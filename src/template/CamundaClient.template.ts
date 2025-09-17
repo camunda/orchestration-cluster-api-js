@@ -283,10 +283,10 @@ export class CamundaClient {
    * @param options Optional: tenantId.
    * @returns ExtendedDeploymentResult
    */
-  // @ts-ignore - ExtendedDeploymentResult is injected by code generation (CamundaClient.ts)
   deployResourcesFromFiles(
     resourceFilenames: string[],
     options?: { tenantId?: string }
+    // @ts-ignore - ExtendedDeploymentResult is injected by code generation (CamundaClient.ts)
   ): CancelablePromise<ExtendedDeploymentResult> {
     return toCancelable(async (_signal) => {
       if (!Array.isArray(resourceFilenames) || resourceFilenames.length === 0) {

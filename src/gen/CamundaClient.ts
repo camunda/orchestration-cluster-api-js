@@ -8,13 +8,16 @@ import { createAuthFacade } from '../runtime/auth';
 import type { CamundaConfig } from '../runtime/unifiedConfiguration';
 import type { EnvOverrides } from '../runtime/configSchema';
 import { hydrateConfig } from '../runtime/unifiedConfiguration';
-import { ConsistencyOptions, eventualPoll } from '../runtime/eventual'
+import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
-import { wrapFetch, withCorrelation as _withCorrelation, getCorrelation } from '../runtime/telemetry';
+import {
+  wrapFetch,
+  withCorrelation as _withCorrelation,
+  getCorrelation,
+} from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -28,7 +31,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-09-17T03:48:16.521Z
+// Generated 2025-09-17T03:54:22.206Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -911,11 +914,20 @@ export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeplo
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES END ===
 
 // Cancelable primitive (kept lightweight & local)
-export class CancelError extends Error { constructor() { super('Cancelled'); this.name = 'CancelError'; } }
-export interface CancelablePromise<T> extends Promise<T> { cancel(): void }
+export class CancelError extends Error {
+  constructor() {
+    super('Cancelled');
+    this.name = 'CancelError';
+  }
+}
+export interface CancelablePromise<T> extends Promise<T> {
+  cancel(): void;
+}
 function toCancelable<T>(factory: (signal: AbortSignal) => Promise<T>): CancelablePromise<T> {
   const ac = new AbortController();
-  const p: any = new Promise<T>((resolve, reject) => { factory(ac.signal).then(resolve, reject); });
+  const p: any = new Promise<T>((resolve, reject) => {
+    factory(ac.signal).then(resolve, reject);
+  });
   p.cancel = () => ac.abort();
   return p as CancelablePromise<T>;
 }
@@ -933,13 +945,19 @@ export interface CamundaOptions {
   // Per-client logging options
   log?: { level?: LogLevel; transport?: LogTransport };
   // Telemetry (Phase 1)
-  telemetry?: { hooks?: import('../runtime/telemetry').TelemetryHooks; correlation?: boolean; mirrorToLog?: boolean };
+  telemetry?: {
+    hooks?: import('../runtime/telemetry').TelemetryHooks;
+    correlation?: boolean;
+    mirrorToLog?: boolean;
+  };
   // If true (default), non-2xx HTTP responses throw instead of returning an error object.
   // Set to false to opt into non-throwing behavior.
   throwOnError?: boolean;
 }
 
-export function createCamundaClient(options?: CamundaOptions) { return new CamundaClient(options); }
+export function createCamundaClient(options?: CamundaOptions) {
+  return new CamundaClient(options);
+}
 
 export class CamundaClient {
   private _client: Client;
@@ -949,7 +967,7 @@ export class CamundaClient {
     auth: { strategy: 'NONE', basic: { username: '', password: '' } } as any,
     validation: { req: 'none', res: 'none', raw: 'req:none,res:none' } as any,
     oauth: { oauthUrl: '', timeoutMs: 0, retry: { max: 0, baseDelayMs: 0 } } as any,
-    tokenAudience: ''
+    tokenAudience: '',
   } as any);
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
@@ -963,99 +981,179 @@ export class CamundaClient {
   constructor(opts: CamundaOptions = {}) {
     if (opts.config) this._overrides = { ...opts.config };
     const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
-  this._config = deepFreeze(config) as Readonly<CamundaConfig>;
-  // Initialize per-client logger
-  this._log = createLogger({ level: opts.log?.level || this._config.logLevel, transport: opts.log?.transport });
-  const baseFetch = opts.fetch;
-  this._fetch = baseFetch;
+    this._config = deepFreeze(config) as Readonly<CamundaConfig>;
+    // Initialize per-client logger
+    this._log = createLogger({
+      level: opts.log?.level || this._config.logLevel,
+      transport: opts.log?.transport,
+    });
+    const baseFetch = opts.fetch;
+    this._fetch = baseFetch;
     // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
     // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
     if (opts.telemetry) {
-      this._fetch = wrapFetch(this._fetch || fetch as any, { hooks: opts.telemetry.hooks, correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined, logger: this._log, mirrorToLog: opts.telemetry.mirrorToLog });
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: opts.telemetry.hooks,
+        correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        mirrorToLog: opts.telemetry.mirrorToLog,
+      });
     } else if (this._config.telemetry?.log) {
-      this._fetch = wrapFetch(this._fetch || fetch as any, { hooks: undefined, correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined, logger: this._log, mirrorToLog: true });
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: undefined,
+        correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        mirrorToLog: true,
+      });
     }
-  this._client = createClient({ baseUrl: this._config.restAddress, fetch: this._fetch, throwOnError: opts.throwOnError !== false });
-  installAuthInterceptor(this._client, () => this._config.auth.strategy, () => this._auth.getAuthHeaders());
-  this._auth = createAuthFacade(this._config, { fetch: this._fetch, logger: this._log, telemetryHooks: opts.telemetry?.hooks, correlationProvider: (opts.telemetry?.correlation || (!opts.telemetry && this._config.telemetry?.correlation)) ? () => getCorrelation() : undefined });
-  this._validation.update(this._config.validation);
-  this._validation.attachLogger(this._log);
-  this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
-  // Debug-level emission of redacted effective configuration (lazy)
-  this._log.debug(() => {
-    try {
-      const last = (globalThis as any).__CAMUNDA_SDK_LAST_CONFIG;
-      const redacted = last?.toRedactedObject ? last.toRedactedObject() : undefined;
-      return redacted ? ['config.hydrated', { config: redacted }] : ['config.hydrated'];
-    } catch {
-      return ['config.hydrated'];
-    }
-  });
+    this._client = createClient({
+      baseUrl: this._config.restAddress,
+      fetch: this._fetch,
+      throwOnError: opts.throwOnError !== false,
+    });
+    installAuthInterceptor(
+      this._client,
+      () => this._config.auth.strategy,
+      () => this._auth.getAuthHeaders()
+    );
+    this._auth = createAuthFacade(this._config, {
+      fetch: this._fetch,
+      logger: this._log,
+      telemetryHooks: opts.telemetry?.hooks,
+      correlationProvider:
+        opts.telemetry?.correlation || (!opts.telemetry && this._config.telemetry?.correlation)
+          ? () => getCorrelation()
+          : undefined,
+    });
+    this._validation.update(this._config.validation);
+    this._validation.attachLogger(this._log);
+    this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
+    // Debug-level emission of redacted effective configuration (lazy)
+    this._log.debug(() => {
+      try {
+        const last = (globalThis as any).__CAMUNDA_SDK_LAST_CONFIG;
+        const redacted = last?.toRedactedObject ? last.toRedactedObject() : undefined;
+        return redacted ? ['config.hydrated', { config: redacted }] : ['config.hydrated'];
+      } catch {
+        return ['config.hydrated'];
+      }
+    });
   }
 
-  get config(): Readonly<CamundaConfig> { return this._config; }
+  get config(): Readonly<CamundaConfig> {
+    return this._config;
+  }
   /**
    * Read-only snapshot of current hydrated configuration (do not mutate directly).
    * Use configure(...) to apply changes.
    */
-  getConfig(): Readonly<CamundaConfig> { return this._config; }
+  getConfig(): Readonly<CamundaConfig> {
+    return this._config;
+  }
 
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
     if (next.config) this._overrides = { ...this._overrides, ...next.config };
-  if (next.fetch) this._fetch = next.fetch;
+    if (next.fetch) this._fetch = next.fetch;
     const { config } = hydrateConfig({ overrides: this._overrides, env: next.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled
     if (next.telemetry) {
-      this._fetch = wrapFetch(this._fetch || fetch as any, { hooks: next.telemetry.hooks, correlation: next.telemetry.correlation ? () => getCorrelation() : undefined, logger: this._log, mirrorToLog: next.telemetry.mirrorToLog });
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: next.telemetry.hooks,
+        correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        mirrorToLog: next.telemetry.mirrorToLog,
+      });
     } else if (this._config.telemetry?.log) {
-      this._fetch = wrapFetch(this._fetch || fetch as any, { hooks: undefined, correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined, logger: this._log, mirrorToLog: true });
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: undefined,
+        correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        mirrorToLog: true,
+      });
     }
-  this._client = createClient({ baseUrl: this._config.restAddress, fetch: this._fetch, throwOnError: next.throwOnError !== false });
-  installAuthInterceptor(this._client, () => this._config.auth.strategy, () => this._auth.getAuthHeaders());
-  // Update logger level / transport if provided, else apply config log level
-  if (next.log?.level) this._log.setLevel(next.log.level); else this._log.setLevel(this._config.logLevel);
-  if (next.log?.transport !== undefined) this._log.setTransport(next.log.transport);
-  this._auth = createAuthFacade(this._config, { fetch: this._fetch, logger: this._log, telemetryHooks: next.telemetry?.hooks, correlationProvider: (next.telemetry?.correlation || (!next.telemetry && this._config.telemetry?.correlation)) ? () => getCorrelation() : undefined });
-  this._validation.update(this._config.validation);
-  this._validation.attachLogger(this._log);
-  // _errorMode intentionally not mutable post-construction.
-  // Emit updated redacted configuration when debug enabled
-  this._log.debug(() => {
-    try {
-      const last = (globalThis as any).__CAMUNDA_SDK_LAST_CONFIG;
-      const redacted = last?.toRedactedObject ? last.toRedactedObject() : undefined;
-      return redacted ? ['config.reconfigured', { config: redacted }] : ['config.reconfigured'];
-    } catch {
-      return ['config.reconfigured'];
-    }
-  });
+    this._client = createClient({
+      baseUrl: this._config.restAddress,
+      fetch: this._fetch,
+      throwOnError: next.throwOnError !== false,
+    });
+    installAuthInterceptor(
+      this._client,
+      () => this._config.auth.strategy,
+      () => this._auth.getAuthHeaders()
+    );
+    // Update logger level / transport if provided, else apply config log level
+    if (next.log?.level) this._log.setLevel(next.log.level);
+    else this._log.setLevel(this._config.logLevel);
+    if (next.log?.transport !== undefined) this._log.setTransport(next.log.transport);
+    this._auth = createAuthFacade(this._config, {
+      fetch: this._fetch,
+      logger: this._log,
+      telemetryHooks: next.telemetry?.hooks,
+      correlationProvider:
+        next.telemetry?.correlation || (!next.telemetry && this._config.telemetry?.correlation)
+          ? () => getCorrelation()
+          : undefined,
+    });
+    this._validation.update(this._config.validation);
+    this._validation.attachLogger(this._log);
+    // _errorMode intentionally not mutable post-construction.
+    // Emit updated redacted configuration when debug enabled
+    this._log.debug(() => {
+      try {
+        const last = (globalThis as any).__CAMUNDA_SDK_LAST_CONFIG;
+        const redacted = last?.toRedactedObject ? last.toRedactedObject() : undefined;
+        return redacted ? ['config.reconfigured', { config: redacted }] : ['config.reconfigured'];
+      } catch {
+        return ['config.reconfigured'];
+      }
+    });
   }
 
   // Auth helpers
-  async getAuthHeaders() { return this._auth.getAuthHeaders(); }
-  async forceAuthRefresh() { return this._auth.forceRefresh(); }
-  clearAuthCache(opts?: { disk?: boolean; memory?: boolean }) { this._auth.clearCache(opts); }
-  onAuthHeaders(h: (headers: Record<string, string>) => Record<string, string> | Promise<Record<string, string>>) { this._auth.registerHeadersHook(h); }
+  async getAuthHeaders() {
+    return this._auth.getAuthHeaders();
+  }
+  async forceAuthRefresh() {
+    return this._auth.forceRefresh();
+  }
+  clearAuthCache(opts?: { disk?: boolean; memory?: boolean }) {
+    this._auth.clearCache(opts);
+  }
+  onAuthHeaders(
+    h: (headers: Record<string, string>) => Record<string, string> | Promise<Record<string, string>>
+  ) {
+    this._auth.registerHeadersHook(h);
+  }
 
   /** @internal ValidationManager is internal; tests may reach via (client as any)._validation */
   /** Access a scoped logger (internal & future user emission). */
-  logger(scope?: string) { return scope ? this._log.scope(scope) : this._log; }
+  logger(scope?: string) {
+    return scope ? this._log.scope(scope) : this._log;
+  }
 
   /** Internal accessor (read-only) for eventual consistency error mode. */
-  getErrorMode(): 'throw' | 'result' { return this._errorMode; }
+  getErrorMode(): 'throw' | 'result' {
+    return this._errorMode;
+  }
 
   // Run a function with a correlation ID (manual propagation phase 1)
-  withCorrelation<T>(id: string, fn: () => Promise<T> | T): Promise<T> { return _withCorrelation(id, fn); }
+  withCorrelation<T>(id: string, fn: () => Promise<T> | T): Promise<T> {
+    return _withCorrelation(id, fn);
+  }
 
   // Helper for detecting documented void responses (stable public contract)
   // Referenced from generated code - DO NOT REMOVE
   private _isVoidResponse(name: string): boolean {
-    try { return (Schemas as any)[name]?.type === "void"; } catch { return false; }
+    try {
+      return (Schemas as any)[name]?.type === 'void';
+    } catch {
+      return false;
+    }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-09-17T03:48:16.524Z)
+  // Generated methods (2025-09-17T03:54:22.207Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -7492,10 +7590,13 @@ export class CamundaClient {
    * Node-only convenience: deploy resources from local filesystem paths.
    * @param resourceFilenames Absolute or relative file paths to BPMN/DMN/form/resource files.
    * @param options Optional: tenantId.
-   * @returns ExtendedDeploymentResult 
+   * @returns ExtendedDeploymentResult
    */
-  deployResourcesFromFiles(resourceFilenames: string[], options?: { tenantId?: string }): CancelablePromise<ExtendedDeploymentResult> {
-    return toCancelable(async _signal => {
+  deployResourcesFromFiles(
+    resourceFilenames: string[],
+    options?: { tenantId?: string }
+  ): CancelablePromise<ExtendedDeploymentResult> {
+    return toCancelable(async (_signal) => {
       if (!Array.isArray(resourceFilenames) || resourceFilenames.length === 0) {
         throw new Error('resourceFilenames must be a non-empty string[]');
       }
@@ -7506,7 +7607,7 @@ export class CamundaClient {
       // Dynamic imports so that bundlers can tree-shake for browser builds
       const [{ readFile }, pathMod] = await Promise.all([
         import('node:fs/promises'),
-        import('node:path')
+        import('node:path'),
       ]);
       // Best-effort MIME inference
       const mimeFor = (filename: string): string => {
@@ -7514,24 +7615,32 @@ export class CamundaClient {
         switch (ext) {
           case 'bpmn':
           case 'dmn':
-          case 'xml': return 'application/xml';
+          case 'xml':
+            return 'application/xml';
           case 'json':
-          case 'form': return 'application/json';
-          default: return 'application/octet-stream';
+          case 'form':
+            return 'application/json';
+          default:
+            return 'application/octet-stream';
         }
       };
       if (typeof File !== 'function') {
-        throw new Error('Global File constructor not available. Requires Node 18+ (fetch experimental) or Node 20+');
+        throw new Error(
+          'Global File constructor not available. Requires Node 18+ (fetch experimental) or Node 20+'
+        );
       }
       const files: File[] = [];
       for (const p of resourceFilenames) {
         if (typeof p !== 'string' || !p) throw new Error('Invalid resource filename encountered');
         const data = await readFile(p);
         const name = pathMod.basename(p);
-  files.push(new File([data as any], name, { type: mimeFor(name) }));
+        files.push(new File([data as any], name, { type: mimeFor(name) }));
       }
-  const payload: createDeploymentInput = { resources: files, ...(options?.tenantId ? { tenantId: options.tenantId } : {}) } as any;
-  return this.createDeployment(payload);
+      const payload: createDeploymentInput = {
+        resources: files,
+        ...(options?.tenantId ? { tenantId: options.tenantId } : {}),
+      } as any;
+      return this.createDeployment(payload);
     });
   }
 }

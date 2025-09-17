@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2025-09-17T03:48:13.149Z",
+  "generatedAt": "2025-09-17T03:54:19.063Z",
   "specHash": "sha256:da95145a7e435daadf9bbc959251cf2aa7944c17dd741ef06a502b11f25a9213",
   "generator": {
     "name": "@hey-api/openapi-ts"
@@ -18,7 +18,9 @@
       "description": "System-generated key for an authorization.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -26,13 +28,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813684332"],
+      "examples": [
+        "2251799813684332"
+      ],
       "brand": {
         "tsType": "CamundaKey<'AuthorizationKey'>"
       },
       "zod": {
         "schemaName": "zAuthorizationKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuthorizationKey",
@@ -47,7 +53,9 @@
         "deprecated": false
       },
       "stableId": "authorization-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "BatchOperationKey",
@@ -62,13 +70,17 @@
       "constraints": {
         "format": "BatchOperationKey | uuid"
       },
-      "examples": ["2251799813684321"],
+      "examples": [
+        "2251799813684321"
+      ],
       "brand": {
         "tsType": "CamundaKey<'BatchOperationKey'>"
       },
       "zod": {
         "schemaName": "zBatchOperationKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationKey",
@@ -100,13 +112,17 @@
         "maxLength": 256,
         "format": "DecisionDefinitionId"
       },
-      "examples": ["new-hire-onboarding-workflow"],
+      "examples": [
+        "new-hire-onboarding-workflow"
+      ],
       "brand": {
         "tsType": "CamundaKey<'DecisionDefinitionId'>"
       },
       "zod": {
         "schemaName": "zDecisionDefinitionId",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionDefinitionId",
@@ -129,7 +145,9 @@
       "description": "System-generated key for a decision definition.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -137,13 +155,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813326547"],
+      "examples": [
+        "2251799813326547"
+      ],
       "brand": {
         "tsType": "CamundaKey<'DecisionDefinitionKey'>"
       },
       "zod": {
         "schemaName": "zDecisionDefinitionKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionDefinitionKey",
@@ -158,7 +180,9 @@
         "deprecated": false
       },
       "stableId": "decision-definition-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "DecisionEvaluationInstanceKey",
@@ -167,7 +191,9 @@
       "description": "System-generated key for a decision evaluation instance.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -175,13 +201,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813684367"],
+      "examples": [
+        "2251799813684367"
+      ],
       "brand": {
         "tsType": "CamundaKey<'DecisionEvaluationInstanceKey'>"
       },
       "zod": {
         "schemaName": "zDecisionEvaluationInstanceKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationInstanceKey",
@@ -196,7 +226,9 @@
         "deprecated": false
       },
       "stableId": "decision-evaluation-instance-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "DecisionEvaluationKey",
@@ -205,7 +237,9 @@
       "description": "System-generated key for a decision evaluation.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -213,13 +247,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251792362345323"],
+      "examples": [
+        "2251792362345323"
+      ],
       "brand": {
         "tsType": "CamundaKey<'DecisionEvaluationKey'>"
       },
       "zod": {
         "schemaName": "zDecisionEvaluationKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationKey",
@@ -234,7 +272,9 @@
         "deprecated": false
       },
       "stableId": "decision-evaluation-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "DecisionInstanceKey",
@@ -243,7 +283,9 @@
       "description": "System-generated key for a deployed decision instance.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -251,13 +293,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["22517998136843567"],
+      "examples": [
+        "22517998136843567"
+      ],
       "brand": {
         "tsType": "CamundaKey<'DecisionInstanceKey'>"
       },
       "zod": {
         "schemaName": "zDecisionInstanceKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionInstanceKey",
@@ -272,7 +318,9 @@
         "deprecated": false
       },
       "stableId": "decision-instance-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "DecisionRequirementsKey",
@@ -281,7 +329,9 @@
       "description": "System-generated key for a deployed decision requirements definition.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -289,13 +339,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813683346"],
+      "examples": [
+        "2251799813683346"
+      ],
       "brand": {
         "tsType": "CamundaKey<'DecisionRequirementsKey'>"
       },
       "zod": {
         "schemaName": "zDecisionRequirementsKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionRequirementsKey",
@@ -310,7 +364,9 @@
         "deprecated": false
       },
       "stableId": "decision-requirements-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "DeploymentKey",
@@ -319,7 +375,9 @@
       "description": "Key for a deployment.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -332,7 +390,9 @@
       },
       "zod": {
         "schemaName": "zDeploymentKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DeploymentKey",
@@ -347,7 +407,9 @@
         "deprecated": false
       },
       "stableId": "deployment-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "DocumentId",
@@ -367,7 +429,9 @@
       },
       "zod": {
         "schemaName": "zDocumentId",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/DocumentId",
@@ -396,13 +460,17 @@
       "constraints": {
         "format": "ElementId"
       },
-      "examples": ["Activity_106kosb"],
+      "examples": [
+        "Activity_106kosb"
+      ],
       "brand": {
         "tsType": "CamundaKey<'ElementId'>"
       },
       "zod": {
         "schemaName": "zElementId",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementId",
@@ -425,7 +493,9 @@
       "description": "System-generated key for a element instance.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -433,13 +503,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813686789"],
+      "examples": [
+        "2251799813686789"
+      ],
       "brand": {
         "tsType": "CamundaKey<'ElementInstanceKey'>"
       },
       "zod": {
         "schemaName": "zElementInstanceKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementInstanceKey",
@@ -454,7 +528,9 @@
         "deprecated": false
       },
       "stableId": "element-instance-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "EndCursor",
@@ -472,13 +548,17 @@
         "maxLength": 300,
         "format": "base64"
       },
-      "examples": ["WzIyNTE3OTk4MTM2ODcxMDJd"],
+      "examples": [
+        "WzIyNTE3OTk4MTM2ODcxMDJd"
+      ],
       "brand": {
         "tsType": "CamundaKey<'EndCursor'>"
       },
       "zod": {
         "schemaName": "zEndCursor",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/EndCursor",
@@ -501,7 +581,9 @@
       "description": "System-generated key for a deployed form.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -509,13 +591,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813684365"],
+      "examples": [
+        "2251799813684365"
+      ],
       "brand": {
         "tsType": "CamundaKey<'FormKey'>"
       },
       "zod": {
         "schemaName": "zFormKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/FormKey",
@@ -530,7 +616,9 @@
         "deprecated": false
       },
       "stableId": "form-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "IncidentKey",
@@ -539,7 +627,9 @@
       "description": "System-generated key for a incident.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -547,13 +637,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813689432"],
+      "examples": [
+        "2251799813689432"
+      ],
       "brand": {
         "tsType": "CamundaKey<'IncidentKey'>"
       },
       "zod": {
         "schemaName": "zIncidentKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/IncidentKey",
@@ -568,7 +662,9 @@
         "deprecated": false
       },
       "stableId": "incident-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "JobKey",
@@ -577,7 +673,9 @@
       "description": "System-generated key for a job.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -585,13 +683,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813653498"],
+      "examples": [
+        "2251799813653498"
+      ],
       "brand": {
         "tsType": "CamundaKey<'JobKey'>"
       },
       "zod": {
         "schemaName": "zJobKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKey",
@@ -606,7 +708,9 @@
         "deprecated": false
       },
       "stableId": "job-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "MessageCorrelationKey",
@@ -615,7 +719,9 @@
       "description": "System-generated key for a message correlation.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -623,13 +729,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813634265"],
+      "examples": [
+        "2251799813634265"
+      ],
       "brand": {
         "tsType": "CamundaKey<'MessageCorrelationKey'>"
       },
       "zod": {
         "schemaName": "zMessageCorrelationKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageCorrelationKey",
@@ -644,7 +754,9 @@
         "deprecated": false
       },
       "stableId": "message-correlation-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "MessageKey",
@@ -653,7 +765,9 @@
       "description": "System-generated key for an message.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -661,13 +775,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813683467"],
+      "examples": [
+        "2251799813683467"
+      ],
       "brand": {
         "tsType": "CamundaKey<'MessageKey'>"
       },
       "zod": {
         "schemaName": "zMessageKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageKey",
@@ -682,7 +800,9 @@
         "deprecated": false
       },
       "stableId": "message-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "MessageSubscriptionKey",
@@ -691,7 +811,9 @@
       "description": "System-generated key for a message subscription.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -699,13 +821,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813632456"],
+      "examples": [
+        "2251799813632456"
+      ],
       "brand": {
         "tsType": "CamundaKey<'MessageSubscriptionKey'>"
       },
       "zod": {
         "schemaName": "zMessageSubscriptionKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionKey",
@@ -720,7 +846,9 @@
         "deprecated": false
       },
       "stableId": "message-subscription-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "ProcessDefinitionId",
@@ -737,13 +865,17 @@
         "minLength": 1,
         "format": "ProcessDefinitionId"
       },
-      "examples": ["new-account-onboarding-workflow"],
+      "examples": [
+        "new-account-onboarding-workflow"
+      ],
       "brand": {
         "tsType": "CamundaKey<'ProcessDefinitionId'>"
       },
       "zod": {
         "schemaName": "zProcessDefinitionId",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessDefinitionId",
@@ -766,7 +898,9 @@
       "description": "System-generated key for a deployed process definition.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -774,13 +908,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813686749"],
+      "examples": [
+        "2251799813686749"
+      ],
       "brand": {
         "tsType": "CamundaKey<'ProcessDefinitionKey'>"
       },
       "zod": {
         "schemaName": "zProcessDefinitionKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessDefinitionKey",
@@ -795,7 +933,9 @@
         "deprecated": false
       },
       "stableId": "process-definition-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "ProcessInstanceKey",
@@ -804,7 +944,9 @@
       "description": "System-generated key for a process instance.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -812,13 +954,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813690746"],
+      "examples": [
+        "2251799813690746"
+      ],
       "brand": {
         "tsType": "CamundaKey<'ProcessInstanceKey'>"
       },
       "zod": {
         "schemaName": "zProcessInstanceKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceKey",
@@ -833,7 +979,9 @@
         "deprecated": false
       },
       "stableId": "process-instance-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "ScopeKey",
@@ -842,7 +990,9 @@
       "description": "System-generated key for a scope.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -850,13 +1000,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813683890"],
+      "examples": [
+        "2251799813683890"
+      ],
       "brand": {
         "tsType": "CamundaKey<'ScopeKey'>"
       },
       "zod": {
         "schemaName": "zScopeKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/ScopeKey",
@@ -871,7 +1025,9 @@
         "deprecated": false
       },
       "stableId": "scope-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "SignalKey",
@@ -880,7 +1036,9 @@
       "description": "System-generated key for an signal.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -888,13 +1046,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["22517998136987467"],
+      "examples": [
+        "22517998136987467"
+      ],
       "brand": {
         "tsType": "CamundaKey<'SignalKey'>"
       },
       "zod": {
         "schemaName": "zSignalKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/SignalKey",
@@ -909,7 +1071,9 @@
         "deprecated": false
       },
       "stableId": "signal-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "StartCursor",
@@ -927,13 +1091,17 @@
         "maxLength": 300,
         "format": "base64"
       },
-      "examples": ["WzIyNTE3OTk4MTM2ODcxMDJd"],
+      "examples": [
+        "WzIyNTE3OTk4MTM2ODcxMDJd"
+      ],
       "brand": {
         "tsType": "CamundaKey<'StartCursor'>"
       },
       "zod": {
         "schemaName": "zStartCursor",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/StartCursor",
@@ -965,13 +1133,17 @@
         "maxLength": 100,
         "format": "Tag"
       },
-      "examples": ["business_key:1234"],
+      "examples": [
+        "business_key:1234"
+      ],
       "brand": {
         "tsType": "CamundaKey<'Tag'>"
       },
       "zod": {
         "schemaName": "zTag",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/Tag",
@@ -1003,13 +1175,17 @@
         "maxLength": 256,
         "format": "TenantId"
       },
-      "examples": ["customer-service"],
+      "examples": [
+        "customer-service"
+      ],
       "brand": {
         "tsType": "CamundaKey<'TenantId'>"
       },
       "zod": {
         "schemaName": "zTenantId",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/TenantId",
@@ -1041,13 +1217,17 @@
         "maxLength": 256,
         "format": "Username"
       },
-      "examples": ["swillis"],
+      "examples": [
+        "swillis"
+      ],
       "brand": {
         "tsType": "CamundaKey<'Username'>"
       },
       "zod": {
         "schemaName": "zUsername",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/Username",
@@ -1070,7 +1250,9 @@
       "description": "System-generated key for a user task.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -1083,7 +1265,9 @@
       },
       "zod": {
         "schemaName": "zUserTaskKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/UserTaskKey",
@@ -1098,7 +1282,9 @@
         "deprecated": false
       },
       "stableId": "user-task-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     },
     {
       "name": "VariableKey",
@@ -1107,7 +1293,9 @@
       "description": "System-generated key for a variable.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": ["LongKey"],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
       "constraints": {
@@ -1115,13 +1303,17 @@
         "minLength": 1,
         "maxLength": 25
       },
-      "examples": ["2251799813683287"],
+      "examples": [
+        "2251799813683287"
+      ],
       "brand": {
         "tsType": "CamundaKey<'VariableKey'>"
       },
       "zod": {
         "schemaName": "zVariableKey",
-        "transformPipeline": ["brand-cast"]
+        "transformPipeline": [
+          "brand-cast"
+        ]
       },
       "source": {
         "schemaPointer": "#/components/schemas/VariableKey",
@@ -1136,7 +1328,9 @@
         "deprecated": false
       },
       "stableId": "variable-key",
-      "notes": ["inherited constraints from LongKey"]
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
     }
   ],
   "unions": [
@@ -1170,7 +1364,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["BatchOperationItemStateEnum"]
+          "refs": [
+            "BatchOperationItemStateEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1194,7 +1390,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["BatchOperationStateEnum"]
+          "refs": [
+            "BatchOperationStateEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1218,7 +1416,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["BatchOperationTypeEnum"]
+          "refs": [
+            "BatchOperationTypeEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1288,7 +1488,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["ElementInstanceStateEnum"]
+          "refs": [
+            "ElementInstanceStateEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1335,7 +1537,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["JobKindEnum"]
+          "refs": [
+            "JobKindEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1359,7 +1563,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["JobListenerEventTypeEnum"]
+          "refs": [
+            "JobListenerEventTypeEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1383,7 +1589,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["JobStateEnum"]
+          "refs": [
+            "JobStateEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1407,7 +1615,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["MessageSubscriptionTypeEnum"]
+          "refs": [
+            "MessageSubscriptionTypeEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1503,7 +1713,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["ProcessInstanceStateEnum"]
+          "refs": [
+            "ProcessInstanceStateEnum"
+          ]
         },
         {
           "branchType": "branded-ref",
@@ -1610,7 +1822,9 @@
       "branches": [
         {
           "branchType": "other",
-          "refs": ["UserTaskStateEnum"]
+          "refs": [
+            "UserTaskStateEnum"
+          ]
         },
         {
           "branchType": "branded-ref",

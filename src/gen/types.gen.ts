@@ -12049,7 +12049,7 @@ export type ClientOptions = {
 // branding-plugin generated
 // schemaVersion=1.0.0
 // specHash=sha256:da95145a7e435daadf9bbc959251cf2aa7944c17dd741ef06a502b11f25a9213
-// generatedAt=2025-09-17T03:48:13.149Z
+// generatedAt=2025-09-17T03:54:19.063Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);
