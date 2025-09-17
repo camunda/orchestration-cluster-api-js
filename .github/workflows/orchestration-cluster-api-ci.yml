@@ -2,13 +2,9 @@ name: Orchestration Cluster API JS - PR & Branch CI
 
 on:
   pull_request:
-    paths:
-      - 'orchestration-cluster-api-js/**'
   push:
     branches-ignore:
       - main
-    paths:
-      - 'orchestration-cluster-api-js/**'
 
 jobs:
   test:
