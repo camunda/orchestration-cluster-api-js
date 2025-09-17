@@ -1,6 +1,9 @@
-name: Orchestration Cluster API JS - Release (Option A)
+name: Orchestration Cluster API JS - Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: '0 * * * *' # hourly check (adjust as needed)
