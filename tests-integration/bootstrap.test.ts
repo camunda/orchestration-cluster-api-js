@@ -14,12 +14,11 @@ describe('integration acceptance', () => {
   it('can get the License', async () => {
     const camunda = createCamundaClient();
     const license = await camunda.getLicense();
-    console.log(JSON.stringify(license, null, 2));
   });
-  it('can get the the current CamundaUser', async () => {
+  // This is only valid against a setup using OIDC. Otherwise, the response is undefined
+  it.skip('can get the the current CamundaUser', async () => {
     const camunda = createCamundaClient();
     const res = await camunda.getAuthentication();
-    console.log(JSON.stringify(res, null, 2));
     expect(res).toBeDefined();
   });
   it('throws when using a Blob instead of File (invalid resources array)', async () => {
@@ -32,7 +31,8 @@ describe('integration acceptance', () => {
     ).rejects.toBeDefined();
   });
 
-  it('throws on 401/403 (invalid auth) when throwOnError true', async () => {
+  // This won't throw if the broker is not using Basic Auth
+  it.skip('throws on 401/403 (invalid auth) when throwOnError true', async () => {
     const buffer = await fs.promises.readFile('./tests-integration/fixtures/test-process.bpmn');
     const copied = Uint8Array.from(buffer);
     const file = new File([copied], 'test-process.bpmn', { type: 'application/xml' });
@@ -68,18 +68,15 @@ describe('integration acceptance', () => {
       processDefinitionKey: res.processes[0].processDefinitionKey,
       tags: [_tag],
     });
-    console.log('ProcessInstance', JSON.stringify(process, null, 2));
     const jobsResponse = await camunda.activateJobs({
       maxJobsToActivate: 1,
       type: jobTypes[0],
       timeout: 30000,
     });
-    console.log(JSON.stringify(jobsResponse, null, 2));
     expect(jobsResponse.jobs.length).toBe(1);
 
     const tag = jobsResponse.jobs[0].tags![0];
-
-    console.log('Tag', tag);
+    expect(tag).toBe(_tag)
     const processes = await camunda.searchProcessInstances(
       {
         filter: {
