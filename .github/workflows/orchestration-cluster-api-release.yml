@@ -16,9 +16,7 @@ jobs:
   generate:
     name: Generate & Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: orchestration-cluster-api-js
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,7 +25,7 @@ jobs:
         with:
           node-version: 20.x
           cache: 'npm'
-          cache-dependency-path: orchestration-cluster-api-js/package.json
+          cache-dependency-path: package.json
       - name: Install deps
         run: npm ci
       - name: Generate & Build
@@ -35,7 +33,7 @@ jobs:
       - name: Unit Tests
         run: npm test
       - name: Start Integration Stack
-        working-directory: orchestration-cluster-api-js/docker
+        working-directory: docker
         run: docker compose up -d
       - name: Wait for Services Healthy
         run: |
@@ -77,11 +75,11 @@ jobs:
           git push origin "$BR" --force
       - name: Upload logs (always)
         if: always()
-        working-directory: orchestration-cluster-api-js/docker
+        working-directory: docker
         run: docker compose logs || true
       - name: Shutdown Integration Stack (always)
         if: always()
-        working-directory: orchestration-cluster-api-js/docker
+        working-directory: docker
         run: docker compose down -v || true
     outputs:
       changed: ${{ steps.diff.outputs.changed }}
@@ -91,9 +89,6 @@ jobs:
     needs: generate
     if: needs.generate.outputs.changed == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: orchestration-cluster-api-js
     steps:
       - uses: actions/checkout@v4
         with:
@@ -111,9 +106,6 @@ jobs:
     needs: [generate, merge]
     # If no changes, still allow semantic-release to process commits (e.g., dependency chore) if desired:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: orchestration-cluster-api-js
     steps:
       - uses: actions/checkout@v4
         with:
@@ -122,7 +114,7 @@ jobs:
         with:
           node-version: 20.x
           cache: 'npm'
-          cache-dependency-path: orchestration-cluster-api-js/package.json
+          cache-dependency-path: package.json
       - name: Install deps
         run: npm ci
       - name: Regenerate & Build (Integrity Check)
