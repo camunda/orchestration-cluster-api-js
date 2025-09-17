@@ -14,7 +14,11 @@ try {
       value: function (_registry: unknown, meta?: { description?: string }) {
         // If description provided and no explicit description already, apply via .describe
         if (meta && (meta as any).description && typeof this.describe === 'function') {
-          try { return (this as any).describe((meta as any).description); } catch { /* ignore */ }
+          try {
+            return (this as any).describe((meta as any).description);
+          } catch {
+            /* ignore */
+          }
         }
         return this;
       },
@@ -22,7 +26,9 @@ try {
       writable: false,
     });
   }
-} catch {/* ignore */}
+} catch {
+  /* ignore */
+}
 
 // Dummy export to force bundlers (tsup/esbuild) to retain this module even when
 // package.json sets "sideEffects": false. A bare import would otherwise be tree-shaken

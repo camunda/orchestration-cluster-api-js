@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+
+import { describe, it, expect } from 'vitest';
 
 // Regression guard: body-only operations must expose ONLY a (body, ...) signature.
 // They are identified in the generated facade by the trio of type aliases:
@@ -15,15 +16,16 @@ import path from 'path';
 //  4. There is no generic union style overload with (arg: any) for that op.
 
 describe('facade body-only operation flattening', () => {
-  const facadePath = path.resolve(__dirname, '../src/facade/operations.gen.ts').replace(/\\/g,'/');
+  const facadePath = path.resolve(__dirname, '../src/facade/operations.gen.ts').replace(/\\/g, '/');
   const src = fs.readFileSync(facadePath, 'utf8');
   const lines = src.split(/\r?\n/);
 
   // Collect body-only operation names
   const bodyTypeRe = /^type _([a-zA-Z0-9_]+)_Body\b/;
   const bodyOnlyOps = lines
-    .map(l => {
-      const m = l.match(bodyTypeRe); return m ? m[1] : null;
+    .map((l) => {
+      const m = l.match(bodyTypeRe);
+      return m ? m[1] : null;
     })
     .filter((v): v is string => !!v);
 
@@ -38,7 +40,7 @@ describe('facade body-only operation flattening', () => {
     const violations: string[] = [];
     for (const op of uniqueBodyOnly) {
       const fnDefRe = new RegExp(`^export function ${op}\\(`);
-      const fnLines = lines.filter(l => fnDefRe.test(l));
+      const fnLines = lines.filter((l) => fnDefRe.test(l));
       if (fnLines.length !== 1) {
         violations.push(`${op}: expected 1 function definition, found ${fnLines.length}`);
         continue;
@@ -55,10 +57,10 @@ describe('facade body-only operation flattening', () => {
       // Check any stray overload lines referencing options or arg: any for this op
       const overloadOptionsRe = new RegExp(`export function ${op}\\(options:`);
       const overloadArgAnyRe = new RegExp(`export function ${op}\\(arg:`);
-      if (lines.some(l => overloadOptionsRe.test(l))) {
+      if (lines.some((l) => overloadOptionsRe.test(l))) {
         violations.push(`${op}: overload with options: detected`);
       }
-      if (lines.some(l => overloadArgAnyRe.test(l))) {
+      if (lines.some((l) => overloadArgAnyRe.test(l))) {
         violations.push(`${op}: overload with arg: any detected`);
       }
     }

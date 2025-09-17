@@ -22,7 +22,9 @@ if (idx === -1) {
 // Regex targets the resources: z.array(z.string())... block inside zCreateDeploymentData body definition.
 const resourcesRegex = /(resources:\s*z\.array\(z\.string\(\)\)[^}]*)/m;
 if (!resourcesRegex.test(text)) {
-  console.warn('[postprocess-deployment-schema] resources schema pattern not found or already patched');
+  console.warn(
+    '[postprocess-deployment-schema] resources schema pattern not found or already patched'
+  );
 } else {
   const replacement = `resources: z.array(\n            z.any().refine(\n                (v) => (typeof File !== 'undefined' && v instanceof File),\n                { message: 'Expected File (with a filename & extension)' }\n            )\n        ).nonempty().register(z.globalRegistry, {`;
   text = text.replace(resourcesRegex, replacement);

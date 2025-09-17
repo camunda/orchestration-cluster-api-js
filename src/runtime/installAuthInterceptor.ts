@@ -8,7 +8,7 @@ import type { Client } from '../gen/client/types.gen';
 export function installAuthInterceptor(
   client: Client,
   getStrategy: () => string,
-  getAuthHeaders: () => Promise<Record<string,string>>
+  getAuthHeaders: () => Promise<Record<string, string>>
 ) {
   client.interceptors.request.use(async (request) => {
     try {
@@ -20,7 +20,9 @@ export function installAuthInterceptor(
         h.set('Authorization', auth);
         return new Request(request, { headers: h });
       }
-    } catch { /* swallow to avoid breaking request flow */ }
+    } catch {
+      /* swallow to avoid breaking request flow */
+    }
     return request;
   });
 }

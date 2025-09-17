@@ -17,12 +17,18 @@
  *   - Metadata is committed for stability & drift detection.
  */
 
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
-import yaml from 'yaml'
 
-interface Constraints { pattern?: string; minLength?: number; maxLength?: number; format?: string; }
+import yaml from 'yaml';
+
+interface Constraints {
+  pattern?: string;
+  minLength?: number;
+  maxLength?: number;
+  format?: string;
+}
 
 type KeyCategory = 'system-key' | 'cursor' | 'model-id' | 'other';
 
@@ -131,20 +137,29 @@ function locateSchema(name: string): { lineStart?: number; lineEnd?: number } {
   const pattern = new RegExp('^ {0,}' + name + ':');
   let start: number | undefined;
   for (let i = 0; i < lines.length; i++) {
-    if (pattern.test(lines[i])) { start = i + 1; break; }
+    if (pattern.test(lines[i])) {
+      start = i + 1;
+      break;
+    }
   }
   if (!start) return {};
   // naive end: next schema at same indent level
   let end: number | undefined;
   for (let i = start; i < lines.length; i++) {
-    if (/^ {0,}[A-Za-z0-9_]+:/.test(lines[i]) && !/^\s{2,}/.test(lines[i])) { // crude section boundary
-      end = i; break; }
+    if (/^ {0,}[A-Za-z0-9_]+:/.test(lines[i]) && !/^\s{2,}/.test(lines[i])) {
+      // crude section boundary
+      end = i;
+      break;
+    }
   }
   return { lineStart: start, lineEnd: end };
 }
 
 function toStableId(name: string): string {
-  return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').replace(/_/g, '-').toLowerCase();
+  return name
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/_/g, '-')
+    .toLowerCase();
 }
 
 function extractConstraints(obj: any): Constraints {
@@ -158,18 +173,10 @@ function extractConstraints(obj: any): Constraints {
 }
 
 function mergeConstraints(target: Constraints, extra: Constraints) {
-  if (!extra) return; Object.entries(extra).forEach(([k, v]) => { if (v !== undefined) (target as any)[k] = v; });
-}
-
-// Determine if schema (any composed fragment) references LongKey.
-function refsLong(o: any): boolean {
-  if (!o) return false;
-  if (Array.isArray(o)) return o.some(refsLong);
-  if (typeof o === 'object') {
-    if (o.$ref === '#/components/schemas/LongKey') return true;
-    return Object.values(o).some(refsLong);
-  }
-  return false;
+  if (!extra) return;
+  Object.entries(extra).forEach(([k, v]) => {
+    if (v !== undefined) (target as any)[k] = v;
+  });
 }
 
 const brandedKeys: BrandedKeyEntry[] = [];
@@ -192,7 +199,6 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
   if (isOneOf || isAnyOf) {
     const list = (schema.oneOf || schema.anyOf) as any[];
     const branches: UnionKeyBranch[] = [];
-    let hasOtherBranch = false;
     for (const b of list) {
       if (b.$ref) {
         const refName = (b.$ref as string).split('/').pop()!;
@@ -202,21 +208,20 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
         for (const part of b.allOf) {
           if (part.$ref) compRefs.push((part.$ref as string).split('/').pop()!);
         }
-  hasOtherBranch = true;
-  branches.push({ branchType: 'other', refs: compRefs });
+        branches.push({ branchType: 'other', refs: compRefs });
       } else if (b.type === 'string' && b.format === 'uuid') {
-        hasOtherBranch = true;
         branches.push({ branchType: 'uuid', tsType: 'string', constraints: { format: 'uuid' } });
       } else {
-        hasOtherBranch = true;
         branches.push({ branchType: 'other' });
       }
     }
     // Classify union kind.
-    const onlyRefs = branches.every(br => br.branchType === 'branded-ref');
+    const onlyRefs = branches.every((br) => br.branchType === 'branded-ref');
     const kind: UnionKeyEntry['kind'] = onlyRefs ? 'union-wrapper' : 'hybrid-union';
     // Build tsType string
-    const tsType = branches.map(br => br.ref ? br.ref : (br.brand ?? br.tsType ?? 'string')).join(' | ');
+    const tsType = branches
+      .map((br) => (br.ref ? br.ref : (br.brand ?? br.tsType ?? 'string')))
+      .join(' | ');
     unionKeys.push({
       name,
       kind,
@@ -225,7 +230,7 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
       tsType,
       zod: { schemaName: 'z' + name },
       source: { schemaPointer: pointer, lineStart, lineEnd },
-      stableId: toStableId(name)
+      stableId: toStableId(name),
     });
     continue; // unions are not primary branded primitives themselves
   }
@@ -241,7 +246,7 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
       minItems: typeof schema.minItems === 'number' ? schema.minItems : undefined,
       maxItems: typeof schema.maxItems === 'number' ? schema.maxItems : undefined,
       uniqueItems: !!schema.uniqueItems,
-      source: { schemaPointer: pointer, lineStart, lineEnd }
+      source: { schemaPointer: pointer, lineStart, lineEnd },
     };
     arraySchemas.push(entry);
   }
@@ -309,14 +314,17 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
       brand: { tsType: `${GENERIC_TYPE_NAME}<'${name}'>` },
       zod: { schemaName: 'z' + name, transformPipeline: ['brand-cast'] },
       source: { schemaPointer: pointer, lineStart, lineEnd },
-      extensions: { 'x-semantic-type': schema['x-semantic-type'], 'x-semantic-key': schema['x-semantic-key'] },
+      extensions: {
+        'x-semantic-type': schema['x-semantic-type'],
+        'x-semantic-key': schema['x-semantic-key'],
+      },
       flags: {
         semanticKey,
         includesLongKeyRef,
-        deprecated: !!schema.deprecated
+        deprecated: !!schema.deprecated,
       },
       stableId: toStableId(name),
-      notes: notes.length ? notes : undefined
+      notes: notes.length ? notes : undefined,
     };
     brandedKeys.push(entry);
   }
@@ -331,7 +339,7 @@ const metadata: BrandingMetadata = {
   brandingConfig: {
     genericTypeName: GENERIC_TYPE_NAME,
     idTypesIncluded: true,
-    namespaceFactories: true
+    namespaceFactories: true,
   },
   keys: brandedKeys.sort((a, b) => a.name.localeCompare(b.name)),
   unions: unionKeys.sort((a, b) => a.name.localeCompare(b.name)),
@@ -339,8 +347,8 @@ const metadata: BrandingMetadata = {
   integrity: {
     totalPrimaryKeys: brandedKeys.length,
     totalUnionWrappers: unionKeys.length,
-    implicitCamundaKeys: implicitIds.sort()
-  }
+    implicitCamundaKeys: implicitIds.sort(),
+  },
 };
 
 // Basic validation
@@ -365,9 +373,16 @@ if (implicitIds.length) summaryLines.push(`  Implicit IDs: ${implicitIds.join(',
 console.log(summaryLines.join('\n'));
 
 // Optional: exit non-zero if any hybrid-union missing a branded branch
-const hybridIssues = metadata.unions.filter(u => u.kind === 'hybrid-union' && !u.branches.some(b => b.branchType === 'branded' || b.branchType === 'branded-ref'));
+const hybridIssues = metadata.unions.filter(
+  (u) =>
+    u.kind === 'hybrid-union' &&
+    !u.branches.some((b) => b.branchType === 'branded' || b.branchType === 'branded-ref')
+);
 if (hybridIssues.length) {
-  console.warn('[preprocess-brands] WARNING: hybrid unions without branded branch:', hybridIssues.map(h => h.name));
+  console.warn(
+    '[preprocess-brands] WARNING: hybrid unions without branded branch:',
+    hybridIssues.map((h) => h.name)
+  );
 }
 
 export {}; // ensure module scope

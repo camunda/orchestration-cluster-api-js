@@ -18,7 +18,10 @@ let source = fs.readFileSync(zodGenPath, 'utf8');
 // Only rewrite if we still have the bare side-effect import form.
 const sideEffectImport = /import '\.\.\/zod-augment';/;
 if (sideEffectImport.test(source) && !/__zodAugmentApplied/.test(source)) {
-  source = source.replace(sideEffectImport, "import { __zodAugmentApplied } from '../zod-augment';\nvoid __zodAugmentApplied; // ensure module retained for prototype patch");
+  source = source.replace(
+    sideEffectImport,
+    "import { __zodAugmentApplied } from '../zod-augment';\nvoid __zodAugmentApplied; // ensure module retained for prototype patch"
+  );
   fs.writeFileSync(zodGenPath, source, 'utf8');
   console.log('[postprocess-zod-augment] Rewrote zod augmentation import to retain side-effect');
 } else {

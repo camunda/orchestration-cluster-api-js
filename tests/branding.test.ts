@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { ProcessInstanceKey, ProcessDefinitionKey } from '../src';
 
 // compile-time only test helpers (no runtime execution for type errors)

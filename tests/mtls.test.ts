@@ -1,8 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
-import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
-import { createAuthFacade } from '../src/runtime/auth';
-import createCamundaClient from '../src';
 import fs from 'fs';
+
+import { describe, it, expect, vi } from 'vitest';
+
+import {createCamundaClient} from '../src';
+import { createAuthFacade } from '../src/runtime/auth';
+import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 // Minimal fake PEMs
 const CERT = '-----BEGIN CERTIFICATE-----\nFAKECERT\n-----END CERTIFICATE-----';
@@ -15,20 +17,24 @@ describe('mTLS config precedence', () => {
     const certPath = tmpDir + '/c.pem';
     const keyPath = tmpDir + '/k.pem';
     const caPath = tmpDir + '/ca.pem';
-    fs.writeFileSync(certPath, CERT.replace('FAKECERT','FROM_PATH'));
-    fs.writeFileSync(keyPath, KEY.replace('FAKEKEY','FROM_PATH'));
-    fs.writeFileSync(caPath, CA.replace('FAKECA','FROM_PATH'));
-    const { config } = hydrateConfig({ env: {
-      CAMUNDA_AUTH_STRATEGY: 'NONE',
-      CAMUNDA_MTLS_CERT: CERT,
-      CAMUNDA_MTLS_KEY: KEY,
-      CAMUNDA_MTLS_CA: CA,
-      CAMUNDA_MTLS_CERT_PATH: certPath,
-      CAMUNDA_MTLS_KEY_PATH: keyPath,
-      CAMUNDA_MTLS_CA_PATH: caPath
-    }});
+    fs.writeFileSync(certPath, CERT.replace('FAKECERT', 'FROM_PATH'));
+    fs.writeFileSync(keyPath, KEY.replace('FAKEKEY', 'FROM_PATH'));
+    fs.writeFileSync(caPath, CA.replace('FAKECA', 'FROM_PATH'));
+    const { config } = hydrateConfig({
+      env: {
+        CAMUNDA_AUTH_STRATEGY: 'NONE',
+        CAMUNDA_MTLS_CERT: CERT,
+        CAMUNDA_MTLS_KEY: KEY,
+        CAMUNDA_MTLS_CA: CA,
+        CAMUNDA_MTLS_CERT_PATH: certPath,
+        CAMUNDA_MTLS_KEY_PATH: keyPath,
+        CAMUNDA_MTLS_CA_PATH: caPath,
+      },
+    });
     // Should build facade without throwing (agent constructed). We can't directly inspect private agent.
-    const auth = createAuthFacade(config, { fetch: vi.fn().mockResolvedValue({ ok:true, json: async () => ({}) }) });
+    const auth = createAuthFacade(config, {
+      fetch: vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }),
+    });
     await auth.getAuthHeaders();
     expect(true).toBe(true); // if no throw, pass
   });
@@ -41,30 +47,47 @@ describe('mTLS config precedence', () => {
     fs.writeFileSync(certPath, CERT);
     fs.writeFileSync(keyPath, KEY);
     fs.writeFileSync(caPath, CA);
-    const { config } = hydrateConfig({ env: {
-      CAMUNDA_AUTH_STRATEGY: 'NONE',
-      CAMUNDA_MTLS_CERT_PATH: certPath,
-      CAMUNDA_MTLS_KEY_PATH: keyPath,
-      CAMUNDA_MTLS_CA_PATH: caPath
-    }});
-    const auth = createAuthFacade(config, { fetch: vi.fn().mockResolvedValue({ ok:true, json: async () => ({}) }) });
+    const { config } = hydrateConfig({
+      env: {
+        CAMUNDA_AUTH_STRATEGY: 'NONE',
+        CAMUNDA_MTLS_CERT_PATH: certPath,
+        CAMUNDA_MTLS_KEY_PATH: keyPath,
+        CAMUNDA_MTLS_CA_PATH: caPath,
+      },
+    });
+    const auth = createAuthFacade(config, {
+      fetch: vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }),
+    });
     await auth.getAuthHeaders();
     expect(true).toBe(true);
   });
 
   it('wraps fetch when agent present (paths precedence)', async () => {
     const tmp = fs.mkdtempSync('/tmp/mtls-newgen-');
-    const certPath = tmp + '/c.pem'; const keyPath = tmp + '/k.pem'; const caPath = tmp + '/ca.pem';
-    fs.writeFileSync(certPath, CERT); fs.writeFileSync(keyPath, KEY); fs.writeFileSync(caPath, CA);
+    const certPath = tmp + '/c.pem';
+    const keyPath = tmp + '/k.pem';
+    const caPath = tmp + '/ca.pem';
+    fs.writeFileSync(certPath, CERT);
+    fs.writeFileSync(keyPath, KEY);
+    fs.writeFileSync(caPath, CA);
     // Simulate facade creating an agent by stubbing global variable used in integration
     (globalThis as any).__CAMUNDA_MTLS_AGENT = { dummy: true };
-    const spy = vi.fn(async () => new Response(JSON.stringify({ ok:true }), { status:200, headers:{'Content-Type':'application/json'} }));
-    const camunda = createCamundaClient({ config: {
-      CAMUNDA_AUTH_STRATEGY: 'NONE',
-      CAMUNDA_MTLS_CERT_PATH: certPath,
-      CAMUNDA_MTLS_KEY_PATH: keyPath,
-      CAMUNDA_MTLS_CA_PATH: caPath
-    }, fetch: spy });
+    const spy = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ ok: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+    );
+    const camunda = createCamundaClient({
+      config: {
+        CAMUNDA_AUTH_STRATEGY: 'NONE',
+        CAMUNDA_MTLS_CERT_PATH: certPath,
+        CAMUNDA_MTLS_KEY_PATH: keyPath,
+        CAMUNDA_MTLS_CA_PATH: caPath,
+      },
+      fetch: spy,
+    });
 
     await camunda.getLicense();
     expect(spy).toHaveBeenCalledTimes(1);

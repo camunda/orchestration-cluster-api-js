@@ -11,25 +11,33 @@ type IsBrandedKey<T> = T extends string & { readonly __brand: infer _B } ? true 
 // Note: We relax types only (brand -> string) so casting is safe.
 export type Loose<T> =
   // Branded key -> plain string
-  IsBrandedKey<T> extends true ? string :
-  // Promise unwrap & rewrap
-  T extends Promise<infer P> ? Promise<Loose<P>> :
-  // Arrays
-  T extends (infer U)[] ? Loose<U>[] :
-  T extends ReadonlyArray<infer U> ? ReadonlyArray<Loose<U>> :
-  // Functions
-  T extends (...a: infer A) => infer R ? (...a: { [I in keyof A]: Loose<A[I]> }) => Loose<R> :
-  // Objects (exclude primitives/Date/etc.)
-  T extends object ? { [K in keyof T]: Loose<T[K]> } :
-  // Fallback: leave as-is
-  T;
+  IsBrandedKey<T> extends true
+    ? string
+    : // Promise unwrap & rewrap
+      T extends Promise<infer P>
+      ? Promise<Loose<P>>
+      : // Arrays
+        T extends (infer U)[]
+        ? Loose<U>[]
+        : T extends ReadonlyArray<infer U>
+          ? ReadonlyArray<Loose<U>>
+          : // Functions
+            T extends (...a: infer A) => infer R
+            ? (...a: { [I in keyof A]: Loose<A[I]> }) => Loose<R>
+            : // Objects (exclude primitives/Date/etc.)
+              T extends object
+              ? { [K in keyof T]: Loose<T[K]> }
+              : // Fallback: leave as-is
+                T;
 
 /**
  * Create a client where all branded key types are widened to string.
  * Use when integrating with external systems or when dynamic string keys are common and brand friction is unwanted.
  * For maximum type safety prefer the strict createCamundaClient.
  */
-export function createCamundaClientLoose(...args: Parameters<typeof createCamundaClient>): Loose<ReturnType<typeof createCamundaClient>> {
+export function createCamundaClientLoose(
+  ...args: Parameters<typeof createCamundaClient>
+): Loose<ReturnType<typeof createCamundaClient>> {
   const strict = createCamundaClient(...args);
   return strict as unknown as Loose<ReturnType<typeof createCamundaClient>>;
 }

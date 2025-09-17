@@ -3,23 +3,26 @@ import path from 'path';
 
 const root = process.cwd();
 const typesPath = path.join(root, 'src/gen/types.gen.ts');
-const brandingPath = path.join(root, 'src/gen/branding.gen.ts');
 
 if (!fs.existsSync(typesPath)) {
   console.error('[postprocess-brand-aliases] types.gen.ts not found');
   process.exit(0);
 }
-let metaPath = path.join(root, 'branding/branding-metadata.json');
+const metaPath = path.join(root, 'branding/branding-metadata.json');
 if (!fs.existsSync(metaPath)) {
   console.error('[postprocess-brand-aliases] branding metadata missing');
   process.exit(0);
 }
 
-interface MetadataKey { name: string }
-interface Metadata { keys: MetadataKey[] }
+interface MetadataKey {
+  name: string;
+}
+interface Metadata {
+  keys: MetadataKey[];
+}
 
 const metadata: Metadata = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
-const keyNames = new Set(metadata.keys.map(k => k.name));
+const keyNames = new Set(metadata.keys.map((k) => k.name));
 let source = fs.readFileSync(typesPath, 'utf8');
 
 // Ensure import
@@ -27,9 +30,14 @@ if (!/import type \{ CamundaKey \} from '.\/branding.gen';/.test(source)) {
   const headerMatch = source.match(/^(\/\/ This file is auto-generated[^\n]*\n)/);
   if (headerMatch) {
     const insertIdx = headerMatch[0].length;
-    source = source.slice(0, insertIdx) + "import type { CamundaKey } from './branding.gen';\n// branding postprocess applied\n" + source.slice(insertIdx);
+    source =
+      source.slice(0, insertIdx) +
+      "import type { CamundaKey } from './branding.gen';\n// branding postprocess applied\n" +
+      source.slice(insertIdx);
   } else {
-    source = "import type { CamundaKey } from './branding.gen';\n// branding postprocess applied\n" + source;
+    source =
+      "import type { CamundaKey } from './branding.gen';\n// branding postprocess applied\n" +
+      source;
   }
 }
 

@@ -1,5 +1,7 @@
 import { definePluginConfig } from '@hey-api/openapi-ts';
+
 import { handler } from './plugin';
+
 import type { BrandingPlugin } from './types';
 
 export const defaultConfig: BrandingPlugin['Config'] = {

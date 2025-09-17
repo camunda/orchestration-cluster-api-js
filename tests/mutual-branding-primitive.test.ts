@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { ProcessInstanceKey, DecisionInstanceKey } from '../src';
 
 describe('Key branding (structural)', () => {

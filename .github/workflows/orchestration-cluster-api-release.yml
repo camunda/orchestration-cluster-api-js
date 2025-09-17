@@ -2,7 +2,7 @@ name: Orchestration Cluster API JS - CI & Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'orchestration-cluster-api-js/**'
       - '.github/workflows/orchestration-cluster-api-release.yml'

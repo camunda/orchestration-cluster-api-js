@@ -1,17 +1,20 @@
 // @generated from CamundaClient.template.ts - DO NOT EDIT DIRECTLY
+/* eslint-disable unused-imports/no-unused-imports */
+/* eslint-disable import/order */
 import { createClient } from '../gen/client/client.gen';
-import type { Client } from '../gen/client/types.gen';
+import * as Sdk from '../gen/sdk.gen';
+import * as Schemas from '../gen/zod.gen';
 import { createAuthFacade } from '../runtime/auth';
 import type { CamundaConfig } from '../runtime/unifiedConfiguration';
 import type { EnvOverrides } from '../runtime/configSchema';
 import { hydrateConfig } from '../runtime/unifiedConfiguration';
-import * as Sdk from '../gen/sdk.gen';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual'
-import * as Schemas from '../gen/zod.gen';
-import { ValidationManager } from '../runtime/validationManager';
+import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
 import { wrapFetch, withCorrelation as _withCorrelation, getCorrelation } from '../runtime/telemetry';
-import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
+import { ValidationManager } from '../runtime/validationManager';
+import type { Client } from '../gen/client/types.gen';
+
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -25,7 +28,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-09-16T23:51:25.096Z
+// Generated 2025-09-17T03:48:16.521Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1052,7 +1055,7 @@ export class CamundaClient {
     try { return (Schemas as any)[name]?.type === "void"; } catch { return false; }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-09-16T23:51:25.097Z)
+  // Generated methods (2025-09-17T03:48:16.524Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.

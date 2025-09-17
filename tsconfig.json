@@ -11,12 +11,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "include": [
-    "src",
-    "scripts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
-  ]
+  "include": ["src", "scripts"],
+  "exclude": ["dist", "node_modules"]
 }

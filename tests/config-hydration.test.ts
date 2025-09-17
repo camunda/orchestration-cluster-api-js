@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { hydrateConfig, CamundaConfigurationError } from '../src/runtime/unifiedConfiguration';
 
 describe('unified configuration hydration', () => {
@@ -9,7 +10,10 @@ describe('unified configuration hydration', () => {
   });
 
   it('applies overrides precedence', () => {
-    const { config } = hydrateConfig({ env: { CAMUNDA_REST_ADDRESS: 'http://env' }, overrides: { CAMUNDA_REST_ADDRESS: 'http://override' } });
+    const { config } = hydrateConfig({
+      env: { CAMUNDA_REST_ADDRESS: 'http://env' },
+      overrides: { CAMUNDA_REST_ADDRESS: 'http://override' },
+    });
     expect(config.restAddress).toBe('http://override');
   });
 
@@ -19,7 +23,7 @@ describe('unified configuration hydration', () => {
       throw new Error('Expected error');
     } catch (e: any) {
       expect(e instanceof CamundaConfigurationError).toBe(true);
-      expect(e.errors.some((d:any)=> d.code==='CONFIG_MISSING_REQUIRED')).toBe(true);
+      expect(e.errors.some((d: any) => d.code === 'CONFIG_MISSING_REQUIRED')).toBe(true);
     }
   });
 
@@ -30,13 +34,21 @@ describe('unified configuration hydration', () => {
   });
 
   it('rejects invalid boolean', () => {
-    try { hydrateConfig({ env: { CAMUNDA_SDK_VALIDATION_VERBOSE: 'maybe' } }); } catch (e: any) {
-      expect(e.errors.some((d:any)=> d.code==='CONFIG_INVALID_BOOLEAN')).toBe(true);
+    try {
+      hydrateConfig({ env: { CAMUNDA_SDK_VALIDATION_VERBOSE: 'maybe' } });
+    } catch (e: any) {
+      expect(e.errors.some((d: any) => d.code === 'CONFIG_INVALID_BOOLEAN')).toBe(true);
     }
   });
 
   it('redacts secrets', () => {
-    const { redacted } = hydrateConfig({ env: { CAMUNDA_AUTH_STRATEGY: 'OAUTH', CAMUNDA_CLIENT_ID: 'abc', CAMUNDA_CLIENT_SECRET: 'abcdefghijklmnop' } });
+    const { redacted } = hydrateConfig({
+      env: {
+        CAMUNDA_AUTH_STRATEGY: 'OAUTH',
+        CAMUNDA_CLIENT_ID: 'abc',
+        CAMUNDA_CLIENT_SECRET: 'abcdefghijklmnop',
+      },
+    });
     expect(redacted.CAMUNDA_CLIENT_SECRET).toMatch(/^\*+mnop$/); // ends with last4
   });
 });

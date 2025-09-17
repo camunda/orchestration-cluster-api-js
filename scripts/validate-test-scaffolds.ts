@@ -20,20 +20,31 @@ if (!fs.existsSync(TEST_DIR)) {
 
 const sdkSource = fs.readFileSync(SDK_FILE, 'utf8');
 const opRegex = /^export const (\w+)\s*=\s*/gm;
-const operations: string[] = []; let m: RegExpExecArray | null;
+const operations: string[] = [];
+let m: RegExpExecArray | null;
 while ((m = opRegex.exec(sdkSource)) !== null) operations.push(m[1]);
 
 let ignore: string[] = [];
 if (fs.existsSync(MANIFEST)) {
-  try { const data = JSON.parse(fs.readFileSync(MANIFEST, 'utf8')); if (Array.isArray(data.ignored)) ignore = data.ignored; } catch {/* ignore */}
+  try {
+    const data = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
+    if (Array.isArray(data.ignored)) ignore = data.ignored;
+  } catch {
+    /* ignore */
+  }
 }
 
-const tests = fs.readdirSync(TEST_DIR).filter(f => f.endsWith('.test.ts'));
+const tests = fs.readdirSync(TEST_DIR).filter((f) => f.endsWith('.test.ts'));
 const testSet = new Set(tests);
-const missing = operations.filter(op => ignore.indexOf(op) === -1 && !testSet.has(`${op}.test.ts`));
+const missing = operations.filter(
+  (op) => ignore.indexOf(op) === -1 && !testSet.has(`${op}.test.ts`)
+);
 
 if (missing.length) {
-  console.error('[validate-test-scaffolds] Missing test scaffolds for operations:\n' + missing.map(o => '  - ' + o).join('\n'));
+  console.error(
+    '[validate-test-scaffolds] Missing test scaffolds for operations:\n' +
+      missing.map((o) => '  - ' + o).join('\n')
+  );
   console.error('Run: npm run scaffold:methods');
   process.exit(1);
 }

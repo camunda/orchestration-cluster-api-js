@@ -1,18 +1,21 @@
+/* eslint-disable unused-imports/no-unused-imports */
+/* eslint-disable import/order */
 // TEMPLATE: Canonical Camunda class template (manually maintained)
 // TEMPLATE: DO NOT add generated operation methods here; generator will produce CamundaClient.ts from this template.
 import { createClient } from '../gen/client/client.gen';
-import type { Client } from '../gen/client/types.gen';
+import * as Sdk from '../gen/sdk.gen';
+import * as Schemas from '../gen/zod.gen';
 import { createAuthFacade } from '../runtime/auth';
 import type { CamundaConfig } from '../runtime/unifiedConfiguration';
 import type { EnvOverrides } from '../runtime/configSchema';
 import { hydrateConfig } from '../runtime/unifiedConfiguration';
-import * as Sdk from '../gen/sdk.gen';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual'
-import * as Schemas from '../gen/zod.gen';
-import { ValidationManager } from '../runtime/validationManager';
+import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
 import { wrapFetch, withCorrelation as _withCorrelation, getCorrelation } from '../runtime/telemetry';
-import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
+import { ValidationManager } from '../runtime/validationManager';
+import type { Client } from '../gen/client/types.gen';
+
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {

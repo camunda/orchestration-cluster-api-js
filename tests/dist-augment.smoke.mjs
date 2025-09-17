@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import '../dist/index.js';
 
-const hasRegister = typeof (z.string() /* base */).register === 'function';
+const hasRegister = typeof z.string() /* base */.register === 'function';
 if (!hasRegister) {
   console.error('[smoke] zod augmentation missing: .register not found on ZodType prototype');
   process.exit(1);

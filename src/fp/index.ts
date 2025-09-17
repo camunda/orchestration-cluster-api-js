@@ -1,2 +1,18 @@
 // FP subpath entry: opt-in import '@camunda8/orchestration-cluster/fp'
-export { createCamundaFpClient, type CamundaFpClient, type Fpify, type DomainError, type Either, type Left, type Right, isLeft, isRight, retryTE, withTimeoutTE, eventuallyTE, foldDomainError, classifyDomainError, type TaskEither } from '../fp-ts';
+export {
+  createCamundaFpClient,
+  type CamundaFpClient,
+  type Fpify,
+  type DomainError,
+  type Either,
+  type Left,
+  type Right,
+  isLeft,
+  isRight,
+  retryTE,
+  withTimeoutTE,
+  eventuallyTE,
+  foldDomainError,
+  classifyDomainError,
+  type TaskEither,
+} from '../fp-ts';

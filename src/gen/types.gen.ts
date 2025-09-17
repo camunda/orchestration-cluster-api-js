@@ -11,12 +11,12 @@ export type LongKey = string;
 /**
  * The start cursor in a search query result set.
  */
-export type StartCursor = string;
+export type StartCursor = CamundaKey<'StartCursor'>;
 
 /**
  * The end cursor in a search query result set.
  */
-export type EndCursor = string;
+export type EndCursor = CamundaKey<'EndCursor'>;
 
 /**
  * System-generated key for a process instance.
@@ -41,7 +41,7 @@ export type ProcessDefinitionKey = CamundaKey<'ProcessDefinitionKey'>;
 /**
  * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
  */
-export type ProcessDefinitionId = string;
+export type ProcessDefinitionId = CamundaKey<'ProcessDefinitionId'>;
 
 /**
  * System-generated key for a element instance.
@@ -51,7 +51,7 @@ export type ElementInstanceKey = CamundaKey<'ElementInstanceKey'>;
 /**
  * The model-defined id of an element.
  */
-export type ElementId = string;
+export type ElementId = CamundaKey<'ElementId'>;
 
 /**
  * System-generated key for a deployed form.
@@ -101,7 +101,7 @@ export type DecisionDefinitionKey = CamundaKey<'DecisionDefinitionKey'>;
 /**
  * Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
  */
-export type DecisionDefinitionId = string;
+export type DecisionDefinitionId = CamundaKey<'DecisionDefinitionId'>;
 
 /**
  * System-generated key for a decision evaluation instance.
@@ -141,7 +141,7 @@ export type SignalKey = CamundaKey<'SignalKey'>;
 /**
  * System-generated key for an batch operation.
  */
-export type BatchOperationKey = string;
+export type BatchOperationKey = CamundaKey<'BatchOperationKey'>;
 
 export type TenantCreateRequest = {
     /**
@@ -4509,7 +4509,7 @@ export type DocumentCreationBatchResponse = {
 /**
  * Document Id that uniquely identifies a document.
  */
-export type DocumentId = string;
+export type DocumentId = CamundaKey<'DocumentId'>;
 
 /**
  * Information about the document.
@@ -5486,7 +5486,7 @@ export type ProcessInstanceModificationMoveBatchOperationInstruction = {
 /**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
  */
-export type Tag = string;
+export type Tag = CamundaKey<'Tag'>;
 
 /**
  * List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
@@ -5496,12 +5496,12 @@ export type TagSet = Array<Tag> & { readonly length: 0 | 1 | 2 | 3 | 4 | 5 | 6 |
 /**
  * The unique identifier of the tenant.
  */
-export type TenantId = string;
+export type TenantId = CamundaKey<'TenantId'>;
 
 /**
  * The unique name of a user.
  */
-export type Username = string;
+export type Username = CamundaKey<'Username'>;
 
 /**
  * Information about the operation effect characteristics. Suitable for reasoning about the idempotency and safety of operations
@@ -12049,7 +12049,7 @@ export type ClientOptions = {
 // branding-plugin generated
 // schemaVersion=1.0.0
 // specHash=sha256:da95145a7e435daadf9bbc959251cf2aa7944c17dd741ef06a502b11f25a9213
-// generatedAt=2025-09-16T23:51:21.885Z
+// generatedAt=2025-09-17T03:48:13.149Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);
@@ -12077,7 +12077,7 @@ export namespace BatchOperationKey {
   }
   export function getValue(key: BatchOperationKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    return !!value;
   }
 }
 // Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
@@ -12185,7 +12185,7 @@ export namespace DocumentId {
   }
   export function getValue(key: DocumentId): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    return !!value;
   }
 }
 // The model-defined id of an element.
@@ -12195,7 +12195,7 @@ export namespace ElementId {
   }
   export function getValue(key: ElementId): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    return !!value;
   }
 }
 // System-generated key for a element instance.

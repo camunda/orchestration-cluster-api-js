@@ -4,9 +4,11 @@
  * can reuse consistent semantics without depending on ValidationManager internals.
  */
 import { ZodError, ZodTypeAny } from 'zod';
-import { formatValidationError, logFormattedValidation } from './formatValidation';
-import type { Logger } from './logger';
+
 import { CamundaValidationError } from './errors';
+import { formatValidationError, logFormattedValidation } from './formatValidation';
+
+import type { Logger } from './logger';
 import type { ValidationMode } from './validationManager';
 
 export interface ApplySchemaValidationOptions<T = any> {
@@ -24,18 +26,29 @@ export interface ApplySchemaValidationOptions<T = any> {
  *  - warn: on success returns original value, on failure logs warning and returns original value
  *  - strict: returns parsed value or throws CamundaValidationError
  */
-export async function applySchemaValidation<T = any>(opts: ApplySchemaValidationOptions<T>): Promise<T> {
+export async function applySchemaValidation<T = any>(
+  opts: ApplySchemaValidationOptions<T>
+): Promise<T> {
   const { side, operationId, mode, schema, value, logger } = opts;
   if (mode === 'none' || !schema) return value;
   try {
-  const parsed = (schema.parseAsync ? await schema.parseAsync(value) : schema.parse(value)) as T;
+    const parsed = (schema.parseAsync ? await schema.parseAsync(value) : schema.parse(value)) as T;
     return mode === 'warn' ? value : parsed;
   } catch (err: any) {
     if (err instanceof ZodError) {
-  const formatted = formatValidationError({ side, operationId, schema, value, error: err });
-      if (mode === 'warn') { if (logger) logFormattedValidation('warn', formatted, logger); return value; }
+      const formatted = formatValidationError({ side, operationId, schema, value, error: err });
+      if (mode === 'warn') {
+        if (logger) logFormattedValidation('warn', formatted, logger);
+        return value;
+      }
       if (logger) logFormattedValidation('throw', formatted, logger); // will throw
-      throw new CamundaValidationError({ side, operationId, message: formatted.message, summary: formatted.summary, issues: formatted.issues });
+      throw new CamundaValidationError({
+        side,
+        operationId,
+        message: formatted.message,
+        summary: formatted.summary,
+        issues: formatted.issues,
+      });
     }
     throw err;
   }

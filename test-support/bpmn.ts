@@ -9,7 +9,8 @@ import { readFileSync } from 'node:fs';
 
 // Match <zeebe:taskDefinition ... type="some-type" .../>
 // Handles single or double quotes and arbitrary attribute ordering.
-const TASK_DEFINITION_REGEX = /<zeebe:taskDefinition[^>]*?type\s*=\s*(?:"([^"]+)"|'([^']+)')[^>]*?>/g;
+const TASK_DEFINITION_REGEX =
+  /<zeebe:taskDefinition[^>]*?type\s*=\s*(?:"([^"]+)"|'([^']+)')[^>]*?>/g;
 
 export function extractJobTypesFromBpmn(xml: string): string[] {
   const types = new Set<string>();
