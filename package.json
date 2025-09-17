@@ -43,6 +43,10 @@
         "docs": "tsx scripts/generate-doc.ts",
         "docs:config": "tsx scripts/generate-config-doc.ts",
         "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
+        "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
+        "lint:fix": "eslint . --ext .ts,.tsx --fix",
+        "format": "prettier . --write",
+        "format:check": "prettier . --check",
         "release": "semantic-release",
         "prepare": "husky install"
     },
@@ -62,25 +66,40 @@
         "zod": "^4"
     },
     "devDependencies": {
-        "@hey-api/client-fetch": "^0.13.1",
-        "@hey-api/openapi-ts": "^0.82.2",
         "@commitlint/cli": "^19.3.0",
         "@commitlint/config-conventional": "^19.2.2",
-        "@types/node": "^20.14.9",
-        "fp-ts": "^2.16.11",
-        "husky": "^9.0.11",
-        "lint-staged": "^15.2.8",
-        "semantic-release": "^23.0.0",
+        "@hey-api/client-fetch": "^0.13.1",
+        "@hey-api/openapi-ts": "^0.82.2",
         "@semantic-release/changelog": "^6.0.3",
         "@semantic-release/git": "^10.0.1",
         "@semantic-release/npm": "^11.0.0",
+        "@types/node": "^20.14.9",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
+        "@typescript-eslint/parser": "^7.18.0",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.2",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-unused-imports": "^3.2.0",
+        "fp-ts": "^2.16.11",
+        "husky": "^9.0.11",
+        "lint-staged": "^15.2.8",
         "openapi-typescript-codegen": "^0.29.0",
+        "prettier": "^3.6.2",
         "rimraf": "^6.0.1",
+        "semantic-release": "^23.0.0",
         "tsup": "^8.0.2",
         "tsx": "^4.7.0",
         "typescript": "^5.4.5",
         "vitest": "^1.6.0",
         "yaml": "^2.8.1"
+    },
+    "lint-staged": {
+        "*.{ts,tsx,js,json,md,yml,yaml}": [
+            "prettier --write"
+        ],
+        "*.{ts,tsx}": [
+            "eslint --fix"
+        ]
     },
     "engines": {
         "node": ">=18"

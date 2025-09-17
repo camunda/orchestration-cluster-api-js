@@ -12,14 +12,14 @@ if [ -z "$husky_skip_init" ]; then
     exit 0
   fi
 
-  if [ -f ~/.huskyrc ]; then
-    debug "sourcing ~/.huskyrc"
-    . ~/.huskyrc
+  if [ ! -f package.json ]; then
+    debug "can't find package.json, skipping hook"
+    exit 0
   fi
 
   export readonly husky_skip_init=1
-  sh -e "$0" "$@"
+  sh -e "$(dirname -- "$0")/../$hook_name" "$@"
   exitCode="$?"
-  unset husky_skip_init
+  debug "exit code $exitCode"
   exit "$exitCode"
 fi
