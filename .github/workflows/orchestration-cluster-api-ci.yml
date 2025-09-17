@@ -33,7 +33,7 @@ jobs:
             echo 'drift=true' >> $GITHUB_OUTPUT
             echo 'Generation produced changes (reporting only).' >&2
             git diff --name-only | sed 's/^/CHANGED: /'
-            git diff > ../_gen-drift.patch || true
+            git diff > _gen-drift.patch || true
           else
             echo 'drift=false' >> $GITHUB_OUTPUT
           fi
@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generation-drift
-          path: ../_gen-drift.patch
+          path: _gen-drift.patch
       - name: Unit Tests
         run: npm test
       - name: Start Integration Stack
@@ -65,7 +65,7 @@ jobs:
       - name: Capture Docker Logs (always)
         if: always()
         run: |
-          mkdir -p ../_logs
+          mkdir -p _logs
           docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
       - name: Shutdown Integration Stack (always)
         if: always()
