@@ -278,14 +278,14 @@ At present the canonical client operates in throwing mode. Non‑throwing adapta
 
 `consistency` object fields (all optional except `waitUpToMs`):
 
-| Field            | Type                 | Description                                                                                                                                                                                                      |
-| ---------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `waitUpToMs`     | `number`             | Maximum total time to wait before failing. `0` disables polling and returns the first response immediately.                                                                                                      |
-| `pollIntervalMs` | `number`             | Base delay between attempts (minimum enforced at 10ms). Defaults to `500` or `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` if provided.                                                                                 |
-| `predicate`      | `(result) => boolean | Promise<boolean>`                                                                                                                                                                                                | Custom success condition. If omitted, non-GET endpoints default to: first 2xx body whose `items` array (if present) is non-empty. |
-| `trace`          | `boolean`            | When true, logs each 200 response body (truncated ~1KB) before predicate evaluation and emits a success line with elapsed time when the predicate passes. Requires log level `debug` (or `trace`) to see output. |
-| `onAttempt`      | `(info) => void`     | Callback after each attempt: `{ attempt, elapsedMs, remainingMs, status, predicateResult, nextDelayMs }`.                                                                                                        |
-| `onComplete`     | `(info) => void`     | Callback when predicate succeeds: `{ attempts, elapsedMs }`. Not called on timeout.                                                                                                                              |
+| Field            | Type                                      | Description |
+| ---------------- | ----------------------------------------- | ----------- |
+| `waitUpToMs`     | `number`                                  | Maximum total time to wait before failing. `0` disables polling and returns the first response immediately. |
+| `pollIntervalMs` | `number`                                  | Base delay between attempts (minimum enforced at 10ms). Defaults to `500` or the value of `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` if provided. |
+| `predicate`      | `(result) => boolean \| Promise<boolean>` | Custom success condition. If omitted, non-GET endpoints default to: first 2xx body whose `items` array (if present) is non-empty. |
+| `trace`          | `boolean`                                 | When true, logs each 200 response body (truncated ~1KB) before predicate evaluation and emits a success line with elapsed time when the predicate passes. Requires log level `debug` (or `trace`) to see output. |
+| `onAttempt`      | `(info) => void`                          | Callback after each attempt: `{ attempt, elapsedMs, remainingMs, status, predicateResult, nextDelayMs }`. |
+| `onComplete`     | `(info) => void`                          | Callback when predicate succeeds: `{ attempts, elapsedMs }`. Not called on timeout. |
 
 ### Trace Logging
 
