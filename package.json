@@ -1,0 +1,88 @@
+{
+    "name": "@camunda8/orchestration-cluster-api",
+    "private": false,
+    "version": "0.0.0-dev",
+    "type": "module",
+    "main": "dist/index.cjs",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs",
+            "default": "./dist/index.js"
+        },
+        "./logger": {
+            "types": "./dist/logger.d.ts",
+            "import": "./dist/logger.js",
+            "require": "./dist/logger.cjs",
+            "default": "./dist/logger.js"
+        },
+        "./fp": {
+            "types": "./dist/fp/index.d.ts",
+            "import": "./dist/fp/index.js",
+            "require": "./dist/fp/index.cjs",
+            "default": "./dist/fp/index.js"
+        }
+    },
+    "scripts": {
+        "clean": "rimraf dist src/gen src/facade",
+        "fetch:spec": "tsx scripts/fetch-spec.ts",
+        "generate": "npm run clean && npm run fetch:spec && npm run preprocess && npm run generate:sdk && tsx scripts/postprocess-deployment-schema.ts && npm run generate:class && npm run generate:facade && npm run gate && tsx scripts/postprocess-zod-augment.ts && npm run scaffold:methods && npm run validate:scaffolds && vitest run --passWithNoTests --exclude 'tests-integration/**'",
+        "scaffold:methods": "tsx scripts/generate-test-scaffolds.ts",
+        "validate:scaffolds": "tsx scripts/validate-test-scaffolds.ts",
+        "generate:class": "tsx scripts/generate-class-methods.ts",
+        "generate:facade": "tsx scripts/generate-facade.ts",
+        "gate": "tsx scripts/postprocess-gate-validation.ts",
+        "generate:sdk": "openapi-ts -i ./rest-api.source.yaml -o src/gen",
+        "preprocess": "tsx scripts/preprocess-brands.ts",
+        "build": "npm run generate && npm run docs:config && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist",
+        "test": "vitest run --passWithNoTests --exclude 'tests-integration/**'",
+        "test:integration": "vitest run tests-integration",
+        "docs": "tsx scripts/generate-doc.ts",
+        "docs:config": "tsx scripts/generate-config-doc.ts",
+        "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
+        "release": "semantic-release",
+        "prepare": "husky install"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "CHANGELOG.md",
+        "package.json",
+        "LICENSE"
+    ],
+    "sideEffects": false,
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "typed-env": "^2.0.0",
+        "zod": "^4"
+    },
+    "devDependencies": {
+        "@hey-api/client-fetch": "^0.13.1",
+        "@hey-api/openapi-ts": "^0.82.2",
+        "@commitlint/cli": "^19.3.0",
+        "@commitlint/config-conventional": "^19.2.2",
+        "@types/node": "^20.14.9",
+        "fp-ts": "^2.16.11",
+        "husky": "^9.0.11",
+        "lint-staged": "^15.2.8",
+        "semantic-release": "^23.0.0",
+        "@semantic-release/changelog": "^6.0.3",
+        "@semantic-release/git": "^10.0.1",
+        "@semantic-release/npm": "^11.0.0",
+        "openapi-typescript-codegen": "^0.29.0",
+        "rimraf": "^6.0.1",
+        "tsup": "^8.0.2",
+        "tsx": "^4.7.0",
+        "typescript": "^5.4.5",
+        "vitest": "^1.6.0",
+        "yaml": "^2.8.1"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}

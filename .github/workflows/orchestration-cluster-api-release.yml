@@ -1,0 +1,106 @@
+name: Orchestration Cluster API JS - CI & Release
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'orchestration-cluster-api-js/**'
+      - '.github/workflows/orchestration-cluster-api-release.yml'
+  pull_request:
+    paths:
+      - 'orchestration-cluster-api-js/**'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: orchestration-cluster-api-js
+    strategy:
+      matrix:
+        node: [18.x, 20.x]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: orchestration-cluster-api-js/package.json
+      - name: Install deps
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Unit Tests
+        run: npm test
+      - name: Start Integration Stack
+        working-directory: orchestration-cluster-api-js/docker
+        run: |
+          docker compose up -d
+      - name: Wait for Services Healthy
+        run: |
+          set -e
+          echo "Waiting for Zeebe broker health: http://localhost:9600/actuator/health/status"
+          attempts=0
+          max_attempts=60
+          while [ $attempts -lt $max_attempts ]; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9600/actuator/health/status || true)
+            if [ "$code" = "200" ]; then
+              echo "Broker healthy after $attempts attempts"
+              break
+            fi
+            if [ $((attempts % 5)) -eq 0 ]; then
+              echo "Attempt $attempts/$max_attempts: broker not healthy (last code: $code)"
+              docker ps --format 'table {{.Names}}\t{{.Status}}'
+            fi
+            attempts=$((attempts+1))
+            sleep 5
+          done
+          if [ $attempts -ge $max_attempts ]; then
+            echo "ERROR: Broker did not become healthy within $((max_attempts*5))s" >&2
+            docker compose -f docker/docker-compose.yaml logs camunda || true
+            exit 1
+          fi
+      - name: Integration Tests
+        run: npm run test:integration
+      - name: Capture Docker Logs (always)
+        if: always()
+        run: |
+          mkdir -p ../_logs
+          docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
+        working-directory: orchestration-cluster-api-js
+      - name: Shutdown Integration Stack (always)
+        if: always()
+        working-directory: orchestration-cluster-api-js/docker
+        run: docker compose down -v || true
+      - name: Upload Logs Artifact (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-docker-logs
+          path: orchestration-cluster-api-js/_logs/compose.log
+
+  release:
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        working-directory: orchestration-cluster-api-js
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: orchestration-cluster-api-js/package.json
+      - name: Install deps
+        run: npm ci
+      - name: Build dist
+        run: npm run build
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release

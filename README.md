@@ -1,0 +1,538 @@
+<!-- Greenfield public README for the Camunda 8 Orchestration Cluster TypeScript SDK -->
+
+# Camunda 8 Orchestration Cluster TypeScript SDK (Pre‑release)
+
+Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST API.
+
+## Highlights
+* Strong TypeScript models (requests, responses, discriminated unions)
+* Branded key types to prevent mixing IDs at compile time
+* Optional request/response schema validation (Zod) via a single env variable
+* OAuth2 client‑credentials & Basic auth (token cache, early refresh, jittered retry, singleflight)
+* Optional mTLS (Node) with inline or *_PATH environment variables
+* Cancelable promises for all operations
+* Eventual consistency helper for polling endpoints
+* Immutable, deep‑frozen configuration accessible through a factory‑created client instance
+
+## Install
+```bash
+npm install @camunda8/orchestration-cluster-api
+```
+Runtime support:
+
+* Node 18+ (native fetch & File; Node 20+ recommended)
+* Modern browsers (Chromium, Firefox, Safari) – global `fetch` & `File` available
+
+For older Node versions supply a fetch ponyfill AND a `File` shim (or upgrade). For legacy browsers, add a fetch polyfill (e.g. `whatwg-fetch`).
+
+## Quick Start (Zero‑Config – Recommended)
+Keep configuration out of application code. Let the factory read `CAMUNDA_*` variables from the environment (12‑factor style). This makes rotation, secret management, and environment promotion safer & simpler.
+
+```ts
+import createCamundaClient from '@camunda8/orchestration-cluster-api';
+
+// Zero‑config construction: reads CAMUNDA_* from process.env once.
+const camunda = createCamundaClient();
+
+const topology = await camunda.getTopology();
+console.log('Brokers:', topology.brokers?.length ?? 0);
+```
+
+Typical `.env` (example):
+```bash
+CAMUNDA_REST_ADDRESS=https://cluster.example
+CAMUNDA_AUTH_STRATEGY=OAUTH
+CAMUNDA_CLIENT_ID=***
+CAMUNDA_CLIENT_SECRET=***
+```
+
+> Prefer environment / secret manager injection over hard‑coding values in source. Treat the SDK like a leaf dependency: construct once near process start, pass the instance where needed.
+
+> **Why zero‑config?**  
+> * Separation of concerns: business code depends on an interface, not on secret/constants wiring.  
+> * 12‑Factor alignment: config lives in the environment → simpler promotion (dev → staging → prod).  
+> * Secret rotation & incident response: rotate credentials without a code change or redeploy of application containers built with baked‑in values.  
+> * Immutable start: single hydration pass prevents drift / mid‑request mutations.  
+> * Test ergonomics: swap an `.env.test` (or injected vars) without touching source; create multiple clients for multi‑tenant tests.  
+> * Security review: fewer code paths handling secrets; scanners & vault tooling work at the boundary.  
+> * Deploy portability: same artifact runs everywhere; only the environment differs.  
+> * Observability clarity: configuration diffing is an ops concern, not an application code diff.
+
+### Advanced: Programmatic Overrides
+Use only when you must supply or mutate configuration dynamically (e.g. multi‑tenant routing, tests, ephemeral preview environments) or in the browser. Keys mirror their `CAMUNDA_*` env names.
+
+```ts
+const camunda = createCamundaClient({
+  config: {
+    CAMUNDA_REST_ADDRESS: 'https://cluster.example',
+    CAMUNDA_AUTH_STRATEGY: 'BASIC',
+    CAMUNDA_BASIC_AUTH_USERNAME: 'alice',
+    CAMUNDA_BASIC_AUTH_PASSWORD: 'secret'
+  }
+});
+```
+
+### Advanced: Custom Fetch Implementation
+Inject a custom `fetch` to add tracing, mock responses, instrumentation, circuit breakers, etc.
+```ts
+const camunda = createCamundaClient({ fetch: (input, init) => {
+  // inspect / modify request here
+  return fetch(input, init);
+}});
+```
+
+### Reconfiguration At Runtime (Rare)
+You can call `client.configure({ config: { ... } })` to re‑hydrate. The exposed `client.getConfig()` stays `Readonly` and deep‑frozen. Prefer creating a new client instead of mutating a shared one in long‑lived services.
+
+## Validation
+Controlled by `CAMUNDA_SDK_VALIDATION` (or `config` override). Grammar:
+```
+none | warn | strict | req:<mode>[,res:<mode>] | res:<mode>[,req:<mode>]
+<mode> = none|warn|strict
+```
+Examples:
+```bash
+CAMUNDA_SDK_VALIDATION=warn           # warn on both
+CAMUNDA_SDK_VALIDATION=req:strict,res:warn
+CAMUNDA_SDK_VALIDATION=none
+```
+Behavior:
+* `request` side: validate JSON body (if schema) before sending
+* `response` side: validate documented JSON 2xx payloads
+* `warn` logs and returns original data; `strict` throws; `none` skips
+
+## Authentication
+Set `CAMUNDA_AUTH_STRATEGY` to `NONE` (default), `BASIC`, or `OAUTH`.
+
+Basic:
+```
+CAMUNDA_AUTH_STRATEGY=BASIC
+CAMUNDA_BASIC_AUTH_USERNAME=alice
+CAMUNDA_BASIC_AUTH_PASSWORD=supersecret
+```
+OAuth (client credentials):
+```
+CAMUNDA_AUTH_STRATEGY=OAUTH
+CAMUNDA_CLIENT_ID=yourClientId
+CAMUNDA_CLIENT_SECRET=yourSecret
+CAMUNDA_OAUTH_URL=https://idp.example/oauth/token   # if required by your deployment
+```
+Optional audience / retry / timeout vars are also read if present (see generated config reference).
+
+Auth helper features (automatic inside the client):
+* Disk + memory token cache
+* Early refresh with skew handling
+* Exponential backoff & jitter
+* Singleflight suppression of concurrent refreshes
+* Hook: `client.onAuthHeaders(h => ({ ...h, 'X-Trace': 'abc' }))`
+* Force refresh: `await client.forceAuthRefresh()`
+* Clear caches: `client.clearAuthCache({ disk: true, memory: true })`
+
+### Token Caching & Persistence
+
+The SDK always keeps the active OAuth access token in memory. Optional disk persistence (Node only) is enabled by setting:
+
+```bash
+CAMUNDA_OAUTH_CACHE_DIR=/path/to/cache
+```
+
+When present and running under Node, each distinct credential context (combination of `oauthUrl | clientId | audience | scope`) is hashed to a filename:
+
+```
+<CAMUNDA_OAUTH_CACHE_DIR>/camunda_oauth_token_cache_<hash>.json
+```
+
+Writes are atomic (`.tmp` + rename) and use file mode `0600` (owner read/write). On process start the SDK attempts to load the persisted file to avoid an unnecessary token fetch; if the token is near expiry it will still perform an early refresh (5s skew window plus additional safety buffer based on 5% or 30s minimum).
+
+Clearing / refreshing:
+* Programmatic clear: `client.clearAuthCache({ disk: true, memory: true })`
+* Memory only: `client.clearAuthCache({ memory: true, disk: false })`
+* Force new token (ignores freshness): `await client.forceAuthRefresh()`
+
+Disable disk persistence by simply omitting `CAMUNDA_OAUTH_CACHE_DIR` (memory cache still applies). For short‑lived or serverless functions you may prefer no disk cache to minimize I/O; for long‑running workers disk caching reduces cold‑start latency and load on the identity provider across restarts / rolling deploys.
+
+Security considerations:
+* Ensure the directory has restrictive ownership/permissions; the SDK creates files with `0600` but will not alter parent directory permissions.
+* Tokens are bearer credentials; treat the directory like a secrets store and avoid including it in container image layers or backups.
+* If you rotate credentials (client secret) the filename hash changes; old cache files become unused and can be pruned safely.
+
+Browser usage: There is no disk concept—if executed in a browser the SDK (when strategy OAUTH) attempts to store the token in `sessionStorage` (tab‑scoped). Closing the tab clears the cache; a new tab will fetch a fresh token.
+
+If you need a custom persistence strategy (e.g. Redis / encrypted keychain), wrap the client and periodically call `client.forceAuthRefresh()` while storing and re‑injecting the token via a headers hook; first measure whether the built‑in disk cache already meets your needs.
+
+## mTLS (Node only)
+Provide inline or path variables (inline wins):
+```
+CAMUNDA_MTLS_CERT / CAMUNDA_MTLS_CERT_PATH
+CAMUNDA_MTLS_KEY  / CAMUNDA_MTLS_KEY_PATH
+CAMUNDA_MTLS_CA   / CAMUNDA_MTLS_CA_PATH (optional)
+CAMUNDA_MTLS_KEY_PASSPHRASE (optional)
+```
+If both cert & key are available an https.Agent is attached to all outbound calls (including token fetches).
+
+## Branded Keys
+Import branded key helpers directly:
+```ts
+import { ProcessDefinitionKey, ProcessInstanceKey } from '@camunda8/orchestration-cluster';
+
+const defKey = ProcessDefinitionKey.assumeExists('2251799813686749');
+// @ts-expect-error – cannot assign def key to instance key
+const bad: ProcessInstanceKey = defKey;
+```
+They are zero‑cost runtime strings with compile‑time separation.
+
+## Cancelable Operations
+All methods return a `CancelablePromise<T>`:
+```ts
+const p = camunda.searchProcessInstances({ filter: { processDefinitionKey: defKey } });
+setTimeout(()=> p.cancel(), 100); // best‑effort cancel
+await p; // rejects with CancelError if aborted
+```
+
+## Functional (fp-ts style) Surface (Opt-In Subpath)
+The main entry stays minimal. To opt in to a TaskEither-style facade & helper combinators import from the dedicated subpath:
+
+```ts
+import { createCamundaFpClient, retryTE, withTimeoutTE, eventuallyTE, isLeft } from '@camunda8/orchestration-cluster/fp';
+
+const fp = createCamundaFpClient();
+const deployTE = fp.deployResourcesFromFiles(['./bpmn/process.bpmn']);
+const deployed = await deployTE();
+if (isLeft(deployed)) throw deployed.left; // DomainError union
+
+// Chain with fp-ts (optional) – the returned thunks are structurally compatible with TaskEither
+// import { pipe } from 'fp-ts/function'; import * as TE from 'fp-ts/TaskEither';
+```
+
+Why a subpath?
+* Keeps base bundle lean for the 80% use case.
+* No hard dependency on `fp-ts` at runtime; only structural types.
+* Advanced users can compose with real `fp-ts` without pulling the effect model into the default import path.
+
+Exports available from `.../fp`:
+* `createCamundaFpClient` – typed facade (methods return `() => Promise<Either<DomainError,T>>`).
+* Type guards: `isLeft`, `isRight`.
+* Error / type aliases: `DomainError`, `TaskEither`, `Either`, `Left`, `Right`, `Fpify`.
+* Combinators: `retryTE`, `withTimeoutTE`, `eventuallyTE`.
+
+DomainError union currently includes:
+* `CamundaValidationError`
+* `EventualConsistencyTimeoutError`
+* HTTP-like error objects (status/body/message) produced by transport
+* Generic `Error`
+
+You can refine left-channel typing later by mapping HTTP status codes or discriminator fields.
+
+## Eventual Consistency Polling
+Some endpoints accept consistency management options. Pass a `consistency` block (where supported) with `waitUpToMs` and optional `pollIntervalMs` (default 500). If the condition is not met within timeout an `EventualConsistencyTimeoutError` is thrown.
+
+To consume eventual polling in a non‑throwing fashion set the client error mode before invoking an eventually consistent method:
+At present the canonical client operates in throwing mode. Non‑throwing adaptation (Result / fp-ts) is achieved via the functional wrappers rather than mutating the base client.
+
+### Options
+`consistency` object fields (all optional except `waitUpToMs`):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `waitUpToMs` | `number` | Maximum total time to wait before failing. `0` disables polling and returns the first response immediately. |
+| `pollIntervalMs` | `number` | Base delay between attempts (minimum enforced at 10ms). Defaults to `500` or `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` if provided. |
+| `predicate` | `(result) => boolean | Promise<boolean>` | Custom success condition. If omitted, non-GET endpoints default to: first 2xx body whose `items` array (if present) is non-empty. |
+| `trace` | `boolean` | When true, logs each 200 response body (truncated ~1KB) before predicate evaluation and emits a success line with elapsed time when the predicate passes. Requires log level `debug` (or `trace`) to see output. |
+| `onAttempt` | `(info) => void` | Callback after each attempt: `{ attempt, elapsedMs, remainingMs, status, predicateResult, nextDelayMs }`. |
+| `onComplete` | `(info) => void` | Callback when predicate succeeds: `{ attempts, elapsedMs }`. Not called on timeout. |
+
+### Trace Logging
+Enable by setting `trace: true` inside `consistency`. Output appears under the `eventual` log scope at level `debug` so you must raise the SDK log level (e.g. `CAMUNDA_SDK_LOG_LEVEL=debug`).
+
+Emitted lines (examples):
+```
+[camunda-sdk][debug][eventual] op=searchJobs attempt=3 trace body={"items":[]}
+[camunda-sdk][debug][eventual] op=searchJobs attempt=5 status=200 predicate=true elapsed=742ms totalAttempts=5
+```
+Use this to understand convergence speed and data shape evolution during tests or to diagnose slow propagation.
+
+### Example
+```ts
+const jobs = await camunda.searchJobs({
+  filter: { type: 'payment' },
+  consistency: {
+    waitUpToMs: 5000,
+    pollIntervalMs: 200,
+    trace: true,
+    predicate: r => Array.isArray(r.items) && r.items.some(j => j.state === 'CREATED')
+  }
+});
+```
+
+On timeout an `EventualConsistencyTimeoutError` includes diagnostic fields: `{ attempts, elapsedMs, lastStatus, lastResponse, operationId }`.
+
+## Logging
+Per‑client logger; no global singleton. The level defaults from `CAMUNDA_SDK_LOG_LEVEL` (default `error`).
+
+```ts
+const client = createCamundaClient({
+  log: {
+    level: 'info',
+    transport: evt => {
+      // evt: { level, scope, ts, args, code?, data? }
+      console.log(JSON.stringify(evt));
+    }
+  }
+});
+
+const log = client.logger('worker');
+log.debug(() => ['expensive detail only if enabled', { meta: 1 }]);
+log.code('info', 'WORK_START', 'Starting work loop', { pid: process.pid });
+```
+
+Lazy args (functions with zero arity) are only invoked if the level is enabled.
+
+Update log level / transport at runtime via `client.configure({ log: { level: 'debug' } })`.
+
+### Default Behaviour
+Without any explicit `log` option:
+* Level = `error` (unless `CAMUNDA_SDK_LOG_LEVEL` is set)
+* Transport = console (`console.error` / `console.warn` / `console.log`)
+* Only `error` level internal events are emitted (e.g. strict validation failure summaries, fatal auth issues)
+* No info/debug/trace noise by default
+
+To silence everything set level to `silent`:
+```bash
+CAMUNDA_SDK_LOG_LEVEL=silent
+```
+
+To enable debug logs via env:
+```bash
+CAMUNDA_SDK_LOG_LEVEL=debug
+```
+
+### Bring Your Own Logger
+Provide a `transport` function to forward structured `LogEvent` objects into any logging library.
+
+#### Pino
+```ts
+import pino from 'pino';
+import createCamundaClient from '@camunda8/orchestration-cluster';
+
+const p = pino();
+const client = createCamundaClient({
+  log: {
+    level: 'info',
+    transport: e => {
+      const lvl = e.level === 'trace' ? 'debug' : e.level; // map trace
+      p.child({ scope: e.scope, code: e.code }).[lvl]({ ts: e.ts, data: e.data, args: e.args }, e.args.filter(a=>typeof a==='string').join(' '));
+    }
+  }
+});
+```
+
+#### Winston
+```ts
+import winston from 'winston';
+import createCamundaClient from '@camunda8/orchestration-cluster';
+
+const w = winston.createLogger({ transports: [ new winston.transports.Console() ] });
+const client = createCamundaClient({
+  log: {
+    level: 'debug',
+    transport: e => {
+      const lvl = e.level === 'trace' ? 'silly' : e.level; // winston has 'silly'
+      w.log({
+        level: lvl,
+        message: e.args.filter(a=>typeof a==='string').join(' '),
+        scope: e.scope,
+        code: e.code,
+        data: e.data,
+        ts: e.ts
+      });
+    }
+  }
+});
+```
+
+#### loglevel
+```ts
+import log from 'loglevel';
+import createCamundaClient from '@camunda8/orchestration-cluster';
+
+log.setLevel('info'); // host app level
+const client = createCamundaClient({
+  log: {
+    level: 'info',
+    transport: e => {
+      if (e.level === 'silent') return;
+      const method = (['error','warn','info','debug'].includes(e.level) ? e.level : 'debug') as 'error'|'warn'|'info'|'debug';
+      (log as any)[method](`[${e.scope}]`, e.code ? `${e.code}:` : '', ...e.args);
+    }
+  }
+});
+```
+
+#### Notes
+* Map `trace` to the nearest available level if your logger lacks it.
+* Use `log.code(level, code, msg, data)` for machine-parsable events.
+* Redact secrets before logging if you add token contents to custom messages.
+* Reconfigure later: `client.configure({ log: { level: 'warn' } })` updates only that client.
+* When the effective level is `debug` (or `trace`), the client emits a lazy `config.hydrated` event on construction and `config.reconfigured` on `configure()`, each containing the redacted effective configuration `{ config: { CAMUNDA_... } }`. Secrets are already masked using the SDK's redaction rules.
+
+## Errors
+May throw:
+* Network / fetch failures
+* Non‑2xx HTTP responses
+* Validation errors (strict mode)
+* `EventualConsistencyTimeoutError`
+* `CancelError` on cancellation
+
+### Functional / Non‑Throwing Variant - EXPERIMENTAL
+
+_Note that this feature is experimental and subject to change._
+
+If you prefer FP‑style explicit error handling instead of exceptions, use the result client wrapper:
+
+```ts
+import { createCamundaResultClient, isOk } from '@camunda8/orchestration-cluster';
+
+const camundaR = createCamundaResultClient();
+const res = await camundaR.createDeployment({ resources: [file] });
+if (isOk(res)) {
+  console.log('Deployment key', res.value.deployments[0].deploymentKey);
+} else {
+  console.error('Deployment failed', res.error);
+}
+```
+
+API surface differences:
+* All async operation methods return `Promise<Result<T>>` where `Result<T> = { ok: true; value: T } | { ok: false; error: unknown }`.
+* No exceptions are thrown for HTTP / validation errors (cancellation and programmer errors like invalid argument sync throws are still converted to `{ ok:false }`).
+* The original throwing client is available via `client.inner` if you need to mix styles.
+
+Helpers:
+```ts
+import { isOk, isErr } from '@camunda8/orchestration-cluster';
+```
+
+When to use:
+* Integrating with algebraic effects / functional pipelines.
+* Avoiding try/catch nesting in larger orchestration flows.
+* Converting to libraries expecting an Either/Result pattern.
+
+### fp-ts Adapter (TaskEither / Either) - EXPERIMENTAL
+_Note that this feature is experimental and subject to change._
+
+For projects using `fp-ts`, wrap the throwing client in a lazy `TaskEither` facade:
+
+```ts
+import { createCamundaFpClient } from '@camunda8/orchestration-cluster';
+import { pipe } from 'fp-ts/function';
+import * as TE from 'fp-ts/TaskEither';
+
+const fp = createCamundaFpClient();
+
+const deployTE = fp.createDeployment({ resources: [file] }); // TaskEither<unknown, ExtendedDeploymentResult>
+
+pipe(
+  deployTE(), // invoke the task (returns Promise<Either>)
+  then => then // typical usage would use TE.match / TE.fold; shown expanded for clarity
+);
+
+// With helpers
+const task = fp.createDeployment({ resources: [file] });
+const either = await task();
+if (either._tag === 'Right') {
+  console.log(either.right.deployments.length);
+} else {
+  console.error('Error', either.left);
+}
+```
+
+Notes:
+* No runtime dependency on `fp-ts`; adapter implements a minimal `Either` shape. Structural typing lets you lift into real `fp-ts` functions (`fromEither`, etc.).
+* Each method becomes a function returning `() => Promise<Either<E,A>>` (a `TaskEither` shape). Invoke it later to execute.
+* Cancellation: calling `.cancel()` on the original promise isn’t surfaced; if you need cancellation use the base client directly.
+* For richer interop, you can map the returned factory to `TE.tryCatch` in userland.
+
+## Pagination
+Search endpoints expose typed request bodies that include pagination fields. Provide the desired page object; auto‑pagination is not (yet) bundled.
+
+## Configuration Reference
+Generated doc enumerating all supported environment variables (types, defaults, conditional requirements, redaction rules) is produced at build time:
+```
+./docs/CONFIG_REFERENCE.md
+```
+
+## Deploying Resources (File-only)
+The deployment endpoint requires each resource to have a filename (extension used to infer type: `.bpmn`, `.dmn`, `.form` / `.json`). Extensions influence server classification; incorrect or missing extensions may yield unexpected results. Pass an array of `File` objects (NOT plain `Blob`).
+
+### Browser
+```ts
+const bpmnXml = `<definitions id="process" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">...</definitions>`;
+const file = new File([bpmnXml], 'order-process.bpmn', { type: 'application/xml' });
+const result = await camunda.createDeployment({ resources: [file] });
+console.log(result.deployments.length);
+```
+
+From an existing Blob:
+```ts
+const blob: Blob = getBlob();
+const file = new File([blob], 'model.bpmn');
+await camunda.createDeployment({ resources: [file] });
+```
+
+### Node (Recommended Convenience)
+Use the built-in helper `deployResourcesFromFiles(...)` to read local files and create `File` objects automatically. It returns the enriched `ExtendedDeploymentResult` (adds typed arrays: `processes`, `decisions`, `decisionRequirements`, `forms`, `resources`).
+
+```ts
+const result = await camunda.deployResourcesFromFiles([
+  './bpmn/order-process.bpmn',
+  './dmn/discount.dmn',
+  './forms/order.form'
+]);
+
+console.log(result.processes.map(p => p.processDefinitionId));
+console.log(result.decisions.length);
+```
+
+With explicit tenant (overriding tenant from configuration):
+```ts
+await camunda.deployResourcesFromFiles(['./bpmn/order-process.bpmn'], { tenantId: 'tenant-a' });
+```
+
+Error handling:
+```ts
+try {
+  await camunda.deployResourcesFromFiles([]); // throws (empty array)
+} catch (e) {
+  console.error('Deployment failed:', e);
+}
+```
+
+Manual construction alternative (if you need custom logic):
+```ts
+import { File } from 'node:buffer';
+const bpmnXml = '<definitions id="process" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"></definitions>';
+const file = new File([Buffer.from(bpmnXml)], 'order-process.bpmn', { type: 'application/xml' });
+await camunda.createDeployment({ resources: [file] });
+```
+
+Helper behavior:
+* Dynamically imports `node:fs/promises` & `node:path` (tree-shaken from browser bundles)
+* Validates Node environment (throws in browsers)
+* Lightweight MIME inference: `.bpmn|.dmn|.xml -> application/xml`, `.json|.form -> application/json`, fallback `application/octet-stream`
+* Rejects empty path list
+
+Empty arrays are rejected. Always use correct extensions so the server can classify each resource.
+
+## Testing Patterns
+Create isolated clients per test file:
+```ts
+const client = createCamundaClient({ config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080', CAMUNDA_AUTH_STRATEGY: 'NONE' } });
+```
+Inject a mock fetch:
+```ts
+const client = createCamundaClient({ fetch: async (input, init) => new Response(JSON.stringify({ ok: true }), { status: 200 }) });
+```
+
+## License
+Apache 2.0
+
+
