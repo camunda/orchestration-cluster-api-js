@@ -38,11 +38,12 @@ jobs:
             echo 'drift=false' >> $GITHUB_OUTPUT
           fi
       - name: Upload Drift Patch
-        if: steps.drift.outputs.drift == 'true'
+        # Only upload a single canonical drift patch from Node 20.x to avoid artifact 409 conflicts
+        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x'
         uses: actions/upload-artifact@v4
         with:
           name: generation-drift
-          path: _gen-drift.patch
+          path: _generation-drift.patch
       - name: Unit Tests
         run: npm test
       - name: Start Integration Stack
@@ -75,5 +76,21 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: integration-docker-logs
+          # Include node version so parallel matrix legs don't conflict
+          name: integration-docker-logs-${{ matrix.node }}
           path: _logs/compose.log
+      - name: Append Job Summary
+        if: always()
+        run: |
+          status="${{ job.status }}"
+          driftFlag="${{ steps.drift.outputs.drift }}"
+          {
+            echo "### Node ${{ matrix.node }} Summary";
+            echo "- Status: ${status}";
+            if [ "${driftFlag}" = "true" ]; then
+              echo "- Generation Drift: detected";
+            else
+              echo "- Generation Drift: none";
+            fi
+            echo "";
+          } >> $GITHUB_STEP_SUMMARY
