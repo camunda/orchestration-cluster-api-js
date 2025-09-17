@@ -1,0 +1,88 @@
+name: Orchestration Cluster API JS - PR & Branch CI
+
+on:
+  pull_request:
+    paths:
+      - 'orchestration-cluster-api-js/**'
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - 'orchestration-cluster-api-js/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        node: [18.x, 20.x]
+    defaults:
+      run:
+        working-directory: orchestration-cluster-api-js
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: orchestration-cluster-api-js/package.json
+      - name: Install deps
+        run: npm ci
+      - name: Generate & Build
+        run: npm run build
+      - name: Detect Generation Drift (non-blocking)
+        id: drift
+        run: |
+          if ! git diff --quiet; then
+            echo 'drift=true' >> $GITHUB_OUTPUT
+            echo 'Generation produced changes (reporting only).' >&2
+            git diff --name-only | sed 's/^/CHANGED: /'
+            git diff > ../_gen-drift.patch || true
+          else
+            echo 'drift=false' >> $GITHUB_OUTPUT
+          fi
+      - name: Upload Drift Patch
+        if: steps.drift.outputs.drift == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: generation-drift
+          path: orchestration-cluster-api-js/../_gen-drift.patch
+      - name: Unit Tests
+        run: npm test
+      - name: Start Integration Stack
+        working-directory: orchestration-cluster-api-js/docker
+        run: docker compose up -d
+      - name: Wait for Services Healthy
+        run: |
+          set -e
+          attempts=0
+          max_attempts=60
+          while [ $attempts -lt $max_attempts ]; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9600/actuator/health/status || true)
+            [ "$code" = "200" ] && echo "Broker healthy" && break
+            attempts=$((attempts+1))
+            sleep 5
+          done
+          [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
+      - name: Integration Tests
+        run: npm run test:integration
+      - name: Capture Docker Logs (always)
+        if: always()
+        run: |
+          mkdir -p ../_logs
+          docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
+        working-directory: orchestration-cluster-api-js
+      - name: Shutdown Integration Stack (always)
+        if: always()
+        working-directory: orchestration-cluster-api-js/docker
+        run: docker compose down -v || true
+      - name: Upload Logs Artifact (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-docker-logs
+          path: orchestration-cluster-api-js/_logs/compose.log

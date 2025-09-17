@@ -26,6 +26,12 @@
       "default": "./dist/fp/index.js"
     }
   },
+  "author": "josh.wulf@camunda.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/camunda/orchestration-cluster-api-js.git"
+  },
   "scripts": {
     "clean": "rimraf dist src/gen src/facade",
     "fetch:spec": "tsx scripts/fetch-spec.ts",
