@@ -7,6 +7,18 @@ describe('End-to-end usage (mocked) - create instance -> search', () => {
     const BASE = 'https://mock.local';
     const fetchMock = vi.fn();
 
+    // Helper: Node 18 does not always expose a global File constructor (added/stabilized later).
+    // We create a minimal polyfill fallback that satisfies the SDK expectation for multipart upload: a Blob with name & lastModified.
+    const makeTestFile = () => {
+      if (typeof File !== 'undefined') {
+        return new File(['dummy content'], 'dummy.bpmn', { type: 'application/octet-stream' });
+      }
+      const blob = new Blob(['dummy content'], { type: 'application/octet-stream' });
+      (blob as any).name = 'dummy.bpmn';
+      (blob as any).lastModified = Date.now();
+      return blob as any; // Cast: good enough for test; SDK treats it as a File-like.
+    };
+
     const camunda = createCamundaClient({
       config: { CAMUNDA_REST_ADDRESS: BASE },
       fetch: fetchMock as any,
@@ -57,7 +69,7 @@ describe('End-to-end usage (mocked) - create instance -> search', () => {
     });
 
     const deployment = await camunda.createDeployment({
-      resources: [new File(['dummy content'], 'dummy.bpmn', { type: 'application/octet-stream' })],
+      resources: [makeTestFile()],
     });
 
     const { processDefinitionKey } = deployment.deployments[0].processDefinition!;
