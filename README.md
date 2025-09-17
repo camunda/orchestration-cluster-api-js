@@ -23,7 +23,7 @@ npm install @camunda8/orchestration-cluster-api
 
 Runtime support:
 
-- Node 18+ (native fetch & File; Node 20+ recommended)
+- Node 20+ (native fetch & File; Node 18 needs global File polyfill)
 - Modern browsers (Chromium, Firefox, Safari) – global `fetch` & `File` available
 
 For older Node versions supply a fetch ponyfill AND a `File` shim (or upgrade). For legacy browsers, add a fetch polyfill (e.g. `whatwg-fetch`).

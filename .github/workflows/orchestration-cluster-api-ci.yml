@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        node: [18.x, 20.x, 22.x, 24.x]
+        node: [20.x, 22.x, 24.x]
     steps:
       - uses: actions/checkout@v4
         with:

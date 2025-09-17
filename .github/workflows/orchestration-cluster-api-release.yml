@@ -12,16 +12,19 @@ concurrency:
 
 jobs:
   generate:
-    name: Generate & Test
+    name: Generate & Test (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20.x, 22.x, 24.x]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: ${{ matrix.node }}
           cache: 'npm'
           cache-dependency-path: package.json
       - name: Install deps
@@ -81,11 +84,13 @@ jobs:
         run: docker compose down -v || true
     outputs:
       changed: ${{ steps.diff.outputs.changed }}
+      # Only expose drift/change status from canonical Node 22.x leg to downstream jobs
+      canonical_changed: ${{ matrix.node == '22.x' && steps.diff.outputs.changed || 'false' }}
 
   merge:
     name: Fast-forward main
     needs: generate
-    if: needs.generate.outputs.changed == 'true'
+    if: needs.generate.outputs.canonical_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -110,7 +115,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package.json
       - name: Install deps
