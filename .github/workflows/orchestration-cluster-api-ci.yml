@@ -72,7 +72,6 @@ jobs:
         run: |
           mkdir -p ../_logs
           docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
-        working-directory: orchestration-cluster-api-js
       - name: Shutdown Integration Stack (always)
         if: always()
         working-directory: docker
