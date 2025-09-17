@@ -16,7 +16,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        node: [18.x, 20.x]
+        node: [18.x, 20.x, 22.x, 24.x]
     defaults:
       run:
         working-directory: orchestration-cluster-api-js
