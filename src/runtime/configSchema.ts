@@ -5,7 +5,7 @@
 export const SCHEMA = {
   CAMUNDA_REST_ADDRESS: {
     type: 'string',
-    default: 'http://localhost:8080',
+    default: 'http://localhost:8080/v2',
     doc: 'Base REST endpoint address.',
   },
   CAMUNDA_TOKEN_AUDIENCE: {

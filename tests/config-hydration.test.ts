@@ -5,7 +5,7 @@ import { hydrateConfig, CamundaConfigurationError } from '../src/runtime/unified
 describe('unified configuration hydration', () => {
   it('hydrates defaults', () => {
     const { config } = hydrateConfig({ env: {} });
-    expect(config.restAddress).toBe('http://localhost:8080');
+    expect(config.restAddress).toBe('http://localhost:8080/v2');
     expect(config.auth.strategy).toBe('NONE');
   });
 

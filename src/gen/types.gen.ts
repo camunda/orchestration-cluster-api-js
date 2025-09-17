@@ -12049,7 +12049,7 @@ export type ClientOptions = {
 // branding-plugin generated
 // schemaVersion=1.0.0
 // specHash=sha256:da95145a7e435daadf9bbc959251cf2aa7944c17dd741ef06a502b11f25a9213
-// generatedAt=2025-09-17T03:54:19.063Z
+// generatedAt=2025-09-17T05:55:45.038Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);
@@ -12077,7 +12077,7 @@ export namespace BatchOperationKey {
   }
   export function getValue(key: BatchOperationKey): string { return key; }
   export function isValid(value: string): boolean {
-    return !!value;
+    return true;
   }
 }
 // Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
@@ -12185,7 +12185,7 @@ export namespace DocumentId {
   }
   export function getValue(key: DocumentId): string { return key; }
   export function isValid(value: string): boolean {
-    return !!value;
+    return true;
   }
 }
 // The model-defined id of an element.
@@ -12195,7 +12195,7 @@ export namespace ElementId {
   }
   export function getValue(key: ElementId): string { return key; }
   export function isValid(value: string): boolean {
-    return !!value;
+    return true;
   }
 }
 // System-generated key for a element instance.
