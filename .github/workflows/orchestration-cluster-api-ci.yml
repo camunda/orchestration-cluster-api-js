@@ -1,7 +1,6 @@
 name: Orchestration Cluster API JS - PR & Branch CI
 
 on:
-  pull_request:
   push:
     branches-ignore:
       - main
