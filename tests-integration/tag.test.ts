@@ -29,7 +29,9 @@ describe('tag demo', () => {
 
   it('has type safety', { timeout: 20000 }, async () => {
     // Application lifecycle: startup
-    const tag = Tag.fromString('test:!@#$%^&');
+    expect(() => Tag.fromString('test:!@#$%^&')).toThrow();
+
+    const tag = Tag.fromString('test');
 
     const camunda = createCamundaClient();
     const res = await camunda.deployResourcesFromFiles([
@@ -41,15 +43,14 @@ describe('tag demo', () => {
       tags: [tag],
     });
 
-    const search = await camunda.getProcessInstance(
+    const get = await camunda.getProcessInstance(
       { processInstanceKey: process.processInstanceKey },
       { consistency: { waitUpToMs: 10000, trace: true } }
     );
 
     console.log('ProcessInstance', JSON.stringify(process, null, 2));
 
-    expect(search.processInstanceKey).toBe(process.processInstanceKey);
-    // expect(search.items.length).toBe(1);
+    expect(get.processInstanceKey).toBe(process.processInstanceKey);
     await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
   });
 });

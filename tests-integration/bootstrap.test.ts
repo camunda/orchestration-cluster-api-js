@@ -58,35 +58,7 @@ describe('integration acceptance', () => {
     expect(res.error).toBeDefined();
   });
 
-  it.only('can do all the things', { timeout: 20000 }, async () => {
-    const camunda = createCamundaClient({});
-    const res = await camunda.deployResourcesFromFiles([
-      './tests-integration/fixtures/test-process.bpmn',
-    ]);
-
-    const process = await camunda.createProcessInstance({
-      processDefinitionKey: res.processes[0].processDefinitionKey,
-      // runtimeInstructions: [{type: 'TERMINATE_PROCESS_INSTANCE', afterElementId: ElementId.assumeExists('Activity_106kosb')}],
-    });
-
-    const buffer = await fs.promises.readFile('./tests-integration/fixtures/test-process.bpmn');
-    const copied = Uint8Array.from(buffer);
-    const _blob = new Blob([copied], { type: 'application/xml' });
-
-    console.log('ProcessInstance', JSON.stringify(process, null, 2));
-    const search = await camunda.searchProcessInstances(
-      {
-        filter: {
-          processInstanceKey: process.processInstanceKey,
-        },
-      },
-      { consistency: { waitUpToMs: 15000, pollIntervalMs: 2000, trace: true } }
-    );
-    expect(search.items.length).toBe(1);
-    await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
-  });
-
-  it('can do activate jobs', { timeout: 20000 }, async () => {
+  it('can activate jobs', { timeout: 20000 }, async () => {
     const camunda = createCamundaClient({});
     const _tag = Tag.fromString('example');
     const filepath = './tests-integration/fixtures/test-process.bpmn';
