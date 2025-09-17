@@ -46,8 +46,6 @@ describe('tag demo', () => {
       { consistency: { waitUpToMs: 10000, trace: true } }
     );
 
-    console.log('ProcessInstance', JSON.stringify(process, null, 2));
-
     expect(get.processInstanceKey).toBe(process.processInstanceKey);
     await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
   });

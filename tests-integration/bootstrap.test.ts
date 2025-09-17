@@ -9,11 +9,12 @@ describe('integration acceptance', () => {
   it('can get the Topology', async () => {
     const camunda = createCamundaClient();
     const topology = await camunda.getTopology();
-    console.log(JSON.stringify(topology, null, 2));
+    expect(topology.brokers).toBeDefined()
   });
   it('can get the License', async () => {
     const camunda = createCamundaClient();
     const license = await camunda.getLicense();
+    expect(typeof license.isCommercial).toBe('boolean')
   });
   // This is only valid against a setup using OIDC. Otherwise, the response is undefined
   it.skip('can get the the current CamundaUser', async () => {
