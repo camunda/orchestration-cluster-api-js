@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 // NOTE: This test previously relied on an outdated integration helper (configureNewgenRuntime)
 // which no longer exists. We now hydrate config via configureFromEnv and mock global fetch,

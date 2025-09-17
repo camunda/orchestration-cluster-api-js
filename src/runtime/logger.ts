@@ -73,7 +73,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
     if (transport) {
       try {
         transport(evt);
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
     } else {
       const tag = `[camunda-sdk][${level}]${scope ? `[${scope}]` : ''}`;

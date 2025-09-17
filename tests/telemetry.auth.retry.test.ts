@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 // We'll mock fetch to fail twice then succeed to exercise retry telemetry
 

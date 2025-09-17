@@ -187,7 +187,9 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
                 if (rhs.includes('|')) return full; // skip unions
                 const trimmed = rhs.trim();
                 // Allow simple primitive alias (string) OR composite of known helper types.
-                const tokens = trimmed.split('&').map((t: string) => t.trim().replace(/[()]/g, '').trim());
+                const tokens = trimmed
+                  .split('&')
+                  .map((t: string) => t.trim().replace(/[()]/g, '').trim());
                 const allowed = new Set(['CamundaKey', 'LongKey', 'unknown', 'string']);
                 if (!tokens.every((t: string) => allowed.has(t))) return full;
                 // Avoid re-branding an already branded alias

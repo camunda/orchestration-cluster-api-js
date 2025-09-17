@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 describe('telemetry http Request object', () => {
   it('captures URL from Request instance', async () => {

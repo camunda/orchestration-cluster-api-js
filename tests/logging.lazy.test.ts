@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 describe('logging lazy args', () => {
   it('does not evaluate lazy arg when below level', () => {

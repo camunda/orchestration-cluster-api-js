@@ -8,7 +8,6 @@ import {
   jobTypes,
 } from '../test-support/bpmn';
 
-
 const fixture = join(__dirname, 'fixtures', 'test-process.bpmn');
 
 describe('BPMN job type extraction', () => {

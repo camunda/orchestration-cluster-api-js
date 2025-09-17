@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { describe, it, expect, vi } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 import { createAuthFacade } from '../src/runtime/auth';
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 

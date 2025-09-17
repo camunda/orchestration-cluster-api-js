@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 function set(val?: string) {
   if (val === undefined) delete process.env.CAMUNDA_SDK_VALIDATION;

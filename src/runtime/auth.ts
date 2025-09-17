@@ -413,7 +413,7 @@ export function createAuthFacade(
       // Expose for request layer reuse without import cycles.
       try {
         (globalThis as any).__CAMUNDA_MTLS_AGENT = nodeAgent;
-      // eslint-disable-next-line no-empty
+        // eslint-disable-next-line no-empty
       } catch {}
     } catch (e) {
       authLogger.warn(

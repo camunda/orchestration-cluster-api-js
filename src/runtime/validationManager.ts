@@ -72,8 +72,7 @@ export class ValidationManager {
           policy: 'error',
           deep: true,
           captureDir:
-            (typeof process !== 'undefined' &&
-              process?.env?.CAMUNDA_SDK_VALIDATION_CAPTURE_DIR) ||
+            (typeof process !== 'undefined' && process?.env?.CAMUNDA_SDK_VALIDATION_CAPTURE_DIR) ||
             '.camunda-sdk-captures',
         },
         logger: this._logger,

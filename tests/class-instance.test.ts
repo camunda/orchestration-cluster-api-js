@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 describe('Camunda class instances', () => {
   it('isolates baseUrl and fetch per instance', async () => {

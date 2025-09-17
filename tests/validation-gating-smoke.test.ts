@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
 
-import {createCamundaClient} from '../src';
+import { createCamundaClient } from '../src';
 
 const schema = z.object({ foo: z.string() });
 

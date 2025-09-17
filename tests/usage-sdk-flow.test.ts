@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 
-import { createCamundaClient,  ProcessInstanceKey } from '../src';
+import { createCamundaClient, ProcessInstanceKey } from '../src';
 
 describe('End-to-end usage (mocked) - create instance -> search', () => {
   it('starts and searches using class instance operations', async () => {
