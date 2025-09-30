@@ -4493,6 +4493,8 @@ paths:
                 $ref: "#/components/schemas/DocumentReference"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "415":
+          $ref: "#/components/responses/UnsupportedMediaType"
       x-eventually-consistent: false
   /documents/batch:
     post:
@@ -4570,6 +4572,8 @@ paths:
                 $ref: "#/components/schemas/DocumentCreationBatchResponse"
         "400":
           $ref: "#/components/responses/InvalidData"
+        "415":
+          $ref: "#/components/responses/UnsupportedMediaType"
       x-eventually-consistent: false
   /documents/{documentId}:
     get:
@@ -10243,6 +10247,7 @@ components:
     JobListenerEventTypeEnum:
       example: UNSPECIFIED
       description: The listener event type of the job.
+      type: string
       enum:
         - ASSIGNING
         - CANCELING
@@ -10363,22 +10368,26 @@ components:
           format: uri
           description: A URI identifying the problem type.
           default: about:blank
+          example: about:blank
         title:
           type: string
           description: A summary of the problem type.
+          example: Bad Request
         status:
           type: integer
           format: int32
           description: The HTTP status code for this problem.
+          example: 400
           minimum: 400
           maximum: 600
         detail:
           type: string
           description: An explanation of the problem in more detail.
+          example: Request property [maxJobsToActivates] cannot be parsed
         instance:
           type: string
-          format: uri
-          description: A URI identifying the origin of the problem.
+          description: A URI path identifying the origin of the problem.
+          example: /v2/jobs/activation
     SearchQueryRequest:
       type: object
       properties:
@@ -12310,6 +12319,14 @@ components:
             $ref: "#/components/schemas/ProblemDetail"
     InvalidData:
       description: The provided data is not valid.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
+    UnsupportedMediaType:
+      description: >
+        The server cannot process the request because the media type (Content-Type) of the request payload is not supported 
+        by the server for the requested resource and method.
       content:
         application/problem+json:
           schema:

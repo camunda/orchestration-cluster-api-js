@@ -31,7 +31,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-09-22T21:16:37.846Z
+// Generated 2025-09-30T22:44:44.642Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1153,7 +1153,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-09-22T21:16:37.847Z)
+  // Generated methods (2025-09-30T22:44:44.645Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -2204,23 +2204,27 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
-        // Enrich deployment response
-        const base = data as _DataOf<typeof Sdk.createDeployment>;
-        const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };
-        for (const d of base.deployments) {
-          if (d.processDefinition) ext.processes.push(d.processDefinition);
-          if (d.decisionDefinition) ext.decisions.push(d.decisionDefinition);
-          if (d.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);
-          if (d.form) ext.forms.push(d.form);
-          if (d.resource) ext.resources.push(d.resource);
-        }
-        data = ext;
         if (this._validation.settings.res !== 'none') {
           const _schema = Schemas.zCreateDeploymentResponse;
           if (_schema) {
             const maybeR = await this._validation.gateResponse('createDeployment', _schema, data);
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
+        }
+        // Enrich deployment response AFTER validation to avoid fanatical extras errors
+        if (data) {
+          const base = data as _DataOf<typeof Sdk.createDeployment>;
+          const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };
+          if (Array.isArray(base.deployments)) {
+            for (const d of base.deployments) {
+              if (d?.processDefinition) ext.processes.push(d.processDefinition);
+              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);
+              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);
+              if (d?.form) ext.forms.push(d.form);
+              if (d?.resource) ext.resources.push(d.resource);
+            }
+          }
+          data = ext;
         }
         return data;
       };

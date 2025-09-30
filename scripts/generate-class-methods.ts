@@ -328,26 +328,7 @@ type ${o.opId}Consistency = {
       methods.push('        if (this._isVoidResponse(_respSchemaName)) {');
       methods.push('          data = undefined;');
       methods.push('        }');
-      if (o.opId === 'createDeployment') {
-        methods.push('        // Enrich deployment response');
-        methods.push('        const base = data as _DataOf<typeof Sdk.createDeployment>;');
-        methods.push(
-          '        const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };'
-        );
-        methods.push('        for (const d of base.deployments) {');
-        methods.push('          if (d.processDefinition) ext.processes.push(d.processDefinition);');
-        methods.push(
-          '          if (d.decisionDefinition) ext.decisions.push(d.decisionDefinition);'
-        );
-        methods.push(
-          '          if (d.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);'
-        );
-        methods.push('          if (d.form) ext.forms.push(d.form);');
-        methods.push('          if (d.resource) ext.resources.push(d.resource);');
-        methods.push('        }');
-        methods.push('        data = ext;');
-      }
-      // Response validation (guarded)
+      // Response validation (guarded) occurs BEFORE any enrichment so fanatical mode sees raw spec shape
       const respName = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response`;
       if (availableResponses.has(respName)) {
         methods.push("        if (this._validation.settings.res !== 'none') {");
@@ -358,6 +339,25 @@ type ${o.opId}Consistency = {
         );
         methods.push("            if (this._validation.settings.res === 'strict') data = maybeR;");
         methods.push('          }');
+        methods.push('        }');
+      }
+      if (o.opId === 'createDeployment') {
+        methods.push('        // Enrich deployment response AFTER validation to avoid fanatical extras errors');
+        methods.push('        if (data) {');
+        methods.push('          const base = data as _DataOf<typeof Sdk.createDeployment>;');
+        methods.push(
+          '          const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };'
+        );
+        methods.push('          if (Array.isArray(base.deployments)) {');
+        methods.push('            for (const d of base.deployments) {');
+        methods.push('              if (d?.processDefinition) ext.processes.push(d.processDefinition);');
+        methods.push('              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);');
+        methods.push('              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);');
+        methods.push('              if (d?.form) ext.forms.push(d.form);');
+        methods.push('              if (d?.resource) ext.resources.push(d.resource);');
+        methods.push('            }');
+        methods.push('          }');
+        methods.push('          data = ext;');
         methods.push('        }');
       }
       methods.push('        return data;');

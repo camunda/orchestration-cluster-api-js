@@ -3995,7 +3995,7 @@ export type ProblemDetail = {
      */
     detail?: string;
     /**
-     * A URI identifying the origin of the problem.
+     * A URI path identifying the origin of the problem.
      */
     instance?: string;
 };
@@ -10925,6 +10925,11 @@ export type CreateDocumentErrors = {
      * The provided data is not valid.
      */
     400: ProblemDetail;
+    /**
+     * The server cannot process the request because the media type (Content-Type) of the request payload is not supported  by the server for the requested resource and method.
+     *
+     */
+    415: ProblemDetail;
 };
 
 export type CreateDocumentError = CreateDocumentErrors[keyof CreateDocumentErrors];
@@ -10965,6 +10970,11 @@ export type CreateDocumentsErrors = {
      * The provided data is not valid.
      */
     400: ProblemDetail;
+    /**
+     * The server cannot process the request because the media type (Content-Type) of the request payload is not supported  by the server for the requested resource and method.
+     *
+     */
+    415: ProblemDetail;
 };
 
 export type CreateDocumentsError = CreateDocumentsErrors[keyof CreateDocumentsErrors];
@@ -12051,8 +12061,8 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:c9831c6329dd05431e26a230e1249c47fa1274b1064e063dd05e7cd92ab085b1
-// generatedAt=2025-09-22T21:16:34.724Z
+// specHash=sha256:1563d4681faab084e2e9039aff67a513e17eca262ab8f1e5ad7111df3cb44b3f
+// generatedAt=2025-09-30T22:44:41.301Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);

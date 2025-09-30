@@ -3558,8 +3558,8 @@ export const zProblemDetail = z.object({
     detail: z.optional(z.string().register(z.globalRegistry, {
         description: 'An explanation of the problem in more detail.'
     })),
-    instance: z.optional(z.url().register(z.globalRegistry, {
-        description: 'A URI identifying the origin of the problem.'
+    instance: z.optional(z.string().register(z.globalRegistry, {
+        description: 'A URI path identifying the origin of the problem.'
     }))
 }).register(z.globalRegistry, {
     description: 'A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.\n'
