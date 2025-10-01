@@ -479,8 +479,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
       x-eventually-consistent: true
-      x-operation-kind:
-        kind: query
     put:
       tags:
         - Tenant
@@ -521,8 +519,6 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
       x-eventually-consistent: false
-      x-operation-kind:
-        kind: update
     delete:
       tags:
         - Tenant
@@ -553,8 +549,6 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
       x-eventually-consistent: false
-      x-operation-kind:
-        kind: delete
   /tenants/{tenantId}/users/{username}:
     put:
       tags:
@@ -659,8 +653,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenantUserSearchResult"
       x-eventually-consistent: true
-      x-operation-kind:
-        kind: query
   /tenants/{tenantId}/clients/search:
     post:
       tags:
@@ -688,8 +680,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenantClientSearchResult"
       x-eventually-consistent: true
-      x-operation-kind:
-        kind: query
   /tenants/{tenantId}/groups/search:
     post:
       tags:
@@ -717,8 +707,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenantGroupSearchResult"
       x-eventually-consistent: true
-      x-operation-kind:
-        kind: query
   /tenants/{tenantId}/roles/search:
     post:
       tags:
@@ -746,8 +734,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/RoleSearchQueryResult"
       x-eventually-consistent: true
-      x-operation-kind:
-        kind: query
   /tenants/{tenantId}/clients/{clientId}:
     put:
       tags:

@@ -45,7 +45,7 @@ console.log('Brokers:', topology.brokers?.length ?? 0);
 Typical `.env` (example):
 
 ```bash
-CAMUNDA_REST_ADDRESS=https://cluster.example
+CAMUNDA_REST_ADDRESS=https://cluster.example   # SDK will use https://cluster.example/v2/... unless /v2 already present
 CAMUNDA_AUTH_STRATEGY=OAUTH
 CAMUNDA_CLIENT_ID=***
 CAMUNDA_CLIENT_SECRET=***

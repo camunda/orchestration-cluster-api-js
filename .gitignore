@@ -8,6 +8,9 @@ lerna-debug.log*
 
 .DS_Store
 
+.camunda-sdk-captures
+PROMPT*
+
 # Env files
 .*.env
 

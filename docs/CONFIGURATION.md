@@ -15,7 +15,7 @@ Comprehensive reference and examples for the unified configuration system poweri
 
 | Key                               | Type        | Default                                    | Conditional Requirement             | Secret | Notes                                                             |
 | --------------------------------- | ----------- | ------------------------------------------ | ----------------------------------- | ------ | ----------------------------------------------------------------- | --- | ------------------ |
-| CAMUNDA_REST_ADDRESS              | string      | http://localhost:8080                      | —                                   |        | Base REST endpoint.                                               |
+| CAMUNDA_REST_ADDRESS              | string      | http://localhost:8080                      | —                                   |        | Base REST endpoint (SDK auto-appends `/v2` if missing).           |
 | CAMUNDA_TOKEN_AUDIENCE            | string      | zeebe.camunda.io                           | —                                   |        | OAuth audience.                                                   |
 | CAMUNDA_CLIENT_ID                 | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    |        | Required for OAuth.                                               |
 | CAMUNDA_CLIENT_SECRET             | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    | yes    | Required for OAuth (redacted in logs).                            |

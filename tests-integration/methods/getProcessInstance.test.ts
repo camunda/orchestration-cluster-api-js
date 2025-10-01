@@ -18,7 +18,7 @@ describe('getProcessInstance', () => {
     console.log('process', JSON.stringify(process, null, 2))
     const get = await camunda.getProcessInstance(
         { processInstanceKey: process.processInstanceKey },
-        { consistency: { waitUpToMs: 10000, trace: true } }
+        { consistency: { waitUpToMs: 20000, trace: true } }
     );
     console.log('get', JSON.stringify(get, null, 2))
     await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });

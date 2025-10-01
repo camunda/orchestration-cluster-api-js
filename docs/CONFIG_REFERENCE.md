@@ -1,10 +1,10 @@
 # Configuration Reference
 
-Generated: 2025-09-30T22:44:51.642Z
+Generated: 2025-10-01T01:19:20.554Z
 
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|
-| `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080/v2` | Optional |  | Base REST endpoint address. |
+| `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080/v2` | Optional |  | Base REST endpoint address. (If value does not already end with `/v2` the SDK appends `/v2` during hydration.) |
 | `CAMUNDA_TOKEN_AUDIENCE` | string | `zeebe.camunda.io` | Optional |  | Token audience for OAuth flows. |
 | `CAMUNDA_CLIENT_ID` | string | — | When CAMUNDA_AUTH_STRATEGY=OAUTH |  | OAuth client id (required when CAMUNDA_AUTH_STRATEGY=OAUTH). |
 | `CAMUNDA_CLIENT_SECRET` | string | — | When CAMUNDA_AUTH_STRATEGY=OAUTH | secret | OAuth client secret (required when CAMUNDA_AUTH_STRATEGY=OAUTH). |

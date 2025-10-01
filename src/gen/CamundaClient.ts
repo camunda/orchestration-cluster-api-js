@@ -31,7 +31,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-09-30T22:44:44.642Z
+// Generated 2025-10-01T01:19:13.773Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1153,7 +1153,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-09-30T22:44:44.645Z)
+  // Generated methods (2025-10-01T01:19:13.774Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.

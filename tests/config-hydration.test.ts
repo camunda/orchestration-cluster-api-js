@@ -14,7 +14,7 @@ describe('unified configuration hydration', () => {
       env: { CAMUNDA_REST_ADDRESS: 'http://env' },
       overrides: { CAMUNDA_REST_ADDRESS: 'http://override' },
     });
-    expect(config.restAddress).toBe('http://override');
+  expect(config.restAddress).toBe('http://override/v2');
   });
 
   it('enforces oauth conditional requirements', () => {
