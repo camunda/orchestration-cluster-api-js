@@ -39,6 +39,7 @@ Comprehensive reference and examples for the unified configuration system poweri
 | CAMUNDA_MTLS_KEY_PATH             | string      | —                                          | —                                   |        | Path to private key PEM (used if inline not provided).            |
 | CAMUNDA_MTLS_CA_PATH              | string      | —                                          | —                                   |        | Path to CA bundle PEM (used if inline not provided).              |
 | CAMUNDA_MTLS_KEY_PASSPHRASE       | string      | —                                          | —                                   | yes    | Optional key passphrase.                                          |
+| CAMUNDA_DEFAULT_TENANT_ID         | string      | <default>                                 | —                                   |        | Default tenant id used when an operation permits an omitted tenantId parameter. |
 
 ## Precedence
 

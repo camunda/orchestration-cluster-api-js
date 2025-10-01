@@ -54,3 +54,8 @@ If the spec hasn't changed and no relevant commits exist, `generate.changed == f
 ### Future Enhancements
 * Add drift daily job to open an issue if spec changes but generation yields no semantic-release-worthy commits.
 * Add a contract test to verify each branded key still appears in metadata and `types.gen.ts`.
+
+### Notable Changes
+
+#### Added CAMUNDA_DEFAULT_TENANT_ID (minor)
+Introduces a new configuration variable `CAMUNDA_DEFAULT_TENANT_ID` (default `<default>`). Hydration exposes this as `config.defaultTenantId`. Future helper methods may implicitly use this when an operation's tenantId is optional and not supplied. Explicit tenantId arguments always take precedence. No migration required; set to a custom tenant string if you operate primarily in a non-`<default>` tenant context.

@@ -49,6 +49,7 @@ CAMUNDA_REST_ADDRESS=https://cluster.example   # SDK will use https://cluster.ex
 CAMUNDA_AUTH_STRATEGY=OAUTH
 CAMUNDA_CLIENT_ID=***
 CAMUNDA_CLIENT_SECRET=***
+CAMUNDA_DEFAULT_TENANT_ID=<default>   # optional: override default tenant resolution
 ```
 
 > Prefer environment / secret manager injection over hard‑coding values in source. Treat the SDK like a leaf dependency: construct once near process start, pass the instance where needed.
