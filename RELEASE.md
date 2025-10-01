@@ -59,3 +59,9 @@ If the spec hasn't changed and no relevant commits exist, `generate.changed == f
 
 #### Added CAMUNDA_DEFAULT_TENANT_ID (minor)
 Introduces a new configuration variable `CAMUNDA_DEFAULT_TENANT_ID` (default `<default>`). Hydration exposes this as `config.defaultTenantId`. Future helper methods may implicitly use this when an operation's tenantId is optional and not supplied. Explicit tenantId arguments always take precedence. No migration required; set to a custom tenant string if you operate primarily in a non-`<default>` tenant context.
+
+#### Body-level tenantId default injection
+Operations with an optional `tenantId` field in the request body will now have that field auto-populated from `config.defaultTenantId` if omitted. This occurs before request validation so strict/fanatical modes treat the injected value as part of the validated shape. Path parameters are unaffected (still explicit). Set `CAMUNDA_DEFAULT_TENANT_ID` to change the default.
+
+Trace-level log event emitted when injection occurs:
+`tenant.default.inject` with data `{ op, tenant }`. Enable via `CAMUNDA_SDK_LOG_LEVEL=trace` (or programmatic log level) to observe.

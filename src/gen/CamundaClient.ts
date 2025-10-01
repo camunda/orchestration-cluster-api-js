@@ -31,7 +31,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-10-01T02:26:53.242Z
+// Generated 2025-10-01T02:59:37.811Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1153,7 +1153,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-10-01T02:26:53.243Z)
+  // Generated methods (2025-10-01T02:59:37.813Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -1793,6 +1793,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'broadcastSignal', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('broadcastSignal', Schemas.zBroadcastSignalData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -2062,6 +2066,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'correlateMessage', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('correlateMessage', Schemas.zCorrelateMessageData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -2190,6 +2198,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'createDeployment', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('createDeployment', Schemas.zCreateDeploymentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -4818,6 +4830,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'publishMessage', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('publishMessage', Schemas.zPublishMessageData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;

@@ -63,6 +63,8 @@ Unknown scope, mode, duplicate scope ⇒ error (`CamundaConfigurationError`).
 
 ## Typical Environment Sets
 
+> Body-only tenantId defaulting: For operations whose request bodies declare an optional `tenantId` property, the SDK automatically injects `CAMUNDA_DEFAULT_TENANT_ID` when you omit it. Path parameters named `tenantId` are never defaulted.
+
 ### 1. Basic Auth (request validation warn, response strict, verbose diagnostics)
 
 ```bash

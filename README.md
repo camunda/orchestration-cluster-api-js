@@ -14,6 +14,7 @@ Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST
 - Cancelable promises for all operations
 - Eventual consistency helper for polling endpoints
 - Immutable, deep‑frozen configuration accessible through a factory‑created client instance
+ - Automatic body-level tenantId defaulting: if a request body supports an optional tenantId and you omit it, the SDK fills it from CAMUNDA_DEFAULT_TENANT_ID (path params are never auto-filled)
 
 ## Install
 
