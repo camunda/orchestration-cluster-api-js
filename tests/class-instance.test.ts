@@ -33,7 +33,7 @@ describe('Camunda class instances', () => {
 
     expect(f1).toHaveBeenCalledTimes(1);
     expect(f2).toHaveBeenCalledTimes(1);
-    expect(r1).toMatchObject({ id: 'c1', url: 'http://cluster-one:8080/license' });
-    expect(r2).toMatchObject({ id: 'c2', url: 'http://cluster-two:8080/license' });
+  expect(r1).toMatchObject({ id: 'c1', url: 'http://cluster-one:8080/v2/license' });
+  expect(r2).toMatchObject({ id: 'c2', url: 'http://cluster-two:8080/v2/license' });
   });
 });

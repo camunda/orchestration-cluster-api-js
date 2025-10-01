@@ -8,7 +8,7 @@ describe('fp-ts client', () => {
     'deploys -> starts instance -> finds it via eventual search (TaskEither pipeline)',
     { timeout: 30000 },
     async () => {
-      const fp = createCamundaFpClient({});
+      const fp = createCamundaFpClient();
 
       const program = pipe(
         fp.deployResourcesFromFiles(['./tests-integration/fixtures/test-process.bpmn']),

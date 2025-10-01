@@ -59,6 +59,11 @@ export type ElementId = CamundaKey<'ElementId'>;
 export type FormKey = CamundaKey<'FormKey'>;
 
 /**
+ * The user-defined id for the form
+ */
+export type FormId = CamundaKey<'FormId'>;
+
+/**
  * System-generated key for a variable.
  */
 export type VariableKey = CamundaKey<'VariableKey'>;
@@ -414,7 +419,7 @@ export type AdvancedUserTaskStateFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<UserTaskStateEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 export type VariableValueFilterProperty = {
@@ -564,6 +569,9 @@ export type VariableFilter = {
      * The value of the variable.
      */
     value?: StringFilterProperty;
+    /**
+     * Tenant ID of this variable.
+     */
     tenantId?: TenantId;
     /**
      * Whether the value is truncated or not.
@@ -572,15 +580,15 @@ export type VariableFilter = {
     /**
      * The key for this variable.
      */
-    variableKey?: VariableKey | AdvancedVariableKeyFilter;
+    variableKey?: VariableKeyFilterProperty;
     /**
      * The key of the scope of this variable.
      */
-    scopeKey?: ScopeKey | AdvancedScopeKeyFilter;
+    scopeKey?: ScopeKeyFilterProperty;
     /**
      * The key of the process instance of this variable.
      */
-    processInstanceKey?: ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
 };
 
 /**
@@ -625,6 +633,9 @@ export type VariableResultBase = {
      * Name of this variable.
      */
     name?: string;
+    /**
+     * Tenant ID of this variable.
+     */
     tenantId?: TenantId;
     /**
      * The key for this variable.
@@ -668,7 +679,9 @@ export type ProcessDefinitionFilter = {
      */
     name?: StringFilterProperty;
     /**
-     * Whether to only return the latest version of each process definition. When using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`. The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
+     * Whether to only return the latest version of each process definition.
+     * When using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.
+     * The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
      *
      */
     isLatestVersion?: boolean;
@@ -688,6 +701,9 @@ export type ProcessDefinitionFilter = {
      * Process definition ID of this process definition.
      */
     processDefinitionId?: StringFilterProperty;
+    /**
+     * Tenant ID of this process definition.
+     */
     tenantId?: TenantId;
     /**
      * The key for this process definition.
@@ -727,6 +743,9 @@ export type ProcessDefinitionResult = {
      * Process definition ID of this process definition.
      */
     processDefinitionId?: ProcessDefinitionId;
+    /**
+     * Tenant ID of this process definition.
+     */
     tenantId?: TenantId;
     /**
      * The key for this process definition.
@@ -843,7 +862,7 @@ export type BasicStringFilter = {
  * Advanced string filter.
  */
 export type AdvancedStringFilter = BasicStringFilter & {
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -867,7 +886,7 @@ export type AdvancedProcessInstanceStateFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<ProcessInstanceStateEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -891,7 +910,7 @@ export type AdvancedElementInstanceStateFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<ElementInstanceStateEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -899,7 +918,13 @@ export type AdvancedElementInstanceStateFilter = {
  * Advanced DecisionDefinitionKey filter.
  */
 export type AdvancedDecisionDefinitionKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: DecisionDefinitionKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
     $neq?: DecisionDefinitionKey;
     /**
      * Checks if the current property exists.
@@ -914,6 +939,11 @@ export type AdvancedDecisionDefinitionKeyFilter = {
      */
     $notIn?: Array<DecisionDefinitionKey>;
 };
+
+/**
+ * DecisionDefinitionKey property with full advanced search capabilities.
+ */
+export type DecisionDefinitionKeyFilterProperty = DecisionDefinitionKey | AdvancedDecisionDefinitionKeyFilter;
 
 /**
  * Advanced filter
@@ -975,7 +1005,7 @@ export type StringFilterProperty = string | AdvancedStringFilter;
  * Wildcard characters can be escaped with backslash, for instance: `\*`.
  *
  */
-export type LikeFilterProperty = string;
+export type LikeFilter = string;
 
 /**
  * ProcessInstanceStateEnum property with full advanced search capabilities.
@@ -997,22 +1027,45 @@ export type DateTimeFilterProperty = string | AdvancedDateTimeFilter;
  * Advanced ProcessDefinitionKey filter.
  */
 export type AdvancedProcessDefinitionKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: ProcessDefinitionKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
     $neq?: ProcessDefinitionKey;
     /**
      * Checks if the current property exists.
      */
     $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
     $in?: Array<ProcessDefinitionKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
     $notIn?: Array<ProcessDefinitionKey>;
 };
+
+/**
+ * ProcessDefinitionKey property with full advanced search capabilities.
+ */
+export type ProcessDefinitionKeyFilterProperty = ProcessDefinitionKey | AdvancedProcessDefinitionKeyFilter;
 
 /**
  * Advanced filter
  * Advanced ProcessInstanceKey filter.
  */
 export type AdvancedProcessInstanceKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: ProcessInstanceKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
     $neq?: ProcessInstanceKey;
     /**
      * Checks if the current property exists.
@@ -1029,11 +1082,22 @@ export type AdvancedProcessInstanceKeyFilter = {
 };
 
 /**
+ * ProcessInstanceKey property with full advanced search capabilities.
+ */
+export type ProcessInstanceKeyFilterProperty = ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+
+/**
  * Advanced filter
  * Advanced ElementInstanceKey filter.
  */
 export type AdvancedElementInstanceKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: ElementInstanceKey;
+    /**
+     * Checks for equality with the provided value.
+     */
     $neq?: ElementInstanceKey;
     /**
      * Checks if the current property exists.
@@ -1050,11 +1114,22 @@ export type AdvancedElementInstanceKeyFilter = {
 };
 
 /**
+ * ElementInstanceKey property with full advanced search capabilities.
+ */
+export type ElementInstanceKeyFilterProperty = ElementInstanceKey | AdvancedElementInstanceKeyFilter;
+
+/**
  * Advanced filter
  * Advanced VariableKey filter.
  */
 export type AdvancedVariableKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: VariableKey;
+    /**
+     * Checks for equality with the provided value.
+     */
     $neq?: VariableKey;
     /**
      * Checks if the current property exists.
@@ -1071,11 +1146,22 @@ export type AdvancedVariableKeyFilter = {
 };
 
 /**
+ * VariableKey property with full advanced search capabilities.
+ */
+export type VariableKeyFilterProperty = VariableKey | AdvancedVariableKeyFilter;
+
+/**
  * Advanced filter
  * Advanced ScopeKey filter.
  */
 export type AdvancedScopeKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: ScopeKey;
+    /**
+     * Checks for equality with the provided value.
+     */
     $neq?: ScopeKey;
     /**
      * Checks if the current property exists.
@@ -1092,11 +1178,22 @@ export type AdvancedScopeKeyFilter = {
 };
 
 /**
+ * ScopeKey property with full advanced search capabilities.
+ */
+export type ScopeKeyFilterProperty = ScopeKey | AdvancedScopeKeyFilter;
+
+/**
  * Advanced filter
  * Advanced MessageSubscriptionKey filter.
  */
 export type AdvancedMessageSubscriptionKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: MessageSubscriptionKey;
+    /**
+     * Checks for equality with the provided value.
+     */
     $neq?: MessageSubscriptionKey;
     /**
      * Checks if the current property exists.
@@ -1113,11 +1210,22 @@ export type AdvancedMessageSubscriptionKeyFilter = {
 };
 
 /**
+ * MessageSubscriptionKey property with full advanced search capabilities.
+ */
+export type MessageSubscriptionKeyFilterProperty = MessageSubscriptionKey | AdvancedMessageSubscriptionKeyFilter;
+
+/**
  * Advanced filter
  * Advanced JobKey filter.
  */
 export type AdvancedJobKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
     $eq?: JobKey;
+    /**
+     * Checks for equality with the provided value.
+     */
     $neq?: JobKey;
     /**
      * Checks if the current property exists.
@@ -1132,6 +1240,11 @@ export type AdvancedJobKeyFilter = {
      */
     $notIn?: Array<JobKey>;
 };
+
+/**
+ * JobKey property with full advanced search capabilities.
+ */
+export type JobKeyFilterProperty = JobKey | AdvancedJobKeyFilter;
 
 /**
  * Base process instance search filter.
@@ -1164,15 +1277,15 @@ export type BaseProcessInstanceFilterFields = {
     /**
      * The key of this process instance.
      */
-    processInstanceKey?: ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The parent process instance key.
      */
-    parentProcessInstanceKey?: ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+    parentProcessInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The parent element instance key.
      */
-    parentElementInstanceKey?: ElementInstanceKey | AdvancedElementInstanceKeyFilter;
+    parentElementInstanceKey?: ElementInstanceKeyFilterProperty;
     /**
      * The batch operation ID.
      */
@@ -1267,7 +1380,7 @@ export type ProcessInstanceFilterFields = BaseProcessInstanceFilterFields & {
     /**
      * The process definition key.
      */
-    processDefinitionKey?: ProcessDefinitionKey | AdvancedProcessDefinitionKeyFilter;
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
 };
 
 /**
@@ -1570,6 +1683,7 @@ export type ElementInstanceFilter = {
     endDate?: DateTimeFilterProperty;
     /**
      * The scope key of this element instance. If provided with a process instance key it will return element instances that are immediate children of the process instance. If provided with an element instance key it will return element instances that are immediate children of the element instance.
+     *
      */
     elementInstanceScopeKey?: ElementInstanceKey | ProcessInstanceKey;
 };
@@ -1614,6 +1728,9 @@ export type ElementInstanceResult = {
      * Shows whether this element instance has an incident. If true also an incidentKey is provided.
      */
     hasIncident: boolean;
+    /**
+     * The tenant ID of the incident.
+     */
     tenantId: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this element instance.
@@ -1696,6 +1813,9 @@ export type DecisionDefinitionFilter = {
      * the DMN ID of the decision requirements graph that the decision definition is part of.
      */
     decisionRequirementsId?: string;
+    /**
+     * The tenant ID of the decision definition.
+     */
     tenantId?: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this decision definition.
@@ -1754,6 +1874,9 @@ export type IncidentFilter = {
      * State of this incident with a defined set of values.
      */
     state?: 'ACTIVE' | 'MIGRATED' | 'RESOLVED' | 'PENDING';
+    /**
+     * The tenant ID of the incident.
+     */
     tenantId?: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this incident.
@@ -1784,14 +1907,14 @@ export type IncidentSearchQueryResult = SearchQueryResponse & {
     items?: Array<IncidentResult>;
 };
 
-export type CorrelatedMessageSearchQueryResult = SearchQueryResponse & {
+export type CorrelatedMessageSubscriptionSearchQueryResult = SearchQueryResponse & {
     /**
-     * The matching correlated messages.
+     * The matching correlated message subscriptions.
      */
-    items?: Array<CorrelatedMessageResult>;
+    items?: Array<CorrelatedMessageSubscriptionResult>;
 };
 
-export type CorrelatedMessageResult = {
+export type CorrelatedMessageSubscriptionResult = {
     /**
      * The correlation key of the message.
      */
@@ -1821,15 +1944,15 @@ export type CorrelatedMessageResult = {
      */
     partitionId: number;
     /**
-     * The process definition ID associated with this correlated message.
+     * The process definition ID associated with this correlated message subscription.
      */
     processDefinitionId: ProcessDefinitionId;
     /**
-     * The process definition key associated with this correlated message.
+     * The process definition key associated with this correlated message subscription.
      */
     processDefinitionKey?: ProcessDefinitionKey;
     /**
-     * The process instance key associated with this correlated message.
+     * The process instance key associated with this correlated message subscription.
      */
     processInstanceKey: ProcessInstanceKey;
     /**
@@ -1837,23 +1960,23 @@ export type CorrelatedMessageResult = {
      */
     subscriptionKey: MessageSubscriptionKey;
     /**
-     * The tenant ID associated with this correlated message.
+     * The tenant ID associated with this correlated message subscription.
      */
     tenantId: TenantId;
 };
 
-export type CorrelatedMessageSearchQuery = SearchQueryRequest & {
+export type CorrelatedMessageSubscriptionSearchQuery = SearchQueryRequest & {
     /**
      * Sort field criteria.
      */
-    sort?: Array<CorrelatedMessageSearchQuerySortRequest>;
+    sort?: Array<CorrelatedMessageSubscriptionSearchQuerySortRequest>;
     /**
-     * The correlated messages search filters.
+     * The correlated message subscriptions search filters.
      */
-    filter?: CorrelatedMessageFilter;
+    filter?: CorrelatedMessageSubscriptionFilter;
 };
 
-export type CorrelatedMessageSearchQuerySortRequest = {
+export type CorrelatedMessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
@@ -1862,9 +1985,9 @@ export type CorrelatedMessageSearchQuerySortRequest = {
 };
 
 /**
- * Correlated messages search filter.
+ * Correlated message subscriptions search filter.
  */
-export type CorrelatedMessageFilter = {
+export type CorrelatedMessageSubscriptionFilter = {
     /**
      * The correlation key of the message.
      */
@@ -1880,7 +2003,7 @@ export type CorrelatedMessageFilter = {
     /**
      * The element instance key that received the message.
      */
-    elementInstanceKey?: ElementInstanceFilter;
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
     /**
      * The message key.
      */
@@ -1894,15 +2017,15 @@ export type CorrelatedMessageFilter = {
      */
     partitionId?: IntegerFilterProperty;
     /**
-     * The process definition ID associated with this correlated message.
+     * The process definition ID associated with this correlated message subscription.
      */
     processDefinitionId?: StringFilterProperty;
     /**
-     * The process definition key associated with this correlated message.
+     * The process definition key associated with this correlated message subscription.
      */
-    processDefinitionKey?: BasicStringFilter;
+    processDefinitionKey?: BasicStringFilterProperty;
     /**
-     * The process instance key associated with this correlated message.
+     * The process instance key associated with this correlated message subscription.
      */
     processInstanceKey?: BasicStringFilterProperty;
     /**
@@ -1910,7 +2033,7 @@ export type CorrelatedMessageFilter = {
      */
     subscriptionKey?: BasicStringFilterProperty;
     /**
-     * The tenant ID associated with this correlated message.
+     * The tenant ID associated with this correlated message subscription.
      */
     tenantId?: StringFilterProperty;
 };
@@ -1947,7 +2070,7 @@ export type MessageSubscriptionResult = {
      * The element instance key associated with this message subscription.
      */
     elementInstanceKey?: ElementInstanceKey;
-    messageSubscriptionType?: MessageSubscriptionTypeEnum;
+    messageSubscriptionState?: MessageSubscriptionStateEnum;
     /**
      * The last updated date of the message subscription.
      */
@@ -1967,7 +2090,7 @@ export type MessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionType' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId';
+    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId';
     order?: SortOrderEnum;
 };
 
@@ -1989,7 +2112,7 @@ export type MessageSubscriptionFilter = {
     /**
      * The message subscription key associated with this message subscription.
      */
-    messageSubscriptionKey?: AdvancedMessageSubscriptionKeyFilter;
+    messageSubscriptionKey?: MessageSubscriptionKeyFilterProperty;
     /**
      * The process definition ID associated with this message subscription.
      */
@@ -1997,7 +2120,7 @@ export type MessageSubscriptionFilter = {
     /**
      * The process instance key associated with this message subscription.
      */
-    processInstanceKey?: AdvancedProcessInstanceKeyFilter;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The element ID associated with this message subscription.
      */
@@ -2005,11 +2128,11 @@ export type MessageSubscriptionFilter = {
     /**
      * The element instance key associated with this message subscription.
      */
-    elementInstanceKey?: AdvancedElementInstanceKeyFilter;
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
     /**
-     * The message subscription type.
+     * The message subscription state.
      */
-    messageSubscriptionType?: MessageSubscriptionTypeFilterProperty;
+    messageSubscriptionState?: MessageSubscriptionStateFilterProperty;
     /**
      * The last updated date of the message subscription.
      */
@@ -2029,28 +2152,28 @@ export type MessageSubscriptionFilter = {
 };
 
 /**
- * MessageSubscriptionTypeEnum with full advanced search capabilities.
+ * MessageSubscriptionStateEnum with full advanced search capabilities.
  */
-export type MessageSubscriptionTypeFilterProperty = MessageSubscriptionTypeEnum | AdvancedMessageSubscriptionTypeFilter;
+export type MessageSubscriptionStateFilterProperty = MessageSubscriptionStateEnum | AdvancedMessageSubscriptionStateFilter;
 
 /**
- * The type of message subscription.
+ * The state of message subscription.
  */
-export type MessageSubscriptionTypeEnum = 'CREATED' | 'MIGRATED';
+export type MessageSubscriptionStateEnum = 'CORRELATED' | 'CREATED' | 'DELETED' | 'MIGRATED';
 
 /**
  * Advanced filter
- * Advanced MessageSubscriptionTypeEnum filter
+ * Advanced MessageSubscriptionStateEnum filter
  */
-export type AdvancedMessageSubscriptionTypeFilter = {
+export type AdvancedMessageSubscriptionStateFilter = {
     /**
      * Checks for equality with the provided value.
      */
-    $eq?: MessageSubscriptionTypeEnum;
+    $eq?: MessageSubscriptionStateEnum;
     /**
      * Checks for inequality with the provided value.
      */
-    $neq?: MessageSubscriptionTypeEnum;
+    $neq?: MessageSubscriptionStateEnum;
     /**
      * Checks if the current property exists.
      */
@@ -2058,8 +2181,8 @@ export type AdvancedMessageSubscriptionTypeFilter = {
     /**
      * Checks if the property matches any of the provided values.
      */
-    $in?: Array<MessageSubscriptionTypeEnum>;
-    $like?: LikeFilterProperty;
+    $in?: Array<MessageSubscriptionStateEnum>;
+    $like?: LikeFilter;
 };
 
 export type IncidentResult = {
@@ -2087,6 +2210,9 @@ export type IncidentResult = {
      * State of this incident with a defined set of values.
      */
     state?: 'ACTIVE' | 'MIGRATED' | 'RESOLVED' | 'PENDING';
+    /**
+     * The tenant ID of the incident.
+     */
     tenantId?: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this incident.
@@ -2134,6 +2260,9 @@ export type DecisionDefinitionResult = {
      * the DMN ID of the decision requirements graph that the decision definition is part of.
      */
     decisionRequirementsId?: string;
+    /**
+     * The tenant ID of the decision definition.
+     */
     tenantId?: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this decision definition.
@@ -2193,9 +2322,6 @@ export type AuthorizationRequest = {
      * The ID of the owner of the permissions.
      */
     ownerId: string;
-    /**
-     * The type of the owner of the permissions.
-     */
     ownerType: OwnerTypeEnum;
     /**
      * The ID of the resource to add permissions to.
@@ -2245,9 +2371,6 @@ export type AuthorizationFilter = {
      * The ID of the owner of permissions.
      */
     ownerId?: string;
-    /**
-     * The type of the owner of permissions.
-     */
     ownerType?: OwnerTypeEnum;
     /**
      * The IDs of the resource to search permissions for.
@@ -2264,12 +2387,9 @@ export type AuthorizationResult = {
      * The ID of the owner of permissions.
      */
     ownerId?: string;
-    /**
-     * The type of the owner of permissions.
-     */
     ownerType?: OwnerTypeEnum;
     /**
-     * The type of resource that owner have permissions.
+     * The type of resource that the permissions relate to.
      */
     resourceType?: ResourceTypeEnum;
     /**
@@ -2309,7 +2429,7 @@ export type UserRequest = {
     /**
      * The email of the user.
      */
-    email: string;
+    email?: string;
 };
 
 export type UserCreateResult = {
@@ -2369,7 +2489,7 @@ export type MappingRuleSearchQueryRequest = SearchQueryRequest & {
      */
     sort?: Array<MappingRuleSearchQuerySortRequest>;
     /**
-     * The mapping search filters.
+     * The mapping rule search filters.
      */
     filter?: MappingRuleFilter;
 };
@@ -2405,11 +2525,11 @@ export type MappingRuleFilter = {
      */
     claimValue?: string;
     /**
-     * The name of the mapping.
+     * The name of the mapping rule.
      */
     name?: string;
     /**
-     * The ID of the mapping.
+     * The ID of the mapping rule.
      */
     mappingRuleId?: string;
 };
@@ -2966,14 +3086,14 @@ export type MappingRuleCreateUpdateRequest = {
      */
     claimValue: string;
     /**
-     * The name of the mapping.
+     * The name of the mapping rule.
      */
     name: string;
 };
 
 export type MappingRuleCreateRequest = MappingRuleCreateUpdateRequest & {
     /**
-     * The unique ID of the mapping.
+     * The unique ID of the mapping rule.
      */
     mappingRuleId: string;
 };
@@ -3301,6 +3421,9 @@ export type ActivatedJobResult = {
     variables: {
         [key: string]: unknown;
     };
+    /**
+     * The ID of the tenant that owns the job.
+     */
     tenantId: TenantId;
     /**
      * The key, a unique identifier for the job.
@@ -3316,6 +3439,7 @@ export type ActivatedJobResult = {
     processDefinitionKey: ProcessDefinitionKey;
     /**
      * The unique key identifying the associated task, unique within the scope of the process instance.
+     *
      */
     elementInstanceKey: ElementInstanceKey;
     kind: JobKindEnum;
@@ -3425,20 +3549,18 @@ export type JobCompletionRequest = {
     result?: JobResult;
 };
 
-/**
- * The result of the completed job as determined by the worker.
- *
- */
-export type JobResult = {
+export type JobResult = (({
+    type: 'userTask';
+} & JobResultUserTask) | ({
+    type: 'adHocSubProcess';
+} & JobResultAdHocSubProcess)) & {
     /**
      * Used to distinguish between different types of job results.
      */
     type: 'userTask' | 'adHocSubProcess';
 };
 
-export type JobResultUserTask = (JobResult & {
-    type: 'userTask';
-} & {
+export type JobResultUserTask = {
     /**
      * Indicates whether the worker denies the work, i.e. explicitly doesn't approve it. For example, a user task listener can deny the completion of a task by setting this flag to true. In this example, the completion of a task is represented by a job that the worker can complete as denied. As a result, the completion request is rejected and the task remains active. Defaults to false.
      *
@@ -3449,7 +3571,7 @@ export type JobResultUserTask = (JobResult & {
      */
     deniedReason?: string | null;
     corrections?: JobResultCorrections;
-}) | null;
+} | null;
 
 /**
  * JSON object with attributes that were corrected by the worker.
@@ -3494,9 +3616,7 @@ export type JobResultCorrections = {
     priority?: number | null;
 } | null;
 
-export type JobResultAdHocSubProcess = (JobResult & {
-    type: 'adHocSubProcess';
-} & {
+export type JobResultAdHocSubProcess = {
     /**
      * Indicates which elements need to be activated in the ad-hoc subprocess.
      */
@@ -3509,7 +3629,7 @@ export type JobResultAdHocSubProcess = (JobResult & {
      * Indicates whether the remaining instances of the ad-hoc subprocess should be canceled.
      */
     isCancelRemainingInstances?: boolean;
-}) | null;
+} | null;
 
 export type JobResultActivateElement = {
     /**
@@ -3583,7 +3703,7 @@ export type JobSearchQuerySortRequest = {
  */
 export type JobFilter = {
     /**
-     * If this is set, when the job can next be activated.
+     * When the job can next be activated.
      */
     deadline?: DateTimeFilterProperty | null;
     /**
@@ -3597,7 +3717,7 @@ export type JobFilter = {
     /**
      * The element instance key associated with the job.
      */
-    elementInstanceKey?: ElementInstanceKey | AdvancedElementInstanceKeyFilter;
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
     /**
      * When the job ended.
      */
@@ -3621,7 +3741,7 @@ export type JobFilter = {
     /**
      * The key, a unique identifier for the job.
      */
-    jobKey?: JobKey | AdvancedJobKeyFilter;
+    jobKey?: JobKeyFilterProperty;
     /**
      * The kind of the job.
      */
@@ -3637,11 +3757,11 @@ export type JobFilter = {
     /**
      * The process definition key associated with the job.
      */
-    processDefinitionKey?: ProcessDefinitionKey | AdvancedProcessDefinitionKeyFilter;
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
     /**
      * The process instance key associated with the job.
      */
-    processInstanceKey?: ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The number of retries left.
      */
@@ -3792,7 +3912,7 @@ export type AdvancedJobStateFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<JobStateEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -3821,7 +3941,7 @@ export type AdvancedJobKindFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<JobKindEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -3850,7 +3970,7 @@ export type AdvancedJobListenerEventTypeFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<JobListenerEventTypeEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -3875,7 +3995,7 @@ export type ProblemDetail = {
      */
     detail?: string;
     /**
-     * A URI identifying the origin of the problem.
+     * A URI path identifying the origin of the problem.
      */
     instance?: string;
 };
@@ -3901,7 +4021,7 @@ export type OffsetPagination = {
      */
     from?: number;
     /**
-     * The maximum number of items to return in one request. <=10,000 for Elasticsearch.
+     * The maximum number of items to return in one request.
      */
     limit?: number;
 };
@@ -3954,7 +4074,13 @@ export type SearchQueryPageResponse = {
      *
      */
     hasMoreTotalItems?: boolean;
+    /**
+     * The cursor value for getting the previous page of results. Use this in the `before` field of an ensuing request.
+     */
     startCursor?: StartCursor;
+    /**
+     * The cursor value for getting the next page of results. Use this in the `after` field of an ensuing request.
+     */
     endCursor?: EndCursor;
 };
 
@@ -3993,6 +4119,9 @@ export type DecisionRequirementsFilter = {
      * the DMN ID of the decision requirements.
      */
     decisionRequirementsId?: string;
+    /**
+     * The tenant ID of the decision requirements.
+     */
     tenantId?: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this decision requirements.
@@ -4028,6 +4157,9 @@ export type DecisionRequirementsResult = {
      * The name of the resource from which this decision requirements was parsed.
      */
     resourceName?: string;
+    /**
+     * The tenant ID of the decision requirements.
+     */
     tenantId?: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this decision requirements.
@@ -4054,6 +4186,9 @@ export type DecisionEvaluationById = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The tenant ID of the decision.
+     */
     tenantId?: TenantId;
 };
 
@@ -4068,6 +4203,9 @@ export type DecisionEvaluationByKey = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The tenant ID of the decision.
+     */
     tenantId?: TenantId;
 };
 
@@ -4075,41 +4213,44 @@ export type EvaluateDecisionResult = {
     /**
      * The ID of the decision which was evaluated.
      */
-    decisionDefinitionId?: DecisionDefinitionId;
+    decisionDefinitionId: DecisionDefinitionId;
     /**
      * The name of the decision which was evaluated.
      */
-    decisionDefinitionName?: string;
+    decisionDefinitionName: string;
     /**
      * The version of the decision which was evaluated.
      */
-    decisionDefinitionVersion?: number;
+    decisionDefinitionVersion: number;
     /**
      * The ID of the decision requirements graph that the decision which was evaluated is part of.
      */
-    decisionRequirementsId?: string;
+    decisionRequirementsId: string;
     /**
      * JSON document that will instantiate the result of the decision which was evaluated.
      *
      */
-    output?: string;
+    output: string;
     /**
      * The ID of the decision which failed during evaluation.
      */
-    failedDecisionDefinitionId?: DecisionDefinitionId;
+    failedDecisionDefinitionId: DecisionDefinitionId;
     /**
      * Message describing why the decision which was evaluated failed.
      */
-    failureMessage?: string;
-    tenantId?: TenantId;
+    failureMessage: string;
+    /**
+     * The tenant ID of the evaluated decision.
+     */
+    tenantId: TenantId;
     /**
      * The unique key identifying the decision which was evaluated.
      */
-    decisionDefinitionKey?: DecisionDefinitionKey;
+    decisionDefinitionKey: DecisionDefinitionKey;
     /**
      * The unique key identifying the decision requirements graph that the decision which was evaluated is part of.
      */
-    decisionRequirementsKey?: DecisionRequirementsKey;
+    decisionRequirementsKey: DecisionRequirementsKey;
     /**
      * Deprecated, please refer to `decisionEvaluationKey`.
      * @deprecated
@@ -4118,11 +4259,11 @@ export type EvaluateDecisionResult = {
     /**
      * The unique key identifying this decision evaluation.
      */
-    decisionEvaluationKey?: DecisionEvaluationKey;
+    decisionEvaluationKey: DecisionEvaluationKey;
     /**
      * Decisions that were evaluated within the requested decision evaluation.
      */
-    evaluatedDecisions?: Array<EvaluatedDecisionResult>;
+    evaluatedDecisions: Array<EvaluatedDecisionResult>;
 };
 
 /**
@@ -4150,6 +4291,9 @@ export type EvaluatedDecisionResult = {
      *
      */
     output?: string;
+    /**
+     * The tenant ID of the evaluated decision.
+     */
     tenantId?: TenantId;
     /**
      * The decision rules that matched within this decision evaluation.
@@ -4269,6 +4413,9 @@ export type DecisionInstanceFilter = {
      */
     decisionDefinitionVersion?: number;
     decisionDefinitionType?: DecisionDefinitionTypeEnum;
+    /**
+     * The tenant ID of the decision instance.
+     */
     tenantId?: TenantId;
     /**
      * The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.
@@ -4286,11 +4433,11 @@ export type DecisionInstanceFilter = {
     /**
      * The key of the decision.
      */
-    decisionDefinitionKey?: DecisionDefinitionKey | AdvancedDecisionDefinitionKeyFilter;
+    decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
     /**
      * The key of the element instance this decision instance is linked to.
      */
-    elementInstanceKey?: ElementInstanceKey | AdvancedElementInstanceKeyFilter;
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
 };
 
 export type DecisionInstanceSearchQueryResult = SearchQueryResponse & {
@@ -4328,6 +4475,9 @@ export type DecisionInstanceResult = {
      * The result of the decision instance.
      */
     result?: string;
+    /**
+     * The tenant ID of the decision instance.
+     */
     tenantId?: TenantId;
     /**
      * The key of the decision evaluation where this instance was created.
@@ -4395,13 +4545,16 @@ export type MessageCorrelationRequest = {
     /**
      * The correlation key of the message.
      */
-    correlationKey: string;
+    correlationKey?: string;
     /**
      * The message variables as JSON document
      */
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * the tenant for which the message is published
+     */
     tenantId?: TenantId;
 };
 
@@ -4433,7 +4586,7 @@ export type MessagePublicationRequest = {
     /**
      * The correlation key of the message.
      */
-    correlationKey: string;
+    correlationKey?: string;
     /**
      * Timespan (in ms) to buffer the message on the broker.
      */
@@ -4450,6 +4603,9 @@ export type MessagePublicationRequest = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The tenant of the message sender.
+     */
     tenantId?: TenantId;
 };
 
@@ -4457,6 +4613,9 @@ export type MessagePublicationRequest = {
  * The message key of the published message.
  */
 export type MessagePublicationResult = {
+    /**
+     * The tenant ID of the message.
+     */
     tenantId?: TenantId;
     /**
      * The key of the message
@@ -4566,6 +4725,9 @@ export type DocumentLink = {
 };
 
 export type DeploymentResult = {
+    /**
+     * The tenant ID associated with the deployment.
+     */
     tenantId: TenantId;
     /**
      * The unique key identifying the deployment.
@@ -4603,6 +4765,9 @@ export type DeploymentProcessResult = {
      * The resource name from which this process was parsed.
      */
     resourceName: string;
+    /**
+     * The tenant ID of the deployed process.
+     */
     tenantId: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this process.
@@ -4628,6 +4793,9 @@ export type DeploymentDecisionResult = {
      * The DMN name of the decision, as parsed during deployment.
      */
     name?: string;
+    /**
+     * The tenant ID of the deployed decision.
+     */
     tenantId?: TenantId;
     /**
      * The dmn ID of the decision requirements graph that this decision is part of, as parsed during deployment.
@@ -4663,6 +4831,9 @@ export type DeploymentDecisionRequirementsResult = {
      * The DMN name of the decision requirements, as parsed during deployment.
      */
     decisionRequirementsName?: string;
+    /**
+     * The tenant ID of the deployed decision requirements.
+     */
     tenantId?: TenantId;
     /**
      * The resource name from which this decision requirements was parsed.
@@ -4684,7 +4855,7 @@ export type DeploymentFormResult = {
      * unique identifier for a specific form.
      *
      */
-    formId?: string;
+    formId?: FormId;
     /**
      * The assigned form version.
      */
@@ -4758,6 +4929,9 @@ export type ProcessInstanceCreationInstructionById = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The tenant ID of the process definition.
+     */
     tenantId?: TenantId;
     operationReference?: OperationReference;
     /**
@@ -4775,9 +4949,7 @@ export type ProcessInstanceCreationInstructionById = {
      * in future releases.
      *
      */
-    runtimeInstructions?: Array<{
-        type: 'TERMINATE_PROCESS_INSTANCE';
-    } & ProcessInstanceCreationTerminateInstruction>;
+    runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
     /**
      * Wait for the process instance to complete. If the process instance completion does
      * not occur within the requestTimeout, the request will be closed. This can lead to a 504
@@ -4818,6 +4990,9 @@ export type ProcessInstanceCreationInstructionByKey = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The tenant ID of the process definition.
+     */
     tenantId?: TenantId;
     operationReference?: OperationReference;
     /**
@@ -4835,9 +5010,7 @@ export type ProcessInstanceCreationInstructionByKey = {
      * in future releases.
      *
      */
-    runtimeInstructions?: Array<{
-        type: 'TERMINATE_PROCESS_INSTANCE';
-    } & ProcessInstanceCreationTerminateInstruction>;
+    runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
     /**
      * Wait for the process instance to complete. If the process instance completion does
      * not occur within the requestTimeout, the request will be closed. This can lead to a 504
@@ -4872,26 +5045,20 @@ export type ProcessInstanceCreationStartInstruction = {
     elementId: ElementId;
 };
 
-/**
- * The type of the runtime instruction. For now, only TERMINATE_PROCESS_INSTANCE is supported.
- *
- */
-export type RuntimeInstructionType = 'TERMINATE_PROCESS_INSTANCE';
-
-/**
- * Base type for all runtime instructions.
- *
- */
-export type ProcessInstanceCreationRuntimeInstruction = {
-    type: RuntimeInstructionType;
+export type ProcessInstanceCreationRuntimeInstruction = ({
+    type: 'TERMINATE_PROCESS_INSTANCE';
+} & ProcessInstanceCreationTerminateInstruction) & {
+    /**
+     * The type of the runtime instruction
+     */
+    type: 'TERMINATE_PROCESS_INSTANCE';
 };
 
 /**
- * Terminate the process
+ * Terminates the process instance after a specific BPMN element is completed or terminated.
+ *
  */
-export type ProcessInstanceCreationTerminateInstruction = ProcessInstanceCreationRuntimeInstruction & {
-    type: 'TERMINATE_PROCESS_INSTANCE';
-} & {
+export type ProcessInstanceCreationTerminateInstruction = {
     /**
      * The ID of the element that, once completed or terminated, will cause the process to be terminated.
      *
@@ -4911,6 +5078,9 @@ export type CreateProcessInstanceResult = {
      *
      */
     processDefinitionVersion: number;
+    /**
+     * The tenant ID of the created process instance.
+     */
     tenantId: TenantId;
     /**
      * All the variables visible in the root scope.
@@ -5090,10 +5260,16 @@ export type SignalBroadcastRequest = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The ID of the tenant that owns the signal.
+     */
     tenantId?: TenantId;
 };
 
 export type SignalBroadcastResult = {
+    /**
+     * The tenant ID of the signal that was broadcast.
+     */
     tenantId: TenantId;
     /**
      * The unique ID of the signal that was broadcast.
@@ -5102,11 +5278,14 @@ export type SignalBroadcastResult = {
 };
 
 export type FormResult = {
+    /**
+     * The tenant ID of the form.
+     */
     tenantId?: TenantId;
     /**
      * The user-provided identifier of the form.
      */
-    formId?: string;
+    formId?: FormId;
     /**
      * The form content.
      */
@@ -5140,6 +5319,9 @@ export type ResourceResult = {
      * The resource ID of this resource.
      */
     resourceId?: string;
+    /**
+     * The tenant ID of this resource.
+     */
     tenantId?: TenantId;
     /**
      * The unique key of this resource.
@@ -5229,7 +5411,7 @@ export type AdvancedBatchOperationTypeFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<BatchOperationTypeEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -5258,13 +5440,13 @@ export type AdvancedBatchOperationStateFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<BatchOperationStateEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
- * The state, one of ACTIVE, COMPLETED, TERMINATED.
+ * The batch operation state.
  */
-export type BatchOperationStateEnum = 'CREATED' | 'ACTIVE' | 'SUSPENDED' | 'COMPLETED' | 'PARTIALLY_COMPLETED' | 'CANCELED';
+export type BatchOperationStateEnum = 'ACTIVE' | 'CANCELED' | 'COMPLETED' | 'CREATED' | 'FAILED' | 'PARTIALLY_COMPLETED' | 'SUSPENDED';
 
 export type BatchOperationItemSearchQuerySortRequest = {
     /**
@@ -5303,7 +5485,7 @@ export type BatchOperationItemFilter = {
     /**
      * The process instance key of the processed item.
      */
-    processInstanceKey?: ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The state of the batch operation.
      */
@@ -5336,7 +5518,7 @@ export type AdvancedBatchOperationItemStateFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<BatchOperationItemStateEnum>;
-    $like?: LikeFilterProperty;
+    $like?: LikeFilter;
 };
 
 /**
@@ -5362,7 +5544,7 @@ export type BatchOperationResponse = {
     /**
      * The state of the batch operation.
      */
-    state?: 'CREATED' | 'ACTIVE' | 'SUSPENDED' | 'COMPLETED' | 'PARTIALLY_COMPLETED' | 'CANCELED' | 'INCOMPLETED';
+    state?: 'ACTIVE' | 'CANCELED' | 'COMPLETED' | 'CREATED' | 'FAILED' | 'PARTIALLY_COMPLETED' | 'SUSPENDED';
     batchOperationType?: BatchOperationTypeEnum;
     /**
      * The start date of the batch operation.
@@ -5502,165 +5684,6 @@ export type TenantId = CamundaKey<'TenantId'>;
  * The unique name of a user.
  */
 export type Username = CamundaKey<'Username'>;
-
-/**
- * Information about the operation effect characteristics. Suitable for reasoning about the idempotency and safety of operations
- */
-export type OperationMetadata = ({
-    kind: 'CommandOperation';
-} & CommandOperation) | ({
-    kind: 'QueryOperation';
-} & QueryOperation) | ({
-    kind: 'CreateOperation';
-} & CreateOperation) | ({
-    kind: 'PatchOperation';
-} & PatchOperation) | ({
-    kind: 'DeleteOperation';
-} & DeleteOperation) | ({
-    kind: 'EventOperation';
-} & EventOperation) | ({
-    kind: 'UpdateOperation';
-} & UpdateOperation) | ({
-    kind: 'BatchCommandOperation';
-} & BatchCommandOperation);
-
-/**
- * A non-idempotent state transition / process action
- */
-export type CommandOperation = {
-    kind: 'command';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
-
-/**
- * A pure read operation. May return a different state with each call, but causes no effect with each call.
- */
-export type QueryOperation = {
-    kind: 'query';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
-
-/**
- * Creates a new resource. The duplicatePolicy describes what happens when you make the same request more than once.
- */
-export type CreateOperation = {
-    kind: 'create';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called. Explicit override; otherwise inferred from duplicatePolicy.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate state.
-     */
-    safe?: boolean;
-    /**
-     * Server behavior when the identical create request is repeated:
-     * - conflict (subsequent identical request → 409; creates none; NOT idempotent)
-     * - return-existing (subsequent identical request → 200/201 with same representation; idempotent)
-     * - ignore (subsequent identical request → 2xx minimal body, no new resource; idempotent)
-     * - upsert (creates if absent, otherwise updates in place producing same final state; idempotent)
-     * - merge (each call adds/accumulates something; NOT idempotent)
-     * - batch-partial (mixed: per item may create or conflict; whole-call classification becomes non-idempotent unless every item stabilized)
-     */
-    duplicatePolicy: 'conflict' | 'return-existing' | 'ignore' | 'upsert' | 'merge' | 'batch-partial';
-    /**
-     * How this operation calculates idempotency: - natural-key (server uses unique natural key(s) in body/path) - body-hash (semantic or byte hash dedupe) - idempotency-key (client supplies Idempotency-Key header) - server-token (client obtains token then submits) - none (default)
-     */
-    idempotencyMechanism?: 'natural-key' | 'body-hash' | 'idempotency-key' | 'server-token' | 'none';
-    /**
-     * Scope within which idempotency applies (resource = same logical resource identity, request = exact same payload, key+payload = Idempotency-Key + payload tuple).
-     */
-    idempotencyScope?: 'resource' | 'request' | 'key+payload';
-};
-
-/**
- * Updates a resource.
- */
-export type PatchOperation = {
-    kind: 'patch';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
-
-/**
- * Deletes a resource.
- */
-export type DeleteOperation = {
-    kind: 'delete';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
-
-/**
- * Fire-and-forget notification. May fan out.
- */
-export type EventOperation = {
-    kind: 'event';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
-
-/**
- * Updates a resource.
- */
-export type UpdateOperation = {
-    kind: 'update';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
-
-/**
- * Updates a resource.
- */
-export type BatchCommandOperation = {
-    kind: 'batch-command';
-    /**
-     * Idempotent operations cause at-most one effect regardless of how many times that are called.
-     */
-    idempotent?: boolean;
-    /**
-     * Safe operations do not mutate the state of the Camunda engine.
-     */
-    safe?: boolean;
-};
 
 export type GetTopologyData = {
     body?: never;
@@ -5870,12 +5893,12 @@ export type FailJobErrors = {
      */
     400: ProblemDetail;
     /**
-     * The job with the given jobKey is not found.
+     * The job with the given jobKey is not found. It was completed by another worker, or the process instance itself was canceled.
      *
      */
     404: ProblemDetail;
     /**
-     * The job with the given key is in the wrong state currently. More details are provided in the response body.
+     * The job with the given key is in the wrong state (i.e: not ACTIVATED or ACTIVATABLE). The job was failed by another worker with retries = 0, and the process is now in an incident state.
      *
      */
     409: ProblemDetail;
@@ -6647,7 +6670,7 @@ export type AssignMappingRuleToTenantResponses = {
 
 export type AssignMappingRuleToTenantResponse = AssignMappingRuleToTenantResponses[keyof AssignMappingRuleToTenantResponses];
 
-export type SearchMappingsForTenantData = {
+export type SearchMappingRulesForTenantData = {
     body?: MappingRuleSearchQueryRequest;
     path: {
         tenantId: TenantId;
@@ -6656,14 +6679,14 @@ export type SearchMappingsForTenantData = {
     url: '/tenants/{tenantId}/mapping-rules/search';
 };
 
-export type SearchMappingsForTenantResponses = {
+export type SearchMappingRulesForTenantResponses = {
     /**
      * The search result of MappingRules for the tenant.
      */
     200: MappingRuleSearchQueryResult;
 };
 
-export type SearchMappingsForTenantResponse = SearchMappingsForTenantResponses[keyof SearchMappingsForTenantResponses];
+export type SearchMappingRulesForTenantResponse = SearchMappingRulesForTenantResponses[keyof SearchMappingRulesForTenantResponses];
 
 export type UnassignGroupFromTenantData = {
     body?: never;
@@ -7139,12 +7162,10 @@ export type GetUserTaskFormError = GetUserTaskFormErrors[keyof GetUserTaskFormEr
 export type GetUserTaskFormResponses = {
     /**
      * The form is successfully returned.
-     *
      */
     200: FormResult;
     /**
      * The user task was found, but no form is associated with it.
-     *
      */
     204: void;
 };
@@ -7232,7 +7253,6 @@ export type SearchUserTasksError = SearchUserTasksErrors[keyof SearchUserTasksEr
 export type SearchUserTasksResponses = {
     /**
      * The user task search result.
-     *
      */
     200: UserTaskSearchQueryResult;
 };
@@ -7307,7 +7327,6 @@ export type SearchVariablesError = SearchVariablesErrors[keyof SearchVariablesEr
 export type SearchVariablesResponses = {
     /**
      * The variable search result.
-     *
      */
     200: VariableSearchQueryResult;
 };
@@ -7355,7 +7374,6 @@ export type GetVariableError = GetVariableErrors[keyof GetVariableErrors];
 export type GetVariableResponses = {
     /**
      * The variable is successfully returned.
-     *
      */
     200: VariableResult;
 };
@@ -7461,7 +7479,6 @@ export type SearchProcessDefinitionsError = SearchProcessDefinitionsErrors[keyof
 export type SearchProcessDefinitionsResponses = {
     /**
      * The process definition search result.
-     *
      */
     200: ProcessDefinitionSearchQueryResult;
 };
@@ -7473,6 +7490,7 @@ export type GetProcessDefinitionData = {
     path: {
         /**
          * The assigned key of the process definition, which acts as a unique identifier for this process definition.
+         *
          */
         processDefinitionKey: ProcessDefinitionKey;
     };
@@ -7510,7 +7528,6 @@ export type GetProcessDefinitionError = GetProcessDefinitionErrors[keyof GetProc
 export type GetProcessDefinitionResponses = {
     /**
      * The process definition is successfully returned.
-     *
      */
     200: ProcessDefinitionResult;
 };
@@ -7559,12 +7576,10 @@ export type GetProcessDefinitionXmlError = GetProcessDefinitionXmlErrors[keyof G
 export type GetProcessDefinitionXmlResponses = {
     /**
      * The XML of the process definition is successfully returned.
-     *
      */
     200: string;
     /**
      * The process definition was found but does not have XML.
-     *
      */
     204: string;
 };
@@ -7612,12 +7627,10 @@ export type GetStartProcessFormError = GetStartProcessFormErrors[keyof GetStartP
 export type GetStartProcessFormResponses = {
     /**
      * The form is successfully returned.
-     *
      */
     200: FormResult;
     /**
      * The process was found, but no form is associated with it.
-     *
      */
     204: void;
 };
@@ -8296,7 +8309,6 @@ export type SearchElementInstancesError = SearchElementInstancesErrors[keyof Sea
 export type SearchElementInstancesResponses = {
     /**
      * The element instance search result.
-     *
      */
     200: ElementInstanceSearchQueryResult;
 };
@@ -8345,7 +8357,6 @@ export type GetElementInstanceError = GetElementInstanceErrors[keyof GetElementI
 export type GetElementInstanceResponses = {
     /**
      * The element instance is successfully returned.
-     *
      */
     200: ElementInstanceResult;
 };
@@ -8384,7 +8395,6 @@ export type SearchDecisionDefinitionsError = SearchDecisionDefinitionsErrors[key
 export type SearchDecisionDefinitionsResponses = {
     /**
      * The decision definition search result.
-     *
      */
     200: DecisionDefinitionSearchQueryResult;
 };
@@ -8482,7 +8492,6 @@ export type GetDecisionDefinitionXmlError = GetDecisionDefinitionXmlErrors[keyof
 export type GetDecisionDefinitionXmlResponses = {
     /**
      * The XML of the decision definition is successfully returned.
-     *
      */
     200: string;
 };
@@ -8521,7 +8530,6 @@ export type SearchDecisionRequirementsError = SearchDecisionRequirementsErrors[k
 export type SearchDecisionRequirementsResponses = {
     /**
      * The decision requirements search result.
-     *
      */
     200: DecisionRequirementsSearchQueryResult;
 };
@@ -8570,7 +8578,6 @@ export type GetDecisionRequirementsError = GetDecisionRequirementsErrors[keyof G
 export type GetDecisionRequirementsResponses = {
     /**
      * The decision requirements is successfully returned.
-     *
      */
     200: DecisionRequirementsResult;
 };
@@ -8619,7 +8626,6 @@ export type GetDecisionRequirementsXmlError = GetDecisionRequirementsXmlErrors[k
 export type GetDecisionRequirementsXmlResponses = {
     /**
      * The XML of the decision requirements is successfully returned.
-     *
      */
     200: string;
 };
@@ -8658,7 +8664,6 @@ export type SearchDecisionInstancesError = SearchDecisionInstancesErrors[keyof S
 export type SearchDecisionInstancesResponses = {
     /**
      * The decision instance search result.
-     *
      */
     200: DecisionInstanceSearchQueryResult;
 };
@@ -8704,7 +8709,6 @@ export type GetDecisionInstanceError = GetDecisionInstanceErrors[keyof GetDecisi
 export type GetDecisionInstanceResponses = {
     /**
      * The decision instance is successfully returned.
-     *
      */
     200: DecisionInstanceGetQueryResult;
 };
@@ -8931,7 +8935,7 @@ export type UpdateAuthorizationResponses = {
 export type UpdateAuthorizationResponse = UpdateAuthorizationResponses[keyof UpdateAuthorizationResponses];
 
 export type SearchAuthorizationsData = {
-    body: AuthorizationSearchQuery;
+    body?: AuthorizationSearchQuery;
     path?: never;
     query?: never;
     url: '/authorizations/search';
@@ -10705,7 +10709,7 @@ export type UpdateMappingRuleResponses = {
 export type UpdateMappingRuleResponse = UpdateMappingRuleResponses[keyof UpdateMappingRuleResponses];
 
 export type SearchMappingRuleData = {
-    body: MappingRuleSearchQueryRequest;
+    body?: MappingRuleSearchQueryRequest;
     path?: never;
     query?: never;
     url: '/mapping-rules/search';
@@ -10820,14 +10824,14 @@ export type CorrelateMessageResponses = {
 
 export type CorrelateMessageResponse = CorrelateMessageResponses[keyof CorrelateMessageResponses];
 
-export type SearchCorrelatedMessagesData = {
-    body?: CorrelatedMessageSearchQuery;
+export type SearchCorrelatedMessageSubscriptionsData = {
+    body?: CorrelatedMessageSubscriptionSearchQuery;
     path?: never;
     query?: never;
-    url: '/correlated-messages/search';
+    url: '/correlated-message-subscriptions/search';
 };
 
-export type SearchCorrelatedMessagesErrors = {
+export type SearchCorrelatedMessageSubscriptionsErrors = {
     /**
      * The provided data is not valid.
      */
@@ -10847,16 +10851,16 @@ export type SearchCorrelatedMessagesErrors = {
     500: ProblemDetail;
 };
 
-export type SearchCorrelatedMessagesError = SearchCorrelatedMessagesErrors[keyof SearchCorrelatedMessagesErrors];
+export type SearchCorrelatedMessageSubscriptionsError = SearchCorrelatedMessageSubscriptionsErrors[keyof SearchCorrelatedMessageSubscriptionsErrors];
 
-export type SearchCorrelatedMessagesResponses = {
+export type SearchCorrelatedMessageSubscriptionsResponses = {
     /**
-     * The correlated messages search result.
+     * The correlated message subscriptions search result.
      */
-    200: CorrelatedMessageSearchQueryResult;
+    200: CorrelatedMessageSubscriptionSearchQueryResult;
 };
 
-export type SearchCorrelatedMessagesResponse = SearchCorrelatedMessagesResponses[keyof SearchCorrelatedMessagesResponses];
+export type SearchCorrelatedMessageSubscriptionsResponse = SearchCorrelatedMessageSubscriptionsResponses[keyof SearchCorrelatedMessageSubscriptionsResponses];
 
 export type SearchMessageSubscriptionsData = {
     body?: MessageSubscriptionSearchQuery;
@@ -10921,6 +10925,11 @@ export type CreateDocumentErrors = {
      * The provided data is not valid.
      */
     400: ProblemDetail;
+    /**
+     * The server cannot process the request because the media type (Content-Type) of the request payload is not supported  by the server for the requested resource and method.
+     *
+     */
+    415: ProblemDetail;
 };
 
 export type CreateDocumentError = CreateDocumentErrors[keyof CreateDocumentErrors];
@@ -10942,6 +10951,7 @@ export type CreateDocumentsData = {
         files: Array<Blob | File>;
         /**
          * Optional JSON array of metadata object whose index aligns with each file entry. The metadata array must have the same length as the files array.
+         *
          */
         metadataList?: Array<DocumentMetadata>;
     };
@@ -10960,6 +10970,11 @@ export type CreateDocumentsErrors = {
      * The provided data is not valid.
      */
     400: ProblemDetail;
+    /**
+     * The server cannot process the request because the media type (Content-Type) of the request payload is not supported  by the server for the requested resource and method.
+     *
+     */
+    415: ProblemDetail;
 };
 
 export type CreateDocumentsError = CreateDocumentsErrors[keyof CreateDocumentsErrors];
@@ -10998,7 +11013,6 @@ export type DeleteDocumentData = {
 export type DeleteDocumentErrors = {
     /**
      * The document with the given ID was not found.
-     *
      */
     404: ProblemDetail;
     /**
@@ -11014,8 +11028,10 @@ export type DeleteDocumentResponses = {
     /**
      * The document was deleted successfully.
      */
-    200: unknown;
+    204: void;
 };
+
+export type DeleteDocumentResponse = DeleteDocumentResponses[keyof DeleteDocumentResponses];
 
 export type GetDocumentData = {
     body?: never;
@@ -11042,7 +11058,6 @@ export type GetDocumentData = {
 export type GetDocumentErrors = {
     /**
      * The document with the given ID was not found.
-     *
      */
     404: ProblemDetail;
     /**
@@ -11153,7 +11168,7 @@ export type CreateUserResponses = {
 export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses];
 
 export type SearchUsersData = {
-    body: UserSearchQueryRequest;
+    body?: UserSearchQueryRequest;
     path?: never;
     query?: never;
     url: '/users/search';
@@ -11446,7 +11461,6 @@ export type GetIncidentError = GetIncidentErrors[keyof GetIncidentErrors];
 export type GetIncidentResponses = {
     /**
      * The incident is successfully returned.
-     *
      */
     200: IncidentResult;
 };
@@ -11458,11 +11472,11 @@ export type GetUsageMetricsData = {
     path?: never;
     query: {
         /**
-         * The start date for usage metrics, including this date.
+         * The start date for usage metrics, including this date. Value in ISO 8601 format.
          */
         startTime: string;
         /**
-         * The end date for usage metrics, including this date.
+         * The end date for usage metrics, including this date. Value in ISO 8601 format.
          */
         endTime: string;
         /**
@@ -11502,7 +11516,6 @@ export type GetUsageMetricsError = GetUsageMetricsErrors[keyof GetUsageMetricsEr
 export type GetUsageMetricsResponses = {
     /**
      * The usage metrics search result.
-     *
      */
     200: UsageMetricsResponse;
 };
@@ -12048,8 +12061,8 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:da95145a7e435daadf9bbc959251cf2aa7944c17dd741ef06a502b11f25a9213
-// generatedAt=2025-09-17T03:54:19.063Z
+// specHash=sha256:05a145e6f296e31f13cafcc19ae63130cd5f84568d1db3761920f2e75dcdb49e
+// generatedAt=2025-10-01T02:59:34.271Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);
@@ -12077,7 +12090,7 @@ export namespace BatchOperationKey {
   }
   export function getValue(key: BatchOperationKey): string { return key; }
   export function isValid(value: string): boolean {
-    return !!value;
+    return true;
   }
 }
 // Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
@@ -12185,7 +12198,7 @@ export namespace DocumentId {
   }
   export function getValue(key: DocumentId): string { return key; }
   export function isValid(value: string): boolean {
-    return !!value;
+    return true;
   }
 }
 // The model-defined id of an element.
@@ -12195,7 +12208,7 @@ export namespace ElementId {
   }
   export function getValue(key: ElementId): string { return key; }
   export function isValid(value: string): boolean {
-    return !!value;
+    return true;
   }
 }
 // System-generated key for a element instance.
@@ -12224,6 +12237,16 @@ export namespace EndCursor {
       assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$", minLength: 2, maxLength: 300 });
       return true;
     } catch { return false; }
+  }
+}
+// The user-defined id for the form
+export namespace FormId {
+  export function assumeExists(value: string): FormId {
+    return value as any;
+  }
+  export function getValue(key: FormId): string { return key; }
+  export function isValid(value: string): boolean {
+    return true;
   }
 }
 // System-generated key for a deployed form.

@@ -63,6 +63,7 @@ export class CamundaConfigurationError extends Error {
 export interface CamundaConfig {
   restAddress: string;
   tokenAudience: string;
+  defaultTenantId: string; // branded at usage sites as TenantId
   oauth: {
     clientId?: string;
     clientSecret?: string;
@@ -413,9 +414,22 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     else redacted[k] = v;
   }
 
+  // Normalize restAddress to ensure it ends with /v2 (idempotent)
+  let _restAddress = rawMap['CAMUNDA_REST_ADDRESS']!;
+  if (_restAddress) {
+    // Trim whitespace and trailing slashes first
+    _restAddress = _restAddress.trim();
+    // If it already ends with /v2 or /v2/, leave as-is; else append
+    if (!/\/v2\/?$/i.test(_restAddress)) {
+      _restAddress = _restAddress.replace(/\/+$/, '') + '/v2';
+    } else {
+      // Canonicalize to no trailing slash (optional design choice); keep existing behavior by not altering
+    }
+  }
   const config: CamundaConfig = {
-    restAddress: rawMap['CAMUNDA_REST_ADDRESS']!,
+    restAddress: _restAddress,
     tokenAudience: rawMap['CAMUNDA_TOKEN_AUDIENCE']!,
+    defaultTenantId: rawMap['CAMUNDA_DEFAULT_TENANT_ID'] || '<default>',
     oauth: {
       clientId: rawMap['CAMUNDA_CLIENT_ID']?.trim() || undefined,
       clientSecret: rawMap['CAMUNDA_CLIENT_SECRET']?.trim() || undefined,

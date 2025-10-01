@@ -1,10 +1,10 @@
 # Configuration Reference
 
-Generated: 2025-09-17T03:54:29.294Z
+Generated: 2025-10-01T02:59:48.641Z
 
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|
-| `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080` | Optional |  | Base REST endpoint address. |
+| `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080/v2` | Optional |  | Base REST endpoint address. |
 | `CAMUNDA_TOKEN_AUDIENCE` | string | `zeebe.camunda.io` | Optional |  | Token audience for OAuth flows. |
 | `CAMUNDA_CLIENT_ID` | string | — | When CAMUNDA_AUTH_STRATEGY=OAUTH |  | OAuth client id (required when CAMUNDA_AUTH_STRATEGY=OAUTH). |
 | `CAMUNDA_CLIENT_SECRET` | string | — | When CAMUNDA_AUTH_STRATEGY=OAUTH | secret | OAuth client secret (required when CAMUNDA_AUTH_STRATEGY=OAUTH). |
@@ -30,3 +30,4 @@ Generated: 2025-09-17T03:54:29.294Z
 | `CAMUNDA_MTLS_KEY` | string | — | No default | secret | Inline PEM client private key. |
 | `CAMUNDA_MTLS_CA` | string | — | No default |  | Inline PEM CA bundle. |
 | `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` | int | `500` | Optional |  | Default poll interval (ms) for eventually consistent endpoint polling. |
+| `CAMUNDA_DEFAULT_TENANT_ID` | string | `<default>` | Optional |  | Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId). |

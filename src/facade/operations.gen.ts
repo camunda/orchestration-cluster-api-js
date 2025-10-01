@@ -1,6 +1,6 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDocument as _deleteDocument, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteUser as _deleteUser, evaluateDecision as _evaluateDecision, failJob as _failJob, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGroup as _getGroup, getIncident as _getIncident, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getTenant as _getTenant, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resumeBatchOperation as _resumeBatchOperation, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchCorrelatedMessages as _searchCorrelatedMessages, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstances as _searchElementInstances, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingsForTenant as _searchMappingsForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDocument as _deleteDocument, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteUser as _deleteUser, evaluateDecision as _evaluateDecision, failJob as _failJob, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGroup as _getGroup, getIncident as _getIncident, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getTenant as _getTenant, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resumeBatchOperation as _resumeBatchOperation, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstances as _searchElementInstances, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
 // Lightweight CancelablePromise implementation (local to facade)
@@ -95,7 +95,7 @@ type _createAdminUser_MaybeBody = _createAdminUser_Options extends { body?: infe
 type _createAdminUser_Body = [ _createAdminUser_MaybeBody ] extends [never] ? unknown : _createAdminUser_MaybeBody;
 /**
  * Create admin user
- * Creates a new user and assign the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
+ * Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
   *
  * @operationId createAdminUser
  * @tags Setup
@@ -415,22 +415,22 @@ export function searchBatchOperations(body: _searchBatchOperations_Body, ec: { c
   return eventualPoll('searchBatchOperations', false, invoke, ec.consistency);
 }
 
-type _searchCorrelatedMessages_Options = Parameters<typeof _searchCorrelatedMessages>[0];
-type _searchCorrelatedMessages_MaybeBody = _searchCorrelatedMessages_Options extends { body?: infer B } ? B : never;
-type _searchCorrelatedMessages_Body = [ _searchCorrelatedMessages_MaybeBody ] extends [never] ? unknown : _searchCorrelatedMessages_MaybeBody;
+type _searchCorrelatedMessageSubscriptions_Options = Parameters<typeof _searchCorrelatedMessageSubscriptions>[0];
+type _searchCorrelatedMessageSubscriptions_MaybeBody = _searchCorrelatedMessageSubscriptions_Options extends { body?: infer B } ? B : never;
+type _searchCorrelatedMessageSubscriptions_Body = [ _searchCorrelatedMessageSubscriptions_MaybeBody ] extends [never] ? unknown : _searchCorrelatedMessageSubscriptions_MaybeBody;
 /**
- * Search correlated messages
- * Search for correlated messages based on given criteria.
+ * Search correlated message subscriptions
+ * Search correlated message subscriptions based on given criteria.
   *
- * @operationId searchCorrelatedMessages
- * @tags Message
+ * @operationId searchCorrelatedMessageSubscriptions
+ * @tags Message subscription
   *
  * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function searchCorrelatedMessages(body: _searchCorrelatedMessages_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchCorrelatedMessages>> }): CancelablePromise<_DataOf<typeof _searchCorrelatedMessages>> {
+export function searchCorrelatedMessageSubscriptions(body: _searchCorrelatedMessageSubscriptions_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchCorrelatedMessageSubscriptions>> }): CancelablePromise<_DataOf<typeof _searchCorrelatedMessageSubscriptions>> {
   if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _searchCorrelatedMessages({ body, signal } as any).then((r:any)=> r?.data ?? r));
-  return eventualPoll('searchCorrelatedMessages', false, invoke, ec.consistency);
+  const invoke = () => toCancelable(signal => _searchCorrelatedMessageSubscriptions({ body, signal } as any).then((r:any)=> r?.data ?? r));
+  return eventualPoll('searchCorrelatedMessageSubscriptions', false, invoke, ec.consistency);
 }
 
 type _searchDecisionDefinitions_Options = Parameters<typeof _searchDecisionDefinitions>[0];
@@ -751,7 +751,9 @@ export function activateAdHocSubProcessActivities(options?: Parameters<typeof _a
 
 /**
  * Assign a client to a group
- * Assigns a client to a group, making it a member of the group. Members of the group inherit the group authorizations, roles, and tenant assignments.
+ * Assigns a client to a group, making it a member of the group.
+ * Members of the group inherit the group authorizations, roles, and tenant assignments.
+ *
   *
  * @operationId assignClientToGroup
  * @tags Group
@@ -762,7 +764,9 @@ export function assignClientToGroup(options?: Parameters<typeof _assignClientToG
 
 /**
  * Assign a client to a tenant
- * Assign the client to the specified tenant. The client can then access tenant data and perform authorized actions.
+ * Assign the client to the specified tenant.
+ * The client can then access tenant data and perform authorized actions.
+ *
   *
  * @operationId assignClientToTenant
  * @tags Tenant
@@ -773,7 +777,9 @@ export function assignClientToTenant(options?: Parameters<typeof _assignClientTo
 
 /**
  * Assign a group to a tenant
- * Assigns a group to a specified tenant. Group members (users, clients) can then access tenant data and perform authorized actions.
+ * Assigns a group to a specified tenant.
+ * Group members (users, clients) can then access tenant data and perform authorized actions.
+ *
   *
  * @operationId assignGroupToTenant
  * @tags Tenant
@@ -809,6 +815,7 @@ export function assignMappingRuleToTenant(options?: Parameters<typeof _assignMap
  * Assign a role to a client
  * Assigns the specified role to the client.
  * The client will inherit the authorizations associated with this role.
+ *
   *
  * @operationId assignRoleToClient
  * @tags Role
@@ -819,7 +826,9 @@ export function assignRoleToClient(options?: Parameters<typeof _assignRoleToClie
 
 /**
  * Assign a role to a group
- *  Assigns the specified role to the group.  Every member of the group (user or client) will inherit the authorizations associated with this role.
+ * Assigns the specified role to the group.
+ * Every member of the group (user or client) will inherit the authorizations associated with this role.
+ *
   *
  * @operationId assignRoleToGroup
  * @tags Role
@@ -842,7 +851,9 @@ export function assignRoleToMappingRule(options?: Parameters<typeof _assignRoleT
 
 /**
  * Assign a role to a tenant
- * Assigns a role to a specified tenant. Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
+ * Assigns a role to a specified tenant.
+ * Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
+ *
   *
  * @operationId assignRoleToTenant
  * @tags Tenant
@@ -853,7 +864,9 @@ export function assignRoleToTenant(options?: Parameters<typeof _assignRoleToTena
 
 /**
  * Assign a role to a user
- * Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
+ * Assigns the specified role to the user.
+ * The user will inherit the authorizations associated with this role.
+ *
   *
  * @operationId assignRoleToUser
  * @tags Role
@@ -875,7 +888,9 @@ export function assignUserTask(options?: Parameters<typeof _assignUserTask>[0]):
 
 /**
  * Assign a user to a group
- * Assigns a user to a group, making the user a member of the group. Group members inherit the group authorizations, roles, and tenant assignments.
+ * Assigns a user to a group, making the user a member of the group.
+ * Group members inherit the group authorizations, roles, and tenant assignments.
+ *
   *
  * @operationId assignUserToGroup
  * @tags Group
@@ -978,7 +993,13 @@ export function createDocumentLink(options?: Parameters<typeof _createDocumentLi
  * Upload multiple documents
  * Upload multiple documents to the Camunda 8 cluster.
  *
- * The caller must provide a file name for each document, which will be used in case of a multi-status responseto identify which documents failed to upload. The file name can be provided in the `Content-Disposition` headerof the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. Theseare matched with the files based on index, and must have the same length as the files array.To pass homogenous metadata for all files, spread the metadata over the metadata array.  A filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` headerof the file part.
+ * The caller must provide a file name for each document, which will be used in case of a multi-status response
+ * to identify which documents failed to upload. The file name can be provided in the `Content-Disposition` header
+ * of the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. These
+ * are matched with the files based on index, and must have the same length as the files array.
+ * To pass homogenous metadata for all files, spread the metadata over the metadata array.
+ * A filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` header
+ * of the file part.
  *
  * In case of a multi-status response, the response body will contain a list of `DocumentBatchProblemDetail` objects,
  * each of which contains the file name of the document that failed to upload and the reason for the failure.
@@ -1826,15 +1847,15 @@ export function searchMappingRulesForRole(options: Parameters<typeof _searchMapp
  * Search mapping rules for tenant
  * Retrieves a filtered and sorted list of MappingRules for a specified tenant.
   *
- * @operationId searchMappingsForTenant
+ * @operationId searchMappingRulesForTenant
  * @tags Tenant
   *
  * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function searchMappingsForTenant(options: Parameters<typeof _searchMappingsForTenant>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchMappingsForTenant>> }): CancelablePromise<_DataOf<typeof _searchMappingsForTenant>> {
+export function searchMappingRulesForTenant(options: Parameters<typeof _searchMappingRulesForTenant>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchMappingRulesForTenant>> }): CancelablePromise<_DataOf<typeof _searchMappingRulesForTenant>> {
   if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _searchMappingsForTenant({ ...(options||{}), signal } as any).then((r:any)=> r?.data ?? r));
-  return eventualPoll('searchMappingsForTenant', false, invoke, ec.consistency);
+  const invoke = () => toCancelable(signal => _searchMappingRulesForTenant({ ...(options||{}), signal } as any).then((r:any)=> r?.data ?? r));
+  return eventualPoll('searchMappingRulesForTenant', false, invoke, ec.consistency);
 }
 
 /**
@@ -1980,6 +2001,7 @@ export function throwJobError(options?: Parameters<typeof _throwJobError>[0]): C
  * Unassign a client from a group
  * Unassigns a client from a group.
  * The client is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
+ *
   *
  * @operationId unassignClientFromGroup
  * @tags Group
@@ -1990,7 +2012,9 @@ export function unassignClientFromGroup(options?: Parameters<typeof _unassignCli
 
 /**
  * Unassign a client from a tenant
- * Unassigns the client from the specified tenant. The client can no longer access tenant data.
+ * Unassigns the client from the specified tenant.
+ * The client can no longer access tenant data.
+ *
   *
  * @operationId unassignClientFromTenant
  * @tags Tenant
@@ -2001,7 +2025,9 @@ export function unassignClientFromTenant(options?: Parameters<typeof _unassignCl
 
 /**
  * Unassign a group from a tenant
- * Unassigns a group from a specified tenant. Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
+ * Unassigns a group from a specified tenant.
+ * Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
+ *
   *
  * @operationId unassignGroupFromTenant
  * @tags Tenant
@@ -2035,7 +2061,9 @@ export function unassignMappingRuleFromTenant(options?: Parameters<typeof _unass
 
 /**
  * Unassign a role from a client
- *  Unassigns the specified role from the client.  The client will no longer inherit the authorizations associated with this role.
+ * Unassigns the specified role from the client.
+ * The client will no longer inherit the authorizations associated with this role.
+ *
   *
  * @operationId unassignRoleFromClient
  * @tags Role
@@ -2046,7 +2074,9 @@ export function unassignRoleFromClient(options?: Parameters<typeof _unassignRole
 
 /**
  * Unassign a role from a group
- * Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
+ * Unassigns the specified role from the group.
+ * All group members (user or client) no longer inherit the authorizations associated with this role.
+ *
   *
  * @operationId unassignRoleFromGroup
  * @tags Role
@@ -2069,7 +2099,10 @@ export function unassignRoleFromMappingRule(options?: Parameters<typeof _unassig
 
 /**
  * Unassign a role from a tenant
- * Unassigns a role from a specified tenant. Users, Clients or Groups, that have the role assigned, will no longer have access to the tenant's data - unless they are assigned directly to the tenant.
+ * Unassigns a role from a specified tenant.
+ * Users, Clients or Groups, that have the role assigned, will no longer have access to the
+ * tenant's data - unless they are assigned directly to the tenant.
+ *
   *
  * @operationId unassignRoleFromTenant
  * @tags Tenant
@@ -2082,6 +2115,7 @@ export function unassignRoleFromTenant(options?: Parameters<typeof _unassignRole
  * Unassign a role from a user
  * Unassigns a role from a user.
  * The user will no longer inherit the authorizations associated with this role.
+ *
   *
  * @operationId unassignRoleFromUser
  * @tags Role
@@ -2094,6 +2128,7 @@ export function unassignRoleFromUser(options?: Parameters<typeof _unassignRoleFr
  * Unassign a user from a group
  * Unassigns a user from a group.
  * The user is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
+ *
   *
  * @operationId unassignUserFromGroup
  * @tags Group
@@ -2104,7 +2139,9 @@ export function unassignUserFromGroup(options?: Parameters<typeof _unassignUserF
 
 /**
  * Unassign a user from a tenant
- * Unassigns the user from the specified tenant. The user can no longer access tenant data.
+ * Unassigns the user from the specified tenant.
+ * The user can no longer access tenant data.
+ *
   *
  * @operationId unassignUserFromTenant
  * @tags Tenant
@@ -2220,4 +2257,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> r?.data ?? r));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=ef0f676937a3475a totalWrappers=146 elements=1020 physicalLines=2222
+// SENTINEL_FACADE_PREWRITE hash=6f3828ae4c839991 totalWrappers=146 elements=1020 physicalLines=2259

@@ -12,6 +12,9 @@ interface OA3Schema {
   oneOf?: any[];
   anyOf?: any[];
   $ref?: string;
+  type?: string;
+  properties?: Record<string, OA3Schema>;
+  required?: string[];
 }
 interface OA3MediaType {
   schema?: OA3Schema;
@@ -33,6 +36,7 @@ interface OA3PathItem {
 }
 interface OA3Spec {
   paths?: Record<string, OA3PathItem>;
+  components?: { schemas?: Record<string, OA3Schema> };
 }
 
 const ROOT = process.cwd();
@@ -100,6 +104,7 @@ function main() {
     verb: string;
     pathParams: string[];
     queryParams: string[];
+    optionalTenantIdInBody: boolean;
   }
   const ops: OpMeta[] = [];
   for (const item of Object.values(spec.paths || {})) {
@@ -121,6 +126,7 @@ function main() {
       const eventual = !!(op as any)['x-eventually-consistent'];
       // Detect union body variants (top-level oneOf/anyOf) when bodyOnly
       const unionBodies: string[] = [];
+      let optionalTenantIdInBody = false;
       if (bodyOnly && op.requestBody?.content) {
         for (const mt of Object.values(op.requestBody.content)) {
           const schema = mt?.schema as OA3Schema | undefined;
@@ -133,6 +139,17 @@ function main() {
                 if (name) unionBodies.push(name.replace(/XML/g, 'Xml'));
               }
             }
+            // Conservative union handling: only mark optionalTenantIdInBody if ALL variants allow optional tenantId
+            const resolved = variants.map((v) => resolveSchema(v, spec));
+            if (
+              resolved.length > 0 &&
+              resolved.every((rs) => rs && hasOptionalTenantId(rs))
+            ) {
+              optionalTenantIdInBody = true;
+            }
+          } else {
+            const resolved = resolveSchema(schema, spec);
+            if (resolved && hasOptionalTenantId(resolved)) optionalTenantIdInBody = true;
           }
         }
       }
@@ -149,6 +166,7 @@ function main() {
         verb: verb.toLowerCase(),
         pathParams,
         queryParams,
+        optionalTenantIdInBody,
       });
     }
   }
@@ -304,6 +322,18 @@ type ${o.opId}Consistency = {
       if (o.queryParams.length)
         methods.push(`      envelope.query = { ${o.queryParams.join(', ')} };`);
       if (o.hasBody) methods.push('      envelope.body = _body;');
+      if (o.hasBody && o.optionalTenantIdInBody) {
+        methods.push(
+          '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
+        );
+        methods.push(
+          "        envelope.body.tenantId = this._config.defaultTenantId;"
+        );
+        methods.push(
+          "        this._log.trace(() => ['tenant.default.inject', { op: '" + o.originalOpId + "', tenant: this._config.defaultTenantId }]);"
+        );
+        methods.push('      }');
+      }
       // Request validation against full envelope schema
       methods.push(`      if (this._validation.settings.req !== 'none') {`);
       methods.push(
@@ -328,26 +358,7 @@ type ${o.opId}Consistency = {
       methods.push('        if (this._isVoidResponse(_respSchemaName)) {');
       methods.push('          data = undefined;');
       methods.push('        }');
-      if (o.opId === 'createDeployment') {
-        methods.push('        // Enrich deployment response');
-        methods.push('        const base = data as _DataOf<typeof Sdk.createDeployment>;');
-        methods.push(
-          '        const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };'
-        );
-        methods.push('        for (const d of base.deployments) {');
-        methods.push('          if (d.processDefinition) ext.processes.push(d.processDefinition);');
-        methods.push(
-          '          if (d.decisionDefinition) ext.decisions.push(d.decisionDefinition);'
-        );
-        methods.push(
-          '          if (d.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);'
-        );
-        methods.push('          if (d.form) ext.forms.push(d.form);');
-        methods.push('          if (d.resource) ext.resources.push(d.resource);');
-        methods.push('        }');
-        methods.push('        data = ext;');
-      }
-      // Response validation (guarded)
+      // Response validation (guarded) occurs BEFORE any enrichment so fanatical mode sees raw spec shape
       const respName = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response`;
       if (availableResponses.has(respName)) {
         methods.push("        if (this._validation.settings.res !== 'none') {");
@@ -358,6 +369,25 @@ type ${o.opId}Consistency = {
         );
         methods.push("            if (this._validation.settings.res === 'strict') data = maybeR;");
         methods.push('          }');
+        methods.push('        }');
+      }
+      if (o.opId === 'createDeployment') {
+        methods.push('        // Enrich deployment response AFTER validation to avoid fanatical extras errors');
+        methods.push('        if (data) {');
+        methods.push('          const base = data as _DataOf<typeof Sdk.createDeployment>;');
+        methods.push(
+          '          const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };'
+        );
+        methods.push('          if (Array.isArray(base.deployments)) {');
+        methods.push('            for (const d of base.deployments) {');
+        methods.push('              if (d?.processDefinition) ext.processes.push(d.processDefinition);');
+        methods.push('              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);');
+        methods.push('              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);');
+        methods.push('              if (d?.form) ext.forms.push(d.form);');
+        methods.push('              if (d?.resource) ext.resources.push(d.resource);');
+        methods.push('            }');
+        methods.push('          }');
+        methods.push('          data = ext;');
         methods.push('        }');
       }
       methods.push('        return data;');
@@ -438,6 +468,24 @@ type ${o.opId}Consistency = {
     process.exit(1);
   }
   console.log(`[class-gen] Wrote Camunda.ts with ${ops.length} methods`);
+}
+
+// Resolve a schema (follows single $ref into components/schemas)
+function resolveSchema(s: any, spec: OA3Spec): OA3Schema | undefined {
+  if (!s) return undefined;
+  if (s.$ref && typeof s.$ref === 'string') {
+    const parts = s.$ref.split('/');
+    const name = parts[parts.length - 1];
+    return spec.components?.schemas?.[name];
+  }
+  return s as OA3Schema;
+}
+
+function hasOptionalTenantId(schema: OA3Schema): boolean {
+  if (!schema || schema.type !== 'object') return false;
+  if (!schema.properties || !schema.properties['tenantId']) return false;
+  const required = schema.required || [];
+  return !required.includes('tenantId');
 }
 
 function hasJsonLike(rb: OA3RequestBody): boolean {

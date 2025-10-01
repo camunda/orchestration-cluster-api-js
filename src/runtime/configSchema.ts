@@ -5,7 +5,7 @@
 export const SCHEMA = {
   CAMUNDA_REST_ADDRESS: {
     type: 'string',
-    default: 'http://localhost:8080',
+    default: 'http://localhost:8080/v2',
     doc: 'Base REST endpoint address.',
   },
   CAMUNDA_TOKEN_AUDIENCE: {
@@ -109,6 +109,11 @@ export const SCHEMA = {
     type: 'int',
     default: 500,
     doc: 'Default poll interval (ms) for eventually consistent endpoint polling.',
+  },
+  CAMUNDA_DEFAULT_TENANT_ID: {
+    type: 'string',
+    default: '<default>',
+    doc: 'Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId).',
   },
 } as const;
 

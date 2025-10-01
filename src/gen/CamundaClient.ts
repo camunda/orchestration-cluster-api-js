@@ -31,7 +31,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-09-17T03:54:22.206Z
+// Generated 2025-10-01T02:59:37.811Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -558,13 +558,13 @@ type searchClientsForTenantConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForTenant>> 
 };
-type searchCorrelatedMessagesOptions = Parameters<typeof Sdk.searchCorrelatedMessages>[0];
-type searchCorrelatedMessagesBody = (NonNullable<searchCorrelatedMessagesOptions> extends { body?: infer B } ? B : never);
-type searchCorrelatedMessagesInput = searchCorrelatedMessagesBody;
+type searchCorrelatedMessageSubscriptionsOptions = Parameters<typeof Sdk.searchCorrelatedMessageSubscriptions>[0];
+type searchCorrelatedMessageSubscriptionsBody = (NonNullable<searchCorrelatedMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
+type searchCorrelatedMessageSubscriptionsInput = searchCorrelatedMessageSubscriptionsBody;
 /** Management of eventual consistency **/
-type searchCorrelatedMessagesConsistency = { 
+type searchCorrelatedMessageSubscriptionsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchCorrelatedMessages>> 
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>> 
 };
 type searchDecisionDefinitionsOptions = Parameters<typeof Sdk.searchDecisionDefinitions>[0];
 type searchDecisionDefinitionsBody = (NonNullable<searchDecisionDefinitionsOptions> extends { body?: infer B } ? B : never);
@@ -666,14 +666,14 @@ type searchMappingRulesForRoleConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForRole>> 
 };
-type searchMappingsForTenantOptions = Parameters<typeof Sdk.searchMappingsForTenant>[0];
-type searchMappingsForTenantBody = (NonNullable<searchMappingsForTenantOptions> extends { body?: infer B } ? B : never);
-type searchMappingsForTenantPathParam_tenantId = (NonNullable<searchMappingsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type searchMappingsForTenantInput = searchMappingsForTenantBody & { tenantId: searchMappingsForTenantPathParam_tenantId };
+type searchMappingRulesForTenantOptions = Parameters<typeof Sdk.searchMappingRulesForTenant>[0];
+type searchMappingRulesForTenantBody = (NonNullable<searchMappingRulesForTenantOptions> extends { body?: infer B } ? B : never);
+type searchMappingRulesForTenantPathParam_tenantId = (NonNullable<searchMappingRulesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+type searchMappingRulesForTenantInput = searchMappingRulesForTenantBody & { tenantId: searchMappingRulesForTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type searchMappingsForTenantConsistency = { 
+type searchMappingRulesForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingsForTenant>> 
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForTenant>> 
 };
 type searchMessageSubscriptionsOptions = Parameters<typeof Sdk.searchMessageSubscriptions>[0];
 type searchMessageSubscriptionsBody = (NonNullable<searchMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
@@ -1153,7 +1153,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-09-17T03:54:22.207Z)
+  // Generated methods (2025-10-01T02:59:37.813Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -1242,7 +1242,9 @@ export class CamundaClient {
 
   /**
    * Assign a client to a group
-   * Assigns a client to a group, making it a member of the group. Members of the group inherit the group authorizations, roles, and tenant assignments.
+   * Assigns a client to a group, making it a member of the group.
+   * Members of the group inherit the group authorizations, roles, and tenant assignments.
+   *
     *
    * @operationId assignClientToGroup
    * @tags Group
@@ -1282,7 +1284,9 @@ export class CamundaClient {
 
   /**
    * Assign a client to a tenant
-   * Assign the client to the specified tenant. The client can then access tenant data and perform authorized actions.
+   * Assign the client to the specified tenant.
+   * The client can then access tenant data and perform authorized actions.
+   *
     *
    * @operationId assignClientToTenant
    * @tags Tenant
@@ -1322,7 +1326,9 @@ export class CamundaClient {
 
   /**
    * Assign a group to a tenant
-   * Assigns a group to a specified tenant. Group members (users, clients) can then access tenant data and perform authorized actions.
+   * Assigns a group to a specified tenant.
+   * Group members (users, clients) can then access tenant data and perform authorized actions.
+   *
     *
    * @operationId assignGroupToTenant
    * @tags Tenant
@@ -1445,6 +1451,7 @@ export class CamundaClient {
    * Assign a role to a client
    * Assigns the specified role to the client.
    * The client will inherit the authorizations associated with this role.
+   *
     *
    * @operationId assignRoleToClient
    * @tags Role
@@ -1484,7 +1491,9 @@ export class CamundaClient {
 
   /**
    * Assign a role to a group
-   *  Assigns the specified role to the group.  Every member of the group (user or client) will inherit the authorizations associated with this role.
+   * Assigns the specified role to the group.
+   * Every member of the group (user or client) will inherit the authorizations associated with this role.
+   *
     *
    * @operationId assignRoleToGroup
    * @tags Role
@@ -1565,7 +1574,9 @@ export class CamundaClient {
 
   /**
    * Assign a role to a tenant
-   * Assigns a role to a specified tenant. Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
+   * Assigns a role to a specified tenant.
+   * Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
+   *
     *
    * @operationId assignRoleToTenant
    * @tags Tenant
@@ -1605,7 +1616,9 @@ export class CamundaClient {
 
   /**
    * Assign a role to a user
-   * Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
+   * Assigns the specified role to the user.
+   * The user will inherit the authorizations associated with this role.
+   *
     *
    * @operationId assignRoleToUser
    * @tags Role
@@ -1687,7 +1700,9 @@ export class CamundaClient {
 
   /**
    * Assign a user to a group
-   * Assigns a user to a group, making the user a member of the group. Group members inherit the group authorizations, roles, and tenant assignments.
+   * Assigns a user to a group, making the user a member of the group.
+   * Group members inherit the group authorizations, roles, and tenant assignments.
+   *
     *
    * @operationId assignUserToGroup
    * @tags Group
@@ -1778,6 +1793,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'broadcastSignal', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('broadcastSignal', Schemas.zBroadcastSignalData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -2047,6 +2066,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'correlateMessage', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('correlateMessage', Schemas.zCorrelateMessageData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -2076,7 +2099,7 @@ export class CamundaClient {
 
   /**
    * Create admin user
-   * Creates a new user and assign the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
+   * Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
     *
    * @operationId createAdminUser
    * @tags Setup
@@ -2175,6 +2198,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'createDeployment', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('createDeployment', Schemas.zCreateDeploymentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -2189,23 +2216,27 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
-        // Enrich deployment response
-        const base = data as _DataOf<typeof Sdk.createDeployment>;
-        const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };
-        for (const d of base.deployments) {
-          if (d.processDefinition) ext.processes.push(d.processDefinition);
-          if (d.decisionDefinition) ext.decisions.push(d.decisionDefinition);
-          if (d.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);
-          if (d.form) ext.forms.push(d.form);
-          if (d.resource) ext.resources.push(d.resource);
-        }
-        data = ext;
         if (this._validation.settings.res !== 'none') {
           const _schema = Schemas.zCreateDeploymentResponse;
           if (_schema) {
             const maybeR = await this._validation.gateResponse('createDeployment', _schema, data);
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
+        }
+        // Enrich deployment response AFTER validation to avoid fanatical extras errors
+        if (data) {
+          const base = data as _DataOf<typeof Sdk.createDeployment>;
+          const ext: ExtendedDeploymentResult = { ...base, processes: [], decisions: [], decisionRequirements: [], forms: [], resources: [] };
+          if (Array.isArray(base.deployments)) {
+            for (const d of base.deployments) {
+              if (d?.processDefinition) ext.processes.push(d.processDefinition);
+              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);
+              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);
+              if (d?.form) ext.forms.push(d.form);
+              if (d?.resource) ext.resources.push(d.resource);
+            }
+          }
+          data = ext;
         }
         return data;
       };
@@ -2309,7 +2340,13 @@ export class CamundaClient {
    * Upload multiple documents
    * Upload multiple documents to the Camunda 8 cluster.
    *
-   * The caller must provide a file name for each document, which will be used in case of a multi-status responseto identify which documents failed to upload. The file name can be provided in the `Content-Disposition` headerof the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. Theseare matched with the files based on index, and must have the same length as the files array.To pass homogenous metadata for all files, spread the metadata over the metadata array.  A filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` headerof the file part.
+   * The caller must provide a file name for each document, which will be used in case of a multi-status response
+   * to identify which documents failed to upload. The file name can be provided in the `Content-Disposition` header
+   * of the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. These
+   * are matched with the files based on index, and must have the same length as the files array.
+   * To pass homogenous metadata for all files, spread the metadata over the metadata array.
+   * A filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` header
+   * of the file part.
    *
    * In case of a multi-status response, the response body will contain a list of `DocumentBatchProblemDetail` objects,
    * each of which contains the file name of the document that failed to upload and the reason for the failure.
@@ -2725,6 +2762,13 @@ export class CamundaClient {
         const _respSchemaName = 'zDeleteDocumentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteDocumentResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteDocument', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
         }
         return data;
       };
@@ -4786,6 +4830,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'publishMessage', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('publishMessage', Schemas.zPublishMessageData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -5272,15 +5320,15 @@ export class CamundaClient {
   }
 
   /**
-   * Search correlated messages
-   * Search for correlated messages based on given criteria.
+   * Search correlated message subscriptions
+   * Search correlated message subscriptions based on given criteria.
     *
-   * @operationId searchCorrelatedMessages
-   * @tags Message
+   * @operationId searchCorrelatedMessageSubscriptions
+   * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchCorrelatedMessages(input: searchCorrelatedMessagesInput, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessagesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchCorrelatedMessages>>;
-  searchCorrelatedMessages(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessagesConsistency): CancelablePromise<any> {
+  searchCorrelatedMessageSubscriptions(input: searchCorrelatedMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>>;
+  searchCorrelatedMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5288,30 +5336,30 @@ export class CamundaClient {
       let envelope: any = {};
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
-        const maybe = await this._validation.gateRequest('searchCorrelatedMessages', Schemas.zSearchCorrelatedMessagesData, envelope);
+        const maybe = await this._validation.gateRequest('searchCorrelatedMessageSubscriptions', Schemas.zSearchCorrelatedMessageSubscriptionsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
       const opts: any = { client: this._client, signal };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
-        const r = await Sdk.searchCorrelatedMessages(opts);
+        const r = await Sdk.searchCorrelatedMessageSubscriptions(opts);
         let data = (r as any)?.data;
         if (data === undefined) data = r;
-        const _respSchemaName = 'zSearchCorrelatedMessagesResponse';
+        const _respSchemaName = 'zSearchCorrelatedMessageSubscriptionsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
         if (this._validation.settings.res !== 'none') {
-          const _schema = Schemas.zSearchCorrelatedMessagesResponse;
+          const _schema = Schemas.zSearchCorrelatedMessageSubscriptionsResponse;
           if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchCorrelatedMessages', _schema, data);
+            const maybeR = await this._validation.gateResponse('searchCorrelatedMessageSubscriptions', _schema, data);
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
         }
         return data;
       };
       const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchCorrelatedMessages', false, invoke, { ...useConsistency, logger: (this as any)._log });
+      if (useConsistency) return eventualPoll('searchCorrelatedMessageSubscriptions', false, invoke, { ...useConsistency, logger: (this as any)._log });
       return invoke();
     });
   }
@@ -5878,12 +5926,12 @@ export class CamundaClient {
    * Search mapping rules for tenant
    * Retrieves a filtered and sorted list of MappingRules for a specified tenant.
     *
-   * @operationId searchMappingsForTenant
+   * @operationId searchMappingRulesForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchMappingsForTenant(input: searchMappingsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingsForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMappingsForTenant>>;
-  searchMappingsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingsForTenantConsistency): CancelablePromise<any> {
+  searchMappingRulesForTenant(input: searchMappingRulesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForTenant>>;
+  searchMappingRulesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5892,31 +5940,31 @@ export class CamundaClient {
       envelope.path = { tenantId };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
-        const maybe = await this._validation.gateRequest('searchMappingsForTenant', Schemas.zSearchMappingsForTenantData, envelope);
+        const maybe = await this._validation.gateRequest('searchMappingRulesForTenant', Schemas.zSearchMappingRulesForTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
       const opts: any = { client: this._client, signal };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
-        const r = await Sdk.searchMappingsForTenant(opts);
+        const r = await Sdk.searchMappingRulesForTenant(opts);
         let data = (r as any)?.data;
         if (data === undefined) data = r;
-        const _respSchemaName = 'zSearchMappingsForTenantResponse';
+        const _respSchemaName = 'zSearchMappingRulesForTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
         if (this._validation.settings.res !== 'none') {
-          const _schema = Schemas.zSearchMappingsForTenantResponse;
+          const _schema = Schemas.zSearchMappingRulesForTenantResponse;
           if (_schema) {
-            const maybeR = await this._validation.gateResponse('searchMappingsForTenant', _schema, data);
+            const maybeR = await this._validation.gateResponse('searchMappingRulesForTenant', _schema, data);
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
         }
         return data;
       };
       const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('searchMappingsForTenant', false, invoke, { ...useConsistency, logger: (this as any)._log });
+      if (useConsistency) return eventualPoll('searchMappingRulesForTenant', false, invoke, { ...useConsistency, logger: (this as any)._log });
       return invoke();
     });
   }
@@ -6718,6 +6766,7 @@ export class CamundaClient {
    * Unassign a client from a group
    * Unassigns a client from a group.
    * The client is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
+   *
     *
    * @operationId unassignClientFromGroup
    * @tags Group
@@ -6757,7 +6806,9 @@ export class CamundaClient {
 
   /**
    * Unassign a client from a tenant
-   * Unassigns the client from the specified tenant. The client can no longer access tenant data.
+   * Unassigns the client from the specified tenant.
+   * The client can no longer access tenant data.
+   *
     *
    * @operationId unassignClientFromTenant
    * @tags Tenant
@@ -6797,7 +6848,9 @@ export class CamundaClient {
 
   /**
    * Unassign a group from a tenant
-   * Unassigns a group from a specified tenant. Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
+   * Unassigns a group from a specified tenant.
+   * Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
+   *
     *
    * @operationId unassignGroupFromTenant
    * @tags Tenant
@@ -6918,7 +6971,9 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a client
-   *  Unassigns the specified role from the client.  The client will no longer inherit the authorizations associated with this role.
+   * Unassigns the specified role from the client.
+   * The client will no longer inherit the authorizations associated with this role.
+   *
     *
    * @operationId unassignRoleFromClient
    * @tags Role
@@ -6958,7 +7013,9 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a group
-   * Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
+   * Unassigns the specified role from the group.
+   * All group members (user or client) no longer inherit the authorizations associated with this role.
+   *
     *
    * @operationId unassignRoleFromGroup
    * @tags Role
@@ -7039,7 +7096,10 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a tenant
-   * Unassigns a role from a specified tenant. Users, Clients or Groups, that have the role assigned, will no longer have access to the tenant's data - unless they are assigned directly to the tenant.
+   * Unassigns a role from a specified tenant.
+   * Users, Clients or Groups, that have the role assigned, will no longer have access to the
+   * tenant's data - unless they are assigned directly to the tenant.
+   *
     *
    * @operationId unassignRoleFromTenant
    * @tags Tenant
@@ -7081,6 +7141,7 @@ export class CamundaClient {
    * Unassign a role from a user
    * Unassigns a role from a user.
    * The user will no longer inherit the authorizations associated with this role.
+   *
     *
    * @operationId unassignRoleFromUser
    * @tags Role
@@ -7122,6 +7183,7 @@ export class CamundaClient {
    * Unassign a user from a group
    * Unassigns a user from a group.
    * The user is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
+   *
     *
    * @operationId unassignUserFromGroup
    * @tags Group
@@ -7161,7 +7223,9 @@ export class CamundaClient {
 
   /**
    * Unassign a user from a tenant
-   * Unassigns the user from the specified tenant. The user can no longer access tenant data.
+   * Unassigns the user from the specified tenant.
+   * The user can no longer access tenant data.
+   *
     *
    * @operationId unassignUserFromTenant
    * @tags Tenant

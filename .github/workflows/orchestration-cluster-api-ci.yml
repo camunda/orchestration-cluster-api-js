@@ -1,14 +1,9 @@
 name: Orchestration Cluster API JS - PR & Branch CI
 
 on:
-  pull_request:
-    paths:
-      - 'orchestration-cluster-api-js/**'
   push:
     branches-ignore:
       - main
-    paths:
-      - 'orchestration-cluster-api-js/**'
 
 jobs:
   test:
@@ -16,10 +11,7 @@ jobs:
     timeout-minutes: 45
     strategy:
       matrix:
-        node: [18.x, 20.x, 22.x, 24.x]
-    defaults:
-      run:
-        working-directory: orchestration-cluster-api-js
+        node: [20.x, 22.x, 24.x]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,7 +21,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-          cache-dependency-path: orchestration-cluster-api-js/package.json
+          cache-dependency-path: package.json
       - name: Install deps
         run: npm ci
       - name: Generate & Build
@@ -41,20 +33,21 @@ jobs:
             echo 'drift=true' >> $GITHUB_OUTPUT
             echo 'Generation produced changes (reporting only).' >&2
             git diff --name-only | sed 's/^/CHANGED: /'
-            git diff > ../_gen-drift.patch || true
+            git diff > _gen-drift.patch || true
           else
             echo 'drift=false' >> $GITHUB_OUTPUT
           fi
       - name: Upload Drift Patch
-        if: steps.drift.outputs.drift == 'true'
+        # Only upload a single canonical drift patch from Node 20.x to avoid artifact 409 conflicts
+        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x'
         uses: actions/upload-artifact@v4
         with:
           name: generation-drift
-          path: orchestration-cluster-api-js/../_gen-drift.patch
+          path: _generation-drift.patch
       - name: Unit Tests
         run: npm test
       - name: Start Integration Stack
-        working-directory: orchestration-cluster-api-js/docker
+        working-directory: docker
         run: docker compose up -d
       - name: Wait for Services Healthy
         run: |
@@ -73,16 +66,31 @@ jobs:
       - name: Capture Docker Logs (always)
         if: always()
         run: |
-          mkdir -p ../_logs
+          mkdir -p _logs
           docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
-        working-directory: orchestration-cluster-api-js
       - name: Shutdown Integration Stack (always)
         if: always()
-        working-directory: orchestration-cluster-api-js/docker
+        working-directory: docker
         run: docker compose down -v || true
       - name: Upload Logs Artifact (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: integration-docker-logs
-          path: orchestration-cluster-api-js/_logs/compose.log
+          # Include node version so parallel matrix legs don't conflict
+          name: integration-docker-logs-${{ matrix.node }}
+          path: _logs/compose.log
+      - name: Append Job Summary
+        if: always()
+        run: |
+          status="${{ job.status }}"
+          driftFlag="${{ steps.drift.outputs.drift }}"
+          {
+            echo "### Node ${{ matrix.node }} Summary";
+            echo "- Status: ${status}";
+            if [ "${driftFlag}" = "true" ]; then
+              echo "- Generation Drift: detected";
+            else
+              echo "- Generation Drift: none";
+            fi
+            echo "";
+          } >> $GITHUB_STEP_SUMMARY

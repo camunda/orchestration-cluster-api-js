@@ -3,9 +3,9 @@ import { describe, it } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
 
-describe('searchCorrelatedMessages', () => {
+describe('searchMappingRulesForTenant', () => {
   it('scaffold', () => {
     const _camunda = createCamundaClient();
-    // TODO: implement searchCorrelatedMessages test logic
+    // TODO: implement searchMappingRulesForTenant test logic
   });
 });

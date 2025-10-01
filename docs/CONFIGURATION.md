@@ -15,7 +15,7 @@ Comprehensive reference and examples for the unified configuration system poweri
 
 | Key                               | Type        | Default                                    | Conditional Requirement             | Secret | Notes                                                             |
 | --------------------------------- | ----------- | ------------------------------------------ | ----------------------------------- | ------ | ----------------------------------------------------------------- | --- | ------------------ |
-| CAMUNDA_REST_ADDRESS              | string      | http://localhost:8080                      | —                                   |        | Base REST endpoint.                                               |
+| CAMUNDA_REST_ADDRESS              | string      | http://localhost:8080                      | —                                   |        | Base REST endpoint (SDK auto-appends `/v2` if missing).           |
 | CAMUNDA_TOKEN_AUDIENCE            | string      | zeebe.camunda.io                           | —                                   |        | OAuth audience.                                                   |
 | CAMUNDA_CLIENT_ID                 | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    |        | Required for OAuth.                                               |
 | CAMUNDA_CLIENT_SECRET             | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    | yes    | Required for OAuth (redacted in logs).                            |
@@ -39,6 +39,7 @@ Comprehensive reference and examples for the unified configuration system poweri
 | CAMUNDA_MTLS_KEY_PATH             | string      | —                                          | —                                   |        | Path to private key PEM (used if inline not provided).            |
 | CAMUNDA_MTLS_CA_PATH              | string      | —                                          | —                                   |        | Path to CA bundle PEM (used if inline not provided).              |
 | CAMUNDA_MTLS_KEY_PASSPHRASE       | string      | —                                          | —                                   | yes    | Optional key passphrase.                                          |
+| CAMUNDA_DEFAULT_TENANT_ID         | string      | <default>                                 | —                                   |        | Default tenant id used when an operation permits an omitted tenantId parameter. |
 
 ## Precedence
 
@@ -61,6 +62,8 @@ Forms:
 Unknown scope, mode, duplicate scope ⇒ error (`CamundaConfigurationError`).
 
 ## Typical Environment Sets
+
+> Body-only tenantId defaulting: For operations whose request bodies declare an optional `tenantId` property, the SDK automatically injects `CAMUNDA_DEFAULT_TENANT_ID` when you omit it. Path parameters named `tenantId` are never defaulted.
 
 ### 1. Basic Auth (request validation warn, response strict, verbose diagnostics)
 

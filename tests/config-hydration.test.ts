@@ -5,8 +5,9 @@ import { hydrateConfig, CamundaConfigurationError } from '../src/runtime/unified
 describe('unified configuration hydration', () => {
   it('hydrates defaults', () => {
     const { config } = hydrateConfig({ env: {} });
-    expect(config.restAddress).toBe('http://localhost:8080');
+    expect(config.restAddress).toBe('http://localhost:8080/v2');
     expect(config.auth.strategy).toBe('NONE');
+    expect(config.defaultTenantId).toBe('<default>');
   });
 
   it('applies overrides precedence', () => {
@@ -14,7 +15,9 @@ describe('unified configuration hydration', () => {
       env: { CAMUNDA_REST_ADDRESS: 'http://env' },
       overrides: { CAMUNDA_REST_ADDRESS: 'http://override' },
     });
-    expect(config.restAddress).toBe('http://override');
+  expect(config.restAddress).toBe('http://override/v2');
+    const { config: config2 } = hydrateConfig({ env: { CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' } });
+    expect(config2.defaultTenantId).toBe('tenant-a');
   });
 
   it('enforces oauth conditional requirements', () => {

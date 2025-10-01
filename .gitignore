@@ -6,6 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+.DS_Store
+
+.camunda-sdk-captures
+PROMPT*
+
 # Env files
 .*.env
 
