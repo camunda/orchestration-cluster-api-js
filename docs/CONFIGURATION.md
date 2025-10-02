@@ -13,33 +13,36 @@ Comprehensive reference and examples for the unified configuration system poweri
 
 ## Supported Environment Variables
 
-| Key                               | Type        | Default                                    | Conditional Requirement             | Secret | Notes                                                             |
-| --------------------------------- | ----------- | ------------------------------------------ | ----------------------------------- | ------ | ----------------------------------------------------------------- | --- | ------------------ |
-| CAMUNDA_REST_ADDRESS              | string      | http://localhost:8080                      | —                                   |        | Base REST endpoint (SDK auto-appends `/v2` if missing).           |
-| CAMUNDA_TOKEN_AUDIENCE            | string      | zeebe.camunda.io                           | —                                   |        | OAuth audience.                                                   |
-| CAMUNDA_CLIENT_ID                 | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    |        | Required for OAuth.                                               |
-| CAMUNDA_CLIENT_SECRET             | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    | yes    | Required for OAuth (redacted in logs).                            |
-| CAMUNDA_OAUTH_URL                 | string      | https://login.cloud.camunda.io/oauth/token | —                                   |        | Token endpoint.                                                   |
-| CAMUNDA_OAUTH_GRANT_TYPE          | string      | client_credentials                         | —                                   |        | OAuth grant (currently only client_credentials supported).        |
-| CAMUNDA_OAUTH_SCOPE               | string      | —                                          | —                                   |        | Optional space-delimited scopes.                                  |
-| CAMUNDA_OAUTH_TIMEOUT_MS          | int         | 10000                                      | —                                   |        | Per token request timeout.                                        |
-| CAMUNDA_OAUTH_RETRY_MAX           | int         | 4                                          | —                                   |        | Max retry attempts for token fetch.                               |
-| CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS | int         | 1000                                       | —                                   |        | Initial backoff slot (exponential, jittered).                     |
-| CAMUNDA_OAUTH_CACHE_DIR           | string      | ~/.camunda-sdk                             | —                                   |        | Directory for persisting token cache (node only).                 |
-| CAMUNDA_SDK_LOG_LEVEL             | string      | error                                      | —                                   |        | SDK log level: silent,error,warn,info,debug,trace.                |
-| CAMUNDA_AUTH_STRATEGY             | enum(NONE   | OAUTH                                      | BASIC)                              | NONE   | —                                                                 |     | Selects auth mode. |
-| CAMUNDA_BASIC_AUTH_USERNAME       | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=BASIC    |        | Basic username.                                                   |
-| CAMUNDA_BASIC_AUTH_PASSWORD       | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=BASIC    | yes    | Basic password (redacted).                                        |
-| CAMUNDA_SDK_VALIDATION            | mini‑lang   | req:none,res:none                          | —                                   |        | Validation modes (see below).                                     |
-| CAMUNDA_SDK_VALIDATION_VERBOSE    | boolean     | (unset)                                    | —                                   |        | Verbose union diagnostics.                                        |
-| CAMUNDA_MTLS_CERT                 | string(pem) | —                                          | when any mTLS var set requires key  | yes    | Inline client certificate (PEM). Inline values override \*\_PATH. |
-| CAMUNDA_MTLS_KEY                  | string(pem) | —                                          | when any mTLS var set requires cert | yes    | Inline client private key (PEM).                                  |
-| CAMUNDA_MTLS_CA                   | string(pem) | —                                          | —                                   |        | Inline custom CA bundle (PEM) if not system trust.                |
-| CAMUNDA_MTLS_CERT_PATH            | string      | —                                          | —                                   |        | Path to client cert PEM (used if inline not provided).            |
-| CAMUNDA_MTLS_KEY_PATH             | string      | —                                          | —                                   |        | Path to private key PEM (used if inline not provided).            |
-| CAMUNDA_MTLS_CA_PATH              | string      | —                                          | —                                   |        | Path to CA bundle PEM (used if inline not provided).              |
-| CAMUNDA_MTLS_KEY_PASSPHRASE       | string      | —                                          | —                                   | yes    | Optional key passphrase.                                          |
-| CAMUNDA_DEFAULT_TENANT_ID         | string      | <default>                                 | —                                   |        | Default tenant id used when an operation permits an omitted tenantId parameter. |
+| Key                                  | Type        | Default                                    | Conditional Requirement             | Secret | Notes                                                                            |
+| ------------------------------------ | ----------- | ------------------------------------------ | ----------------------------------- | ------ | -------------------------------------------------------------------------------- | --- | ------------------ |
+| CAMUNDA_REST_ADDRESS                 | string      | http://localhost:8080                      | —                                   |        | Base REST endpoint (SDK auto-appends `/v2` if missing).                          |
+| CAMUNDA_TOKEN_AUDIENCE               | string      | zeebe.camunda.io                           | —                                   |        | OAuth audience.                                                                  |
+| CAMUNDA_CLIENT_ID                    | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    |        | Required for OAuth.                                                              |
+| CAMUNDA_CLIENT_SECRET                | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=OAUTH    | yes    | Required for OAuth (redacted in logs).                                           |
+| CAMUNDA_OAUTH_URL                    | string      | https://login.cloud.camunda.io/oauth/token | —                                   |        | Token endpoint.                                                                  |
+| CAMUNDA_OAUTH_GRANT_TYPE             | string      | client_credentials                         | —                                   |        | OAuth grant (currently only client_credentials supported).                       |
+| CAMUNDA_OAUTH_SCOPE                  | string      | —                                          | —                                   |        | Optional space-delimited scopes.                                                 |
+| CAMUNDA_OAUTH_TIMEOUT_MS             | int         | 10000                                      | —                                   |        | Per token request timeout.                                                       |
+| CAMUNDA_OAUTH_RETRY_MAX              | int         | 4                                          | —                                   |        | Max retry attempts for token fetch.                                              |
+| CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS    | int         | 1000                                       | —                                   |        | Initial backoff slot (exponential, jittered).                                    |
+| CAMUNDA_OAUTH_CACHE_DIR              | string      | ~/.camunda-sdk                             | —                                   |        | Directory for persisting token cache (node only).                                |
+| CAMUNDA_SDK_LOG_LEVEL                | string      | error                                      | —                                   |        | SDK log level: silent,error,warn,info,debug,trace.                               |
+| CAMUNDA_AUTH_STRATEGY                | enum(NONE   | OAUTH                                      | BASIC)                              | NONE   | —                                                                                |     | Selects auth mode. |
+| CAMUNDA_BASIC_AUTH_USERNAME          | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=BASIC    |        | Basic username.                                                                  |
+| CAMUNDA_BASIC_AUTH_PASSWORD          | string      | —                                          | when CAMUNDA_AUTH_STRATEGY=BASIC    | yes    | Basic password (redacted).                                                       |
+| CAMUNDA_SDK_VALIDATION               | mini‑lang   | req:none,res:none                          | —                                   |        | Validation modes (see below).                                                    |
+| CAMUNDA_SDK_VALIDATION_VERBOSE       | boolean     | (unset)                                    | —                                   |        | Verbose union diagnostics.                                                       |
+| CAMUNDA_MTLS_CERT                    | string(pem) | —                                          | when any mTLS var set requires key  | yes    | Inline client certificate (PEM). Inline values override \*\_PATH.                |
+| CAMUNDA_MTLS_KEY                     | string(pem) | —                                          | when any mTLS var set requires cert | yes    | Inline client private key (PEM).                                                 |
+| CAMUNDA_MTLS_CA                      | string(pem) | —                                          | —                                   |        | Inline custom CA bundle (PEM) if not system trust.                               |
+| CAMUNDA_MTLS_CERT_PATH               | string      | —                                          | —                                   |        | Path to client cert PEM (used if inline not provided).                           |
+| CAMUNDA_MTLS_KEY_PATH                | string      | —                                          | —                                   |        | Path to private key PEM (used if inline not provided).                           |
+| CAMUNDA_MTLS_CA_PATH                 | string      | —                                          | —                                   |        | Path to CA bundle PEM (used if inline not provided).                             |
+| CAMUNDA_MTLS_KEY_PASSPHRASE          | string      | —                                          | —                                   | yes    | Optional key passphrase.                                                         |
+| CAMUNDA_DEFAULT_TENANT_ID            | string      | <default>                                  | —                                   |        | Default tenant id used when an operation permits an omitted tenantId parameter.  |
+| CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS  | int         | 3                                          | —                                   |        | Max HTTP attempts (initial + retries) for transient failures (429,503, network). |
+| CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS | int         | 100                                        | —                                   |        | Base delay for exponential backoff (full jitter) for HTTP retries.               |
+| CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS  | int         | 2000                                       | —                                   |        | Max backoff cap in ms for HTTP retries.                                          |
 
 ## Precedence
 
@@ -88,6 +91,9 @@ export CAMUNDA_OAUTH_SCOPE="openid profile"
 export CAMUNDA_OAUTH_RETRY_MAX=6
 export CAMUNDA_REST_ADDRESS=https://api.cluster.example
 export CAMUNDA_SDK_VALIDATION=warn
+export CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS=5
+export CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS=150
+export CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS=3000
 ```
 
 ### 3. Disable Validation

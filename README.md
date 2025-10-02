@@ -14,7 +14,8 @@ Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST
 - Cancelable promises for all operations
 - Eventual consistency helper for polling endpoints
 - Immutable, deep‑frozen configuration accessible through a factory‑created client instance
- - Automatic body-level tenantId defaulting: if a request body supports an optional tenantId and you omit it, the SDK fills it from CAMUNDA_DEFAULT_TENANT_ID (path params are never auto-filled)
+- Automatic body-level tenantId defaulting: if a request body supports an optional tenantId and you omit it, the SDK fills it from CAMUNDA_DEFAULT_TENANT_ID (path params are never auto-filled)
+- Automatic transient HTTP retry (429, 503, network) with exponential backoff + full jitter (configurable via CAMUNDA*SDK_HTTP_RETRY*\*). Non-retryable 500s fail fast. Pluggable strategy surface (default uses p-retry when available, internal fallback otherwise).
 
 ## Install
 
@@ -51,6 +52,9 @@ CAMUNDA_AUTH_STRATEGY=OAUTH
 CAMUNDA_CLIENT_ID=***
 CAMUNDA_CLIENT_SECRET=***
 CAMUNDA_DEFAULT_TENANT_ID=<default>   # optional: override default tenant resolution
+CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS=4  # optional: total attempts (initial + 3 retries)
+CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS=100  # optional: base backoff (ms)
+CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS=2000  # optional: cap (ms)
 ```
 
 > Prefer environment / secret manager injection over hard‑coding values in source. Treat the SDK like a leaf dependency: construct once near process start, pass the instance where needed.
@@ -117,9 +121,118 @@ CAMUNDA_SDK_VALIDATION=none
 
 Behavior:
 
-- `request` side: validate JSON body (if schema) before sending
-- `response` side: validate documented JSON 2xx payloads
-- `warn` logs and returns original data; `strict` throws; `none` skips
+## Advanced HTTP Retry: Cockatiel Adapter (Optional)
+
+The SDK includes built‑in transient HTTP retry (429, 503, network errors) using a p‑retry based engine plus a fallback implementation. For advanced resilience patterns (circuit breakers, timeouts, custom classification, combining policies) you can integrate [cockatiel](https://github.com/connor4312/cockatiel).
+
+### When To Use Cockatiel
+
+- You need different retry policies per operation (e.g. idempotent GET vs mutating POST)
+- You want circuit breaking, hedging, timeout, or bulkhead controls
+- You want to add custom classification (e.g. retry certain 5xx only on safe verbs)
+
+### Disable Built‑In HTTP Retries
+
+Set `CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS=1` so the SDK does only the initial attempt; then wrap operations with cockatiel.
+
+### Minimal Example (Single Operation)
+
+```ts
+import { createCamundaClient } from '@camunda8/orchestration-cluster-api';
+import { retry, ExponentialBackoff, handleAll } from 'cockatiel';
+
+const client = createCamundaClient({
+  config: {
+    CAMUNDA_REST_ADDRESS: 'https://cluster.example',
+    CAMUNDA_AUTH_STRATEGY: 'NONE',
+    CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1, // disable SDK automatic retries
+  } as any,
+});
+
+// Policy: up to 5 attempts total (1 + 4 retries) with exponential backoff & jitter
+const policy = retry(handleAll, {
+  maxAttempts: 5,
+  backoff: new ExponentialBackoff({ initialDelay: 100, maxDelay: 2000, jitter: true }),
+});
+
+// Wrap getTopology
+const origGetTopology = client.getTopology.bind(client);
+client.getTopology = (() => policy.execute(() => origGetTopology())) as any;
+
+const topo = await client.getTopology();
+console.log(topo.brokers?.length);
+```
+
+### Bulk Wrapping All Operations
+
+```ts
+import { createCamundaClient } from '@camunda8/orchestration-cluster-api';
+import { retry, ExponentialBackoff, handleAll } from 'cockatiel';
+
+const client = createCamundaClient({
+  config: {
+    CAMUNDA_REST_ADDRESS: 'https://cluster.example',
+    CAMUNDA_AUTH_STRATEGY: 'OAUTH',
+    CAMUNDA_CLIENT_ID: process.env.CAMUNDA_CLIENT_ID,
+    CAMUNDA_CLIENT_SECRET: process.env.CAMUNDA_CLIENT_SECRET,
+    CAMUNDA_OAUTH_URL: process.env.CAMUNDA_OAUTH_URL,
+    CAMUNDA_TOKEN_AUDIENCE: 'zeebe.camunda.io',
+    CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1,
+  } as any,
+});
+
+const retryPolicy = retry(handleAll, {
+  maxAttempts: 4,
+  backoff: new ExponentialBackoff({ initialDelay: 150, maxDelay: 2500, jitter: true }),
+});
+
+const skip = new Set([
+  'logger',
+  'configure',
+  'getConfig',
+  'withCorrelation',
+  'deployResourcesFromFiles',
+]);
+
+for (const key of Object.keys(client)) {
+  const val: any = (client as any)[key];
+  if (typeof val === 'function' && !key.startsWith('_') && !skip.has(key)) {
+    const original = val.bind(client);
+    (client as any)[key] = (...a: any[]) => retryPolicy.execute(() => original(...a));
+  }
+}
+
+// Now every public operation is wrapped.
+```
+
+### Custom Classification Example
+
+Retry only network errors + 429/503, plus optionally 500 on safe GET endpoints you mark:
+
+```ts
+import { retry, ExponentialBackoff, handleWhen } from 'cockatiel';
+
+const classify = handleWhen((err) => {
+  const status = (err as any)?.status;
+  if (status === 429 || status === 503) return true;
+  if (status === 500 && (err as any).__opVerb === 'GET') return true; // custom tagging optional
+  return err?.name === 'TypeError'; // network errors from fetch
+});
+
+const policy = retry(classify, {
+  maxAttempts: 5,
+  backoff: new ExponentialBackoff({ initialDelay: 100, maxDelay: 2000, jitter: true }),
+});
+```
+
+### Notes
+
+- Keep SDK retries disabled to prevent duplicate layers.
+- SDK synthesizes `Error` objects with a `status` for retry-significant HTTP responses (429, 503, 500), enabling classification.
+- You can tag errors (e.g. assign `err.__opVerb`) in a wrapper if verb-level logic is needed.
+- Future improvement: an official `retryStrategy` injection hook—current approach is non-invasive.
+
+> Combine cockatiel retry with a circuit breaker, timeout, or bulkhead policy for more robust behavior in partial outages.
 
 ## Authentication
 
@@ -280,14 +393,14 @@ At present the canonical client operates in throwing mode. Non‑throwing adapta
 
 `consistency` object fields (all optional except `waitUpToMs`):
 
-| Field            | Type                                      | Description |
-| ---------------- | ----------------------------------------- | ----------- |
-| `waitUpToMs`     | `number`                                  | Maximum total time to wait before failing. `0` disables polling and returns the first response immediately. |
-| `pollIntervalMs` | `number`                                  | Base delay between attempts (minimum enforced at 10ms). Defaults to `500` or the value of `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` if provided. |
-| `predicate`      | `(result) => boolean \| Promise<boolean>` | Custom success condition. If omitted, non-GET endpoints default to: first 2xx body whose `items` array (if present) is non-empty. |
+| Field            | Type                                      | Description                                                                                                                                                                                                      |
+| ---------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `waitUpToMs`     | `number`                                  | Maximum total time to wait before failing. `0` disables polling and returns the first response immediately.                                                                                                      |
+| `pollIntervalMs` | `number`                                  | Base delay between attempts (minimum enforced at 10ms). Defaults to `500` or the value of `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` if provided.                                                                    |
+| `predicate`      | `(result) => boolean \| Promise<boolean>` | Custom success condition. If omitted, non-GET endpoints default to: first 2xx body whose `items` array (if present) is non-empty.                                                                                |
 | `trace`          | `boolean`                                 | When true, logs each 200 response body (truncated ~1KB) before predicate evaluation and emits a success line with elapsed time when the predicate passes. Requires log level `debug` (or `trace`) to see output. |
-| `onAttempt`      | `(info) => void`                          | Callback after each attempt: `{ attempt, elapsedMs, remainingMs, status, predicateResult, nextDelayMs }`. |
-| `onComplete`     | `(info) => void`                          | Callback when predicate succeeds: `{ attempts, elapsedMs }`. Not called on timeout. |
+| `onAttempt`      | `(info) => void`                          | Callback after each attempt: `{ attempt, elapsedMs, remainingMs, status, predicateResult, nextDelayMs }`.                                                                                                        |
+| `onComplete`     | `(info) => void`                          | Callback when predicate succeeds: `{ attempts, elapsedMs }`. Not called on timeout.                                                                                                                              |
 
 ### Trace Logging
 
@@ -450,6 +563,50 @@ May throw:
 - Validation errors (strict mode)
 - `EventualConsistencyTimeoutError`
 - `CancelError` on cancellation
+
+### Typed Error Handling
+
+All SDK-thrown operational errors normalize to a discriminated union (`SdkError`) when they originate from HTTP, network, auth, or validation layers. Use the guard `isSdkError` to narrow inside a catch:
+
+```ts
+import { createCamundaClient } from '@camunda8/orchestration-cluster-api';
+import { isSdkError } from '@camunda8/orchestration-cluster-api/dist/runtime/errors';
+
+const client = createCamundaClient();
+
+try {
+  await client.getTopology();
+} catch (e) {
+  if (isSdkError(e)) {
+    switch (e.name) {
+      case 'HttpSdkError':
+        console.error('HTTP failure', e.status, e.operationId);
+        break;
+      case 'ValidationSdkError':
+        console.error('Validation issue on', e.operationId, e.side, e.issues);
+        break;
+      case 'AuthSdkError':
+        console.error('Auth problem', e.message, e.status);
+        break;
+      case 'NetworkSdkError':
+        console.error('Network layer error', e.message);
+        break;
+    }
+    return;
+  }
+  // Non-SDK (programmer) error; rethrow or wrap
+  throw e;
+}
+```
+
+Guarantees:
+
+- HTTP errors expose `status` and optional `operationId`.
+- If the server returns RFC 9457 / RFC 7807 Problem Details JSON (`type`, `title`, `status`, `detail`, `instance`) these fields are passed through on the `HttpSdkError` when present.
+- Validation errors expose `side` and `operationId`.
+- Classification is best-effort; unknown shapes fall back to `NetworkSdkError`.
+
+> Advanced: You can still layer your own domain errors on top (e.g. translate certain status codes) by mapping `SdkError` into custom discriminants.
 
 ### Functional / Non‑Throwing Variant - EXPERIMENTAL
 

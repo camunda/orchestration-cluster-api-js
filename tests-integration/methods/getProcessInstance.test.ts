@@ -1,26 +1,27 @@
 // AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { createCamundaClient, TenantId } from '../../dist';
+import { createCamundaClient } from '../../dist';
+import { validateResponseShape } from '../../json-body-assertions';
 
 describe('getProcessInstance', () => {
   it('scaffold', async () => {
     const camunda = createCamundaClient();
-        const tenantId = TenantId.assumeExists('<default>')
-    
-        const res = await camunda.deployResourcesFromFiles([
-            './tests-integration/fixtures/test-job-process.bpmn',
-        ], { tenantId });
+
+    const res = await camunda.deployResourcesFromFiles([
+      './tests-integration/fixtures/test-job-process.bpmn',
+    ]);
     const process = await camunda.createProcessInstance({
-        processDefinitionKey: res.processes[0].processDefinitionKey,
-        tenantId
-    })
-    console.log('process', JSON.stringify(process, null, 2))
+      processDefinitionKey: res.processes[0].processDefinitionKey,
+    });
     const get = await camunda.getProcessInstance(
-        { processInstanceKey: process.processInstanceKey },
-        { consistency: { waitUpToMs: 20000, trace: true } }
+      { processInstanceKey: process.processInstanceKey },
+      { consistency: { waitUpToMs: 20000, trace: true } }
     );
-    console.log('get', JSON.stringify(get, null, 2))
-    await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
+    validateResponseShape(
+      { path: '/process-instances/{processInstanceKey}', method: 'GET', status: '200' },
+      get
+    );
+    expect(get.processInstanceKey).toBe(process.processInstanceKey);
   });
 });

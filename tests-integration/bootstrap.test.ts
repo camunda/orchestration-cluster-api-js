@@ -2,19 +2,19 @@ import fs from 'fs';
 
 import { describe, it, expect } from 'vitest';
 
-import { createCamundaClient, createCamundaResultClient, Tag } from '../dist';
+import { createCamundaClient, createCamundaResultClient, ProcessDefinitionKey, Tag } from '../dist';
 import { extractJobTypesFromBpmnFile } from '../test-support/bpmn';
 
 describe('integration acceptance', () => {
   it('can get the Topology', async () => {
     const camunda = createCamundaClient();
     const topology = await camunda.getTopology();
-    expect(topology.brokers).toBeDefined()
+    expect(topology.brokers).toBeDefined();
   });
   it('can get the License', async () => {
     const camunda = createCamundaClient();
     const license = await camunda.getLicense();
-    expect(typeof license.isCommercial).toBe('boolean')
+    expect(typeof license.isCommercial).toBe('boolean');
   });
   // This is only valid against a setup using OIDC. Otherwise, the response is undefined
   it.skip('can get the the current CamundaUser', async () => {
@@ -59,14 +59,44 @@ describe('integration acceptance', () => {
     expect(res.error).toBeDefined();
   });
 
-  it('can activate jobs', { timeout: 20000 }, async () => {
+  it('can activate jobs, and the job has a tag', { timeout: 20000 }, async () => {
     const camunda = createCamundaClient({});
+
+    async function cancelActiveProcesses(processDefinitionKey: ProcessDefinitionKey) {
+      // Cancel existing instances
+      const existingProcesses = await camunda.searchProcessInstances(
+        {
+          filter: {
+            processDefinitionKey,
+            state: 'ACTIVE',
+          },
+        },
+        { consistency: { waitUpToMs: 0 } }
+      );
+      for (const process of existingProcesses.items) {
+        await camunda
+          .cancelProcessInstance({
+            processInstanceKey: process.processInstanceKey,
+          })
+          .catch((e) => {
+            if (e.status !== 404) {
+              throw e;
+            }
+          });
+      }
+    }
+
     const _tag = Tag.fromString('example');
     const filepath = './tests-integration/fixtures/test-process.bpmn';
     const res = await camunda.deployResourcesFromFiles([filepath]);
+
+    const { processDefinitionKey } = res.processes[0];
+    // Cancel existing instances
+    await cancelActiveProcesses(processDefinitionKey);
+
     const jobTypes = extractJobTypesFromBpmnFile(filepath);
     const process = await camunda.createProcessInstance({
-      processDefinitionKey: res.processes[0].processDefinitionKey,
+      processDefinitionKey,
       tags: [_tag],
     });
     const jobsResponse = await camunda.activateJobs({
@@ -76,28 +106,11 @@ describe('integration acceptance', () => {
     });
     expect(jobsResponse.jobs.length).toBe(1);
 
-    const tag = jobsResponse.jobs[0].tags![0];
-    expect(tag).toBe(_tag)
-    const processes = await camunda.searchProcessInstances(
-      {
-        filter: {
-          processDefinitionKey: process.processDefinitionKey,
-          state: 'ACTIVE',
-        },
-      },
-      {
-        consistency: {
-          waitUpToMs: 20000,
-          predicate: (res) =>
-            res.items.some((item) => item.processInstanceKey === process.processInstanceKey),
-          trace: true,
-        },
-      }
-    );
-    await Promise.all(
-      processes.items.map((item) =>
-        camunda.cancelProcessInstance({ processInstanceKey: item.processInstanceKey })
-      )
-    );
+    const job = jobsResponse.jobs[0];
+    camunda.completeJob({ jobKey: job.jobKey });
+
+    const tag = (job.tags ?? [])[0];
+    expect(job.processInstanceKey).toBe(process.processInstanceKey);
+    expect(tag).toBe(_tag);
   });
 });

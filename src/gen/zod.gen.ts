@@ -1347,7 +1347,7 @@ export const zProcessInstanceResult = z.object({
     processDefinitionKey: zProcessDefinitionKey,
     parentProcessInstanceKey: z.optional(zProcessInstanceKey),
     parentElementInstanceKey: z.optional(zElementInstanceKey),
-    tags: zTagSet
+    tags: z.optional(zTagSet)
 }).register(z.globalRegistry, {
     description: 'Process instance search response item.'
 });
