@@ -48,7 +48,7 @@
     "build": "npm run generate && npm run docs:config && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist",
     "build:local": "npm run generate:local && npm run docs:config && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist",
     "test": "vitest run --passWithNoTests --exclude 'tests-integration/**'",
-    "test:integration": "CAMUNDA_SDK_INTEGRATION=1 vitest run --no-isolate tests-integration --sequence.concurrent=false",
+    "test:integration": "CAMUNDA_SDK_INTEGRATION=1 vitest run tests-integration",
     "docs": "tsx scripts/generate-doc.ts",
     "docs:config": "tsx scripts/generate-config-doc.ts",
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
@@ -105,7 +105,7 @@
     "tsup": "^8.0.2",
     "tsx": "^4.7.0",
     "typescript": "^5.4.5",
-    "vitest": "^1.6.0",
+    "vitest": "^3.2.4",
     "yaml": "^2.8.1"
   },
   "lint-staged": {

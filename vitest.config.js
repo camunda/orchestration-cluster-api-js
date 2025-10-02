@@ -10,6 +10,8 @@ export default defineConfig(() => {
   return {
     test: {
       globals: true,
+      // Run tests sequentially
+      fileParallelism: false,
       // Only run cleanup (or environment provisioning) for integration runs.
       setupFiles: isIntegrationRun ? './tests-integration/setup/cleanup.ts' : undefined,
       globalSetup: isIntegrationRun ? './tests-integration/setup/global-setup.ts' : undefined,

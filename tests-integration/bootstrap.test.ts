@@ -95,7 +95,7 @@ describe('integration acceptance', () => {
     await cancelActiveProcesses(processDefinitionKey);
 
     const jobTypes = extractJobTypesFromBpmnFile(filepath);
-    await camunda.createProcessInstance({
+    const process = await camunda.createProcessInstance({
       processDefinitionKey,
       tags: [_tag],
     });
@@ -110,6 +110,7 @@ describe('integration acceptance', () => {
     camunda.completeJob({ jobKey: job.jobKey });
 
     const tag = (job.tags ?? [])[0];
+    expect(job.processInstanceKey).toBe(process.processInstanceKey);
     expect(tag).toBe(_tag);
   });
 });

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { cancelActiveInstancesForDefinitions } from './cancelTasks';
 
-import type { GlobalSetupContext } from 'vitest/node';
+import type { TestProject } from 'vitest/node';
 
 // Basic logger (avoid bringing full logger plumbing)
 function log(...args: any[]) {
@@ -19,7 +19,7 @@ function extractProcessIds(xml: string): string[] {
   while ((m = re.exec(xml))) ids.push(m[1]);
   return ids;
 }
-export async function setup({ provide }: GlobalSetupContext) {
+export async function setup(project: TestProject) {
   log('global setup started');
   const models = await new Promise<Array<string>>((resolve) => {
     const fixturesDir = join(process.cwd(), 'tests-integration', 'fixtures');
@@ -42,7 +42,7 @@ export async function setup({ provide }: GlobalSetupContext) {
     }
   });
   cancelActiveInstancesForDefinitions(models);
-  provide('models', models);
+  project.provide('models', models);
   log('global setup done');
 }
 

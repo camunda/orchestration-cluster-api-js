@@ -36,6 +36,7 @@ export async function cancelActiveInstancesForDefinitions(processIds: string[]) 
           if (!e?.message?.includes('NOT_FOUND')) {
             log('cancel failure', inst.processInstanceKey, e?.message || e);
             log(JSON.stringify(e, null, 2));
+            a;
           }
         }
       }
