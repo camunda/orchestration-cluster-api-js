@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   camunda:
     image: camunda/camunda:${CAMUNDA_DOCKER_IMAGE_VERSION:-8.8-SNAPSHOT}

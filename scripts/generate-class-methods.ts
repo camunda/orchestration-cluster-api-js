@@ -141,10 +141,7 @@ function main() {
             }
             // Conservative union handling: only mark optionalTenantIdInBody if ALL variants allow optional tenantId
             const resolved = variants.map((v) => resolveSchema(v, spec));
-            if (
-              resolved.length > 0 &&
-              resolved.every((rs) => rs && hasOptionalTenantId(rs))
-            ) {
+            if (resolved.length > 0 && resolved.every((rs) => rs && hasOptionalTenantId(rs))) {
               optionalTenantIdInBody = true;
             }
           } else {
@@ -326,11 +323,11 @@ type ${o.opId}Consistency = {
         methods.push(
           '      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {'
         );
+        methods.push('        envelope.body.tenantId = this._config.defaultTenantId;');
         methods.push(
-          "        envelope.body.tenantId = this._config.defaultTenantId;"
-        );
-        methods.push(
-          "        this._log.trace(() => ['tenant.default.inject', { op: '" + o.originalOpId + "', tenant: this._config.defaultTenantId }]);"
+          "        this._log.trace(() => ['tenant.default.inject', { op: '" +
+            o.originalOpId +
+            "', tenant: this._config.defaultTenantId }]);"
         );
         methods.push('      }');
       }
@@ -349,7 +346,40 @@ type ${o.opId}Consistency = {
       if (o.hasBody)
         methods.push('      if (envelope.body !== undefined) opts.body = envelope.body;');
       methods.push(`      const call = async () => {`);
+      methods.push(`        try {`);
       methods.push(`        const r = await Sdk.${o.opId}(opts);`);
+      methods.push('        if (r && typeof r === "object" && (r as any).status) {');
+      methods.push('          const _st = (r as any).status;');
+      methods.push('          if (_st === 429 || _st === 503 || _st === 500) {');
+      methods.push('            let _prob: any = undefined;');
+      methods.push('            try {');
+      methods.push(
+        '              // Attempt to parse problem+json or generic json body for RFC 9457 fields'
+      );
+      methods.push(
+        '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
+      );
+      methods.push('              if (ct && /json/i.test(ct)) {');
+      methods.push(
+        '                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;'
+      );
+      methods.push('                // If body already materialized as data, prefer that');
+      methods.push(
+        '                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }'
+      );
+      methods.push('                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }');
+      methods.push('              }');
+      methods.push('            } catch(_e) { /* swallow parse issues */ }');
+      methods.push(
+        '            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));'
+      );
+      methods.push('            err.status = _st; err.name = "HttpSdkError";');
+      methods.push(
+        '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
+      );
+      methods.push('            throw err;');
+      methods.push('          }');
+      methods.push('        }');
       methods.push('        let data = (r as any)?.data;');
       methods.push('        if (data === undefined) data = r;');
       methods.push(
@@ -372,7 +402,9 @@ type ${o.opId}Consistency = {
         methods.push('        }');
       }
       if (o.opId === 'createDeployment') {
-        methods.push('        // Enrich deployment response AFTER validation to avoid fanatical extras errors');
+        methods.push(
+          '        // Enrich deployment response AFTER validation to avoid fanatical extras errors'
+        );
         methods.push('        if (data) {');
         methods.push('          const base = data as _DataOf<typeof Sdk.createDeployment>;');
         methods.push(
@@ -380,9 +412,15 @@ type ${o.opId}Consistency = {
         );
         methods.push('          if (Array.isArray(base.deployments)) {');
         methods.push('            for (const d of base.deployments) {');
-        methods.push('              if (d?.processDefinition) ext.processes.push(d.processDefinition);');
-        methods.push('              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);');
-        methods.push('              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);');
+        methods.push(
+          '              if (d?.processDefinition) ext.processes.push(d.processDefinition);'
+        );
+        methods.push(
+          '              if (d?.decisionDefinition) ext.decisions.push(d.decisionDefinition);'
+        );
+        methods.push(
+          '              if (d?.decisionRequirements) ext.decisionRequirements.push(d.decisionRequirements);'
+        );
         methods.push('              if (d?.form) ext.forms.push(d.form);');
         methods.push('              if (d?.resource) ext.resources.push(d.resource);');
         methods.push('            }');
@@ -391,6 +429,9 @@ type ${o.opId}Consistency = {
         methods.push('        }');
       }
       methods.push('        return data;');
+      methods.push('        } catch(e) {');
+      methods.push("          throw normalizeError(e, { opId: '" + o.originalOpId + "' });");
+      methods.push('        }');
       methods.push('      };');
       if (o.eventual) {
         methods.push('      const invoke = () => toCancelable(()=>call());');
@@ -399,13 +440,45 @@ type ${o.opId}Consistency = {
         );
         methods.push('      return invoke();');
       } else {
-        methods.push('      return call();');
+        // Inject HTTP retry wrapper
+        methods.push(
+          '      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));'
+        );
       }
     } else {
       // No-input operation
       methods.push('      const opts: any = { client: this._client, signal };');
       methods.push('      const call = async () => {');
+      methods.push('        try {');
       methods.push(`        const r = await Sdk.${o.opId}(opts as any);`);
+      methods.push('        if (r && typeof r === "object" && (r as any).status) {');
+      methods.push('          const _st = (r as any).status;');
+      methods.push('          if (_st === 429 || _st === 503 || _st === 500) {');
+      methods.push('            let _prob: any = undefined;');
+      methods.push('            try {');
+      methods.push(
+        '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
+      );
+      methods.push('              if (ct && /json/i.test(ct)) {');
+      methods.push(
+        '                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;'
+      );
+      methods.push(
+        '                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }'
+      );
+      methods.push('                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }');
+      methods.push('              }');
+      methods.push('            } catch(_e) { }');
+      methods.push(
+        '            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));'
+      );
+      methods.push('            err.status = _st; err.name = "HttpSdkError";');
+      methods.push(
+        '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
+      );
+      methods.push('            throw err;');
+      methods.push('          }');
+      methods.push('        }');
       methods.push('        let data = (r as any)?.data;');
       methods.push('        if (data === undefined) data = r;');
       methods.push(
@@ -427,6 +500,9 @@ type ${o.opId}Consistency = {
         methods.push('        }');
       }
       methods.push('        return data;');
+      methods.push('        } catch(e) {');
+      methods.push("          throw normalizeError(e, { opId: '" + o.originalOpId + "' });");
+      methods.push('        }');
       methods.push('      };');
       if (o.eventual) {
         methods.push('      const invoke = () => toCancelable(()=>call());');
@@ -435,7 +511,9 @@ type ${o.opId}Consistency = {
         );
         methods.push('      return invoke();');
       } else {
-        methods.push('      return call();');
+        methods.push(
+          '      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));'
+        );
       }
     }
     methods.push('    });');

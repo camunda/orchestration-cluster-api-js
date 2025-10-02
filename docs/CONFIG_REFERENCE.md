@@ -1,33 +1,36 @@
 # Configuration Reference
 
-Generated: 2025-10-01T02:59:48.641Z
+Generated: 2025-10-02T01:46:44.014Z
 
-| Key | Type | Default | Requirement | Flags | Description |
-|-----|------|---------|-------------|-------|-------------|
-| `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080/v2` | Optional |  | Base REST endpoint address. |
-| `CAMUNDA_TOKEN_AUDIENCE` | string | `zeebe.camunda.io` | Optional |  | Token audience for OAuth flows. |
-| `CAMUNDA_CLIENT_ID` | string | — | When CAMUNDA_AUTH_STRATEGY=OAUTH |  | OAuth client id (required when CAMUNDA_AUTH_STRATEGY=OAUTH). |
-| `CAMUNDA_CLIENT_SECRET` | string | — | When CAMUNDA_AUTH_STRATEGY=OAUTH | secret | OAuth client secret (required when CAMUNDA_AUTH_STRATEGY=OAUTH). |
-| `CAMUNDA_OAUTH_URL` | string | `https://login.cloud.camunda.io/oauth/token` | Optional |  | OAuth token URL. |
-| `CAMUNDA_OAUTH_GRANT_TYPE` | string | `client_credentials` | Optional |  | OAuth grant type. |
-| `CAMUNDA_OAUTH_SCOPE` | string | — | No default |  | Optional OAuth scope (space-separated). |
-| `CAMUNDA_OAUTH_TIMEOUT_MS` | int | `5000` | Optional |  | Timeout in ms for OAuth token fetch. |
-| `CAMUNDA_OAUTH_RETRY_MAX` | int | `5` | Optional |  | Maximum OAuth token fetch attempts (including initial). |
-| `CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS` | int | `1000` | Optional |  | Base delay (ms) for first retry (exponential backoff). |
-| `CAMUNDA_OAUTH_CACHE_DIR` | string | — | No default |  | Directory for disk caching OAuth tokens (Node only). |
-| `CAMUNDA_AUTH_STRATEGY` | enum(NONE | OAUTH | BASIC) | `NONE` | Optional |  | Authentication strategy. |
-| `CAMUNDA_BASIC_AUTH_USERNAME` | string | — | When CAMUNDA_AUTH_STRATEGY=BASIC |  | Basic auth username (required when CAMUNDA_AUTH_STRATEGY=BASIC). |
-| `CAMUNDA_BASIC_AUTH_PASSWORD` | string | — | When CAMUNDA_AUTH_STRATEGY=BASIC | secret | Basic auth password (required when CAMUNDA_AUTH_STRATEGY=BASIC). |
-| `CAMUNDA_SDK_VALIDATION` | string | `req:none,res:none` | Optional |  | Validation mini-language controlling req/res modes. |
-| `CAMUNDA_SDK_LOG_LEVEL` | string | `error` | Optional |  | SDK log level (silent|error|warn|info|debug|trace). |
-| `CAMUNDA_SDK_TELEMETRY_LOG` | boolean | `false` | Optional |  | Emit telemetry (auth/http/retry) events to the SDK logger automatically (no code). |
-| `CAMUNDA_SDK_TELEMETRY_CORRELATION` | boolean | `false` | Optional |  | Enable correlation context (withCorrelation helper) when auto telemetry logging is on. |
-| `CAMUNDA_MTLS_CERT_PATH` | string | — | No default |  | Path to client certificate (PEM) for mTLS. |
-| `CAMUNDA_MTLS_KEY_PATH` | string | — | No default |  | Path to client private key (PEM) for mTLS. |
-| `CAMUNDA_MTLS_CA_PATH` | string | — | No default |  | Path to CA certificate bundle (PEM) for mTLS. |
-| `CAMUNDA_MTLS_KEY_PASSPHRASE` | string | — | No default | secret | Optional passphrase for encrypted private key. |
-| `CAMUNDA_MTLS_CERT` | string | — | No default |  | Inline PEM client certificate. |
-| `CAMUNDA_MTLS_KEY` | string | — | No default | secret | Inline PEM client private key. |
-| `CAMUNDA_MTLS_CA` | string | — | No default |  | Inline PEM CA bundle. |
-| `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` | int | `500` | Optional |  | Default poll interval (ms) for eventually consistent endpoint polling. |
-| `CAMUNDA_DEFAULT_TENANT_ID` | string | `<default>` | Optional |  | Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId). |
+| Key                                    | Type      | Default                                      | Requirement                      | Flags  | Description                                                                                           |
+| -------------------------------------- | --------- | -------------------------------------------- | -------------------------------- | ------ | ----------------------------------------------------------------------------------------------------- | ----- | ------------------------ | ---- | ----- | ------- |
+| `CAMUNDA_REST_ADDRESS`                 | string    | `http://localhost:8080/v2`                   | Optional                         |        | Base REST endpoint address.                                                                           |
+| `CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS`  | int       | `3`                                          | Optional                         |        | undefined                                                                                             |
+| `CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS` | int       | `100`                                        | Optional                         |        | undefined                                                                                             |
+| `CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS`  | int       | `2000`                                       | Optional                         |        | undefined                                                                                             |
+| `CAMUNDA_TOKEN_AUDIENCE`               | string    | `zeebe.camunda.io`                           | Optional                         |        | Token audience for OAuth flows.                                                                       |
+| `CAMUNDA_CLIENT_ID`                    | string    | —                                            | When CAMUNDA_AUTH_STRATEGY=OAUTH |        | OAuth client id (required when CAMUNDA_AUTH_STRATEGY=OAUTH).                                          |
+| `CAMUNDA_CLIENT_SECRET`                | string    | —                                            | When CAMUNDA_AUTH_STRATEGY=OAUTH | secret | OAuth client secret (required when CAMUNDA_AUTH_STRATEGY=OAUTH).                                      |
+| `CAMUNDA_OAUTH_URL`                    | string    | `https://login.cloud.camunda.io/oauth/token` | Optional                         |        | OAuth token URL.                                                                                      |
+| `CAMUNDA_OAUTH_GRANT_TYPE`             | string    | `client_credentials`                         | Optional                         |        | OAuth grant type.                                                                                     |
+| `CAMUNDA_OAUTH_SCOPE`                  | string    | —                                            | No default                       |        | Optional OAuth scope (space-separated).                                                               |
+| `CAMUNDA_OAUTH_TIMEOUT_MS`             | int       | `5000`                                       | Optional                         |        | Timeout in ms for OAuth token fetch.                                                                  |
+| `CAMUNDA_OAUTH_RETRY_MAX`              | int       | `5`                                          | Optional                         |        | Maximum OAuth token fetch attempts (including initial).                                               |
+| `CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS`    | int       | `1000`                                       | Optional                         |        | Base delay (ms) for first retry (exponential backoff).                                                |
+| `CAMUNDA_OAUTH_CACHE_DIR`              | string    | —                                            | No default                       |        | Directory for disk caching OAuth tokens (Node only).                                                  |
+| `CAMUNDA_AUTH_STRATEGY`                | enum(NONE | OAUTH                                        | BASIC)                           | `NONE` | Optional                                                                                              |       | Authentication strategy. |
+| `CAMUNDA_BASIC_AUTH_USERNAME`          | string    | —                                            | When CAMUNDA_AUTH_STRATEGY=BASIC |        | Basic auth username (required when CAMUNDA_AUTH_STRATEGY=BASIC).                                      |
+| `CAMUNDA_BASIC_AUTH_PASSWORD`          | string    | —                                            | When CAMUNDA_AUTH_STRATEGY=BASIC | secret | Basic auth password (required when CAMUNDA_AUTH_STRATEGY=BASIC).                                      |
+| `CAMUNDA_SDK_VALIDATION`               | string    | `req:none,res:none`                          | Optional                         |        | Validation mini-language controlling req/res modes.                                                   |
+| `CAMUNDA_SDK_LOG_LEVEL`                | string    | `error`                                      | Optional                         |        | SDK log level (silent                                                                                 | error | warn                     | info | debug | trace). |
+| `CAMUNDA_SDK_TELEMETRY_LOG`            | boolean   | `false`                                      | Optional                         |        | Emit telemetry (auth/http/retry) events to the SDK logger automatically (no code).                    |
+| `CAMUNDA_SDK_TELEMETRY_CORRELATION`    | boolean   | `false`                                      | Optional                         |        | Enable correlation context (withCorrelation helper) when auto telemetry logging is on.                |
+| `CAMUNDA_MTLS_CERT_PATH`               | string    | —                                            | No default                       |        | Path to client certificate (PEM) for mTLS.                                                            |
+| `CAMUNDA_MTLS_KEY_PATH`                | string    | —                                            | No default                       |        | Path to client private key (PEM) for mTLS.                                                            |
+| `CAMUNDA_MTLS_CA_PATH`                 | string    | —                                            | No default                       |        | Path to CA certificate bundle (PEM) for mTLS.                                                         |
+| `CAMUNDA_MTLS_KEY_PASSPHRASE`          | string    | —                                            | No default                       | secret | Optional passphrase for encrypted private key.                                                        |
+| `CAMUNDA_MTLS_CERT`                    | string    | —                                            | No default                       |        | Inline PEM client certificate.                                                                        |
+| `CAMUNDA_MTLS_KEY`                     | string    | —                                            | No default                       | secret | Inline PEM client private key.                                                                        |
+| `CAMUNDA_MTLS_CA`                      | string    | —                                            | No default                       |        | Inline PEM CA bundle.                                                                                 |
+| `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` | int       | `500`                                        | Optional                         |        | Default poll interval (ms) for eventually consistent endpoint polling.                                |
+| `CAMUNDA_DEFAULT_TENANT_ID`            | string    | `<default>`                                  | Optional                         |        | Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId). |

@@ -8,6 +8,21 @@ export const SCHEMA = {
     default: 'http://localhost:8080/v2',
     doc: 'Base REST endpoint address.',
   },
+  CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: {
+    desc: 'Maximum total HTTP attempts (including the initial attempt) for transient failures (429,503, network).',
+    type: 'int',
+    default: 3,
+  },
+  CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS: {
+    desc: 'Base delay in milliseconds for exponential backoff (full jitter) for HTTP retries.',
+    type: 'int',
+    default: 100,
+  },
+  CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS: {
+    desc: 'Maximum delay cap in milliseconds for HTTP retry backoff.',
+    type: 'int',
+    default: 2000,
+  },
   CAMUNDA_TOKEN_AUDIENCE: {
     type: 'string',
     default: 'zeebe.camunda.io',

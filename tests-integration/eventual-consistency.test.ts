@@ -19,5 +19,4 @@ describe('eventual consistency', () =>
     );
 
     expect(get.processInstanceKey).toBe(process.processInstanceKey);
-    await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
   }));

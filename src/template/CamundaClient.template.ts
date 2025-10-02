@@ -19,6 +19,8 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
+import { executeWithHttpRetry } from '../runtime/retry';
+import { normalizeError } from '../runtime/errors';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
