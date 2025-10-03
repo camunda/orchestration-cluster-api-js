@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Generated: 2025-10-02T01:46:44.014Z
+Generated: 2025-10-03T01:14:37.638Z
 
 | Key                                    | Type      | Default                                      | Requirement                      | Flags  | Description                                                                                           |
 | -------------------------------------- | --------- | -------------------------------------------- | -------------------------------- | ------ | ----------------------------------------------------------------------------------------------------- | ----- | ------------------------ | ---- | ----- | ------- |
@@ -34,3 +34,4 @@ Generated: 2025-10-02T01:46:44.014Z
 | `CAMUNDA_MTLS_CA`                      | string    | —                                            | No default                       |        | Inline PEM CA bundle.                                                                                 |
 | `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` | int       | `500`                                        | Optional                         |        | Default poll interval (ms) for eventually consistent endpoint polling.                                |
 | `CAMUNDA_DEFAULT_TENANT_ID`            | string    | `<default>`                                  | Optional                         |        | Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId). |
+| `CAMUNDA_SDK_BACKPRESSURE_ENABLED`     | boolean   | `true`                                       | Optional                         |        | Enable adaptive global backpressure concurrency control (set false to disable gating).                |

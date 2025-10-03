@@ -65,6 +65,7 @@ export interface CamundaConfig {
   tokenAudience: string;
   defaultTenantId: string; // branded at usage sites as TenantId
   httpRetry: { maxAttempts: number; baseDelayMs: number; maxDelayMs: number }; // generic HTTP operation retry policy
+  backpressure: { enabled: boolean };
   oauth: {
     clientId?: string;
     clientSecret?: string;
@@ -435,6 +436,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       maxAttempts: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS'] || '3', 10),
       baseDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS'] || '100', 10),
       maxDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS'] || '2000', 10),
+    },
+    backpressure: {
+      enabled:
+        (rawMap['CAMUNDA_SDK_BACKPRESSURE_ENABLED'] || 'true').toString().toLowerCase() !== 'false',
     },
     oauth: {
       clientId: rawMap['CAMUNDA_CLIENT_ID']?.trim() || undefined,

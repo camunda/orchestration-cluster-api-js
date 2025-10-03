@@ -234,6 +234,101 @@ const policy = retry(classify, {
 
 > Combine cockatiel retry with a circuit breaker, timeout, or bulkhead policy for more robust behavior in partial outages.
 
+## Global Backpressure (Adaptive Concurrency)
+
+The client now includes an internal global backpressure manager that adaptively throttles the number of _initiating_ in‑flight operations when the cluster signals resource exhaustion. It complements (not replaces) per‑request HTTP retry.
+
+### Signals Considered
+
+An HTTP response is treated as a backpressure signal when it is classified retryable **and** matches one of:
+
+- `429` (Too Many Requests) – always
+- `503` with `title === "RESOURCE_EXHAUSTED"`
+- `500` whose RFC 9457 / 7807 `detail` text contains `RESOURCE_EXHAUSTED`
+
+All other 5xx / 503 variants are treated as non‑retryable (fail fast) and do **not** influence the adaptive gate.
+
+### How It Works
+
+1. Normal state starts with effectively unlimited concurrency (no global semaphore enforced) until the first backpressure event.
+2. On the first signal the manager boots with a provisional concurrency cap (e.g. 16) and immediately reduces it (soft state).
+3. Repeated consecutive signals escalate severity to `severe`, applying a stronger reduction factor.
+4. Successful (non‑backpressure) completions trigger passive recovery checks that gradually restore permits over time if the system stays quiet.
+5. Quiet periods (no signals for a configurable decay interval) downgrade severity (`severe → soft → healthy`) and reset the consecutive counter when fully healthy.
+
+The policy is intentionally conservative: it only engages after genuine pressure signals and recovers gradually to avoid oscillation.
+
+### Exempt Operations
+
+Certain operations that help drain work or complete execution are _exempt_ from gating so they are never queued behind initiating calls:
+
+- `completeJob`
+- `failJob`
+- `throwJobError`
+- `completeUserTask`
+
+These continue immediately even during severe backpressure to promote system recovery.
+
+### Interaction With HTTP Retry
+
+Per‑request retry still performs exponential backoff + jitter for classified transient errors. The adaptive concurrency layer sits _outside_ retry:
+
+1. A call acquires a permit (unless exempt) before its first attempt.
+2. Internal retry re‑attempts happen _within_ the held permit.
+3. On final success the permit is released and a healthy hint is recorded (possible gradual recovery).
+4. On final failure (non‑retryable or attempts exhausted) the permit is released; a 429 on the terminal attempt still records backpressure.
+
+This design prevents noisy churn (permits would not shrink/expand per retry attempt) and focuses on admission control of distinct logical operations.
+
+### Observability
+
+Enable debug logging (`CAMUNDA_SDK_LOG_LEVEL=debug` or `trace`) to see events emitted under the scoped logger `bp` (e.g. `backpressure.permits.scale`, `backpressure.permits.recover`, `backpressure.severity`). These are trace‑level; use `trace` for the most granular insight.
+
+### Configuration
+
+Current release ships with defaults tuned for conservative behavior. You can disable the mechanism entirely with:
+
+```bash
+CAMUNDA_SDK_BACKPRESSURE_ENABLED=false
+```
+
+Planned future knobs (subject to change):
+
+- Initial bootstrap cap
+- Reduce factors (soft / severe)
+- Recovery interval & step size
+- Quiet period decay window
+- Floor concurrency
+
+If you have concrete tuning needs, open an issue describing workload patterns (operation mix, baseline concurrency, observed broker limits) to help prioritize which knobs to surface.
+
+### Guarantees & Caveats
+
+- Never increases latency for healthy clusters (no cap until first signal).
+- Cannot create fairness across multiple _processes_; it is per client instance in a single process. Scale your worker pool with that in mind.
+- Not a replacement for server‑side quotas or external rate limiters—it's a cooperative adaptive limiter.
+- Exempt list is minimal by design; adding more exemptions without care can reduce effectiveness.
+
+### Opt‑Out
+
+Set `CAMUNDA_SDK_BACKPRESSURE_ENABLED=false` to bypass adaptive concurrency (the client reverts to only per‑request retry). This should be rare—prefer leaving it enabled unless you have measured, specific conflicts with an external limiter.
+
+### Inspecting State Programmatically
+
+Call `client.getBackpressureState()` to obtain:
+
+```ts
+{
+  severity: 'healthy' | 'soft' | 'severe';
+  consecutive: number; // consecutive backpressure signals observed
+  permitsMax: number | null; // current concurrency cap (null => unlimited/not engaged)
+  permitsCurrent: number; // currently acquired permits
+  waiters: number; // queued operations waiting for a permit
+}
+```
+
+---
+
 ## Authentication
 
 Set `CAMUNDA_AUTH_STRATEGY` to `NONE` (default), `BASIC`, or `OAUTH`.

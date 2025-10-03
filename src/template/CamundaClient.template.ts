@@ -19,8 +19,9 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-import { executeWithHttpRetry } from '../runtime/retry';
+import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
+import { BackpressureManager } from '../runtime/backpressure';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -96,6 +97,7 @@ export class CamundaClient {
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
+  private _bp: BackpressureManager = new BackpressureManager();
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -152,6 +154,11 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
+    // Initialize global backpressure manager (using defaults for now; future: allow config)
+    this._bp = new BackpressureManager({
+      logger: this._log.scope('bp'),
+      config: { enabled: this._config.backpressure.enabled },
+    });
     // Debug-level emission of redacted effective configuration (lazy)
     this._log.debug(() => {
       try {
@@ -274,6 +281,58 @@ export class CamundaClient {
       return (Schemas as any)[name]?.type === 'void';
     } catch {
       return false;
+    }
+  }
+
+  /** Internal invocation helper to apply global backpressure gating + retry + normalization */
+  public async _invokeWithRetry<T>(
+    op: () => Promise<T>,
+    opts: {
+      opId: string;
+      exempt?: boolean;
+      classify?: (e: any) => { retryable: boolean; reason: string };
+    }
+  ): Promise<T> {
+    const { opId, exempt, classify } = opts;
+    const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
+    if (!exempt) {
+      await this._bp.acquire(signal);
+    }
+    try {
+      const result = await executeWithHttpRetry(
+        async () => op(),
+        this._config.httpRetry,
+        this._log.scope(opId),
+        (err) => {
+          const decision = (classify ? classify(err) : defaultHttpClassifier(err)) as any;
+          if (decision && decision.retryable && /backpressure|http-429/.test(decision.reason)) {
+            this._bp.recordBackpressure();
+          }
+          return decision;
+        }
+      );
+      this._bp.recordHealthyHint();
+      return result;
+    } catch (e: any) {
+      // Non-retryable or exhausted
+      if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
+      throw normalizeError(e, { opId });
+    } finally {
+      if (!exempt) this._bp.release();
+    }
+  }
+  /** Public accessor for current backpressure adaptive limiter state (stable) */
+  getBackpressureState() {
+    try {
+      return this._bp.getState();
+    } catch {
+      return {
+        severity: 'healthy',
+        permitsMax: null,
+        permitsCurrent: 0,
+        consecutive: 0,
+        waiters: 0,
+      };
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===

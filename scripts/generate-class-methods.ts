@@ -50,6 +50,11 @@ const MARK_TYPES_END = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES END ===';
 const MARK_METHODS_START = '// === AUTO-GENERATED CAMUNDA METHODS START ===';
 const MARK_METHODS_END = '// === AUTO-GENERATED CAMUNDA METHODS END ===';
 
+function isExempt(opId: string): boolean {
+  // Exempt operations: job completion / failure / throwing BPMN error (names sanitized already)
+  return ['completeJob', 'failJob', 'throwJobError', 'completeUserTask'].includes(opId);
+}
+
 function main() {
   if (!fs.existsSync(SPEC_PATH)) {
     throw new Error('[class-gen] Spec missing, skipping');
@@ -459,7 +464,7 @@ type ${o.opId}Consistency = {
       } else {
         // Inject HTTP retry wrapper
         methods.push(
-          '      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));'
+          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
         );
       }
     } else {
@@ -541,7 +546,7 @@ type ${o.opId}Consistency = {
         methods.push('      return invoke();');
       } else {
         methods.push(
-          '      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));'
+          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
         );
       }
     }

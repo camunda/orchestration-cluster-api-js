@@ -130,6 +130,11 @@ export const SCHEMA = {
     default: '<default>',
     doc: 'Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId).',
   },
+  CAMUNDA_SDK_BACKPRESSURE_ENABLED: {
+    type: 'boolean',
+    default: true,
+    doc: 'Enable adaptive global backpressure concurrency control (set false to disable gating).',
+  },
 } as const;
 
 export type EnvVarKey = keyof typeof SCHEMA;
