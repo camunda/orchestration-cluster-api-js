@@ -57,7 +57,8 @@ export class BackpressureManager {
       decayQuietMs: 2000,
       ...opts.config,
     } as Required<BackpressureConfig>;
-    this.permitsMax = this.cfg.initialMaxConcurrency; // often null
+    // If disabled, force unlimited (permitsMax=null) regardless of provided initialMaxConcurrency.
+    this.permitsMax = this.cfg.enabled === false ? null : this.cfg.initialMaxConcurrency; // often null
   }
 
   isEnabled() {
@@ -68,8 +69,9 @@ export class BackpressureManager {
     return {
       severity: this.severity,
       consecutive: this.consecutive,
-      permitsMax: this.permitsMax,
-      permitsCurrent: this.permitsCurrent,
+      // When disabled, report unlimited semantics explicitly
+      permitsMax: this.cfg.enabled === false ? null : this.permitsMax,
+      permitsCurrent: this.cfg.enabled === false ? 0 : this.permitsCurrent,
       waiters: this.waiters.length,
     };
   }
@@ -83,7 +85,7 @@ export class BackpressureManager {
   }
 
   async acquire(signal?: AbortSignal) {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled()) return; // disabled => no gating
     // Unlimited fast path
     if (this.permitsMax === null) return;
     // Attempt immediate acquire
@@ -110,7 +112,7 @@ export class BackpressureManager {
   }
 
   release() {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled()) return; // disabled => no tracking
     if (this.permitsMax === null) return; // unlimited mode
     if (this.permitsCurrent > 0) this.permitsCurrent--;
     // Drain a waiter if capacity

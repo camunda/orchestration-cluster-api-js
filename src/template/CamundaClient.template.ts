@@ -159,7 +159,10 @@ export class CamundaClient {
       logger: this._log.scope('bp'),
       config: {
         enabled: this._config.backpressure.enabled,
-        initialMaxConcurrency: this._config.backpressure.initialMax || null,
+        // If disabled we keep initialMaxConcurrency null so state exposes unlimited and never bootstraps.
+        initialMaxConcurrency: this._config.backpressure.enabled
+          ? this._config.backpressure.initialMax || null
+          : null,
         reduceFactor: this._config.backpressure.softFactor,
         severeReduceFactor: this._config.backpressure.severeFactor,
         recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,

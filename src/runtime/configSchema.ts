@@ -177,7 +177,7 @@ export const SCHEMA = {
   },
   CAMUNDA_SDK_BACKPRESSURE_PROFILE: {
     type: 'enum',
-    choices: ['BALANCED', 'CONSERVATIVE', 'AGGRESSIVE'],
+    choices: ['BALANCED', 'CONSERVATIVE', 'AGGRESSIVE'] as const,
     default: 'BALANCED',
     doc: 'Preset profile for backpressure tuning (overridden by explicit individual knob env vars).',
   },

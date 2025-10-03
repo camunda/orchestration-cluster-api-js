@@ -34,7 +34,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-10-03T01:14:15.968Z
+// Generated 2025-10-03T03:43:06.934Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1032,8 +1032,24 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
-  // Initialize global backpressure manager (using defaults for now; future: allow config)
-  this._bp = new BackpressureManager({ logger: this._log.scope('bp'), config: { enabled: this._config.backpressure.enabled } });
+    // Initialize global backpressure manager with tuned config
+    this._bp = new BackpressureManager({
+      logger: this._log.scope('bp'),
+      config: {
+        enabled: this._config.backpressure.enabled,
+        // If disabled we keep initialMaxConcurrency null so state exposes unlimited and never bootstraps.
+        initialMaxConcurrency: this._config.backpressure.enabled
+          ? this._config.backpressure.initialMax || null
+          : null,
+        reduceFactor: this._config.backpressure.softFactor,
+        severeReduceFactor: this._config.backpressure.severeFactor,
+        recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,
+        recoveryStep: this._config.backpressure.recoveryStep,
+        decayQuietMs: this._config.backpressure.decayQuietMs,
+        floorConcurrency: this._config.backpressure.floor,
+        severeThreshold: this._config.backpressure.severeThreshold,
+      },
+    });
     // Debug-level emission of redacted effective configuration (lazy)
     this._log.debug(() => {
       try {
@@ -1160,7 +1176,14 @@ export class CamundaClient {
   }
 
   /** Internal invocation helper to apply global backpressure gating + retry + normalization */
-  public async _invokeWithRetry<T>(op: () => Promise<T>, opts: { opId: string; exempt?: boolean; classify?: (e:any)=>{ retryable: boolean; reason: string } }): Promise<T> {
+  public async _invokeWithRetry<T>(
+    op: () => Promise<T>,
+    opts: {
+      opId: string;
+      exempt?: boolean;
+      classify?: (e: any) => { retryable: boolean; reason: string };
+    }
+  ): Promise<T> {
     const { opId, exempt, classify } = opts;
     const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
     if (!exempt) {
@@ -1181,9 +1204,9 @@ export class CamundaClient {
       );
       this._bp.recordHealthyHint();
       return result;
-    } catch (e:any) {
+    } catch (e: any) {
       // Non-retryable or exhausted
-      if ((e && (e as any).status) && (e as any).status === 429) this._bp.recordBackpressure();
+      if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
       throw normalizeError(e, { opId });
     } finally {
       if (!exempt) this._bp.release();
@@ -1191,10 +1214,20 @@ export class CamundaClient {
   }
   /** Public accessor for current backpressure adaptive limiter state (stable) */
   getBackpressureState() {
-    try { return this._bp.getState(); } catch { return { severity: 'healthy', permitsMax: null, permitsCurrent: 0, consecutive: 0, waiters: 0 }; }
+    try {
+      return this._bp.getState();
+    } catch {
+      return {
+        severity: 'healthy',
+        permitsMax: null,
+        permitsCurrent: 0,
+        consecutive: 0,
+        waiters: 0,
+      };
+    }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-10-03T01:14:15.969Z)
+  // Generated methods (2025-10-03T03:43:06.935Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
