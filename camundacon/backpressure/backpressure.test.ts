@@ -20,7 +20,7 @@ beforeAll(async () => {
   }
 });
 
-describe('backpressure', () => {
+describe('backpressure', { timeout: 30_000 }, () => {
   it('demonstrates the backpressure characteristic', { timeout: 20_000 }, async () => {
     const camunda = createCamundaClient({
       config: {
@@ -38,11 +38,13 @@ describe('backpressure', () => {
       { consistency: { waitUpToMs: 1_000, trace: true } }
     );
 
-    setInterval(() => {
+    const processGenerator = setInterval(() => {
       camunda.createProcessInstance({
         processDefinitionKey,
       });
     }, 3);
+
+    setTimeout(() => clearInterval(processGenerator), 10_000);
 
     setInterval(async () => {
       const jobs = await camunda.activateJobs({
