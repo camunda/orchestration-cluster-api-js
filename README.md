@@ -292,13 +292,47 @@ Current release ships with defaults tuned for conservative behavior. You can dis
 CAMUNDA_SDK_BACKPRESSURE_ENABLED=false
 ```
 
-Planned future knobs (subject to change):
+Tuning environment variables (all optional; defaults shown):
 
-- Initial bootstrap cap
-- Reduce factors (soft / severe)
-- Recovery interval & step size
-- Quiet period decay window
-- Floor concurrency
+| Variable                                        | Default    | Description                                                                                     |
+| ----------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| `CAMUNDA_SDK_BACKPRESSURE_ENABLED`              | `true`     | Master toggle for adaptive concurrency gating.                                                  |
+| `CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX`          | `16`       | Bootstrap concurrency cap once the first signal is observed (null/unlimited before any signal). |
+| `CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR`          | `70`       | Percentage multiplier applied on each soft backpressure event (70 => 0.70x permits).            |
+| `CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR`        | `50`       | Percentage multiplier when entering or re-triggering in severe state.                           |
+| `CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS` | `1000`     | Interval between passive recovery checks.                                                       |
+| `CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP`        | `1`        | Permits regained per recovery interval until reaching the bootstrap cap.                        |
+| `CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS`       | `2000`     | Quiet period to downgrade severity (`severe→soft→healthy`).                                     |
+| `CAMUNDA_SDK_BACKPRESSURE_FLOOR`                | `1`        | Minimum concurrency floor while degraded.                                                       |
+| `CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD`     | `3`        | Consecutive signals required to enter severe state.                                             |
+| `CAMUNDA_SDK_BACKPRESSURE_PROFILE`              | `BALANCED` | Preset profile: BALANCED, CONSERVATIVE, AGGRESSIVE (ignored for any knob you explicitly set).   |
+
+#### Profiles
+
+Profiles supply coordinated defaults when you don't want to reason about individual knobs. Any explicitly set knob env var overrides the profile value.
+
+| Profile      | initialMax | softFactor% | severeFactor% | recoveryIntervalMs | recoveryStep | quietDecayMs | floor | severeThreshold | Intended Use                                                 |
+| ------------ | ---------- | ----------- | ------------- | ------------------ | ------------ | ------------ | ----- | --------------- | ------------------------------------------------------------ |
+| BALANCED     | 16         | 70          | 50            | 1000               | 1            | 2000         | 1     | 3               | General workloads with moderate spikes                       |
+| CONSERVATIVE | 12         | 60          | 40            | 1200               | 1            | 2500         | 1     | 2               | Protect cluster under tighter capacity / cost constraints    |
+| AGGRESSIVE   | 24         | 80          | 60            | 800                | 2            | 1500         | 2     | 4               | High throughput scenarios aiming to utilize headroom quickly |
+
+Select via:
+
+```bash
+CAMUNDA_SDK_BACKPRESSURE_PROFILE=AGGRESSIVE
+```
+
+Then optionally override a single parameter, e.g.:
+
+```bash
+CAMUNDA_SDK_BACKPRESSURE_PROFILE=AGGRESSIVE
+CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX=32
+```
+
+If the profile name is unrecognized the SDK falls back to BALANCED silently (future versions may emit a warning).
+
+Factors use integer percentages to avoid floating point drift in env parsing; the SDK converts them to multipliers internally (e.g. `70` -> `0.7`).
 
 If you have concrete tuning needs, open an issue describing workload patterns (operation mix, baseline concurrency, observed broker limits) to help prioritize which knobs to surface.
 

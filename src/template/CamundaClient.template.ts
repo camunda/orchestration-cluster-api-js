@@ -154,10 +154,20 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
-    // Initialize global backpressure manager (using defaults for now; future: allow config)
+    // Initialize global backpressure manager with tuned config
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
-      config: { enabled: this._config.backpressure.enabled },
+      config: {
+        enabled: this._config.backpressure.enabled,
+        initialMaxConcurrency: this._config.backpressure.initialMax || null,
+        reduceFactor: this._config.backpressure.softFactor,
+        severeReduceFactor: this._config.backpressure.severeFactor,
+        recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,
+        recoveryStep: this._config.backpressure.recoveryStep,
+        decayQuietMs: this._config.backpressure.decayQuietMs,
+        floorConcurrency: this._config.backpressure.floor,
+        severeThreshold: this._config.backpressure.severeThreshold,
+      },
     });
     // Debug-level emission of redacted effective configuration (lazy)
     this._log.debug(() => {

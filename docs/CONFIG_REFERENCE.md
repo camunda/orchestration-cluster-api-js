@@ -35,3 +35,13 @@ Generated: 2025-10-03T01:17:22.119Z
 | `CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS` | int       | `500`                                        | Optional                         |        | Default poll interval (ms) for eventually consistent endpoint polling.                                |
 | `CAMUNDA_DEFAULT_TENANT_ID`            | string    | `<default>`                                  | Optional                         |        | Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId). |
 | `CAMUNDA_SDK_BACKPRESSURE_ENABLED`     | boolean   | `true`                                       | Optional                         |        | Enable adaptive global backpressure concurrency control (set false to disable gating).                |
+
+| `CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX` | int | `16` | Optional | | Bootstrap concurrency cap after first signal. |
+| `CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR` | int | `70` | Optional | | Percentage multiplier for soft scaling (70 => 0.7x). |
+| `CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR` | int | `50` | Optional | | Percentage multiplier for severe scaling (50 => 0.5x). |
+| `CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS` | int | `1000` | Optional | | Interval (ms) between recovery checks. |
+| `CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP` | int | `1` | Optional | | Permits regained per recovery interval. |
+| `CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS` | int | `2000` | Optional | | Quiet period (ms) to downgrade severity. |
+| `CAMUNDA_SDK_BACKPRESSURE_FLOOR` | int | `1` | Optional | | Minimum floor concurrency while degraded. |
+| `CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD` | int | `3` | Optional | | Consecutive signals to enter severe state. |
+| `CAMUNDA_SDK_BACKPRESSURE_PROFILE` | enum(BALANCED|CONSERVATIVE|AGGRESSIVE) | `BALANCED` | Optional | | Preset profile supplying coordinated defaults (explicit knob vars override). |
