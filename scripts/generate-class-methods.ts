@@ -339,7 +339,9 @@ type ${o.opId}Consistency = {
       methods.push(`        if (this._validation.settings.req === 'strict') envelope = maybe;`);
       methods.push('      }');
       // Build options for SDK call
-      methods.push('      const opts: any = { client: this._client, signal };');
+      methods.push(
+        '      const opts: any = { client: this._client, signal, throwOnError: false };'
+      );
       if (o.pathParams.length) methods.push('      if (envelope.path) opts.path = envelope.path;');
       if (o.queryParams.length)
         methods.push('      if (envelope.query) opts.query = envelope.query;');
@@ -348,10 +350,17 @@ type ${o.opId}Consistency = {
       methods.push(`      const call = async () => {`);
       methods.push(`        try {`);
       methods.push(`        const r = await Sdk.${o.opId}(opts);`);
-      methods.push('        if (r && typeof r === "object" && (r as any).status) {');
-      methods.push('          const _st = (r as any).status;');
-      methods.push('          if (_st === 429 || _st === 503 || _st === 500) {');
+      methods.push(
+        '        if (r && typeof r === "object" && ((r as any).status || (r as any).response?.status)) {'
+      );
+      methods.push('          const _st = (r as any).status ?? (r as any).response?.status;');
+      methods.push('          // Backpressure / retry classification candidates');
+      methods.push('          const _isCandidate = _st === 429 || _st === 503 || _st === 500;');
+      methods.push('          if (_isCandidate) {');
       methods.push('            let _prob: any = undefined;');
+      methods.push(
+        '            if ((r as any).error && typeof (r as any).error === "object") { _prob = (r as any).error; }'
+      );
       methods.push('            try {');
       methods.push(
         '              // Attempt to parse problem+json or generic json body for RFC 9457 fields'
@@ -377,7 +386,14 @@ type ${o.opId}Consistency = {
       methods.push(
         '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
       );
-      methods.push('            throw err;');
+      methods.push(
+        '            const isBackpressure = (_st === 429) || (_st === 503 && err.title === "RESOURCE_EXHAUSTED") || (_st === 500 && (typeof err.detail === "string" && /RESOURCE_EXHAUSTED/.test(err.detail)));'
+      );
+      methods.push('            if (!isBackpressure) {');
+      methods.push('              // Mark explicit non-retryable for classifier and still throw');
+      methods.push('              err.nonRetryable = true;');
+      methods.push('            }');
+      methods.push('            throw err; // raw error (not yet normalized)');
       methods.push('          }');
       methods.push('        }');
       methods.push('        let data = (r as any)?.data;');
@@ -430,7 +446,8 @@ type ${o.opId}Consistency = {
       }
       methods.push('        return data;');
       methods.push('        } catch(e) {');
-      methods.push("          throw normalizeError(e, { opId: '" + o.originalOpId + "' });");
+      methods.push('          // Defer normalization to outer executeWithHttpRetry boundary');
+      methods.push('          throw e;');
       methods.push('        }');
       methods.push('      };');
       if (o.eventual) {
@@ -447,14 +464,22 @@ type ${o.opId}Consistency = {
       }
     } else {
       // No-input operation
-      methods.push('      const opts: any = { client: this._client, signal };');
+      methods.push(
+        '      const opts: any = { client: this._client, signal, throwOnError: false };'
+      );
       methods.push('      const call = async () => {');
       methods.push('        try {');
       methods.push(`        const r = await Sdk.${o.opId}(opts as any);`);
-      methods.push('        if (r && typeof r === "object" && (r as any).status) {');
-      methods.push('          const _st = (r as any).status;');
-      methods.push('          if (_st === 429 || _st === 503 || _st === 500) {');
+      methods.push(
+        '        if (r && typeof r === "object" && ((r as any).status || (r as any).response?.status)) {'
+      );
+      methods.push('          const _st = (r as any).status ?? (r as any).response?.status;');
+      methods.push('          const _isCandidate = _st === 429 || _st === 503 || _st === 500;');
+      methods.push('          if (_isCandidate) {');
       methods.push('            let _prob: any = undefined;');
+      methods.push(
+        '            if ((r as any).error && typeof (r as any).error === "object") { _prob = (r as any).error; }'
+      );
       methods.push('            try {');
       methods.push(
         '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
@@ -476,6 +501,10 @@ type ${o.opId}Consistency = {
       methods.push(
         '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
       );
+      methods.push(
+        '            const isBackpressure = (_st === 429) || (_st === 503 && err.title === "RESOURCE_EXHAUSTED") || (_st === 500 && (typeof err.detail === "string" && /RESOURCE_EXHAUSTED/.test(err.detail)));'
+      );
+      methods.push('            if (!isBackpressure) { err.nonRetryable = true; }');
       methods.push('            throw err;');
       methods.push('          }');
       methods.push('        }');
@@ -501,7 +530,7 @@ type ${o.opId}Consistency = {
       }
       methods.push('        return data;');
       methods.push('        } catch(e) {');
-      methods.push("          throw normalizeError(e, { opId: '" + o.originalOpId + "' });");
+      methods.push('          throw e;');
       methods.push('        }');
       methods.push('      };');
       if (o.eventual) {

@@ -65,6 +65,7 @@ export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError 
     for (const k of ['type', 'title', 'detail', 'instance'] as const) {
       if (e[k] !== undefined) (h as any)[k] = e[k];
     }
+    if (e.nonRetryable) (h as any).nonRetryable = true;
     return h;
   }
   // Validation hints (side / operation present?)
