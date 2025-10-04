@@ -1,0 +1,71 @@
+services:
+  camunda:
+    image: camunda/camunda:${CAMUNDA_DOCKER_IMAGE_VERSION:-8.8-SNAPSHOT}
+    # If you want to override via env like the framework: set CAMUNDA_DOCKER_IMAGE_VERSION externally
+    container_name: camunda-engine
+    environment:
+      SPRING_PROFILES_ACTIVE: 'broker,consolidated-auth'
+      ZEEBE_CLOCK_CONTROLLED: 'true'
+      ZEEBE_LOG_APPENDER: 'Stackdriver'
+      CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI: 'true'
+      CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED: 'false'
+      ZEEBE_BROKER_EXPORTERS_ELASTICSEARCH_ARGS_BULK_SIZE: 1
+      ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: 0.998
+      ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: 0.999
+      LOGGING_LEVEL_ORG_MYBATIS: 'INFO'
+    ports:
+      - '8080:8080' # REST API (ZEEBE_REST_ADDRESS -> http://localhost:8080)
+      - '26500:26500' # gRPC Gateway
+      - '9600:9600' # Monitoring / actuator / test time control
+      # Uncomment if you need direct access to internal broker ports:
+      # - "26501:26501" # Command API (internal)
+      # - "26502:26502" # Internal API (internal)
+    healthcheck:
+      # Mimic readiness checks: uses monitoring port + health endpoint
+      test: ['CMD', 'wget', '-qO', '-', 'http://localhost:9600/actuator/health/status']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - zeebe:/usr/local/zeebe/data
+      - './.core/application.yaml:/usr/local/camunda/config/application.yaml'
+    depends_on:
+      - elasticsearch
+    networks:
+      - camunda-net
+
+  elasticsearch: # https://hub.docker.com/_/elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-8.17.5}
+    container_name: elasticsearch
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      # allow running with low disk space
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:9200/_cat/health | grep -q green']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - elastic:/usr/share/elasticsearch/data
+    networks:
+      - camunda-net
+
+networks:
+  camunda-net:
+    name: camunda-net
+
+volumes:
+  zeebe:
+  elastic:

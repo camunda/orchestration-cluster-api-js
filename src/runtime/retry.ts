@@ -78,7 +78,22 @@ export function createRetryExecutor(opts: CreateRetryOptions): RetryStrategy {
 export function defaultHttpClassifier(err: any): RetryClassification {
   // Fetch network error heuristic: TypeError with failed to fetch / network error messages
   if (err) {
-    if ((err as any).nonRetryable) return { retryable: false, reason: 'explicit-non-retryable' };
+    // Some generated method wrappers may pessimistically mark errors nonRetryable before
+    // we have a chance to refine classification. We still want to treat broker backpressure
+    // signals (RESOURCE_EXHAUSTED) as retryable even if flagged nonRetryable upstream.
+    if ((err as any).nonRetryable) {
+      const status = (err as any).status || (err as any).response?.status;
+      const title = (err as any).title || (err as any).response?.data?.title;
+      const detail = (err as any).detail || (err as any).response?.data?.detail;
+      if (
+        status === 500 &&
+        ((typeof title === 'string' && /RESOURCE_EXHAUSTED/.test(title)) ||
+          (typeof detail === 'string' && /RESOURCE_EXHAUSTED/.test(detail)))
+      ) {
+        return { retryable: true, reason: 'backpressure-500-title' };
+      }
+      return { retryable: false, reason: 'explicit-non-retryable' };
+    }
     const msg = (err.message || '').toLowerCase();
     if (err.name === 'TypeError' && (msg.includes('fetch') || msg.includes('network'))) {
       return { retryable: true, reason: 'network-error' };
@@ -92,7 +107,10 @@ export function defaultHttpClassifier(err: any): RetryClassification {
       return { retryable: false, reason: 'http-503-non-backpressure' };
     }
     if (status === 500) {
-      if (typeof detail === 'string' && /RESOURCE_EXHAUSTED/.test(detail)) {
+      if (
+        (typeof detail === 'string' && /RESOURCE_EXHAUSTED/.test(detail)) ||
+        (typeof title === 'string' && /RESOURCE_EXHAUSTED/.test(title))
+      ) {
         return { retryable: true, reason: 'backpressure-500-detail' };
       }
       return { retryable: false, reason: 'http-500' };
