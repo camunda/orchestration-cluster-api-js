@@ -286,17 +286,12 @@ Enable debug logging (`CAMUNDA_SDK_LOG_LEVEL=debug` or `trace`) to see events em
 
 ### Configuration
 
-Current release ships with defaults tuned for conservative behavior. You can disable the mechanism entirely with:
-
-```bash
-CAMUNDA_SDK_BACKPRESSURE_ENABLED=false
-```
+Current release ships with defaults tuned for conservative behavior. Adaptive gating is controlled by a profile (no separate boolean toggle). Use the `LEGACY` profile for observe‑only mode (no global gating, still records severity). Otherwise choose a tuning profile and optionally override individual knobs.
 
 Tuning environment variables (all optional; defaults shown):
 
 | Variable                                        | Default    | Description                                                                                     |
 | ----------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------- |
-| `CAMUNDA_SDK_BACKPRESSURE_ENABLED`              | `true`     | Master toggle for adaptive concurrency gating.                                                  |
 | `CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX`          | `16`       | Bootstrap concurrency cap once the first signal is observed (null/unlimited before any signal). |
 | `CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR`          | `70`       | Percentage multiplier applied on each soft backpressure event (70 => 0.70x permits).            |
 | `CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR`        | `50`       | Percentage multiplier when entering or re-triggering in severe state.                           |
@@ -305,17 +300,18 @@ Tuning environment variables (all optional; defaults shown):
 | `CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS`       | `2000`     | Quiet period to downgrade severity (`severe→soft→healthy`).                                     |
 | `CAMUNDA_SDK_BACKPRESSURE_FLOOR`                | `1`        | Minimum concurrency floor while degraded.                                                       |
 | `CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD`     | `3`        | Consecutive signals required to enter severe state.                                             |
-| `CAMUNDA_SDK_BACKPRESSURE_PROFILE`              | `BALANCED` | Preset profile: BALANCED, CONSERVATIVE, AGGRESSIVE (ignored for any knob you explicitly set).   |
+| `CAMUNDA_SDK_BACKPRESSURE_PROFILE`              | `BALANCED` | Preset profile: BALANCED, CONSERVATIVE, AGGRESSIVE, LEGACY (LEGACY = observe-only, no gating).  |
 
 #### Profiles
 
 Profiles supply coordinated defaults when you don't want to reason about individual knobs. Any explicitly set knob env var overrides the profile value.
 
-| Profile      | initialMax | softFactor% | severeFactor% | recoveryIntervalMs | recoveryStep | quietDecayMs | floor | severeThreshold | Intended Use                                                 |
-| ------------ | ---------- | ----------- | ------------- | ------------------ | ------------ | ------------ | ----- | --------------- | ------------------------------------------------------------ |
-| BALANCED     | 16         | 70          | 50            | 1000               | 1            | 2000         | 1     | 3               | General workloads with moderate spikes                       |
-| CONSERVATIVE | 12         | 60          | 40            | 1200               | 1            | 2500         | 1     | 2               | Protect cluster under tighter capacity / cost constraints    |
-| AGGRESSIVE   | 24         | 80          | 60            | 800                | 2            | 1500         | 2     | 4               | High throughput scenarios aiming to utilize headroom quickly |
+| Profile      | initialMax | softFactor% | severeFactor% | recoveryIntervalMs | recoveryStep | quietDecayMs | floor | severeThreshold | Intended Use                                                    |
+| ------------ | ---------- | ----------- | ------------- | ------------------ | ------------ | ------------ | ----- | --------------- | --------------------------------------------------------------- |
+| BALANCED     | 16         | 70          | 50            | 1000               | 1            | 2000         | 1     | 3               | General workloads with moderate spikes                          |
+| CONSERVATIVE | 12         | 60          | 40            | 1200               | 1            | 2500         | 1     | 2               | Protect cluster under tighter capacity / cost constraints       |
+| AGGRESSIVE   | 24         | 80          | 60            | 800                | 2            | 1500         | 2     | 4               | High throughput scenarios aiming to utilize headroom quickly    |
+| LEGACY       | n/a        | 70          | 50            | 1000               | 1            | 2000         | 1     | 3               | Observe signals only (severity metrics) without adaptive gating |
 
 Select via:
 
@@ -345,7 +341,13 @@ If you have concrete tuning needs, open an issue describing workload patterns (o
 
 ### Opt‑Out
 
-Set `CAMUNDA_SDK_BACKPRESSURE_ENABLED=false` to bypass adaptive concurrency (the client reverts to only per‑request retry). This should be rare—prefer leaving it enabled unless you have measured, specific conflicts with an external limiter.
+To bypass adaptive concurrency while still collecting severity metrics use:
+
+```bash
+CAMUNDA_SDK_BACKPRESSURE_PROFILE=LEGACY
+```
+
+This reverts to only per‑request retry for transient errors (no global gating) while keeping observability.
 
 ### Inspecting State Programmatically
 
