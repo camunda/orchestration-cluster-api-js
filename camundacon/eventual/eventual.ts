@@ -27,7 +27,7 @@ async function main() {
 
   const getProcess = await camunda.getProcessInstance(
     { processInstanceKey: process.processInstanceKey },
-    { consistency: { waitUpToMs: 0, trace: true } }
+    { consistency: { waitUpToMs: 10_000, trace: true } }
   );
 
   console.log(JSON.stringify(getProcess, null, 2));

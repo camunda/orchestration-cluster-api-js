@@ -198,7 +198,7 @@ async function cleanup() {
     const activeProcesses = await cleaner.searchProcessInstances(
       {
         filter: { state: 'ACTIVE', processDefinitionId: 'Process_0f7cr6y' },
-        page: { limit: 1000 },
+        page: { limit: 2000 },
       },
       { consistency: { waitUpToMs: 0 } }
     );
@@ -251,6 +251,7 @@ async function main() {
   const metrics = await runScenario(processDefinitionKey, sc);
   // eslint-disable-next-line no-console
   console.log('[backpressure-profile] Scenario complete', metrics);
+  process.exit(0);
 }
 
 cleanup().then(main);
