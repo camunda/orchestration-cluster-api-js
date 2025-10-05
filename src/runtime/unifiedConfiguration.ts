@@ -67,6 +67,8 @@ export interface CamundaConfig {
   httpRetry: { maxAttempts: number; baseDelayMs: number; maxDelayMs: number }; // generic HTTP operation retry policy
   backpressure: {
     enabled: boolean;
+    profile: string; // BALANCED | CONSERVATIVE | AGGRESSIVE | LEGACY
+    observeOnly: boolean; // LEGACY profile semantics (collect signals, no gating)
     initialMax: number;
     softFactor: number;
     severeFactor: number;
@@ -483,6 +485,17 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       floor: 2,
       severeThreshold: 4,
     },
+    LEGACY: {
+      // observe-only: we still need plausible defaults if user overrides individual knobs
+      initialMax: 16,
+      soft: 70,
+      severe: 50,
+      recoveryInterval: 1000,
+      recoveryStep: 1,
+      quietMs: 2000,
+      floor: 1,
+      severeThreshold: 3,
+    },
   };
   const preset = PRESETS[profile] || PRESETS.BALANCED;
   // Only override when user did NOT explicitly provide a value (env or override). We rely on the
@@ -509,8 +522,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       maxDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS'] || '2000', 10),
     },
     backpressure: {
-      enabled:
-        (rawMap['CAMUNDA_SDK_BACKPRESSURE_ENABLED'] || 'true').toString().toLowerCase() !== 'false',
+      enabled: profile !== 'LEGACY',
+      profile,
+      observeOnly: profile === 'LEGACY',
       initialMax: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX'] || '16', 10),
       softFactor: Math.min(
         1,

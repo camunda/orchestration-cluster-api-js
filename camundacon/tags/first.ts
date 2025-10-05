@@ -1,6 +1,6 @@
 import readline from 'readline';
 
-import { createCamundaClient } from '../../src';
+import { createCamundaClientLoose as createCamundaClient } from '../../dist';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -13,11 +13,11 @@ async function main() {
   const res = await camunda.deployResourcesFromFiles([
     './tests-integration/fixtures/test-process.bpmn',
   ]);
-  const processDefinitionKey = res.processes[0].processDefinitionId as any;
+  const processDefinitionKey = res.processes[0].processDefinitionId;
 
   const processInstance1 = await camunda.createProcessInstance({
     processDefinitionKey,
-    // tags: ['some-tag' as any]
+    tags: ['some-tag'],
   });
 
   // console.log(processInstance1, typeof processInstance1)
@@ -37,7 +37,7 @@ async function main() {
 
   const processInstance2 = await camunda.createProcessInstance({
     processDefinitionKey,
-    tags: ['#some-other-tag' as any],
+    tags: ['#some-other-tag'],
   });
 
   console.log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);

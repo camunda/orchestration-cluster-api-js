@@ -33,6 +33,12 @@
     "url": "git+https://github.com/camunda/orchestration-cluster-api-js.git"
   },
   "scripts": {
+    "camundacon:eventual:shell": "./camundacon/eventual/eventual.sh",
+    "camundacon:eventual:sdk": "tsx camundacon/eventual/eventual.ts",
+    "camundacon:eventual:sdk:trace": "CAMUNDA_SDK_LOG_LEVEL=trace tsx camundacon/eventual/eventual.ts",
+    "camundacon:backpressure:legacy": "CAMUNDA_SDK_BACKPRESSURE_PROFILE=LEGACY tsx camundacon/backpressure/backpressure.ts",
+    "camundacon:backpressure:balanced": "CAMUNDA_SDK_BACKPRESSURE_PROFILE=BALANCED tsx camundacon/backpressure/backpressure.ts",
+    "camundacon:backpressure:aggressive": "CAMUNDA_SDK_BACKPRESSURE_PROFILE=AGGRESSIVE tsx camundacon/backpressure/backpressure.ts",
     "clean": "rimraf dist src/gen src/facade",
     "fetch:spec": "tsx scripts/fetch-spec.ts",
     "generate": "npm run clean && npm run fetch:spec && npm run _pipeline:generate",
@@ -47,7 +53,7 @@
     "preprocess": "tsx scripts/preprocess-brands.ts",
     "build": "npm run generate && npm run docs:config && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist",
     "build:local": "npm run generate:local && npm run docs:config && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist",
-    "test": "CAMUNDA_SDK_INTEGRATION=0 vitest run --passWithNoTests --exclude 'tests-integration/**'",
+    "test": "CAMUNDA_SDK_INTEGRATION=0 vitest run --passWithNoTests --exclude 'tests-integration/' --exclude 'camundacon/**'",
     "test:integration": "CAMUNDA_SDK_INTEGRATION=1 vitest run tests-integration",
     "docs": "tsx scripts/generate-doc.ts",
     "docs:config": "tsx scripts/generate-config-doc.ts",

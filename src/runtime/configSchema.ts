@@ -130,11 +130,7 @@ export const SCHEMA = {
     default: '<default>',
     doc: 'Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId).',
   },
-  CAMUNDA_SDK_BACKPRESSURE_ENABLED: {
-    type: 'boolean',
-    default: true,
-    doc: 'Enable adaptive global backpressure concurrency control (set false to disable gating).',
-  },
+  // CAMUNDA_SDK_BACKPRESSURE_ENABLED removed in favor of profile LEGACY (observe-only) vs others (active gating)
   CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX: {
     type: 'int',
     default: 16,
@@ -177,9 +173,9 @@ export const SCHEMA = {
   },
   CAMUNDA_SDK_BACKPRESSURE_PROFILE: {
     type: 'enum',
-    choices: ['BALANCED', 'CONSERVATIVE', 'AGGRESSIVE'] as const,
+    choices: ['BALANCED', 'CONSERVATIVE', 'AGGRESSIVE', 'LEGACY'] as const,
     default: 'BALANCED',
-    doc: 'Preset profile for backpressure tuning (overridden by explicit individual knob env vars).',
+    doc: 'Preset profile for backpressure tuning (LEGACY = observe-only, no gating; other profiles enable adaptive global concurrency control).',
   },
 } as const;
 

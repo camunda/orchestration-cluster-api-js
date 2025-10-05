@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { createCamundaClient } from '../src';
 
-describe('Backpressure toggle & state access', () => {
-  it('disables gating when CAMUNDA_SDK_BACKPRESSURE_ENABLED=false', async () => {
-    // First two requests simulate backpressure-worthy responses; gating disabled means no queuing and state reports disabled.
+describe('Backpressure legacy profile observe-only', () => {
+  it('LEGACY profile observes severity without gating', async () => {
+    // Simulate backpressure-worthy responses; LEGACY should not gate but should escalate severity.
     let count = 0;
     const responses: Response[] = [
       new Response(JSON.stringify({ title: 'bp' }), {
@@ -25,7 +25,7 @@ describe('Backpressure toggle & state access', () => {
       config: {
         CAMUNDA_REST_ADDRESS: 'https://example.com',
         CAMUNDA_AUTH_STRATEGY: 'NONE',
-        CAMUNDA_SDK_BACKPRESSURE_ENABLED: false,
+        CAMUNDA_SDK_BACKPRESSURE_PROFILE: 'LEGACY',
         CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 2,
       } as any,
       fetch: fetch as any,
@@ -39,8 +39,8 @@ describe('Backpressure toggle & state access', () => {
     ]);
 
     const state = client.getBackpressureState();
-    // Since disabled, permitsMax should remain null (never engaged) despite signals
-    expect(state.permitsMax).toBeNull();
+    expect(state.permitsMax).toBeNull(); // observe-only => no gating permits
+    expect(['soft', 'severe']).toContain(state.severity); // severity escalates
     expect(fetch).toHaveBeenCalled();
   });
 

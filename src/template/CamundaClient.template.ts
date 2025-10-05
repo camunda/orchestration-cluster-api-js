@@ -22,6 +22,7 @@ import type { Client } from '../gen/client/types.gen';
 import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
+import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -159,10 +160,12 @@ export class CamundaClient {
       logger: this._log.scope('bp'),
       config: {
         enabled: this._config.backpressure.enabled,
-        // If disabled we keep initialMaxConcurrency null so state exposes unlimited and never bootstraps.
-        initialMaxConcurrency: this._config.backpressure.enabled
-          ? this._config.backpressure.initialMax || null
-          : null,
+        observeOnly: this._config.backpressure.observeOnly,
+        // In observe-only or disabled modes we keep permitsMax null.
+        initialMaxConcurrency:
+          this._config.backpressure.enabled && !this._config.backpressure.observeOnly
+            ? this._config.backpressure.initialMax || null
+            : null,
         reduceFactor: this._config.backpressure.softFactor,
         severeReduceFactor: this._config.backpressure.severeFactor,
         recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,
@@ -333,6 +336,14 @@ export class CamundaClient {
     } finally {
       if (!exempt) this._bp.release();
     }
+  }
+  /** Shared evaluation for raw transport responses (throwOnError:false) */
+  private _evaluateResponse(
+    raw: any,
+    opId: string,
+    buildBackpressureError: (resp: any) => Error | undefined
+  ) {
+    return evaluateSdkResponse(raw, { opId, buildBackpressureError });
   }
   /** Public accessor for current backpressure adaptive limiter state (stable) */
   getBackpressureState() {

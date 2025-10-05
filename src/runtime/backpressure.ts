@@ -6,6 +6,7 @@ import type { Logger } from './logger';
 
 export interface BackpressureConfig {
   enabled?: boolean;
+  observeOnly?: boolean; // LEGACY profile: record severity, never gate
   initialMaxConcurrency?: number | null; // null => unlimited until first backpressure
   floorConcurrency?: number; // minimum when degraded
   reduceFactor?: number; // factor applied on each backpressure event (soft)
@@ -41,6 +42,7 @@ export class BackpressureManager {
   private permitsMax: number | null; // null => unlimited
   private waiters: Waiter[] = [];
   private lastRecoverCheck = 0;
+  private observeOnly = false;
 
   constructor(opts: BackpressureManagerOptions = {}) {
     this.logger = opts.logger;
@@ -57,12 +59,13 @@ export class BackpressureManager {
       decayQuietMs: 2000,
       ...opts.config,
     } as Required<BackpressureConfig>;
-    // If disabled, force unlimited (permitsMax=null) regardless of provided initialMaxConcurrency.
-    this.permitsMax = this.cfg.enabled === false ? null : this.cfg.initialMaxConcurrency; // often null
+    this.observeOnly = !!this.cfg.observeOnly;
+    this.permitsMax =
+      this.cfg.enabled === false || this.observeOnly ? null : this.cfg.initialMaxConcurrency; // often null
   }
 
   isEnabled() {
-    return this.cfg.enabled !== false;
+    return this.cfg.enabled !== false && !this.observeOnly;
   }
 
   getState() {
@@ -85,9 +88,9 @@ export class BackpressureManager {
   }
 
   async acquire(signal?: AbortSignal) {
-    if (!this.isEnabled()) return; // disabled => no gating
-    // Unlimited fast path
-    if (this.permitsMax === null) return;
+    if (this.observeOnly) return; // never gate in observe-only mode
+    if (!this.isEnabled()) return;
+    if (this.permitsMax === null) return; // unlimited fast path
     // Attempt immediate acquire
     if (this.permitsCurrent < (this.permitsMax || 0)) {
       this.permitsCurrent++;
@@ -112,8 +115,8 @@ export class BackpressureManager {
   }
 
   release() {
-    if (!this.isEnabled()) return; // disabled => no tracking
-    if (this.permitsMax === null) return; // unlimited mode
+    if (!this.isEnabled()) return; // disabled or observeOnly (we don't track permits in observeOnly)
+    if (this.permitsMax === null) return;
     if (this.permitsCurrent > 0) this.permitsCurrent--;
     // Drain a waiter if capacity
     while (this.waiters.length && this.permitsCurrent < (this.permitsMax || 0)) {
@@ -129,32 +132,32 @@ export class BackpressureManager {
   }
 
   recordBackpressure() {
-    if (!this.isEnabled()) return;
+    if (!this.cfg.enabled && !this.observeOnly) return;
     const now = this.now();
     this.lastEventAt = now;
     this.consecutive++;
-    // Possibly set initial max concurrency
-    if (this.permitsMax === null) {
-      // bootstrap: guess a starting concurrency (e.g., 16) then reduce immediately
-      this.permitsMax = 16;
-      this.permitsCurrent = Math.min(this.permitsCurrent, this.permitsMax);
+    if (!this.observeOnly) {
+      if (this.permitsMax === null) {
+        this.permitsMax = 16;
+        this.permitsCurrent = Math.min(this.permitsCurrent, this.permitsMax);
+      }
     }
     const prevSeverity = this.severity;
     if (this.consecutive >= this.cfg.severeThreshold) {
       this.severity = 'severe';
-      this.scalePermits(this.cfg.severeReduceFactor);
+      if (!this.observeOnly) this.scalePermits(this.cfg.severeReduceFactor);
     } else if (this.severity === 'healthy') {
       this.severity = 'soft';
-      this.scalePermits(this.cfg.reduceFactor);
+      if (!this.observeOnly) this.scalePermits(this.cfg.reduceFactor);
     } else if (this.severity === 'soft') {
-      this.scalePermits(this.cfg.reduceFactor);
+      if (!this.observeOnly) this.scalePermits(this.cfg.reduceFactor);
     }
     if (this.severity !== prevSeverity) this.log('severity', { severity: this.severity });
   }
 
   recordHealthyHint() {
     // Called after a successful call with no backpressure classification
-    if (!this.isEnabled()) return;
+    if (!this.cfg.enabled && !this.observeOnly) return;
     const now = this.now();
     // Passive recovery check piggy-backed
     this.maybeRecover(now);
@@ -170,7 +173,7 @@ export class BackpressureManager {
   }
 
   private maybeRecover(now = this.now()) {
-    if (this.permitsMax === null) return; // unlimited
+    if (this.permitsMax === null || this.observeOnly) return; // unlimited or observe-only
     if (now - this.lastRecoverCheck < this.cfg.recoveryIntervalMs) return;
     this.lastRecoverCheck = now;
     // Decay severity if quiet

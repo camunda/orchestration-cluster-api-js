@@ -2,40 +2,36 @@
 // Goal: Allow user code to discriminate errors in catch blocks with strong typing.
 
 // RFC 9457 / RFC 7807 style Problem Details passthrough (type, title, status, detail, instance)
-export type HttpSdkError = {
-  name: 'HttpSdkError';
-  message: string;
-  status: number; // HTTP status code
+export interface HttpSdkError extends Error {
+  status: number;
   operationId?: string;
   retries?: { attempt: number; max: number };
   cause?: unknown;
-  // Problem Details fields (optional – only if provided by server)
   type?: string;
   title?: string;
   detail?: string;
   instance?: string;
-};
+  // marker for type guard
+  name: 'HttpSdkError';
+}
 
-export type ValidationSdkError = {
-  name: 'ValidationSdkError';
-  message: string;
+export interface ValidationSdkError extends Error {
   side: 'request' | 'response';
   operationId: string;
-  issues?: unknown; // zod issues or extras detail
-};
+  issues?: unknown;
+  name: 'ValidationSdkError';
+}
 
-export type AuthSdkError = {
-  name: 'AuthSdkError';
-  message: string;
+export interface AuthSdkError extends Error {
   status?: number;
   cause?: unknown;
-};
+  name: 'AuthSdkError';
+}
 
-export type NetworkSdkError = {
-  name: 'NetworkSdkError';
-  message: string;
+export interface NetworkSdkError extends Error {
   cause?: unknown;
-};
+  name: 'NetworkSdkError';
+}
 
 export type SdkError = HttpSdkError | ValidationSdkError | AuthSdkError | NetworkSdkError;
 
@@ -52,51 +48,61 @@ export function isSdkError(e: unknown): e is SdkError {
 
 // Attempt to classify any thrown value to a stable SdkError.
 export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError {
-  if (isSdkError(err)) return err;
+  if (isSdkError(err)) return err as SdkError;
   const e: any = err || {};
-  // HTTP classification (our generator throws synthetic Error with status)
+  // HTTP classification
   if (typeof e.status === 'number') {
-    const h: HttpSdkError = {
-      name: 'HttpSdkError',
-      message: e.message || e.title || e.detail || `HTTP ${e.status}`,
-      status: e.status,
-      operationId: ctx?.opId,
-    };
+    const msg = e.message || e.title || e.detail || `HTTP ${e.status}`;
+    const httpErr = new Error(msg) as any as HttpSdkError;
+    httpErr.name = 'HttpSdkError';
+    httpErr.status = e.status;
+    httpErr.operationId = ctx?.opId;
     for (const k of ['type', 'title', 'detail', 'instance'] as const) {
-      if (e[k] !== undefined) (h as any)[k] = e[k];
+      if (e[k] !== undefined) (httpErr as any)[k] = e[k];
     }
-    if (e.nonRetryable) (h as any).nonRetryable = true;
-    return h;
+    if (e.nonRetryable) (httpErr as any).nonRetryable = true;
+    // preserve original stack if present
+    if (e.stack && typeof e.stack === 'string') {
+      httpErr.stack = e.stack;
+    }
+    return httpErr;
   }
-  // Validation hints (side / operation present?)
+  // Validation
   if (
     e?.code === 'VALIDATION_ERROR' ||
     /validation/i.test(e?.message || '') ||
     /Invalid .* request/i.test(e?.message || '')
   ) {
-    return {
-      name: 'ValidationSdkError',
-      message: e.message || 'Validation error',
-      side: e.side || 'request',
-      operationId: e.operationId || ctx?.opId || 'unknown',
-      issues: e.issues,
-    };
+    const vErr = new Error(e.message || 'Validation error') as any as ValidationSdkError;
+    vErr.name = 'ValidationSdkError';
+    vErr.side = e.side || 'request';
+    vErr.operationId = e.operationId || ctx?.opId || 'unknown';
+    vErr.issues = e.issues;
+    if (e.stack) vErr.stack = e.stack;
+    return vErr;
   }
   // Auth
   if (/auth/i.test(e?.message || '') || e?.name === 'AuthError') {
-    return {
-      name: 'AuthSdkError',
-      message: e.message || 'Authentication error',
-      status: e.status,
-      cause: e,
-    };
+    const aErr = new Error(e.message || 'Authentication error') as any as AuthSdkError;
+    aErr.name = 'AuthSdkError';
+    aErr.status = e.status;
+    aErr.cause = e;
+    if (e.stack) aErr.stack = e.stack;
+    return aErr;
   }
-  // Network (TypeError fetch failures commonly)
+  // Network
   if (e?.name === 'TypeError' || /network/i.test(e?.message || '')) {
-    return { name: 'NetworkSdkError', message: e.message || 'Network error', cause: e };
+    const nErr = new Error(e.message || 'Network error') as any as NetworkSdkError;
+    nErr.name = 'NetworkSdkError';
+    nErr.cause = e;
+    if (e.stack) nErr.stack = e.stack;
+    return nErr;
   }
-  // Fallback treat as network generic
-  return { name: 'NetworkSdkError', message: e?.message || 'Unknown error', cause: e };
+  const unk = new Error(e?.message || 'Unknown error') as any as NetworkSdkError;
+  unk.name = 'NetworkSdkError';
+  unk.cause = e;
+  if (e.stack) unk.stack = e.stack;
+  return unk;
 }
 export class CamundaValidationError extends Error {
   side: 'request' | 'response';

@@ -354,55 +354,31 @@ type ${o.opId}Consistency = {
         methods.push('      if (envelope.body !== undefined) opts.body = envelope.body;');
       methods.push(`      const call = async () => {`);
       methods.push(`        try {`);
-      methods.push(`        const r = await Sdk.${o.opId}(opts);`);
+      methods.push(`        const _raw = await Sdk.${o.opId}(opts);`);
       methods.push(
-        '        if (r && typeof r === "object" && ((r as any).status || (r as any).response?.status)) {'
+        `        let data = this._evaluateResponse(_raw, '${o.originalOpId}', (resp: any) => {`
       );
-      methods.push('          const _st = (r as any).status ?? (r as any).response?.status;');
-      methods.push('          // Backpressure / retry classification candidates');
-      methods.push('          const _isCandidate = _st === 429 || _st === 503 || _st === 500;');
-      methods.push('          if (_isCandidate) {');
-      methods.push('            let _prob: any = undefined;');
+      methods.push('          const st = resp.status ?? resp.response?.status;');
+      methods.push('          if (!st) return undefined;');
+      methods.push('          const candidate = st === 429 || st === 503 || st === 500;');
+      methods.push('          if (!candidate) return undefined;');
+      methods.push('          let prob: any = undefined;');
       methods.push(
-        '            if ((r as any).error && typeof (r as any).error === "object") { _prob = (r as any).error; }'
-      );
-      methods.push('            try {');
-      methods.push(
-        '              // Attempt to parse problem+json or generic json body for RFC 9457 fields'
+        "          if (resp.error && typeof resp.error === 'object') prob = resp.error;"
       );
       methods.push(
-        '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
+        "          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));"
       );
-      methods.push('              if (ct && /json/i.test(ct)) {');
+      methods.push("          err.status = st; err.name = 'HttpSdkError';");
       methods.push(
-        '                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;'
-      );
-      methods.push('                // If body already materialized as data, prefer that');
-      methods.push(
-        '                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }'
-      );
-      methods.push('                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }');
-      methods.push('              }');
-      methods.push('            } catch(_e) { /* swallow parse issues */ }');
-      methods.push(
-        '            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));'
-      );
-      methods.push('            err.status = _st; err.name = "HttpSdkError";');
-      methods.push(
-        '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
+        "          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }"
       );
       methods.push(
-        '            const isBackpressure = (_st === 429) || (_st === 503 && err.title === "RESOURCE_EXHAUSTED") || (_st === 500 && (typeof err.detail === "string" && /RESOURCE_EXHAUSTED/.test(err.detail)));'
+        "          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));"
       );
-      methods.push('            if (!isBackpressure) {');
-      methods.push('              // Mark explicit non-retryable for classifier and still throw');
-      methods.push('              err.nonRetryable = true;');
-      methods.push('            }');
-      methods.push('            throw err; // raw error (not yet normalized)');
-      methods.push('          }');
-      methods.push('        }');
-      methods.push('        let data = (r as any)?.data;');
-      methods.push('        if (data === undefined) data = r;');
+      methods.push('          if (!isBp) err.nonRetryable = true;');
+      methods.push('          return err;');
+      methods.push('        });');
       methods.push(
         `        const _respSchemaName = 'z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response';`
       );
@@ -474,47 +450,31 @@ type ${o.opId}Consistency = {
       );
       methods.push('      const call = async () => {');
       methods.push('        try {');
-      methods.push(`        const r = await Sdk.${o.opId}(opts as any);`);
+      methods.push(`        const _raw = await Sdk.${o.opId}(opts as any);`);
       methods.push(
-        '        if (r && typeof r === "object" && ((r as any).status || (r as any).response?.status)) {'
+        `        let data = this._evaluateResponse(_raw, '${o.originalOpId}', (resp: any) => {`
       );
-      methods.push('          const _st = (r as any).status ?? (r as any).response?.status;');
-      methods.push('          const _isCandidate = _st === 429 || _st === 503 || _st === 500;');
-      methods.push('          if (_isCandidate) {');
-      methods.push('            let _prob: any = undefined;');
+      methods.push('          const st = resp.status ?? resp.response?.status;');
+      methods.push('          if (!st) return undefined;');
+      methods.push('          const candidate = st === 429 || st === 503 || st === 500;');
+      methods.push('          if (!candidate) return undefined;');
+      methods.push('          let prob: any = undefined;');
       methods.push(
-        '            if ((r as any).error && typeof (r as any).error === "object") { _prob = (r as any).error; }'
-      );
-      methods.push('            try {');
-      methods.push(
-        '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
-      );
-      methods.push('              if (ct && /json/i.test(ct)) {');
-      methods.push(
-        '                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;'
+        "          if (resp.error && typeof resp.error === 'object') prob = resp.error;"
       );
       methods.push(
-        '                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }'
+        "          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));"
       );
-      methods.push('                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }');
-      methods.push('              }');
-      methods.push('            } catch(_e) { }');
+      methods.push("          err.status = st; err.name = 'HttpSdkError';");
       methods.push(
-        '            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));'
-      );
-      methods.push('            err.status = _st; err.name = "HttpSdkError";');
-      methods.push(
-        '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
+        "          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }"
       );
       methods.push(
-        '            const isBackpressure = (_st === 429) || (_st === 503 && err.title === "RESOURCE_EXHAUSTED") || (_st === 500 && (typeof err.detail === "string" && /RESOURCE_EXHAUSTED/.test(err.detail)));'
+        "          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); "
       );
-      methods.push('            if (!isBackpressure) { err.nonRetryable = true; }');
-      methods.push('            throw err;');
-      methods.push('          }');
-      methods.push('        }');
-      methods.push('        let data = (r as any)?.data;');
-      methods.push('        if (data === undefined) data = r;');
+      methods.push('          if (!isBp) err.nonRetryable = true;');
+      methods.push('          return err;');
+      methods.push('        });');
       methods.push(
         `        const _respSchemaName = 'z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response';`
       );
