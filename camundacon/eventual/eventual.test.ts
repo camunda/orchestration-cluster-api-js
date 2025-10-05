@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { createCamundaClient } from '../../dist';
+import { createCamundaClient } from '../../src';
 
 describe('eventual consistency', () => {
   it('demonstrates the eventually consistent characteristic', { timeout: 20000 }, async () => {
@@ -19,7 +19,7 @@ describe('eventual consistency', () => {
 
     const getProcess = await camunda.getProcessInstance(
       { processInstanceKey: process.processInstanceKey },
-      { consistency: { waitUpToMs: 0, trace: true } }
+      { consistency: { waitUpToMs: 10_000, trace: true } }
     );
 
     console.log(JSON.stringify(getProcess, null, 2));
