@@ -15,7 +15,7 @@ describe('unified configuration hydration', () => {
       env: { CAMUNDA_REST_ADDRESS: 'http://env' },
       overrides: { CAMUNDA_REST_ADDRESS: 'http://override' },
     });
-  expect(config.restAddress).toBe('http://override/v2');
+    expect(config.restAddress).toBe('http://override/v2');
     const { config: config2 } = hydrateConfig({ env: { CAMUNDA_DEFAULT_TENANT_ID: 'tenant-a' } });
     expect(config2.defaultTenantId).toBe('tenant-a');
   });

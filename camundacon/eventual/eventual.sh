@@ -33,7 +33,7 @@ PROCESS_INSTANCE_KEY=$(echo "$PROCESS_INSTANCE_RESPONSE" | jq -r '.processInstan
 # Get the Process Instance by Key
 
 echo
-echo "Calling get for processInstanceKey=$PROCESS_INSTANCE_KEY" >&2
+echo "GET processInstanceKey=$PROCESS_INSTANCE_KEY" >&2
 CANCEL_RESPONSE_STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X GET \
   "http://localhost:8080/v2/process-instances/$PROCESS_INSTANCE_KEY/" 
 )

@@ -21,7 +21,7 @@ describe('integration helper (basic auth + base URL)', () => {
     });
     const res = await camunda.getLicense();
     expect(fetchMock).toHaveBeenCalledTimes(1);
-  expect((fetchMock.mock.calls[0][0] as Request).url).toBe('http://example.test:8080/v2/license');
+    expect((fetchMock.mock.calls[0][0] as Request).url).toBe('http://example.test:8080/v2/license');
     expect(res).toEqual({ ok: true, url: expect.any(String) });
   });
 });

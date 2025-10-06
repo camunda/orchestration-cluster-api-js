@@ -17,6 +17,7 @@ async function main() {
   const process = await camunda.createProcessInstance({
     processDefinitionKey,
   });
+
   console.log(
     chalk.greenBright(
       `\nCreated process instance with key ${process.processInstanceKey} for definition ${processDefinitionKey}\n`
@@ -27,7 +28,7 @@ async function main() {
 
   const getProcess = await camunda.getProcessInstance(
     { processInstanceKey: process.processInstanceKey },
-    { consistency: { waitUpToMs: 10_000, trace: true } }
+    { consistency: { waitUpToMs: 0, trace: true } }
   );
 
   console.log(JSON.stringify(getProcess, null, 2));
