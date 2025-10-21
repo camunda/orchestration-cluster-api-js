@@ -186,8 +186,9 @@ export class BackpressureManager {
     // Restore permits gradually if not at initial bootstrap cap (we don't exceed original bootstrap cap here)
     if (this.permitsMax !== null) {
       // Chosen policy: we consider bootstrap cap (16) as transient; we could expose a hard upper bound in config later.
-      if (this.permitsMax < 16) {
-        this.permitsMax = Math.min(16, this.permitsMax + this.cfg.recoveryStep);
+      const bootstrapCap = this.cfg.initialMaxConcurrency ?? 16;
+      if (this.permitsMax < bootstrapCap) {
+        this.permitsMax = Math.min(bootstrapCap, this.permitsMax + this.cfg.recoveryStep);
         this.log('permits.recover', { max: this.permitsMax });
         // Attempt draining waiters after increasing cap
         this.release();

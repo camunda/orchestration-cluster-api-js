@@ -98,7 +98,7 @@ export class CamundaClient {
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
-  private _bp: BackpressureManager = new BackpressureManager();
+  private _bp: BackpressureManager;
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -349,7 +349,8 @@ export class CamundaClient {
   getBackpressureState() {
     try {
       return this._bp.getState();
-    } catch {
+    } catch (e) {
+      this._log.error('Error retrieving backpressure state', e);
       return {
         severity: 'healthy',
         permitsMax: null,
