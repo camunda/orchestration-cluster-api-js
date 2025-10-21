@@ -13,6 +13,9 @@ services:
       ZEEBE_BROKER_DATA_DISKUSAGECOMMANDWATERMARK: 0.998
       ZEEBE_BROKER_DATA_DISKUSAGEREPLICATIONWATERMARK: 0.999
       LOGGING_LEVEL_ORG_MYBATIS: 'INFO'
+      ENDPOINT_PROMETHEUS_ACCESS: 'unrestricted'
+      PROMETHEUS_METRICS_EXPORT_ENABLED: 'true'
+
     ports:
       - '8080:8080' # REST API (ZEEBE_REST_ADDRESS -> http://localhost:8080)
       - '26500:26500' # gRPC Gateway
@@ -62,6 +65,50 @@ services:
     networks:
       - camunda-net
 
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus-data:/prometheus
+    ports:
+      - '9090:9090'
+    depends_on:
+      - camunda
+    networks:
+      - camunda-net
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+      - ./grafana/zeebe.json/:/var/lib/grafana/dashboards/zeebe.json
+      - ./grafana/zeebe-overview.json/:/var/lib/grafana/dashboards/zeebe-overview.json
+      - ./grafana/backpressure.json:/var/lib/grafana/dashboards/backpressure.json
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+    ports:
+      - '3000:3000'
+    depends_on:
+      - prometheus
+    networks:
+      - camunda-net
+
 networks:
   camunda-net:
     name: camunda-net
@@ -69,3 +116,5 @@ networks:
 volumes:
   zeebe:
   elastic:
+  prometheus-data:
+  grafana-data:

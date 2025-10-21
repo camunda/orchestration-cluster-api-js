@@ -31,7 +31,7 @@ describe('searchProcessInstances', () => {
     await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
   });
   it.skip('can search for a specific process instance', async () => {
-    const res = await camunda.searchProcessInstances(
+    await camunda.searchProcessInstances(
       {
         filter: { processInstanceKey: ProcessInstanceKey.assumeExists('2251799813685370') },
       },

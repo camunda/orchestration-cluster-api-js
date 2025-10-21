@@ -19,7 +19,9 @@ describe('completeJob', () => {
       timeout: 30000,
     });
 
-    const res = await _camunda.completeJob({
+    expect(jobsResponse.jobs[0].processDefinitionKey).toBe(process.processDefinitionKey);
+
+    await _camunda.completeJob({
       jobKey: jobsResponse.jobs[0].jobKey,
       variables: { someResult: 'value' },
       //  result: {type: 'adHocS ubProcess', isCancelRemainingInstances: true}

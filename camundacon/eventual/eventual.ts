@@ -18,20 +18,20 @@ async function main() {
     processDefinitionKey,
   });
 
-  console.log(
-    chalk.greenBright(
-      `\nCreated process instance with key ${process.processInstanceKey} for definition ${processDefinitionKey}\n`
-    )
-  );
+  log(`\nCreated process instance with key ${process.processInstanceKey}\n`);
 
   // Get the process instance by key
 
   const getProcess = await camunda.getProcessInstance(
     { processInstanceKey: process.processInstanceKey },
-    { consistency: { waitUpToMs: 0, trace: true } }
+    { consistency: { waitUpToMs: 10_000, trace: true } }
   );
 
-  console.log(JSON.stringify(getProcess, null, 2));
+  log(JSON.stringify(getProcess, null, 2));
 }
 
 main();
+
+function log(msg: string) {
+  console.log(chalk.greenBright(msg));
+}

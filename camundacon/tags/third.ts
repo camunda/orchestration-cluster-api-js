@@ -1,6 +1,6 @@
 import readline from 'readline';
 
-import { createCamundaClient as createCamundaClient, Tag } from '../../dist';
+import { createCamundaClient, Tag } from '../../dist';
 
 setup().then(main);
 
@@ -8,14 +8,11 @@ setup().then(main);
  * Lift Tags into type system from configuration
  */
 async function setup() {
-  const tags: Record<string, string> = {
+  const tags = {
     tag1: 'some-tag',
     tag2: '#some-other-tag',
   };
-  return Object.keys(tags).reduce(
-    (prev, key) => ({ ...prev, [key]: Tag.fromString(tags[key]) }),
-    {}
-  ) as Tags;
+  return liftConfigToTags(tags);
 }
 
 async function main(tags: Tags) {
@@ -31,7 +28,7 @@ async function main(tags: Tags) {
     tags: [tags.tag1],
   });
 
-  console.log(`Created first process instance: ${processInstance1.processInstanceKey}`);
+  log(`Created first process instance: ${processInstance1.processInstanceKey}`);
 
   await waitForKeyPress();
 
@@ -40,7 +37,7 @@ async function main(tags: Tags) {
     tags: [tags.tag2],
   });
 
-  console.log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);
+  log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);
 }
 
 async function waitForKeyPress() {
@@ -48,7 +45,7 @@ async function waitForKeyPress() {
     input: process.stdin,
     output: process.stdout,
   });
-  console.log(`Press a key to continue....`);
+  log(`Press a key to continue....`);
   process.stdin.setRawMode(true);
   await new Promise<void>((resolve) =>
     process.stdin.on('data', () => {
@@ -61,4 +58,17 @@ async function waitForKeyPress() {
 interface Tags {
   tag1: Tag;
   tag2: Tag;
+}
+
+type TagsConfig = Record<string, string>;
+const { log } = console;
+
+function liftConfigToTags(tags: TagsConfig): Tags {
+  return Object.keys(tags).reduce(
+    (prev, key) => ({
+      ...prev,
+      [key]: Tag.fromString(tags[key]),
+    }),
+    {}
+  ) as Tags;
 }

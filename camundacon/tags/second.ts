@@ -1,8 +1,33 @@
 import readline from 'readline';
 
-import { createCamundaClient as createCamundaClient, Tag } from '../../dist';
+import { createCamundaClient, Tag } from '../../dist';
 
 main();
+
+async function main() {
+  const camunda = createCamundaClient();
+
+  const res = await camunda.deployResourcesFromFiles([
+    './tests-integration/fixtures/test-process.bpmn',
+  ]);
+  const processDefinitionKey = res.processes[0].processDefinitionKey;
+
+  const processInstance1 = await camunda.createProcessInstance({
+    processDefinitionKey,
+    tags: [Tag.fromString('some-tag')],
+  });
+
+  log(`Created first process instance: ${processInstance1.processInstanceKey}`);
+
+  await waitForKeyPress();
+
+  const processInstance2 = await camunda.createProcessInstance({
+    processDefinitionKey,
+    tags: [Tag.fromString('#some-other-tag')],
+  });
+
+  log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);
+}
 
 async function waitForKeyPress() {
   const rl = readline.createInterface({
@@ -19,27 +44,4 @@ async function waitForKeyPress() {
   );
 }
 
-async function main() {
-  const camunda = createCamundaClient();
-
-  const res = await camunda.deployResourcesFromFiles([
-    './tests-integration/fixtures/test-process.bpmn',
-  ]);
-  const processDefinitionKey = res.processes[0].processDefinitionKey;
-
-  const processInstance1 = await camunda.createProcessInstance({
-    processDefinitionKey,
-    tags: [Tag.fromString('some-tag')],
-  });
-
-  console.log(`Created first process instance: ${processInstance1.processInstanceKey}`);
-
-  //   await waitForKeyPress()
-
-  const processInstance2 = await camunda.createProcessInstance({
-    processDefinitionKey,
-    tags: [Tag.fromString('#some-other-tag')],
-  });
-
-  console.log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);
-}
+const { log } = console;

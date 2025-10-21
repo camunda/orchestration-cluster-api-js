@@ -87,7 +87,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
       'export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {'
     );
     lines.push(
-      '  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);'
+      "  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`\x1b[31mInvalid pattern for ${label}: '${value}'.\x1b[0m Needs to match: ${JSON.stringify(c)}\n`);"
     );
     lines.push(
       '  if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);'

@@ -37,8 +37,13 @@
     "camundacon:eventual:sdk": "tsx camundacon/eventual/eventual.ts",
     "camundacon:eventual:sdk:trace": "CAMUNDA_SDK_LOG_LEVEL=trace tsx camundacon/eventual/eventual.ts",
     "camundacon:backpressure:legacy": "CAMUNDA_SDK_BACKPRESSURE_PROFILE=LEGACY tsx camundacon/backpressure/backpressure.ts",
+    "camundacon:backpressure:legacy:long": "BP_PROFILE_ACTIVATE_BATCH=20 BP_PROFILE_TARGET=10000 CAMUNDA_SDK_BACKPRESSURE_PROFILE=LEGACY tsx camundacon/backpressure/backpressure.ts",
     "camundacon:backpressure:balanced": "CAMUNDA_SDK_BACKPRESSURE_PROFILE=BALANCED tsx camundacon/backpressure/backpressure.ts",
+    "camundacon:backpressure:balanced:long": "BP_PROFILE_ACTIVATE_BATCH=20 BP_PROFILE_TARGET=10000 CAMUNDA_SDK_BACKPRESSURE_PROFILE=BALANCED tsx camundacon/backpressure/backpressure.ts",
     "camundacon:backpressure:aggressive": "CAMUNDA_SDK_BACKPRESSURE_PROFILE=AGGRESSIVE tsx camundacon/backpressure/backpressure.ts",
+    "camundacon:tags:first": "tsx camundacon/tags/first.ts",
+    "camundacon:tags:second": "tsx camundacon/tags/second.ts",
+    "camundacon:tags:third": "tsx camundacon/tags/third.ts",
     "clean": "rimraf dist src/gen src/facade",
     "fetch:spec": "tsx scripts/fetch-spec.ts",
     "generate": "npm run clean && npm run fetch:spec && npm run _pipeline:generate",
@@ -69,7 +74,8 @@
     "docker:start": "docker compose -f docker/docker-compose.yaml up -d",
     "docker:stop": "docker compose -f docker/docker-compose.yaml down",
     "docker:es:start": "docker compose -f docker/docker-compose-es.yaml up -d",
-    "docker:es:stop": "docker compose -f docker/docker-compose-es.yaml down && docker volume prune -f && docker volume rm docker_elastic && docker volume rm docker_zeebe"
+    "docker:es:stop": "docker compose -f docker/docker-compose-es.yaml down && npm run docker:es:cleanup",
+    "docker:es:cleanup": "docker volume rm docker_elastic && docker volume rm docker_zeebe && docker volume rm docker_prometheus-data && docker volume rm docker_grafana-data"
   },
   "files": [
     "dist",

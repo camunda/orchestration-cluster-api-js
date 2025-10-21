@@ -490,7 +490,7 @@ export function validateResponseShape<
   );
 }
 export function validateResponse<
-  P extends RoutePath = RoutePath,
+  P extends RoutePath,
   M extends MethodFor<P>,
   S extends StatusFor<P, M>,
 >(

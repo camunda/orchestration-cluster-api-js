@@ -1,10 +1,10 @@
 {
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda-orchestration-cluster-api",
-    "commit": "6b770a0fb85bcdcd5f00b194cbb414e88294084c",
-    "generatedAt": "2025-10-02T00:32:34.616Z",
+    "commit": "3c57081ff143e302040b544ea0c8273fb06d3183",
+    "generatedAt": "2025-10-08T21:09:11.283Z",
     "specPath": "specification/rest-api.yaml",
-    "specSha256": "b49a73ba78ef93977ace34f643187fe0a0b2393670db2dc995334e123fcb52c7"
+    "specSha256": "44c6da73d18d1028c327b2b7c71163c32094160664fd683180a5a5a348b03bfc"
   },
   "responses": [
     {

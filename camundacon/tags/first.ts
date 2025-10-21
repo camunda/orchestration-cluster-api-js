@@ -17,7 +17,7 @@ async function main() {
     tags: ['some-tag'],
   });
 
-  console.log(`Created first process instance: ${processInstance1.processInstanceKey}`);
+  log(`Created first process instance: ${processInstance1.processInstanceKey}`);
 
   await waitForKeyPress();
 
@@ -26,7 +26,7 @@ async function main() {
     tags: ['#some-other-tag'],
   });
 
-  console.log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);
+  log(`Process instance 2 created: ${processInstance2.processInstanceKey}`);
 }
 
 async function waitForKeyPress() {
@@ -34,7 +34,7 @@ async function waitForKeyPress() {
     input: process.stdin,
     output: process.stdout,
   });
-  console.log(`Press a key to continue....`);
+  log(`Press a key to continue....`);
   process.stdin.setRawMode(true);
   await new Promise<void>((resolve) =>
     process.stdin.on('data', () => {
@@ -43,3 +43,5 @@ async function waitForKeyPress() {
     })
   );
 }
+
+const { log } = console;
