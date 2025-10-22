@@ -8,13 +8,13 @@ import { createCamundaClient } from '../src';
 
 describe('tenantId default injection (body-only)', () => {
   it('injects default tenantId when omitted', async () => {
-  const fetchMock = vi.fn(async (_req: Request) => {
+    const fetchMock = vi.fn(async (_req: Request) => {
       // Extract the multipart/form-data boundary and ensure body is captured
       // We only need to confirm request proceeded; response body shape is enriched after validation.
-      return new Response(
-        JSON.stringify({ deployments: [], tenantMarker: 'ok' }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ deployments: [], tenantMarker: 'ok' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     });
     const client = createCamundaClient({
       config: { CAMUNDA_DEFAULT_TENANT_ID: 'tenant-alpha' },
@@ -32,10 +32,10 @@ describe('tenantId default injection (body-only)', () => {
 
   it('preserves explicit tenantId when provided', async () => {
     const fetchMock = vi.fn(async () => {
-      return new Response(
-        JSON.stringify({ deployments: [], tenantMarker: 'explicit' }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ deployments: [], tenantMarker: 'explicit' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     });
     const client = createCamundaClient({
       config: { CAMUNDA_DEFAULT_TENANT_ID: 'tenant-alpha' },

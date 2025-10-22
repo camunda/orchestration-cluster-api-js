@@ -50,6 +50,11 @@ const MARK_TYPES_END = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES END ===';
 const MARK_METHODS_START = '// === AUTO-GENERATED CAMUNDA METHODS START ===';
 const MARK_METHODS_END = '// === AUTO-GENERATED CAMUNDA METHODS END ===';
 
+function isExempt(opId: string): boolean {
+  // Exempt operations: job completion / failure / throwing BPMN error (names sanitized already)
+  return ['completeJob', 'failJob', 'throwJobError', 'completeUserTask'].includes(opId);
+}
+
 function main() {
   if (!fs.existsSync(SPEC_PATH)) {
     throw new Error('[class-gen] Spec missing, skipping');
@@ -339,7 +344,9 @@ type ${o.opId}Consistency = {
       methods.push(`        if (this._validation.settings.req === 'strict') envelope = maybe;`);
       methods.push('      }');
       // Build options for SDK call
-      methods.push('      const opts: any = { client: this._client, signal };');
+      methods.push(
+        '      const opts: any = { client: this._client, signal, throwOnError: false };'
+      );
       if (o.pathParams.length) methods.push('      if (envelope.path) opts.path = envelope.path;');
       if (o.queryParams.length)
         methods.push('      if (envelope.query) opts.query = envelope.query;');
@@ -347,41 +354,31 @@ type ${o.opId}Consistency = {
         methods.push('      if (envelope.body !== undefined) opts.body = envelope.body;');
       methods.push(`      const call = async () => {`);
       methods.push(`        try {`);
-      methods.push(`        const r = await Sdk.${o.opId}(opts);`);
-      methods.push('        if (r && typeof r === "object" && (r as any).status) {');
-      methods.push('          const _st = (r as any).status;');
-      methods.push('          if (_st === 429 || _st === 503 || _st === 500) {');
-      methods.push('            let _prob: any = undefined;');
-      methods.push('            try {');
+      methods.push(`        const _raw = await Sdk.${o.opId}(opts);`);
       methods.push(
-        '              // Attempt to parse problem+json or generic json body for RFC 9457 fields'
+        `        let data = this._evaluateResponse(_raw, '${o.originalOpId}', (resp: any) => {`
+      );
+      methods.push('          const st = resp.status ?? resp.response?.status;');
+      methods.push('          if (!st) return undefined;');
+      methods.push('          const candidate = st === 429 || st === 503 || st === 500;');
+      methods.push('          if (!candidate) return undefined;');
+      methods.push('          let prob: any = undefined;');
+      methods.push(
+        "          if (resp.error && typeof resp.error === 'object') prob = resp.error;"
       );
       methods.push(
-        '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
+        "          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));"
       );
-      methods.push('              if (ct && /json/i.test(ct)) {');
+      methods.push("          err.status = st; err.name = 'HttpSdkError';");
       methods.push(
-        '                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;'
+        "          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }"
       );
-      methods.push('                // If body already materialized as data, prefer that');
       methods.push(
-        '                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }'
+        "          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));"
       );
-      methods.push('                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }');
-      methods.push('              }');
-      methods.push('            } catch(_e) { /* swallow parse issues */ }');
-      methods.push(
-        '            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));'
-      );
-      methods.push('            err.status = _st; err.name = "HttpSdkError";');
-      methods.push(
-        '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
-      );
-      methods.push('            throw err;');
-      methods.push('          }');
-      methods.push('        }');
-      methods.push('        let data = (r as any)?.data;');
-      methods.push('        if (data === undefined) data = r;');
+      methods.push('          if (!isBp) err.nonRetryable = true;');
+      methods.push('          return err;');
+      methods.push('        });');
       methods.push(
         `        const _respSchemaName = 'z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response';`
       );
@@ -430,7 +427,8 @@ type ${o.opId}Consistency = {
       }
       methods.push('        return data;');
       methods.push('        } catch(e) {');
-      methods.push("          throw normalizeError(e, { opId: '" + o.originalOpId + "' });");
+      methods.push('          // Defer normalization to outer executeWithHttpRetry boundary');
+      methods.push('          throw e;');
       methods.push('        }');
       methods.push('      };');
       if (o.eventual) {
@@ -442,45 +440,41 @@ type ${o.opId}Consistency = {
       } else {
         // Inject HTTP retry wrapper
         methods.push(
-          '      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));'
+          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
         );
       }
     } else {
       // No-input operation
-      methods.push('      const opts: any = { client: this._client, signal };');
+      methods.push(
+        '      const opts: any = { client: this._client, signal, throwOnError: false };'
+      );
       methods.push('      const call = async () => {');
       methods.push('        try {');
-      methods.push(`        const r = await Sdk.${o.opId}(opts as any);`);
-      methods.push('        if (r && typeof r === "object" && (r as any).status) {');
-      methods.push('          const _st = (r as any).status;');
-      methods.push('          if (_st === 429 || _st === 503 || _st === 500) {');
-      methods.push('            let _prob: any = undefined;');
-      methods.push('            try {');
+      methods.push(`        const _raw = await Sdk.${o.opId}(opts as any);`);
       methods.push(
-        '              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;'
+        `        let data = this._evaluateResponse(_raw, '${o.originalOpId}', (resp: any) => {`
       );
-      methods.push('              if (ct && /json/i.test(ct)) {');
+      methods.push('          const st = resp.status ?? resp.response?.status;');
+      methods.push('          if (!st) return undefined;');
+      methods.push('          const candidate = st === 429 || st === 503 || st === 500;');
+      methods.push('          if (!candidate) return undefined;');
+      methods.push('          let prob: any = undefined;');
       methods.push(
-        '                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;'
+        "          if (resp.error && typeof resp.error === 'object') prob = resp.error;"
       );
       methods.push(
-        '                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }'
+        "          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));"
       );
-      methods.push('                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }');
-      methods.push('              }');
-      methods.push('            } catch(_e) { }');
+      methods.push("          err.status = st; err.name = 'HttpSdkError';");
       methods.push(
-        '            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));'
+        "          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }"
       );
-      methods.push('            err.status = _st; err.name = "HttpSdkError";');
       methods.push(
-        '            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }'
+        "          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); "
       );
-      methods.push('            throw err;');
-      methods.push('          }');
-      methods.push('        }');
-      methods.push('        let data = (r as any)?.data;');
-      methods.push('        if (data === undefined) data = r;');
+      methods.push('          if (!isBp) err.nonRetryable = true;');
+      methods.push('          return err;');
+      methods.push('        });');
       methods.push(
         `        const _respSchemaName = 'z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response';`
       );
@@ -501,7 +495,7 @@ type ${o.opId}Consistency = {
       }
       methods.push('        return data;');
       methods.push('        } catch(e) {');
-      methods.push("          throw normalizeError(e, { opId: '" + o.originalOpId + "' });");
+      methods.push('          throw e;');
       methods.push('        }');
       methods.push('      };');
       if (o.eventual) {
@@ -512,7 +506,7 @@ type ${o.opId}Consistency = {
         methods.push('      return invoke();');
       } else {
         methods.push(
-          '      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));'
+          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
         );
       }
     }

@@ -19,8 +19,10 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-import { executeWithHttpRetry } from '../runtime/retry';
+import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
+import { BackpressureManager } from '../runtime/backpressure';
+import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -96,6 +98,7 @@ export class CamundaClient {
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
+  private _bp: BackpressureManager;
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -152,6 +155,26 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
+    // Initialize global backpressure manager with tuned config
+    this._bp = new BackpressureManager({
+      logger: this._log.scope('bp'),
+      config: {
+        enabled: this._config.backpressure.enabled,
+        observeOnly: this._config.backpressure.observeOnly,
+        // In observe-only or disabled modes we keep permitsMax null.
+        initialMaxConcurrency:
+          this._config.backpressure.enabled && !this._config.backpressure.observeOnly
+            ? this._config.backpressure.initialMax || null
+            : null,
+        reduceFactor: this._config.backpressure.softFactor,
+        severeReduceFactor: this._config.backpressure.severeFactor,
+        recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,
+        recoveryStep: this._config.backpressure.recoveryStep,
+        decayQuietMs: this._config.backpressure.decayQuietMs,
+        floorConcurrency: this._config.backpressure.floor,
+        severeThreshold: this._config.backpressure.severeThreshold,
+      },
+    });
     // Debug-level emission of redacted effective configuration (lazy)
     this._log.debug(() => {
       try {
@@ -274,6 +297,67 @@ export class CamundaClient {
       return (Schemas as any)[name]?.type === 'void';
     } catch {
       return false;
+    }
+  }
+
+  /** Internal invocation helper to apply global backpressure gating + retry + normalization */
+  public async _invokeWithRetry<T>(
+    op: () => Promise<T>,
+    opts: {
+      opId: string;
+      exempt?: boolean;
+      classify?: (e: any) => { retryable: boolean; reason: string };
+    }
+  ): Promise<T> {
+    const { opId, exempt, classify } = opts;
+    const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
+    if (!exempt) {
+      await this._bp.acquire(signal);
+    }
+    try {
+      const result = await executeWithHttpRetry(
+        async () => op(),
+        this._config.httpRetry,
+        this._log.scope(opId),
+        (err) => {
+          const decision = (classify ? classify(err) : defaultHttpClassifier(err)) as any;
+          if (decision && decision.retryable && /backpressure|http-429/.test(decision.reason)) {
+            this._bp.recordBackpressure();
+          }
+          return decision;
+        }
+      );
+      this._bp.recordHealthyHint();
+      return result;
+    } catch (e: any) {
+      // Non-retryable or exhausted
+      if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
+      throw normalizeError(e, { opId });
+    } finally {
+      if (!exempt) this._bp.release();
+    }
+  }
+  /** Shared evaluation for raw transport responses (throwOnError:false) */
+  private _evaluateResponse(
+    raw: any,
+    opId: string,
+    buildBackpressureError: (resp: any) => Error | undefined
+  ) {
+    return evaluateSdkResponse(raw, { opId, buildBackpressureError });
+  }
+  /** Public accessor for current backpressure adaptive limiter state (stable) */
+  getBackpressureState() {
+    try {
+      return this._bp.getState();
+    } catch (e) {
+      this._log.error('Error retrieving backpressure state', e);
+      return {
+        severity: 'healthy',
+        permitsMax: null,
+        permitsCurrent: 0,
+        consecutive: 0,
+        waiters: 0,
+      };
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===

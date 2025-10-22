@@ -18,8 +18,10 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-import { executeWithHttpRetry } from '../runtime/retry';
+import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
+import { BackpressureManager } from '../runtime/backpressure';
+import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -33,7 +35,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-10-02T01:46:34.381Z
+// Generated 2025-10-08T20:59:32.944Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -974,6 +976,7 @@ export class CamundaClient {
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
+  private _bp: BackpressureManager = new BackpressureManager();
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -1030,6 +1033,26 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
+    // Initialize global backpressure manager with tuned config
+    this._bp = new BackpressureManager({
+      logger: this._log.scope('bp'),
+      config: {
+        enabled: this._config.backpressure.enabled,
+        observeOnly: this._config.backpressure.observeOnly,
+        // In observe-only or disabled modes we keep permitsMax null.
+        initialMaxConcurrency:
+          this._config.backpressure.enabled && !this._config.backpressure.observeOnly
+            ? this._config.backpressure.initialMax || null
+            : null,
+        reduceFactor: this._config.backpressure.softFactor,
+        severeReduceFactor: this._config.backpressure.severeFactor,
+        recoveryIntervalMs: this._config.backpressure.recoveryIntervalMs,
+        recoveryStep: this._config.backpressure.recoveryStep,
+        decayQuietMs: this._config.backpressure.decayQuietMs,
+        floorConcurrency: this._config.backpressure.floor,
+        severeThreshold: this._config.backpressure.severeThreshold,
+      },
+    });
     // Debug-level emission of redacted effective configuration (lazy)
     this._log.debug(() => {
       try {
@@ -1154,8 +1177,68 @@ export class CamundaClient {
       return false;
     }
   }
+
+  /** Internal invocation helper to apply global backpressure gating + retry + normalization */
+  public async _invokeWithRetry<T>(
+    op: () => Promise<T>,
+    opts: {
+      opId: string;
+      exempt?: boolean;
+      classify?: (e: any) => { retryable: boolean; reason: string };
+    }
+  ): Promise<T> {
+    const { opId, exempt, classify } = opts;
+    const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
+    if (!exempt) {
+      await this._bp.acquire(signal);
+    }
+    try {
+      const result = await executeWithHttpRetry(
+        async () => op(),
+        this._config.httpRetry,
+        this._log.scope(opId),
+        (err) => {
+          const decision = (classify ? classify(err) : defaultHttpClassifier(err)) as any;
+          if (decision && decision.retryable && /backpressure|http-429/.test(decision.reason)) {
+            this._bp.recordBackpressure();
+          }
+          return decision;
+        }
+      );
+      this._bp.recordHealthyHint();
+      return result;
+    } catch (e: any) {
+      // Non-retryable or exhausted
+      if (e && (e as any).status && (e as any).status === 429) this._bp.recordBackpressure();
+      throw normalizeError(e, { opId });
+    } finally {
+      if (!exempt) this._bp.release();
+    }
+  }
+  /** Shared evaluation for raw transport responses (throwOnError:false) */
+  private _evaluateResponse(
+    raw: any,
+    opId: string,
+    buildBackpressureError: (resp: any) => Error | undefined
+  ) {
+    return evaluateSdkResponse(raw, { opId, buildBackpressureError });
+  }
+  /** Public accessor for current backpressure adaptive limiter state (stable) */
+  getBackpressureState() {
+    try {
+      return this._bp.getState();
+    } catch {
+      return {
+        severity: 'healthy',
+        permitsMax: null,
+        permitsCurrent: 0,
+        consecutive: 0,
+        waiters: 0,
+      };
+    }
+  }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-10-02T01:46:34.382Z)
+  // Generated methods (2025-10-08T20:59:32.945Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -1177,34 +1260,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('activateAdHocSubProcessActivities', Schemas.zActivateAdHocSubProcessActivitiesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.activateAdHocSubProcessActivities(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.activateAdHocSubProcessActivities(opts);
+        let data = this._evaluateResponse(_raw, 'activateAdHocSubProcessActivities', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zActivateAdHocSubProcessActivitiesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1218,10 +1293,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'activateAdHocSubProcessActivities' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false }));
     });
   }
 
@@ -1243,33 +1319,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('activateJobs', Schemas.zActivateJobsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.activateJobs(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.activateJobs(opts);
+        let data = this._evaluateResponse(_raw, 'activateJobs', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zActivateJobsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1283,10 +1351,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'activateJobs' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false }));
     });
   }
 
@@ -1309,33 +1378,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignClientToGroup', Schemas.zAssignClientToGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignClientToGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignClientToGroup(opts);
+        let data = this._evaluateResponse(_raw, 'assignClientToGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignClientToGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1349,10 +1410,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignClientToGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false }));
     });
   }
 
@@ -1375,33 +1437,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignClientToTenant', Schemas.zAssignClientToTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignClientToTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignClientToTenant(opts);
+        let data = this._evaluateResponse(_raw, 'assignClientToTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignClientToTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1415,10 +1469,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignClientToTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false }));
     });
   }
 
@@ -1441,33 +1496,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignGroupToTenant', Schemas.zAssignGroupToTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignGroupToTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignGroupToTenant(opts);
+        let data = this._evaluateResponse(_raw, 'assignGroupToTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignGroupToTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1481,10 +1528,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignGroupToTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false }));
     });
   }
 
@@ -1506,33 +1554,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignMappingRuleToGroup', Schemas.zAssignMappingRuleToGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignMappingRuleToGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignMappingRuleToGroup(opts);
+        let data = this._evaluateResponse(_raw, 'assignMappingRuleToGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignMappingRuleToGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1546,10 +1586,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignMappingRuleToGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false }));
     });
   }
 
@@ -1570,33 +1611,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignMappingRuleToTenant', Schemas.zAssignMappingRuleToTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignMappingRuleToTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignMappingRuleToTenant(opts);
+        let data = this._evaluateResponse(_raw, 'assignMappingRuleToTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignMappingRuleToTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1610,10 +1643,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignMappingRuleToTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false }));
     });
   }
 
@@ -1636,33 +1670,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignRoleToClient', Schemas.zAssignRoleToClientData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignRoleToClient(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignRoleToClient(opts);
+        let data = this._evaluateResponse(_raw, 'assignRoleToClient', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignRoleToClientResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1676,10 +1702,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignRoleToClient' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false }));
     });
   }
 
@@ -1702,33 +1729,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignRoleToGroup', Schemas.zAssignRoleToGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignRoleToGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignRoleToGroup(opts);
+        let data = this._evaluateResponse(_raw, 'assignRoleToGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignRoleToGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1742,10 +1761,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignRoleToGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false }));
     });
   }
 
@@ -1767,33 +1787,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignRoleToMappingRule', Schemas.zAssignRoleToMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignRoleToMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignRoleToMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'assignRoleToMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignRoleToMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1807,10 +1819,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignRoleToMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false }));
     });
   }
 
@@ -1833,33 +1846,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignRoleToTenant', Schemas.zAssignRoleToTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignRoleToTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignRoleToTenant(opts);
+        let data = this._evaluateResponse(_raw, 'assignRoleToTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignRoleToTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1873,10 +1878,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignRoleToTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false }));
     });
   }
 
@@ -1899,33 +1905,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignRoleToUser', Schemas.zAssignRoleToUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignRoleToUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignRoleToUser(opts);
+        let data = this._evaluateResponse(_raw, 'assignRoleToUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignRoleToUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -1939,10 +1937,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignRoleToUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false }));
     });
   }
 
@@ -1964,34 +1963,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignUserTask', Schemas.zAssignUserTaskData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.assignUserTask(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignUserTask(opts);
+        let data = this._evaluateResponse(_raw, 'assignUserTask', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignUserTaskResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2005,10 +1996,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignUserTask' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false }));
     });
   }
 
@@ -2031,33 +2023,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignUserToGroup', Schemas.zAssignUserToGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignUserToGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignUserToGroup(opts);
+        let data = this._evaluateResponse(_raw, 'assignUserToGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignUserToGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2071,10 +2055,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignUserToGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false }));
     });
   }
 
@@ -2095,33 +2080,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('assignUserToTenant', Schemas.zAssignUserToTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.assignUserToTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.assignUserToTenant(opts);
+        let data = this._evaluateResponse(_raw, 'assignUserToTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zAssignUserToTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2135,10 +2112,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'assignUserToTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false }));
     });
   }
 
@@ -2163,33 +2141,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('broadcastSignal', Schemas.zBroadcastSignalData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.broadcastSignal(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.broadcastSignal(opts);
+        let data = this._evaluateResponse(_raw, 'broadcastSignal', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zBroadcastSignalResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2203,10 +2173,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'broadcastSignal' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false }));
     });
   }
 
@@ -2233,34 +2204,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('cancelBatchOperation', Schemas.zCancelBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.cancelBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.cancelBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'cancelBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCancelBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2274,7 +2237,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'cancelBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -2301,34 +2265,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('cancelProcessInstance', Schemas.zCancelProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.cancelProcessInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.cancelProcessInstance(opts);
+        let data = this._evaluateResponse(_raw, 'cancelProcessInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCancelProcessInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2342,10 +2298,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'cancelProcessInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false }));
     });
   }
 
@@ -2373,33 +2330,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('cancelProcessInstancesBatchOperation', Schemas.zCancelProcessInstancesBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.cancelProcessInstancesBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.cancelProcessInstancesBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'cancelProcessInstancesBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCancelProcessInstancesBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2413,7 +2362,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'cancelProcessInstancesBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -2441,34 +2391,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('completeJob', Schemas.zCompleteJobData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.completeJob(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.completeJob(opts);
+        let data = this._evaluateResponse(_raw, 'completeJob', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCompleteJobResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2482,10 +2424,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'completeJob' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true }));
     });
   }
 
@@ -2507,34 +2450,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('completeUserTask', Schemas.zCompleteUserTaskData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.completeUserTask(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.completeUserTask(opts);
+        let data = this._evaluateResponse(_raw, 'completeUserTask', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCompleteUserTaskResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2548,10 +2483,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'completeUserTask' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true }));
     });
   }
 
@@ -2580,33 +2516,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('correlateMessage', Schemas.zCorrelateMessageData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.correlateMessage(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.correlateMessage(opts);
+        let data = this._evaluateResponse(_raw, 'correlateMessage', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCorrelateMessageResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2620,10 +2548,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'correlateMessage' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false }));
     });
   }
 
@@ -2647,33 +2576,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createAdminUser', Schemas.zCreateAdminUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createAdminUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createAdminUser(opts);
+        let data = this._evaluateResponse(_raw, 'createAdminUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateAdminUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2687,7 +2608,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createAdminUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -2713,33 +2635,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createAuthorization', Schemas.zCreateAuthorizationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createAuthorization(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createAuthorization(opts);
+        let data = this._evaluateResponse(_raw, 'createAuthorization', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateAuthorizationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2753,10 +2667,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createAuthorization' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false }));
     });
   }
 
@@ -2784,33 +2699,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createDeployment', Schemas.zCreateDeploymentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createDeployment(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createDeployment(opts);
+        let data = this._evaluateResponse(_raw, 'createDeployment', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateDeploymentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2839,10 +2746,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createDeployment' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false }));
     });
   }
 
@@ -2867,34 +2775,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createDocument', Schemas.zCreateDocumentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createDocument(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createDocument(opts);
+        let data = this._evaluateResponse(_raw, 'createDocument', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateDocumentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2908,10 +2808,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createDocument' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false }));
     });
   }
 
@@ -2937,35 +2838,27 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createDocumentLink', Schemas.zCreateDocumentLinkData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createDocumentLink(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createDocumentLink(opts);
+        let data = this._evaluateResponse(_raw, 'createDocumentLink', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateDocumentLinkResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -2979,10 +2872,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createDocumentLink' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false }));
     });
   }
 
@@ -3019,34 +2913,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createDocuments', Schemas.zCreateDocumentsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createDocuments(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createDocuments(opts);
+        let data = this._evaluateResponse(_raw, 'createDocuments', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateDocumentsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3060,10 +2946,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createDocuments' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false }));
     });
   }
 
@@ -3087,34 +2974,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createElementInstanceVariables', Schemas.zCreateElementInstanceVariablesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createElementInstanceVariables(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createElementInstanceVariables(opts);
+        let data = this._evaluateResponse(_raw, 'createElementInstanceVariables', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateElementInstanceVariablesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3128,10 +3007,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createElementInstanceVariables' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false }));
     });
   }
 
@@ -3153,33 +3033,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createGroup', Schemas.zCreateGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createGroup(opts);
+        let data = this._evaluateResponse(_raw, 'createGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3193,10 +3065,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false }));
     });
   }
 
@@ -3218,33 +3091,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createMappingRule', Schemas.zCreateMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'createMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3258,10 +3123,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false }));
     });
   }
 
@@ -3288,33 +3154,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createProcessInstance', Schemas.zCreateProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createProcessInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createProcessInstance(opts);
+        let data = this._evaluateResponse(_raw, 'createProcessInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateProcessInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3328,10 +3186,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createProcessInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false }));
     });
   }
 
@@ -3353,33 +3212,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createRole', Schemas.zCreateRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createRole(opts);
+        let data = this._evaluateResponse(_raw, 'createRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3393,10 +3244,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false }));
     });
   }
 
@@ -3417,33 +3269,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createTenant', Schemas.zCreateTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createTenant(opts);
+        let data = this._evaluateResponse(_raw, 'createTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3457,10 +3301,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false }));
     });
   }
 
@@ -3484,33 +3329,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('createUser', Schemas.zCreateUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.createUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.createUser(opts);
+        let data = this._evaluateResponse(_raw, 'createUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zCreateUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3524,7 +3361,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'createUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -3550,33 +3388,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteAuthorization', Schemas.zDeleteAuthorizationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.deleteAuthorization(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteAuthorization(opts);
+        let data = this._evaluateResponse(_raw, 'deleteAuthorization', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteAuthorizationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3590,10 +3420,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteAuthorization' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false }));
     });
   }
 
@@ -3618,34 +3449,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteDocument', Schemas.zDeleteDocumentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.query) opts.query = envelope.query;
       const call = async () => {
         try {
-        const r = await Sdk.deleteDocument(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteDocument(opts);
+        let data = this._evaluateResponse(_raw, 'deleteDocument', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteDocumentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3659,10 +3482,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteDocument' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false }));
     });
   }
 
@@ -3684,33 +3508,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteGroup', Schemas.zDeleteGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.deleteGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteGroup(opts);
+        let data = this._evaluateResponse(_raw, 'deleteGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3724,10 +3540,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false }));
     });
   }
 
@@ -3749,33 +3566,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteMappingRule', Schemas.zDeleteMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.deleteMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'deleteMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3789,10 +3598,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false }));
     });
   }
 
@@ -3817,44 +3627,37 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteResource', Schemas.zDeleteResourceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.deleteResource(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteResource(opts);
+        let data = this._evaluateResponse(_raw, 'deleteResource', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteResourceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteResource' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false }));
     });
   }
 
@@ -3876,33 +3679,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteRole', Schemas.zDeleteRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.deleteRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteRole(opts);
+        let data = this._evaluateResponse(_raw, 'deleteRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3916,10 +3711,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false }));
     });
   }
 
@@ -3940,33 +3736,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteTenant', Schemas.zDeleteTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.deleteTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteTenant(opts);
+        let data = this._evaluateResponse(_raw, 'deleteTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -3980,10 +3768,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false }));
     });
   }
 
@@ -4008,33 +3797,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('deleteUser', Schemas.zDeleteUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.deleteUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.deleteUser(opts);
+        let data = this._evaluateResponse(_raw, 'deleteUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zDeleteUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4048,7 +3829,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'deleteUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4078,33 +3860,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('evaluateDecision', Schemas.zEvaluateDecisionData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.evaluateDecision(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.evaluateDecision(opts);
+        let data = this._evaluateResponse(_raw, 'evaluateDecision', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zEvaluateDecisionResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4118,10 +3892,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'evaluateDecision' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false }));
     });
   }
 
@@ -4144,34 +3919,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('failJob', Schemas.zFailJobData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.failJob(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.failJob(opts);
+        let data = this._evaluateResponse(_raw, 'failJob', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zFailJobResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4185,10 +3952,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'failJob' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true }));
     });
   }
 
@@ -4202,30 +3970,24 @@ export class CamundaClient {
   getAuthentication(): CancelablePromise<_DataOf<typeof Sdk.getAuthentication>>;
   getAuthentication(arg?: any): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
         try {
-        const r = await Sdk.getAuthentication(opts as any);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getAuthentication(opts as any);
+        let data = this._evaluateResponse(_raw, 'getAuthentication', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetAuthenticationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4239,10 +4001,10 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getAuthentication' });
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false }));
     });
   }
 
@@ -4266,33 +4028,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getAuthorization', Schemas.zGetAuthorizationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getAuthorization(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getAuthorization(opts);
+        let data = this._evaluateResponse(_raw, 'getAuthorization', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetAuthorizationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4306,7 +4060,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getAuthorization' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4335,33 +4090,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getBatchOperation', Schemas.zGetBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'getBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4375,7 +4122,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4405,33 +4153,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getDecisionDefinition', Schemas.zGetDecisionDefinitionData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getDecisionDefinition(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getDecisionDefinition(opts);
+        let data = this._evaluateResponse(_raw, 'getDecisionDefinition', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetDecisionDefinitionResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4445,7 +4185,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getDecisionDefinition' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4475,33 +4216,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getDecisionDefinitionXML', Schemas.zGetDecisionDefinitionXmlData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getDecisionDefinitionXml(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getDecisionDefinitionXml(opts);
+        let data = this._evaluateResponse(_raw, 'getDecisionDefinitionXML', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetDecisionDefinitionXmlResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4515,7 +4248,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getDecisionDefinitionXML' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4545,33 +4279,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getDecisionInstance', Schemas.zGetDecisionInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getDecisionInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getDecisionInstance(opts);
+        let data = this._evaluateResponse(_raw, 'getDecisionInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetDecisionInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4585,7 +4311,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getDecisionInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4615,33 +4342,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getDecisionRequirements', Schemas.zGetDecisionRequirementsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getDecisionRequirements(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getDecisionRequirements(opts);
+        let data = this._evaluateResponse(_raw, 'getDecisionRequirements', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetDecisionRequirementsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4655,7 +4374,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getDecisionRequirements' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4685,33 +4405,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getDecisionRequirementsXML', Schemas.zGetDecisionRequirementsXmlData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getDecisionRequirementsXml(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getDecisionRequirementsXml(opts);
+        let data = this._evaluateResponse(_raw, 'getDecisionRequirementsXML', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetDecisionRequirementsXmlResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4725,7 +4437,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getDecisionRequirementsXML' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4755,34 +4468,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getDocument', Schemas.zGetDocumentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.query) opts.query = envelope.query;
       const call = async () => {
         try {
-        const r = await Sdk.getDocument(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getDocument(opts);
+        let data = this._evaluateResponse(_raw, 'getDocument', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetDocumentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4796,10 +4501,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getDocument' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false }));
     });
   }
 
@@ -4824,33 +4530,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getElementInstance', Schemas.zGetElementInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getElementInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getElementInstance(opts);
+        let data = this._evaluateResponse(_raw, 'getElementInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetElementInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4864,7 +4562,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getElementInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4894,33 +4593,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getGroup', Schemas.zGetGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getGroup(opts);
+        let data = this._evaluateResponse(_raw, 'getGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -4934,7 +4625,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -4964,33 +4656,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getIncident', Schemas.zGetIncidentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getIncident(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getIncident(opts);
+        let data = this._evaluateResponse(_raw, 'getIncident', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetIncidentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5004,7 +4688,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getIncident' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5023,30 +4708,24 @@ export class CamundaClient {
   getLicense(): CancelablePromise<_DataOf<typeof Sdk.getLicense>>;
   getLicense(arg?: any): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
         try {
-        const r = await Sdk.getLicense(opts as any);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getLicense(opts as any);
+        let data = this._evaluateResponse(_raw, 'getLicense', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetLicenseResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5060,10 +4739,10 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getLicense' });
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false }));
     });
   }
 
@@ -5088,33 +4767,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getMappingRule', Schemas.zGetMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'getMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5128,7 +4799,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5158,33 +4830,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessDefinition', Schemas.zGetProcessDefinitionData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessDefinition(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessDefinition(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessDefinition', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessDefinitionResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5198,7 +4862,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessDefinition' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5229,34 +4894,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessDefinitionStatistics', Schemas.zGetProcessDefinitionStatisticsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessDefinitionStatistics(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessDefinitionStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessDefinitionStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessDefinitionStatisticsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5270,7 +4927,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessDefinitionStatistics' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5300,33 +4958,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessDefinitionXML', Schemas.zGetProcessDefinitionXmlData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessDefinitionXml(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessDefinitionXml(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessDefinitionXML', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessDefinitionXmlResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5340,7 +4990,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessDefinitionXML' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5370,33 +5021,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessInstance', Schemas.zGetProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessInstance(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5410,7 +5053,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5440,33 +5084,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessInstanceCallHierarchy', Schemas.zGetProcessInstanceCallHierarchyData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessInstanceCallHierarchy(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessInstanceCallHierarchy(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceCallHierarchy', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessInstanceCallHierarchyResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5480,7 +5116,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessInstanceCallHierarchy' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5510,33 +5147,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessInstanceSequenceFlows', Schemas.zGetProcessInstanceSequenceFlowsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessInstanceSequenceFlows(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessInstanceSequenceFlows(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceSequenceFlows', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessInstanceSequenceFlowsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5550,7 +5179,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessInstanceSequenceFlows' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5580,33 +5210,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getProcessInstanceStatistics', Schemas.zGetProcessInstanceStatisticsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getProcessInstanceStatistics(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getProcessInstanceStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetProcessInstanceStatisticsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5620,7 +5242,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getProcessInstanceStatistics' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5650,33 +5273,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getResource', Schemas.zGetResourceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getResource(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getResource(opts);
+        let data = this._evaluateResponse(_raw, 'getResource', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetResourceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5690,10 +5305,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getResource' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getResource', exempt: false }));
     });
   }
 
@@ -5718,33 +5334,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getResourceContent', Schemas.zGetResourceContentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getResourceContent(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getResourceContent(opts);
+        let data = this._evaluateResponse(_raw, 'getResourceContent', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetResourceContentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5758,10 +5366,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getResourceContent' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getResourceContent', exempt: false }));
     });
   }
 
@@ -5786,33 +5395,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getRole', Schemas.zGetRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getRole(opts);
+        let data = this._evaluateResponse(_raw, 'getRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5826,7 +5427,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5858,33 +5460,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getStartProcessForm', Schemas.zGetStartProcessFormData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getStartProcessForm(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getStartProcessForm(opts);
+        let data = this._evaluateResponse(_raw, 'getStartProcessForm', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetStartProcessFormResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5898,7 +5492,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getStartProcessForm' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -5917,30 +5512,24 @@ export class CamundaClient {
   getStatus(): CancelablePromise<_DataOf<typeof Sdk.getStatus>>;
   getStatus(arg?: any): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
         try {
-        const r = await Sdk.getStatus(opts as any);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getStatus(opts as any);
+        let data = this._evaluateResponse(_raw, 'getStatus', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetStatusResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -5954,10 +5543,10 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getStatus' });
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false }));
     });
   }
 
@@ -5981,33 +5570,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getTenant', Schemas.zGetTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getTenant(opts);
+        let data = this._evaluateResponse(_raw, 'getTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6021,7 +5602,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6040,30 +5622,24 @@ export class CamundaClient {
   getTopology(): CancelablePromise<_DataOf<typeof Sdk.getTopology>>;
   getTopology(arg?: any): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
         try {
-        const r = await Sdk.getTopology(opts as any);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getTopology(opts as any);
+        let data = this._evaluateResponse(_raw, 'getTopology', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetTopologyResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6077,10 +5653,10 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getTopology' });
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false }));
     });
   }
 
@@ -6104,33 +5680,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getUsageMetrics', Schemas.zGetUsageMetricsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
       const call = async () => {
         try {
-        const r = await Sdk.getUsageMetrics(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getUsageMetrics(opts);
+        let data = this._evaluateResponse(_raw, 'getUsageMetrics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetUsageMetricsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6144,7 +5712,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getUsageMetrics' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6174,33 +5743,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getUser', Schemas.zGetUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getUser(opts);
+        let data = this._evaluateResponse(_raw, 'getUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6214,7 +5775,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6244,33 +5806,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getUserTask', Schemas.zGetUserTaskData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getUserTask(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getUserTask(opts);
+        let data = this._evaluateResponse(_raw, 'getUserTask', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetUserTaskResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6284,7 +5838,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getUserTask' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6316,33 +5871,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getUserTaskForm', Schemas.zGetUserTaskFormData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getUserTaskForm(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getUserTaskForm(opts);
+        let data = this._evaluateResponse(_raw, 'getUserTaskForm', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetUserTaskFormResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6356,7 +5903,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getUserTaskForm' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6386,33 +5934,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('getVariable', Schemas.zGetVariableData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.getVariable(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.getVariable(opts);
+        let data = this._evaluateResponse(_raw, 'getVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zGetVariableResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6426,7 +5966,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'getVariable' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6460,34 +6001,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('migrateProcessInstance', Schemas.zMigrateProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.migrateProcessInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.migrateProcessInstance(opts);
+        let data = this._evaluateResponse(_raw, 'migrateProcessInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zMigrateProcessInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6501,10 +6034,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'migrateProcessInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false }));
     });
   }
 
@@ -6532,33 +6066,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('migrateProcessInstancesBatchOperation', Schemas.zMigrateProcessInstancesBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.migrateProcessInstancesBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.migrateProcessInstancesBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'migrateProcessInstancesBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zMigrateProcessInstancesBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6572,7 +6098,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'migrateProcessInstancesBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6605,34 +6132,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('modifyProcessInstance', Schemas.zModifyProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.modifyProcessInstance(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.modifyProcessInstance(opts);
+        let data = this._evaluateResponse(_raw, 'modifyProcessInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zModifyProcessInstanceResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6646,10 +6165,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'modifyProcessInstance' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false }));
     });
   }
 
@@ -6679,33 +6199,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('modifyProcessInstancesBatchOperation', Schemas.zModifyProcessInstancesBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.modifyProcessInstancesBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.modifyProcessInstancesBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'modifyProcessInstancesBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zModifyProcessInstancesBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6719,7 +6231,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'modifyProcessInstancesBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -6751,33 +6264,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('pinClock', Schemas.zPinClockData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.pinClock(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.pinClock(opts);
+        let data = this._evaluateResponse(_raw, 'pinClock', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zPinClockResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6791,10 +6296,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'pinClock' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false }));
     });
   }
 
@@ -6824,33 +6330,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('publishMessage', Schemas.zPublishMessageData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.publishMessage(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.publishMessage(opts);
+        let data = this._evaluateResponse(_raw, 'publishMessage', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zPublishMessageResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6864,10 +6362,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'publishMessage' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false }));
     });
   }
 
@@ -6887,30 +6386,24 @@ export class CamundaClient {
   resetClock(): CancelablePromise<_DataOf<typeof Sdk.resetClock>>;
   resetClock(arg?: any): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
         try {
-        const r = await Sdk.resetClock(opts as any);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.resetClock(opts as any);
+        let data = this._evaluateResponse(_raw, 'resetClock', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zResetClockResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6924,10 +6417,10 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'resetClock' });
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false }));
     });
   }
 
@@ -6950,34 +6443,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('resolveIncident', Schemas.zResolveIncidentData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.resolveIncident(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.resolveIncident(opts);
+        let data = this._evaluateResponse(_raw, 'resolveIncident', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zResolveIncidentResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -6991,10 +6476,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'resolveIncident' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false }));
     });
   }
 
@@ -7022,33 +6508,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('resolveIncidentsBatchOperation', Schemas.zResolveIncidentsBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.resolveIncidentsBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.resolveIncidentsBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'resolveIncidentsBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zResolveIncidentsBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7062,7 +6540,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'resolveIncidentsBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7094,34 +6573,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('resumeBatchOperation', Schemas.zResumeBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.resumeBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.resumeBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'resumeBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zResumeBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7135,7 +6606,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'resumeBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7165,33 +6637,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchAuthorizations', Schemas.zSearchAuthorizationsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchAuthorizations(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchAuthorizations(opts);
+        let data = this._evaluateResponse(_raw, 'searchAuthorizations', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchAuthorizationsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7205,7 +6669,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchAuthorizations' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7234,33 +6699,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchBatchOperationItems', Schemas.zSearchBatchOperationItemsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchBatchOperationItems(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchBatchOperationItems(opts);
+        let data = this._evaluateResponse(_raw, 'searchBatchOperationItems', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchBatchOperationItemsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7274,7 +6731,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchBatchOperationItems' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7303,33 +6761,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchBatchOperations', Schemas.zSearchBatchOperationsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchBatchOperations(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchBatchOperations(opts);
+        let data = this._evaluateResponse(_raw, 'searchBatchOperations', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchBatchOperationsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7343,7 +6793,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchBatchOperations' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7374,34 +6825,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchClientsForGroup', Schemas.zSearchClientsForGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchClientsForGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchClientsForGroup(opts);
+        let data = this._evaluateResponse(_raw, 'searchClientsForGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchClientsForGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7415,7 +6858,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchClientsForGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7446,34 +6890,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchClientsForRole', Schemas.zSearchClientsForRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchClientsForRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchClientsForRole(opts);
+        let data = this._evaluateResponse(_raw, 'searchClientsForRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchClientsForRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7487,7 +6923,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchClientsForRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7517,34 +6954,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchClientsForTenant', Schemas.zSearchClientsForTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchClientsForTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchClientsForTenant(opts);
+        let data = this._evaluateResponse(_raw, 'searchClientsForTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchClientsForTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7558,7 +6987,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchClientsForTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7587,33 +7017,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchCorrelatedMessageSubscriptions', Schemas.zSearchCorrelatedMessageSubscriptionsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchCorrelatedMessageSubscriptions(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchCorrelatedMessageSubscriptions(opts);
+        let data = this._evaluateResponse(_raw, 'searchCorrelatedMessageSubscriptions', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchCorrelatedMessageSubscriptionsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7627,7 +7049,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchCorrelatedMessageSubscriptions' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7657,33 +7080,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchDecisionDefinitions', Schemas.zSearchDecisionDefinitionsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchDecisionDefinitions(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchDecisionDefinitions(opts);
+        let data = this._evaluateResponse(_raw, 'searchDecisionDefinitions', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchDecisionDefinitionsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7697,7 +7112,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchDecisionDefinitions' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7727,33 +7143,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchDecisionInstances', Schemas.zSearchDecisionInstancesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchDecisionInstances(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchDecisionInstances(opts);
+        let data = this._evaluateResponse(_raw, 'searchDecisionInstances', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchDecisionInstancesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7767,7 +7175,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchDecisionInstances' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7797,33 +7206,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchDecisionRequirements', Schemas.zSearchDecisionRequirementsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchDecisionRequirements(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchDecisionRequirements(opts);
+        let data = this._evaluateResponse(_raw, 'searchDecisionRequirements', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchDecisionRequirementsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7837,7 +7238,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchDecisionRequirements' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7867,33 +7269,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchElementInstances', Schemas.zSearchElementInstancesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchElementInstances(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchElementInstances(opts);
+        let data = this._evaluateResponse(_raw, 'searchElementInstances', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchElementInstancesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7907,7 +7301,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchElementInstances' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -7937,34 +7332,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchGroupIdsForTenant', Schemas.zSearchGroupIdsForTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchGroupIdsForTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchGroupIdsForTenant(opts);
+        let data = this._evaluateResponse(_raw, 'searchGroupIdsForTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchGroupIdsForTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -7978,7 +7365,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchGroupIdsForTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8008,33 +7396,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchGroups', Schemas.zSearchGroupsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchGroups(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchGroups(opts);
+        let data = this._evaluateResponse(_raw, 'searchGroups', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchGroupsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8048,7 +7428,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchGroups' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8079,34 +7460,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchGroupsForRole', Schemas.zSearchGroupsForRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchGroupsForRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchGroupsForRole(opts);
+        let data = this._evaluateResponse(_raw, 'searchGroupsForRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchGroupsForRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8120,7 +7493,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchGroupsForRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8150,33 +7524,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchIncidents', Schemas.zSearchIncidentsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchIncidents(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchIncidents(opts);
+        let data = this._evaluateResponse(_raw, 'searchIncidents', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchIncidentsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8190,7 +7556,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchIncidents' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8219,33 +7586,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchJobs', Schemas.zSearchJobsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchJobs(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchJobs(opts);
+        let data = this._evaluateResponse(_raw, 'searchJobs', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchJobsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8259,7 +7618,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchJobs' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8289,33 +7649,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchMappingRule', Schemas.zSearchMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'searchMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8329,7 +7681,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8360,34 +7713,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchMappingRulesForGroup', Schemas.zSearchMappingRulesForGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchMappingRulesForGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchMappingRulesForGroup(opts);
+        let data = this._evaluateResponse(_raw, 'searchMappingRulesForGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchMappingRulesForGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8401,7 +7746,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchMappingRulesForGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8432,34 +7778,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchMappingRulesForRole', Schemas.zSearchMappingRulesForRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchMappingRulesForRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchMappingRulesForRole(opts);
+        let data = this._evaluateResponse(_raw, 'searchMappingRulesForRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchMappingRulesForRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8473,7 +7811,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchMappingRulesForRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8503,34 +7842,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchMappingRulesForTenant', Schemas.zSearchMappingRulesForTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchMappingRulesForTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchMappingRulesForTenant(opts);
+        let data = this._evaluateResponse(_raw, 'searchMappingRulesForTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchMappingRulesForTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8544,7 +7875,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchMappingRulesForTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8574,33 +7906,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchMessageSubscriptions', Schemas.zSearchMessageSubscriptionsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchMessageSubscriptions(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchMessageSubscriptions(opts);
+        let data = this._evaluateResponse(_raw, 'searchMessageSubscriptions', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchMessageSubscriptionsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8614,7 +7938,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchMessageSubscriptions' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8644,33 +7969,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchProcessDefinitions', Schemas.zSearchProcessDefinitionsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchProcessDefinitions(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchProcessDefinitions(opts);
+        let data = this._evaluateResponse(_raw, 'searchProcessDefinitions', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchProcessDefinitionsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8684,7 +8001,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchProcessDefinitions' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8715,34 +8033,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchProcessInstanceIncidents', Schemas.zSearchProcessInstanceIncidentsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchProcessInstanceIncidents(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchProcessInstanceIncidents(opts);
+        let data = this._evaluateResponse(_raw, 'searchProcessInstanceIncidents', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchProcessInstanceIncidentsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8756,7 +8066,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchProcessInstanceIncidents' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8786,33 +8097,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchProcessInstances', Schemas.zSearchProcessInstancesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchProcessInstances(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchProcessInstances(opts);
+        let data = this._evaluateResponse(_raw, 'searchProcessInstances', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchProcessInstancesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8826,7 +8129,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchProcessInstances' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8856,33 +8160,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchRoles', Schemas.zSearchRolesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchRoles(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchRoles(opts);
+        let data = this._evaluateResponse(_raw, 'searchRoles', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchRolesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8896,7 +8192,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchRoles' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8927,34 +8224,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchRolesForGroup', Schemas.zSearchRolesForGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchRolesForGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchRolesForGroup(opts);
+        let data = this._evaluateResponse(_raw, 'searchRolesForGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchRolesForGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -8968,7 +8257,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchRolesForGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -8998,34 +8288,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchRolesForTenant', Schemas.zSearchRolesForTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchRolesForTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchRolesForTenant(opts);
+        let data = this._evaluateResponse(_raw, 'searchRolesForTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchRolesForTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9039,7 +8321,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchRolesForTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9068,33 +8351,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchTenants', Schemas.zSearchTenantsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchTenants(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchTenants(opts);
+        let data = this._evaluateResponse(_raw, 'searchTenants', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchTenantsResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9108,7 +8383,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchTenants' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9138,33 +8414,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchUsers', Schemas.zSearchUsersData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchUsers(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchUsers(opts);
+        let data = this._evaluateResponse(_raw, 'searchUsers', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchUsersResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9178,7 +8446,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchUsers' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9209,34 +8478,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchUsersForGroup', Schemas.zSearchUsersForGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchUsersForGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchUsersForGroup(opts);
+        let data = this._evaluateResponse(_raw, 'searchUsersForGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchUsersForGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9250,7 +8511,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchUsersForGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9281,34 +8543,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchUsersForRole', Schemas.zSearchUsersForRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchUsersForRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchUsersForRole(opts);
+        let data = this._evaluateResponse(_raw, 'searchUsersForRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchUsersForRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9322,7 +8576,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchUsersForRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9352,34 +8607,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchUsersForTenant', Schemas.zSearchUsersForTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchUsersForTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchUsersForTenant(opts);
+        let data = this._evaluateResponse(_raw, 'searchUsersForTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchUsersForTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9393,7 +8640,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchUsersForTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9423,33 +8671,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchUserTasks', Schemas.zSearchUserTasksData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchUserTasks(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchUserTasks(opts);
+        let data = this._evaluateResponse(_raw, 'searchUserTasks', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchUserTasksResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9463,7 +8703,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchUserTasks' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9494,34 +8735,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchUserTaskVariables', Schemas.zSearchUserTaskVariablesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchUserTaskVariables(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchUserTaskVariables(opts);
+        let data = this._evaluateResponse(_raw, 'searchUserTaskVariables', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchUserTaskVariablesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9535,7 +8768,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchUserTaskVariables' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9565,33 +8799,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('searchVariables', Schemas.zSearchVariablesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.searchVariables(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.searchVariables(opts);
+        let data = this._evaluateResponse(_raw, 'searchVariables', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSearchVariablesResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9605,7 +8831,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'searchVariables' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9637,34 +8864,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('suspendBatchOperation', Schemas.zSuspendBatchOperationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.suspendBatchOperation(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.suspendBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'suspendBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zSuspendBatchOperationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9678,7 +8897,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'suspendBatchOperation' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -9706,34 +8926,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('throwJobError', Schemas.zThrowJobErrorData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.throwJobError(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.throwJobError(opts);
+        let data = this._evaluateResponse(_raw, 'throwJobError', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zThrowJobErrorResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9747,10 +8959,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'throwJobError' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true }));
     });
   }
 
@@ -9773,33 +8986,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignClientFromGroup', Schemas.zUnassignClientFromGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignClientFromGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignClientFromGroup(opts);
+        let data = this._evaluateResponse(_raw, 'unassignClientFromGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignClientFromGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9813,10 +9018,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignClientFromGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false }));
     });
   }
 
@@ -9839,33 +9045,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignClientFromTenant', Schemas.zUnassignClientFromTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignClientFromTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignClientFromTenant(opts);
+        let data = this._evaluateResponse(_raw, 'unassignClientFromTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignClientFromTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9879,10 +9077,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignClientFromTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false }));
     });
   }
 
@@ -9905,33 +9104,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignGroupFromTenant', Schemas.zUnassignGroupFromTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignGroupFromTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignGroupFromTenant(opts);
+        let data = this._evaluateResponse(_raw, 'unassignGroupFromTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignGroupFromTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -9945,10 +9136,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignGroupFromTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false }));
     });
   }
 
@@ -9970,33 +9162,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignMappingRuleFromGroup', Schemas.zUnassignMappingRuleFromGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignMappingRuleFromGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignMappingRuleFromGroup(opts);
+        let data = this._evaluateResponse(_raw, 'unassignMappingRuleFromGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignMappingRuleFromGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10010,10 +9194,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignMappingRuleFromGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false }));
     });
   }
 
@@ -10034,33 +9219,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignMappingRuleFromTenant', Schemas.zUnassignMappingRuleFromTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignMappingRuleFromTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignMappingRuleFromTenant(opts);
+        let data = this._evaluateResponse(_raw, 'unassignMappingRuleFromTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignMappingRuleFromTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10074,10 +9251,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignMappingRuleFromTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false }));
     });
   }
 
@@ -10100,33 +9278,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignRoleFromClient', Schemas.zUnassignRoleFromClientData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignRoleFromClient(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignRoleFromClient(opts);
+        let data = this._evaluateResponse(_raw, 'unassignRoleFromClient', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignRoleFromClientResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10140,10 +9310,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignRoleFromClient' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false }));
     });
   }
 
@@ -10166,33 +9337,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignRoleFromGroup', Schemas.zUnassignRoleFromGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignRoleFromGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignRoleFromGroup(opts);
+        let data = this._evaluateResponse(_raw, 'unassignRoleFromGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignRoleFromGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10206,10 +9369,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignRoleFromGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false }));
     });
   }
 
@@ -10231,33 +9395,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignRoleFromMappingRule', Schemas.zUnassignRoleFromMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignRoleFromMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignRoleFromMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'unassignRoleFromMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignRoleFromMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10271,10 +9427,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignRoleFromMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false }));
     });
   }
 
@@ -10298,33 +9455,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignRoleFromTenant', Schemas.zUnassignRoleFromTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignRoleFromTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignRoleFromTenant(opts);
+        let data = this._evaluateResponse(_raw, 'unassignRoleFromTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignRoleFromTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10338,10 +9487,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignRoleFromTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false }));
     });
   }
 
@@ -10364,33 +9514,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignRoleFromUser', Schemas.zUnassignRoleFromUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignRoleFromUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignRoleFromUser(opts);
+        let data = this._evaluateResponse(_raw, 'unassignRoleFromUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignRoleFromUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10404,10 +9546,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignRoleFromUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false }));
     });
   }
 
@@ -10430,33 +9573,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignUserFromGroup', Schemas.zUnassignUserFromGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignUserFromGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignUserFromGroup(opts);
+        let data = this._evaluateResponse(_raw, 'unassignUserFromGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignUserFromGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10470,10 +9605,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignUserFromGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false }));
     });
   }
 
@@ -10496,33 +9632,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignUserFromTenant', Schemas.zUnassignUserFromTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignUserFromTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignUserFromTenant(opts);
+        let data = this._evaluateResponse(_raw, 'unassignUserFromTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignUserFromTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10536,10 +9664,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignUserFromTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false }));
     });
   }
 
@@ -10560,33 +9689,25 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('unassignUserTask', Schemas.zUnassignUserTaskData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       const call = async () => {
         try {
-        const r = await Sdk.unassignUserTask(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.unassignUserTask(opts);
+        let data = this._evaluateResponse(_raw, 'unassignUserTask', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUnassignUserTaskResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10600,10 +9721,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'unassignUserTask' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false }));
     });
   }
 
@@ -10625,34 +9747,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateAuthorization', Schemas.zUpdateAuthorizationData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateAuthorization(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateAuthorization(opts);
+        let data = this._evaluateResponse(_raw, 'updateAuthorization', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateAuthorizationResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10666,10 +9780,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateAuthorization' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false }));
     });
   }
 
@@ -10692,34 +9807,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateGroup', Schemas.zUpdateGroupData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateGroup(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateGroup(opts);
+        let data = this._evaluateResponse(_raw, 'updateGroup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateGroupResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10733,10 +9840,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateGroup' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false }));
     });
   }
 
@@ -10758,34 +9866,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateJob', Schemas.zUpdateJobData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateJob(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateJob(opts);
+        let data = this._evaluateResponse(_raw, 'updateJob', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateJobResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10799,10 +9899,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateJob' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false }));
     });
   }
 
@@ -10825,34 +9926,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateMappingRule', Schemas.zUpdateMappingRuleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateMappingRule(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateMappingRule(opts);
+        let data = this._evaluateResponse(_raw, 'updateMappingRule', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateMappingRuleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10866,10 +9959,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateMappingRule' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false }));
     });
   }
 
@@ -10892,34 +9986,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateRole', Schemas.zUpdateRoleData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateRole(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateRole(opts);
+        let data = this._evaluateResponse(_raw, 'updateRole', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateRoleResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10933,10 +10019,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateRole' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false }));
     });
   }
 
@@ -10958,34 +10045,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateTenant', Schemas.zUpdateTenantData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateTenant(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateTenant(opts);
+        let data = this._evaluateResponse(_raw, 'updateTenant', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateTenantResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -10999,10 +10078,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateTenant' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false }));
     });
   }
 
@@ -11028,34 +10108,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateUser', Schemas.zUpdateUserData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateUser(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateUser(opts);
+        let data = this._evaluateResponse(_raw, 'updateUser', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateUserResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -11069,7 +10141,8 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateUser' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
       const invoke = () => toCancelable(()=>call());
@@ -11096,34 +10169,26 @@ export class CamundaClient {
         const maybe = await this._validation.gateRequest('updateUserTask', Schemas.zUpdateUserTaskData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
-      const opts: any = { client: this._client, signal };
+      const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
-        const r = await Sdk.updateUserTask(opts);
-        if (r && typeof r === "object" && (r as any).status) {
-          const _st = (r as any).status;
-          if (_st === 429 || _st === 503 || _st === 500) {
-            let _prob: any = undefined;
-            try {
-              // Attempt to parse problem+json or generic json body for RFC 9457 fields
-              const ct = (r as any).headers?.get ? (r as any).headers.get("content-type") : undefined;
-              if (ct && /json/i.test(ct)) {
-                const raw = (r as any).body ? await (r as any).body?.text?.() : undefined;
-                // If body already materialized as data, prefer that
-                if (!raw && (r as any).data && typeof (r as any).data === "object") { _prob = (r as any).data; }
-                else if (raw) { try { _prob = JSON.parse(raw); } catch(_){} }
-              }
-            } catch(_e) { /* swallow parse issues */ }
-            const err: any = new Error((_prob && (_prob.title || _prob.detail)) ? (_prob.title || _prob.detail) : ("HTTP " + _st));
-            err.status = _st; err.name = "HttpSdkError";
-            if (_prob) { for (const k of ["type","title","detail","instance"]) if (_prob[k] !== undefined) err[k] = _prob[k]; }
-            throw err;
-          }
-        }
-        let data = (r as any)?.data;
-        if (data === undefined) data = r;
+        const _raw = await Sdk.updateUserTask(opts);
+        let data = this._evaluateResponse(_raw, 'updateUserTask', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
         const _respSchemaName = 'zUpdateUserTaskResponse';
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
@@ -11137,10 +10202,11 @@ export class CamundaClient {
         }
         return data;
         } catch(e) {
-          throw normalizeError(e, { opId: 'updateUserTask' });
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
         }
       };
-      return toCancelable(async _sig => executeWithHttpRetry(() => call(), (this as any)._config.httpRetry, (this as any)._log));
+      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false }));
     });
   }
 

@@ -4,8 +4,9 @@ import { describe, it } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 describe('getTopology', () => {
-  it('scaffold', () => {
+  it('scaffold', async () => {
     const _camunda = createCamundaClient();
-    // TODO: implement getTopology test logic
+    const topology = await _camunda.getTopology();
+    console.log(JSON.stringify(topology, null, 2));
   });
 });

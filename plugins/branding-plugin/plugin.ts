@@ -87,7 +87,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
       'export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {'
     );
     lines.push(
-      '  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`Invalid pattern for ${label}`);'
+      "  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`\x1b[31mInvalid pattern for ${label}: '${value}'.\x1b[0m Needs to match: ${JSON.stringify(c)}\n`);"
     );
     lines.push(
       '  if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);'
@@ -187,7 +187,9 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
                 if (rhs.includes('|')) return full; // skip unions
                 const trimmed = rhs.trim();
                 // Allow simple primitive alias (string) OR composite of known helper types.
-                const tokens = trimmed.split('&').map((t: string) => t.trim().replace(/[()]/g, '').trim());
+                const tokens = trimmed
+                  .split('&')
+                  .map((t: string) => t.trim().replace(/[()]/g, '').trim());
                 const allowed = new Set(['CamundaKey', 'LongKey', 'unknown', 'string']);
                 if (!tokens.every((t: string) => allowed.has(t))) return full;
                 // Avoid re-branding an already branded alias

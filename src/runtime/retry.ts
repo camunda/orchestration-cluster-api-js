@@ -78,14 +78,43 @@ export function createRetryExecutor(opts: CreateRetryOptions): RetryStrategy {
 export function defaultHttpClassifier(err: any): RetryClassification {
   // Fetch network error heuristic: TypeError with failed to fetch / network error messages
   if (err) {
+    // Some generated method wrappers may pessimistically mark errors nonRetryable before
+    // we have a chance to refine classification. We still want to treat broker backpressure
+    // signals (RESOURCE_EXHAUSTED) as retryable even if flagged nonRetryable upstream.
+    if ((err as any).nonRetryable) {
+      const status = (err as any).status || (err as any).response?.status;
+      const title = (err as any).title || (err as any).response?.data?.title;
+      const detail = (err as any).detail || (err as any).response?.data?.detail;
+      if (
+        status === 500 &&
+        ((typeof title === 'string' && /RESOURCE_EXHAUSTED/.test(title)) ||
+          (typeof detail === 'string' && /RESOURCE_EXHAUSTED/.test(detail)))
+      ) {
+        return { retryable: true, reason: 'backpressure-500-title' };
+      }
+      return { retryable: false, reason: 'explicit-non-retryable' };
+    }
     const msg = (err.message || '').toLowerCase();
     if (err.name === 'TypeError' && (msg.includes('fetch') || msg.includes('network'))) {
       return { retryable: true, reason: 'network-error' };
     }
     const status = (err as any).status || (err as any).response?.status;
-    if (status === 429) return { retryable: true, reason: 'http-429' };
-    if (status === 503) return { retryable: true, reason: 'http-503' };
-    if (status === 500) return { retryable: false, reason: 'http-500' };
+    if (status === 429) return { retryable: true, reason: 'http-429' }; // always retry 429
+    const title = (err as any).title || (err as any).response?.data?.title;
+    const detail = (err as any).detail || (err as any).response?.data?.detail;
+    if (status === 503) {
+      if (title === 'RESOURCE_EXHAUSTED') return { retryable: true, reason: 'backpressure-503' };
+      return { retryable: false, reason: 'http-503-non-backpressure' };
+    }
+    if (status === 500) {
+      if (
+        (typeof detail === 'string' && /RESOURCE_EXHAUSTED/.test(detail)) ||
+        (typeof title === 'string' && /RESOURCE_EXHAUSTED/.test(title))
+      ) {
+        return { retryable: true, reason: 'backpressure-500-detail' };
+      }
+      return { retryable: false, reason: 'http-500' };
+    }
   }
   return { retryable: false, reason: 'non-retryable' };
 }
@@ -102,28 +131,39 @@ export async function executeWithPRetry<T>(
     const mod: any = await import('p-retry');
     const pRetry = mod.default || mod;
     let attempt = 0;
-    return await pRetry(fn, {
+    // Wrap the user fn so we can classify BEFORE p-retry decides to schedule another attempt.
+    const wrapped = async () => {
+      try {
+        return await fn();
+      } catch (e) {
+        const classification = classify(e);
+        if (!classification.retryable) {
+          // Abort immediately; p-retry will not perform further attempts.
+          throw new pRetry.AbortError(e);
+        }
+        // Attach reason for logging in onFailedAttempt without re-classifying.
+        (e as any).__retryReason = classification.reason;
+        throw e;
+      }
+    };
+    return await pRetry(wrapped, {
       retries: policy.maxAttempts - 1,
       onFailedAttempt: (err: any) => {
         attempt = err.attemptNumber; // 1-based
         const original = err.originalError || err;
-        const classification = classify(original);
-        if (!classification.retryable) {
-          // Abort further retries by rethrowing original error (p-retry will stop)
-          throw original;
-        }
+        const reason = original.__retryReason || classify(original).reason;
         // Compute next delay similar to our fallback (exponential full jitter)
         const exp = policy.baseDelayMs * 2 ** (attempt - 1);
         const cap = Math.min(exp, policy.maxDelayMs);
         const nextDelay = Math.floor(Math.random() * cap);
-        onAttempt?.({ attempt, nextDelayMs: nextDelay, reason: classification.reason });
+        onAttempt?.({ attempt, nextDelayMs: nextDelay, reason });
         logger?.trace(() => [
           'http.retry.scheduled',
           {
             attempt: attempt + 1,
             max: policy.maxAttempts,
             delayMs: nextDelay,
-            reason: classification.reason,
+            reason,
           },
         ]);
       },
@@ -148,5 +188,7 @@ export async function executeWithHttpRetry<T>(
   classify: (err: any) => RetryClassification = defaultHttpClassifier,
   onAttempt?: (info: { attempt: number; nextDelayMs: number; reason: string }) => void
 ): Promise<T> {
-  return executeWithPRetry(fn, policy, classify, onAttempt, logger);
+  // Use internal executor directly for deterministic single-attempt behavior on non-retryable errors.
+  const exec = createRetryExecutor({ policy, logger, onAttempt });
+  return exec(fn, classify);
 }

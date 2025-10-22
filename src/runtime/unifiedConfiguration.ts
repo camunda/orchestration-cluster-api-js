@@ -65,6 +65,19 @@ export interface CamundaConfig {
   tokenAudience: string;
   defaultTenantId: string; // branded at usage sites as TenantId
   httpRetry: { maxAttempts: number; baseDelayMs: number; maxDelayMs: number }; // generic HTTP operation retry policy
+  backpressure: {
+    enabled: boolean;
+    profile: string; // BALANCED | CONSERVATIVE | AGGRESSIVE | LEGACY
+    observeOnly: boolean; // LEGACY profile semantics (collect signals, no gating)
+    initialMax: number;
+    softFactor: number;
+    severeFactor: number;
+    recoveryIntervalMs: number;
+    recoveryStep: number;
+    decayQuietMs: number;
+    floor: number;
+    severeThreshold: number;
+  };
   oauth: {
     clientId?: string;
     clientSecret?: string;
@@ -427,6 +440,78 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       // Canonicalize to no trailing slash (optional design choice); keep existing behavior by not altering
     }
   }
+  // Apply backpressure profile defaults if individual vars not explicitly provided.
+  const profile = (rawMap['CAMUNDA_SDK_BACKPRESSURE_PROFILE'] || 'BALANCED')
+    .toString()
+    .toUpperCase();
+  interface BpPreset {
+    initialMax: number;
+    soft: number;
+    severe: number;
+    recoveryInterval: number;
+    recoveryStep: number;
+    quietMs: number;
+    floor: number;
+    severeThreshold: number;
+  }
+  const PRESETS: Record<string, BpPreset> = {
+    BALANCED: {
+      initialMax: 16,
+      soft: 70,
+      severe: 50,
+      recoveryInterval: 1000,
+      recoveryStep: 1,
+      quietMs: 2000,
+      floor: 1,
+      severeThreshold: 3,
+    },
+    CONSERVATIVE: {
+      initialMax: 12,
+      soft: 60,
+      severe: 40,
+      recoveryInterval: 1200,
+      recoveryStep: 1,
+      quietMs: 2500,
+      floor: 1,
+      severeThreshold: 2,
+    },
+    AGGRESSIVE: {
+      initialMax: 24,
+      soft: 80,
+      severe: 60,
+      recoveryInterval: 800,
+      recoveryStep: 2,
+      quietMs: 1500,
+      floor: 2,
+      severeThreshold: 4,
+    },
+    LEGACY: {
+      // observe-only: we still need plausible defaults if user overrides individual knobs
+      initialMax: 16,
+      soft: 70,
+      severe: 50,
+      recoveryInterval: 1000,
+      recoveryStep: 1,
+      quietMs: 2000,
+      floor: 1,
+      severeThreshold: 3,
+    },
+  };
+  const preset = PRESETS[profile] || PRESETS.BALANCED;
+  // Only override when user did NOT explicitly provide a value (env or override). We rely on the
+  // 'provided' map built earlier; default schema values should not block profile application.
+  function ensure(k: string, val: number) {
+    if (!(provided as any)[k]) rawMap[k] = String(val);
+  }
+  // Only fill when the specific env var is absent (explicit override wins over profile).
+  ensure('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX', preset.initialMax);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR', preset.soft);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR', preset.severe);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS', preset.recoveryInterval);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP', preset.recoveryStep);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS', preset.quietMs);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_FLOOR', preset.floor);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD', preset.severeThreshold);
   const config: CamundaConfig = {
     restAddress: _restAddress,
     tokenAudience: rawMap['CAMUNDA_TOKEN_AUDIENCE']!,
@@ -435,6 +520,34 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       maxAttempts: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS'] || '3', 10),
       baseDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS'] || '100', 10),
       maxDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS'] || '2000', 10),
+    },
+    backpressure: {
+      enabled: profile !== 'LEGACY',
+      profile,
+      observeOnly: profile === 'LEGACY',
+      initialMax: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX'] || '16', 10),
+      softFactor: Math.min(
+        1,
+        Math.max(
+          0.01,
+          (parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR'] || '70', 10) || 70) / 100
+        )
+      ),
+      severeFactor: Math.min(
+        1,
+        Math.max(
+          0.01,
+          (parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR'] || '50', 10) || 50) / 100
+        )
+      ),
+      recoveryIntervalMs: parseInt(
+        rawMap['CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS'] || '1000',
+        10
+      ),
+      recoveryStep: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP'] || '1', 10),
+      decayQuietMs: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS'] || '2000', 10),
+      floor: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_FLOOR'] || '1', 10),
+      severeThreshold: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD'] || '3', 10),
     },
     oauth: {
       clientId: rawMap['CAMUNDA_CLIENT_ID']?.trim() || undefined,

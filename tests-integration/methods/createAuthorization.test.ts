@@ -2,10 +2,11 @@
 import { describe, it } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
+import { validateResponseShape } from '../../json-body-assertions';
 import { isSdkError } from '../../src/runtime/errors';
 
 describe('createAuthorization', () => {
-  it('scaffold', async () => {
+  it('throws 409 if the user exists', async () => {
     const _camunda = createCamundaClient();
     const res = await _camunda
       .createAuthorization({
@@ -39,5 +40,15 @@ describe('createAuthorization', () => {
         // Non-SDK (programmer) error; rethrow or wrap
         throw e;
       });
+    if (res) {
+      validateResponseShape(
+        {
+          path: '/authorizations',
+          method: 'POST',
+          status: '201',
+        },
+        res
+      );
+    }
   });
 });

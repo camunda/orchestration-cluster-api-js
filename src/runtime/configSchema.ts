@@ -130,6 +130,53 @@ export const SCHEMA = {
     default: '<default>',
     doc: 'Default tenant id applied to operations when an explicit tenantId is not provided (branded TenantId).',
   },
+  // CAMUNDA_SDK_BACKPRESSURE_ENABLED removed in favor of profile LEGACY (observe-only) vs others (active gating)
+  CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX: {
+    type: 'int',
+    default: 16,
+    doc: 'Initial bootstrap concurrency cap once first backpressure signal occurs.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR: {
+    type: 'int',
+    default: 70,
+    doc: 'Percentage (integer) multiplier applied to permits on soft backpressure event (e.g. 70 => 0.7x).',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR: {
+    type: 'int',
+    default: 50,
+    doc: 'Percentage multiplier applied when escalating to severe (e.g. 50 => 0.5x).',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS: {
+    type: 'int',
+    default: 1000,
+    doc: 'Interval in ms between passive recovery checks while healthy hints observed.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP: {
+    type: 'int',
+    default: 1,
+    doc: 'Permits regained per recovery interval until reaching bootstrap cap.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS: {
+    type: 'int',
+    default: 2000,
+    doc: 'Quiet period (ms) without backpressure signals required to downgrade severity.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_FLOOR: {
+    type: 'int',
+    default: 1,
+    doc: 'Minimum floor concurrency when degraded.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD: {
+    type: 'int',
+    default: 3,
+    doc: 'Consecutive backpressure events required to enter severe state.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_PROFILE: {
+    type: 'enum',
+    choices: ['BALANCED', 'CONSERVATIVE', 'AGGRESSIVE', 'LEGACY'] as const,
+    default: 'BALANCED',
+    doc: 'Preset profile for backpressure tuning (LEGACY = observe-only, no gating; other profiles enable adaptive global concurrency control).',
+  },
 } as const;
 
 export type EnvVarKey = keyof typeof SCHEMA;

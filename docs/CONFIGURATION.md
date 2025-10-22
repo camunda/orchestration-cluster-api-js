@@ -222,6 +222,7 @@ console.log(toDisplayString());
 - Additional numeric knobs (timeouts, retry counts) via `int` type entries. (Several implemented for OAuth already.)
 - Deprecation warnings surface in `warnings` array.
 - Potential multi‑source merge strategies for multi‑tenant browser apps.
+- Global backpressure tuning knobs (adaptive concurrency): initial cap, reduce factors, recovery cadence, floor concurrency, quiet decay window. (Currently internal defaults; not yet exposed as public env vars.)
 
 ---
 
