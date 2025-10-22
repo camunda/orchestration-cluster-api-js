@@ -35,7 +35,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-10-08T20:59:32.944Z
+// Generated 2025-10-22T03:56:56.258Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -976,7 +976,7 @@ export class CamundaClient {
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
-  private _bp: BackpressureManager = new BackpressureManager();
+  private _bp: BackpressureManager;
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -1227,7 +1227,8 @@ export class CamundaClient {
   getBackpressureState() {
     try {
       return this._bp.getState();
-    } catch {
+    } catch (e) {
+      this._log.error('Error retrieving backpressure state', e);
       return {
         severity: 'healthy',
         permitsMax: null,
@@ -1238,7 +1239,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-10-08T20:59:32.945Z)
+  // Generated methods (2025-10-22T03:56:56.258Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
