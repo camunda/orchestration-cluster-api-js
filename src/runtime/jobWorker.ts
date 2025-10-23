@@ -19,7 +19,7 @@ export interface JobWorkerConfig<
   pollIntervalMs?: number; // default 1ms
   jobHandler: (job: Job<In, Headers>) => Promise<JobActionReceipt> | JobActionReceipt;
   autoStart?: boolean; // default true
-  maxParallelJobs: number; // concurrency limit (prompt said boolean; treated as number)
+  maxParallelJobs: number; // concurrency limit
   timeoutMs: number; // requestTimeout for activation long poll
   jobType: string; // Zeebe job type
   /** @deprecated Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility. */
@@ -207,7 +207,7 @@ export class JobWorker {
         } finally {
           markDone();
         }
-        return JobActionReceipt as JobActionReceipt;
+        return JobActionReceipt;
       },
       cancel: async (body: any): Promise<JobActionReceipt> => {
         try {
@@ -218,7 +218,7 @@ export class JobWorker {
         } finally {
           markDone();
         }
-        return JobActionReceipt as JobActionReceipt;
+        return JobActionReceipt;
       },
       complete: async (body: any): Promise<JobActionReceipt> => {
         if (this._cfg.validateSchemas && this._cfg.outputSchema && body?.variables) {
@@ -235,7 +235,7 @@ export class JobWorker {
         } finally {
           markDone();
         }
-        return JobActionReceipt as JobActionReceipt;
+        return JobActionReceipt;
       },
       fail: async (body: any): Promise<JobActionReceipt> => {
         try {
@@ -243,11 +243,11 @@ export class JobWorker {
         } finally {
           markDone();
         }
-        return JobActionReceipt as JobActionReceipt;
+        return JobActionReceipt;
       },
       ignore: async (): Promise<JobActionReceipt> => {
         markDone();
-        return JobActionReceipt as JobActionReceipt;
+        return JobActionReceipt;
       },
       log: this._log.scope(`job:${raw.jobKey}`),
     });
