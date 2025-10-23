@@ -194,6 +194,18 @@ const skip = new Set([
   'deployResourcesFromFiles',
 ]);
 
+## Contributing
+
+We welcome issues and pull requests. Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) guide before opening a PR to understand:
+
+- Deterministic build mode (`CAMUNDA_SDK_DETERMINISTIC_BUILD=1`)
+- Commit message conventions (Conventional Commits with enforced subject length)
+- Release workflow & how to dry‑run semantic‑release locally
+- Testing strategy (unit vs integration)
+- Performance and security considerations
+
+If you plan to help migrate to npm Trusted Publishing (OIDC), open an issue so we can coordinate workflow permission changes (`id-token: write`) and removal of the legacy `NPM_TOKEN` secret.
+
 for (const key of Object.keys(client)) {
   const val: any = (client as any)[key];
   if (typeof val === 'function' && !key.startsWith('_') && !skip.has(key)) {
