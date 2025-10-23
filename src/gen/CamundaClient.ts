@@ -36,7 +36,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-10-23T01:45:22.639Z
+// Generated 2025-10-23T03:16:05.130Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1242,7 +1242,9 @@ export class CamundaClient {
     }
   }
   /** Return a read-only snapshot of currently registered job workers. */
-  getWorkers() { return [...this._workers]; }
+  getWorkers() {
+    return [...this._workers];
+  }
   /** Stop all registered job workers (best-effort). */
   stopAllWorkers() {
     for (const w of this._workers) {
@@ -1254,7 +1256,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-10-23T01:45:22.640Z)
+  // Generated methods (2025-10-23T03:16:05.130Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -10232,7 +10234,11 @@ export class CamundaClient {
    * Create a job worker that activates and processes jobs of the given type.
    * @param cfg Worker configuration
    */
-  createJobWorker<In extends import('zod').ZodTypeAny = any, Out extends import('zod').ZodTypeAny = any, Headers extends import('zod').ZodTypeAny = any>(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
+  createJobWorker<
+    In extends import('zod').ZodTypeAny = any,
+    Out extends import('zod').ZodTypeAny = any,
+    Headers extends import('zod').ZodTypeAny = any,
+  >(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
     const worker = new JobWorker(this as any, cfg as JobWorkerConfig);
     this._workers.push(worker);
     return worker;

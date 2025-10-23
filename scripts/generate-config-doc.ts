@@ -29,14 +29,10 @@ function table(): string {
 }
 
 function main() {
-  const md = [
-    '# Configuration Reference',
-    '',
-    'Generated: ' + new Date().toISOString(),
-    '',
-    table(),
-    '',
-  ].join('\n');
+  const nowTs = process.env.CAMUNDA_SDK_DETERMINISTIC_BUILD
+    ? '1970-01-01T00:00:00.000Z'
+    : new Date().toISOString();
+  const md = ['# Configuration Reference', '', 'Generated: ' + nowTs, '', table(), ''].join('\n');
   mkdirSync('docs', { recursive: true });
   writeFileSync('docs/CONFIG_REFERENCE.md', md);
   console.log('Generated docs/CONFIG_REFERENCE.md');

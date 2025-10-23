@@ -56,6 +56,9 @@ function isExempt(opId: string): boolean {
 }
 
 function main() {
+  const nowTs = process.env.CAMUNDA_SDK_DETERMINISTIC_BUILD
+    ? '1970-01-01T00:00:00.000Z'
+    : new Date().toISOString();
   if (!fs.existsSync(SPEC_PATH)) {
     throw new Error('[class-gen] Spec missing, skipping');
   }
@@ -175,7 +178,7 @@ function main() {
   ops.sort((a, b) => a.opId.localeCompare(b.opId));
 
   const support: string[] = [];
-  support.push('// Generated ' + new Date().toISOString());
+  support.push('// Generated ' + nowTs);
   support.push('// Operations: ' + ops.length);
   support.push('type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;');
   support.push(
@@ -250,7 +253,7 @@ type ${o.opId}Consistency = {
   support.push('}');
 
   const methods: string[] = [];
-  methods.push('  // Generated methods (' + new Date().toISOString() + ')');
+  methods.push('  // Generated methods (' + nowTs + ')');
   // (createDeployment) enrichment handled inline per-call; types above exported
   for (const o of ops) {
     let jsdoc = forwardJsDoc(o, docs);

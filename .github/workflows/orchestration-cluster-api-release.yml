@@ -124,8 +124,10 @@ jobs:
       - name: Install deps
         run: npm ci
       - name: Regenerate & Build (Integrity Check)
+        env:
+          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
         run: npm run build
-      - name: Verify no drift
+      - name: Verify no drift (deterministic)
         run: git diff --exit-code
       - name: Write BUILDINFO
         run: npx tsx scripts/write-buildinfo.ts
