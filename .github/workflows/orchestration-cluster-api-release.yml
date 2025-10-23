@@ -132,11 +132,16 @@ jobs:
       - name: Regenerate & Build (Integrity Check)
         env:
           CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
-        run: npm run build
+          CAMUNDA_SDK_SKIP_FETCH_SPEC: '1'
+        run: |
+          # Deterministic build without refetching upstream spec to avoid mid-release spec drift.
+          npm run build
+      - name: Write BUILDINFO (deterministic timestamp) BEFORE drift check
+        env:
+          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
+        run: npx tsx scripts/write-buildinfo.ts
       - name: Verify no drift (deterministic)
         run: git diff --exit-code
-      - name: Write BUILDINFO
-        run: npx tsx scripts/write-buildinfo.ts
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
