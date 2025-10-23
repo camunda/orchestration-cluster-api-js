@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import logLine from 'single-line-log';
 
-import { createCamundaClient } from '../../dist';
+import { createCamundaClient } from '../../src';
 import * as CamundaKeys from '../../src/gen';
 
 /**
@@ -118,42 +118,30 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
     }
   })();
 
-  // Consumer loop: activate & complete jobs until target completions reached.
-  const consumer = (async () => {
-    while (!done) {
-      if (completed >= TARGET) break;
+  // Job worker using new API
+  const worker = client.createJobWorker({
+    jobType: 'test-job',
+    maxParallelJobs: ACTIVATE_BATCH,
+    timeoutMs: 5000,
+    pollIntervalMs: 1, // quick re-poll after long poll completes
+    autoStart: true,
+    validateSchemas: false,
+    jobHandler: async (job) => {
       try {
-        const act = await client.activateJobs({
-          type: 'test-job',
-          maxJobsToActivate: ACTIVATE_BATCH,
-          timeout: 5000,
-          worker: 'bp-profile-worker',
-        });
-        if (act && Array.isArray(act.jobs) && act.jobs.length) {
-          // Complete in parallel but limit concurrency implicitly by next loop iteration only after completes
-          await Promise.all(
-            act.jobs.map((j: any) =>
-              client
-                .completeJob({ jobKey: j.jobKey, variables: { profiled: true } })
-                .catch(() => {})
-            )
-          );
-          completed += act.jobs.length;
-          const now = Date.now();
-          if (now - lastProgressPrint >= PROGRESS_INTERVAL_MS) {
-            writeProgress();
-            lastProgressPrint = now;
-          }
-        } else {
-          // Light backoff when no jobs
-          await new Promise((r) => setTimeout(r, 1));
+        const receipt = await job.complete({ variables: { profiled: true } });
+        completed += 1;
+        const now = Date.now();
+        if (now - lastProgressPrint >= PROGRESS_INTERVAL_MS) {
+          writeProgress();
+          lastProgressPrint = now;
         }
-      } catch {
-        // swallow and retry
-        await new Promise((r) => setTimeout(r, 1));
+        return receipt;
+      } catch (e) {
+        job.log.error('completion.error', e);
+        return job.fail({ errorMessage: 'handler failure' });
       }
-    }
-  })();
+    },
+  });
 
   // Watcher to terminate when done
   const watcher = (async () => {
@@ -167,9 +155,16 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
   })();
 
   await Promise.race([
-    Promise.all([producer, consumer, watcher]),
+    Promise.all([producer, watcher]),
     new Promise((_, rej) => setTimeout(() => rej(new Error('scenario timeout')), 480_000)),
   ]);
+
+  // Stop worker after completion target
+  try {
+    worker.stop();
+  } catch (e) {
+    /* ignore */
+  }
 
   done = true; // ensure loops exit
   // Wait for any lingering create ops

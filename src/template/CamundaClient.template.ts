@@ -22,6 +22,7 @@ import type { Client } from '../gen/client/types.gen';
 import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
+import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -99,6 +100,8 @@ export class CamundaClient {
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
   private _bp: BackpressureManager;
+  /** Registered job workers created via createJobWorker (lifecycle managed by user). */
+  private _workers: any[] = [];
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -360,8 +363,36 @@ export class CamundaClient {
       };
     }
   }
+  /** Return a read-only snapshot of currently registered job workers. */
+  getWorkers() {
+    return [...this._workers];
+  }
+  /** Stop all registered job workers (best-effort). */
+  stopAllWorkers() {
+    for (const w of this._workers) {
+      try {
+        if (typeof w.stop === 'function') w.stop();
+      } catch (e) {
+        this._log.warn('worker.stop.error', e);
+      }
+    }
+  }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
   // === AUTO-GENERATED CAMUNDA METHODS END ===
+
+  /**
+   * Create a job worker that activates and processes jobs of the given type.
+   * @param cfg Worker configuration
+   */
+  createJobWorker<
+    In extends import('zod').ZodTypeAny = any,
+    Out extends import('zod').ZodTypeAny = any,
+    Headers extends import('zod').ZodTypeAny = any,
+  >(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
+    const worker = new JobWorker(this as any, cfg as JobWorkerConfig);
+    this._workers.push(worker);
+    return worker;
+  }
 
   /**
    * Node-only convenience: deploy resources from local filesystem paths.

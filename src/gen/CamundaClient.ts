@@ -21,6 +21,7 @@ import type { Client } from '../gen/client/types.gen';
 import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
+import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -35,7 +36,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-10-08T20:59:32.944Z
+// Generated 2025-10-23T01:45:22.639Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -976,7 +977,9 @@ export class CamundaClient {
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
-  private _bp: BackpressureManager = new BackpressureManager();
+  private _bp: BackpressureManager;
+  /** Registered job workers created via createJobWorker (lifecycle managed by user). */
+  private _workers: any[] = [];
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -1227,7 +1230,8 @@ export class CamundaClient {
   getBackpressureState() {
     try {
       return this._bp.getState();
-    } catch {
+    } catch (e) {
+      this._log.error('Error retrieving backpressure state', e);
       return {
         severity: 'healthy',
         permitsMax: null,
@@ -1237,8 +1241,20 @@ export class CamundaClient {
       };
     }
   }
+  /** Return a read-only snapshot of currently registered job workers. */
+  getWorkers() { return [...this._workers]; }
+  /** Stop all registered job workers (best-effort). */
+  stopAllWorkers() {
+    for (const w of this._workers) {
+      try {
+        if (typeof w.stop === 'function') w.stop();
+      } catch (e) {
+        this._log.warn('worker.stop.error', e);
+      }
+    }
+  }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-10-08T20:59:32.945Z)
+  // Generated methods (2025-10-23T01:45:22.640Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -10211,6 +10227,16 @@ export class CamundaClient {
   }
 
 // === AUTO-GENERATED CAMUNDA METHODS END ===
+
+  /**
+   * Create a job worker that activates and processes jobs of the given type.
+   * @param cfg Worker configuration
+   */
+  createJobWorker<In extends import('zod').ZodTypeAny = any, Out extends import('zod').ZodTypeAny = any, Headers extends import('zod').ZodTypeAny = any>(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
+    const worker = new JobWorker(this as any, cfg as JobWorkerConfig);
+    this._workers.push(worker);
+    return worker;
+  }
 
   /**
    * Node-only convenience: deploy resources from local filesystem paths.
