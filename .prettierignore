@@ -1,3 +1,8 @@
+# Generated artifacts – excluded to preserve deterministic build output
+src/gen/
+branding/branding-metadata.json
+tests-integration/methods/manifest.json
+docs/CONFIG_REFERENCE.md
 dist
 node_modules
 coverage
