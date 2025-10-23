@@ -332,6 +332,96 @@ Factors use integer percentages to avoid floating point drift in env parsing; th
 
 If you have concrete tuning needs, open an issue describing workload patterns (operation mix, baseline concurrency, observed broker limits) to help prioritize which knobs to surface.
 
+## Job Workers (Polling API)
+
+The SDK provides a lightweight polling job worker for service task job types using `createJobWorker`. It activates jobs in batches (respecting a concurrency limit), validates variables (optional), and offers action helpers on each job.
+
+### Minimal Example
+
+```ts
+import createCamundaClient from '@camunda8/orchestration-cluster-api';
+import { z } from 'zod';
+
+const client = createCamundaClient();
+
+// Define schemas (optional)
+const Input = z.object({ orderId: z.string() });
+const Output = z.object({ processed: z.boolean() });
+
+const worker = client.createJobWorker({
+  jobType: 'process-order',
+  maxParallelJobs: 10,
+  timeoutMs: 15_000, // long‑poll timeout (server side requestTimeout)
+  pollIntervalMs: 100, // delay between polls when no jobs / at capacity
+  inputSchema: Input, // validates incoming variables if validateSchemas true
+  outputSchema: Output, // validates variables passed to complete(...)
+  validateSchemas: true, // set false for max throughput (skip Zod)
+  autoStart: true, // default true; start polling immediately
+  jobHandler: async (job) => {
+    // Access typed variables
+    const vars = job.variables; // inferred from Input schema
+    // Do work...
+    await job.complete({ variables: { processed: true } });
+    // Returning the receipt is optional; completion already acknowledges the job.
+  },
+});
+
+// Later, on shutdown:
+process.on('SIGINT', () => {
+  worker.stop();
+});
+```
+
+### Job Handler Semantics
+
+Your `jobHandler` must ultimately invoke exactly one of:
+
+- `job.complete({ variables? })`
+- `job.fail({ errorMessage, retries?, retryBackoff? })`
+- `job.cancelWorkflow({})` / `job.cancel({})` (alias – cancels the process instance)
+- `job.ignore()` (marks as done locally without reporting to broker – only use for experimental flows)
+
+Each action returns an opaque unique symbol receipt (`JobActionReceipt`) primarily for internal/test assertions; you do not need to use it. If the handler returns without invoking an action the worker logs a warning and internally marks the job done (no completion sent) to prevent a leak.
+
+### Concurrency & Backpressure
+
+Set `maxParallelJobs` to the maximum number of jobs you want actively processing concurrently. The worker will long‑poll for up to the remaining capacity each cycle. Global backpressure (adaptive concurrency) still applies to the underlying REST calls; activation itself is a normal operation.
+
+### Validation
+
+If `validateSchemas` is true:
+
+- Incoming `variables` are parsed with `inputSchema` (fail => job is failed with a validation error message).
+- Incoming `customHeaders` parsed with `customHeadersSchema` if provided.
+- Completion payload `variables` parsed with `outputSchema` (warns & proceeds on failure).
+
+### Graceful Shutdown
+
+Call `worker.stop()` (or `client.stopAllWorkers()`) to cancel ongoing polling and prevent new activations. Jobs already handed to handlers can finish their HTTP completion/failure calls.
+
+### Multiple Workers
+
+You can register multiple workers on a single client instance—one per job type is typical. The client exposes `client.getWorkers()` for inspection and `client.stopAllWorkers()` for coordinated shutdown.
+
+### Receipt Type (Unique Symbol)
+
+Action methods return a unique symbol (not a string) to avoid accidental misuse and allow internal metrics. If you store the receipt, annotate its type as `JobActionReceipt` to preserve uniqueness:
+
+```ts
+import { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
+const receipt: JobActionReceipt = await job.complete({ variables: { processed: true } });
+```
+
+If you ignore the return value you don’t need to import the symbol.
+
+### When Not To Use The Worker
+
+- Extremely latency‑sensitive tasks where a push mechanism or streaming protocol is required.
+- Massive fan‑out requiring custom partitioning strategies (implement a custom activator loop instead).
+- Browser environments (long‑lived polling + secret handling often unsuitable).
+
+For custom strategies you can still call `client.activateJobs(...)`, manage concurrency yourself, and use `completeJob` / `failJob` directly.
+
 ### Guarantees & Caveats
 
 - Never increases latency for healthy clusters (no cap until first signal).
