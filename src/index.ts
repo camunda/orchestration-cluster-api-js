@@ -1,6 +1,9 @@
 // Entry point: export Camunda class, key types, and errors.
 import { createCamundaClient } from './gen/CamundaClient';
 import { createCamundaClientLoose, type CamundaClientLoose, type Loose } from './loose';
+// Public re-exports for worker API
+export type { JobWorkerConfig, JobWorker, Job, JobActionReceipt } from './runtime/jobWorker';
+export { JobActionReceipt as JobActionReceiptSymbol } from './runtime/jobWorker';
 
 export {
   createCamundaResultClient,

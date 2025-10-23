@@ -90,19 +90,22 @@ jobs:
   merge:
     name: Fast-forward main
     needs: generate
-    if: needs.generate.outputs.canonical_changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fetch temp branch
-        run: git fetch origin "release/apply/${GITHUB_RUN_ID}"
-      - name: Merge fast-forward
+      - name: Fast-forward (only if generated drift)
+        if: needs.generate.outputs.canonical_changed == 'true'
         run: |
+          set -e
+          git fetch origin "release/apply/${GITHUB_RUN_ID}"
           git checkout main
           git merge --ff-only "origin/release/apply/${GITHUB_RUN_ID}" || { echo 'Fast-forward failed'; exit 1; }
           git push origin main
+      - name: No drift – skip fast-forward
+        if: needs.generate.outputs.canonical_changed != 'true'
+        run: echo "No generated drift detected; fast-forward step skipped."
 
   publish:
     name: Publish & Release
