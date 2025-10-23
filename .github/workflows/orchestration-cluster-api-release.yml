@@ -30,6 +30,8 @@ jobs:
       - name: Install deps
         run: npm ci
       - name: Generate & Build
+        env:
+          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
         run: npm run build
       - name: Unit Tests
         run: npm test
@@ -57,6 +59,10 @@ jobs:
           mkdir -p spec-snapshots
           cp rest-api.source.yaml spec-snapshots/spec-${HASH}.yaml
           echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
+      - name: Write BUILDINFO (deterministic)
+        env:
+          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
+        run: npx tsx scripts/write-buildinfo.ts
       - name: Detect changes
         id: diff
         run: |
