@@ -20,6 +20,21 @@ const workDir = join(externalDir, 'tmp-clone');
 const upstreamFile = join(externalDir, 'rest-api.upstream.yaml');
 const consumedFile = join(baseDir, 'rest-api.source.yaml');
 
+// Deterministic / publish-time optimization:
+// Allow skipping the upstream fetch during the publish integrity check to avoid
+// introducing new external changes (spec drift) between generate & publish.
+// If CAMUNDA_SDK_SKIP_FETCH_SPEC=1 and both files already exist, we reuse them.
+if (process.env.CAMUNDA_SDK_SKIP_FETCH_SPEC === '1') {
+  if (existsSync(upstreamFile) && existsSync(consumedFile)) {
+    console.log(
+      '[fetch-spec] Skip fetch (CAMUNDA_SDK_SKIP_FETCH_SPEC=1) – using existing spec files'
+    );
+    process.exit(0);
+  } else {
+    console.log('[fetch-spec] Skip flag set but spec files missing – performing normal fetch');
+  }
+}
+
 function run(cmd: string) {
   execSync(cmd, { stdio: 'inherit', cwd: baseDir });
 }
