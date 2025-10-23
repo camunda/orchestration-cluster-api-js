@@ -70,8 +70,11 @@ const missing = operations.filter(
   (op) => ignore.indexOf(op) === -1 && !finalFiles.includes(`${op}.test.ts`)
 );
 
+const nowTs = process.env.CAMUNDA_SDK_DETERMINISTIC_BUILD
+  ? '1970-01-01T00:00:00.000Z'
+  : new Date().toISOString();
 const manifest: Manifest = {
-  generatedAt: new Date().toISOString(),
+  generatedAt: nowTs,
   operations: operations.length,
   tests: finalFiles.length,
   missing: missing.map((m) => `${m}.test.ts`),
