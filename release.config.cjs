@@ -18,8 +18,6 @@ module.exports = {
       {
         assets: [
           { path: 'dist', label: 'dist directory (unpacked)' },
-          { path: 'dist/**/*.js', label: 'Compiled JS files' },
-          { path: 'dist/**/*.d.ts', label: 'TypeScript declarations' },
           { path: 'BUILDINFO.json', label: 'Build info' },
           { path: 'branding/branding-metadata.json', label: 'Branding metadata' },
           { path: 'spec-snapshots', label: 'Spec snapshots' },
