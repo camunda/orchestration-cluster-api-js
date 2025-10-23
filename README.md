@@ -1006,3 +1006,29 @@ const client = createCamundaClient({
 ## License
 
 Apache 2.0
+
+## Deterministic Build Mode
+
+To eliminate spurious publish drift caused by timestamps and formatting churn in generated artifacts, the SDK supports a deterministic build mode gated by the environment variable `CAMUNDA_SDK_DETERMINISTIC_BUILD=1`.
+
+When set:
+
+- All generation scripts use a fixed timestamp (`1970-01-01T00:00:00.000Z`) instead of `new Date().toISOString()`.
+- Build info writer and doc generators produce stable content.
+- Upstream spec cloning still occurs, but we exclude auto-formatting of generated files via `.prettierignore` to avoid style oscillation.
+
+Release workflow strategy:
+
+1. Generate job runs with `CAMUNDA_SDK_DETERMINISTIC_BUILD=1`, producing canonical artifacts. If drift is detected they are committed on a temp branch and fast‑forwarded to `main`.
+2. Publish job re-runs the deterministic build and performs `git diff --exit-code` to assert zero drift before `semantic-release`.
+
+Local verification:
+
+```bash
+CAMUNDA_SDK_DETERMINISTIC_BUILD=1 npm run build
+git diff --exit-code  # should be clean after baseline committed
+```
+
+If you see persistent diff after following the above, ensure you have not manually edited generated files and that your local commit hooks (lint-staged) respect `.prettierignore`.
+
+Do not hand-edit files under `src/gen/`, `branding/branding-metadata.json`, `tests-integration/methods/manifest.json`, or `docs/CONFIG_REFERENCE.md`; regenerate instead.
