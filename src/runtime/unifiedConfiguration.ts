@@ -3,6 +3,9 @@
 // Responsibilities kept: precedence, conditional requirements, validation grammar,
 // strict parsing (booleans, ints), secrets redaction, aggregated errors.
 
+// Static import for path placed before other module imports to satisfy lint ordering
+import path from 'node:path';
+
 import { createEnv } from 'typed-env';
 
 import {
@@ -614,9 +617,8 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
         (rawMap['CAMUNDA_SUPPORT_LOG_ENABLED'] || 'false').toString().toLowerCase() === 'true',
       filePath:
         rawMap['CAMUNDA_SUPPORT_LOG_FILE_PATH'] ||
-        (typeof process !== 'undefined'
-          ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-            require('node:path').join(process.cwd(), 'camunda-support.log')
+        (typeof process !== 'undefined' && typeof process.cwd === 'function'
+          ? path.join(process.cwd(), 'camunda-support.log')
           : 'camunda-support.log'),
     },
     __raw: { ...rawMap },
