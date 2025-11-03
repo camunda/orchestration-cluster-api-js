@@ -177,6 +177,22 @@ export const SCHEMA = {
     default: 'BALANCED',
     doc: 'Preset profile for backpressure tuning (LEGACY = observe-only, no gating; other profiles enable adaptive global concurrency control).',
   },
+  // Support logging (optional diagnostic file emission; Node-only)
+  CAMUNDA_SUPPORT_LOG_ENABLED: {
+    type: 'boolean',
+    default: false,
+    doc: 'Enable creation of a support log file with environment & configuration diagnostics (Node-only).',
+  },
+  CAMUNDA_SUPPORT_LOG_FILE_PATH: {
+    type: 'string',
+    doc: 'Override support log output file path (default: ./camunda-support.log in current working directory).',
+  },
+  // Backward-compatible alias (boolean) if users set CAMUNDA_SUPPORT_LOGGER=true by mistake
+  CAMUNDA_SUPPORT_LOGGER: {
+    type: 'boolean',
+    default: false,
+    doc: 'Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated).',
+  },
 } as const;
 
 export type EnvVarKey = keyof typeof SCHEMA;

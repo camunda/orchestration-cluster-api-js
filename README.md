@@ -1,5 +1,3 @@
-<!-- Greenfield public README for the Camunda 8 Orchestration Cluster TypeScript SDK -->
-
 # Camunda 8 Orchestration Cluster TypeScript SDK (Pre‑release)
 
 Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST API.
@@ -15,7 +13,7 @@ Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST
 - Eventual consistency helper for polling endpoints
 - Immutable, deep‑frozen configuration accessible through a factory‑created client instance
 - Automatic body-level tenantId defaulting: if a request body supports an optional tenantId and you omit it, the SDK fills it from CAMUNDA_DEFAULT_TENANT_ID (path params are never auto-filled)
-- Automatic transient HTTP retry (429, 503, network) with exponential backoff + full jitter (configurable via CAMUNDA*SDK_HTTP_RETRY*\*). Non-retryable 500s fail fast. Pluggable strategy surface (default uses p-retry when available, internal fallback otherwise).
+- Automatic transient HTTP retry (429, 503, network) with exponential backoff + full jitter (configurable via CAMUNDA_SDK_HTTP_RETRY\*). Non-retryable 500s fail fast. Pluggable strategy surface (default uses p-retry when available, internal fallback otherwise).
 
 ## Install
 
@@ -193,6 +191,42 @@ const skip = new Set([
   'withCorrelation',
   'deployResourcesFromFiles',
 ]);
+```
+
+## Support Logger (Node Only)
+
+For diagnostics during support interactions you can enable an auxiliary file logger that captures a sanitized snapshot of environment & configuration plus selected runtime events.
+
+Enable by setting one of:
+
+```bash
+CAMUNDA_SUPPORT_LOG_ENABLED=true        # canonical
+```
+
+Optional override for output path (default is `./camunda-support.log` in the current working directory):
+
+```bash
+CAMUNDA_SUPPORT_LOG_FILE_PATH=/var/log/camunda-support.log
+```
+
+Behavior:
+
+- File is created eagerly on first client construction (one per process; if the path exists a numeric suffix is appended to avoid clobbering).
+- Initial preamble includes SDK package version, timestamp, and redacted environment snapshot.
+- Secrets (client secret, passwords, mTLS private key, etc.) are automatically masked or truncated.
+- Designed to be low‑impact: append‑only, newline‑delimited JSON records may be added in future releases for deeper inspection (current version writes the preamble only unless additional events are wired).
+
+Recommended usage:
+
+```bash
+CAMUNDA_SUPPORT_LOG_ENABLED=1 CAMUNDA_SDK_LOG_LEVEL=debug node app.js
+```
+
+Keep the file only as long as needed for troubleshooting; it may contain sensitive non‑secret operational metadata. Do not commit it to version control.
+
+To disable, unset the env variable or set `CAMUNDA_SUPPORT_LOG_ENABLED=false`.
+
+Refer to `./docs/CONFIG_REFERENCE.md` for the full list of related environment variables.
 
 ## Contributing
 
@@ -207,15 +241,16 @@ We welcome issues and pull requests. Please read the [CONTRIBUTING.md](./CONTRIB
 If you plan to help migrate to npm Trusted Publishing (OIDC), open an issue so we can coordinate workflow permission changes (`id-token: write`) and removal of the legacy `NPM_TOKEN` secret.
 
 for (const key of Object.keys(client)) {
-  const val: any = (client as any)[key];
-  if (typeof val === 'function' && !key.startsWith('_') && !skip.has(key)) {
-    const original = val.bind(client);
-    (client as any)[key] = (...a: any[]) => retryPolicy.execute(() => original(...a));
-  }
+const val: any = (client as any)[key];
+if (typeof val === 'function' && !key.startsWith('\_') && !skip.has(key)) {
+const original = val.bind(client);
+(client as any)[key] = (...a: any[]) => retryPolicy.execute(() => original(...a));
+}
 }
 
 // Now every public operation is wrapped.
-```
+
+````
 
 ### Custom Classification Example
 
@@ -235,7 +270,7 @@ const policy = retry(classify, {
   maxAttempts: 5,
   backoff: new ExponentialBackoff({ initialDelay: 100, maxDelay: 2000, jitter: true }),
 });
-```
+````
 
 ### Notes
 

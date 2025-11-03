@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Generated: 1970-01-01T00:00:00.000Z
+Generated: 2025-11-03T07:24:11.845Z
 
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|
@@ -43,3 +43,6 @@ Generated: 1970-01-01T00:00:00.000Z
 | `CAMUNDA_SDK_BACKPRESSURE_FLOOR` | int | `1` | Optional |  | Minimum floor concurrency when degraded. |
 | `CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD` | int | `3` | Optional |  | Consecutive backpressure events required to enter severe state. |
 | `CAMUNDA_SDK_BACKPRESSURE_PROFILE` | enum(BALANCED | CONSERVATIVE | AGGRESSIVE | LEGACY) | `BALANCED` | Optional |  | Preset profile for backpressure tuning (LEGACY = observe-only, no gating; other profiles enable adaptive global concurrency control). |
+| `CAMUNDA_SUPPORT_LOG_ENABLED` | boolean | `false` | Optional |  | Enable creation of a support log file with environment & configuration diagnostics (Node-only). |
+| `CAMUNDA_SUPPORT_LOG_FILE_PATH` | string | — | No default |  | Override support log output file path (default: ./camunda-support.log in current working directory). |
+| `CAMUNDA_SUPPORT_LOGGER` | boolean | `false` | Optional |  | Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated). |

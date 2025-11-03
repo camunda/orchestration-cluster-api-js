@@ -110,6 +110,7 @@ export interface CamundaConfig {
     caPath?: string;
   };
   telemetry?: { log: boolean; correlation: boolean };
+  supportLog?: { enabled: boolean; filePath: string };
   // Raw access (canonical uppercase enums applied) keyed by env var (internal/debug)
   __raw: Record<string, string | undefined>;
 }
@@ -320,6 +321,13 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   for (const k of allKeys()) {
     if ((overrides as any)[k] !== undefined) envInput[k] = String((overrides as any)[k]);
     else if (baseEnv[k] !== undefined) envInput[k] = baseEnv[k]!;
+  }
+  // Alias handling: promote CAMUNDA_SUPPORT_LOGGER to CAMUNDA_SUPPORT_LOG_ENABLED if set
+  if (
+    envInput['CAMUNDA_SUPPORT_LOG_ENABLED'] === undefined &&
+    envInput['CAMUNDA_SUPPORT_LOGGER'] !== undefined
+  ) {
+    envInput['CAMUNDA_SUPPORT_LOG_ENABLED'] = envInput['CAMUNDA_SUPPORT_LOGGER'];
   }
 
   // Run typed-env (will not throw for our parser-based validation; parseErrors collects issues)
@@ -600,6 +608,16 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       correlation:
         (rawMap['CAMUNDA_SDK_TELEMETRY_CORRELATION'] || 'false').toString().toLowerCase() ===
         'true',
+    },
+    supportLog: {
+      enabled:
+        (rawMap['CAMUNDA_SUPPORT_LOG_ENABLED'] || 'false').toString().toLowerCase() === 'true',
+      filePath:
+        rawMap['CAMUNDA_SUPPORT_LOG_FILE_PATH'] ||
+        (typeof process !== 'undefined'
+          ? // eslint-disable-next-line @typescript-eslint/no-var-requires
+            require('node:path').join(process.cwd(), 'camunda-support.log')
+          : 'camunda-support.log'),
     },
     __raw: { ...rawMap },
   };

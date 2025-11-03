@@ -11,6 +11,7 @@ import { hydrateConfig } from '../runtime/unifiedConfiguration';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
+import { createSupportLogger, type SupportLogger } from '../runtime/supportLogger';
 import {
   wrapFetch,
   withCorrelation as _withCorrelation,
@@ -36,7 +37,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 1970-01-01T00:00:00.000Z
+// Generated 2025-11-03T07:23:52.749Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -958,6 +959,8 @@ export interface CamundaOptions {
   // If true (default), non-2xx HTTP responses throw instead of returning an error object.
   // Set to false to opt into non-throwing behavior.
   throwOnError?: boolean;
+  // Optional injected SupportLogger (Node-only). If absent, auto-created when enabled via env/config.
+  supportLogger?: SupportLogger;
 }
 
 export function createCamundaClient(options?: CamundaOptions) {
@@ -980,6 +983,10 @@ export class CamundaClient {
   private _bp: BackpressureManager;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
+  /** Support logger (Node-only; no-op in browser). */
+  private _supportLogger: SupportLogger = new (class implements SupportLogger {
+    log() {}
+  })();
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -1036,6 +1043,13 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
+    // Support logger initialization (after config hydration & before major components start emitting)
+    this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
+    try {
+      this._supportLogger.log('CamundaClient constructed');
+    } catch {
+      /* ignore */
+    }
     // Initialize global backpressure manager with tuned config
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
@@ -1127,6 +1141,19 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     // _errorMode intentionally not mutable post-construction.
+    // Re-init support logger only if it was disabled and now enabled (avoid overwriting custom injected instance)
+    if (!next.supportLogger && !('supportLogger' in next)) {
+      // Auto-detect change in enable flag
+      const shouldEnable = this._config.supportLog?.enabled;
+      const previouslyEnabled = (this._supportLogger as any).enabled === true; // heuristic
+      if (shouldEnable && !previouslyEnabled) {
+        this._supportLogger = createSupportLogger(this._config);
+        this._supportLogger.log('Support logger enabled via reconfigure');
+      }
+    } else if (next.supportLogger) {
+      this._supportLogger = next.supportLogger;
+      this._supportLogger.log('Support logger injected via reconfigure');
+    }
     // Emit updated redacted configuration when debug enabled
     this._log.debug(() => {
       try {
@@ -1164,6 +1191,11 @@ export class CamundaClient {
   /** Internal accessor (read-only) for eventual consistency error mode. */
   getErrorMode(): 'throw' | 'result' {
     return this._errorMode;
+  }
+
+  /** Internal accessor for support logger (no public API commitment yet). */
+  _getSupportLogger(): SupportLogger {
+    return this._supportLogger;
   }
 
   // Run a function with a correlation ID (manual propagation phase 1)
@@ -1256,7 +1288,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (1970-01-01T00:00:00.000Z)
+  // Generated methods (2025-11-03T07:23:52.749Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.

@@ -1,5 +1,5 @@
 // Entry point: export Camunda class, key types, and errors.
-import { createCamundaClient } from './gen/CamundaClient';
+import { createCamundaClient, CamundaClient } from './gen/CamundaClient';
 import { createCamundaClientLoose, type CamundaClientLoose, type Loose } from './loose';
 // Public re-exports for worker API
 export type { JobWorkerConfig, JobWorker, Job, JobActionReceipt } from './runtime/jobWorker';
@@ -16,5 +16,11 @@ export { createCamundaFpClient, type CamundaFpClient, type Either, isLeft, isRig
 export * from './gen/types.gen';
 export { CamundaValidationError, EventualConsistencyTimeoutError } from './runtime/errors';
 // eventualPoll unified with result mode; no separate export
-export { createCamundaClient, createCamundaClientLoose, type CamundaClientLoose, type Loose };
+export {
+  createCamundaClient,
+  createCamundaClientLoose,
+  type CamundaClientLoose,
+  type Loose,
+  CamundaClient,
+};
 export default createCamundaClient;

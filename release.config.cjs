@@ -8,7 +8,7 @@ module.exports = {
     [
       '@semantic-release/git',
       {
-        assets: ['CHANGELOG.md', 'package.json'],
+        assets: ['CHANGELOG.md', 'package.json', 'src/runtime/version.ts'],
         // Keep commit message compact; full notes are in CHANGELOG.md and GitHub release.
         message: 'chore(release): ${nextRelease.version} [skip ci]',
       },
