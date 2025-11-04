@@ -12,7 +12,11 @@ import { hydrateConfig } from '../runtime/unifiedConfiguration';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
-import { createSupportLogger, type SupportLogger } from '../runtime/supportLogger';
+import {
+  createSupportLogger,
+  type SupportLogger,
+  writeSupportLogPreamble,
+} from '../runtime/supportLogger';
 import {
   wrapFetch,
   withCorrelation as _withCorrelation,
@@ -172,6 +176,8 @@ export class CamundaClient {
     } catch {
       /* ignore */
     }
+    // Emit canonical support log preamble (idempotent; covers injected loggers)
+    this.emitSupportLogPreamble();
     // Initialize global backpressure manager with tuned config
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
@@ -318,6 +324,19 @@ export class CamundaClient {
   /** Internal accessor for support logger (no public API commitment yet). */
   _getSupportLogger(): SupportLogger {
     return this._supportLogger;
+  }
+
+  /**
+   * Emit the standard support log preamble & redacted configuration to the current support logger.
+   * Safe to call multiple times; subsequent calls are ignored (idempotent).
+   * Useful when a custom supportLogger was injected and you still want the canonical header & config dump.
+   */
+  emitSupportLogPreamble() {
+    try {
+      writeSupportLogPreamble(this._supportLogger, this._config as CamundaConfig);
+    } catch (e) {
+      this._log.debug(() => ['supportLog.preamble.error', e]);
+    }
   }
 
   // Run a function with a correlation ID (manual propagation phase 1)

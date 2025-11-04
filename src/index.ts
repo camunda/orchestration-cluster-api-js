@@ -23,4 +23,6 @@ export {
   type Loose,
   CamundaClient,
 };
+// Public type for client construction options
+export type { CamundaOptions } from './gen/CamundaClient';
 export default createCamundaClient;

@@ -68,6 +68,8 @@ function obscureSensitiveInfo(raw: Record<string, string | undefined>) {
 export class CamundaSupportLogger implements SupportLogger {
   private enabled: boolean;
   private filepath: string;
+  /** marker used by writeSupportLogPreamble to avoid duplicate emission */
+  private __preambleEmitted = false;
 
   constructor(config: CamundaConfig) {
     const enabled = !!config.supportLog?.enabled;
@@ -79,51 +81,14 @@ export class CamundaSupportLogger implements SupportLogger {
         : 'camunda-support.log');
     if (!this.enabled || !isNode()) return;
     const fs = require('node:fs') as typeof import('node:fs');
-    // Ensure uniqueness
     if (fs.existsSync(this.filepath)) {
+      // ensure uniqueness; append numeric suffix
       let n = 1;
       const base = this.filepath;
-      while (fs.existsSync(this.filepath)) {
-        this.filepath = `${base}-${n++}`;
-      }
+      while (fs.existsSync(this.filepath)) this.filepath = `${base}-${n++}`;
     }
-    // Preamble
-    this.log('********************************************************', false);
-    this.log(
-      'Camunda Support Debugging log. Supply this to Camunda Technical Support to assist in troubleshooting issues',
-      false
-    );
-    this.log('* https://camunda.com/services/camunda-success/', false);
-    this.log('* https://github.com/camunda/orchestration-cluster-api-js/issues', false);
-    this.log(
-      '**WARNING**: This log may contain sensitive secrets. Review before sharing publicly.',
-      false
-    );
-    this.log('********************************************************', false);
-    this.log(`CamundaSupportLogger initialized. Logging to ${this.filepath}`);
-    this.log(`Camunda SDK version: ${packageVersion}`, false);
-    try {
-      const os = require('node:os') as typeof import('node:os');
-      const osInfo = {
-        platform: os.platform(),
-        release: os.release(),
-        type: os.type(),
-        arch: os.arch(),
-        version: os.version?.(),
-        hostname: os.hostname(),
-        totalmem: os.totalmem(),
-        freemem: os.freemem(),
-        cpus: os.cpus().length,
-        uptime: os.uptime(),
-      };
-      this.log('/** OS Information */\n' + safeStringify(osInfo) + '\n', false);
-    } catch {
-      /* ignore */
-    }
-    // Redacted configuration (raw env plus secrets truncated)
-    const raw = (config as any).__raw || {};
-    const obscured = obscureSensitiveInfo(raw);
-    this.log('/** Configuration */\n' + safeStringify(obscured) + '\n', false);
+    // Emit preamble immediately for the built-in logger (maintains existing behavior)
+    writeSupportLogPreamble(this, config);
   }
 
   log(message: string | number | boolean | object, addTimestamp = true): void {
@@ -153,4 +118,53 @@ export function createSupportLogger(
   if (!isNode()) return new NoopSupportLogger();
   if (!config.supportLog?.enabled) return new NoopSupportLogger();
   return new CamundaSupportLogger(config);
+}
+
+// Reusable preamble emission allowing custom injected loggers to receive the standard header & config dump.
+// Guarded to run only once per logger instance.
+export function writeSupportLogPreamble(logger: SupportLogger, config: CamundaConfig) {
+  const anyLogger = logger as any;
+  if (anyLogger.__preambleEmitted) return;
+  anyLogger.__preambleEmitted = true;
+  try {
+    logger.log('********************************************************', false);
+    logger.log(
+      'Camunda Support Debugging log. Supply this to Camunda Technical Support to assist in troubleshooting issues',
+      false
+    );
+    logger.log('* https://camunda.com/services/camunda-success/', false);
+    logger.log('* https://github.com/camunda/orchestration-cluster-api-js/issues', false);
+    logger.log(
+      '**WARNING**: This log may contain sensitive secrets. Review before sharing publicly.',
+      false
+    );
+    logger.log('********************************************************', false);
+    logger.log(
+      `CamundaSupportLogger active. Target path: ${config.supportLog?.filePath || 'camunda-support.log'}`
+    );
+    logger.log(`Camunda SDK version: ${packageVersion}`, false);
+    try {
+      const os = require('node:os') as typeof import('node:os');
+      const osInfo = {
+        platform: os.platform(),
+        release: os.release(),
+        type: os.type(),
+        arch: os.arch(),
+        version: os.version?.(),
+        hostname: os.hostname(),
+        totalmem: os.totalmem(),
+        freemem: os.freemem(),
+        cpus: os.cpus().length,
+        uptime: os.uptime(),
+      };
+      logger.log('/** OS Information */\n' + safeStringify(osInfo) + '\n', false);
+    } catch {
+      /* ignore */
+    }
+    const raw = (config as any).__raw || {};
+    const obscured = obscureSensitiveInfo(raw);
+    logger.log('/** Configuration */\n' + safeStringify(obscured) + '\n', false);
+  } catch {
+    /* swallow */
+  }
 }

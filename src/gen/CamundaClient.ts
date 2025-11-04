@@ -11,7 +11,11 @@ import { hydrateConfig } from '../runtime/unifiedConfiguration';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
-import { createSupportLogger, type SupportLogger } from '../runtime/supportLogger';
+import {
+  createSupportLogger,
+  type SupportLogger,
+  writeSupportLogPreamble,
+} from '../runtime/supportLogger';
 import {
   wrapFetch,
   withCorrelation as _withCorrelation,
@@ -37,7 +41,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-11-03T22:24:40.811Z
+// Generated 2025-11-04T05:58:18.529Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1050,6 +1054,8 @@ export class CamundaClient {
     } catch {
       /* ignore */
     }
+    // Emit canonical support log preamble (idempotent; covers injected loggers)
+    this.emitSupportLogPreamble();
     // Initialize global backpressure manager with tuned config
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
@@ -1198,6 +1204,19 @@ export class CamundaClient {
     return this._supportLogger;
   }
 
+  /**
+   * Emit the standard support log preamble & redacted configuration to the current support logger.
+   * Safe to call multiple times; subsequent calls are ignored (idempotent).
+   * Useful when a custom supportLogger was injected and you still want the canonical header & config dump.
+   */
+  emitSupportLogPreamble() {
+    try {
+      writeSupportLogPreamble(this._supportLogger, this._config as CamundaConfig);
+    } catch (e) {
+      this._log.debug(() => ['supportLog.preamble.error', e]);
+    }
+  }
+
   // Run a function with a correlation ID (manual propagation phase 1)
   withCorrelation<T>(id: string, fn: () => Promise<T> | T): Promise<T> {
     return _withCorrelation(id, fn);
@@ -1288,7 +1307,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-11-03T22:24:40.811Z)
+  // Generated methods (2025-11-04T05:58:18.529Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.

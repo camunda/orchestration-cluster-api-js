@@ -12067,7 +12067,7 @@ export type ClientOptions = {
 // branding-plugin generated
 // schemaVersion=1.0.0
 // specHash=sha256:44c6da73d18d1028c327b2b7c71163c32094160664fd683180a5a5a348b03bfc
-// generatedAt=2025-11-03T22:24:37.508Z
+// generatedAt=2025-11-04T05:58:15.390Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
