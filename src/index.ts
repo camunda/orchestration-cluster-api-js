@@ -25,4 +25,5 @@ export {
 };
 // Public type for client construction options
 export type { CamundaOptions } from './gen/CamundaClient';
+export type { EnrichedActivatedJob } from './runtime/jobActions';
 export default createCamundaClient;

@@ -27,6 +27,7 @@ import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
+import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -41,7 +42,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-11-04T05:58:18.529Z
+// Generated 2025-11-04T09:08:46.523Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -1307,7 +1308,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-11-04T05:58:18.529Z)
+  // Generated methods (2025-11-04T09:08:46.523Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -1378,7 +1379,7 @@ export class CamundaClient {
    * @operationId activateJobs
    * @tags Job
    */
-  activateJobs(input: activateJobsInput): CancelablePromise<_DataOf<typeof Sdk.activateJobs>>;
+  activateJobs(input: activateJobsInput): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
   activateJobs(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
@@ -1418,6 +1419,7 @@ export class CamundaClient {
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
         }
+        if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this as any, this.logger().scope(`job:${j.jobKey}`))); }
         return data;
         } catch(e) {
           // Defer normalization to outer executeWithHttpRetry boundary

@@ -23,7 +23,6 @@ describe('searchJobs', () => {
       { consistency: { waitUpToMs: 10_000 } }
     );
 
-    console.log(JSON.stringify(response, null, 2));
     validateResponseShape({ path: '/jobs/search', method: 'POST', status: '200' }, response);
     await camunda.cancelProcessInstance({ processInstanceKey });
   });
