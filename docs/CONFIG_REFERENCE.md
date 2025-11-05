@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Generated: 2025-11-04T09:09:04.812Z
+Generated: 2025-11-04T21:52:08.416Z
 
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|

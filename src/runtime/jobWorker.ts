@@ -98,6 +98,55 @@ export class JobWorker {
     this._log.info('worker.stop');
   }
 
+  /**
+   * Gracefully stop the worker: prevent new polls, allow any in-flight activation to finish
+   * without cancellation, and wait for currently active jobs to drain (be acknowledged) up to waitUpToMs.
+   * If timeout is reached, falls back to hard stop logic (cancels activation if still pending).
+   */
+  async stopGracefully(opts?: { waitUpToMs?: number; checkIntervalMs?: number }) {
+    const waitUpToMs = opts?.waitUpToMs ?? 5000;
+    const checkIntervalMs = opts?.checkIntervalMs ?? 10;
+    this._stopped = true;
+    if (this._pollTimer) clearTimeout(this._pollTimer);
+    this._pollTimer = null;
+    const start = Date.now();
+    // Wait for activation to settle (do not cancel proactively)
+    if (this._inFlightActivation) {
+      try {
+        await Promise.race([
+          this._inFlightActivation,
+          new Promise((_, rej) =>
+            setTimeout(() => rej(new Error('activation.wait.timeout')), waitUpToMs)
+          ),
+        ]);
+      } catch (e: any) {
+        // If activation timed out, we will proceed to fallback below.
+        if (e && e.message === 'activation.wait.timeout') {
+          this._log.debug('worker.gracefulStop.activationTimeout');
+        }
+      }
+    }
+    // Wait for active jobs to drain
+    while (this._activeJobs > 0 && Date.now() - start < waitUpToMs) {
+      await new Promise((r) => setTimeout(r, checkIntervalMs));
+    }
+    const timedOut = this._activeJobs > 0;
+    if (timedOut) {
+      // Fallback: cancel activation if still present and perform hard stop semantics.
+      if (this._inFlightActivation?.cancel) {
+        try {
+          this._inFlightActivation.cancel();
+        } catch {
+          /* ignore */
+        }
+      }
+      this._log.debug('worker.gracefulStop.timeout', { remaining: this._activeJobs });
+    } else {
+      this._log.debug('worker.gracefulStop.done');
+    }
+    return { remainingJobs: this._activeJobs, timedOut };
+  }
+
   private _scheduleNext(delayMs: number) {
     if (this._stopped) return;
     this._pollTimer = setTimeout(() => this._poll(), delayMs);
@@ -135,7 +184,12 @@ export class JobWorker {
     } catch (e) {
       this._inFlightActivation = null;
       if (this._stopped) return; // Ignore errors after stop
-      this._log.error('activation.error', e);
+      // Suppress logging for intentional cancellation (user-initiated stop).
+      if ((e as any)?.name === 'CancelSdkError') {
+        this._log.debug('activation.cancelled');
+      } else {
+        this._log.error('activation.error', e);
+      }
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
     }

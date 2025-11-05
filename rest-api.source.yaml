@@ -10134,7 +10134,6 @@ components:
         - customHeaders
         - elementId
         - elementInstanceKey
-        - hasFailedWithRetriesLeft
         - jobKey
         - kind
         - listenerEventType

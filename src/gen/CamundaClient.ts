@@ -42,7 +42,7 @@ function deepFreeze<T>(obj: T): T {
 }
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
-// Generated 2025-11-04T09:08:46.523Z
+// Generated 2025-11-04T21:51:48.983Z
 // Operations: 146
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
@@ -936,10 +936,38 @@ export interface CancelablePromise<T> extends Promise<T> {
 }
 function toCancelable<T>(factory: (signal: AbortSignal) => Promise<T>): CancelablePromise<T> {
   const ac = new AbortController();
+  let settled = false;
+  let rejectRef: (e: any) => void = () => {};
   const p: any = new Promise<T>((resolve, reject) => {
-    factory(ac.signal).then(resolve, reject);
+    rejectRef = reject;
+    factory(ac.signal)
+      .then((v) => {
+        settled = true;
+        resolve(v);
+      })
+      .catch((e) => {
+        // If already canceled and fetch produced an abort, translate to CancelSdkError once.
+        if (
+          ac.signal.aborted &&
+          (e?.name === 'AbortError' || /abort|cancel/i.test(e?.message || ''))
+        ) {
+          const c = new Error('Cancelled') as any;
+          c.name = 'CancelSdkError';
+          return reject(c);
+        }
+        reject(e);
+      });
   });
-  p.cancel = () => ac.abort();
+  p.cancel = () => {
+    if (ac.signal.aborted) return; // idempotent
+    ac.abort();
+    // If underlying promise hasn't settled yet, proactively reject with CancelSdkError.
+    if (!settled) {
+      const c = new Error('Cancelled') as any;
+      c.name = 'CancelSdkError';
+      rejectRef(c);
+    }
+  };
   return p as CancelablePromise<T>;
 }
 
@@ -1308,7 +1336,7 @@ export class CamundaClient {
     }
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
-  // Generated methods (2025-11-04T09:08:46.523Z)
+  // Generated methods (2025-11-04T21:51:48.983Z)
   /**
    * Activate activities within an ad-hoc sub-process
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
@@ -1367,7 +1395,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false });
     });
   }
 
@@ -1426,7 +1454,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false });
     });
   }
 
@@ -1485,7 +1513,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false });
     });
   }
 
@@ -1544,7 +1572,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false });
     });
   }
 
@@ -1603,7 +1631,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false });
     });
   }
 
@@ -1661,7 +1689,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false });
     });
   }
 
@@ -1718,7 +1746,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false });
     });
   }
 
@@ -1777,7 +1805,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false });
     });
   }
 
@@ -1836,7 +1864,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false });
     });
   }
 
@@ -1894,7 +1922,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false });
     });
   }
 
@@ -1953,7 +1981,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false });
     });
   }
 
@@ -2012,7 +2040,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false });
     });
   }
 
@@ -2071,7 +2099,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false });
     });
   }
 
@@ -2130,7 +2158,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false });
     });
   }
 
@@ -2187,7 +2215,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false });
     });
   }
 
@@ -2248,7 +2276,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false });
     });
   }
 
@@ -2373,7 +2401,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false });
     });
   }
 
@@ -2499,7 +2527,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true });
     });
   }
 
@@ -2558,7 +2586,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true });
     });
   }
 
@@ -2623,7 +2651,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false });
     });
   }
 
@@ -2742,7 +2770,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false });
     });
   }
 
@@ -2821,7 +2849,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false });
     });
   }
 
@@ -2883,7 +2911,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false });
     });
   }
 
@@ -2947,7 +2975,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false });
     });
   }
 
@@ -3021,7 +3049,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false });
     });
   }
 
@@ -3082,7 +3110,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false });
     });
   }
 
@@ -3140,7 +3168,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false });
     });
   }
 
@@ -3198,7 +3226,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false });
     });
   }
 
@@ -3261,7 +3289,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false });
     });
   }
 
@@ -3319,7 +3347,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false });
     });
   }
 
@@ -3376,7 +3404,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false });
     });
   }
 
@@ -3495,7 +3523,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false });
     });
   }
 
@@ -3557,7 +3585,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false });
     });
   }
 
@@ -3615,7 +3643,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false });
     });
   }
 
@@ -3673,7 +3701,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false });
     });
   }
 
@@ -3728,7 +3756,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false });
     });
   }
 
@@ -3786,7 +3814,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false });
     });
   }
 
@@ -3843,7 +3871,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false });
     });
   }
 
@@ -3967,7 +3995,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false });
     });
   }
 
@@ -4027,7 +4055,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true });
     });
   }
 
@@ -4075,7 +4103,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false });
     });
   }
 
@@ -4576,7 +4604,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false });
     });
   }
 
@@ -4813,7 +4841,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false });
     });
   }
 
@@ -5380,7 +5408,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getResource', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getResource', exempt: false });
     });
   }
 
@@ -5441,7 +5469,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getResourceContent', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getResourceContent', exempt: false });
     });
   }
 
@@ -5617,7 +5645,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false });
     });
   }
 
@@ -5727,7 +5755,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false });
     });
   }
 
@@ -6109,7 +6137,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false });
     });
   }
 
@@ -6240,7 +6268,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false });
     });
   }
 
@@ -6371,7 +6399,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false });
     });
   }
 
@@ -6437,7 +6465,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false });
     });
   }
 
@@ -6491,7 +6519,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false });
     });
   }
 
@@ -6551,7 +6579,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false });
     });
   }
 
@@ -9034,7 +9062,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true });
     });
   }
 
@@ -9093,7 +9121,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false });
     });
   }
 
@@ -9152,7 +9180,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false });
     });
   }
 
@@ -9211,7 +9239,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false });
     });
   }
 
@@ -9269,7 +9297,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false });
     });
   }
 
@@ -9326,7 +9354,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false });
     });
   }
 
@@ -9385,7 +9413,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false });
     });
   }
 
@@ -9444,7 +9472,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false });
     });
   }
 
@@ -9502,7 +9530,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false });
     });
   }
 
@@ -9562,7 +9590,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false });
     });
   }
 
@@ -9621,7 +9649,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false });
     });
   }
 
@@ -9680,7 +9708,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false });
     });
   }
 
@@ -9739,7 +9767,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false });
     });
   }
 
@@ -9796,7 +9824,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false });
     });
   }
 
@@ -9855,7 +9883,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false });
     });
   }
 
@@ -9915,7 +9943,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false });
     });
   }
 
@@ -9974,7 +10002,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false });
     });
   }
 
@@ -10034,7 +10062,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false });
     });
   }
 
@@ -10094,7 +10122,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false });
     });
   }
 
@@ -10153,7 +10181,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false });
     });
   }
 
@@ -10277,7 +10305,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false }));
+      return (this as any)._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false });
     });
   }
 

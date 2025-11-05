@@ -3504,9 +3504,9 @@ export const zJobSearchResult = z.object({
         z.string(),
         z.null()
     ])),
-    hasFailedWithRetriesLeft: z.boolean().register(z.globalRegistry, {
+    hasFailedWithRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the job has failed with retries left.'
-    }),
+    })),
     isDenied: z.optional(z.union([
         z.boolean(),
         z.null()

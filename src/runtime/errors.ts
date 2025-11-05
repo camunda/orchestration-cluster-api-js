@@ -33,16 +33,30 @@ export interface NetworkSdkError extends Error {
   name: 'NetworkSdkError';
 }
 
-export type SdkError = HttpSdkError | ValidationSdkError | AuthSdkError | NetworkSdkError;
+export interface CancelSdkError extends Error {
+  operationId?: string;
+  name: 'CancelSdkError';
+}
+
+export type SdkError =
+  | HttpSdkError
+  | ValidationSdkError
+  | AuthSdkError
+  | NetworkSdkError
+  | CancelSdkError;
 
 export function isSdkError(e: unknown): e is SdkError {
   return (
     !!e &&
     typeof e === 'object' &&
     'name' in e &&
-    ['HttpSdkError', 'ValidationSdkError', 'AuthSdkError', 'NetworkSdkError'].includes(
-      (e as any).name
-    )
+    [
+      'HttpSdkError',
+      'ValidationSdkError',
+      'AuthSdkError',
+      'NetworkSdkError',
+      'CancelSdkError',
+    ].includes((e as any).name)
   );
 }
 
@@ -50,6 +64,23 @@ export function isSdkError(e: unknown): e is SdkError {
 export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError {
   if (isSdkError(err)) return err as SdkError;
   const e: any = err || {};
+  // Explicit cancellation (AbortController / manual cancel) classification FIRST so we don't
+  // downgrade into generic NetworkSdkError.
+  if (
+    e?.name === 'AbortError' ||
+    e?.name === 'CancelError' ||
+    e?.name === 'CancelSdkError' ||
+    e?.code === 'ABORT_ERR' ||
+    /aborted|abort|cancelled|canceled/i.test(e?.message || '')
+  ) {
+    const cErr = new Error('Cancelled') as CancelSdkError;
+    cErr.name = 'CancelSdkError';
+    cErr.operationId = ctx?.opId;
+    // Preserve original stack/message detail if present
+    if (e?.message && !/Cancelled/i.test(e.message)) cErr.message = e.message;
+    if (e?.stack) (cErr as any).stack = e.stack;
+    return cErr;
+  }
   // HTTP classification
   if (typeof e.status === 'number') {
     const msg = e.message || e.title || e.detail || `HTTP ${e.status}`;

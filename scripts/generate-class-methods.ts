@@ -443,7 +443,7 @@ type ${o.opId}Consistency = {
       } else {
         // Inject HTTP retry wrapper
         methods.push(
-          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
+          `      return (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} });`
         );
       }
     } else {
@@ -509,7 +509,7 @@ type ${o.opId}Consistency = {
         methods.push('      return invoke();');
       } else {
         methods.push(
-          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
+          `      return (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} });`
         );
       }
     }
