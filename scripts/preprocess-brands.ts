@@ -283,7 +283,7 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
   // explicit constraints. This preserves DRY spec definitions while retaining runtime
   // validation for numeric key shapes.
   if (includesLongKeyRef && Object.keys(constraints).length === 0) {
-    const longKey = (schemas as any)['LongKey'];
+    const longKey = schemas['LongKey'];
     if (longKey) {
       const beforeKeys = Object.keys(constraints).length;
       mergeConstraints(constraints, extractConstraints(longKey));

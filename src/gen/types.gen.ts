@@ -3791,7 +3791,7 @@ export type JobSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching jobs.
      */
-    items?: Array<JobSearchResult>;
+    items: Array<JobSearchResult>;
 };
 
 export type JobSearchResult = {
@@ -3832,7 +3832,7 @@ export type JobSearchResult = {
     /**
      * Indicates whether the job has failed with retries left.
      */
-    hasFailedWithRetriesLeft: boolean;
+    hasFailedWithRetriesLeft?: boolean;
     /**
      * Indicates whether the user task listener denies the work.
      */
@@ -12066,8 +12066,8 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:44c6da73d18d1028c327b2b7c71163c32094160664fd683180a5a5a348b03bfc
-// generatedAt=1970-01-01T00:00:00.000Z
+// specHash=sha256:e41213bb1e0300ca199a86b111c28915a10ba83f7a8013c6406370d30704241e
+// generatedAt=2025-11-05T05:04:50.219Z
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

@@ -81,10 +81,10 @@ export function defaultHttpClassifier(err: any): RetryClassification {
     // Some generated method wrappers may pessimistically mark errors nonRetryable before
     // we have a chance to refine classification. We still want to treat broker backpressure
     // signals (RESOURCE_EXHAUSTED) as retryable even if flagged nonRetryable upstream.
-    if ((err as any).nonRetryable) {
-      const status = (err as any).status || (err as any).response?.status;
-      const title = (err as any).title || (err as any).response?.data?.title;
-      const detail = (err as any).detail || (err as any).response?.data?.detail;
+    if (err.nonRetryable) {
+      const status = err.status || err.response?.status;
+      const title = err.title || err.response?.data?.title;
+      const detail = err.detail || err.response?.data?.detail;
       if (
         status === 500 &&
         ((typeof title === 'string' && /RESOURCE_EXHAUSTED/.test(title)) ||
@@ -98,10 +98,10 @@ export function defaultHttpClassifier(err: any): RetryClassification {
     if (err.name === 'TypeError' && (msg.includes('fetch') || msg.includes('network'))) {
       return { retryable: true, reason: 'network-error' };
     }
-    const status = (err as any).status || (err as any).response?.status;
+    const status = err.status || err.response?.status;
     if (status === 429) return { retryable: true, reason: 'http-429' }; // always retry 429
-    const title = (err as any).title || (err as any).response?.data?.title;
-    const detail = (err as any).detail || (err as any).response?.data?.detail;
+    const title = err.title || err.response?.data?.title;
+    const detail = err.detail || err.response?.data?.detail;
     if (status === 503) {
       if (title === 'RESOURCE_EXHAUSTED') return { retryable: true, reason: 'backpressure-503' };
       return { retryable: false, reason: 'http-503-non-backpressure' };

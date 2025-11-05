@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Generated: 1970-01-01T00:00:00.000Z
+Generated: 2025-11-05T05:05:14.623Z
 
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|
@@ -22,7 +22,7 @@ Generated: 1970-01-01T00:00:00.000Z
 | `CAMUNDA_BASIC_AUTH_USERNAME` | string | — | When CAMUNDA_AUTH_STRATEGY=BASIC |  | Basic auth username (required when CAMUNDA_AUTH_STRATEGY=BASIC). |
 | `CAMUNDA_BASIC_AUTH_PASSWORD` | string | — | When CAMUNDA_AUTH_STRATEGY=BASIC | secret | Basic auth password (required when CAMUNDA_AUTH_STRATEGY=BASIC). |
 | `CAMUNDA_SDK_VALIDATION` | string | `req:none,res:none` | Optional |  | Validation mini-language controlling req/res modes. |
-| `CAMUNDA_SDK_LOG_LEVEL` | string | `error` | Optional |  | SDK log level (silent|error|warn|info|debug|trace). |
+| `CAMUNDA_SDK_LOG_LEVEL` | enum(silent | error | warn | info | debug | trace) | `error` | Optional |  | SDK log level. |
 | `CAMUNDA_SDK_TELEMETRY_LOG` | boolean | `false` | Optional |  | Emit telemetry (auth/http/retry) events to the SDK logger automatically (no code). |
 | `CAMUNDA_SDK_TELEMETRY_CORRELATION` | boolean | `false` | Optional |  | Enable correlation context (withCorrelation helper) when auto telemetry logging is on. |
 | `CAMUNDA_MTLS_CERT_PATH` | string | — | No default |  | Path to client certificate (PEM) for mTLS. |
@@ -43,3 +43,6 @@ Generated: 1970-01-01T00:00:00.000Z
 | `CAMUNDA_SDK_BACKPRESSURE_FLOOR` | int | `1` | Optional |  | Minimum floor concurrency when degraded. |
 | `CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD` | int | `3` | Optional |  | Consecutive backpressure events required to enter severe state. |
 | `CAMUNDA_SDK_BACKPRESSURE_PROFILE` | enum(BALANCED | CONSERVATIVE | AGGRESSIVE | LEGACY) | `BALANCED` | Optional |  | Preset profile for backpressure tuning (LEGACY = observe-only, no gating; other profiles enable adaptive global concurrency control). |
+| `CAMUNDA_SUPPORT_LOG_ENABLED` | boolean | `false` | Optional |  | Enable creation of a support log file with environment & configuration diagnostics (Node-only). |
+| `CAMUNDA_SUPPORT_LOG_FILE_PATH` | string | — | No default |  | Override support log output file path (default: ./camunda-support.log in current working directory). |
+| `CAMUNDA_SUPPORT_LOGGER` | boolean | `false` | Optional |  | Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated). |

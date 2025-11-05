@@ -13,6 +13,11 @@ import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
 import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
 import {
+  createSupportLogger,
+  type SupportLogger,
+  writeSupportLogPreamble,
+} from '../runtime/supportLogger';
+import {
   wrapFetch,
   withCorrelation as _withCorrelation,
   getCorrelation,
@@ -52,10 +57,38 @@ export interface CancelablePromise<T> extends Promise<T> {
 }
 function toCancelable<T>(factory: (signal: AbortSignal) => Promise<T>): CancelablePromise<T> {
   const ac = new AbortController();
+  let settled = false;
+  let rejectRef: (e: any) => void = () => {};
   const p: any = new Promise<T>((resolve, reject) => {
-    factory(ac.signal).then(resolve, reject);
+    rejectRef = reject;
+    factory(ac.signal)
+      .then((v) => {
+        settled = true;
+        resolve(v);
+      })
+      .catch((e) => {
+        // If already canceled and fetch produced an abort, translate to CancelSdkError once.
+        if (
+          ac.signal.aborted &&
+          (e?.name === 'AbortError' || /abort|cancel/i.test(e?.message || ''))
+        ) {
+          const c = new Error('Cancelled') as any;
+          c.name = 'CancelSdkError';
+          return reject(c);
+        }
+        reject(e);
+      });
   });
-  p.cancel = () => ac.abort();
+  p.cancel = () => {
+    if (ac.signal.aborted) return; // idempotent
+    ac.abort();
+    // If underlying promise hasn't settled yet, proactively reject with CancelSdkError.
+    if (!settled) {
+      const c = new Error('Cancelled') as any;
+      c.name = 'CancelSdkError';
+      rejectRef(c);
+    }
+  };
   return p as CancelablePromise<T>;
 }
 
@@ -80,6 +113,8 @@ export interface CamundaOptions {
   // If true (default), non-2xx HTTP responses throw instead of returning an error object.
   // Set to false to opt into non-throwing behavior.
   throwOnError?: boolean;
+  // Optional injected SupportLogger (Node-only). If absent, auto-created when enabled via env/config.
+  supportLogger?: SupportLogger;
 }
 
 export function createCamundaClient(options?: CamundaOptions) {
@@ -102,6 +137,10 @@ export class CamundaClient {
   private _bp: BackpressureManager;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
+  /** Support logger (Node-only; no-op in browser). */
+  private _supportLogger: SupportLogger = new (class implements SupportLogger {
+    log() {}
+  })();
 
   // Internal fixed error mode for eventual consistency ('throw' | 'result'). Not user mutable after construction.
   private readonly _errorMode: 'throw' | 'result';
@@ -126,6 +165,7 @@ export class CamundaClient {
         hooks: opts.telemetry.hooks,
         correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: opts.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -133,6 +173,25 @@ export class CamundaClient {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
+        mirrorToLog: true,
+      });
+    } else if (
+      // Auto-enable mirror telemetry when trace level and user did not explicitly set CAMUNDA_SDK_TELEMETRY_LOG to a disabling value.
+      this._log.level() === 'trace' &&
+      !this._config.telemetry?.log &&
+      // No explicit override provided
+      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      // And env var either absent or truthy enabling value
+      (typeof process === 'undefined' ||
+        process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
+        /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
+    ) {
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: undefined,
+        correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     }
@@ -158,6 +217,15 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     this._errorMode = (opts as any).errorMode === 'result' ? 'result' : 'throw';
+    // Support logger initialization (after config hydration & before major components start emitting)
+    this._supportLogger = createSupportLogger(this._config, opts.supportLogger);
+    try {
+      this._supportLogger.log('CamundaClient constructed');
+    } catch {
+      /* ignore */
+    }
+    // Emit canonical support log preamble (idempotent; covers injected loggers)
+    this.emitSupportLogPreamble();
     // Initialize global backpressure manager with tuned config
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
@@ -213,6 +281,7 @@ export class CamundaClient {
         hooks: next.telemetry.hooks,
         correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: next.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -220,6 +289,22 @@ export class CamundaClient {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
+        mirrorToLog: true,
+      });
+    } else if (
+      this._log.level() === 'trace' &&
+      !this._config.telemetry?.log &&
+      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      (typeof process === 'undefined' ||
+        process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
+        /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
+    ) {
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: undefined,
+        correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     }
@@ -249,6 +334,19 @@ export class CamundaClient {
     this._validation.update(this._config.validation);
     this._validation.attachLogger(this._log);
     // _errorMode intentionally not mutable post-construction.
+    // Re-init support logger only if it was disabled and now enabled (avoid overwriting custom injected instance)
+    if (!next.supportLogger && !('supportLogger' in next)) {
+      // Auto-detect change in enable flag
+      const shouldEnable = this._config.supportLog?.enabled;
+      const previouslyEnabled = (this._supportLogger as any).enabled === true; // heuristic
+      if (shouldEnable && !previouslyEnabled) {
+        this._supportLogger = createSupportLogger(this._config);
+        this._supportLogger.log('Support logger enabled via reconfigure');
+      }
+    } else if (next.supportLogger) {
+      this._supportLogger = next.supportLogger;
+      this._supportLogger.log('Support logger injected via reconfigure');
+    }
     // Emit updated redacted configuration when debug enabled
     this._log.debug(() => {
       try {
@@ -286,6 +384,24 @@ export class CamundaClient {
   /** Internal accessor (read-only) for eventual consistency error mode. */
   getErrorMode(): 'throw' | 'result' {
     return this._errorMode;
+  }
+
+  /** Internal accessor for support logger (no public API commitment yet). */
+  _getSupportLogger(): SupportLogger {
+    return this._supportLogger;
+  }
+
+  /**
+   * Emit the standard support log preamble & redacted configuration to the current support logger.
+   * Safe to call multiple times; subsequent calls are ignored (idempotent).
+   * Useful when a custom supportLogger was injected and you still want the canonical header & config dump.
+   */
+  emitSupportLogPreamble() {
+    try {
+      writeSupportLogPreamble(this._supportLogger, this._config as CamundaConfig);
+    } catch (e) {
+      this._log.debug(() => ['supportLog.preamble.error', e]);
+    }
   }
 
   // Run a function with a correlation ID (manual propagation phase 1)

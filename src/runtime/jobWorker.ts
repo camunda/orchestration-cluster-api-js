@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import type { EnrichedActivatedJob } from './jobActions';
 import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivatedJobResult } from '../gen/types.gen';
 
@@ -35,15 +36,9 @@ type InferOrUnknown<T extends z.ZodTypeAny | undefined> = T extends z.ZodTypeAny
 export type Job<
   In extends z.ZodTypeAny | undefined,
   Headers extends z.ZodTypeAny | undefined,
-> = ActivatedJobResult & {
+> = EnrichedActivatedJob & {
   variables: InferOrUnknown<In>;
   customHeaders: InferOrUnknown<Headers>;
-  cancelWorkflow: (body: any) => Promise<JobActionReceipt>;
-  cancel: (body: any) => Promise<JobActionReceipt>;
-  complete: (body: any) => Promise<JobActionReceipt>;
-  fail: (body: any) => Promise<JobActionReceipt>;
-  ignore: () => Promise<JobActionReceipt>;
-  log: ReturnType<CamundaClient['logger']>;
 };
 
 let _workerCounter = 0;
@@ -103,6 +98,55 @@ export class JobWorker {
     this._log.info('worker.stop');
   }
 
+  /**
+   * Gracefully stop the worker: prevent new polls, allow any in-flight activation to finish
+   * without cancellation, and wait for currently active jobs to drain (be acknowledged) up to waitUpToMs.
+   * If timeout is reached, falls back to hard stop logic (cancels activation if still pending).
+   */
+  async stopGracefully(opts?: { waitUpToMs?: number; checkIntervalMs?: number }) {
+    const waitUpToMs = opts?.waitUpToMs ?? 5000;
+    const checkIntervalMs = opts?.checkIntervalMs ?? 10;
+    this._stopped = true;
+    if (this._pollTimer) clearTimeout(this._pollTimer);
+    this._pollTimer = null;
+    const start = Date.now();
+    // Wait for activation to settle (do not cancel proactively)
+    if (this._inFlightActivation) {
+      try {
+        await Promise.race([
+          this._inFlightActivation,
+          new Promise((_, rej) =>
+            setTimeout(() => rej(new Error('activation.wait.timeout')), waitUpToMs)
+          ),
+        ]);
+      } catch (e: any) {
+        // If activation timed out, we will proceed to fallback below.
+        if (e && e.message === 'activation.wait.timeout') {
+          this._log.debug('worker.gracefulStop.activationTimeout');
+        }
+      }
+    }
+    // Wait for active jobs to drain
+    while (this._activeJobs > 0 && Date.now() - start < waitUpToMs) {
+      await new Promise((r) => setTimeout(r, checkIntervalMs));
+    }
+    const timedOut = this._activeJobs > 0;
+    if (timedOut) {
+      // Fallback: cancel activation if still present and perform hard stop semantics.
+      if (this._inFlightActivation?.cancel) {
+        try {
+          this._inFlightActivation.cancel();
+        } catch {
+          /* ignore */
+        }
+      }
+      this._log.debug('worker.gracefulStop.timeout', { remaining: this._activeJobs });
+    } else {
+      this._log.debug('worker.gracefulStop.done');
+    }
+    return { remainingJobs: this._activeJobs, timedOut };
+  }
+
   private _scheduleNext(delayMs: number) {
     if (this._stopped) return;
     this._pollTimer = setTimeout(() => this._poll(), delayMs);
@@ -140,7 +184,12 @@ export class JobWorker {
     } catch (e) {
       this._inFlightActivation = null;
       if (this._stopped) return; // Ignore errors after stop
-      this._log.error('activation.error', e);
+      // Suppress logging for intentional cancellation (user-initiated stop).
+      if ((e as any)?.name === 'CancelSdkError') {
+        this._log.debug('activation.cancelled');
+      } else {
+        this._log.error('activation.error', e);
+      }
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
     }
@@ -159,7 +208,7 @@ export class JobWorker {
     }
   }
 
-  private async _handleJob(raw: ActivatedJobResult) {
+  private async _handleJob(raw: ActivatedJobResult & Partial<EnrichedActivatedJob>) {
     if (this._stopped) {
       this._decrementOnce();
       return;
@@ -172,7 +221,7 @@ export class JobWorker {
         const parsed = this._cfg.inputSchema.safeParse(variables);
         if (!parsed.success) {
           this._log.warn('job.validation.variables.failed', parsed.error.flatten());
-          await this._failValidation(raw, 'Invalid variables');
+          await this._failValidation(raw as ActivatedJobResult, 'Invalid variables');
           return;
         }
         variables = parsed.data;
@@ -181,104 +230,44 @@ export class JobWorker {
         const parsed = this._cfg.customHeadersSchema.safeParse(headers);
         if (!parsed.success) {
           this._log.warn('job.validation.headers.failed', parsed.error.flatten());
-          await this._failValidation(raw, 'Invalid custom headers');
+          await this._failValidation(raw as ActivatedJobResult, 'Invalid custom headers');
           return;
         }
         headers = parsed.data;
       }
     }
-    const finalize = () => this._decrementOnce();
-    let done = false;
-    const markDone = () => {
-      if (!done) {
-        done = true;
-        finalize();
-      }
-    };
-    const jobObj = Object.assign({}, raw, {
-      variables,
-      customHeaders: headers,
-      cancelWorkflow: async (body: any): Promise<JobActionReceipt> => {
-        try {
-          await (this._client as any).cancelProcessInstance({
-            ...body,
-            processInstanceKey: raw.processInstanceKey,
-          });
-        } finally {
-          markDone();
-        }
-        return JobActionReceipt;
-      },
-      cancel: async (body: any): Promise<JobActionReceipt> => {
-        try {
-          await (this._client as any).cancelProcessInstance({
-            ...body,
-            processInstanceKey: raw.processInstanceKey,
-          });
-        } finally {
-          markDone();
-        }
-        return JobActionReceipt;
-      },
-      complete: async (body: any): Promise<JobActionReceipt> => {
-        if (this._cfg.validateSchemas && this._cfg.outputSchema && body?.variables) {
-          const parsed = this._cfg.outputSchema.safeParse(body.variables);
-          if (!parsed.success) {
-            this._log.warn('job.validation.output.failed', parsed.error.flatten());
-            // fall through to failing job maybe? For now still attempt completion.
-          } else {
-            body.variables = parsed.data;
-          }
-        }
-        try {
-          await (this._client as any).completeJob({ ...body, jobKey: raw.jobKey });
-        } finally {
-          markDone();
-        }
-        return JobActionReceipt;
-      },
-      fail: async (body: any): Promise<JobActionReceipt> => {
-        try {
-          await (this._client as any).failJob({ ...body, jobKey: raw.jobKey });
-        } finally {
-          markDone();
-        }
-        return JobActionReceipt;
-      },
-      ignore: async (): Promise<JobActionReceipt> => {
-        markDone();
-        return JobActionReceipt;
-      },
-      log: this._log.scope(`job:${raw.jobKey}`),
-    });
-    const job: Job<any, any> = jobObj as Job<any, any>;
+    // Mutate enriched job with validated data if present
+    const job: Job<any, any> = Object.assign(raw, { variables, customHeaders: headers }) as Job<
+      any,
+      any
+    >;
     try {
       const receipt = await this._cfg.jobHandler(job);
-      // If handler returned without invoking an action & no decrement yet, warn.
-      if (!done) {
+      if (!job.acknowledged) {
         this._log.warn('job.handler.noAction', { jobKey: raw.jobKey });
-        markDone();
       }
       return receipt;
     } catch (e: any) {
       this._log.error('job.handler.error', e);
       try {
-        await (this._client as any).failJob({
+        const retries = raw.retries;
+        await this._client.failJob({
           jobKey: raw.jobKey,
           errorMessage: e?.message || 'Handler error',
+          retries: typeof retries === 'number' ? Math.max(0, retries - 1) : 0,
         });
       } catch (failErr) {
         this._log.error('job.fail.error', failErr);
-      } finally {
-        markDone();
       }
       return JobActionReceipt;
+    } finally {
+      this._decrementOnce();
     }
   }
 
   private async _failValidation(raw: ActivatedJobResult, msg: string) {
     try {
-      await (this._client as any).failJob({ jobKey: raw.jobKey, errorMessage: msg });
+      await this._client.failJob({ jobKey: raw.jobKey, errorMessage: msg });
     } catch (e) {
       this._log.error('job.fail.validation.error', e);
     } finally {

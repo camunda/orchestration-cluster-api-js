@@ -116,7 +116,7 @@ function main() {
   }
   const ops: OpMeta[] = [];
   for (const item of Object.values(spec.paths || {})) {
-    for (const [verb, raw] of Object.entries(item as any)) {
+    for (const [verb, raw] of Object.entries(item)) {
       const op = raw as OA3Operation;
       if (!op?.operationId) continue;
       const originalId = op.operationId;
@@ -131,7 +131,7 @@ function main() {
       const hasPQ = params.some((p) => p.in === 'path' || p.in === 'query');
       const hasBody = !!op.requestBody && hasJsonLike(op.requestBody);
       const bodyOnly = !!(hasBody && !hasPQ);
-      const eventual = !!(op as any)['x-eventually-consistent'];
+      const eventual = !!op['x-eventually-consistent'];
       // Detect union body variants (top-level oneOf/anyOf) when bodyOnly
       const unionBodies: string[] = [];
       let optionalTenantIdInBody = false;
@@ -437,13 +437,13 @@ type ${o.opId}Consistency = {
       if (o.eventual) {
         methods.push('      const invoke = () => toCancelable(()=>call());');
         methods.push(
-          `      if (useConsistency) return eventualPoll('${o.originalOpId}', ${o.verb === 'get'}, invoke, { ...useConsistency, logger: (this as any)._log });`
+          `      if (useConsistency) return eventualPoll('${o.originalOpId}', ${o.verb === 'get'}, invoke, { ...useConsistency, logger: this._log });`
         );
         methods.push('      return invoke();');
       } else {
         // Inject HTTP retry wrapper
         methods.push(
-          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
+          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} });`
         );
       }
     } else {
@@ -509,7 +509,7 @@ type ${o.opId}Consistency = {
         methods.push('      return invoke();');
       } else {
         methods.push(
-          `      return toCancelable(async _sig => (this as any)._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} }));`
+          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} });`
         );
       }
     }

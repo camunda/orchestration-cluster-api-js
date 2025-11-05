@@ -1,10 +1,10 @@
 {
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda-orchestration-cluster-api",
-    "commit": "3c57081ff143e302040b544ea0c8273fb06d3183",
-    "generatedAt": "2025-10-08T21:09:11.283Z",
+    "commit": "6921b8c3236996d0d793ccb07453718f1a8fbb8c",
+    "generatedAt": "2025-11-04T09:16:05.611Z",
     "specPath": "specification/rest-api.yaml",
-    "specSha256": "44c6da73d18d1028c327b2b7c71163c32094160664fd683180a5a5a348b03bfc"
+    "specSha256": "513fb17611e89f352d07ac83ef170101a58209e5bb30622c0ef6754dbbfef4b8"
   },
   "responses": [
     {
@@ -396,10 +396,6 @@
                   "type": "string"
                 },
                 {
-                  "name": "hasFailedWithRetriesLeft",
-                  "type": "boolean"
-                },
-                {
                   "name": "jobKey",
                   "type": "string"
                 },
@@ -502,6 +498,10 @@
                 {
                   "name": "errorMessage",
                   "type": "string"
+                },
+                {
+                  "name": "hasFailedWithRetriesLeft",
+                  "type": "boolean"
                 },
                 {
                   "name": "isDenied",

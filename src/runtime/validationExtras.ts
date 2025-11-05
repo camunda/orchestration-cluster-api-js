@@ -44,7 +44,7 @@ export function detectExtrasAndMaybeThrow(opts: DetectOptions) {
       if (settings.deep) {
         for (const k of keys) {
           if (expected.has(k)) {
-            visit(val[k], (shape as any)[k], path ? `${path}.${k}` : k);
+            visit(val[k], shape[k], path ? `${path}.${k}` : k);
           }
         }
       }

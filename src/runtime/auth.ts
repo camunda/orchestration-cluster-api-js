@@ -382,7 +382,7 @@ export function createAuthFacade(
     trace: () => {},
     code: () => {},
     scope: () => noop,
-  } as any;
+  };
   const authLogger = (opts?.logger || noop).scope('auth');
   const tHooks = opts?.telemetryHooks;
   const hooks: HeadersHook[] = [];

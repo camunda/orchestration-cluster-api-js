@@ -64,7 +64,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
       const tag = `[camunda-sdk][${level}]${scope ? `[${scope}]` : ''}`;
       const method = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
       // eslint-disable-next-line no-console
-      (console as any)[method](tag, ...args);
+      console[method](tag, ...args);
     }
   }
   function emitCode(level: LogLevel, scope: string, code: string, msg: string, data?: any) {
@@ -79,7 +79,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
       const tag = `[camunda-sdk][${level}]${scope ? `[${scope}]` : ''}`;
       const method = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
       // eslint-disable-next-line no-console
-      (console as any)[method](tag, code + ':', msg, data ?? '');
+      console[method](tag, code + ':', msg, data ?? '');
     }
   }
   const make = (scope: string): Logger => ({
