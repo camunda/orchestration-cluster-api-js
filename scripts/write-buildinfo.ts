@@ -12,11 +12,8 @@ const specHash = fs.existsSync(specPath) ? sha256(specPath) : 'absent';
 const brandingMeta = path.resolve('branding/branding-metadata.json');
 const brandingHash = fs.existsSync(brandingMeta) ? sha256(brandingMeta) : 'absent';
 
-const now = process.env.CAMUNDA_SDK_DETERMINISTIC_BUILD
-  ? '1970-01-01T00:00:00.000Z'
-  : new Date().toISOString();
 const info = {
-  generatedAt: now,
+  generatedAt: new Date().toISOString(),
   commit: process.env.GITHUB_SHA || 'local',
   workflowRun: process.env.GITHUB_RUN_ID || 'local',
   node: process.version,

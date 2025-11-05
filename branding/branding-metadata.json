@@ -1,6 +1,5 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2025-11-05T05:04:50.219Z",
   "specHash": "sha256:e41213bb1e0300ca199a86b111c28915a10ba83f7a8013c6406370d30704241e",
   "generator": {
     "name": "@hey-api/openapi-ts"

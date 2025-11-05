@@ -79,7 +79,6 @@ interface UnionKeyEntry {
 
 interface BrandingMetadata {
   schemaVersion: string;
-  generatedAt: string;
   specHash: string;
   generator: { name: string; version?: string };
   brandingConfig: {
@@ -331,12 +330,8 @@ for (const [name, schema] of Object.entries<any>(schemas)) {
 }
 
 // Integrity counters
-const nowTs = process.env.CAMUNDA_SDK_DETERMINISTIC_BUILD
-  ? '1970-01-01T00:00:00.000Z'
-  : new Date().toISOString();
 const metadata: BrandingMetadata = {
   schemaVersion: '1.0.0',
-  generatedAt: nowTs,
   specHash,
   generator: { name: '@hey-api/openapi-ts' },
   brandingConfig: {

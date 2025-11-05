@@ -22,7 +22,6 @@ interface BrandingMetadata {
   keys: BrandingMetadataKey[];
   arrays?: BrandingArrayMeta[];
   schemaVersion: string;
-  generatedAt: string;
   specHash: string;
 }
 
@@ -76,7 +75,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
   lines.push('// branding-plugin generated');
   lines.push(`// schemaVersion=${meta.schemaVersion}`);
   lines.push(`// specHash=${meta.specHash}`);
-  lines.push(`// generatedAt=${meta.generatedAt}`);
+  // (timestamp removed for deterministic builds)
   lines.push('');
   // NOTE: We no longer emit the generic brand wrapper here; instead we patch the base
   // alias in types.gen.ts from `export type CamundaKey = string;` to the generic branded form.

@@ -27,25 +27,31 @@ Integration tests spin up containers (Zeebe, Operate, etc.). Use:
 npm run test:integration
 ```
 
-## Deterministic Build
+## Deterministic Build & Timestamp Policy
 
-To verify release integrity we support deterministic builds:
+The repository enforces a drift guard: regenerated artifacts must be byte‑for‑byte identical across builds unless a real source/input change occurred. To make this reliable we **removed all embedded generation timestamps** (e.g. `generatedAt`, banner date strings) from committed artifacts.
 
-```
-CAMUNDA_SDK_DETERMINISTIC_BUILD=1 npm run build
-```
+Current policy:
 
-This forces timestamps to the fixed epoch `1970-01-01T00:00:00.000Z`.
+- Do **not** reintroduce wall‑clock timestamps, date banners, or build times into any committed generated file (TypeScript, JSON, Markdown) unless they are logically required for runtime behavior.
+- If you need provenance, prefer stable content hashes (already present: `specHash`, branding key hashes) or add a new hash field rather than a timestamp.
+- The publish workflow sets `CAMUNDA_SDK_SKIP_FETCH_SPEC=1` to avoid pulling a moving upstream spec mid‑release.
 
-Publish workflow also sets:
+Rationale:
 
-```
-CAMUNDA_SDK_SKIP_FETCH_SPEC=1
-```
+1. Eliminates false positive drift failures due solely to time.
+2. Simplifies local verification: two consecutive `npm run build` runs must yield zero git diffs.
+3. Improves review signal: any diff now reflects a substantive schema/template/script change.
 
-so it does not refetch the upstream REST API spec during the final integrity check (preventing mid‑release drift).
+Contributor guidance:
 
-If you change generation scripts, ensure they honor `CAMUNDA_SDK_DETERMINISTIC_BUILD` for any time‑based fields.
+| Scenario                                 | What to do                                                                       |
+| ---------------------------------------- | -------------------------------------------------------------------------------- |
+| Need to record when something was built  | Use runtime logging or external release notes, not a committed artifact field.   |
+| Want to tag provenance in generated code | Add or extend a stable hash (e.g. combine spec hash + template hash).            |
+| Adding a new generation script           | Ensure output ordering is deterministic (sort keys, arrays) and omit timestamps. |
+
+If you inadvertently add a timestamp, the second local build will show a diff—remove the field instead of guarding it behind the deterministic flag.
 
 ## Commit Message Guidelines
 
@@ -99,7 +105,7 @@ Semantic-release publishes from `main` only. Use feature branches and PRs; merge
 Dry-run release locally:
 
 ```
-CAMUNDA_SDK_DETERMINISTIC_BUILD=1 npx semantic-release --dry-run
+npx semantic-release --dry-run
 ```
 
 (Will report no publication if not on `main`.)
