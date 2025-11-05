@@ -1,3 +1,13 @@
+# [1.1.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.0.0...v1.1.0) (2025-11-05)
+
+### Features
+
+- add CamundaSupportLogger ([2562abc](https://github.com/camunda/orchestration-cluster-api-js/commit/2562abc2849161d5a306fda19776eb30c2ab56b4))
+- enrich activated jobs with resolution methods ([2bbd361](https://github.com/camunda/orchestration-cluster-api-js/commit/2bbd36142abc21b34f9b9aaa16639efa6859835c))
+- log telemetry at trace level ([822bf29](https://github.com/camunda/orchestration-cluster-api-js/commit/822bf29f9ef6add9f6d5668e024f8376bf2483e8))
+- propagate cancel throw to caller ([c69fc0c](https://github.com/camunda/orchestration-cluster-api-js/commit/c69fc0c52881498c32b80da310a922892d92b06f))
+- use injected support logger ([b46606b](https://github.com/camunda/orchestration-cluster-api-js/commit/b46606bfd49e2dcf57e5e852a15142115188a4de))
+
 # 1.0.0 (2025-10-23)
 
 ### Bug Fixes
