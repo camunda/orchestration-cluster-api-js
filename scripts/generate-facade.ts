@@ -105,7 +105,7 @@ function main() {
       const params = (op.parameters || []) as OA3Parameter[];
       const hasPathOrQuery = params.some((pr) => pr.in === 'path' || pr.in === 'query');
       const hasBody = !!op.requestBody && hasJsonLike(op.requestBody);
-      const eventual = !!(op as any)['x-eventually-consistent'];
+      const eventual = !!op['x-eventually-consistent'];
       const meta: OpMeta = {
         opId: sanitizedId,
         summary: op.summary,
@@ -196,7 +196,7 @@ function main() {
         `  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');`
       );
       lines.push(
-        `  const invoke = () => toCancelable(signal => _${op.opId}({ body, signal } as any).then((r:any)=> r?.data ?? r));`
+        `  const invoke = () => toCancelable(signal => _${op.opId}({ body, signal }).then((r:any)=> r?.data ?? r));`
       );
       lines.push(
         `  return eventualPoll('${(op as any).originalOpId}', ${op.verb === 'get'}, invoke, ec.consistency);`
@@ -208,7 +208,7 @@ function main() {
         `export function ${op.opId}(body: _${op.opId}_Body): CancelablePromise<_DataOf<typeof _${op.opId}>> {`
       );
       lines.push(
-        `  return toCancelable(signal => _${op.opId}({ body, signal } as any).then((r:any)=> r?.data ?? r));`
+        `  return toCancelable(signal => _${op.opId}({ body, signal }).then((r:any)=> r?.data ?? r));`
       );
       lines.push('}');
     }

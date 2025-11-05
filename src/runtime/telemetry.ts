@@ -1,5 +1,6 @@
 // Telemetry Phase 1: hook-based lightweight instrumentation
 import type { Logger } from './logger';
+import type { SupportLogger } from './supportLogger';
 
 export interface TelemetryHooks {
   beforeRequest?(e: TelemetryHttpStartEvent): void;
@@ -16,6 +17,7 @@ export interface TelemetryOptionsInternal {
   correlation?: () => string | undefined; // provider for correlation id
   logger?: Logger; // optional, only used for trace mirroring
   mirrorToLog?: boolean; // if true, emit trace level log.code events
+  supportLogger?: SupportLogger; // unconditional sink (even when main log level filters)
 }
 
 interface BaseEvt {
@@ -122,17 +124,25 @@ export function wrapFetch(
   const mirror = !!opts.mirrorToLog && !!logger;
   function mirrorLog(evt: TelemetryHttpEvent) {
     if (!mirror) return;
-    const data: any = {
-      type: evt.type,
-      method: (evt as any).method,
-      url: (evt as any).url,
-      attempt: (evt as any).attempt,
-      status: (evt as any).status,
-      durationMs: (evt as any).durationMs,
-      requestId: evt.requestId,
-      correlationId: evt.correlationId,
-    };
-    logger!.trace(() => ['telemetry', data]);
+    const opName = `${evt.method} ${evt.url}`;
+    if (evt.type === 'http.end') {
+      logger!.trace(() => [
+        `op=${opName} http.end method=${evt.method} status=${(evt as TelemetryHttpEndEvent).status} url=${evt.url} attempt=${evt.attempt} duration=${(evt as TelemetryHttpEndEvent).durationMs}ms requestId=${evt.requestId}`,
+      ]);
+    } else if (evt.type === 'http.error') {
+      const e = evt as TelemetryHttpErrorEvent;
+      logger!.trace(() => [
+        `op=${opName} http.error method=${e.method} url=${e.url} attempt=${e.attempt} kind=${e.errorKind} msg=${sanitize(e.message)} duration=${e.durationMs}ms requestId=${e.requestId}`,
+      ]);
+    } else if (evt.type === 'http.start') {
+      logger!.trace(() => [
+        `op=${opName} http.start method=${evt.method} url=${evt.url} attempt=${evt.attempt} requestId=${evt.requestId}`,
+      ]);
+    }
+  }
+  function sanitize(msg: string) {
+    if (!msg) return '';
+    return msg.replace(/\s+/g, ' ').slice(0, 300);
   }
   return async function wrapped(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const attempt = (init as any)?.__camundaAttempt || 1; // future retry integration
@@ -145,7 +155,7 @@ export function wrapFetch(
     if (typeof input === 'string') origUrl = input;
     else if (typeof URL !== 'undefined' && input instanceof URL) origUrl = input.toString();
     else if (typeof Request !== 'undefined' && input instanceof Request) origUrl = input.url;
-    else origUrl = (input as any)?.url || (input as any)?.toString?.() || String(input);
+    else origUrl = (input as any)?.url || input?.toString?.() || String(input);
     const redactedUrl = redactUrl(origUrl);
     const requestId = 'r' + (++globalRequestCounter).toString(36);
     const correlationId = opts.correlation ? opts.correlation() : undefined;
@@ -185,6 +195,15 @@ export function wrapFetch(
       } catch {
         /* swallow */
       }
+      // Unconditional SupportLogger emission (if provided)
+      try {
+        const opName = `${endEvt.method} ${endEvt.url}`;
+        opts.supportLogger?.log(
+          `op=${opName} http.end method=${endEvt.method} status=${endEvt.status} url=${endEvt.url} attempt=${endEvt.attempt} durationMs=${endEvt.durationMs} requestId=${endEvt.requestId}`
+        );
+      } catch {
+        /* ignore */
+      }
       return res;
     } catch (e: any) {
       const end = Date.now();
@@ -205,6 +224,14 @@ export function wrapFetch(
         mirrorLog(errEvt);
       } catch {
         /* swallow */
+      }
+      try {
+        const opName = `${errEvt.method} ${errEvt.url}`;
+        opts.supportLogger?.log(
+          `op=${opName} http.error method=${errEvt.method} url=${errEvt.url} attempt=${errEvt.attempt} kind=${errEvt.errorKind} msg=${sanitize(errEvt.message)} durationMs=${errEvt.durationMs} requestId=${errEvt.requestId}`
+        );
+      } catch {
+        /* ignore */
       }
       throw e;
     }

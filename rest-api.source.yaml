@@ -10120,6 +10120,8 @@ components:
     JobSearchQueryResult:
       description: Job search response.
       type: object
+      required: 
+        - items
       allOf:
         - $ref: "#/components/schemas/SearchQueryResponse"
       properties:

@@ -250,13 +250,11 @@ export class JobWorker {
     } catch (e: any) {
       this._log.error('job.handler.error', e);
       try {
-        await (this._client as any).failJob({
+        const retries = raw.retries;
+        await this._client.failJob({
           jobKey: raw.jobKey,
           errorMessage: e?.message || 'Handler error',
-          retries:
-            typeof (raw as any).retries === 'number'
-              ? Math.max(0, (raw as any).retries - 1)
-              : undefined,
+          retries: typeof retries === 'number' ? Math.max(0, retries - 1) : 0,
         });
       } catch (failErr) {
         this._log.error('job.fail.error', failErr);
@@ -269,7 +267,7 @@ export class JobWorker {
 
   private async _failValidation(raw: ActivatedJobResult, msg: string) {
     try {
-      await (this._client as any).failJob({ jobKey: raw.jobKey, errorMessage: msg });
+      await this._client.failJob({ jobKey: raw.jobKey, errorMessage: msg });
     } catch (e) {
       this._log.error('job.fail.validation.error', e);
     } finally {

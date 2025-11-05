@@ -165,6 +165,7 @@ export class CamundaClient {
         hooks: opts.telemetry.hooks,
         correlation: opts.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: opts.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -172,6 +173,25 @@ export class CamundaClient {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
+        mirrorToLog: true,
+      });
+    } else if (
+      // Auto-enable mirror telemetry when trace level and user did not explicitly set CAMUNDA_SDK_TELEMETRY_LOG to a disabling value.
+      this._log.level() === 'trace' &&
+      !this._config.telemetry?.log &&
+      // No explicit override provided
+      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      // And env var either absent or truthy enabling value
+      (typeof process === 'undefined' ||
+        process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
+        /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
+    ) {
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: undefined,
+        correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     }
@@ -261,6 +281,7 @@ export class CamundaClient {
         hooks: next.telemetry.hooks,
         correlation: next.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: next.telemetry.mirrorToLog,
       });
     } else if (this._config.telemetry?.log) {
@@ -268,6 +289,22 @@ export class CamundaClient {
         hooks: undefined,
         correlation: this._config.telemetry.correlation ? () => getCorrelation() : undefined,
         logger: this._log,
+        supportLogger: this._supportLogger,
+        mirrorToLog: true,
+      });
+    } else if (
+      this._log.level() === 'trace' &&
+      !this._config.telemetry?.log &&
+      (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
+      (typeof process === 'undefined' ||
+        process.env['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined ||
+        /^(1|true|yes|on)$/i.test(process.env['CAMUNDA_SDK_TELEMETRY_LOG'] || ''))
+    ) {
+      this._fetch = wrapFetch(this._fetch || (fetch as any), {
+        hooks: undefined,
+        correlation: this._config.telemetry?.correlation ? () => getCorrelation() : undefined,
+        logger: this._log,
+        supportLogger: this._supportLogger,
         mirrorToLog: true,
       });
     }

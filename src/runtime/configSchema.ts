@@ -95,9 +95,10 @@ export const SCHEMA = {
     doc: 'Validation mini-language controlling req/res modes.',
   },
   CAMUNDA_SDK_LOG_LEVEL: {
-    type: 'string',
+    type: 'enum',
+    choices: ['silent', 'error', 'warn', 'info', 'debug', 'trace'] as const,
     default: 'error',
-    doc: 'SDK log level (silent|error|warn|info|debug|trace).',
+    doc: 'SDK log level.',
   },
   CAMUNDA_SDK_TELEMETRY_LOG: {
     type: 'boolean',

@@ -44,7 +44,7 @@ function patchCamundaClient(filePath: string) {
       if (returnPos !== -1) {
         const before = src.slice(0, implStart) + slice.slice(0, returnPos);
         const after = slice.slice(returnPos + 'return data;'.length);
-        const inject = `if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this as any, this.logger().scope(\`job:${'$'}{j.jobKey}\`))); }\n        return data;`;
+        const inject = `if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this, this.logger().scope(\`job:${'$'}{j.jobKey}\`))); }\n        return data;`;
         src = before + inject + after;
       }
     }

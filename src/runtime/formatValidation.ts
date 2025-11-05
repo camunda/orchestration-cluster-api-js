@@ -17,8 +17,7 @@ function describeObjectShape(obj: ZodObject<ZodRawShape>): {
   required: string[];
   optional: string[];
 } {
-  const rawShapeFn = (obj as any)._def?.shape || (obj as any).shape;
-  const shapeObj = typeof rawShapeFn === 'function' ? rawShapeFn() : rawShapeFn;
+  const shapeObj = obj.shape;
   const required: string[] = [];
   const optional: string[] = [];
   for (const k of Object.keys(shapeObj)) {

@@ -33,7 +33,7 @@ function safeStringifyReplacer(seen: WeakSet<object>) {
     seen.add(value);
     const out: any = Array.isArray(value) ? [] : {};
     for (const [k, v] of Object.entries(value)) {
-      out[k] = safeStringifyReplacer(seen)(k, v as any);
+      out[k] = safeStringifyReplacer(seen)(k, v);
     }
     seen.delete(value);
     return out;
@@ -82,10 +82,19 @@ export class CamundaSupportLogger implements SupportLogger {
     if (!this.enabled || !isNode()) return;
     const fs = require('node:fs') as typeof import('node:fs');
     if (fs.existsSync(this.filepath)) {
-      // ensure uniqueness; append numeric suffix
+      // ensure uniqueness; append numeric suffix, with upper bound to avoid infinite loop
       let n = 1;
       const base = this.filepath;
-      while (fs.existsSync(this.filepath)) this.filepath = `${base}-${n++}`;
+      const MAX_SUFFIX = 1000;
+      while (fs.existsSync(this.filepath) && n < MAX_SUFFIX) {
+        this.filepath = `${base}-${n++}`;
+      }
+      if (fs.existsSync(this.filepath)) {
+        throw new Error(
+          `Unable to find unique support log filename after ${MAX_SUFFIX} attempts. ` +
+            `Please clean up old log files or specify a different filePath in supportLog config.`
+        );
+      }
     }
     // Emit preamble immediately for the built-in logger (maintains existing behavior)
     writeSupportLogPreamble(this, config);
@@ -123,9 +132,9 @@ export function createSupportLogger(
 // Reusable preamble emission allowing custom injected loggers to receive the standard header & config dump.
 // Guarded to run only once per logger instance.
 export function writeSupportLogPreamble(logger: SupportLogger, config: CamundaConfig) {
-  const anyLogger = logger as any;
-  if (anyLogger.__preambleEmitted) return;
-  anyLogger.__preambleEmitted = true;
+  const anyLogger = logger;
+  if ((anyLogger as any).__preambleEmitted) return;
+  (anyLogger as any).__preambleEmitted = true;
   try {
     logger.log('********************************************************', false);
     logger.log(
@@ -161,7 +170,7 @@ export function writeSupportLogPreamble(logger: SupportLogger, config: CamundaCo
     } catch {
       /* ignore */
     }
-    const raw = (config as any).__raw || {};
+    const raw = config.__raw || {};
     const obscured = obscureSensitiveInfo(raw);
     logger.log('/** Configuration */\n' + safeStringify(obscured) + '\n', false);
   } catch {

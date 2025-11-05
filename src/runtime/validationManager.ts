@@ -55,7 +55,7 @@ export class ValidationManager {
     const validated = await applySchemaValidation({
       side,
       operationId: opId,
-      mode: effectiveMode as any,
+      mode: effectiveMode,
       schema,
       value,
       logger: this._logger,

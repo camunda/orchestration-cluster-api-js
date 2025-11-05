@@ -102,10 +102,10 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
             // Swallow & continue (transient or backpressure classification)
           })
           .finally(() => {
-            const idx = inFlight.indexOf(p as any);
+            const idx = inFlight.indexOf(p);
             if (idx >= 0) inFlight.splice(idx, 1);
           });
-        inFlight.push(p as any);
+        inFlight.push(p);
       }
       if (completed >= TARGET) break;
       const now = Date.now();
@@ -173,7 +173,7 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
   const durationMs = Date.now() - t0;
   const bpState = client.getBackpressureState ? client.getBackpressureState() : undefined;
   writeProgress('FINAL');
-  if ((logLine as any).stdout?.clear) (logLine as any).stdout.clear();
+  logLine.stdout.clear();
 
   return {
     scenario: scenario.name,

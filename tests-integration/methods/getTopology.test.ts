@@ -1,12 +1,12 @@
-// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
 import { describe, it } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
+import { validateResponseShape } from '../../json-body-assertions';
 
 describe('getTopology', () => {
-  it('scaffold', async () => {
+  it('can get the cluster topology', async () => {
     const _camunda = createCamundaClient();
     const topology = await _camunda.getTopology();
-    console.log(JSON.stringify(topology, null, 2));
+    validateResponseShape({ path: '/topology', method: 'GET', status: '200' }, topology);
   });
 });

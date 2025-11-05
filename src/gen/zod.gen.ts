@@ -3534,9 +3534,9 @@ export const zJobSearchResult = z.object({
  * Job search response.
  */
 export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.optional(z.array(zJobSearchResult).register(z.globalRegistry, {
+    items: z.array(zJobSearchResult).register(z.globalRegistry, {
         description: 'The matching jobs.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Job search response.'
 }));

@@ -154,7 +154,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
     const targetTypesSuffix = path.join('src', 'gen', 'types.gen.ts');
     const targetZodSuffix = path.join('src', 'gen', 'zod.gen.ts');
     const originalWrite = fs.writeFileSync.bind(fs);
-    (fs as any).writeFileSync = function (filePath: any, data: any, ...rest: any[]) {
+    fs.writeFileSync = function (filePath: any, data: any, ...rest: any[]) {
       try {
         if (typeof filePath === 'string' && typeof data === 'string') {
           // Patch types.gen.ts branding
@@ -208,7 +208,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
             }
             // Generic bounded array length transformation based on metadata
             try {
-              const arrayMetaList: BrandingArrayMeta[] = (meta as any).arrays || [];
+              const arrayMetaList: BrandingArrayMeta[] = meta.arrays || [];
               if (arrayMetaList.length) {
                 const arrayMetaMap = new Map(arrayMetaList.map((a) => [a.name, a]));
                 const aliasRegex = /^export type (\w+) = Array<([^>]+)>;$/gm;

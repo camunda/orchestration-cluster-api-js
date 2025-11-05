@@ -24,7 +24,7 @@ function toCancelable<T>(
       (r as Promise<T>).then(resolve, reject);
     }
   }) as CancelablePromise<T>;
-  (p as any).cancel = () => {
+  p.cancel = () => {
     ac.abort();
     rejectFn(new Error('Cancelled'));
   };
@@ -96,7 +96,7 @@ export function eventualPoll<T>(
     const base = invoke();
     if (options.errorMode === 'result') {
       return toCancelable<Result<T>>((signal) => {
-        signal.addEventListener('abort', () => (base as any).cancel?.());
+        signal.addEventListener('abort', () => base.cancel?.());
         return base
           .then((v) => ({ ok: true, value: v }) as Result<T>)
           .catch((e) => ({ ok: false, error: e }) as Result<T>);
@@ -127,7 +127,7 @@ export function eventualPoll<T>(
         if (settled) return;
         settled = true;
         if (options.errorMode === 'result') (resolve as any)({ ok: true, value: val } as Result<T>);
-        else resolve(val as any);
+        else resolve(val);
       };
       const settleErr = (err: any) => {
         if (settled) return;
@@ -137,7 +137,7 @@ export function eventualPoll<T>(
         else reject(err);
       };
       const req = invoke();
-      (req as any)
+      req
         .then(async (res: any) => {
           if (cancelled || outerSignal.aborted) return settleErr(new Error('Cancelled'));
           if (trace) {
@@ -153,8 +153,8 @@ export function eventualPoll<T>(
           let ok = true;
           try {
             if (predicate) ok = await predicate(res);
-            else if (!isGet && res && typeof res === 'object' && Array.isArray((res as any).items))
-              ok = (res as any).items.length > 0;
+            else if (!isGet && res && typeof res === 'object' && Array.isArray(res.items))
+              ok = res.items.length > 0;
           } catch (e) {
             return settleErr(e);
           }

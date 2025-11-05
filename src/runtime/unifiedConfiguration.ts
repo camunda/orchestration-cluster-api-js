@@ -139,9 +139,9 @@ export interface HydrateOptions {
 function deepFreeze<T>(o: T): T {
   if (o && typeof o === 'object' && !Object.isFrozen(o)) {
     Object.freeze(o);
-    for (const k of Object.keys(o as any)) {
+    for (const k of Object.keys(o)) {
       // @ts-ignore
-      deepFreeze((o as any)[k]);
+      deepFreeze(o[k]);
     }
   }
   return o;
@@ -269,29 +269,40 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   function boolParserFactory(key: string) {
     return (v: string) => {
       const parsed = parseBoolean(v, key, parseErrors);
-      if (parsed === undefined) return undefined as any;
+      if (parsed === undefined) return undefined;
       return parsed;
     };
   }
   function intParserFactory(key: string) {
     return (v: string) => {
       const parsed = parseInteger(v, key, parseErrors);
-      if (parsed === undefined) return undefined as any;
+      if (parsed === undefined) return undefined;
       return parsed;
     };
   }
   function enumParserFactory(key: string, choices: readonly string[]) {
+    // Case-insensitive parsing. Canonicalize to schema-declared casing style.
+    // If all choices are lowercase => return lowercase value.
+    // If all choices are uppercase => return uppercase value.
+    // Mixed casing (currently unused) => return the exact schema choice matched.
+    const lowered = choices.map((c) => c.toLowerCase());
+    const allLower = choices.every((c) => c === c.toLowerCase());
+    const allUpper = choices.every((c) => c === c.toUpperCase());
     return (v: string) => {
-      const norm = v.trim().toUpperCase();
-      if (!choices.includes(norm)) {
+      const raw = v.trim();
+      const candidateLower = raw.toLowerCase();
+      const idx = lowered.indexOf(candidateLower);
+      if (idx === -1) {
         parseErrors.push({
           code: ConfigErrorCode.CONFIG_INVALID_ENUM,
           key,
           message: `Invalid value '${v}' (expected one of ${choices.join('|')}).`,
         });
-        return undefined as any;
+        return undefined;
       }
-      return norm;
+      if (allLower) return lowered[idx];
+      if (allUpper) return choices[idx];
+      return choices[idx];
     };
   }
 
@@ -335,13 +346,13 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
 
   // Run typed-env (will not throw for our parser-based validation; parseErrors collects issues)
   let envTyped: Record<string, any> = {};
-  envTyped = createEnv(typedEnvSchema as any, { env: envInput });
+  envTyped = createEnv(typedEnvSchema, { env: envInput });
 
   // Build rawMap from typed values (string representation); fill in defaults for unset keys if defined
   for (const k of allKeys()) {
     const entry = schemaEntry(k);
     const rawProvided = envInput[k];
-    const val = (envTyped as any)[k];
+    const val = envTyped[k];
     if (val !== undefined && val !== null) {
       rawMap[k] = typeof val === 'string' ? val : String(val);
     } else if (rawProvided !== undefined) {
@@ -372,7 +383,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     if (req) {
       const condValue = rawMap[req.key]?.trim().toUpperCase();
       if (condValue === req.equals) {
-        const origin = (baseEnv[k] ?? (overrides as any)[k] ?? '').toString().trim();
+        const origin = (baseEnv[k] ?? overrides[k] ?? '').toString().trim();
         if (origin === '') {
           const list = missingByCondition[req.equals] || (missingByCondition[req.equals] = []);
           list.push(k);
@@ -512,7 +523,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   // Only override when user did NOT explicitly provide a value (env or override). We rely on the
   // 'provided' map built earlier; default schema values should not block profile application.
   function ensure(k: string, val: number) {
-    if (!(provided as any)[k]) rawMap[k] = String(val);
+    if (!provided[k]) rawMap[k] = String(val);
   }
   // Only fill when the specific env var is absent (explicit override wins over profile).
   ensure('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX', preset.initialMax);
@@ -584,7 +595,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
           : undefined,
     },
     validation: { req: validation.req, res: validation.res, raw: validation.raw },
-    logLevel: (rawMap['CAMUNDA_SDK_LOG_LEVEL'] as any as CamundaConfig['logLevel']) || 'error',
+    logLevel: (rawMap['CAMUNDA_SDK_LOG_LEVEL'] as CamundaConfig['logLevel']) || 'error',
     eventual: {
       pollDefaultMs: parseInt(rawMap['CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS'] || '500', 10),
     },
@@ -711,7 +722,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
                 code: ConfigErrorCode.CONFIG_INVALID_ENUM,
                 message: `Configuration fetch timed out after ${ms}ms`,
               },
-            ] as any)
+            ])
           ),
         ms
       );

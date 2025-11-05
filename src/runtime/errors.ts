@@ -78,18 +78,18 @@ export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError 
     cErr.operationId = ctx?.opId;
     // Preserve original stack/message detail if present
     if (e?.message && !/Cancelled/i.test(e.message)) cErr.message = e.message;
-    if (e?.stack) (cErr as any).stack = e.stack;
+    if (e?.stack) cErr.stack = e.stack;
     return cErr;
   }
   // HTTP classification
   if (typeof e.status === 'number') {
     const msg = e.message || e.title || e.detail || `HTTP ${e.status}`;
-    const httpErr = new Error(msg) as any as HttpSdkError;
+    const httpErr = new Error(msg) as HttpSdkError;
     httpErr.name = 'HttpSdkError';
     httpErr.status = e.status;
     httpErr.operationId = ctx?.opId;
     for (const k of ['type', 'title', 'detail', 'instance'] as const) {
-      if (e[k] !== undefined) (httpErr as any)[k] = e[k];
+      if (e[k] !== undefined) httpErr[k] = e[k];
     }
     if (e.nonRetryable) (httpErr as any).nonRetryable = true;
     // preserve original stack if present
@@ -104,7 +104,7 @@ export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError 
     /validation/i.test(e?.message || '') ||
     /Invalid .* request/i.test(e?.message || '')
   ) {
-    const vErr = new Error(e.message || 'Validation error') as any as ValidationSdkError;
+    const vErr = new Error(e.message || 'Validation error') as ValidationSdkError;
     vErr.name = 'ValidationSdkError';
     vErr.side = e.side || 'request';
     vErr.operationId = e.operationId || ctx?.opId || 'unknown';
@@ -114,7 +114,7 @@ export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError 
   }
   // Auth
   if (/auth/i.test(e?.message || '') || e?.name === 'AuthError') {
-    const aErr = new Error(e.message || 'Authentication error') as any as AuthSdkError;
+    const aErr = new Error(e.message || 'Authentication error') as AuthSdkError;
     aErr.name = 'AuthSdkError';
     aErr.status = e.status;
     aErr.cause = e;
@@ -123,13 +123,13 @@ export function normalizeError(err: unknown, ctx?: { opId?: string }): SdkError 
   }
   // Network
   if (e?.name === 'TypeError' || /network/i.test(e?.message || '')) {
-    const nErr = new Error(e.message || 'Network error') as any as NetworkSdkError;
+    const nErr = new Error(e.message || 'Network error') as NetworkSdkError;
     nErr.name = 'NetworkSdkError';
     nErr.cause = e;
     if (e.stack) nErr.stack = e.stack;
     return nErr;
   }
-  const unk = new Error(e?.message || 'Unknown error') as any as NetworkSdkError;
+  const unk = new Error(e?.message || 'Unknown error') as NetworkSdkError;
   unk.name = 'NetworkSdkError';
   unk.cause = e;
   if (e.stack) unk.stack = e.stack;
