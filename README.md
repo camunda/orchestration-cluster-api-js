@@ -191,6 +191,15 @@ const skip = new Set([
   'withCorrelation',
   'deployResourcesFromFiles',
 ]);
+for (const key of Object.keys(client)) {
+  const val: any = (client as any)[key];
+  if (typeof val === 'function' && !key.startsWith('_') && !skip.has(key)) {
+    const original = val.bind(client);
+    (client as any)[key] = (...a: any[]) => retryPolicy.execute(() => original(...a));
+  }
+}
+
+// Now every public operation is wrapped.
 ```
 
 ## Support Logger (Node Only)
@@ -240,18 +249,6 @@ We welcome issues and pull requests. Please read the [CONTRIBUTING.md](./CONTRIB
 
 If you plan to help migrate to npm Trusted Publishing (OIDC), open an issue so we can coordinate workflow permission changes (`id-token: write`) and removal of the legacy `NPM_TOKEN` secret.
 
-for (const key of Object.keys(client)) {
-const val: any = (client as any)[key];
-if (typeof val === 'function' && !key.startsWith('\_') && !skip.has(key)) {
-const original = val.bind(client);
-(client as any)[key] = (...a: any[]) => retryPolicy.execute(() => original(...a));
-}
-}
-
-// Now every public operation is wrapped.
-
-````
-
 ### Custom Classification Example
 
 Retry only network errors + 429/503, plus optionally 500 on safe GET endpoints you mark:
@@ -270,7 +267,7 @@ const policy = retry(classify, {
   maxAttempts: 5,
   backoff: new ExponentialBackoff({ initialDelay: 100, maxDelay: 2000, jitter: true }),
 });
-````
+```
 
 ### Notes
 
@@ -404,12 +401,11 @@ const worker = client.createJobWorker({
   outputSchema: Output, // validates variables passed to complete(...)
   validateSchemas: true, // set false for max throughput (skip Zod)
   autoStart: true, // default true; start polling immediately
-  jobHandler: async (job) => {
+  jobHandler: (job) => {
     // Access typed variables
     const vars = job.variables; // inferred from Input schema
     // Do work...
-    await job.complete({ variables: { processed: true } });
-    // Returning the receipt is optional; completion already acknowledges the job.
+    return job.complete({ variables: { processed: true } });
   },
 });
 
@@ -423,12 +419,46 @@ process.on('SIGINT', () => {
 
 Your `jobHandler` must ultimately invoke exactly one of:
 
-- `job.complete({ variables? })`
+- `job.complete({ variables? })` OR `job.complete()`
 - `job.fail({ errorMessage, retries?, retryBackoff? })`
-- `job.cancelWorkflow({})` / `job.cancel({})` (alias – cancels the process instance)
-- `job.ignore()` (marks as done locally without reporting to broker – only use for experimental flows)
+- `job.cancelWorkflow({})` (cancels the process instance)
+- `job.ignore()` (marks as done locally without reporting to broker – can be used for decoupled flows)
 
-Each action returns an opaque unique symbol receipt (`JobActionReceipt`) primarily for internal/test assertions; you do not need to use it. If the handler returns without invoking an action the worker logs a warning and internally marks the job done (no completion sent) to prevent a leak.
+Each action returns an opaque unique symbol receipt (`JobActionReceipt`). The handler's declared return type (`Promise<JobActionReceipt>`) is intentional:
+
+Why this design:
+
+- Enforces a single terminal code path: every successful handler path should end by returning the sentinal obtained by invoking an action.
+- Enables static reasoning: TypeScript can identify if your handler has a code path that does not acknowledge the job (catch unintended behavior early).
+- Makes test assertions simple: e.g. `expect(await job.complete()).toBe(JobActionReceipt)`.
+
+Acknowledgement lifecycle:
+
+- Calling any action (`complete`, `fail`, `cancelWorkflow`, `ignore`) sets `job.acknowledged = true` internally. This surfaces multiple job resolution code paths at runtime.
+- If the handler resolves (returns the symbol manually or via an action) without any acknowledgement having occurred, the worker logs `job.handler.noAction` and locally marks the job finished WITHOUT informing the broker (avoids a leak of the in-memory slot, but the broker will eventually time out and re-dispatch the job).
+
+Recommended usage:
+
+- Always invoke an action; if you truly mean to skip broker acknowledgement (for example: forwarding a job to another system which will complete it) use `job.ignore()`.
+
+Example patterns:
+
+```ts
+// GOOD: explicit completion
+return job.complete({ variables: { processed: true } });
+
+// GOOD: No-arg completion example, sentinel stored for ultimate return
+const ack = await job.complete();
+// ...
+return ack;
+
+// GOOD: explicit ignore
+const ack = await job.ignore();
+```
+
+```ts
+// No-arg completion example
+```
 
 ### Concurrency & Backpressure
 
@@ -444,7 +474,26 @@ If `validateSchemas` is true:
 
 ### Graceful Shutdown
 
-Call `worker.stop()` (or `client.stopAllWorkers()`) to cancel ongoing polling and prevent new activations. Jobs already handed to handlers can finish their HTTP completion/failure calls.
+Use `await worker.stopGracefully({ waitUpToMs?, checkIntervalMs? })` to drain without force‑cancelling the current activation request.
+
+```ts
+// Attempt graceful drain for up to 8 seconds
+const { remainingJobs, timedOut } = await worker.stopGracefully({ waitUpToMs: 8000 });
+if (timedOut) {
+  console.warn('Graceful stop timed out; remaining jobs:', remainingJobs);
+}
+```
+
+Behavior:
+
+- Stops scheduling new polls immediately.
+- Lets any in‑flight activation finish (not cancelled proactively).
+- Waits for active jobs to acknowledge (complete/fail/cancelWorkflow/ignore).
+- On timeout: falls back to hard stop semantics (cancels activation) and logs `worker.gracefulStop.timeout` at debug.
+
+For immediate termination call `worker.stop()` (or `client.stopAllWorkers()`) which cancels the in‑flight activation if present.
+
+Activation cancellations during stop are logged at debug (`activation.cancelled`) instead of error noise.
 
 ### Multiple Workers
 
@@ -474,7 +523,6 @@ For custom strategies you can still call `client.activateJobs(...)`, manage conc
 - Never increases latency for healthy clusters (no cap until first signal).
 - Cannot create fairness across multiple _processes_; it is per client instance in a single process. Scale your worker pool with that in mind.
 - Not a replacement for server‑side quotas or external rate limiters—it's a cooperative adaptive limiter.
-- Exempt list is minimal by design; adding more exemptions without care can reduce effectiveness.
 
 ### Opt‑Out
 
@@ -603,8 +651,20 @@ All methods return a `CancelablePromise<T>`:
 ```ts
 const p = camunda.searchProcessInstances({ filter: { processDefinitionKey: defKey } });
 setTimeout(() => p.cancel(), 100); // best‑effort cancel
-await p; // rejects with CancelError if aborted
+try {
+  await p; // resolves if not cancelled
+} catch (e) {
+  if (isSdkError(e) && e.name === 'CancelSdkError') {
+    console.log('Operation cancelled');
+  } else throw e;
+}
 ```
+
+Notes:
+
+- Rejects with `CancelSdkError`.
+- Cancellation classification runs first so aborted fetches are never downgraded to generic network errors.
+- Abort is immediate and idempotent; underlying fetch is signalled.
 
 ## Functional (fp-ts style) Surface (Opt-In Subpath)
 
@@ -830,7 +890,7 @@ May throw:
 - Non‑2xx HTTP responses
 - Validation errors (strict mode)
 - `EventualConsistencyTimeoutError`
-- `CancelError` on cancellation
+- `CancelSdkError` on cancellation
 
 ### Typed Error Handling
 
@@ -855,6 +915,9 @@ try {
         break;
       case 'AuthSdkError':
         console.error('Auth problem', e.message, e.status);
+        break;
+      case 'CancelSdkError':
+        console.error('Operation cancelled', e.operationId);
         break;
       case 'NetworkSdkError':
         console.error('Network layer error', e.message);
