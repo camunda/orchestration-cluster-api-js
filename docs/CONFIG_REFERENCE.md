@@ -1,7 +1,5 @@
 # Configuration Reference
 
-Generated: 2025-11-05T05:05:14.623Z
-
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|
 | `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080/v2` | Optional |  | Base REST endpoint address. |

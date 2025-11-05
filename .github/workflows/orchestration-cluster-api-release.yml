@@ -30,8 +30,6 @@ jobs:
       - name: Install deps
         run: npm ci
       - name: Generate & Build
-        env:
-          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
         run: npm run build
       - name: Unit Tests
         run: npm test
@@ -60,8 +58,6 @@ jobs:
           cp rest-api.source.yaml spec-snapshots/spec-${HASH}.yaml
           echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
       - name: Write BUILDINFO (deterministic)
-        env:
-          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
         run: npx tsx scripts/write-buildinfo.ts
       - name: Detect changes
         id: diff
@@ -131,14 +127,11 @@ jobs:
         run: npm ci
       - name: Regenerate & Build (Integrity Check)
         env:
-          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
           CAMUNDA_SDK_SKIP_FETCH_SPEC: '1'
         run: |
           # Deterministic build without refetching upstream spec to avoid mid-release spec drift.
           npm run build
       - name: Write BUILDINFO (deterministic timestamp) BEFORE drift check
-        env:
-          CAMUNDA_SDK_DETERMINISTIC_BUILD: '1'
         run: npx tsx scripts/write-buildinfo.ts
       - name: Verify no drift (deterministic)
         run: git diff --exit-code
