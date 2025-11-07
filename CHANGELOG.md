@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.0...v1.1.1) (2025-11-07)
+
+### Bug Fixes
+
+- preserve cancelable promise in loose client ([c1d49ba](https://github.com/camunda/orchestration-cluster-api-js/commit/c1d49ba3f38be97fa8e2d212b6ccbc3158256a5d))
+
 # [1.1.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.0.0...v1.1.0) (2025-11-05)
 
 ### Features
