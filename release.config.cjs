@@ -8,20 +8,9 @@ module.exports = {
     [
       '@semantic-release/git',
       {
-        assets: ['CHANGELOG.md', 'package.json', 'src/runtime/version.ts'],
+        assets: ['CHANGELOG.md', 'package.json', 'src/runtime/version.ts', 'src/gen/**'],
         // Keep commit message compact; full notes are in CHANGELOG.md and GitHub release.
         message: 'chore(release): ${nextRelease.version} [skip ci]',
-      },
-    ],
-    [
-      '@semantic-release/github',
-      {
-        assets: [
-          { path: 'dist', label: 'dist directory (unpacked)' },
-          { path: 'BUILDINFO.json', label: 'Build info' },
-          { path: 'branding/branding-metadata.json', label: 'Branding metadata' },
-          { path: 'spec-snapshots', label: 'Spec snapshots' },
-        ],
       },
     ],
   ],
