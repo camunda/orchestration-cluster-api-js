@@ -1,16 +1,13 @@
 import { test, expect } from 'vitest';
 
-import { createCamundaClient, TenantId } from '../dist';
+import { createCamundaClient, createCamundaClientLoose } from '../dist';
 
 test('activates and completes job correctly', async () => {
   const camunda = createCamundaClient();
 
-  const tenantId = TenantId.assumeExists('<default>');
-
-  const res = await camunda.deployResourcesFromFiles(
-    ['./tests-integration/fixtures/test-job-process.bpmn'],
-    { tenantId }
-  );
+  const res = await camunda.deployResourcesFromFiles([
+    './tests-integration/fixtures/test-job-process.bpmn',
+  ]);
 
   // Cancel existing instances
   const existingProcesses = await camunda.searchProcessInstances(
@@ -36,7 +33,6 @@ test('activates and completes job correctly', async () => {
 
   const process = await camunda.createProcessInstance({
     processDefinitionKey: res.processes[0].processDefinitionKey,
-    tenantId,
   });
 
   const jobs = await camunda.activateJobs({
@@ -44,7 +40,6 @@ test('activates and completes job correctly', async () => {
     timeout: 1000,
     worker: 'test-job-worker',
     type: 'test-job',
-    tenantIds: [tenantId],
   });
 
   expect(jobs.jobs[0].retries).toBe(3);
@@ -64,7 +59,6 @@ test('activates and completes job correctly', async () => {
     timeout: 1000,
     worker: 'test-job-worker',
     type: 'test-job',
-    tenantIds: [tenantId],
   });
 
   expect(jobs.jobs[0].jobKey).toBe(jobs2.jobs[0].jobKey);
@@ -77,4 +71,18 @@ test('activates and completes job correctly', async () => {
         throw e;
       }
     });
+});
+
+test('Can cancel an in-flight REST job activation call', async () => {
+  const camunda = createCamundaClientLoose();
+  const res = camunda.activateJobs({
+    maxJobsToActivate: 2,
+    requestTimeout: 5000,
+    timeout: 5000,
+    type: 'non-existent-type-' + Date.now().toString(),
+    worker: 'test',
+  });
+
+  res.cancel();
+  await expect(res).rejects.toMatchObject({ name: 'CancelSdkError' });
 });
