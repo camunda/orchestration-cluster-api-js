@@ -1,6 +1,6 @@
 {
   "entryPoints": ["src/index.ts", "src/logger.ts", "src/fp/index.ts"],
-  "out": "docs/api",
+  "out": "docs",
   "exclude": [
     "**/node_modules/**",
     "**/tests/**",
