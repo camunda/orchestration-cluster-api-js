@@ -85,7 +85,7 @@ function isPromiseLike<T>(v: any): v is Promise<T> {
 
 /**
  *
- * @experimental This feature under development and is not guaranteed to be stable.
+ * @experimental This feature under development and is not guaranteed to be fully tested or stable.
  * @description Camunda FP Client - a Task-Either compatible client. See the README and [this test](https://github.com/camunda/orchestration-cluster-api-js/blob/main/tests-integration/fp.test.ts) for example usage.
  */
 export function createCamundaFpClient(options?: CamundaOptions): CamundaFpClient {
