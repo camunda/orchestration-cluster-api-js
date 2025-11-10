@@ -74,6 +74,7 @@ describe('searchUserTasks', () => {
       if (e.name === 'CancelSdkError') {
         return; // swallow cancelation
       }
+      throw e;
     });
 
     // Wait for our process to be completed
