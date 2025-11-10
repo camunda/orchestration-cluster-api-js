@@ -6283,6 +6283,9 @@ components:
     VariableSearchResult:
       description: Variable search response item.
       type: object
+      required: 
+        - value 
+        - isTruncated
       allOf:
         - $ref: "#/components/schemas/VariableResultBase"
       properties:
@@ -6309,7 +6312,6 @@ components:
       required:
         - name 
         - processInstanceKey 
-        - isTruncated
         - tenantId 
         - variableKey 
         - scopeKey

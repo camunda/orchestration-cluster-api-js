@@ -1,4 +1,4 @@
-import { it, vitest } from 'vitest';
+import { describe, it, vitest, expect } from 'vitest';
 
 import { createCamundaClient } from '../dist';
 

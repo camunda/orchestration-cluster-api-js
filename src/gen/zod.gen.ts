@@ -849,12 +849,12 @@ export const zVariableResultBase = z.object({
  * Variable search response item.
  */
 export const zVariableSearchResult = zVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Value of this variable. Can be truncated.'
-    })),
-    isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
+    }),
+    isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Variable search response item.'
 }));

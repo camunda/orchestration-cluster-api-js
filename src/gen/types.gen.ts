@@ -608,11 +608,11 @@ export type VariableSearchResult = VariableResultBase & {
     /**
      * Value of this variable. Can be truncated.
      */
-    value?: string;
+    value: string;
     /**
      * Whether the value is truncated or not.
      */
-    isTruncated?: boolean;
+    isTruncated: boolean;
 };
 
 /**
@@ -12066,7 +12066,7 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:72cb4f192874e7c3046e17477b747a9d8074eacea501cf24a088a2df115fb411
+// specHash=sha256:c6c3f5f4c9c24b7b7d6873e31f72d83db79418de81dc00f09a21843b4ce0d507
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
