@@ -1,4 +1,4 @@
-# Camunda 8 Orchestration Cluster TypeScript SDK (Pre‑release)
+# Camunda 8 Orchestration Cluster TypeScript SDK
 
 Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST API.
 
