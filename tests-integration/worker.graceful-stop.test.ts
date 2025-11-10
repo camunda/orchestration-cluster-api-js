@@ -23,7 +23,7 @@ describe('JobWorker graceful stop', () => {
     const worker = new JobWorker(camunda as any, {
       jobType: 'test-job',
       maxParallelJobs: 2,
-      timeoutMs: 30_000,
+      jobTimeoutMs: 30_000,
       jobHandler: async (job: any) => {
         // Simulate work time
         await delay(50);

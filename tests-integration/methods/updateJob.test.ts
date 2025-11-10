@@ -30,7 +30,6 @@ describe('updateJob', () => {
       { consistency: { waitUpToMs: 10_000 } }
     );
     const job1 = response.items[0];
-    console.log('**************', job1);
     expect(job1.retries).toBe(3);
 
     await camunda.updateJob({ changeset: { retries: 4 }, jobKey: job1.jobKey });
@@ -41,24 +40,6 @@ describe('updateJob', () => {
       timeout: 10_000,
     });
     const job2 = jobs.jobs[0];
-    // const subsequentState = await camunda.searchJobs(
-    //   {
-    //     filter: {
-    //       jobKey: job1.jobKey,
-    //     },
-    //   },
-    //   {
-    //     consistency: {
-    //       waitUpToMs: 35_000,
-    //       predicate: (res) => {
-    //         // console.log(JSON.stringify(res, null, 2))
-    //         return res.items[0]?.retries === 4;
-    //       },
-    //       pollIntervalMs: 1_000,
-    //     },
-    //   }
-    // );
-    // const job2 = subsequentState.items[0];
     expect(job2.retries).toBe(4);
     await camunda.cancelProcessInstance({ processInstanceKey });
   });

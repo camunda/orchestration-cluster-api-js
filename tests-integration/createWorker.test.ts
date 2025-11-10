@@ -10,7 +10,7 @@ describe('createJobWorker', () => {
     camunda.createJobWorker({
       jobType: 'service-task',
       maxParallelJobs: 5,
-      timeoutMs: 20_000,
+      jobTimeoutMs: 20_000,
       jobHandler: (job) => {
         console.log(`[Zeebe Worker] handling job of type ${job.type}`);
         return job.complete({
@@ -36,7 +36,7 @@ describe('createJobWorker', () => {
       camunda.createJobWorker({
         jobType: 'test-job',
         maxParallelJobs: 5,
-        timeoutMs: 20_000,
+        jobTimeoutMs: 20_000,
         jobHandler: (job) => {
           resolve();
           return job.complete({
