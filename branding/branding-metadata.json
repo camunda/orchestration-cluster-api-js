@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:e41213bb1e0300ca199a86b111c28915a10ba83f7a8013c6406370d30704241e",
+  "specHash": "sha256:72cb4f192874e7c3046e17477b747a9d8074eacea501cf24a088a2df115fb411",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -434,7 +434,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DocumentId",
-        "lineStart": 11118
+        "lineStart": 11135
       },
       "extensions": {
         "x-semantic-type": "DocumentId"
@@ -1185,7 +1185,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/Tag",
-        "lineStart": 12258
+        "lineStart": 12275
       },
       "extensions": {
         "x-semantic-type": "Tag"
@@ -1227,7 +1227,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/TenantId",
-        "lineStart": 12278
+        "lineStart": 12295
       },
       "extensions": {
         "x-semantic-type": "TenantId"
@@ -1269,7 +1269,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/Username",
-        "lineStart": 12287
+        "lineStart": 12304
       },
       "extensions": {
         "x-semantic-type": "Username"
@@ -1391,7 +1391,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BasicStringFilterProperty",
-        "lineStart": 6685
+        "lineStart": 6700
       },
       "stableId": "basic-string-filter-property"
     },
@@ -1417,7 +1417,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationItemStateFilterProperty",
-        "lineStart": 12050
+        "lineStart": 12067
       },
       "stableId": "batch-operation-item-state-filter-property"
     },
@@ -1443,7 +1443,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationStateFilterProperty",
-        "lineStart": 11954
+        "lineStart": 11971
       },
       "stableId": "batch-operation-state-filter-property"
     },
@@ -1469,7 +1469,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationTypeFilterProperty",
-        "lineStart": 11921
+        "lineStart": 11938
       },
       "stableId": "batch-operation-type-filter-property"
     },
@@ -1492,7 +1492,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DateTimeFilterProperty",
-        "lineStart": 6732
+        "lineStart": 6747
       },
       "stableId": "date-time-filter-property"
     },
@@ -1518,7 +1518,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionDefinitionKeyFilterProperty",
-        "lineStart": 6637
+        "lineStart": 6652
       },
       "stableId": "decision-definition-key-filter-property"
     },
@@ -1541,7 +1541,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationInstruction",
-        "lineStart": 10582
+        "lineStart": 10599
       },
       "stableId": "decision-evaluation-instruction"
     },
@@ -1567,7 +1567,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementInstanceKeyFilterProperty",
-        "lineStart": 6839
+        "lineStart": 6854
       },
       "stableId": "element-instance-key-filter-property"
     },
@@ -1593,7 +1593,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementInstanceStateFilterProperty",
-        "lineStart": 6722
+        "lineStart": 6737
       },
       "stableId": "element-instance-state-filter-property"
     },
@@ -1616,7 +1616,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/IntegerFilterProperty",
-        "lineStart": 6523
+        "lineStart": 6538
       },
       "stableId": "integer-filter-property"
     },
@@ -1642,7 +1642,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKeyFilterProperty",
-        "lineStart": 6983
+        "lineStart": 6998
       },
       "stableId": "job-key-filter-property"
     },
@@ -1668,7 +1668,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKindFilterProperty",
-        "lineStart": 10294
+        "lineStart": 10311
       },
       "stableId": "job-kind-filter-property"
     },
@@ -1694,7 +1694,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobListenerEventTypeFilterProperty",
-        "lineStart": 10327
+        "lineStart": 10344
       },
       "stableId": "job-listener-event-type-filter-property"
     },
@@ -1718,7 +1718,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobResult",
-        "lineStart": 9830
+        "lineStart": 9847
       },
       "stableId": "job-result"
     },
@@ -1744,7 +1744,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobStateFilterProperty",
-        "lineStart": 10260
+        "lineStart": 10277
       },
       "stableId": "job-state-filter-property"
     },
@@ -1770,7 +1770,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionKeyFilterProperty",
-        "lineStart": 6947
+        "lineStart": 6962
       },
       "stableId": "message-subscription-key-filter-property"
     },
@@ -1796,7 +1796,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionStateFilterProperty",
-        "lineStart": 8097
+        "lineStart": 8112
       },
       "stableId": "message-subscription-state-filter-property"
     },
@@ -1822,7 +1822,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessDefinitionKeyFilterProperty",
-        "lineStart": 6767
+        "lineStart": 6782
       },
       "stableId": "process-definition-key-filter-property"
     },
@@ -1846,7 +1846,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceCreationInstruction",
-        "lineStart": 11360
+        "lineStart": 11377
       },
       "stableId": "process-instance-creation-instruction"
     },
@@ -1866,7 +1866,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceCreationRuntimeInstruction",
-        "lineStart": 11521
+        "lineStart": 11538
       },
       "stableId": "process-instance-creation-runtime-instruction"
     },
@@ -1892,7 +1892,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceKeyFilterProperty",
-        "lineStart": 6803
+        "lineStart": 6818
       },
       "stableId": "process-instance-key-filter-property"
     },
@@ -1918,7 +1918,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceStateFilterProperty",
-        "lineStart": 6712
+        "lineStart": 6727
       },
       "stableId": "process-instance-state-filter-property"
     },
@@ -1976,7 +1976,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ScopeKeyFilterProperty",
-        "lineStart": 6911
+        "lineStart": 6926
       },
       "stableId": "scope-key-filter-property"
     },
@@ -2004,7 +2004,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/SearchQueryPageRequest",
-        "lineStart": 10399
+        "lineStart": 10416
       },
       "stableId": "search-query-page-request"
     },
@@ -2027,7 +2027,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/StringFilterProperty",
-        "lineStart": 6693
+        "lineStart": 6708
       },
       "stableId": "string-filter-property"
     },
@@ -2053,7 +2053,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/UserTaskStateFilterProperty",
-        "lineStart": 6047
+        "lineStart": 6049
       },
       "stableId": "user-task-state-filter-property"
     },
@@ -2079,7 +2079,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/VariableKeyFilterProperty",
-        "lineStart": 6875
+        "lineStart": 6890
       },
       "stableId": "variable-key-filter-property"
     }
@@ -2092,7 +2092,7 @@
       "uniqueItems": true,
       "source": {
         "schemaPointer": "#/components/schemas/TagSet",
-        "lineStart": 12267
+        "lineStart": 12284
       }
     }
   ],

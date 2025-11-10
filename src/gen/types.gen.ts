@@ -307,7 +307,7 @@ export type UserTaskSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching user tasks.
      */
-    items?: Array<UserTaskResult>;
+    items: Array<UserTaskResult>;
 };
 
 /**
@@ -507,7 +507,7 @@ export type UserTaskResult = {
     /**
      * The key of the user task.
      */
-    userTaskKey?: UserTaskKey;
+    userTaskKey: UserTaskKey;
     /**
      * The key of the element instance.
      */
@@ -598,7 +598,7 @@ export type VariableSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching variables.
      */
-    items?: Array<VariableSearchResult>;
+    items: Array<VariableSearchResult>;
 };
 
 /**
@@ -622,7 +622,7 @@ export type VariableResult = VariableResultBase & {
     /**
      * Full value of this variable.
      */
-    value?: string;
+    value: string;
 };
 
 /**
@@ -632,23 +632,23 @@ export type VariableResultBase = {
     /**
      * Name of this variable.
      */
-    name?: string;
+    name: string;
     /**
      * Tenant ID of this variable.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The key for this variable.
      */
-    variableKey?: VariableKey;
+    variableKey: VariableKey;
     /**
      * The key of the scope of this variable.
      */
-    scopeKey?: ScopeKey;
+    scopeKey: ScopeKey;
     /**
      * The key of the process instance of this variable.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
 };
 
 export type ProcessDefinitionSearchQuerySortRequest = {
@@ -3263,7 +3263,7 @@ export type UserTaskAssignmentRequest = {
     /**
      * The assignee for the user task. The assignee must not be empty or `null`.
      */
-    assignee?: string;
+    assignee: string;
     /**
      * By default, the task is reassigned if it was already assigned. Set this to `false` to return an error in such cases. The task must then first be unassigned to be assigned again. Use this when you have users picking from group task queues to prevent race conditions.
      *
@@ -12066,7 +12066,7 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:e41213bb1e0300ca199a86b111c28915a10ba83f7a8013c6406370d30704241e
+// specHash=sha256:72cb4f192874e7c3046e17477b747a9d8074eacea501cf24a088a2df115fb411
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

@@ -5953,6 +5953,8 @@ components:
     UserTaskSearchQueryResult:
       description: User task search query response.
       type: object
+      required: 
+        - items
       allOf:
         - $ref: "#/components/schemas/SearchQueryResponse"
       properties:
@@ -6100,6 +6102,8 @@ components:
             - $ref: "#/components/schemas/StringFilterProperty"
     UserTaskResult:
       type: object
+      required:
+        - userTaskKey
       properties:
         name:
           type: string
@@ -6268,6 +6272,8 @@ components:
       type: object
       allOf:
         - $ref: "#/components/schemas/SearchQueryResponse"
+      required:
+        - items
       properties:
         items:
           description: The matching variables.
@@ -6291,6 +6297,8 @@ components:
       type: object
       allOf:
         - $ref: "#/components/schemas/VariableResultBase"
+      required:
+        - value
       properties:
         value:
           description: Full value of this variable.
@@ -6298,6 +6306,13 @@ components:
     VariableResultBase:
       description: Variable response item.
       type: object
+      required:
+        - name 
+        - processInstanceKey 
+        - isTruncated
+        - tenantId 
+        - variableKey 
+        - scopeKey
       properties:
         name:
           description: Name of this variable.
@@ -9456,6 +9471,8 @@ components:
     UserTaskAssignmentRequest:
       type: object
       additionalProperties: false
+      required:
+        - assignee
       properties:
         assignee:
           description: The assignee for the user task. The assignee must not be empty or `null`.
