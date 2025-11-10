@@ -38,9 +38,9 @@ function table(): string {
 
 function main() {
   const md = ['# Configuration Reference', '', table(), ''].join('\n');
-  mkdirSync('docs', { recursive: true });
-  writeFileSync('docs/CONFIG_REFERENCE.md', md);
-  console.log('Generated docs/CONFIG_REFERENCE.md');
+  mkdirSync('documentation', { recursive: true });
+  writeFileSync('documentation/CONFIG_REFERENCE.md', md);
+  console.log('Generated documentation/CONFIG_REFERENCE.md');
 }
 
 main();

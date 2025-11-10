@@ -10,9 +10,12 @@ function isPromise(v: any): v is Promise<unknown> {
   return v && typeof v.then === 'function';
 }
 
-// Factory returning a proxy that mirrors the CamundaClient surface but never throws.
-// All async returning methods (Promise or CancelablePromise) are wrapped into Promise<Result<..>>.
-// Synchronous utility methods (e.g. logger(), getConfig()) are passed through unchanged.
+/**
+ * @experimental This feature is under development and is not guaranteed to be fully tested or stable.
+ * @description Factory returning a proxy that mirrors the CamundaClient surface but never throws.
+ * All async returning methods (Promise or CancelablePromise) are wrapped into Promise<Result<..>>.
+ * Synchronous utility methods (e.g. logger(), getConfig()) are passed through unchanged.
+ * */
 export function createCamundaResultClient(options?: CamundaOptions) {
   const base = createCamundaClient(options);
 

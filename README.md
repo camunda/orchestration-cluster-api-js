@@ -668,6 +668,8 @@ Notes:
 
 ## Functional (fp-ts style) Surface (Opt-In Subpath)
 
+@experimental - this feature is not guaranteed to be tested or stable.
+
 The main entry stays minimal. To opt in to a TaskEither-style facade & helper combinators import from the dedicated subpath:
 
 ```ts
