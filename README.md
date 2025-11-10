@@ -1116,3 +1116,13 @@ const client = createCamundaClient({
 ## License
 
 Apache 2.0
+
+## API Documentation
+
+Generate an HTML API reference site with TypeDoc (public entry points only):
+
+```bash
+npm run docs:api
+```
+
+Output: static site in `docs/api` (open `docs/api/index.html` in a browser or serve the folder, e.g. `npx http-server docs/api`). Entry points: `src/index.ts`, `src/logger.ts`, `src/fp/index.ts`. Internal generated code, scripts, tests are excluded and private / protected members are filtered. Regenerate after changing public exports.

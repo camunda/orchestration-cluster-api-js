@@ -7,6 +7,8 @@ yarn-error.log*
 lerna-debug.log*
 camunda-support.log*
 
+docs/api
+
 .DS_Store
 
 .camunda-sdk-captures

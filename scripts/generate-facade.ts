@@ -47,6 +47,10 @@ const OUT_DIR = path.join(ROOT, 'src/facade');
 const OUT_FILE = path.join(OUT_DIR, 'operations.gen.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
 
+function capitalizeFirst(id: string): string {
+  return id.charAt(0).toUpperCase() + id.slice(1);
+}
+
 function main() {
   if (!fs.existsSync(SPEC_PATH)) {
     console.warn('[facade-gen] Spec missing, skipping');
@@ -137,6 +141,10 @@ function main() {
       importOps.map((o) => `${o} as _${o}`).join(', ') +
       " } from '../gen/sdk.gen';"
   );
+  if (bodyOnlyOps.length) {
+    const dataTypeImports = bodyOnlyOps.map((o) => `${capitalizeFirst(o.opId)}Data`);
+    lines.push('import { ' + dataTypeImports.join(', ') + " } from '../gen/types.gen';");
+  }
   const anyEventual = allOps.some((o) => o.eventual);
   if (anyEventual) {
     lines.push("import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';");
@@ -169,13 +177,9 @@ function main() {
 
   // Body-only operations: provide typed overload (raw body OR full options)
   for (const op of bodyOnlyOps) {
-    // Derive body type & overloads first
-    lines.push(`type _${op.opId}_Options = Parameters<typeof _${op.opId}>[0];`);
+    // Derive body type from generated *Data type to avoid generic erosion to unknown.
     lines.push(
-      `type _${op.opId}_MaybeBody = _${op.opId}_Options extends { body?: infer B } ? B : never;`
-    );
-    lines.push(
-      `type _${op.opId}_Body = [ _${op.opId}_MaybeBody ] extends [never] ? unknown : _${op.opId}_MaybeBody;`
+      `type _${op.opId}_Body = ${capitalizeFirst(op.opId)}Data extends { body?: infer B } ? B : never;`
     );
     const jsdoc = forwardJsDoc(op, underlyingDocs);
     if (jsdoc) {
@@ -196,7 +200,7 @@ function main() {
         `  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');`
       );
       lines.push(
-        `  const invoke = () => toCancelable(signal => _${op.opId}({ body, signal }).then((r:any)=> r?.data ?? r));`
+        `  const invoke = () => toCancelable(signal => _${op.opId}({ body, signal }).then((r:any)=> (r as any).data));`
       );
       lines.push(
         `  return eventualPoll('${(op as any).originalOpId}', ${op.verb === 'get'}, invoke, ec.consistency);`
@@ -208,7 +212,7 @@ function main() {
         `export function ${op.opId}(body: _${op.opId}_Body): CancelablePromise<_DataOf<typeof _${op.opId}>> {`
       );
       lines.push(
-        `  return toCancelable(signal => _${op.opId}({ body, signal }).then((r:any)=> r?.data ?? r));`
+        `  return toCancelable(signal => _${op.opId}({ body, signal }).then((r:any)=> (r as any).data));`
       );
       lines.push('}');
     }
@@ -244,7 +248,7 @@ function main() {
         `  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');`
       );
       lines.push(
-        `  const invoke = () => toCancelable(signal => _${op.opId}({ ...(options||{}), signal } as any).then((r:any)=> r?.data ?? r));`
+        `  const invoke = () => toCancelable(signal => _${op.opId}({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));`
       );
       lines.push(
         `  return eventualPoll('${(op as any).originalOpId}', ${op.verb === 'get'}, invoke, ec.consistency);`
@@ -255,7 +259,7 @@ function main() {
         `export function ${op.opId}(options?: Parameters<typeof _${op.opId}>[0]): CancelablePromise<_DataOf<typeof _${op.opId}>> {`
       );
       lines.push(
-        `  return toCancelable(signal => _${op.opId}({ ...(options||{}), signal } as any).then((r:any)=> r?.data ?? r));`
+        `  return toCancelable(signal => _${op.opId}({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));`
       );
       lines.push('}');
     }
