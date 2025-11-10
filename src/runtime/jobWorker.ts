@@ -39,7 +39,7 @@ export interface JobWorkerConfig<
   workerName?: string;
   /**
    * Validate any provided input, output, customheader schema
-   * @default: `false`
+   * default: false
    **/
   validateSchemas?: boolean;
 }

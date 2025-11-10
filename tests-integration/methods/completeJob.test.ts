@@ -1,4 +1,3 @@
-// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
 import { describe, it } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
@@ -24,7 +23,6 @@ describe('completeJob', () => {
     await _camunda.completeJob({
       jobKey: jobsResponse.jobs[0].jobKey,
       variables: { someResult: 'value' },
-      //  result: {type: 'adHocS ubProcess', isCancelRemainingInstances: true}
     });
   });
 });

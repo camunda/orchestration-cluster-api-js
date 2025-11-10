@@ -79,11 +79,23 @@ export class BackpressureManager {
     };
   }
 
-  private log(evt: string, data: any) {
-    // Emit trace for detailed debugging and info for state change telemetry consumers.
+  private log(evt: string, data: any, prevSeverity?: BackpressureSeverity) {
+    // Always emit trace-level detailed event.
     this.logger?.trace?.(() => ['backpressure.' + evt, data]);
-    if (evt === 'severity' || evt.startsWith('permits.')) {
-      this.logger?.info?.(() => ['bp.state.change', { event: evt, ...data }]);
+    if (evt === 'severity') {
+      const curr = data.severity as BackpressureSeverity;
+      // Unhealthy boundary crossings at info: entering unhealthy (healthy->soft/severe)
+      // and recovery (soft/severe->healthy). All other severity shifts at debug.
+      const enteringUnhealthy = prevSeverity === 'healthy' && curr !== 'healthy';
+      const recoveringHealthy = prevSeverity !== 'healthy' && curr === 'healthy';
+      const level: 'info' | 'debug' = enteringUnhealthy || recoveringHealthy ? 'info' : 'debug';
+      this.logger?.[level]?.(() => [
+        'bp.state.change',
+        { event: evt, from: prevSeverity, to: curr },
+      ]);
+    } else if (evt.startsWith('permits.')) {
+      // Permits changes are noisy; emit at debug rather than info.
+      this.logger?.debug?.(() => ['bp.state.change', { event: evt, ...data }]);
     }
   }
 
@@ -152,7 +164,8 @@ export class BackpressureManager {
     } else if (this.severity === 'soft') {
       if (!this.observeOnly) this.scalePermits(this.cfg.reduceFactor);
     }
-    if (this.severity !== prevSeverity) this.log('severity', { severity: this.severity });
+    if (this.severity !== prevSeverity)
+      this.log('severity', { severity: this.severity }, prevSeverity);
   }
 
   recordHealthyHint() {
@@ -178,10 +191,11 @@ export class BackpressureManager {
     this.lastRecoverCheck = now;
     // Decay severity if quiet
     if (now - this.lastEventAt > this.cfg.decayQuietMs) {
+      const prev = this.severity;
       if (this.severity === 'severe') this.severity = 'soft';
       else if (this.severity === 'soft') this.severity = 'healthy';
       if (this.severity === 'healthy') this.consecutive = 0;
-      this.log('severity', { severity: this.severity });
+      if (prev !== this.severity) this.log('severity', { severity: this.severity }, prev);
     }
     // Restore permits gradually if not at initial bootstrap cap (we don't exceed original bootstrap cap here)
     if (this.permitsMax !== null) {
@@ -189,7 +203,7 @@ export class BackpressureManager {
       const bootstrapCap = this.cfg.initialMaxConcurrency ?? 16;
       if (this.permitsMax < bootstrapCap) {
         this.permitsMax = Math.min(bootstrapCap, this.permitsMax + this.cfg.recoveryStep);
-        this.log('permits.recover', { max: this.permitsMax });
+        this.log('permits.recover', { max: this.permitsMax }, this.severity);
         // Attempt draining waiters after increasing cap
         this.release();
       }
