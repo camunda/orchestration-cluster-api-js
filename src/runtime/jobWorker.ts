@@ -17,16 +17,25 @@ export interface JobWorkerConfig<
   inputSchema?: In;
   outputSchema?: Out;
   customHeadersSchema?: Headers;
-  pollIntervalMs?: number; // default 1ms
+  /* Backoff between polls - default 1ms */
+  pollIntervalMs?: number;
   jobHandler: (job: Job<In, Headers>) => Promise<JobActionReceipt> | JobActionReceipt;
-  autoStart?: boolean; // default true
-  maxParallelJobs: number; // concurrency limit
-  timeoutMs: number; // requestTimeout for activation long poll
-  jobType: string; // Zeebe job type
+  /* default true */
+  autoStart?: boolean;
+  /* concurrency limit */
+  maxParallelJobs: number;
+  /* requestTimeout for activation long poll - default 55_000 */
+  pollTimeoutMs?: number;
+  /* Job activation timeout */
+  jobTimeoutMs: number;
+  /* Zeebe job type */
+  jobType: string;
   /** @deprecated Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility. */
   maxBackoffTimeMs?: number;
-  workerName?: string; // optional explicit name
-  validateSchemas?: boolean; // default false
+  /* Optional explicit name */
+  workerName?: string;
+  /* default false */
+  validateSchemas?: boolean;
 }
 
 type InferOrUnknown<T extends z.ZodTypeAny | undefined> = T extends z.ZodTypeAny
@@ -42,6 +51,8 @@ export type Job<
 };
 
 let _workerCounter = 0;
+
+const DEFAULT_LONGPOLL_TIMEOUT = 55_000;
 
 export class JobWorker {
   private _client: CamundaClient;
@@ -170,8 +181,8 @@ export class JobWorker {
       type: this._cfg.jobType,
       worker: this._name,
       maxJobsToActivate: batchSize,
-      requestTimeout: this._cfg.timeoutMs,
-      timeout: this._cfg.timeoutMs,
+      requestTimeout: this._cfg.pollTimeoutMs ?? DEFAULT_LONGPOLL_TIMEOUT,
+      timeout: this._cfg.jobTimeoutMs,
     };
     this._log.debug(() => ['activation.request', { batchSize }]);
     let result: ActivatedJobResult[] = [];

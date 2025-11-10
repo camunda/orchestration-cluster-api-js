@@ -682,7 +682,7 @@ export const zUserTaskResult = z.object({
     priority: z.optional(z.int().gte(0).lte(100).register(z.globalRegistry, {
         description: 'The priority of a user task. The higher the value the higher the priority.'
     })).default(50),
-    userTaskKey: z.optional(zUserTaskKey),
+    userTaskKey: zUserTaskKey,
     elementInstanceKey: z.optional(zElementInstanceKey),
     processName: z.optional(z.string().register(z.globalRegistry, {
         description: 'The name of the process definition.'
@@ -696,9 +696,9 @@ export const zUserTaskResult = z.object({
  * User task search query response.
  */
 export const zUserTaskSearchQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.optional(z.array(zUserTaskResult).register(z.globalRegistry, {
+    items: z.array(zUserTaskResult).register(z.globalRegistry, {
         description: 'The matching user tasks.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'User task search query response.'
 }));
@@ -834,13 +834,13 @@ export const zVariableSearchQuery = zSearchQueryRequest.and(z.object({
  * Variable response item.
  */
 export const zVariableResultBase = z.object({
-    name: z.optional(z.string().register(z.globalRegistry, {
+    name: z.string().register(z.globalRegistry, {
         description: 'Name of this variable.'
-    })),
-    tenantId: z.optional(zTenantId),
-    variableKey: z.optional(zVariableKey),
-    scopeKey: z.optional(zScopeKey),
-    processInstanceKey: z.optional(zProcessInstanceKey)
+    }),
+    tenantId: zTenantId,
+    variableKey: zVariableKey,
+    scopeKey: zScopeKey,
+    processInstanceKey: zProcessInstanceKey
 }).register(z.globalRegistry, {
     description: 'Variable response item.'
 });
@@ -849,12 +849,12 @@ export const zVariableResultBase = z.object({
  * Variable search response item.
  */
 export const zVariableSearchResult = zVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Value of this variable. Can be truncated.'
-    })),
-    isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
+    }),
+    isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Variable search response item.'
 }));
@@ -863,9 +863,9 @@ export const zVariableSearchResult = zVariableResultBase.and(z.object({
  * Variable search query response.
  */
 export const zVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.optional(z.array(zVariableSearchResult).register(z.globalRegistry, {
+    items: z.array(zVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching variables.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Variable search query response.'
 }));
@@ -874,9 +874,9 @@ export const zVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
  * Variable search response item.
  */
 export const zVariableResult = zVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Full value of this variable.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Variable search response item.'
 }));
@@ -2927,9 +2927,9 @@ export const zUserTaskCompletionRequest = z.object({
 });
 
 export const zUserTaskAssignmentRequest = z.object({
-    assignee: z.optional(z.string().register(z.globalRegistry, {
+    assignee: z.string().register(z.globalRegistry, {
         description: 'The assignee for the user task. The assignee must not be empty or `null`.'
-    })),
+    }),
     allowOverride: z.optional(z.union([
         z.boolean(),
         z.null()
