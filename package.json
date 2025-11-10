@@ -77,7 +77,8 @@
     "docker:stop": "docker compose -f docker/docker-compose.yaml down",
     "docker:es:start": "docker compose -f docker/docker-compose-es.yaml up -d",
     "docker:es:stop": "docker compose -f docker/docker-compose-es.yaml down && npm run docker:es:cleanup",
-    "docker:es:cleanup": "docker volume rm docker_elastic && docker volume rm docker_zeebe && docker volume rm docker_prometheus-data && docker volume rm docker_grafana-data"
+    "docker:es:cleanup": "docker volume rm docker_elastic && docker volume rm docker_zeebe && docker volume rm docker_prometheus-data && docker volume rm docker_grafana-data",
+    "docs:api": "rm -rf docs/api/* && typedoc"
   },
   "files": [
     "dist",
@@ -123,6 +124,8 @@
     "single-line-log": "^1.1.2",
     "tsup": "^8.0.2",
     "tsx": "^4.7.0",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^5.4.5",
     "vitest": "^3.2.4",
     "yaml": "^2.8.1"

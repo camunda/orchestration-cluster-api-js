@@ -14,27 +14,33 @@ export interface JobWorkerConfig<
   Out extends z.ZodTypeAny = any,
   Headers extends z.ZodTypeAny = any,
 > {
+  /** Zod schema for variables in the activated job */
   inputSchema?: In;
+  /** Zod schema for variables in the complete command */
   outputSchema?: Out;
+  /** Zod schema for custom headers in the activated job */
   customHeadersSchema?: Headers;
-  /* Backoff between polls - default 1ms */
+  /** Backoff between polls - default 1ms */
   pollIntervalMs?: number;
   jobHandler: (job: Job<In, Headers>) => Promise<JobActionReceipt> | JobActionReceipt;
-  /* default true */
+  /** Immediately start polling for work - default `true` */
   autoStart?: boolean;
-  /* concurrency limit */
+  /** concurrency limit */
   maxParallelJobs: number;
-  /* requestTimeout for activation long poll - default 55_000 */
+  /** requestTimeout for activation long poll - default 55_000 */
   pollTimeoutMs?: number;
-  /* Job activation timeout */
+  /** Job activation timeout */
   jobTimeoutMs: number;
-  /* Zeebe job type */
+  /** Zeebe job type */
   jobType: string;
   /** @deprecated Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility. */
   maxBackoffTimeMs?: number;
-  /* Optional explicit name */
+  /** Optional explicit name */
   workerName?: string;
-  /* default false */
+  /**
+   * Validate any provided input, output, customheader schema
+   * @default: `false`
+   **/
   validateSchemas?: boolean;
 }
 
