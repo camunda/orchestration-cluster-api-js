@@ -146,5 +146,5 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: docs/api
+          folder: docs
           branch: gh-pages
