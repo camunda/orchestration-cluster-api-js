@@ -7,10 +7,17 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 
 import { SCHEMA } from '../src/runtime/configSchema';
 
+function escapeCell(v: any): string {
+  if (v === undefined || v === null) return '—';
+  return String(v).replace(/\|/g, '\\|');
+}
+
 function table(): string {
+  const header = '| Key | Type | Default | Requirement | Flags | Description |';
+  const separator = '|-----|------|---------|-------------|-------|-------------|';
   const rows = Object.entries(SCHEMA)
     .map(([key, raw]) => {
-      const entry: any = raw; // permissive for optional props
+      const entry: any = raw;
       const type =
         entry.type === 'enum' ? 'enum(' + (entry.choices || []).join(' | ') + ')' : entry.type;
       const def = entry.default !== undefined ? `\`${entry.default}\`` : '—';
@@ -22,17 +29,18 @@ function table(): string {
       const flags: string[] = [];
       if (entry.secret) flags.push('secret');
       const flagStr = flags.join(',');
-      return `| \`${key}\` | ${type} | ${def} | ${req} | ${flagStr} | ${entry.doc} |`;
+      const desc = entry.doc || entry.desc || '—';
+      return `| \`${key}\` | ${escapeCell(type)} | ${escapeCell(def)} | ${escapeCell(req)} | ${escapeCell(flagStr)} | ${escapeCell(desc)} |`;
     })
     .join('\n');
-  return `| Key | Type | Default | Requirement | Flags | Description |\n|-----|------|---------|-------------|-------|-------------|\n${rows}`;
+  return `${header}\n${separator}\n${rows}`;
 }
 
 function main() {
   const md = ['# Configuration Reference', '', table(), ''].join('\n');
   mkdirSync('docs', { recursive: true });
-  writeFileSync('documentation/CONFIG_REFERENCE.md', md);
-  console.log('Generated documentation/CONFIG_REFERENCE.md');
+  writeFileSync('docs/CONFIG_REFERENCE.md', md);
+  console.log('Generated docs/CONFIG_REFERENCE.md');
 }
 
 main();
