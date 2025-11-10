@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.1...v1.1.2) (2025-11-10)
+
+### Bug Fixes
+
+- fix typings upstream ([3b933df](https://github.com/camunda/orchestration-cluster-api-js/commit/3b933df98480e061baa67e2884fbbbea4e2cd797))
+- specify poll timeout in worker ([7c8f217](https://github.com/camunda/orchestration-cluster-api-js/commit/7c8f217a5fa9b83dd40bc968121373a6bd78aea0))
+- update some typings ([0085ac2](https://github.com/camunda/orchestration-cluster-api-js/commit/0085ac22ebadbd9fb581170162b164a00e3f5f57))
+
 ## [1.1.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.0...v1.1.1) (2025-11-07)
 
 ### Bug Fixes
