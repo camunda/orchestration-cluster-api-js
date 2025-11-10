@@ -1,3 +1,9 @@
+## [1.1.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.2...v1.1.3) (2025-11-10)
+
+### Bug Fixes
+
+- log backpressure at debug ([ef8fd69](https://github.com/camunda/orchestration-cluster-api-js/commit/ef8fd6999a39b8ed25a57a3647ec3b20928da640))
+
 ## [1.1.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.1...v1.1.2) (2025-11-10)
 
 ### Bug Fixes
