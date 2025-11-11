@@ -60,6 +60,8 @@ jobs:
       - name: Write BUILDINFO (deterministic)
         # Only write BUILDINFO from canonical Node 22.x to avoid parallel matrix race conditions
         if: matrix.node == '22.x'
+        env:
+          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
         run: npx tsx scripts/write-buildinfo.ts
       - name: Detect changes
         id: diff
