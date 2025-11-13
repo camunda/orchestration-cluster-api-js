@@ -54,8 +54,14 @@ jobs:
         run: |
           set -e
           HASH=$(sha256sum rest-api.source.yaml | cut -d ' ' -f1)
+          SNAP=spec-snapshots/spec-${HASH}.yaml
           mkdir -p spec-snapshots
-          cp rest-api.source.yaml spec-snapshots/spec-${HASH}.yaml
+          if [ ! -f "$SNAP" ]; then
+            cp rest-api.source.yaml "$SNAP"
+            echo "Created new spec snapshot: $SNAP"
+          else
+            echo "Spec snapshot already exists: $SNAP (no overwrite)"
+          fi
           echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
       - name: Get commit timestamp
         id: get_commit_timestamp
