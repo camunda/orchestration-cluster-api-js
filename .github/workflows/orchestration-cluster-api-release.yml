@@ -10,6 +10,11 @@ concurrency:
   group: orchestration-cluster-api-js-release
   cancel-in-progress: false
 
+permissions:
+  contents: write   # required for pushing version bump commit, tags, CHANGELOG
+  packages: write   # required for npm publish via semantic-release
+  pull-requests: read
+
 jobs:
   generate:
     name: Generate & Test (Node ${{ matrix.node }})
