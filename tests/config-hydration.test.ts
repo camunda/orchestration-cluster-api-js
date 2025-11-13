@@ -54,4 +54,22 @@ describe('unified configuration hydration', () => {
     });
     expect(redacted.CAMUNDA_CLIENT_SECRET).toMatch(/^\*+mnop$/); // ends with last4
   });
+
+  it('supports ZEEBE_REST_ADDRESS alias when CAMUNDA_REST_ADDRESS absent', () => {
+    const { config } = hydrateConfig({
+      env: { ZEEBE_REST_ADDRESS: 'https://cluster.alias.example' },
+    });
+    expect(config.restAddress).toBe('https://cluster.alias.example/v2');
+  });
+
+  it('infers OAUTH auth strategy when CAMUNDA_OAUTH_URL provided and strategy missing', () => {
+    const { config } = hydrateConfig({
+      env: {
+        CAMUNDA_OAUTH_URL: 'https://auth.example/oauth/token',
+        CAMUNDA_CLIENT_ID: 'id',
+        CAMUNDA_CLIENT_SECRET: 'secret',
+      },
+    });
+    expect(config.auth.strategy).toBe('OAUTH');
+  });
 });
