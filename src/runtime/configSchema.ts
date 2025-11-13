@@ -96,9 +96,9 @@ export const SCHEMA = {
   },
   CAMUNDA_SDK_LOG_LEVEL: {
     type: 'enum',
-    choices: ['silent', 'error', 'warn', 'info', 'debug', 'trace'] as const,
+    choices: ['silent', 'error', 'warn', 'info', 'debug', 'trace', 'silly'] as const,
     default: 'error',
-    doc: 'SDK log level.',
+    doc: 'SDK log level. "silly" adds unsafe deep diagnostics including HTTP request bodies.',
   },
   CAMUNDA_SDK_TELEMETRY_LOG: {
     type: 'boolean',

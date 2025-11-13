@@ -1,6 +1,7 @@
 // Per-client logger (no global singleton). Construct via createLogger.
 
-export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug' | 'trace';
+// Added 'silly' for deep diagnostics (unsafe: logs HTTP bodies when enabled elsewhere)
+export type LogLevel = 'silent' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silly';
 export interface LogEvent {
   level: LogLevel;
   scope: string;
@@ -17,6 +18,7 @@ const ORDER: Record<LogLevel, number> = {
   info: 3,
   debug: 4,
   trace: 5,
+  silly: 6,
 };
 
 export interface Logger {
@@ -28,6 +30,7 @@ export interface Logger {
   info(...a: any[]): void;
   debug(...a: any[]): void;
   trace(...a: any[]): void;
+  silly(...a: any[]): void;
   scope(child: string): Logger;
   code(level: LogLevel, code: string, msg: string, data?: any): void;
 }
@@ -95,6 +98,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
     info: (...a: any[]) => emit('info', scope, a),
     debug: (...a: any[]) => emit('debug', scope, a),
     trace: (...a: any[]) => emit('trace', scope, a),
+    silly: (...a: any[]) => emit('silly', scope, a),
     scope(child: string) {
       return make(scope ? `${scope}:${child}` : child);
     },
