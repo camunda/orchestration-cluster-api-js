@@ -1,3 +1,14 @@
+## [1.1.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.3...v1.1.4) (2025-11-13)
+
+
+### Bug Fixes
+
+* **ci:** prevent BUILDINFO drift from parallel matrix jobs ([45edce6](https://github.com/camunda/orchestration-cluster-api-js/commit/45edce610714cf8cb51ca31833f5469bc925085b))
+* **gen:** regenerate artifacts ([da77e80](https://github.com/camunda/orchestration-cluster-api-js/commit/da77e809ca58c41f5486c392e46d6ad43954a369))
+* mark methods experimental ([f88a8cd](https://github.com/camunda/orchestration-cluster-api-js/commit/f88a8cd6689774ff5cb08c279b04f788d2298375))
+* remove pre-release note ([0c3c26d](https://github.com/camunda/orchestration-cluster-api-js/commit/0c3c26d4b674a33aa5f1a3e9c68f131f90411729))
+* update dependencies ([faacf92](https://github.com/camunda/orchestration-cluster-api-js/commit/faacf92d995add72bcbc41e9740b9bf746b714e3))
+
 ## [1.1.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.2...v1.1.3) (2025-11-10)
 
 ### Bug Fixes
