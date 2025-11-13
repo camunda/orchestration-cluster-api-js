@@ -249,10 +249,12 @@ export function wrapFetch(
           // Clone so we do not consume original body
           const cloned = res.clone();
           const ctype = cloned.headers.get('Content-Type') || '';
+          let originalSize: number;
           if (/^(application\/json|text\/)/i.test(ctype)) {
             // Attempt text read for JSON or text
             try {
               const text = await cloned.text();
+              originalSize = text.length;
               respPreview = text.slice(0, 4000);
               if (text.length > 4000) respPreview += '…';
             } catch {
@@ -267,6 +269,7 @@ export function wrapFetch(
             try {
               const text = await cloned.text();
               if (text) {
+                originalSize = text.length;
                 respPreview = text.slice(0, 200); // shorter for unknown types
                 if (text.length > 200) respPreview += '…';
               }
@@ -276,7 +279,7 @@ export function wrapFetch(
           }
           if (respPreview) {
             logger!.silly(() => [
-              `op=${method} ${redactedUrl} http.response requestId=${requestId} status=${res.status} size=${respPreview.length} preview=${respPreview}`,
+              `op=${method} ${redactedUrl} http.response requestId=${requestId} status=${res.status} size=${originalSize} preview=${respPreview}`,
             ]);
           }
         }

@@ -808,7 +808,7 @@ CAMUNDA_SDK_LOG_LEVEL=debug
 
 ### Unsafe Deep Diagnostics (`silly`)
 
-Setting `CAMUNDA_SDK_LOG_LEVEL=silly` enables the deepest diagnostics. In addition to everything at `trace`, the SDK will emit HTTP request and response body previews for `POST`, `PUT`, and `PATCH` calls under the `telemetry` scope (log line contains `http.body`). This can leak sensitive information (secrets, PII). A warning (`log.level.silly.enabled`) is emitted on client construction. Use only for short‑lived local debugging; never enable in production or share captured logs externally. Body output is truncated (max ~4KB) and form-data parts identify uploaded files as `[File]`.
+Setting `CAMUNDA_SDK_LOG_LEVEL=silly` enables the deepest diagnostics. In addition to everything at `trace`, the SDK will emit HTTP request and response body previews for all HTTP methods under the `telemetry` scope (log line contains `http.body`). This can leak sensitive information (secrets, PII). A warning (`log.level.silly.enabled`) is emitted on client construction. Use only for short‑lived local debugging; never enable in production or share captured logs externally. Body output is truncated (max ~4KB) and form-data parts identify uploaded files as `[File]`.
 
 ### Bring Your Own Logger
 

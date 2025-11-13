@@ -204,7 +204,7 @@ export class CamundaClient {
     if (this._log.level() === 'silly') {
       this._log.warn(
         'log.level.silly.enabled',
-        'HTTP request bodies will be logged; this may leak sensitive information. Use only for local debugging.'
+        'HTTP request and response bodies will be logged; this may leak sensitive information. Use only for local debugging.'
       );
     }
     installAuthInterceptor(
