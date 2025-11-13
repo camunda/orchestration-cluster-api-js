@@ -1,3 +1,4 @@
+.github/workflows/
 # Generated artifacts – excluded to preserve deterministic build output
 src/gen/
 branding/branding-metadata.json
