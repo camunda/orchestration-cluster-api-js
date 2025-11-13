@@ -11,17 +11,18 @@ describe('searchProcessInstances', () => {
     const res = await camunda.deployResourcesFromFiles([
       './tests-integration/fixtures/test-job-process.bpmn',
     ]);
-    const tag = Tag.fromString('tag-' + Date.now().toString())
+    const uniqueId = Date.now().toString()
+    const tag = Tag.fromString(`tag-${uniqueId}`)
     const process = await camunda.createProcessInstance({
       processDefinitionKey: res.processes[0].processDefinitionKey,
       variables: {
-        testVar: 3,
+        testVar: uniqueId,
       },
       tags: [tag]
     });
     const search = await camunda.searchProcessInstances(
       {
-        filter: { variables: [{ name: 'testVar', value: '3' }], state: 'ACTIVE' },
+        filter: { variables: [{ name: 'testVar', value: uniqueId }], state: 'ACTIVE' },
       },
       { consistency: { waitUpToMs: 10_000 } }
     );
@@ -29,7 +30,7 @@ describe('searchProcessInstances', () => {
       { path: '/process-instances/search', method: 'POST', status: '200' },
       search
     );
-    expect(search.items[0].tags?.[0]).toBe(tag);
+    expect(search.items[0].tags?.[0]).toBe(uniqueId);
     await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
   }, 12_000);
   it.skip('can search for a specific process instance', async () => {
