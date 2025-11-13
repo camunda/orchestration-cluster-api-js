@@ -139,7 +139,12 @@ jobs:
         run: |
           # Deterministic build without refetching upstream spec to avoid mid-release spec drift.
           npm run build
+      - name: Get commit timestamp
+        id: get_commit_timestamp
+        run: echo "commit_timestamp=$(git log -1 --format=%cI)" >> $GITHUB_OUTPUT
       - name: Write BUILDINFO (deterministic timestamp) BEFORE drift check
+        env:
+          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp.outputs.commit_timestamp }}
         run: npx tsx scripts/write-buildinfo.ts
       - name: Verify no drift (deterministic)
         run: git diff --exit-code
