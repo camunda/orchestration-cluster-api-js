@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.5...v1.2.0) (2025-11-13)
+
+
+### Features
+
+* add silly level logging ([a8a4aad](https://github.com/camunda/orchestration-cluster-api-js/commit/a8a4aadd3556d5c441d63d2a9b3943a68dc747e5))
+
 ## [1.1.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.4...v1.1.5) (2025-11-13)
 
 ### Bug Fixes
