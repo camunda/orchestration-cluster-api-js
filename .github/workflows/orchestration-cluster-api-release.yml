@@ -137,16 +137,23 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          npx semantic-release --dry-run --no-ci > dry-run.log 2>&1 || true
-          if ! grep -q 'The next release version is' dry-run.log; then
-            echo "No release required";
-            echo "publish_needed=false" >> $GITHUB_OUTPUT
+          node scripts/next-version.mjs > next-version.out 2>&1 || {
+            echo 'publish_needed=false' >> $GITHUB_OUTPUT
+            echo 'version=' >> $GITHUB_OUTPUT
+            echo 'Semantic-release dry-run failed:'
+            cat next-version.out
             exit 0
+          }
+          VER=$(grep -E '^next_version=' next-version.out | cut -d '=' -f2)
+          if [ -z "$VER" ]; then
+            echo "No release required"
+            echo "publish_needed=false" >> $GITHUB_OUTPUT
+            echo "version=" >> $GITHUB_OUTPUT
+          else
+            echo "Next version: $VER"
+            echo "publish_needed=true" >> $GITHUB_OUTPUT
+            echo "version=$VER" >> $GITHUB_OUTPUT
           fi
-          VER=$(grep -Eo 'The next release version is [0-9]+\.[0-9]+\.[0-9]+' dry-run.log | awk '{print $6}' | tail -n1)
-          echo "Next version: $VER"
-          echo "publish_needed=true" >> $GITHUB_OUTPUT
-          echo "version=$VER" >> $GITHUB_OUTPUT
       - name: Bump version & regenerate artifacts
         if: steps.next_version.outputs.publish_needed == 'true'
         run: |
@@ -178,3 +185,10 @@ jobs:
         with:
           folder: docs
           branch: gh-pages
+      - name: Upload release analysis logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-analysis
+          path: |
+            next-version.out
