@@ -17,33 +17,33 @@ No post‑publish mutation: tag points at the commit containing final generated 
 
 ### Artifacts
 
-| File                              | Purpose                                         |
-| --------------------------------- | ----------------------------------------------- |
-| `spec-snapshots/spec-<sha>.yaml`  | Immutable copy of spec used for that build      |
-| `branding/branding-metadata.json` | Branded key metadata for auditing changes       |
+| File                              | Purpose                                    |
+| --------------------------------- | ------------------------------------------ |
+| `spec-snapshots/spec-<sha>.yaml`  | Immutable copy of spec used for that build |
+| `branding/branding-metadata.json` | Branded key metadata for auditing changes  |
 
 `BUILDINFO.json` was removed (previously stored commit/run/version hashes) to eliminate redundant drift sources. Reproducibility is ensured by deterministic regeneration + clean diff checks.
 
 ### Commit Conventions
 
-| Pattern                      | Effect / Release impact                                |
-| ---------------------------- | ------------------------------------------------------- |
-| `fix(gen): regenerate artifacts` | Triggers patch release if no higher type present       |
-| `feat: ...`                 | Triggers minor (or major if breaking) per conventional rules |
-| `fix: ...`                  | Triggers patch                                           |
-| `chore(release): vX.Y.Z`    | Version bump commit created before semantic-release run  |
-| `[skip ci]`                 | Added by semantic-release asset commit to prevent loop   |
+| Pattern                          | Effect / Release impact                                      |
+| -------------------------------- | ------------------------------------------------------------ |
+| `fix(gen): regenerate artifacts` | Triggers patch release if no higher type present             |
+| `feat: ...`                      | Triggers minor (or major if breaking) per conventional rules |
+| `fix: ...`                       | Triggers patch                                               |
+| `chore(release): vX.Y.Z`         | Version bump commit created before semantic-release run      |
+| `[skip ci]`                      | Added by semantic-release asset commit to prevent loop       |
 
 Pure `ci:` / generic `chore:` (non `chore(release)`) commits do not release.
 
 ### Failure Modes & Guards
 
-| Failure                            | Guard / Behavior                                             |
-| ---------------------------------- | ------------------------------------------------------------ |
-| Generated diff not committed       | No staging commit → merge/publish proceed without drift      |
-| Non-fast-forward (main advanced)   | FF merge fails → workflow stops; next run regenerates        |
-| Upstream spec changes mid-run      | Publish rebuild sees new spec diff → new run will capture    |
-| Missing release-worthy commits     | Dry run sets `publish_needed=false`; publish steps skipped    |
+| Failure                          | Guard / Behavior                                           |
+| -------------------------------- | ---------------------------------------------------------- |
+| Generated diff not committed     | No staging commit → merge/publish proceed without drift    |
+| Non-fast-forward (main advanced) | FF merge fails → workflow stops; next run regenerates      |
+| Upstream spec changes mid-run    | Publish rebuild sees new spec diff → new run will capture  |
+| Missing release-worthy commits   | Dry run sets `publish_needed=false`; publish steps skipped |
 
 ### Local Reproduction
 
