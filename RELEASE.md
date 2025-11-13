@@ -2,40 +2,48 @@
 
 ### Goals
 
-1. Published npm artifact exactly matches `main`.
-2. No publish if generated sources cannot be committed.
-3. Deterministic & auditable: spec snapshot + build metadata stored.
-4. Zero infinite CI loops (use `[skip release]` on sync commit, `[skip ci]` on version bump commit).
+1. Published npm artifact exactly matches the tip of `main`.
+2. No publish if generated sources cannot be committed (fast‑forward guarantee).
+3. Deterministic generation: spec snapshot retained; no volatile build metadata file.
+4. Zero infinite CI loops (semantic-release commit includes `[skip ci]`).
 
 ### Pipeline Overview
 
-1. `generate` job: build, generate SDK from latest spec, run tests, snapshot spec, commit changes (if any) to a temp branch `release/apply/<run-id>`.
-2. `merge` job: fast-forward `main` to the temp branch (aborts if non-FF → next run will retry with fresh generation).
-3. `publish` job: regenerates from merged `main`, asserts clean diff, writes `BUILDINFO.json`, runs semantic-release to publish & create GitHub Release with assets.
+1. `generate` job: build, generate SDK from latest spec, run unit + integration tests, snapshot spec, commit drift (if any) from canonical Node 22.x leg as `fix(gen): regenerate artifacts` to a staging branch `release/stage/<run-id>`.
+2. `merge` job: fast-forward `main` to staging branch if drift occurred.
+3. `publish` job (runs on `main`): semantic-release dry run → if release needed (e.g. `fix:` / `feat:` present) bump `package.json` (no tag yet), rebuild (embeds version), smoke test, commit `chore(release): vX.Y.Z`, run semantic-release (publishes, tags, updates CHANGELOG, commits assets), build & deploy docs.
+
+No post‑publish mutation: tag points at the commit containing final generated artifacts + bumped version.
 
 ### Artifacts
 
-| File                              | Purpose                                              |
-| --------------------------------- | ---------------------------------------------------- |
-| `spec-snapshots/spec-<sha>.yaml`  | Immutable copy of spec used for that build           |
-| `branding/branding-metadata.json` | Branded key metadata for auditing changes            |
-| `BUILDINFO.json`                  | Commit, run id, spec & metadata hashes, node version |
+| File                              | Purpose                                         |
+| --------------------------------- | ----------------------------------------------- |
+| `spec-snapshots/spec-<sha>.yaml`  | Immutable copy of spec used for that build      |
+| `branding/branding-metadata.json` | Branded key metadata for auditing changes       |
 
-### Commit Markers
+`BUILDINFO.json` was removed (previously stored commit/run/version hashes) to eliminate redundant drift sources. Reproducibility is ensured by deterministic regeneration + clean diff checks.
 
-| Marker           | Effect                                                                                                                 |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `[skip release]` | Prevents semantic-release triggering on sync commit content (conventional analyzer ignores if no relevant commit type) |
-| `[skip ci]`      | Added by semantic-release git plugin to avoid rerunning workflow on version bump commit                                |
+### Commit Conventions
+
+| Pattern                      | Effect / Release impact                                |
+| ---------------------------- | ------------------------------------------------------- |
+| `fix(gen): regenerate artifacts` | Triggers patch release if no higher type present       |
+| `feat: ...`                 | Triggers minor (or major if breaking) per conventional rules |
+| `fix: ...`                  | Triggers patch                                           |
+| `chore(release): vX.Y.Z`    | Version bump commit created before semantic-release run  |
+| `[skip ci]`                 | Added by semantic-release asset commit to prevent loop   |
+
+Pure `ci:` / generic `chore:` (non `chore(release)`) commits do not release.
 
 ### Failure Modes & Guards
 
-| Failure                            | Guard                                                        |
+| Failure                            | Guard / Behavior                                             |
 | ---------------------------------- | ------------------------------------------------------------ |
-| Generated diff not committed       | Sync commit step; if push fails, no merge → no publish       |
-| Drift between generation & publish | Regenerate + `git diff --exit-code` before semantic-release  |
-| Non-fast-forward (main advanced)   | FF merge fails → pipeline stops (next scheduled run retries) |
-| Upstream spec changed mid-pipeline | Regeneration in publish step detects drift                   |
+| Generated diff not committed       | No staging commit → merge/publish proceed without drift      |
+| Non-fast-forward (main advanced)   | FF merge fails → workflow stops; next run regenerates        |
+| Upstream spec changes mid-run      | Publish rebuild sees new spec diff → new run will capture    |
+| Missing release-worthy commits     | Dry run sets `publish_needed=false`; publish steps skipped    |
 
 ### Local Reproduction
 
@@ -43,7 +51,8 @@
 npm ci
 npm run build
 sha256sum rest-api.source.yaml
-node scripts/write-buildinfo.ts
+# Optional: semantic-release dry run to inspect next version
+npx semantic-release --dry-run --no-ci
 ```
 
 ### Adding New Release Assets
@@ -53,17 +62,19 @@ node scripts/write-buildinfo.ts
 
 ### When No Code Changes
 
-If the spec hasn't changed and no relevant commits exist, `generate.changed == false`; merge job is skipped; publish still runs to allow versioning for other commit types (docs/chore fix) if present.
+If no spec drift and no conventional commits since last tag (feat/fix), dry run finds no release; version bump + publish steps are skipped.
 
 ### Known Limitations
 
-- Upstream spec is implicitly “latest” at run time; pin via a spec ref file + PR automation if stricter reproducibility desired.
-- Fast-forward only: manual intervention needed if divergent commits land on main between detect & merge.
+- Upstream spec is implicitly “latest”; pin with a ref file if stricter reproducibility required.
+- Fast-forward only; divergent commits landing between staging and merge abort the run.
+- Manual bump logic plus semantic-release still produces an additional asset commit (CHANGELOG). Acceptable duplication.
 
 ### Future Enhancements
 
-- Add drift daily job to open an issue if spec changes but generation yields no semantic-release-worthy commits.
-- Add a contract test to verify each branded key still appears in metadata and `types.gen.ts`.
+- Scheduled drift check detecting spec changes without corresponding conventional commits.
+- Contract test verifying branded keys coverage in generated types.
+- Optional rule set (releaseRules) to treat certain `refactor:` or scoped `chore:` commits as patch.
 
 ### Notable Changes
 
