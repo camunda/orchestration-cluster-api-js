@@ -63,33 +63,26 @@ jobs:
             echo "Spec snapshot already exists: $SNAP (no overwrite)"
           fi
           echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
-      - name: Get commit timestamp
-        id: get_commit_timestamp
-        run: echo "commit_timestamp=$(git log -1 --format=%cI)" >> $GITHUB_OUTPUT
-      - name: Write BUILDINFO (deterministic)
-        # Only write BUILDINFO from canonical Node 22.x to avoid parallel matrix race conditions
-        if: matrix.node == '22.x'
-        env:
-          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp.outputs.commit_timestamp }}
-        run: npx tsx scripts/write-buildinfo.ts
-      - name: Detect changes
-        id: diff
+      - name: Detect generated drift
+        id: detect
         run: |
           if git diff --quiet; then echo "changed=false" >> $GITHUB_OUTPUT; else echo "changed=true" >> $GITHUB_OUTPUT; fi
-      - name: Commit generated changes
-        # Only commit/push from canonical Node 22.x leg
-        if: steps.diff.outputs.changed == 'true' && matrix.node == '22.x'
+      - name: Commit generated artifacts (canonical)
+        if: steps.detect.outputs.changed == 'true' && matrix.node == '22.x'
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
           git add -A
-          git commit -m "chore(gen): sync generated artifacts [skip release]"
-      - name: Push temp branch
-        if: steps.diff.outputs.changed == 'true' && matrix.node == '22.x'
+          git commit -m "chore(gen): generated artifacts [skip release]"
+      - name: Push staging branch (canonical)
+        if: matrix.node == '22.x'
+        id: push_stage
         run: |
-          BR=release/apply/${GITHUB_RUN_ID}
-          git branch -f "$BR"
-          git push origin "$BR" --force
+          STAGE_BRANCH=release/stage/${GITHUB_RUN_ID}
+          git branch -f "$STAGE_BRANCH"
+          git push origin "$STAGE_BRANCH" --force
+          echo "branch=$STAGE_BRANCH" >> $GITHUB_OUTPUT
+          echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Upload logs (always)
         if: always()
         working-directory: docker
@@ -99,39 +92,19 @@ jobs:
         working-directory: docker
         run: docker compose down -v || true
     outputs:
-      changed: ${{ steps.diff.outputs.changed }}
-      # Only expose drift/change status from canonical Node 22.x leg to downstream jobs
-      canonical_changed: ${{ matrix.node == '22.x' && steps.diff.outputs.changed || 'false' }}
+      changed: ${{ steps.detect.outputs.changed }}
+      staging_branch: ${{ steps.push_stage.outputs.branch }}
+      staging_commit_sha: ${{ steps.push_stage.outputs.commit_sha }}
 
-  merge:
-    name: Fast-forward main
+  publish:
+    name: Version & Publish (staging)
     needs: generate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fast-forward (only if generated drift)
-        if: needs.generate.outputs.canonical_changed == 'true'
-        run: |
-          set -e
-          git fetch origin "release/apply/${GITHUB_RUN_ID}"
-          git checkout main
-          git merge --ff-only "origin/release/apply/${GITHUB_RUN_ID}" || { echo 'Fast-forward failed'; exit 1; }
-          git push origin main
-      - name: No drift – skip fast-forward
-        if: needs.generate.outputs.canonical_changed != 'true'
-        run: echo "No generated drift detected; fast-forward step skipped."
-
-  publish:
-    name: Publish & Release
-    needs: [generate, merge]
-    # If no changes, still allow semantic-release to process commits (e.g., dependency chore) if desired:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+          ref: ${{ needs.generate.outputs.staging_branch }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
@@ -139,31 +112,79 @@ jobs:
           cache-dependency-path: package.json
       - name: Install deps
         run: npm ci
-      - name: Regenerate & Build (Integrity Check)
+      - name: Determine next version (dry-run)
+        id: next_version
         env:
-          CAMUNDA_SDK_SKIP_FETCH_SPEC: '1'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Deterministic build without refetching upstream spec to avoid mid-release spec drift.
-          npm run build
-      - name: Get commit timestamp
-        id: get_commit_timestamp_publish
-        run: echo "commit_timestamp=$(git log -1 --format=%cI)" >> $GITHUB_OUTPUT
-      - name: Write BUILDINFO (deterministic timestamp) BEFORE drift check
-        env:
-          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp_publish.outputs.commit_timestamp }}
-        run: npx tsx scripts/write-buildinfo.ts
-      - name: Verify no drift (deterministic)
-        run: git diff --exit-code
-      - name: Semantic Release
+          set -e
+          npx semantic-release --dry-run --no-ci > dry-run.log 2>&1 || true
+          if ! grep -q 'The next release version is' dry-run.log; then
+            echo "No release required";
+            echo "publish_needed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          VER=$(grep -Eo 'The next release version is [0-9]+\.[0-9]+\.[0-9]+' dry-run.log | awk '{print $6}' | tail -n1)
+          echo "Next version: $VER"
+          echo "publish_needed=true" >> $GITHUB_OUTPUT
+          echo "version=$VER" >> $GITHUB_OUTPUT
+      - name: Bump version
+        if: steps.next_version.outputs.publish_needed == 'true'
+        run: |
+          npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
+      - name: Rebuild with bumped version
+        if: steps.next_version.outputs.publish_needed == 'true'
+        run: npm run build
+      - name: Smoke tests with bumped version
+        if: steps.next_version.outputs.publish_needed == 'true'
+        run: npm test -- --run
+      - name: Commit version bump & regenerated artifacts
+        if: steps.next_version.outputs.publish_needed == 'true'
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'actions@github.com'
+          git add -A
+          git commit -m "chore(release): v${{ steps.next_version.outputs.version }}"
+          git push origin ${{ needs.generate.outputs.staging_branch }}
+      - name: Publish (semantic-release)
+        if: steps.next_version.outputs.publish_needed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
       - name: Build Docs
+        if: steps.next_version.outputs.publish_needed == 'true'
         run: npm run docs:api
-      - name: Deploy Docs
-        if: github.ref == 'refs/heads/main'
+      - name: Deploy Docs (staging branch)
+        if: steps.next_version.outputs.publish_needed == 'true'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs
           branch: gh-pages
+      - name: Capture final commit
+        id: capture_final
+        run: echo "final_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+    outputs:
+      publish_needed: ${{ steps.next_version.outputs.publish_needed }}
+      final_commit_sha: ${{ steps.capture_final.outputs.final_sha }}
+      staging_branch: ${{ needs.generate.outputs.staging_branch }}
+
+  merge:
+    name: Fast-forward main to published commit
+    needs: publish
+    runs-on: ubuntu-latest
+    if: needs.publish.outputs.publish_needed == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fast-forward main
+        run: |
+          set -e
+          git fetch origin ${{ needs.publish.outputs.staging_branch }}
+          git checkout main
+          git merge --ff-only FETCH_HEAD || { echo 'Fast-forward failed'; exit 1; }
+          git push origin main
+      - name: Merge skipped (no release)
+        if: needs.publish.outputs.publish_needed != 'true'
+        run: echo "No release performed; merge skipped."
