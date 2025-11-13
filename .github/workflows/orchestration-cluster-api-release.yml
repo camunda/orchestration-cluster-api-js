@@ -120,6 +120,8 @@ jobs:
     name: Version & Publish (main)
     needs: merge
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # to enable use of OIDC for trusted publishing and npm provenance
     steps:
       - uses: actions/checkout@v4
         with:
