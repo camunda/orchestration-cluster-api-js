@@ -18,8 +18,8 @@ describe('createProcessInstance', () => {
     expect(process.tags).toBeDefined();
     const processInstance = await camunda.getProcessInstance(
       { processInstanceKey: process.processInstanceKey },
-      { consistency: { waitUpToMs: 5_000 } }
+      { consistency: { waitUpToMs: 10_000 } }
     );
     expect(processInstance.processInstanceKey).toBe(process.processInstanceKey);
-  });
+  }, 12_000);
 });

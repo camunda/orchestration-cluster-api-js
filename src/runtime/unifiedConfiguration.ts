@@ -263,6 +263,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       provided[k] = baseEnv[k]!.trim();
     }
   }
+  // Flag: did the user explicitly set an auth strategy (via env or overrides)?
+  const userSetStrategy =
+    provided['CAMUNDA_AUTH_STRATEGY'] !== undefined &&
+    provided['CAMUNDA_AUTH_STRATEGY'].trim() !== '';
 
   // Build typed-env schema with parser functions that accumulate errors instead of throwing early
   const parseErrors: ConfigErrorDetail[] = [];
@@ -344,6 +348,29 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     envInput['CAMUNDA_SUPPORT_LOG_ENABLED'] = envInput['CAMUNDA_SUPPORT_LOGGER'];
   }
 
+  // Alias: accept ZEEBE_REST_ADDRESS as CAMUNDA_REST_ADDRESS (if primary unset)
+  if (
+    envInput['CAMUNDA_REST_ADDRESS'] === undefined &&
+    baseEnv['ZEEBE_REST_ADDRESS'] !== undefined &&
+    baseEnv['ZEEBE_REST_ADDRESS']!.trim() !== ''
+  ) {
+    envInput['CAMUNDA_REST_ADDRESS'] = baseEnv['ZEEBE_REST_ADDRESS']!.trim();
+  }
+
+  // Implicit auth strategy inference: if OAUTH URL provided and no explicit strategy, default to OAUTH
+  if (
+    (envInput['CAMUNDA_AUTH_STRATEGY'] === undefined ||
+      envInput['CAMUNDA_AUTH_STRATEGY'].trim() === '') &&
+    envInput['CAMUNDA_OAUTH_URL'] !== undefined &&
+    envInput['CAMUNDA_OAUTH_URL'].trim() !== '' &&
+    envInput['CAMUNDA_CLIENT_ID'] !== undefined &&
+    envInput['CAMUNDA_CLIENT_ID'].trim() !== '' &&
+    envInput['CAMUNDA_CLIENT_SECRET'] !== undefined &&
+    envInput['CAMUNDA_CLIENT_SECRET'].trim() !== ''
+  ) {
+    envInput['CAMUNDA_AUTH_STRATEGY'] = 'OAUTH';
+  }
+
   // Run typed-env (will not throw for our parser-based validation; parseErrors collects issues)
   let envTyped: Record<string, any> = {};
   envTyped = createEnv(typedEnvSchema, { env: envInput });
@@ -361,6 +388,22 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     } else if (entry.default !== undefined) {
       rawMap[k] = String(entry.default);
     }
+  }
+
+  // Post-default inference safeguard: if auth strategy still NONE (default applied) but OAuth URL provided
+  // and user did not explicitly set a strategy, infer OAUTH. This covers cases where earlier inference
+  // might be overridden by schema default application.
+  if (
+    !userSetStrategy &&
+    rawMap['CAMUNDA_AUTH_STRATEGY'] === 'NONE' &&
+    rawMap['CAMUNDA_OAUTH_URL'] &&
+    rawMap['CAMUNDA_OAUTH_URL']!.trim() !== '' &&
+    rawMap['CAMUNDA_CLIENT_ID'] &&
+    rawMap['CAMUNDA_CLIENT_ID']!.trim() !== '' &&
+    rawMap['CAMUNDA_CLIENT_SECRET'] &&
+    rawMap['CAMUNDA_CLIENT_SECRET']!.trim() !== ''
+  ) {
+    rawMap['CAMUNDA_AUTH_STRATEGY'] = 'OAUTH';
   }
 
   // Parse primitives (int, boolean, enum normalization) replicating original semantics
