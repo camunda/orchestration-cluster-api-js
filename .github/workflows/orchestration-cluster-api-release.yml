@@ -64,7 +64,7 @@ jobs:
         # Only write BUILDINFO from canonical Node 22.x to avoid parallel matrix race conditions
         if: matrix.node == '22.x'
         env:
-          BUILD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp.outputs.commit_timestamp }}
+          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp.outputs.commit_timestamp }}
         run: npx tsx scripts/write-buildinfo.ts
       - name: Detect changes
         id: diff
