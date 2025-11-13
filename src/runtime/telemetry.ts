@@ -160,6 +160,48 @@ export function wrapFetch(
     const requestId = 'r' + (++globalRequestCounter).toString(36);
     const correlationId = opts.correlation ? opts.correlation() : undefined;
     const start = Date.now();
+    // Unsafe deep diagnostics: capture body when log level 'silly'. Only handles readily serializable bodies.
+    let bodyPreview: string | undefined;
+    try {
+      const lvl = logger?.level?.();
+      if (lvl === 'silly' && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+        let body: any = init?.body;
+        if (body === undefined && typeof Request !== 'undefined' && input instanceof Request) {
+          try {
+            body = await (input as Request).clone().text();
+          } catch {
+            body = undefined;
+          }
+        }
+        if (body !== undefined && body !== null) {
+          if (typeof body === 'string') bodyPreview = body;
+          else if (body instanceof URLSearchParams) bodyPreview = body.toString();
+          else if (typeof FormData !== 'undefined' && body instanceof FormData) {
+            const entries: string[] = [];
+            for (const [k, v] of (body as any).entries()) {
+              entries.push(`${k}=${typeof v === 'string' ? v.slice(0, 200) : '[File]'}`);
+            }
+            bodyPreview = entries.join('&');
+          } else if (body instanceof Blob) {
+            bodyPreview = `[Blob size=${(body as Blob).size}]`;
+          } else if (body instanceof ArrayBuffer) {
+            bodyPreview = `[ArrayBuffer byteLength=${(body as ArrayBuffer).byteLength}]`;
+          } else if (body instanceof Uint8Array) {
+            bodyPreview = `[Uint8Array length=${(body as Uint8Array).length}]`;
+          } else if (typeof body === 'object') {
+            try {
+              bodyPreview = JSON.stringify(body).slice(0, 4000);
+            } catch {
+              bodyPreview = '[Unstringifiable object body]';
+            }
+          }
+          if (bodyPreview && bodyPreview.length > 4000)
+            bodyPreview = bodyPreview.slice(0, 4000) + '…';
+        }
+      }
+    } catch {
+      /* swallow body preview errors */
+    }
     const startEvt: TelemetryHttpStartEvent = {
       type: 'http.start',
       ts: start,
@@ -172,6 +214,11 @@ export function wrapFetch(
     try {
       hooks?.beforeRequest?.(startEvt);
       mirrorLog(startEvt);
+      if (bodyPreview && logger?.level?.() === 'silly') {
+        logger!.silly(() => [
+          `op=${method} ${redactedUrl} http.body requestId=${requestId} size=${bodyPreview.length} preview=${bodyPreview}`,
+        ]);
+      }
     } catch {
       /* swallow */
     }
@@ -194,6 +241,50 @@ export function wrapFetch(
         mirrorLog(endEvt);
       } catch {
         /* swallow */
+      }
+      // Unsafe deep diagnostics: response body preview when level=silly
+      try {
+        if (logger?.level?.() === 'silly') {
+          let respPreview: string | undefined;
+          // Clone so we do not consume original body
+          const cloned = res.clone();
+          const ctype = cloned.headers.get('Content-Type') || '';
+          let originalSize: number;
+          if (/^(application\/json|text\/)/i.test(ctype)) {
+            // Attempt text read for JSON or text
+            try {
+              const text = await cloned.text();
+              originalSize = text.length;
+              respPreview = text.slice(0, 4000);
+              if (text.length > 4000) respPreview += '…';
+            } catch {
+              respPreview = undefined;
+            }
+          } else if (/multipart\//i.test(ctype)) {
+            respPreview = '[multipart body omitted]';
+          } else if (/octet-stream|binary/i.test(ctype)) {
+            respPreview = '[binary body omitted]';
+          } else {
+            // Fallback: attempt text anyway, may succeed
+            try {
+              const text = await cloned.text();
+              if (text) {
+                originalSize = text.length;
+                respPreview = text.slice(0, 200); // shorter for unknown types
+                if (text.length > 200) respPreview += '…';
+              }
+            } catch {
+              /* ignore */
+            }
+          }
+          if (respPreview) {
+            logger!.silly(() => [
+              `op=${method} ${redactedUrl} http.response requestId=${requestId} status=${res.status} size=${originalSize} preview=${respPreview}`,
+            ]);
+          }
+        }
+      } catch {
+        /* swallow response preview errors */
       }
       // Unconditional SupportLogger emission (if provided)
       try {

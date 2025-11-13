@@ -178,7 +178,7 @@ export class CamundaClient {
       });
     } else if (
       // Auto-enable mirror telemetry when trace level and user did not explicitly set CAMUNDA_SDK_TELEMETRY_LOG to a disabling value.
-      this._log.level() === 'trace' &&
+      /^(trace|silly)$/.test(this._log.level()) &&
       !this._config.telemetry?.log &&
       // No explicit override provided
       (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
@@ -200,6 +200,13 @@ export class CamundaClient {
       fetch: this._fetch,
       throwOnError: opts.throwOnError !== false,
     });
+    // Unsafe diagnostic level warning
+    if (this._log.level() === 'silly') {
+      this._log.warn(
+        'log.level.silly.enabled',
+        'HTTP request and response bodies will be logged; this may leak sensitive information. Use only for local debugging.'
+      );
+    }
     installAuthInterceptor(
       this._client,
       () => this._config.auth.strategy,
@@ -293,7 +300,7 @@ export class CamundaClient {
         mirrorToLog: true,
       });
     } else if (
-      this._log.level() === 'trace' &&
+      /^(trace|silly)$/.test(this._log.level()) &&
       !this._config.telemetry?.log &&
       (this._overrides as any)['CAMUNDA_SDK_TELEMETRY_LOG'] === undefined &&
       (typeof process === 'undefined' ||
