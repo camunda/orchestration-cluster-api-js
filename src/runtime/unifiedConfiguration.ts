@@ -263,6 +263,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       provided[k] = baseEnv[k]!.trim();
     }
   }
+  // Flag: did the user explicitly set an auth strategy (via env or overrides)?
+  const userSetStrategy =
+    provided['CAMUNDA_AUTH_STRATEGY'] !== undefined &&
+    provided['CAMUNDA_AUTH_STRATEGY'].trim() !== '';
 
   // Build typed-env schema with parser functions that accumulate errors instead of throwing early
   const parseErrors: ConfigErrorDetail[] = [];
@@ -359,10 +363,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       envInput['CAMUNDA_AUTH_STRATEGY'].trim() === '') &&
     envInput['CAMUNDA_OAUTH_URL'] !== undefined &&
     envInput['CAMUNDA_OAUTH_URL'].trim() !== '' &&
-    baseEnv['CAMUNDA_CLIENT_ID'] !== undefined &&
-    baseEnv['CAMUNDA_CLIENT_ID']!.trim() !== '' &&
-    baseEnv['CAMUNDA_CLIENT_SECRET'] !== undefined &&
-    baseEnv['CAMUNDA_CLIENT_SECRET']!.trim() !== ''
+    envInput['CAMUNDA_CLIENT_ID'] !== undefined &&
+    envInput['CAMUNDA_CLIENT_ID'].trim() !== '' &&
+    envInput['CAMUNDA_CLIENT_SECRET'] !== undefined &&
+    envInput['CAMUNDA_CLIENT_SECRET'].trim() !== ''
   ) {
     envInput['CAMUNDA_AUTH_STRATEGY'] = 'OAUTH';
   }
@@ -390,8 +394,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   // and user did not explicitly set a strategy, infer OAUTH. This covers cases where earlier inference
   // might be overridden by schema default application.
   if (
-    (baseEnv['CAMUNDA_AUTH_STRATEGY'] === undefined ||
-      baseEnv['CAMUNDA_AUTH_STRATEGY']!.trim() === '') &&
+    !userSetStrategy &&
     rawMap['CAMUNDA_AUTH_STRATEGY'] === 'NONE' &&
     rawMap['CAMUNDA_OAUTH_URL'] &&
     rawMap['CAMUNDA_OAUTH_URL']!.trim() !== '' &&

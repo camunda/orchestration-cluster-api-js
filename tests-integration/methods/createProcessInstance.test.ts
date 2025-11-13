@@ -21,5 +21,5 @@ describe('createProcessInstance', () => {
       { consistency: { waitUpToMs: 10_000 } }
     );
     expect(processInstance.processInstanceKey).toBe(process.processInstanceKey);
-  }, {timeout: 12_000});
+  }, 12_000);
 });
