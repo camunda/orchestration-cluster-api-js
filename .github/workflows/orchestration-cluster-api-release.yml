@@ -57,11 +57,14 @@ jobs:
           mkdir -p spec-snapshots
           cp rest-api.source.yaml spec-snapshots/spec-${HASH}.yaml
           echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
+      - name: Get commit timestamp
+        id: get_commit_timestamp
+        run: echo "commit_timestamp=$(git log -1 --format=%cI)" >> $GITHUB_OUTPUT
       - name: Write BUILDINFO (deterministic)
         # Only write BUILDINFO from canonical Node 22.x to avoid parallel matrix race conditions
         if: matrix.node == '22.x'
         env:
-          GITHUB_EVENT_HEAD_COMMIT_TIMESTAMP: ${{ github.event.head_commit.timestamp }}
+          BUILD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp.outputs.commit_timestamp }}
         run: npx tsx scripts/write-buildinfo.ts
       - name: Detect changes
         id: diff
