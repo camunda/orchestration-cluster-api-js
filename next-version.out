@@ -1,58 +1,52 @@
-[1:08:19 PM] [semantic-release] › ℹ  Running semantic-release version 23.1.1
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/changelog"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/npm"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/git"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "analyzeCommits" from "@semantic-release/commit-analyzer"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "generateNotes" from "@semantic-release/release-notes-generator"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/changelog"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/npm"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/git"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/npm"
-[1:08:20 PM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/npm"
-[1:08:21 PM] [semantic-release] › ⚠  Run automated release from branch main on repository git+https://github.com/camunda/orchestration-cluster-api-js.git in dry-run mode
-[1:08:21 PM] [semantic-release] › ✔  Allowed to push to the Git repository
-[1:08:21 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/changelog"
-[1:08:21 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/changelog"
-[1:08:21 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/npm"
-[1:08:21 PM] [semantic-release] [@semantic-release/npm] › ℹ  Verify authentication for registry https://registry.npmjs.org/
-[1:08:21 PM] [semantic-release] [@semantic-release/npm] › ℹ  Reading npm config from /home/runner/work/orchestration-cluster-api-js/orchestration-cluster-api-js/.npmrc
+[1:36:36 PM] [semantic-release] › ℹ  Running semantic-release version 23.1.1
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/changelog"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/npm"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/git"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "analyzeCommits" from "@semantic-release/commit-analyzer"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "generateNotes" from "@semantic-release/release-notes-generator"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/changelog"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/npm"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/git"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/npm"
+[1:36:36 PM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/npm"
+[1:36:37 PM] [semantic-release] › ⚠  Run automated release from branch main on repository git+https://github.com/camunda/orchestration-cluster-api-js.git in dry-run mode
+[1:36:37 PM] [semantic-release] › ✔  Allowed to push to the Git repository
+[1:36:37 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/changelog"
+[1:36:37 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/changelog"
+[1:36:37 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/npm"
+[1:36:37 PM] [semantic-release] [@semantic-release/npm] › ℹ  Verify authentication for registry https://registry.npmjs.org/
+[1:36:37 PM] [semantic-release] [@semantic-release/npm] › ℹ  Reading npm config from /home/runner/work/orchestration-cluster-api-js/orchestration-cluster-api-js/.npmrc
 sitapati
-[1:08:21 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/npm"
-[1:08:21 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/git"
-[1:08:21 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/git"
-[1:08:21 PM] [semantic-release] › ℹ  Found git tag v1.1.4 associated with version 1.1.4 on branch main
-[1:08:21 PM] [semantic-release] › ℹ  Found 6 commits since last release
-[1:08:21 PM] [semantic-release] › ℹ  Start step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: Merge pull request #29 from camunda/config-update
+[1:36:38 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/npm"
+[1:36:38 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/git"
+[1:36:38 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/git"
+[1:36:38 PM] [semantic-release] › ℹ  Found git tag v1.1.5 associated with version 1.1.5 on branch main
+[1:36:38 PM] [semantic-release] › ℹ  Found 3 commits since last release
+[1:36:38 PM] [semantic-release] › ℹ  Start step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: Merge pull request #30 from camunda/add-silly-logging
 
-fix: use creds from SaaS correctly. fixes #28
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: refactor: address edge-case in auth defaulting
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: test: remove console.log
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: test: avoid testing tag for now
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: test: use uniqueID in test
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: fix: use creds from SaaS correctly. fixes #28
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is patch
-[1:08:21 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analysis of 6 commits complete: patch release
-[1:08:21 PM] [semantic-release] › ✔  Completed step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
-[1:08:21 PM] [semantic-release] › ℹ  The next release version is 1.1.5
-[1:08:21 PM] [semantic-release] › ℹ  Start step "generateNotes" of plugin "@semantic-release/release-notes-generator"
-[1:08:22 PM] [semantic-release] › ✔  Completed step "generateNotes" of plugin "@semantic-release/release-notes-generator"
-[1:08:22 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/changelog" in dry-run mode
-[1:08:22 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/npm" in dry-run mode
-[1:08:22 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/git" in dry-run mode
-[1:08:22 PM] [semantic-release] › ⚠  Skip v1.1.5 tag creation in dry-run mode
-[1:08:22 PM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/npm" in dry-run mode
-[1:08:22 PM] [semantic-release] › ✔  Published release 1.1.5 on default channel
-[1:08:22 PM] [semantic-release] › ℹ  Release note for version 1.1.5:
-## 1.1.5 (https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.4...v1.1.5) (2025-11-13)
+feat: add silly level logging
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: docs: update documentation
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: feat: add silly level logging
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is minor
+[1:36:38 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analysis of 3 commits complete: minor release
+[1:36:38 PM] [semantic-release] › ✔  Completed step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
+[1:36:38 PM] [semantic-release] › ℹ  The next release version is 1.2.0
+[1:36:38 PM] [semantic-release] › ℹ  Start step "generateNotes" of plugin "@semantic-release/release-notes-generator"
+[1:36:38 PM] [semantic-release] › ✔  Completed step "generateNotes" of plugin "@semantic-release/release-notes-generator"
+[1:36:38 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/changelog" in dry-run mode
+[1:36:38 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/npm" in dry-run mode
+[1:36:38 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/git" in dry-run mode
+[1:36:38 PM] [semantic-release] › ⚠  Skip v1.2.0 tag creation in dry-run mode
+[1:36:38 PM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/npm" in dry-run mode
+[1:36:38 PM] [semantic-release] › ✔  Published release 1.2.0 on default channel
+[1:36:38 PM] [semantic-release] › ℹ  Release note for version 1.2.0:
+# 1.2.0 (https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.5...v1.2.0) (2025-11-13)
 
-### Bug Fixes
+### Features
 
-    * use creds from SaaS correctly. fixes #28 (https://github.com/camunda/orchestration-cluster-api-js/issues/28) (348bc9e (https://github.com/camunda/orchestration-cluster-api-js/commit/348bc9e3916b7a549ddd17215cd4367877805216))
+    * add silly level logging (a8a4aad (https://github.com/camunda/orchestration-cluster-api-js/commit/a8a4aadd3556d5c441d63d2a9b3943a68dc747e5))
 
-next_version=1.1.5
+next_version=1.2.0

@@ -1,9 +1,8 @@
 ## [1.1.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.4...v1.1.5) (2025-11-13)
 
-
 ### Bug Fixes
 
-* use creds from SaaS correctly. fixes [#28](https://github.com/camunda/orchestration-cluster-api-js/issues/28) ([348bc9e](https://github.com/camunda/orchestration-cluster-api-js/commit/348bc9e3916b7a549ddd17215cd4367877805216))
+- use creds from SaaS correctly. fixes [#28](https://github.com/camunda/orchestration-cluster-api-js/issues/28) ([348bc9e](https://github.com/camunda/orchestration-cluster-api-js/commit/348bc9e3916b7a549ddd17215cd4367877805216))
 
 ## [1.1.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.3...v1.1.4) (2025-11-13)
 
