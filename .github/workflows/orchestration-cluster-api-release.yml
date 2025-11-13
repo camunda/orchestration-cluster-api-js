@@ -57,21 +57,29 @@ jobs:
           mkdir -p spec-snapshots
           cp rest-api.source.yaml spec-snapshots/spec-${HASH}.yaml
           echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
+      - name: Get commit timestamp
+        id: get_commit_timestamp
+        run: echo "commit_timestamp=$(git log -1 --format=%cI)" >> $GITHUB_OUTPUT
       - name: Write BUILDINFO (deterministic)
+        # Only write BUILDINFO from canonical Node 22.x to avoid parallel matrix race conditions
+        if: matrix.node == '22.x'
+        env:
+          BUILD_COMMIT_TIMESTAMP: ${{ steps.get_commit_timestamp.outputs.commit_timestamp }}
         run: npx tsx scripts/write-buildinfo.ts
       - name: Detect changes
         id: diff
         run: |
           if git diff --quiet; then echo "changed=false" >> $GITHUB_OUTPUT; else echo "changed=true" >> $GITHUB_OUTPUT; fi
       - name: Commit generated changes
-        if: steps.diff.outputs.changed == 'true'
+        # Only commit/push from canonical Node 22.x leg
+        if: steps.diff.outputs.changed == 'true' && matrix.node == '22.x'
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
           git add -A
           git commit -m "chore(gen): sync generated artifacts [skip release]"
       - name: Push temp branch
-        if: steps.diff.outputs.changed == 'true'
+        if: steps.diff.outputs.changed == 'true' && matrix.node == '22.x'
         run: |
           BR=release/apply/${GITHUB_RUN_ID}
           git branch -f "$BR"
