@@ -1,0 +1,25 @@
+{
+  "entryPoints": ["src/index.ts", "src/logger.ts", "src/fp/index.ts"],
+  "out": "docs-md",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-docusaurus-theme", "typedoc-plugin-frontmatter"],
+  "exclude": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/tests-integration/**",
+    "camundacon/**",
+    "scripts/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "hideGenerator": true,
+  "skipErrorChecking": true,
+  "frontmatterGlobals": {
+    "mdx" : {
+      "format": "md"
+    }
+  },
+  "sidebar": {
+    "pretty": true
+  }, 
+  "docsPath": "api-tools/typescript/docs-md"
+}
