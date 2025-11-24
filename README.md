@@ -102,6 +102,14 @@ You can call `client.configure({ config: { ... } })` to re‑hydrate. The expose
 
 ## Validation
 
+This allows you to validate that requests to the API from your application and responses from the API have the expected types and shape declared in the type system. 
+
+This protects your application from runtime bugs or errors in the type system leading to undefined states hitting your business logic.
+
+Recommended to use `fanatical` or `strict` in development and then switch to `strict` or `warn` in production. 
+
+Or you can just YOLO it and leave it on `none` all the time.
+
 Controlled by `CAMUNDA_SDK_VALIDATION` (or `config` override). Grammar:
 
 ```
@@ -113,11 +121,16 @@ Examples:
 
 ```bash
 CAMUNDA_SDK_VALIDATION=warn           # warn on both
-CAMUNDA_SDK_VALIDATION=req:strict,res:warn
+CAMUNDA_SDK_VALIDATION=req:strict,res:warn # strict on requests, warn on responses
 CAMUNDA_SDK_VALIDATION=none
 ```
 
 Behavior:
+
+- `none` - no validation performed
+- `warn` - emit warning on invalid shape
+- `strict` - fail on type mismatch or missing required fields
+- `fanatical` - fail on type mismatch, missing required fields, or unknown additional fields
 
 ## Advanced HTTP Retry: Cockatiel Adapter (Optional)
 
@@ -236,18 +249,6 @@ Keep the file only as long as needed for troubleshooting; it may contain sensiti
 To disable, unset the env variable or set `CAMUNDA_SUPPORT_LOG_ENABLED=false`.
 
 Refer to `./docs/CONFIG_REFERENCE.md` for the full list of related environment variables.
-
-## Contributing
-
-We welcome issues and pull requests. Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) guide before opening a PR to understand:
-
-- Deterministic builds policy (no committed timestamps) – see CONTRIBUTING
-- Commit message conventions (Conventional Commits with enforced subject length)
-- Release workflow & how to dry‑run semantic‑release locally
-- Testing strategy (unit vs integration)
-- Performance and security considerations
-
-If you plan to help migrate to npm Trusted Publishing (OIDC), open an issue so we can coordinate workflow permission changes (`id-token: write`) and removal of the legacy `NPM_TOKEN` secret.
 
 ### Custom Classification Example
 
@@ -1119,10 +1120,6 @@ const client = createCamundaClient({
 });
 ```
 
-## License
-
-Apache 2.0
-
 ## API Documentation
 
 Generate an HTML API reference site with TypeDoc (public entry points only):
@@ -1132,3 +1129,17 @@ npm run docs:api
 ```
 
 Output: static site in `docs/api` (open `docs/api/index.html` in a browser or serve the folder, e.g. `npx http-server docs/api`). Entry points: `src/index.ts`, `src/logger.ts`, `src/fp/index.ts`. Internal generated code, scripts, tests are excluded and private / protected members are filtered. Regenerate after changing public exports.
+
+## Contributing
+
+We welcome issues and pull requests. Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) guide before opening a PR to understand:
+
+- Deterministic builds policy (no committed timestamps) – see CONTRIBUTING
+- Commit message conventions (Conventional Commits with enforced subject length)
+- Release workflow & how to dry‑run semantic‑release locally
+- Testing strategy (unit vs integration)
+- Performance and security considerations
+
+## License
+
+Apache 2.0
