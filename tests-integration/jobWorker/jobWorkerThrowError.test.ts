@@ -3,44 +3,48 @@ import { test, expect } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 test(
-	'Throws a business error that is caught in the process',
-	async () => {
-		const camunda = createCamundaClient();
+  'Throws a business error that is caught in the process',
+  async () => {
+    const camunda = createCamundaClient();
 
-		const res = await camunda.deployResourcesFromFiles([
-			'./tests-integration/fixtures/Client-ThrowError.bpmn',
-		]);
-		const { processDefinitionKey } = res.processes[0] 
-		await camunda.cancelProcessInstancesBatchOperation({filter: {processDefinitionKey}}, {consistency: {waitUpToMs: 0}})
+    const res = await camunda.deployResourcesFromFiles([
+      './tests-integration/fixtures/Client-ThrowError.bpmn',
+    ]);
+    const { processDefinitionKey } = res.processes[0];
+    await camunda.cancelProcessInstancesBatchOperation(
+      { filter: { processDefinitionKey } },
+      { consistency: { waitUpToMs: 0 } }
+    );
 
-		camunda.createJobWorker({
-			jobHandler: (job) => {
-				return job.error({errorCode: 'BUSINESS_ERROR', errorMessage: 'Well, that did not work'})
-			},
-			jobType: 'throw-bpmn-error-task',
-			jobTimeoutMs: 30_000,
-			maxParallelJobs: 1
-		})
-		camunda.createJobWorker({
-			jobType: 'sad-flow',
-			jobHandler: (job) => {
-				return job.complete({
-					bpmnErrorCaught: true,
-				})
-			},
-			maxParallelJobs: 1,
-			jobTimeoutMs: 10_000
-		})
-		const result = await camunda.createProcessInstance({
-			processDefinitionKey,
-			requestTimeout: 20_000,
-			variables: {},
-			awaitCompletion: true
-		})
-		expect(result.variables.bpmnErrorCaught).toBe(true)
-		camunda.stopAllWorkers()
-	}, {timeout: 20_000}
-)
+    camunda.createJobWorker({
+      jobHandler: (job) => {
+        return job.error({ errorCode: 'BUSINESS_ERROR', errorMessage: 'Well, that did not work' });
+      },
+      jobType: 'throw-bpmn-error-task',
+      jobTimeoutMs: 30_000,
+      maxParallelJobs: 1,
+    });
+    camunda.createJobWorker({
+      jobType: 'sad-flow',
+      jobHandler: (job) => {
+        return job.complete({
+          bpmnErrorCaught: true,
+        });
+      },
+      maxParallelJobs: 1,
+      jobTimeoutMs: 10_000,
+    });
+    const result = await camunda.createProcessInstance({
+      processDefinitionKey,
+      requestTimeout: 20_000,
+      variables: {},
+      awaitCompletion: true,
+    });
+    expect(result.variables.bpmnErrorCaught).toBe(true);
+    camunda.stopAllWorkers();
+  },
+  { timeout: 20_000 }
+);
 
 // test.runIf(allowAny([{ deployment: 'saas' }, { deployment: 'self-managed' }]))(
 // 	'Can set variables when throwing a BPMN Error',
