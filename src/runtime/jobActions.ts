@@ -1,12 +1,13 @@
 import { JobActionReceipt } from './jobWorker';
 
 import type { CamundaClient } from '../gen/CamundaClient';
-import type { ActivatedJobResult } from '../gen/types.gen';
+import type { ActivatedJobResult, JobErrorRequest } from '../gen/types.gen';
 
 /** Enriched job type with convenience methods. */
 export interface EnrichedActivatedJob extends ActivatedJobResult {
   complete(variables?: { [k: string]: any }): Promise<JobActionReceipt>;
   fail(body: any): Promise<JobActionReceipt>;
+  error(error: JobErrorRequest): Promise<JobActionReceipt>;
   cancelWorkflow(): Promise<JobActionReceipt>;
   ignore(): Promise<JobActionReceipt>;
   /**
@@ -64,6 +65,14 @@ export function enrichActivatedJob(
   job.fail = async (reason: JobFailureConfiguration): Promise<JobActionReceipt> => {
     try {
       await client.failJob({ ...reason, jobKey: raw.jobKey });
+    } finally {
+      ack();
+    }
+    return JobActionReceipt;
+  };
+  job.error = async (error: JobErrorRequest): Promise<JobActionReceipt> => {
+    try {
+      await client.throwJobError({ ...error, jobKey: raw.jobKey });
     } finally {
       ack();
     }

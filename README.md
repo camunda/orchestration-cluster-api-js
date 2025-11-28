@@ -35,7 +35,7 @@ Keep configuration out of application code. Let the factory read `CAMUNDA_*` var
 ```ts
 import createCamundaClient from '@camunda8/orchestration-cluster-api';
 
-// Zero‑config construction: reads CAMUNDA_* from process.env once.
+// Zero‑config construction: reads CAMUNDA_* from process.env. If no configuration is present, defaults to Camunda 8 Run on localhost.
 const camunda = createCamundaClient();
 
 const topology = await camunda.getTopology();
@@ -102,11 +102,11 @@ You can call `client.configure({ config: { ... } })` to re‑hydrate. The expose
 
 ## Validation
 
-This allows you to validate that requests to the API from your application and responses from the API have the expected types and shape declared in the type system. 
+This allows you to validate that requests to the API from your application and responses from the API have the expected types and shape declared in the type system.
 
 This protects your application from runtime bugs or errors in the type system leading to undefined states hitting your business logic.
 
-Recommended to use `fanatical` or `strict` in development and then switch to `strict` or `warn` in production. 
+Recommended to use `fanatical` or `strict` in development and then switch to `strict` or `warn` in production.
 
 Or you can just YOLO it and leave it on `none` all the time.
 
@@ -423,6 +423,7 @@ Your `jobHandler` must ultimately invoke exactly one of:
 - `job.complete({ variables? })` OR `job.complete()`
 - `job.fail({ errorMessage, retries?, retryBackoff? })`
 - `job.cancelWorkflow({})` (cancels the process instance)
+- `job.error({ errorCode, errorMessage? })` (throws a business error)
 - `job.ignore()` (marks as done locally without reporting to broker – can be used for decoupled flows)
 
 Each action returns an opaque unique symbol receipt (`JobActionReceipt`). The handler's declared return type (`Promise<JobActionReceipt>`) is intentional:
