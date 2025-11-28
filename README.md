@@ -423,6 +423,7 @@ Your `jobHandler` must ultimately invoke exactly one of:
 - `job.complete({ variables? })` OR `job.complete()`
 - `job.fail({ errorMessage, retries?, retryBackoff? })`
 - `job.cancelWorkflow({})` (cancels the process instance)
+- `job.error({ errorCode, errorMessage? })` (throws a business error)
 - `job.ignore()` (marks as done locally without reporting to broker – can be used for decoupled flows)
 
 Each action returns an opaque unique symbol receipt (`JobActionReceipt`). The handler's declared return type (`Promise<JobActionReceipt>`) is intentional:
