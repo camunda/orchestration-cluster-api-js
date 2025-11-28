@@ -2,11 +2,6 @@ import { test, expect } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
 
-process.env.ZEEBE_NODE_LOG_LEVEL = process.env.ZEEBE_NODE_LOG_LEVEL || 'NONE'
-
-let bpmnProcessId: string
-let processDefinitionKey: string
-
 test(
 	'Throws a business error that is caught in the process',
 	async () => {
@@ -15,7 +10,7 @@ test(
 		const res = await camunda.deployResourcesFromFiles([
 			'./tests-integration/fixtures/Client-ThrowError.bpmn',
 		]);
-		const {  processDefinitionKey } = res.processes[0] 
+		const { processDefinitionKey } = res.processes[0] 
 		await camunda.cancelProcessInstancesBatchOperation({filter: {processDefinitionKey}}, {consistency: {waitUpToMs: 0}})
 
 		camunda.createJobWorker({
