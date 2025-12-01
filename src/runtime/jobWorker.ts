@@ -27,7 +27,12 @@ export interface JobWorkerConfig<
   autoStart?: boolean;
   /** concurrency limit */
   maxParallelJobs: number;
-  /** requestTimeout for activation long poll - default 55_000 */
+  /**
+	 * The request will be completed when at least one job is activated or after the requestTimeout.
+	 * If the requestTimeout = 0, the request will be completed after a default configured timeout in the broker.
+	 * To immediately complete the request when no job is activated set the requestTimeout to a negative value
+	 *
+	 */
   pollTimeoutMs?: number;
   /** Job activation timeout */
   jobTimeoutMs: number;
@@ -58,7 +63,7 @@ export type Job<
 
 let _workerCounter = 0;
 
-const DEFAULT_LONGPOLL_TIMEOUT = 55_000;
+const DEFAULT_LONGPOLL_TIMEOUT = 0;
 
 export class JobWorker {
   private _client: CamundaClient;
