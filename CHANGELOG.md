@@ -1,9 +1,8 @@
 ## [1.2.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.0...v1.2.1) (2025-11-28)
 
-
 ### Bug Fixes
 
-* add job.error method ([285e743](https://github.com/camunda/orchestration-cluster-api-js/commit/285e743a0d6f0020ba5b25bf7f048748edcd63b4))
+- add job.error method ([285e743](https://github.com/camunda/orchestration-cluster-api-js/commit/285e743a0d6f0020ba5b25bf7f048748edcd63b4))
 
 # [1.2.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.1.5...v1.2.0) (2025-11-13)
 

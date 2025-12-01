@@ -28,11 +28,11 @@ export interface JobWorkerConfig<
   /** concurrency limit */
   maxParallelJobs: number;
   /**
-	 * The request will be completed when at least one job is activated or after the requestTimeout.
-	 * If the requestTimeout = 0, the request will be completed after a default configured timeout in the broker.
-	 * To immediately complete the request when no job is activated set the requestTimeout to a negative value
-	 *
-	 */
+   * The request will be completed when at least one job is activated or after the requestTimeout.
+   * If the requestTimeout = 0, the request will be completed after a default configured timeout in the broker.
+   * To immediately complete the request when no job is activated set the requestTimeout to a negative value
+   *
+   */
   pollTimeoutMs?: number;
   /** Job activation timeout */
   jobTimeoutMs: number;
