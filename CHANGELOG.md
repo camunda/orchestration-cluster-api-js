@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.1...v1.2.2) (2025-12-01)
+
+
+### Bug Fixes
+
+* set default requestTimeout to 0 ([c18a22a](https://github.com/camunda/orchestration-cluster-api-js/commit/c18a22a0f5dacfcd6b16ac16d8260307a17f87d9))
+
 ## [1.2.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.0...v1.2.1) (2025-11-28)
 
 ### Bug Fixes
