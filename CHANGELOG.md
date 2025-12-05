@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.2...v1.2.3) (2025-12-05)
+
+
+### Bug Fixes
+
+* support fetchVariables in job worker ([b672d8d](https://github.com/camunda/orchestration-cluster-api-js/commit/b672d8d3ec499624a58d1db2b8e920f3ccc77ebc))
+
 ## [1.2.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.1...v1.2.2) (2025-12-01)
 
 ### Bug Fixes
