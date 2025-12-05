@@ -15,13 +15,13 @@ describe('job worker fetchVariables', () => {
 
       // Deploy a simple process with a service task of type 'test-job'
       const dep = await camunda.deployResourcesFromFiles([
-        './tests-integration/fixtures/test-job-process.bpmn',
+        './tests-integration/fixtures/fetch-variables-process.bpmn',
       ]);
       const defKey = dep.processes[0].processDefinitionKey;
 
       const seen: any[] = [];
       const worker = camunda.createJobWorker({
-        jobType: 'test-job',
+        jobType: 'fetch-variable-test-job',
         jobTimeoutMs: 10_000,
         maxParallelJobs: 1,
         fetchVariables: ['keepMe'],
