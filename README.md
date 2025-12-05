@@ -398,6 +398,8 @@ const worker = client.createJobWorker({
   maxParallelJobs: 10,
   timeoutMs: 15_000, // long‑poll timeout (server side requestTimeout)
   pollIntervalMs: 100, // delay between polls when no jobs / at capacity
+  // Optional: only fetch specific variables during activation
+  fetchVariables: ['orderId'],
   inputSchema: Input, // validates incoming variables if validateSchemas true
   outputSchema: Output, // validates variables passed to complete(...)
   validateSchemas: true, // set false for max throughput (skip Zod)
@@ -415,6 +417,29 @@ process.on('SIGINT', () => {
   worker.stop();
 });
 ```
+
+Note on variable fetching:
+
+- `fetchVariables: string[]` limits variables returned on activated jobs to the specified keys. If omitted, all visible variables at activation scope are returned. This maps to the REST API field `fetchVariable`.
+
+TypeScript inference:
+
+- When you provide `inputSchema`, the type of `fetchVariables` is constrained to the keys of the inferred `variables` type from that schema. Example:
+
+```ts
+const Input = z.object({ orderId: z.string(), amount: z.number() });
+client.createJobWorker({
+  jobType: 'process-order',
+  maxParallelJobs: 5,
+  jobTimeoutMs: 30_000,
+  inputSchema: Input,
+  // Only allows 'orderId' | 'amount' here at compile-time
+  fetchVariables: ['orderId', 'amount'],
+  jobHandler: async (job) => job.complete(),
+});
+```
+
+- Without `inputSchema`, `fetchVariables` defaults to `string[]`.
 
 ### Job Handler Semantics
 

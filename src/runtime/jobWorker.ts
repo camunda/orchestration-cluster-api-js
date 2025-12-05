@@ -38,6 +38,8 @@ export interface JobWorkerConfig<
   jobTimeoutMs: number;
   /** Zeebe job type */
   jobType: string;
+  /** Optional list of variable names to fetch during activation */
+  fetchVariables?: In extends z.ZodTypeAny ? Array<Extract<keyof z.infer<In>, string>> : string[];
   /** @deprecated Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility. */
   maxBackoffTimeMs?: number;
   /** Optional explicit name */
@@ -194,6 +196,10 @@ export class JobWorker {
       maxJobsToActivate: batchSize,
       requestTimeout: this._cfg.pollTimeoutMs ?? DEFAULT_LONGPOLL_TIMEOUT,
       timeout: this._cfg.jobTimeoutMs,
+      // API expects `fetchVariable`; map from config `fetchVariables`
+      ...(this._cfg.fetchVariables && this._cfg.fetchVariables.length > 0
+        ? { fetchVariable: this._cfg.fetchVariables }
+        : {}),
     };
     this._log.debug(() => ['activation.request', { batchSize }]);
     let result: ActivatedJobResult[] = [];
