@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createCamundaClient } from '../src';
+
+import { createCamundaClient, ProcessDefinitionKey } from '../src';
 
 describe('silly level HTTP body logging', () => {
   it('emits warning and body preview at silly level', async () => {
@@ -22,7 +23,7 @@ describe('silly level HTTP body logging', () => {
       fetch: fetchMock as any,
       log: { level: 'silly', transport: (e: any) => events.push(e) },
     });
-    await client.createProcessInstance({ processDefinitionKey: '123' });
+    await client.createProcessInstance({ processDefinitionKey: ProcessDefinitionKey.assumeExists('123') });
 
     const warning = events.find(
       (e) => e.level === 'warn' && e.args[0] === 'log.level.silly.enabled'
@@ -58,7 +59,7 @@ describe('silly level HTTP body logging', () => {
       fetch: fetchMock as any,
       log: { level: 'trace', transport: (e: any) => events.push(e) },
     });
-    await client.createProcessInstance({ processDefinitionKey: '123' });
+    await client.createProcessInstance({ processDefinitionKey: ProcessDefinitionKey.assumeExists('123') });
 
     const bodyEvt = events.find(
       (e) =>

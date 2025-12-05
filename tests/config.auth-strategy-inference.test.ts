@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 describe('auth strategy inference', () => {
