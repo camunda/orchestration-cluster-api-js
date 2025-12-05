@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { createCamundaClient } from '../../src';
+import { createCamundaClient } from '../../dist';
 
 // This test verifies that when fetchVariables is configured on the worker,
 // the variables visible on activated jobs are limited to the specified keys.
