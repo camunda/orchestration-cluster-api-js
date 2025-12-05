@@ -1,52 +1,54 @@
-[6:36:36 AM] [semantic-release] › ℹ  Running semantic-release version 23.1.1
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/changelog"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/npm"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/git"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "analyzeCommits" from "@semantic-release/commit-analyzer"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "generateNotes" from "@semantic-release/release-notes-generator"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/changelog"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/npm"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/git"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/npm"
-[6:36:37 AM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/npm"
-[6:36:39 AM] [semantic-release] › ⚠  Run automated release from branch main on repository git+https://github.com/camunda/orchestration-cluster-api-js.git in dry-run mode
-[6:36:39 AM] [semantic-release] › ✔  Allowed to push to the Git repository
-[6:36:39 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/changelog"
-[6:36:39 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/changelog"
-[6:36:39 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/npm"
-[6:36:39 AM] [semantic-release] [@semantic-release/npm] › ℹ  Verify authentication for registry https://registry.npmjs.org/
-[6:36:39 AM] [semantic-release] [@semantic-release/npm] › ℹ  Reading npm config from /home/runner/work/orchestration-cluster-api-js/orchestration-cluster-api-js/.npmrc
+[5:07:30 AM] [semantic-release] › ℹ  Running semantic-release version 23.1.1
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/changelog"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/npm"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/git"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "analyzeCommits" from "@semantic-release/commit-analyzer"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "generateNotes" from "@semantic-release/release-notes-generator"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/changelog"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/npm"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/git"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/npm"
+[5:07:30 AM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/npm"
+[5:07:32 AM] [semantic-release] › ⚠  Run automated release from branch main on repository git+https://github.com/camunda/orchestration-cluster-api-js.git in dry-run mode
+[5:07:32 AM] [semantic-release] › ✔  Allowed to push to the Git repository
+[5:07:32 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/changelog"
+[5:07:32 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/changelog"
+[5:07:32 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/npm"
+[5:07:32 AM] [semantic-release] [@semantic-release/npm] › ℹ  Verify authentication for registry https://registry.npmjs.org/
+[5:07:32 AM] [semantic-release] [@semantic-release/npm] › ℹ  Reading npm config from /home/runner/work/orchestration-cluster-api-js/orchestration-cluster-api-js/.npmrc
 sitapati
-[6:36:39 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/npm"
-[6:36:39 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/git"
-[6:36:39 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/git"
-[6:36:39 AM] [semantic-release] › ℹ  Found git tag v1.2.1 associated with version 1.2.1 on branch main
-[6:36:39 AM] [semantic-release] › ℹ  Found 3 commits since last release
-[6:36:39 AM] [semantic-release] › ℹ  Start step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: Merge pull request #37 from camunda/fix-36
+[5:07:32 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/npm"
+[5:07:32 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/git"
+[5:07:32 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/git"
+[5:07:32 AM] [semantic-release] › ℹ  Found git tag v1.2.2 associated with version 1.2.2 on branch main
+[5:07:32 AM] [semantic-release] › ℹ  Found 4 commits since last release
+[5:07:32 AM] [semantic-release] › ℹ  Start step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: Merge pull request #39 from camunda/fix-38
 
-fix: set default requestTimeout to 0
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: docs: minor grammar edit to comment
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: fix: set default requestTimeout to 0
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is patch
-[6:36:39 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analysis of 3 commits complete: patch release
-[6:36:39 AM] [semantic-release] › ✔  Completed step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
-[6:36:39 AM] [semantic-release] › ℹ  The next release version is 1.2.2
-[6:36:39 AM] [semantic-release] › ℹ  Start step "generateNotes" of plugin "@semantic-release/release-notes-generator"
-[6:36:39 AM] [semantic-release] › ✔  Completed step "generateNotes" of plugin "@semantic-release/release-notes-generator"
-[6:36:39 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/changelog" in dry-run mode
-[6:36:39 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/npm" in dry-run mode
-[6:36:39 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/git" in dry-run mode
-[6:36:40 AM] [semantic-release] › ⚠  Skip v1.2.2 tag creation in dry-run mode
-[6:36:40 AM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/npm" in dry-run mode
-[6:36:40 AM] [semantic-release] › ✔  Published release 1.2.2 on default channel
-[6:36:40 AM] [semantic-release] › ℹ  Release note for version 1.2.2:
-## 1.2.2 (https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.1...v1.2.2) (2025-12-01)
+fix: support fetchVariables in job worker
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: test: isolate fetch variables test
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: test: import from dist
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: fix: support fetchVariables in job worker
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is patch
+[5:07:33 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analysis of 4 commits complete: patch release
+[5:07:33 AM] [semantic-release] › ✔  Completed step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
+[5:07:33 AM] [semantic-release] › ℹ  The next release version is 1.2.3
+[5:07:33 AM] [semantic-release] › ℹ  Start step "generateNotes" of plugin "@semantic-release/release-notes-generator"
+[5:07:33 AM] [semantic-release] › ✔  Completed step "generateNotes" of plugin "@semantic-release/release-notes-generator"
+[5:07:33 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/changelog" in dry-run mode
+[5:07:33 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/npm" in dry-run mode
+[5:07:33 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/git" in dry-run mode
+[5:07:33 AM] [semantic-release] › ⚠  Skip v1.2.3 tag creation in dry-run mode
+[5:07:33 AM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/npm" in dry-run mode
+[5:07:33 AM] [semantic-release] › ✔  Published release 1.2.3 on default channel
+[5:07:33 AM] [semantic-release] › ℹ  Release note for version 1.2.3:
+## 1.2.3 (https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.2...v1.2.3) (2025-12-05)
 
 ### Bug Fixes
 
-    * set default requestTimeout to 0 (c18a22a (https://github.com/camunda/orchestration-cluster-api-js/commit/c18a22a0f5dacfcd6b16ac16d8260307a17f87d9))
+    * support fetchVariables in job worker (b672d8d (https://github.com/camunda/orchestration-cluster-api-js/commit/b672d8d3ec499624a58d1db2b8e920f3ccc77ebc))
 
-next_version=1.2.2
+next_version=1.2.3
