@@ -12,11 +12,12 @@
  * resolving to either { data: T, ... } or T (future-friendly). We unwrap to T and wrap
  * in a lightweight CancelablePromise providing cancel() (AbortController-based).
  */
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { parse } from 'yaml';
+import { loadOpenApiDereferenced } from './openapi-load';
+import { LOCAL_SPEC_ENTRY_PATH } from './spec-location';
 
 interface OA3Parameter {
   in?: string;
@@ -42,7 +43,7 @@ interface OA3Spec {
 }
 
 const ROOT = process.cwd();
-const SPEC_PATH = path.resolve(ROOT, './rest-api.source.yaml');
+const SPEC_PATH = LOCAL_SPEC_ENTRY_PATH;
 const OUT_DIR = path.join(ROOT, 'src/facade');
 const OUT_FILE = path.join(OUT_DIR, 'operations.gen.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
@@ -51,12 +52,12 @@ function capitalizeFirst(id: string): string {
   return id.charAt(0).toUpperCase() + id.slice(1);
 }
 
-function main() {
+async function main() {
   if (!fs.existsSync(SPEC_PATH)) {
     console.warn('[facade-gen] Spec missing, skipping');
     return;
   }
-  const spec: OA3Spec = parse(fs.readFileSync(SPEC_PATH, 'utf8'));
+  const spec: OA3Spec = (await loadOpenApiDereferenced(SPEC_PATH)) as any;
   interface OpMeta {
     opId: string;
     summary?: string;
@@ -370,4 +371,9 @@ function sanitizeOpId(id: string): string {
   return id.replace(/XML/g, 'Xml');
 }
 
-main();
+try {
+  await main();
+} catch (e) {
+  console.error('[facade-gen] error', e);
+  process.exitCode = 1;
+}

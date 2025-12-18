@@ -105,5 +105,7 @@ node scripts/next-version.mjs
 ```sh
 npm ci
 npm run build
+find external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2 -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum
+# Optional: semantic-release dry run to inspect next version
 npx semantic-release --dry-run --no-ci
 ```

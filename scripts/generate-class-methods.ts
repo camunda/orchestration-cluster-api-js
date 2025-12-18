@@ -1,7 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import { parse } from 'yaml';
+import { loadOpenApiDereferenced } from './openapi-load';
+import { LOCAL_SPEC_ENTRY_PATH } from './spec-location';
 
 interface OA3Parameter {
   in?: string;
@@ -40,7 +41,7 @@ interface OA3Spec {
 }
 
 const ROOT = process.cwd();
-const SPEC_PATH = path.resolve(ROOT, './rest-api.source.yaml');
+const SPEC_PATH = LOCAL_SPEC_ENTRY_PATH;
 const TEMPLATE_FILE = path.join(ROOT, 'src/template/CamundaClient.template.ts');
 const CLASS_FILE = path.join(ROOT, 'src/gen/CamundaClient.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
@@ -55,14 +56,14 @@ function isExempt(opId: string): boolean {
   return ['completeJob', 'failJob', 'throwJobError', 'completeUserTask'].includes(opId);
 }
 
-function main() {
+async function main() {
   if (!fs.existsSync(SPEC_PATH)) {
     throw new Error('[class-gen] Spec missing, skipping');
   }
   if (!fs.existsSync(TEMPLATE_FILE)) {
     throw new Error('[class-gen] Template missing, skipping');
   }
-  const spec: OA3Spec = parse(fs.readFileSync(SPEC_PATH, 'utf8'));
+  const spec: OA3Spec = (await loadOpenApiDereferenced(SPEC_PATH)) as any;
   const tpl = fs.readFileSync(TEMPLATE_FILE, 'utf8');
   const tS = tpl.indexOf(MARK_TYPES_START),
     tE = tpl.indexOf(MARK_TYPES_END),
@@ -600,4 +601,9 @@ function indent(s: string, d: number) {
     .join('\n');
 }
 
-main();
+try {
+  await main();
+} catch (e) {
+  console.error('[class-gen] error', e);
+  process.exitCode = 1;
+}

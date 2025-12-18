@@ -1,7 +1,10 @@
 import { JobActionReceipt } from './jobWorker';
 
 import type { CamundaClient } from '../gen/CamundaClient';
-import type { ActivatedJobResult, JobErrorRequest } from '../gen/types.gen';
+import type { ActivateJobsResponses, ThrowJobErrorData } from '../gen/types.gen';
+
+type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
+type JobErrorRequest = ThrowJobErrorData['body'];
 
 /** Enriched job type with convenience methods. */
 export interface EnrichedActivatedJob extends ActivatedJobResult {

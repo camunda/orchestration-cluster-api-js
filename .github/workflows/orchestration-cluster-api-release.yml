@@ -60,16 +60,18 @@ jobs:
       - name: Snapshot Spec & Metadata
         run: |
           set -e
-          HASH=$(sha256sum rest-api.source.yaml | cut -d ' ' -f1)
-          SNAP=spec-snapshots/spec-${HASH}.yaml
+          SPEC_DIR=external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2
+          # Deterministic hash over the whole spec directory (multi-file refs).
+          HASH=$(find "$SPEC_DIR" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f1)
+          SNAP=spec-snapshots/spec-${HASH}.tgz
           mkdir -p spec-snapshots
           if [ ! -f "$SNAP" ]; then
-            cp rest-api.source.yaml "$SNAP"
+            tar -czf "$SNAP" -C "$SPEC_DIR" .
             echo "Created new spec snapshot: $SNAP"
           else
             echo "Spec snapshot already exists: $SNAP (no overwrite)"
           fi
-          echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
+          echo "spec snapshot: spec-snapshots/spec-${HASH}.tgz"
       - name: Detect generated drift
         id: detect
         run: |

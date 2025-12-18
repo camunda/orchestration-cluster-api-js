@@ -71,31 +71,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
 
   // Rely entirely on preprocessing script for key selection (no in-plugin filtering now).
 
-  const lines: string[] = [];
-  lines.push('// branding-plugin generated');
-  lines.push(`// schemaVersion=${meta.schemaVersion}`);
-  lines.push(`// specHash=${meta.specHash}`);
-  // (timestamp removed for deterministic builds)
-  lines.push('');
-  // NOTE: We no longer emit the generic brand wrapper here; instead we patch the base
-  // alias in types.gen.ts from `export type CamundaKey = string;` to the generic branded form.
-  // This avoids an import cycle and keeps all existing references to `CamundaKey` working.
   const doValidate = cfg.validate !== false;
-  if (doValidate) {
-    lines.push(
-      'export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {'
-    );
-    lines.push(
-      "  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`\x1b[31mInvalid pattern for ${label}: '${value}'.\x1b[0m Needs to match: ${JSON.stringify(c)}\n`);"
-    );
-    lines.push(
-      '  if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);'
-    );
-    lines.push(
-      '  if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);'
-    );
-    lines.push('}');
-  }
   // Load lifter overrides once (search common relative locations)
   let lifterOverrides: Record<string, string> = {};
   try {
@@ -114,36 +90,75 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
     /* ignore */
   }
 
-  for (const k of meta.keys.sort((a, b) => a.name.localeCompare(b.name))) {
-    const c: string[] = [];
-    if (k.constraints.pattern) c.push(`pattern: ${JSON.stringify(k.constraints.pattern)}`);
-    if (k.constraints.minLength !== undefined) c.push(`minLength: ${k.constraints.minLength}`);
-    if (k.constraints.maxLength !== undefined) c.push(`maxLength: ${k.constraints.maxLength}`);
-    const obj = `{ ${c.join(', ')} }`;
-    // lifter method overrides sidecar
-    const lifterName = lifterOverrides[k.name] || 'assumeExists';
-    if (k.description) lines.push(`// ${k.description.replace(/\n/g, ' ')}`);
-    lines.push(`export namespace ${k.name} {`);
-    lines.push(`  export function ${lifterName}(value: string): ${k.name} {`);
-    if (doValidate && c.length) lines.push(`    assertConstraint(value, '${k.name}', ${obj});`);
-    lines.push('    return value as any;');
-    lines.push('  }');
-    lines.push(`  export function getValue(key: ${k.name}): string { return key; }`);
-    lines.push('  export function isValid(value: string): boolean {');
-    if (doValidate && c.length) {
-      lines.push('    try {');
-      lines.push(`      assertConstraint(value, '${k.name}', ${obj});`);
-      lines.push('      return true;');
-      lines.push('    } catch { return false; }');
-    } else {
-      lines.push('    return true;');
-    }
-    lines.push('  }');
-    lines.push('}');
-  }
+  const keysSorted = meta.keys.sort((a, b) => a.name.localeCompare(b.name));
 
-  // Prepare helper namespace source we will append into types.gen.ts instead of separate file (simplifies consumption)
-  const helperSource = lines.join('\n');
+  const buildHelperSource = (existingTypesGenSource: string) => {
+    const lines: string[] = [];
+    lines.push('// branding-plugin generated');
+    lines.push(`// schemaVersion=${meta.schemaVersion}`);
+    lines.push(`// specHash=${meta.specHash}`);
+    // (timestamp removed for deterministic builds)
+    lines.push('');
+    // NOTE: We no longer emit the generic brand wrapper here; instead we patch the base
+    // alias in types.gen.ts from `export type CamundaKey = string;` to the generic branded form.
+    // This avoids an import cycle and keeps all existing references to `CamundaKey` working.
+    if (doValidate) {
+      lines.push(
+        'export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {'
+      );
+      lines.push(
+        "  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`\x1b[31mInvalid pattern for ${label}: '${value}'.\x1b[0m Needs to match: ${JSON.stringify(c)}\n`);"
+      );
+      lines.push(
+        '  if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);'
+      );
+      lines.push(
+        '  if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);'
+      );
+      lines.push('}');
+    }
+
+    for (const k of keysSorted) {
+      const c: string[] = [];
+      if (k.constraints.pattern) c.push(`pattern: ${JSON.stringify(k.constraints.pattern)}`);
+      if (k.constraints.minLength !== undefined) c.push(`minLength: ${k.constraints.minLength}`);
+      if (k.constraints.maxLength !== undefined) c.push(`maxLength: ${k.constraints.maxLength}`);
+      const obj = `{ ${c.join(', ')} }`;
+      const lifterName = lifterOverrides[k.name] || 'assumeExists';
+
+      // Ensure there is a type alias for each key so the namespace can merge.
+      // Some upstream specs inline key schemas so openapi-ts never emits an alias.
+      const hasTypeOrInterface = new RegExp(`^export (?:type|interface) ${k.name}\\b`, 'm').test(
+        existingTypesGenSource
+      );
+      if (!hasTypeOrInterface) {
+        if (k.description) lines.push(`// ${k.description.replace(/\n/g, ' ')}`);
+        lines.push(`export type ${k.name} = CamundaKey<'${k.name}'>;`);
+      } else if (k.description) {
+        lines.push(`// ${k.description.replace(/\n/g, ' ')}`);
+      }
+
+      lines.push(`export namespace ${k.name} {`);
+      lines.push(`  export function ${lifterName}(value: string): ${k.name} {`);
+      if (doValidate && c.length) lines.push(`    assertConstraint(value, '${k.name}', ${obj});`);
+      lines.push('    return value as any;');
+      lines.push('  }');
+      lines.push(`  export function getValue(key: ${k.name}): string { return key; }`);
+      lines.push('  export function isValid(value: string): boolean {');
+      if (doValidate && c.length) {
+        lines.push('    try {');
+        lines.push(`      assertConstraint(value, '${k.name}', ${obj});`);
+        lines.push('      return true;');
+        lines.push('    } catch { return false; }');
+      } else {
+        lines.push('    return true;');
+      }
+      lines.push('  }');
+      lines.push('}');
+    }
+
+    return lines.join('\n');
+  };
 
   // Monkey patch writeFileSync early so when types.gen.ts is emitted we can rewrite in-memory content.
   try {
@@ -263,6 +278,58 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
             } catch {
               /* ignore */
             }
+
+            // openapi-ts sometimes emits internal `_heyapi_*` identifiers in the types output
+            // but (for some specs) does not emit corresponding aliases. Synthesize the missing
+            // aliases to keep declaration generation (tsup --dts) happy.
+            try {
+              if (!/\btype _heyapi_\d+_\b/.test(src)) {
+                const matches = src.match(/_heyapi_\d+_/g) || [];
+                const unique = Array.from(new Set(matches));
+                const missing = unique.filter(
+                  (name) => !new RegExp(`\\btype ${name}\\b`).test(src)
+                );
+                if (missing.length) {
+                  const aliasBlockLines = [
+                    '',
+                    '// heyapi internal type aliases (synthesized by branding-plugin)',
+                    ...missing.map((name) => `type ${name} = string;`),
+                    '',
+                  ];
+
+                  const marker = '// branding-plugin patch: applied primitive branding';
+                  const idx = src.indexOf(marker);
+                  if (idx !== -1) {
+                    const insertAt = src.indexOf('\n', idx);
+                    if (insertAt !== -1) {
+                      src =
+                        src.slice(0, insertAt + 1) +
+                        aliasBlockLines.join('\n') +
+                        src.slice(insertAt + 1);
+                    } else {
+                      src = src + aliasBlockLines.join('\n');
+                    }
+                  } else {
+                    // Fallback: append near file start (after initial header line)
+                    const headerMatch = src.match(
+                      /^(\/\/ This file is auto-generated by @hey-api\/openapi-ts\n)/
+                    );
+                    if (headerMatch) {
+                      src =
+                        headerMatch[1] +
+                        aliasBlockLines.join('\n') +
+                        src.slice(headerMatch[1].length);
+                    } else {
+                      src = aliasBlockLines.join('\n') + src;
+                    }
+                  }
+                  console.log(`[branding-plugin] synthesized ${missing.length} _heyapi_* aliases`);
+                }
+              }
+            } catch (e) {
+              console.warn('[branding-plugin] failed to synthesize _heyapi_* aliases', e);
+            }
+
             data = src;
           }
           // Inject zod augmentation import into zod.gen.ts if missing
@@ -292,7 +359,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
           if (filePath.endsWith(targetTypesSuffix)) {
             let src: string = data;
             if (!/branding-plugin generated/.test(src)) {
-              src += `\n\n${helperSource}`;
+              src += `\n\n${buildHelperSource(src)}`;
               data = src;
               console.log('[branding-plugin] appended key helper namespaces into types.gen.ts');
             }
