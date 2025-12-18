@@ -17,10 +17,10 @@ No post‑publish mutation: tag points at the commit containing final generated 
 
 ### Artifacts
 
-| File                              | Purpose                                    |
-| --------------------------------- | ------------------------------------------ |
-| `spec-snapshots/spec-<sha>.yaml`  | Immutable copy of spec used for that build |
-| `branding/branding-metadata.json` | Branded key metadata for auditing changes  |
+| File                              | Purpose                                              |
+| --------------------------------- | ---------------------------------------------------- |
+| `spec-snapshots/spec-<sha>.tgz`   | Immutable copy of spec directory used for that build |
+| `branding/branding-metadata.json` | Branded key metadata for auditing changes            |
 
 `BUILDINFO.json` was removed (previously stored commit/run/version hashes) to eliminate redundant drift sources. Reproducibility is ensured by deterministic regeneration + clean diff checks.
 
@@ -50,7 +50,7 @@ Pure `ci:` / generic `chore:` (non `chore(release)`) commits do not release.
 ```
 npm ci
 npm run build
-sha256sum rest-api.source.yaml
+find external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2 -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum
 # Optional: semantic-release dry run to inspect next version
 npx semantic-release --dry-run --no-ci
 ```

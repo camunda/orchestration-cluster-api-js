@@ -4,7 +4,7 @@
  * Usage:
  *   npx ts-node scripts/preprocess-brands.ts [specPath] [outputJson]
  * Defaults:
- *   specPath    = ./rest-api.source.yaml
+ *   specPath    = ./external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml
  *   outputJson  = ./sdks/typescript-codegen/branding/branding-metadata.json
  *
  * Policy (semantic key marker refactor):
@@ -17,11 +17,13 @@
  *   - Metadata is committed for stability & drift detection.
  */
 
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
-import yaml from 'yaml';
+import { hashDirectoryTree, listFilesRecursive } from './openapi-load';
+import { LOCAL_SPEC_ENTRY_PATH, LOCAL_UPSTREAM_ROOT_DIR } from './spec-location';
+
+import { parse as parseYaml } from 'yaml';
 
 interface Constraints {
   pattern?: string;
@@ -106,7 +108,7 @@ interface BrandingMetadata {
 
 const GENERIC_TYPE_NAME = 'CamundaKey';
 
-const SPEC_DEFAULT = path.resolve(process.cwd(), './rest-api.source.yaml');
+const SPEC_DEFAULT = LOCAL_SPEC_ENTRY_PATH;
 const OUT_DEFAULT = path.resolve(process.cwd(), './branding/branding-metadata.json');
 
 const specPath = path.resolve(process.argv[2] || SPEC_DEFAULT);
@@ -117,19 +119,35 @@ if (!fs.existsSync(specPath)) {
   process.exit(1);
 }
 
-const specSource = fs.readFileSync(specPath, 'utf8');
-const specHash = 'sha256:' + crypto.createHash('sha256').update(specSource).digest('hex');
+// Multi-file specs: hash the full directory tree so referenced-file changes are detected.
+const specHash = hashDirectoryTree(LOCAL_UPSTREAM_ROOT_DIR);
 
-let doc: any;
-try {
-  doc = yaml.parse(specSource);
-} catch (e) {
-  console.error('[preprocess-brands] Failed to parse YAML spec:', e);
-  process.exit(1);
+// IMPORTANT:
+// The upstream spec is multi-file. `rest-api.yaml` primarily references other files' paths.
+// Those per-endpoint YAML files also declare `components.schemas`, but dereferencing tends to
+// inline schemas into operations and leaves `doc.components.schemas` empty.
+// For branding we need the schema registry, so we build it by parsing all YAML files.
+const schemas: Record<string, any> = {};
+for (const abs of listFilesRecursive(LOCAL_UPSTREAM_ROOT_DIR)) {
+  if (!abs.endsWith('.yaml') && !abs.endsWith('.yml')) continue;
+  const src = fs.readFileSync(abs, 'utf8');
+  const doc = parseYaml(src) as any;
+  const localSchemas = doc?.components?.schemas;
+  if (!localSchemas || typeof localSchemas !== 'object') continue;
+  for (const [name, schema] of Object.entries(localSchemas)) {
+    if (schemas[name] && schemas[name] !== schema) {
+      throw new Error(
+        `[preprocess-brands] Duplicate schema name '${name}' encountered while merging spec files (first seen earlier, again in ${path.relative(process.cwd(), abs)})`
+      );
+    }
+    schemas[name] = schema;
+  }
 }
 
-const schemas = doc?.components?.schemas || {};
-const lines = specSource.split(/\r?\n/);
+// Utility: find schema line range (best-effort, not required for logic).
+// For multi-file specs, this only searches within the entry file.
+const entrySource = fs.readFileSync(specPath, 'utf8');
+const lines = entrySource.split(/\r?\n/);
 
 // Utility: find schema line range (best-effort, not required for logic)
 function locateSchema(name: string): { lineStart?: number; lineEnd?: number } {
