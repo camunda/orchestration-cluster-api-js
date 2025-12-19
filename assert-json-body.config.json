@@ -6,7 +6,7 @@
     "outputDir": "json-body-assertions",
     "preserveCheckout": false,
     "dryRun": false,
-    "logLevel": "info",
+    "logLevel": "debug",
     "failIfExists": false
   },
   "validate": {

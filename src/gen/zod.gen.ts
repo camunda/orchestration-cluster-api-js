@@ -86,12 +86,12 @@ export const zSearchAuditLogsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_870_;
+                                    return _heyapi_875_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_870_;
+                                    return _heyapi_875_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -99,14 +99,14 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_870_;
+                                    return _heyapi_875_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_870_;
+                                    return _heyapi_875_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -117,17 +117,17 @@ export const zSearchAuditLogsData = z.object({
                     ])),
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -135,14 +135,14 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -153,17 +153,17 @@ export const zSearchAuditLogsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -171,14 +171,14 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -189,17 +189,17 @@ export const zSearchAuditLogsData = z.object({
                     ])),
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -207,14 +207,14 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -241,12 +241,12 @@ export const zSearchAuditLogsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_875_;
+                                    return _heyapi_880_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_875_;
+                                    return _heyapi_880_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -254,7 +254,7 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_875_;
+                                    return _heyapi_880_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
@@ -270,7 +270,7 @@ export const zSearchAuditLogsData = z.object({
                         'SUCCESS',
                         'FAIL'
                     ]).register(z.globalRegistry, {
-                        description: 'The result search filter.'
+                        description: 'The result status of the operation.'
                     })),
                     timestamp: z.optional(z.union([
                         z.iso.datetime().register(z.globalRegistry, {
@@ -331,7 +331,7 @@ export const zSearchAuditLogsData = z.object({
                             return z.object({
                                 get '$like'() {
                                     return z.optional(z.lazy((): any => {
-                                        return _heyapi_876_;
+                                        return _heyapi_881_;
                                     }));
                                 }
                             });
@@ -341,7 +341,7 @@ export const zSearchAuditLogsData = z.object({
                         'USER',
                         'CLIENT'
                     ]).register(z.globalRegistry, {
-                        description: 'The actor type search filter.'
+                        description: 'The type of actor who performed the operation.'
                     })),
                     entityType: z.optional(z.union([
                         z.literal('AUTHORIZATION'),
@@ -360,12 +360,12 @@ export const zSearchAuditLogsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_877_;
+                                    return _heyapi_882_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_877_;
+                                    return _heyapi_882_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -373,14 +373,14 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_877_;
+                                    return _heyapi_882_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -389,22 +389,22 @@ export const zSearchAuditLogsData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     category: z.optional(z.union([
-                        z.literal('OPERATOR'),
-                        z.literal('USER_TASK'),
+                        z.literal('DEPLOYED_RESOURCES'),
+                        z.literal('USER_TASKS'),
                         z.literal('ADMIN'),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_879_;
+                                    return _heyapi_884_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_879_;
+                                    return _heyapi_884_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -412,14 +412,14 @@ export const zSearchAuditLogsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_879_;
+                                    return _heyapi_884_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -483,7 +483,7 @@ export const zSearchAuditLogsResponse = z.object({
                     'RESOURCE',
                     'VARIABLE'
                 ]).register(z.globalRegistry, {
-                    description: 'The type of the entity.'
+                    description: 'The type of entity affected by the operation.'
                 })),
                 operationType: z.optional(z.enum([
                     'ASSIGN',
@@ -529,7 +529,7 @@ export const zSearchAuditLogsResponse = z.object({
                     'USER',
                     'CLIENT'
                 ]).register(z.globalRegistry, {
-                    description: 'The type of the actor.'
+                    description: 'The type of actor who performed the operation.'
                 })),
                 tenantId: z.optional(z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
                     description: 'The unique identifier of the tenant.'
@@ -538,34 +538,34 @@ export const zSearchAuditLogsResponse = z.object({
                     'SUCCESS',
                     'FAIL'
                 ]).register(z.globalRegistry, {
-                    description: 'The result of the audit log.'
+                    description: 'The result status of the operation.'
                 })),
                 annotation: z.optional(z.string().register(z.globalRegistry, {
                     description: 'Additional notes about the operation.'
                 })),
                 category: z.optional(z.enum([
-                    'OPERATOR',
-                    'USER_TASK',
+                    'DEPLOYED_RESOURCES',
+                    'USER_TASKS',
                     'ADMIN'
                 ]).register(z.globalRegistry, {
-                    description: 'The category of the audit log.'
+                    description: 'The category of the audit log operation.'
                 })),
                 processDefinitionId: z.optional(z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_\-\.]*$/).register(z.globalRegistry, {
                     description: 'Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.'
                 })),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 jobKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
@@ -573,7 +573,7 @@ export const zSearchAuditLogsResponse = z.object({
                 })),
                 get userTaskKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
@@ -581,7 +581,7 @@ export const zSearchAuditLogsResponse = z.object({
                 })),
                 get decisionRequirementsKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 decisionDefinitionId: z.optional(z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
@@ -589,12 +589,12 @@ export const zSearchAuditLogsResponse = z.object({
                 })),
                 get decisionDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get decisionEvaluationKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 }
             }).register(z.globalRegistry, {
@@ -643,7 +643,7 @@ export const zGetAuditLogResponse = z.object({
         'RESOURCE',
         'VARIABLE'
     ]).register(z.globalRegistry, {
-        description: 'The type of the entity.'
+        description: 'The type of entity affected by the operation.'
     })),
     operationType: z.optional(z.enum([
         'ASSIGN',
@@ -689,7 +689,7 @@ export const zGetAuditLogResponse = z.object({
         'USER',
         'CLIENT'
     ]).register(z.globalRegistry, {
-        description: 'The type of the actor.'
+        description: 'The type of actor who performed the operation.'
     })),
     tenantId: z.optional(z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
         description: 'The unique identifier of the tenant.'
@@ -698,34 +698,34 @@ export const zGetAuditLogResponse = z.object({
         'SUCCESS',
         'FAIL'
     ]).register(z.globalRegistry, {
-        description: 'The result of the audit log.'
+        description: 'The result status of the operation.'
     })),
     annotation: z.optional(z.string().register(z.globalRegistry, {
         description: 'Additional notes about the operation.'
     })),
     category: z.optional(z.enum([
-        'OPERATOR',
-        'USER_TASK',
+        'DEPLOYED_RESOURCES',
+        'USER_TASKS',
         'ADMIN'
     ]).register(z.globalRegistry, {
-        description: 'The category of the audit log.'
+        description: 'The category of the audit log operation.'
     })),
     processDefinitionId: z.optional(z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_\-\.]*$/).register(z.globalRegistry, {
         description: 'Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.'
     })),
     get processDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get processInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get elementInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     jobKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
@@ -733,7 +733,7 @@ export const zGetAuditLogResponse = z.object({
     })),
     get userTaskKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
@@ -741,7 +741,7 @@ export const zGetAuditLogResponse = z.object({
     })),
     get decisionRequirementsKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     decisionDefinitionId: z.optional(z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
@@ -749,12 +749,12 @@ export const zGetAuditLogResponse = z.object({
     })),
     get decisionDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get decisionEvaluationKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     }
 }).register(z.globalRegistry, {
@@ -911,7 +911,7 @@ export const zCreateAuthorizationData = z.object({
             }),
             get ownerType() {
                 return z.lazy((): any => {
-                    return _heyapi_886_;
+                    return _heyapi_891_;
                 });
             },
             resourcePropertyName: z.string().register(z.globalRegistry, {
@@ -919,12 +919,12 @@ export const zCreateAuthorizationData = z.object({
             }),
             get resourceType() {
                 return z.lazy((): any => {
-                    return _heyapi_887_;
+                    return _heyapi_892_;
                 });
             },
             get permissionTypes() {
                 return z.array(z.lazy((): any => {
-                    return _heyapi_888_;
+                    return _heyapi_893_;
                 })).register(z.globalRegistry, {
                     description: 'The permission types to add.'
                 });
@@ -1373,7 +1373,7 @@ export const zUpdateAuthorizationData = z.object({
             }),
             get ownerType() {
                 return z.lazy((): any => {
-                    return _heyapi_886_;
+                    return _heyapi_891_;
                 });
             },
             resourcePropertyName: z.string().register(z.globalRegistry, {
@@ -1381,12 +1381,12 @@ export const zUpdateAuthorizationData = z.object({
             }),
             get resourceType() {
                 return z.lazy((): any => {
-                    return _heyapi_887_;
+                    return _heyapi_892_;
                 });
             },
             get permissionTypes() {
                 return z.array(z.lazy((): any => {
-                    return _heyapi_888_;
+                    return _heyapi_893_;
                 })).register(z.globalRegistry, {
                     description: 'The permission types to add.'
                 });
@@ -1490,7 +1490,7 @@ export const zSearchBatchOperationItemsData = z.object({
                     ])),
                     get itemKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_899_;
+                            return _heyapi_904_;
                         }));
                     },
                     processInstanceKey: z.optional(z.union([
@@ -1500,12 +1500,12 @@ export const zSearchBatchOperationItemsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -1513,14 +1513,14 @@ export const zSearchBatchOperationItemsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -1545,7 +1545,7 @@ export const zSearchBatchOperationItemsData = z.object({
                             })),
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_900_;
+                                    return _heyapi_905_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -1553,7 +1553,7 @@ export const zSearchBatchOperationItemsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_900_;
+                                    return _heyapi_905_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
@@ -1578,12 +1578,12 @@ export const zSearchBatchOperationItemsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_901_;
+                                    return _heyapi_906_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_901_;
+                                    return _heyapi_906_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -1591,14 +1591,14 @@ export const zSearchBatchOperationItemsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_901_;
+                                    return _heyapi_906_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -1723,7 +1723,9 @@ export const zSearchBatchOperationsData = z.object({
                 'operationType',
                 'state',
                 'startDate',
-                'endDate'
+                'endDate',
+                'actorType',
+                'actorId'
             ]).register(z.globalRegistry, {
                 description: 'The field to sort by.'
             }),
@@ -1774,12 +1776,12 @@ export const zSearchBatchOperationsData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_901_;
+                            return _heyapi_906_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_901_;
+                            return _heyapi_906_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -1787,7 +1789,7 @@ export const zSearchBatchOperationsData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_901_;
+                            return _heyapi_906_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
@@ -1810,12 +1812,12 @@ export const zSearchBatchOperationsData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_904_;
+                            return _heyapi_909_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_904_;
+                            return _heyapi_909_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -1823,19 +1825,57 @@ export const zSearchBatchOperationsData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_904_;
+                            return _heyapi_909_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$like'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_876_;
+                            return _heyapi_881_;
                         }));
                     }
                 }).register(z.globalRegistry, {
                     description: 'Advanced BatchOperationStateEnum filter.'
                 })
+            ])),
+            actorType: z.optional(z.enum([
+                'CLIENT',
+                'USER'
+            ]).register(z.globalRegistry, {
+                description: 'The type of the actor. Available for batch operations created since 8.9.'
+            })),
+            actorId: z.optional(z.union([
+                z.string().register(z.globalRegistry, {
+                    description: 'Matches the value exactly.'
+                }),
+                z.object({
+                    '$eq': z.optional(z.string().register(z.globalRegistry, {
+                        description: 'Checks for equality with the provided value.'
+                    })),
+                    '$neq': z.optional(z.string().register(z.globalRegistry, {
+                        description: 'Checks for inequality with the provided value.'
+                    })),
+                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+                        description: 'Checks if the current property exists.'
+                    })),
+                    '$in': z.optional(z.array(z.string()).register(z.globalRegistry, {
+                        description: 'Checks if the property matches any of the provided values.'
+                    })),
+                    '$notIn': z.optional(z.array(z.string()).register(z.globalRegistry, {
+                        description: 'Checks if the property matches none of the provided values.'
+                    }))
+                }).register(z.globalRegistry, {
+                    description: 'Basic advanced string filter.'
+                }).and(z.lazy(() => {
+                    return z.object({
+                        get '$like'() {
+                            return z.optional(z.lazy((): any => {
+                                return _heyapi_881_;
+                            }));
+                        }
+                    });
+                }))
             ]))
         }).register(z.globalRegistry, {
             description: 'Batch operation filter request.'
@@ -1901,6 +1941,15 @@ export const zSearchBatchOperationsResponse = z.object({
         })),
         endDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
             description: 'The end date of the batch operation.'
+        })),
+        actorType: z.optional(z.enum([
+            'CLIENT',
+            'USER'
+        ]).register(z.globalRegistry, {
+            description: 'The type of the actor. Available for batch operations created since 8.9.'
+        })),
+        actorId: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The ID of the actor who performed the operation. Available for batch operations created since 8.9.'
         })),
         operationsTotalCount: z.optional(z.int().register(z.globalRegistry, {
             description: 'The total number of items contained in this batch operation.'
@@ -1980,6 +2029,15 @@ export const zGetBatchOperationResponse = z.object({
     })),
     endDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
         description: 'The end date of the batch operation.'
+    })),
+    actorType: z.optional(z.enum([
+        'CLIENT',
+        'USER'
+    ]).register(z.globalRegistry, {
+        description: 'The type of the actor. Available for batch operations created since 8.9.'
+    })),
+    actorId: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The ID of the actor who performed the operation. Available for batch operations created since 8.9.'
     })),
     operationsTotalCount: z.optional(z.int().register(z.globalRegistry, {
         description: 'The total number of items contained in this batch operation.'
@@ -2266,7 +2324,7 @@ export const zSearchClusterVariablesData = z.object({
                     ])),
                     get value() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     scope: z.optional(z.union([
@@ -2275,12 +2333,12 @@ export const zSearchClusterVariablesData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_925_;
+                                    return _heyapi_930_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_925_;
+                                    return _heyapi_930_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -2288,14 +2346,14 @@ export const zSearchClusterVariablesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_925_;
+                                    return _heyapi_930_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -2304,7 +2362,7 @@ export const zSearchClusterVariablesData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
@@ -2503,7 +2561,7 @@ export const zEvaluateConditionalsResponse = z.object({
             })),
             get processInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }));
             }
         })).register(z.globalRegistry, {
@@ -2640,7 +2698,7 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                     ])),
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     elementInstanceKey: z.optional(z.union([
@@ -2650,12 +2708,12 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -2663,14 +2721,14 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -2705,7 +2763,7 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                     ])),
                     get messageName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     partitionId: z.optional(z.union([
@@ -2743,22 +2801,22 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                     ])),
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -2766,14 +2824,14 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -2784,17 +2842,17 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -2802,14 +2860,14 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -2820,17 +2878,17 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                     ])),
                     subscriptionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -2838,14 +2896,14 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -2856,7 +2914,7 @@ export const zSearchCorrelatedMessageSubscriptionsData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -2907,7 +2965,7 @@ export const zSearchCorrelatedMessageSubscriptionsResponse = z.object({
                 })),
                 get messageKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 messageName: z.string().register(z.globalRegistry, {
@@ -2921,17 +2979,17 @@ export const zSearchCorrelatedMessageSubscriptionsResponse = z.object({
                 }),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 get subscriptionKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 tenantId: z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
@@ -2968,7 +3026,7 @@ export const zEvaluateDecisionData = z.object({
             })),
             get tenantId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_939_;
+                    return _heyapi_944_;
                 }));
             }
         })
@@ -2998,7 +3056,7 @@ export const zEvaluateDecisionResponse = z.object({
     }),
     get failedDecisionDefinitionId() {
         return z.lazy((): any => {
-            return _heyapi_941_;
+            return _heyapi_946_;
         });
     },
     failureMessage: z.string().register(z.globalRegistry, {
@@ -3012,24 +3070,24 @@ export const zEvaluateDecisionResponse = z.object({
     }),
     get decisionRequirementsKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     get decisionInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get decisionEvaluationKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     get evaluatedDecisions() {
         return z.array(z.object({
             get decisionDefinitionId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_941_;
+                    return _heyapi_946_;
                 }));
             },
             decisionDefinitionName: z.optional(z.string().register(z.globalRegistry, {
@@ -3046,7 +3104,7 @@ export const zEvaluateDecisionResponse = z.object({
             })),
             get tenantId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_939_;
+                    return _heyapi_944_;
                 }));
             },
             matchedRules: z.optional(z.array(z.object({
@@ -3083,12 +3141,12 @@ export const zEvaluateDecisionResponse = z.object({
             })),
             get decisionDefinitionKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_942_;
+                    return _heyapi_947_;
                 }));
             },
             get decisionEvaluationInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }));
             }
         }).register(z.globalRegistry, {
@@ -3181,7 +3239,7 @@ export const zSearchDecisionDefinitionsData = z.object({
                     })),
                     get decisionRequirementsKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     decisionRequirementsName: z.optional(z.string().register(z.globalRegistry, {
@@ -3244,7 +3302,7 @@ export const zSearchDecisionDefinitionsResponse = z.object({
                 })),
                 get decisionRequirementsKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 decisionRequirementsName: z.optional(z.string().register(z.globalRegistry, {
@@ -3296,7 +3354,7 @@ export const zGetDecisionDefinitionResponse = z.object({
     })),
     get decisionRequirementsKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     decisionRequirementsName: z.optional(z.string().register(z.globalRegistry, {
@@ -3399,12 +3457,12 @@ export const zSearchDecisionInstancesData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_950_;
+                                    return _heyapi_955_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_950_;
+                                    return _heyapi_955_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -3412,14 +3470,14 @@ export const zSearchDecisionInstancesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_950_;
+                                    return _heyapi_955_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_950_;
+                                    return _heyapi_955_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -3435,12 +3493,12 @@ export const zSearchDecisionInstancesData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_951_;
+                                    return _heyapi_956_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_951_;
+                                    return _heyapi_956_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -3448,14 +3506,14 @@ export const zSearchDecisionInstancesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_951_;
+                                    return _heyapi_956_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_951_;
+                                    return _heyapi_956_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -3524,32 +3582,32 @@ export const zSearchDecisionInstancesData = z.object({
                     })),
                     get decisionEvaluationKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get processInstanceKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     decisionDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -3557,14 +3615,14 @@ export const zSearchDecisionInstancesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -3575,17 +3633,17 @@ export const zSearchDecisionInstancesData = z.object({
                     ])),
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -3593,14 +3651,14 @@ export const zSearchDecisionInstancesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -3611,17 +3669,17 @@ export const zSearchDecisionInstancesData = z.object({
                     ])),
                     rootDecisionDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_942_;
+                            return _heyapi_947_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -3629,14 +3687,14 @@ export const zSearchDecisionInstancesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_942_;
+                                    return _heyapi_947_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -3719,32 +3777,32 @@ export const zSearchDecisionInstancesResponse = z.object({
                 })),
                 get decisionEvaluationKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get decisionDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get rootDecisionDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_942_;
+                        return _heyapi_947_;
                     }));
                 }
             })).register(z.globalRegistry, {
@@ -3810,32 +3868,32 @@ export const zGetDecisionInstanceResponse = z.object({
     })),
     get decisionEvaluationKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get processDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get processInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get decisionDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get elementInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get rootDecisionDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_942_;
+            return _heyapi_947_;
         }));
     }
 }).and(z.object({
@@ -4094,12 +4152,12 @@ export const zCreateDeploymentResponse = z.object({
                     }),
                     get tenantId() {
                         return z.lazy((): any => {
-                            return _heyapi_939_;
+                            return _heyapi_944_;
                         });
                     },
                     get processDefinitionKey() {
                         return z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         });
                     }
                 }).register(z.globalRegistry, {
@@ -4119,7 +4177,7 @@ export const zCreateDeploymentResponse = z.object({
                     })),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_939_;
+                            return _heyapi_944_;
                         }));
                     },
                     decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
@@ -4127,12 +4185,12 @@ export const zCreateDeploymentResponse = z.object({
                     })),
                     get decisionDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get decisionRequirementsKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -4147,12 +4205,12 @@ export const zCreateDeploymentResponse = z.object({
                     resourceName: z.optional(z.string()),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_939_;
+                            return _heyapi_944_;
                         }));
                     },
                     get decisionRequirementsKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_963_;
+                            return _heyapi_968_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -4168,12 +4226,12 @@ export const zCreateDeploymentResponse = z.object({
                     resourceName: z.optional(z.string()),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_939_;
+                            return _heyapi_944_;
                         }));
                     },
                     get formKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -4187,21 +4245,21 @@ export const zCreateDeploymentResponse = z.object({
                     version: z.optional(z.int()),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_939_;
+                            return _heyapi_944_;
                         }));
                     },
                     resourceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_872_;
+                            return _heyapi_877_;
                         }),
                         z.lazy((): any => {
-                            return _heyapi_963_;
+                            return _heyapi_968_;
                         }),
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.lazy((): any => {
-                            return _heyapi_942_;
+                            return _heyapi_947_;
                         })
                     ]))
                 }).register(z.globalRegistry, {
@@ -4657,12 +4715,12 @@ export const zSearchElementInstancesData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_977_;
+                                    return _heyapi_982_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_977_;
+                                    return _heyapi_982_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -4670,7 +4728,7 @@ export const zSearchElementInstancesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_977_;
+                                    return _heyapi_982_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
@@ -4730,17 +4788,17 @@ export const zSearchElementInstancesData = z.object({
                     })),
                     get processInstanceKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get incidentKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     startDate: z.optional(z.union([
@@ -4778,15 +4836,15 @@ export const zSearchElementInstancesData = z.object({
                     ])),
                     get endDate() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_978_;
+                            return _heyapi_983_;
                         }));
                     },
                     elementInstanceScopeKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }),
                         z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })
                     ]))
                 }).register(z.globalRegistry, {
@@ -4889,17 +4947,17 @@ export const zSearchElementInstancesResponse = z.object({
                 }),
                 get processInstanceKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 get processDefinitionKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 get incidentKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 }
             })).register(z.globalRegistry, {
@@ -4989,17 +5047,17 @@ export const zGetElementInstanceResponse = z.object({
     }),
     get processInstanceKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     get processDefinitionKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     get incidentKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     }
 }).register(z.globalRegistry, {
@@ -5117,12 +5175,12 @@ export const zSearchElementInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -5130,21 +5188,21 @@ export const zSearchElementInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property does not match any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -5153,12 +5211,12 @@ export const zSearchElementInstanceIncidentsData = z.object({
                     ])),
                     get errorMessage() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     creationTime: z.optional(z.union([
@@ -5202,12 +5260,12 @@ export const zSearchElementInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -5215,21 +5273,21 @@ export const zSearchElementInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property does not match any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -5238,7 +5296,7 @@ export const zSearchElementInstanceIncidentsData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     incidentKey: z.optional(z.union([
@@ -5272,12 +5330,12 @@ export const zSearchElementInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -5285,14 +5343,14 @@ export const zSearchElementInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -5303,17 +5361,17 @@ export const zSearchElementInstanceIncidentsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -5321,14 +5379,14 @@ export const zSearchElementInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -5339,17 +5397,17 @@ export const zSearchElementInstanceIncidentsData = z.object({
                     ])),
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -5357,14 +5415,14 @@ export const zSearchElementInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -5380,12 +5438,12 @@ export const zSearchElementInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -5393,14 +5451,14 @@ export const zSearchElementInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -5493,17 +5551,17 @@ export const zSearchElementInstanceIncidentsResponse = z.object({
                 })),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 jobKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
@@ -6423,12 +6481,12 @@ export const zSearchIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -6436,21 +6494,21 @@ export const zSearchIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property does not match any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -6459,12 +6517,12 @@ export const zSearchIncidentsData = z.object({
                     ])),
                     get errorMessage() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     creationTime: z.optional(z.union([
@@ -6508,12 +6566,12 @@ export const zSearchIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -6521,21 +6579,21 @@ export const zSearchIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property does not match any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -6544,7 +6602,7 @@ export const zSearchIncidentsData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     incidentKey: z.optional(z.union([
@@ -6578,12 +6636,12 @@ export const zSearchIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -6591,14 +6649,14 @@ export const zSearchIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -6609,17 +6667,17 @@ export const zSearchIncidentsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -6627,14 +6685,14 @@ export const zSearchIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -6645,17 +6703,17 @@ export const zSearchIncidentsData = z.object({
                     ])),
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -6663,14 +6721,14 @@ export const zSearchIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -6686,12 +6744,12 @@ export const zSearchIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -6699,14 +6757,14 @@ export const zSearchIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -6795,17 +6853,17 @@ export const zSearchIncidentsResponse = z.object({
                 })),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 jobKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
@@ -6880,17 +6938,17 @@ export const zGetIncidentResponse = z.object({
     })),
     get processDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get processInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get elementInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     jobKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
@@ -6992,6 +7050,99 @@ export const zGetIncidentProcessInstanceStatisticsResponse = z.object({
     description: 'The incident statistics result.'
 }));
 
+export const zGetProcessInstanceStatisticsByDefinitionData = z.object({
+    body: z.object({
+        filter: z.object({
+            errorHashCode: z.int().register(z.globalRegistry, {
+                description: 'The error hash code of the incidents to filter the process instance statistics by.\n'
+            })
+        }).register(z.globalRegistry, {
+            description: 'Filter for the incident process instance statistics by definition query.'
+        }),
+        page: z.optional(z.object({
+            from: z.optional(z.int().gte(0).register(z.globalRegistry, {
+                description: 'The index of items to start searching from.'
+            })),
+            limit: z.optional(z.int().gte(1).register(z.globalRegistry, {
+                description: 'The maximum number of items to return in one request.'
+            })).default(100)
+        }).register(z.globalRegistry, {
+            description: 'Pagination parameters for the aggregated process instance statistics.'
+        })),
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'activeInstancesWithErrorCount',
+                'processDefinitionId',
+                'processDefinitionKey',
+                'processDefinitionName',
+                'processDefinitionVersion',
+                'tenantId'
+            ]).register(z.globalRegistry, {
+                description: 'The aggregated field by which the process instance statistics are sorted.'
+            }),
+            order: z.optional(z.enum([
+                'ASC',
+                'DESC'
+            ]).register(z.globalRegistry, {
+                description: 'The order in which to sort the related field.'
+            }))
+        })).register(z.globalRegistry, {
+            description: 'Sorting criteria for process instance statistics grouped by process definition.'
+        }))
+    }),
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance incident statistics grouped by process definition are successfully
+ * returned.
+ *
+ */
+export const zGetProcessInstanceStatisticsByDefinitionResponse = z.object({
+    page: z.object({
+        totalItems: z.coerce.bigint().register(z.globalRegistry, {
+            description: 'Total items matching the criteria.'
+        }),
+        hasMoreTotalItems: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'Indicates whether there are more items matching the criteria beyond the returned items.\nThis is useful for determining if additional requests are needed to retrieve all results.\n'
+        })),
+        startCursor: z.optional(z.string().min(2).max(300).regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}(?:==)?|[A-Za-z0-9+\/]{3}=)?$/).register(z.globalRegistry, {
+            description: 'The start cursor in a search query result set.'
+        })),
+        endCursor: z.optional(z.string().min(2).max(300).regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}(?:==)?|[A-Za-z0-9+\/]{3}=)?$/).register(z.globalRegistry, {
+            description: 'The end cursor in a search query result set.'
+        }))
+    }).register(z.globalRegistry, {
+        description: 'Pagination information about the search results.'
+    })
+}).and(z.object({
+    items: z.optional(z.array(z.object({
+        processDefinitionId: z.optional(z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_\-\.]*$/).register(z.globalRegistry, {
+            description: 'Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.'
+        })),
+        processDefinitionKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
+            description: 'Zeebe Engine resource key (Java long serialized as string)'
+        })),
+        processDefinitionName: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The name of the process definition.'
+        })),
+        processDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+            description: 'The version of the process definition.'
+        })),
+        tenantId: z.optional(z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
+            description: 'The unique identifier of the tenant.'
+        })),
+        activeInstancesWithErrorCount: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+            description: 'The number of active process instances that currently have an incident\nwith the specified error hash code.\n'
+        }))
+    })).register(z.globalRegistry, {
+        description: 'Statistics of active process instances with incidents, grouped by process\ndefinition for the specified error hash code.\n'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The process instance incident statistics grouped by process definition are successfully\nreturned.\n'
+}));
+
 export const zActivateJobsData = z.object({
     body: z.object({
         type: z.string().register(z.globalRegistry, {
@@ -7066,12 +7217,12 @@ export const zActivateJobsResponse = z.object({
             }),
             get processDefinitionKey() {
                 return z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 });
             },
             get elementInstanceKey() {
                 return z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 });
             },
             kind: z.enum([
@@ -7122,7 +7273,7 @@ export const zActivateJobsResponse = z.object({
                     ])),
                     get formKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     priority: z.optional(z.union([
@@ -7131,7 +7282,7 @@ export const zActivateJobsResponse = z.object({
                     ])),
                     userTaskKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.null()
                     ]))
@@ -7289,7 +7440,7 @@ export const zSearchJobsData = z.object({
                     ])),
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     elementInstanceKey: z.optional(z.union([
@@ -7299,12 +7450,12 @@ export const zSearchJobsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7312,14 +7463,14 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -7363,12 +7514,12 @@ export const zSearchJobsData = z.object({
                     ])),
                     get errorCode() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get errorMessage() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     hasFailedWithRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -7385,12 +7536,12 @@ export const zSearchJobsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7398,14 +7549,14 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -7422,12 +7573,12 @@ export const zSearchJobsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1032_;
+                                    return _heyapi_1039_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1032_;
+                                    return _heyapi_1039_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7435,7 +7586,7 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1032_;
+                                    return _heyapi_1039_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
@@ -7459,12 +7610,12 @@ export const zSearchJobsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1033_;
+                                    return _heyapi_1040_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1033_;
+                                    return _heyapi_1040_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7472,14 +7623,14 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1033_;
+                                    return _heyapi_1040_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -7488,22 +7639,22 @@ export const zSearchJobsData = z.object({
                     ])),
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7511,14 +7662,14 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -7529,17 +7680,17 @@ export const zSearchJobsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7547,14 +7698,14 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -7608,12 +7759,12 @@ export const zSearchJobsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1034_;
+                                    return _heyapi_1041_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1034_;
+                                    return _heyapi_1041_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -7621,14 +7772,14 @@ export const zSearchJobsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1034_;
+                                    return _heyapi_1041_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -7637,7 +7788,7 @@ export const zSearchJobsData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     type: z.optional(z.union([
@@ -7645,12 +7796,12 @@ export const zSearchJobsData = z.object({
                             description: 'Matches the value exactly.'
                         }),
                         z.lazy((): any => {
-                            return _heyapi_1035_;
+                            return _heyapi_1042_;
                         }).and(z.lazy(() => {
                             return z.object({
                                 get '$like'() {
                                     return z.optional(z.lazy((): any => {
-                                        return _heyapi_876_;
+                                        return _heyapi_881_;
                                     }));
                                 }
                             });
@@ -7658,17 +7809,17 @@ export const zSearchJobsData = z.object({
                     ])),
                     get worker() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get creationTime() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_978_;
+                            return _heyapi_983_;
                         }));
                     },
                     get lastUpdateTime() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_978_;
+                            return _heyapi_983_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -7770,12 +7921,12 @@ export const zSearchJobsResponse = z.object({
                 }),
                 get processDefinitionKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 get processInstanceKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 retries: z.int().register(z.globalRegistry, {
@@ -8335,12 +8486,12 @@ export const zSearchMessageSubscriptionsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -8348,14 +8499,14 @@ export const zSearchMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -8366,17 +8517,17 @@ export const zSearchMessageSubscriptionsData = z.object({
                     ])),
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -8384,14 +8535,14 @@ export const zSearchMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -8430,17 +8581,17 @@ export const zSearchMessageSubscriptionsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -8448,14 +8599,14 @@ export const zSearchMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -8466,22 +8617,22 @@ export const zSearchMessageSubscriptionsData = z.object({
                     ])),
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -8489,14 +8640,14 @@ export const zSearchMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -8513,12 +8664,12 @@ export const zSearchMessageSubscriptionsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1058_;
+                                    return _heyapi_1065_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1058_;
+                                    return _heyapi_1065_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -8526,14 +8677,14 @@ export const zSearchMessageSubscriptionsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1058_;
+                                    return _heyapi_1065_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -8575,17 +8726,17 @@ export const zSearchMessageSubscriptionsData = z.object({
                     ])),
                     get messageName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get correlationKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -8630,12 +8781,12 @@ export const zSearchMessageSubscriptionsResponse = z.object({
                 })),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 elementId: z.optional(z.string().register(z.globalRegistry, {
@@ -8643,7 +8794,7 @@ export const zSearchMessageSubscriptionsResponse = z.object({
                 })),
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 messageSubscriptionState: z.optional(z.enum([
@@ -8662,7 +8813,7 @@ export const zSearchMessageSubscriptionsResponse = z.object({
                 })),
                 get correlationKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 tenantId: z.optional(z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
@@ -8710,7 +8861,7 @@ export const zCorrelateMessageResponse = z.object({
     })),
     get processInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     }
 }).register(z.globalRegistry, {
@@ -8856,7 +9007,7 @@ export const zSearchProcessDefinitionsData = z.object({
                     })),
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     tenantId: z.optional(z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
@@ -8951,12 +9102,12 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -8964,14 +9115,14 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_936_;
+                                    return _heyapi_941_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -8982,17 +9133,17 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                     ])),
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9000,14 +9151,14 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -9046,17 +9197,17 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9064,14 +9215,14 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -9082,22 +9233,22 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                     ])),
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9105,14 +9256,14 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -9129,12 +9280,12 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1058_;
+                                    return _heyapi_1065_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1058_;
+                                    return _heyapi_1065_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9142,14 +9293,14 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1058_;
+                                    return _heyapi_1065_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -9191,17 +9342,17 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
                     ])),
                     get messageName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get correlationKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -9454,7 +9605,7 @@ export const zGetProcessDefinitionStatisticsData = z.object({
             ])),
             get endDate() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_978_;
+                    return _heyapi_983_;
                 }));
             },
             state: z.optional(z.union([
@@ -9464,12 +9615,12 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9477,7 +9628,7 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
@@ -9518,7 +9669,7 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     return z.object({
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     });
@@ -9531,7 +9682,7 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     }),
                     get value() {
                         return z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         });
                     }
                 })).register(z.globalRegistry, {
@@ -9545,12 +9696,12 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9558,14 +9709,14 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -9576,22 +9727,22 @@ export const zGetProcessDefinitionStatisticsData = z.object({
             ])),
             get parentProcessInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1076_;
+                    return _heyapi_1083_;
                 }));
             },
             parentElementInstanceKey: z.optional(z.union([
                 z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }),
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9599,14 +9750,14 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -9617,12 +9768,12 @@ export const zGetProcessDefinitionStatisticsData = z.object({
             ])),
             get batchOperationId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             get errorMessage() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -9635,12 +9786,12 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9648,14 +9799,14 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$like'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_876_;
+                            return _heyapi_881_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -9664,7 +9815,7 @@ export const zGetProcessDefinitionStatisticsData = z.object({
             ])),
             get elementId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -9716,27 +9867,27 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                     return z.optional(z.array(z.object({
                         get startDate() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_978_;
+                                return _heyapi_983_;
                             }));
                         },
                         get endDate() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_978_;
+                                return _heyapi_983_;
                             }));
                         },
                         state: z.optional(z.union([
                             z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             }),
                             z.object({
                                 get '$eq'() {
                                     return z.optional(z.lazy((): any => {
-                                        return _heyapi_1075_;
+                                        return _heyapi_1082_;
                                     }));
                                 },
                                 get '$neq'() {
                                     return z.optional(z.lazy((): any => {
-                                        return _heyapi_1075_;
+                                        return _heyapi_1082_;
                                     }));
                                 },
                                 '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -9744,14 +9895,14 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                                 })),
                                 get '$in'() {
                                     return z.optional(z.array(z.lazy((): any => {
-                                        return _heyapi_1075_;
+                                        return _heyapi_1082_;
                                     })).register(z.globalRegistry, {
                                         description: 'Checks if the property matches any of the provided values.'
                                     }));
                                 },
                                 get '$like'() {
                                     return z.optional(z.lazy((): any => {
-                                        return _heyapi_876_;
+                                        return _heyapi_881_;
                                     }));
                                 }
                             }).register(z.globalRegistry, {
@@ -9763,39 +9914,39 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                         })),
                         get tenantId() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get variables() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_1077_;
+                                return _heyapi_1084_;
                             })).register(z.globalRegistry, {
                                 description: 'The process instance variables.'
                             }));
                         },
                         get processInstanceKey() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1076_;
+                                return _heyapi_1083_;
                             }));
                         },
                         get parentProcessInstanceKey() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1076_;
+                                return _heyapi_1083_;
                             }));
                         },
                         get parentElementInstanceKey() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1078_;
+                                return _heyapi_1085_;
                             }));
                         },
                         get batchOperationId() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get errorMessage() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -9803,12 +9954,12 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                         })),
                         get elementInstanceState() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1079_;
+                                return _heyapi_1086_;
                             }));
                         },
                         get elementId() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -9816,12 +9967,12 @@ export const zGetProcessDefinitionStatisticsData = z.object({
                         })),
                         get incidentErrorHashCode() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1080_;
+                                return _heyapi_1087_;
                             }));
                         },
                         get tags() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1081_;
+                                return _heyapi_1088_;
                             }));
                         }
                     }).register(z.globalRegistry, {
@@ -10021,7 +10172,7 @@ export const zCreateProcessInstanceData = z.object({
                     })),
                     get afterElementId() {
                         return z.lazy((): any => {
-                            return _heyapi_1088_;
+                            return _heyapi_1095_;
                         });
                     }
                 }).register(z.globalRegistry, {
@@ -10056,7 +10207,7 @@ export const zCreateProcessInstanceData = z.object({
                 return z.optional(z.array(z.object({
                     get elementId() {
                         return z.lazy((): any => {
-                            return _heyapi_1088_;
+                            return _heyapi_1095_;
                         });
                     }
                 })).register(z.globalRegistry, {
@@ -10070,7 +10221,7 @@ export const zCreateProcessInstanceData = z.object({
                     })),
                     get afterElementId() {
                         return z.lazy((): any => {
-                            return _heyapi_1088_;
+                            return _heyapi_1095_;
                         });
                     }
                 }).register(z.globalRegistry, {
@@ -10081,12 +10232,12 @@ export const zCreateProcessInstanceData = z.object({
             },
             get tenantId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_939_;
+                    return _heyapi_944_;
                 }));
             },
             get operationReference() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1089_;
+                    return _heyapi_1096_;
                 }));
             },
             awaitCompletion: z.optional(z.boolean().register(z.globalRegistry, {
@@ -10100,7 +10251,7 @@ export const zCreateProcessInstanceData = z.object({
             })),
             get tags() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1081_;
+                    return _heyapi_1088_;
                 }));
             }
         })
@@ -10130,7 +10281,7 @@ export const zCreateProcessInstanceResponse = z.object({
     }),
     get processInstanceKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     tags: z.optional(z.array(z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
@@ -10180,7 +10331,7 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
             ])),
             get endDate() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_978_;
+                    return _heyapi_983_;
                 }));
             },
             state: z.optional(z.union([
@@ -10190,12 +10341,12 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10203,7 +10354,7 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
@@ -10244,7 +10395,7 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                     return z.object({
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     });
@@ -10257,7 +10408,7 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                     }),
                     get value() {
                         return z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         });
                     }
                 })).register(z.globalRegistry, {
@@ -10271,12 +10422,12 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10284,14 +10435,14 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -10302,22 +10453,22 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
             ])),
             get parentProcessInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1076_;
+                    return _heyapi_1083_;
                 }));
             },
             parentElementInstanceKey: z.optional(z.union([
                 z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }),
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10325,14 +10476,14 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -10343,12 +10494,12 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
             ])),
             get batchOperationId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             get errorMessage() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -10361,12 +10512,12 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10374,14 +10525,14 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$like'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_876_;
+                            return _heyapi_881_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -10390,7 +10541,7 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
             ])),
             get elementId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -10440,37 +10591,37 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
             return z.object({
                 get processDefinitionId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionName() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionVersion() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_1080_;
+                        return _heyapi_1087_;
                     }));
                 },
                 get processDefinitionVersionTag() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 processDefinitionKey: z.optional(z.union([
                     z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }),
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10478,14 +10629,14 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -10499,32 +10650,32 @@ export const zCancelProcessInstancesBatchOperationData = z.object({
             });
         })).and(z.object({
             '$or': z.optional(z.array(z.lazy((): any => {
-                return _heyapi_1092_;
+                return _heyapi_1099_;
             }).and(z.lazy(() => {
                 return z.object({
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionVersion() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1080_;
+                            return _heyapi_1087_;
                         }));
                     },
                     get processDefinitionVersionTag() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1093_;
+                            return _heyapi_1100_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -10606,7 +10757,7 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
             ])),
             get endDate() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_978_;
+                    return _heyapi_983_;
                 }));
             },
             state: z.optional(z.union([
@@ -10616,12 +10767,12 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10629,7 +10780,7 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
@@ -10670,7 +10821,7 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                     return z.object({
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     });
@@ -10683,7 +10834,7 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                     }),
                     get value() {
                         return z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         });
                     }
                 })).register(z.globalRegistry, {
@@ -10697,12 +10848,12 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10710,14 +10861,14 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -10728,22 +10879,22 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
             ])),
             get parentProcessInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1076_;
+                    return _heyapi_1083_;
                 }));
             },
             parentElementInstanceKey: z.optional(z.union([
                 z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }),
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10751,14 +10902,14 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -10769,12 +10920,12 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
             ])),
             get batchOperationId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             get errorMessage() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -10787,12 +10938,12 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10800,14 +10951,14 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$like'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_876_;
+                            return _heyapi_881_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -10816,7 +10967,7 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
             ])),
             get elementId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -10866,37 +11017,37 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
             return z.object({
                 get processDefinitionId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionName() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionVersion() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_1080_;
+                        return _heyapi_1087_;
                     }));
                 },
                 get processDefinitionVersionTag() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 processDefinitionKey: z.optional(z.union([
                     z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }),
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -10904,14 +11055,14 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -10925,32 +11076,32 @@ export const zDeleteProcessInstancesBatchOperationData = z.object({
             });
         })).and(z.object({
             '$or': z.optional(z.array(z.lazy((): any => {
-                return _heyapi_1092_;
+                return _heyapi_1099_;
             }).and(z.lazy(() => {
                 return z.object({
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionVersion() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1080_;
+                            return _heyapi_1087_;
                         }));
                     },
                     get processDefinitionVersionTag() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1093_;
+                            return _heyapi_1100_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -11032,7 +11183,7 @@ export const zResolveIncidentsBatchOperationData = z.object({
             ])),
             get endDate() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_978_;
+                    return _heyapi_983_;
                 }));
             },
             state: z.optional(z.union([
@@ -11042,12 +11193,12 @@ export const zResolveIncidentsBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11055,7 +11206,7 @@ export const zResolveIncidentsBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
@@ -11096,7 +11247,7 @@ export const zResolveIncidentsBatchOperationData = z.object({
                     return z.object({
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     });
@@ -11109,7 +11260,7 @@ export const zResolveIncidentsBatchOperationData = z.object({
                     }),
                     get value() {
                         return z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         });
                     }
                 })).register(z.globalRegistry, {
@@ -11123,12 +11274,12 @@ export const zResolveIncidentsBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11136,14 +11287,14 @@ export const zResolveIncidentsBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -11154,22 +11305,22 @@ export const zResolveIncidentsBatchOperationData = z.object({
             ])),
             get parentProcessInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1076_;
+                    return _heyapi_1083_;
                 }));
             },
             parentElementInstanceKey: z.optional(z.union([
                 z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }),
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11177,14 +11328,14 @@ export const zResolveIncidentsBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -11195,12 +11346,12 @@ export const zResolveIncidentsBatchOperationData = z.object({
             ])),
             get batchOperationId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             get errorMessage() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -11213,12 +11364,12 @@ export const zResolveIncidentsBatchOperationData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11226,14 +11377,14 @@ export const zResolveIncidentsBatchOperationData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$like'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_876_;
+                            return _heyapi_881_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -11242,7 +11393,7 @@ export const zResolveIncidentsBatchOperationData = z.object({
             ])),
             get elementId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -11292,37 +11443,37 @@ export const zResolveIncidentsBatchOperationData = z.object({
             return z.object({
                 get processDefinitionId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionName() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionVersion() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_1080_;
+                        return _heyapi_1087_;
                     }));
                 },
                 get processDefinitionVersionTag() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 processDefinitionKey: z.optional(z.union([
                     z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }),
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11330,14 +11481,14 @@ export const zResolveIncidentsBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -11351,32 +11502,32 @@ export const zResolveIncidentsBatchOperationData = z.object({
             });
         })).and(z.object({
             '$or': z.optional(z.array(z.lazy((): any => {
-                return _heyapi_1092_;
+                return _heyapi_1099_;
             }).and(z.lazy(() => {
                 return z.object({
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionVersion() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1080_;
+                            return _heyapi_1087_;
                         }));
                     },
                     get processDefinitionVersionTag() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1093_;
+                            return _heyapi_1100_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -11459,7 +11610,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 ])),
                 get endDate() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_978_;
+                        return _heyapi_983_;
                     }));
                 },
                 state: z.optional(z.union([
@@ -11469,12 +11620,12 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11482,7 +11633,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
@@ -11523,7 +11674,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                         return z.object({
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         });
@@ -11536,7 +11687,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                         }),
                         get value() {
                             return z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             });
                         }
                     })).register(z.globalRegistry, {
@@ -11550,12 +11701,12 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11563,14 +11714,14 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -11581,22 +11732,22 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 ])),
                 get parentProcessInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_1076_;
+                        return _heyapi_1083_;
                     }));
                 },
                 parentElementInstanceKey: z.optional(z.union([
                     z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }),
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11604,14 +11755,14 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -11622,12 +11773,12 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 ])),
                 get batchOperationId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get errorMessage() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -11640,12 +11791,12 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_977_;
+                                return _heyapi_982_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_977_;
+                                return _heyapi_982_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11653,14 +11804,14 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_977_;
+                                return _heyapi_982_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     }).register(z.globalRegistry, {
@@ -11669,7 +11820,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 ])),
                 get elementId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -11719,37 +11870,37 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 return z.object({
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionVersion() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1080_;
+                            return _heyapi_1087_;
                         }));
                     },
                     get processDefinitionVersionTag() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11757,14 +11908,14 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -11778,32 +11929,32 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 });
             })).and(z.object({
                 '$or': z.optional(z.array(z.lazy((): any => {
-                    return _heyapi_1092_;
+                    return _heyapi_1099_;
                 }).and(z.lazy(() => {
                     return z.object({
                         get processDefinitionId() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get processDefinitionName() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get processDefinitionVersion() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1080_;
+                                return _heyapi_1087_;
                             }));
                         },
                         get processDefinitionVersionTag() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get processDefinitionKey() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1093_;
+                                return _heyapi_1100_;
                             }));
                         }
                     }).register(z.globalRegistry, {
@@ -11817,7 +11968,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                 return z.object({
                     get targetProcessDefinitionKey() {
                         return z.lazy((): any => {
-                            return _heyapi_872_;
+                            return _heyapi_877_;
                         });
                     },
                     get mappingInstructions() {
@@ -11827,7 +11978,7 @@ export const zMigrateProcessInstancesBatchOperationData = z.object({
                             }),
                             get targetElementId() {
                                 return z.lazy((): any => {
-                                    return _heyapi_1088_;
+                                    return _heyapi_1095_;
                                 });
                             }
                         }).register(z.globalRegistry, {
@@ -11912,7 +12063,7 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                 ])),
                 get endDate() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_978_;
+                        return _heyapi_983_;
                     }));
                 },
                 state: z.optional(z.union([
@@ -11922,12 +12073,12 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -11935,7 +12086,7 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_1075_;
+                                return _heyapi_1082_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
@@ -11976,7 +12127,7 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                         return z.object({
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         });
@@ -11989,7 +12140,7 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                         }),
                         get value() {
                             return z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             });
                         }
                     })).register(z.globalRegistry, {
@@ -12003,12 +12154,12 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12016,14 +12167,14 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_873_;
+                                return _heyapi_878_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -12034,22 +12185,22 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                 ])),
                 get parentProcessInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_1076_;
+                        return _heyapi_1083_;
                     }));
                 },
                 parentElementInstanceKey: z.optional(z.union([
                     z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }),
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12057,14 +12208,14 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -12075,12 +12226,12 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                 ])),
                 get batchOperationId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get errorMessage() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -12093,12 +12244,12 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_977_;
+                                return _heyapi_982_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_977_;
+                                return _heyapi_982_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12106,14 +12257,14 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_977_;
+                                return _heyapi_982_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     }).register(z.globalRegistry, {
@@ -12122,7 +12273,7 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                 ])),
                 get elementId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -12172,37 +12323,37 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                 return z.object({
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionVersion() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1080_;
+                            return _heyapi_1087_;
                         }));
                     },
                     get processDefinitionVersionTag() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     processDefinitionKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12210,14 +12361,14 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -12231,32 +12382,32 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                 });
             })).and(z.object({
                 '$or': z.optional(z.array(z.lazy((): any => {
-                    return _heyapi_1092_;
+                    return _heyapi_1099_;
                 }).and(z.lazy(() => {
                     return z.object({
                         get processDefinitionId() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get processDefinitionName() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get processDefinitionVersion() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1080_;
+                                return _heyapi_1087_;
                             }));
                         },
                         get processDefinitionVersionTag() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_878_;
+                                return _heyapi_883_;
                             }));
                         },
                         get processDefinitionKey() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_1093_;
+                                return _heyapi_1100_;
                             }));
                         }
                     }).register(z.globalRegistry, {
@@ -12273,7 +12424,7 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
                     }),
                     get targetElementId() {
                         return z.lazy((): any => {
-                            return _heyapi_1088_;
+                            return _heyapi_1095_;
                         });
                     }
                 }).register(z.globalRegistry, {
@@ -12414,7 +12565,7 @@ export const zSearchProcessInstancesData = z.object({
             ])),
             get endDate() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_978_;
+                    return _heyapi_983_;
                 }));
             },
             state: z.optional(z.union([
@@ -12424,12 +12575,12 @@ export const zSearchProcessInstancesData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12437,7 +12588,7 @@ export const zSearchProcessInstancesData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_1075_;
+                            return _heyapi_1082_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
@@ -12478,7 +12629,7 @@ export const zSearchProcessInstancesData = z.object({
                     return z.object({
                         get '$like'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_876_;
+                                return _heyapi_881_;
                             }));
                         }
                     });
@@ -12491,7 +12642,7 @@ export const zSearchProcessInstancesData = z.object({
                     }),
                     get value() {
                         return z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         });
                     }
                 })).register(z.globalRegistry, {
@@ -12505,12 +12656,12 @@ export const zSearchProcessInstancesData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12518,14 +12669,14 @@ export const zSearchProcessInstancesData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_873_;
+                            return _heyapi_878_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -12536,22 +12687,22 @@ export const zSearchProcessInstancesData = z.object({
             ])),
             get parentProcessInstanceKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_1076_;
+                    return _heyapi_1083_;
                 }));
             },
             parentElementInstanceKey: z.optional(z.union([
                 z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }),
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12559,14 +12710,14 @@ export const zSearchProcessInstancesData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$notIn'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_874_;
+                            return _heyapi_879_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches none of the provided values.'
                         }));
@@ -12577,12 +12728,12 @@ export const zSearchProcessInstancesData = z.object({
             ])),
             get batchOperationId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             get errorMessage() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
@@ -12595,12 +12746,12 @@ export const zSearchProcessInstancesData = z.object({
                 z.object({
                     get '$eq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     get '$neq'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         }));
                     },
                     '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12608,14 +12759,14 @@ export const zSearchProcessInstancesData = z.object({
                     })),
                     get '$in'() {
                         return z.optional(z.array(z.lazy((): any => {
-                            return _heyapi_977_;
+                            return _heyapi_982_;
                         })).register(z.globalRegistry, {
                             description: 'Checks if the property matches any of the provided values.'
                         }));
                     },
                     get '$like'() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_876_;
+                            return _heyapi_881_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -12624,7 +12775,7 @@ export const zSearchProcessInstancesData = z.object({
             ])),
             get elementId() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_878_;
+                    return _heyapi_883_;
                 }));
             },
             hasElementInstanceIncident: z.optional(z.boolean().register(z.globalRegistry, {
@@ -12674,37 +12825,37 @@ export const zSearchProcessInstancesData = z.object({
             return z.object({
                 get processDefinitionId() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionName() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 get processDefinitionVersion() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_1080_;
+                        return _heyapi_1087_;
                     }));
                 },
                 get processDefinitionVersionTag() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_878_;
+                        return _heyapi_883_;
                     }));
                 },
                 processDefinitionKey: z.optional(z.union([
                     z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }),
                     z.object({
                         get '$eq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         get '$neq'() {
                             return z.optional(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             }));
                         },
                         '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -12712,14 +12863,14 @@ export const zSearchProcessInstancesData = z.object({
                         })),
                         get '$in'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches any of the provided values.'
                             }));
                         },
                         get '$notIn'() {
                             return z.optional(z.array(z.lazy((): any => {
-                                return _heyapi_872_;
+                                return _heyapi_877_;
                             })).register(z.globalRegistry, {
                                 description: 'Checks if the property matches none of the provided values.'
                             }));
@@ -12733,32 +12884,32 @@ export const zSearchProcessInstancesData = z.object({
             });
         })).and(z.object({
             '$or': z.optional(z.array(z.lazy((): any => {
-                return _heyapi_1092_;
+                return _heyapi_1099_;
             }).and(z.lazy(() => {
                 return z.object({
                     get processDefinitionId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionName() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionVersion() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1080_;
+                            return _heyapi_1087_;
                         }));
                     },
                     get processDefinitionVersionTag() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_1093_;
+                            return _heyapi_1100_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -12829,17 +12980,17 @@ export const zSearchProcessInstancesResponse = z.object({
                 }),
                 get processDefinitionKey() {
                     return z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     });
                 },
                 get parentProcessInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_873_;
+                        return _heyapi_878_;
                     }));
                 },
                 get parentElementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 tags: z.optional(z.array(z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
@@ -12902,17 +13053,17 @@ export const zGetProcessInstanceResponse = z.object({
     }),
     get processDefinitionKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     get parentProcessInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_873_;
+            return _heyapi_878_;
         }));
     },
     get parentElementInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     tags: z.optional(z.array(z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
@@ -12943,7 +13094,7 @@ export const zGetProcessInstanceCallHierarchyResponse = z.array(z.object({
     }),
     get processDefinitionKey() {
         return z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         });
     },
     processDefinitionName: z.string().register(z.globalRegistry, {
@@ -13146,12 +13297,12 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -13159,21 +13310,21 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_983_;
+                                    return _heyapi_988_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property does not match any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -13182,12 +13333,12 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                     ])),
                     get errorMessage() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get elementId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     creationTime: z.optional(z.union([
@@ -13231,12 +13382,12 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -13244,21 +13395,21 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_984_;
+                                    return _heyapi_989_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property does not match any of the provided values.'
                                 }));
                             },
                             get '$like'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_876_;
+                                    return _heyapi_881_;
                                 }));
                             }
                         }).register(z.globalRegistry, {
@@ -13267,7 +13418,7 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                     ])),
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     incidentKey: z.optional(z.union([
@@ -13301,12 +13452,12 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -13314,14 +13465,14 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_872_;
+                                    return _heyapi_877_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -13332,17 +13483,17 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -13350,14 +13501,14 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -13368,17 +13519,17 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                     ])),
                     elementInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -13386,14 +13537,14 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -13409,12 +13560,12 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -13422,14 +13573,14 @@ export const zSearchProcessInstanceIncidentsData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_985_;
+                                    return _heyapi_990_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -13522,17 +13673,17 @@ export const zSearchProcessInstanceIncidentsResponse = z.object({
                 })),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 jobKey: z.optional(z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z.globalRegistry, {
@@ -13558,7 +13709,7 @@ export const zMigrateProcessInstanceData = z.object({
                     }),
                     get targetElementId() {
                         return z.lazy((): any => {
-                            return _heyapi_1088_;
+                            return _heyapi_1095_;
                         });
                     }
                 }).register(z.globalRegistry, {
@@ -13631,7 +13782,7 @@ export const zModifyProcessInstanceData = z.object({
                             }),
                             get sourceElementId() {
                                 return z.lazy((): any => {
-                                    return _heyapi_1088_;
+                                    return _heyapi_1095_;
                                 });
                             }
                         }).register(z.globalRegistry, {
@@ -13643,7 +13794,7 @@ export const zModifyProcessInstanceData = z.object({
                             }),
                             get sourceElementInstanceKey() {
                                 return z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 });
                             }
                         }).register(z.globalRegistry, {
@@ -13652,7 +13803,7 @@ export const zModifyProcessInstanceData = z.object({
                     ]),
                     get targetElementId() {
                         return z.lazy((): any => {
-                            return _heyapi_1088_;
+                            return _heyapi_1095_;
                         });
                     },
                     ancestorScopeInstruction: z.optional(z.union([
@@ -13663,7 +13814,7 @@ export const zModifyProcessInstanceData = z.object({
                             ancestorElementInstanceKey: z.union([
                                 z.string().default('-1'),
                                 z.lazy((): any => {
-                                    return _heyapi_874_;
+                                    return _heyapi_879_;
                                 })
                             ])
                         }).register(z.globalRegistry, {
@@ -13700,7 +13851,7 @@ export const zModifyProcessInstanceData = z.object({
                     z.object({
                         get elementId() {
                             return z.lazy((): any => {
-                                return _heyapi_1088_;
+                                return _heyapi_1095_;
                             });
                         }
                     }).register(z.globalRegistry, {
@@ -13709,7 +13860,7 @@ export const zModifyProcessInstanceData = z.object({
                     z.object({
                         get elementInstanceKey() {
                             return z.lazy((): any => {
-                                return _heyapi_874_;
+                                return _heyapi_879_;
                             });
                         }
                     }).register(z.globalRegistry, {
@@ -13760,7 +13911,7 @@ export const zGetProcessInstanceSequenceFlowsResponse = z.object({
             })),
             get processDefinitionKey() {
                 return z.optional(z.lazy((): any => {
-                    return _heyapi_871_;
+                    return _heyapi_876_;
                 }));
             },
             processDefinitionId: z.optional(z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_\-\.]*$/).register(z.globalRegistry, {
@@ -13829,7 +13980,7 @@ export const zGetResourceData = z.object({
                 description: 'Zeebe Engine resource key (Java long serialized as string)'
             }),
             z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             })
         ])
     }),
@@ -13860,7 +14011,7 @@ export const zGetResourceResponse = z.object({
             description: 'Zeebe Engine resource key (Java long serialized as string)'
         }),
         z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         })
     ]))
 }).register(z.globalRegistry, {
@@ -13875,7 +14026,7 @@ export const zGetResourceContentData = z.object({
                 description: 'Zeebe Engine resource key (Java long serialized as string)'
             }),
             z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             })
         ])
     }),
@@ -13904,7 +14055,7 @@ export const zDeleteResourceData = z.object({
                 description: 'Zeebe Engine resource key (Java long serialized as string)'
             }),
             z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             })
         ])
     }),
@@ -15856,12 +16007,12 @@ export const zSearchUsersData = z.object({
                     ])),
                     get name() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get email() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     }
                 }).register(z.globalRegistry, {
@@ -16063,12 +16214,12 @@ export const zSearchUserTasksData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1224_;
+                                    return _heyapi_1231_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1224_;
+                                    return _heyapi_1231_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -16076,7 +16227,7 @@ export const zSearchUserTasksData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1224_;
+                                    return _heyapi_1231_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
@@ -16114,7 +16265,7 @@ export const zSearchUserTasksData = z.object({
                             return z.object({
                                 get '$like'() {
                                     return z.optional(z.lazy((): any => {
-                                        return _heyapi_876_;
+                                        return _heyapi_881_;
                                     }));
                                 }
                             });
@@ -16161,17 +16312,17 @@ export const zSearchUserTasksData = z.object({
                     })),
                     get candidateGroup() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get candidateUser() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     get tenantId() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     processDefinitionId: z.optional(z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_\-\.]*$/).register(z.globalRegistry, {
@@ -16212,17 +16363,17 @@ export const zSearchUserTasksData = z.object({
                     ])),
                     get completionDate() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_978_;
+                            return _heyapi_983_;
                         }));
                     },
                     get followUpDate() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_978_;
+                            return _heyapi_983_;
                         }));
                     },
                     get dueDate() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_978_;
+                            return _heyapi_983_;
                         }));
                     },
                     get processInstanceVariables() {
@@ -16232,7 +16383,7 @@ export const zSearchUserTasksData = z.object({
                             }),
                             get value() {
                                 return z.lazy((): any => {
-                                    return _heyapi_878_;
+                                    return _heyapi_883_;
                                 });
                             }
                         })));
@@ -16244,7 +16395,7 @@ export const zSearchUserTasksData = z.object({
                             }),
                             get value() {
                                 return z.lazy((): any => {
-                                    return _heyapi_878_;
+                                    return _heyapi_883_;
                                 });
                             }
                         })));
@@ -16254,17 +16405,17 @@ export const zSearchUserTasksData = z.object({
                     })),
                     get processDefinitionKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get processInstanceKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     get elementInstanceKey() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }));
                     },
                     tags: z.optional(z.array(z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
@@ -16371,7 +16522,7 @@ export const zSearchUserTasksResponse = z.object({
                 })),
                 get elementInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 processName: z.optional(z.string().register(z.globalRegistry, {
@@ -16379,17 +16530,17 @@ export const zSearchUserTasksResponse = z.object({
                 })),
                 get processDefinitionKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get processInstanceKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 get formKey() {
                     return z.optional(z.lazy((): any => {
-                        return _heyapi_871_;
+                        return _heyapi_876_;
                     }));
                 },
                 tags: z.optional(z.array(z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
@@ -16483,7 +16634,7 @@ export const zGetUserTaskResponse = z.object({
     })),
     get elementInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     processName: z.optional(z.string().register(z.globalRegistry, {
@@ -16491,17 +16642,17 @@ export const zGetUserTaskResponse = z.object({
     })),
     get processDefinitionKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get processInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get formKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     tags: z.optional(z.array(z.string().min(1).max(100).regex(/^[A-Za-z][A-Za-z0-9_\-:.]{0,99}$/).register(z.globalRegistry, {
@@ -16801,12 +16952,12 @@ export const zSearchUserTaskVariablesResponse = z.object({
         })),
         get scopeKey() {
             return z.optional(z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             }));
         },
         get processInstanceKey() {
             return z.optional(z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             }));
         }
     }).register(z.globalRegistry, {
@@ -16914,7 +17065,7 @@ export const zSearchVariablesData = z.object({
                     ])),
                     get value() {
                         return z.optional(z.lazy((): any => {
-                            return _heyapi_878_;
+                            return _heyapi_883_;
                         }));
                     },
                     tenantId: z.optional(z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
@@ -16930,12 +17081,12 @@ export const zSearchVariablesData = z.object({
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1241_;
+                                    return _heyapi_1248_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1241_;
+                                    return _heyapi_1248_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -16943,14 +17094,14 @@ export const zSearchVariablesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1241_;
+                                    return _heyapi_1248_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1241_;
+                                    return _heyapi_1248_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -16961,17 +17112,17 @@ export const zSearchVariablesData = z.object({
                     ])),
                     scopeKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1242_;
+                                    return _heyapi_1249_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_1242_;
+                                    return _heyapi_1249_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -16979,14 +17130,14 @@ export const zSearchVariablesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1242_;
+                                    return _heyapi_1249_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_1242_;
+                                    return _heyapi_1249_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -16997,17 +17148,17 @@ export const zSearchVariablesData = z.object({
                     ])),
                     processInstanceKey: z.optional(z.union([
                         z.lazy((): any => {
-                            return _heyapi_871_;
+                            return _heyapi_876_;
                         }),
                         z.object({
                             get '$eq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             get '$neq'() {
                                 return z.optional(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 }));
                             },
                             '$exists': z.optional(z.boolean().register(z.globalRegistry, {
@@ -17015,14 +17166,14 @@ export const zSearchVariablesData = z.object({
                             })),
                             get '$in'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches any of the provided values.'
                                 }));
                             },
                             get '$notIn'() {
                                 return z.optional(z.array(z.lazy((): any => {
-                                    return _heyapi_873_;
+                                    return _heyapi_878_;
                                 })).register(z.globalRegistry, {
                                     description: 'Checks if the property matches none of the provided values.'
                                 }));
@@ -17080,12 +17231,12 @@ export const zSearchVariablesResponse = z.object({
         })),
         get scopeKey() {
             return z.optional(z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             }));
         },
         get processInstanceKey() {
             return z.optional(z.lazy((): any => {
-                return _heyapi_871_;
+                return _heyapi_876_;
             }));
         }
     }).register(z.globalRegistry, {
@@ -17131,12 +17282,12 @@ export const zGetVariableResponse = z.object({
     })),
     get scopeKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     },
     get processInstanceKey() {
         return z.optional(z.lazy((): any => {
-            return _heyapi_871_;
+            return _heyapi_876_;
         }));
     }
 }).register(z.globalRegistry, {
