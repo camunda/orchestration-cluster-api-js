@@ -312,7 +312,7 @@
                                     "description": "Matches the value exactly.",
                                     "allOf": [
                                       {
-                                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType/allOf/0"
+                                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType"
                                       }
                                     ]
                                   },
@@ -325,7 +325,7 @@
                                         "description": "Checks for equality with the provided value.",
                                         "allOf": [
                                           {
-                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType/allOf/0"
+                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType"
                                           }
                                         ]
                                       },
@@ -333,7 +333,7 @@
                                         "description": "Checks for inequality with the provided value.",
                                         "allOf": [
                                           {
-                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType/allOf/0"
+                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType"
                                           }
                                         ]
                                       },
@@ -345,7 +345,7 @@
                                         "description": "Checks if the property matches any of the provided values.",
                                         "type": "array",
                                         "items": {
-                                          "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType/allOf/0"
+                                          "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/operationType"
                                         }
                                       },
                                       "$like": {
@@ -361,7 +361,7 @@
                             "description": "The result search filter.",
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/result/allOf/0"
+                                "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/result"
                               }
                             ]
                           },
@@ -385,7 +385,7 @@
                             "description": "The actor type search filter.",
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/actorType/allOf/0"
+                                "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/actorType"
                               }
                             ]
                           },
@@ -402,7 +402,7 @@
                                     "description": "Matches the value exactly.",
                                     "allOf": [
                                       {
-                                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType/allOf/0"
+                                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType"
                                       }
                                     ]
                                   },
@@ -415,7 +415,7 @@
                                         "description": "Checks for equality with the provided value.",
                                         "allOf": [
                                           {
-                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType/allOf/0"
+                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType"
                                           }
                                         ]
                                       },
@@ -423,7 +423,7 @@
                                         "description": "Checks for inequality with the provided value.",
                                         "allOf": [
                                           {
-                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType/allOf/0"
+                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType"
                                           }
                                         ]
                                       },
@@ -435,7 +435,7 @@
                                         "description": "Checks if the property matches any of the provided values.",
                                         "type": "array",
                                         "items": {
-                                          "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType/allOf/0"
+                                          "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/entityType"
                                         }
                                       },
                                       "$like": {
@@ -468,7 +468,7 @@
                                     "description": "Matches the value exactly.",
                                     "allOf": [
                                       {
-                                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category/allOf/0"
+                                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category"
                                       }
                                     ]
                                   },
@@ -481,7 +481,7 @@
                                         "description": "Checks for equality with the provided value.",
                                         "allOf": [
                                           {
-                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category/allOf/0"
+                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category"
                                           }
                                         ]
                                       },
@@ -489,7 +489,7 @@
                                         "description": "Checks for inequality with the provided value.",
                                         "allOf": [
                                           {
-                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category/allOf/0"
+                                            "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category"
                                           }
                                         ]
                                       },
@@ -501,7 +501,7 @@
                                         "description": "Checks if the property matches any of the provided values.",
                                         "type": "array",
                                         "items": {
-                                          "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category/allOf/0"
+                                          "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema/properties/category"
                                         }
                                       },
                                       "$like": {
@@ -615,51 +615,43 @@
                       "description": "The key of the entity this audit log refers to."
                     },
                     "entityType": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "AUTHORIZATION",
-                            "BATCH",
-                            "DECISION",
-                            "GROUP",
-                            "INCIDENT",
-                            "MAPPING_RULE",
-                            "PROCESS_INSTANCE",
-                            "ROLE",
-                            "TENANT",
-                            "USER",
-                            "USER_TASK",
-                            "RESOURCE",
-                            "VARIABLE"
-                          ]
-                        }
-                      ],
-                      "description": "The type of the entity."
+                      "type": "string",
+                      "description": "The type of entity affected by the operation.",
+                      "enum": [
+                        "AUTHORIZATION",
+                        "BATCH",
+                        "DECISION",
+                        "GROUP",
+                        "INCIDENT",
+                        "MAPPING_RULE",
+                        "PROCESS_INSTANCE",
+                        "ROLE",
+                        "TENANT",
+                        "USER",
+                        "USER_TASK",
+                        "RESOURCE",
+                        "VARIABLE"
+                      ]
                     },
                     "operationType": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "ASSIGN",
-                            "CANCEL",
-                            "COMPLETE",
-                            "CREATE",
-                            "DELETE",
-                            "EVALUATE",
-                            "MIGRATE",
-                            "MODIFY",
-                            "RESOLVE",
-                            "RESUME",
-                            "SUSPEND",
-                            "UNASSIGN",
-                            "UPDATE",
-                            "UNKNOWN"
-                          ]
-                        }
-                      ],
-                      "description": "The type of operation performed."
+                      "type": "string",
+                      "description": "The type of operation performed.",
+                      "enum": [
+                        "ASSIGN",
+                        "CANCEL",
+                        "COMPLETE",
+                        "CREATE",
+                        "DELETE",
+                        "EVALUATE",
+                        "MIGRATE",
+                        "MODIFY",
+                        "RESOLVE",
+                        "RESUME",
+                        "SUSPEND",
+                        "UNASSIGN",
+                        "UPDATE",
+                        "UNKNOWN"
+                      ]
                     },
                     "batchOperationKey": {
                       "allOf": [
@@ -687,16 +679,12 @@
                       "description": "The ID of the actor who performed the operation."
                     },
                     "actorType": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "USER",
-                            "CLIENT"
-                          ]
-                        }
-                      ],
-                      "description": "The type of the actor."
+                      "type": "string",
+                      "description": "The type of actor who performed the operation.",
+                      "enum": [
+                        "USER",
+                        "CLIENT"
+                      ]
                     },
                     "tenantId": {
                       "allOf": [
@@ -707,33 +695,25 @@
                       "description": "The tenant ID of the audit log."
                     },
                     "result": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "SUCCESS",
-                            "FAIL"
-                          ]
-                        }
-                      ],
-                      "description": "The result of the audit log."
+                      "type": "string",
+                      "description": "The result status of the operation.",
+                      "enum": [
+                        "SUCCESS",
+                        "FAIL"
+                      ]
                     },
                     "annotation": {
                       "type": "string",
                       "description": "Additional notes about the operation."
                     },
                     "category": {
-                      "allOf": [
-                        {
-                          "type": "string",
-                          "enum": [
-                            "OPERATOR",
-                            "USER_TASK",
-                            "ADMIN"
-                          ]
-                        }
-                      ],
-                      "description": "The category of the audit log."
+                      "type": "string",
+                      "description": "The category of the audit log operation.",
+                      "enum": [
+                        "DEPLOYED_RESOURCES",
+                        "USER_TASKS",
+                        "ADMIN"
+                      ]
                     },
                     "processDefinitionId": {
                       "allOf": [
@@ -1832,7 +1812,9 @@
                             "operationType",
                             "state",
                             "startDate",
-                            "endDate"
+                            "endDate",
+                            "actorType",
+                            "actorId"
                           ]
                         },
                         "order": {
@@ -1973,6 +1955,22 @@
                                 ]
                               }
                             ]
+                          },
+                          "actorType": {
+                            "description": "The type of the actor who performed the operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1batch-operations~1{batchOperationKey}/get/responses/200/content/application~1json/schema/properties/actorType"
+                              }
+                            ]
+                          },
+                          "actorId": {
+                            "description": "The ID of the actor who performed the operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/type/allOf/0"
+                              }
+                            ]
                           }
                         }
                       }
@@ -2091,6 +2089,18 @@
                       "type": "string",
                       "description": "The end date of the batch operation.",
                       "format": "date-time"
+                    },
+                    "actorType": {
+                      "description": "The type of the actor. Available for batch operations created since 8.9.",
+                      "type": "string",
+                      "enum": [
+                        "CLIENT",
+                        "USER"
+                      ]
+                    },
+                    "actorId": {
+                      "type": "string",
+                      "description": "The ID of the actor who performed the operation. Available for batch operations created since 8.9."
                     },
                     "operationsTotalCount": {
                       "type": "integer",
@@ -8503,6 +8513,148 @@
                             "type": "integer",
                             "format": "int64",
                             "description": "The number of active process instances with this error."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/incidents/statistics/process-instances-by-definition": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Incident"
+        ],
+        "operationId": "getProcessInstanceStatisticsByDefinition",
+        "summary": "Get process instance statistics by definition",
+        "description": "Returns statistics for active process instances with incidents, grouped by process\ndefinition. The result set is scoped to a specific incident error hash code, which must be\nprovided as a filter in the request body.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filter": {
+                    "description": "Filter criteria for the aggregated process instance statistics.",
+                    "allOf": [
+                      {
+                        "description": "Filter for the incident process instance statistics by definition query.",
+                        "type": "object",
+                        "properties": {
+                          "errorHashCode": {
+                            "type": "integer",
+                            "format": "int32",
+                            "description": "The error hash code of the incidents to filter the process instance statistics by.\n"
+                          }
+                        },
+                        "required": [
+                          "errorHashCode"
+                        ]
+                      }
+                    ]
+                  },
+                  "page": {
+                    "description": "Pagination parameters for the aggregated process instance statistics.",
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1incidents~1statistics~1process-instances/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
+                      }
+                    ]
+                  },
+                  "sort": {
+                    "description": "Sorting criteria for process instance statistics grouped by process definition.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "description": "The aggregated field by which the process instance statistics are sorted.",
+                          "type": "string",
+                          "enum": [
+                            "activeInstancesWithErrorCount",
+                            "processDefinitionId",
+                            "processDefinitionKey",
+                            "processDefinitionName",
+                            "processDefinitionVersion",
+                            "tenantId"
+                          ]
+                        },
+                        "order": {
+                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
+                        }
+                      },
+                      "required": [
+                        "field"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "filter"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The process instance incident statistics grouped by process definition are successfully\nreturned.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/paths/~1groups~1{groupId}~1roles~1search/post/responses/200/content/application~1json/schema"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "Statistics of active process instances with incidents, grouped by process\ndefinition for the specified error hash code.\n",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "processDefinitionId": {
+                            "$ref": "#/paths/~1process-definitions~1{processDefinitionId}~1statistics~1process-instances/post/parameters/0/schema"
+                          },
+                          "processDefinitionKey": {
+                            "$ref": "#/paths/~1process-definitions~1{processDefinitionKey}/get/parameters/0/schema"
+                          },
+                          "processDefinitionName": {
+                            "type": "string",
+                            "description": "The name of the process definition."
+                          },
+                          "processDefinitionVersion": {
+                            "type": "integer",
+                            "description": "The version of the process definition."
+                          },
+                          "tenantId": {
+                            "$ref": "#/paths/~1system~1usage-metrics/get/parameters/2/schema"
+                          },
+                          "activeInstancesWithErrorCount": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The number of active process instances that currently have an incident\nwith the specified error hash code.\n"
                           }
                         }
                       }

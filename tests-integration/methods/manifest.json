@@ -1,6 +1,6 @@
 {
-  "operations": 165,
-  "tests": 166,
+  "operations": 166,
+  "tests": 167,
   "missing": [],
   "ignored": [],
   "files": [
@@ -84,6 +84,7 @@
     "getProcessInstanceCallHierarchy.test.ts",
     "getProcessInstanceSequenceFlows.test.ts",
     "getProcessInstanceStatistics.test.ts",
+    "getProcessInstanceStatisticsByDefinition.test.ts",
     "getResource.test.ts",
     "getResourceContent.test.ts",
     "getRole.test.ts",
