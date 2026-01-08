@@ -5349,7 +5349,7 @@ export type BatchOperationSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'batchOperationKey' | 'operationType' | 'state' | 'startDate' | 'endDate';
+    field: 'batchOperationKey' | 'operationType' | 'state' | 'startDate' | 'endDate' | 'actorId' | 'actorType';
     order?: SortOrderEnum;
 };
 
@@ -5383,6 +5383,14 @@ export type BatchOperationFilter = {
      * The state of the batch operation.
      */
     state?: BatchOperationStateFilterProperty;
+    /**
+     * The ID of the actor that created the batch operation.
+     */
+    actorId?: BasicStringFilterProperty;
+    /**
+     * The type of the actor that created the batch operation.
+     */
+    actorType?: BasicStringFilterProperty;
 };
 
 /**
@@ -5566,6 +5574,14 @@ export type BatchOperationResponse = {
      * The number of successfully completed tasks.
      */
     operationsCompletedCount?: number;
+    /**
+     * The ID of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
+     */
+    actorId?: string | null;
+    /**
+     * The type of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
+     */
+    actorType?: string | null;
     /**
      * The errors that occurred per partition during the batch operation.
      */
@@ -12066,7 +12082,7 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:c6c3f5f4c9c24b7b7d6873e31f72d83db79418de81dc00f09a21843b4ce0d507
+// specHash=sha256:e6d17175d4892daecd26046ec9daf4b2fcea3292af6847e3ca484353bdf452f6
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

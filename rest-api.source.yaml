@@ -11901,6 +11901,8 @@ components:
             - state
             - startDate
             - endDate
+            - actorId
+            - actorType
         order:
           $ref: "#/components/schemas/SortOrderEnum"
       required:
@@ -11937,6 +11939,14 @@ components:
           description: The state of the batch operation.
           allOf:
             - $ref: "#/components/schemas/BatchOperationStateFilterProperty"
+        actorId:
+          description: The ID of the actor that created the batch operation.
+          allOf:
+            - $ref: "#/components/schemas/BasicStringFilterProperty"
+        actorType:
+          description: The type of the actor that created the batch operation.
+          allOf:
+            - $ref: "#/components/schemas/BasicStringFilterProperty"
     BatchOperationTypeFilterProperty:
       description: BatchOperationTypeEnum property with full advanced search capabilities.
       type: object
@@ -12158,6 +12168,14 @@ components:
           type: integer
           description: The number of successfully completed tasks.
           format: int32
+        actorId:
+          type: string
+          description: The ID of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
+          nullable: true
+        actorType:
+          type: string
+          description: The type of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
+          nullable: true
         errors:
           description: The errors that occurred per partition during the batch operation.
           type: array

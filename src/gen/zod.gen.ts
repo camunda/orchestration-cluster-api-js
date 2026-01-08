@@ -4437,7 +4437,9 @@ export const zBatchOperationSearchQuerySortRequest = z.object({
         'operationType',
         'state',
         'startDate',
-        'endDate'
+        'endDate',
+        'actorId',
+        'actorType'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -4517,7 +4519,9 @@ export const zBatchOperationStateFilterProperty = z.union([
 export const zBatchOperationFilter = z.object({
     batchOperationKey: z.optional(zBasicStringFilterProperty),
     operationType: z.optional(zBatchOperationTypeFilterProperty),
-    state: z.optional(zBatchOperationStateFilterProperty)
+    state: z.optional(zBatchOperationStateFilterProperty),
+    actorId: z.optional(zBasicStringFilterProperty),
+    actorType: z.optional(zBasicStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Batch operation filter request.'
 });
@@ -4652,6 +4656,14 @@ export const zBatchOperationResponse = z.object({
     operationsCompletedCount: z.optional(z.int().register(z.globalRegistry, {
         description: 'The number of successfully completed tasks.'
     })),
+    actorId: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
+    actorType: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
     errors: z.optional(z.array(zBatchOperationError).register(z.globalRegistry, {
         description: 'The errors that occurred per partition during the batch operation.'
     }))

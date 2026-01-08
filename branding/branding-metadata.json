@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:c6c3f5f4c9c24b7b7d6873e31f72d83db79418de81dc00f09a21843b4ce0d507",
+  "specHash": "sha256:e6d17175d4892daecd26046ec9daf4b2fcea3292af6847e3ca484353bdf452f6",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1185,7 +1185,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/Tag",
-        "lineStart": 12277
+        "lineStart": 12295
       },
       "extensions": {
         "x-semantic-type": "Tag"
@@ -1227,7 +1227,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/TenantId",
-        "lineStart": 12297
+        "lineStart": 12315
       },
       "extensions": {
         "x-semantic-type": "TenantId"
@@ -1269,7 +1269,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/Username",
-        "lineStart": 12306
+        "lineStart": 12324
       },
       "extensions": {
         "x-semantic-type": "Username"
@@ -1417,7 +1417,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationItemStateFilterProperty",
-        "lineStart": 12069
+        "lineStart": 12079
       },
       "stableId": "batch-operation-item-state-filter-property"
     },
@@ -1443,7 +1443,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationStateFilterProperty",
-        "lineStart": 11973
+        "lineStart": 11983
       },
       "stableId": "batch-operation-state-filter-property"
     },
@@ -1469,7 +1469,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationTypeFilterProperty",
-        "lineStart": 11940
+        "lineStart": 11950
       },
       "stableId": "batch-operation-type-filter-property"
     },
@@ -2092,7 +2092,7 @@
       "uniqueItems": true,
       "source": {
         "schemaPointer": "#/components/schemas/TagSet",
-        "lineStart": 12286
+        "lineStart": 12304
       }
     }
   ],
