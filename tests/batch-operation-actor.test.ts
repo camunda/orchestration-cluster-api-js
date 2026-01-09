@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 import createClient from '../src';
 import type {
@@ -177,32 +177,68 @@ describe('batch operation actor support', () => {
   });
 
   describe('searchBatchOperations integration', () => {
-    it('should accept actor filter and sort in request type', () => {
+    it('should accept actor filter and sort, and receive actor fields in response', async () => {
+      const fetchMock = vi.fn();
       const camunda = createClient({
         config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+        fetch: fetchMock as any,
       });
 
-      // This test validates that the types compile correctly
-      // We verify the request object structure matches expected types
-      const request = {
-        filter: {
-          actorId: 'user-123',
-          actorType: 'user',
-        },
-        sort: [
-          { field: 'actorId' as const, order: 'asc' as const },
-          { field: 'actorType' as const, order: 'desc' as const },
-        ],
-      };
+      // Mock the API response with actor fields
+      fetchMock.mockImplementationOnce(async (input: Request) => {
+        expect(input.url).toContain('/batch-operations/search');
+        
+        // Verify the request body contains actor filter and sort
+        const body = await input.json();
+        expect(body.filter?.actorId).toBe('user-123');
+        expect(body.filter?.actorType).toBe('user');
+        expect(body.sort).toContainEqual({ field: 'actorId', order: 'asc' });
+        expect(body.sort).toContainEqual({ field: 'actorType', order: 'desc' });
 
-      // Type assertion verifies the structure is compatible
-      expect(request.filter.actorId).toBe('user-123');
-      expect(request.filter.actorType).toBe('user');
-      expect(request.sort?.[0].field).toBe('actorId');
-      expect(request.sort?.[1].field).toBe('actorType');
-      
-      // Verify the function exists
-      expect(typeof camunda.searchBatchOperations).toBe('function');
+        return new Response(
+          JSON.stringify({
+            items: [
+              {
+                batchOperationKey: '1001',
+                state: 'COMPLETED',
+                actorId: 'user-123',
+                actorType: 'user',
+              },
+              {
+                batchOperationKey: '1002',
+                state: 'ACTIVE',
+                actorId: null,
+                actorType: null,
+              },
+            ],
+            total: 2,
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } }
+        );
+      });
+
+      // Call searchBatchOperations with actor filter and sort
+      const result = await camunda.searchBatchOperations(
+        {
+          filter: {
+            actorId: 'user-123',
+            actorType: 'user',
+          },
+          sort: [
+            { field: 'actorId', order: 'asc' },
+            { field: 'actorType', order: 'desc' },
+          ],
+        },
+        { consistency: { waitUpToMs: 0 } }
+      );
+
+      // Verify the response includes actor fields
+      expect(result.items).toHaveLength(2);
+      expect(result.items?.[0].actorId).toBe('user-123');
+      expect(result.items?.[0].actorType).toBe('user');
+      expect(result.items?.[1].actorId).toBeNull();
+      expect(result.items?.[1].actorType).toBeNull();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
     });
   });
 });
