@@ -4422,6 +4422,16 @@ export const zBatchOperationTypeEnum = z.enum([
 });
 
 /**
+ * The type of the actor. Available for batch operations created since 8.9.
+ */
+export const zBatchOperationActorTypeEnum = z.enum([
+    'CLIENT',
+    'USER'
+]).register(z.globalRegistry, {
+    description: 'The type of the actor. Available for batch operations created since 8.9.'
+});
+
+/**
  * The created batch operation.
  */
 export const zBatchOperationCreatedResult = z.object({
@@ -4521,7 +4531,7 @@ export const zBatchOperationFilter = z.object({
     operationType: z.optional(zBatchOperationTypeFilterProperty),
     state: z.optional(zBatchOperationStateFilterProperty),
     actorId: z.optional(zBasicStringFilterProperty),
-    actorType: z.optional(zBasicStringFilterProperty)
+    actorType: z.optional(zBatchOperationActorTypeEnum)
 }).register(z.globalRegistry, {
     description: 'Batch operation filter request.'
 });
@@ -4661,7 +4671,7 @@ export const zBatchOperationResponse = z.object({
         z.null()
     ])),
     actorType: z.optional(z.union([
-        z.string(),
+        zBatchOperationActorTypeEnum,
         z.null()
     ])),
     errors: z.optional(z.array(zBatchOperationError).register(z.globalRegistry, {

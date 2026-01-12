@@ -5335,6 +5335,11 @@ export type ResourceResult = {
 export type BatchOperationTypeEnum = 'CANCEL_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'DELETE_PROCESS_INSTANCE' | 'ADD_VARIABLE' | 'UPDATE_VARIABLE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_PROCESS_DEFINITION';
 
 /**
+ * The type of the actor. Available for batch operations created since 8.9.
+ */
+export type BatchOperationActorTypeEnum = 'CLIENT' | 'USER';
+
+/**
  * The created batch operation.
  */
 export type BatchOperationCreatedResult = {
@@ -5390,7 +5395,7 @@ export type BatchOperationFilter = {
     /**
      * The type of the actor that created the batch operation.
      */
-    actorType?: BasicStringFilterProperty;
+    actorType?: BatchOperationActorTypeEnum;
 };
 
 /**
@@ -5581,7 +5586,7 @@ export type BatchOperationResponse = {
     /**
      * The type of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
      */
-    actorType?: string | null;
+    actorType?: BatchOperationActorTypeEnum | null;
     /**
      * The errors that occurred per partition during the batch operation.
      */
@@ -12082,7 +12087,7 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:e6d17175d4892daecd26046ec9daf4b2fcea3292af6847e3ca484353bdf452f6
+// specHash=sha256:24e1c53e65418a229fc6c1ef7d0335bdadccfac8e712433d25c5a0a1e0f0c9f6
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

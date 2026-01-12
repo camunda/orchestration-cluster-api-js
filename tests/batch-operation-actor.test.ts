@@ -19,10 +19,10 @@ describe('batch operation actor support', () => {
         batchOperationKey: '123',
         state: 'COMPLETED',
         actorId: 'user-123',
-        actorType: 'user',
+        actorType: 'USER',
       };
       expect(response.actorId).toBe('user-123');
-      expect(response.actorType).toBe('user');
+      expect(response.actorType).toBe('USER');
     });
 
     it('should accept actorId and actorType as null', () => {
@@ -52,7 +52,7 @@ describe('batch operation actor support', () => {
         batchOperationKey: '123',
         state: 'COMPLETED',
         actorId: 'user-123',
-        actorType: 'user',
+        actorType: 'USER',
       };
       const result = zBatchOperationResponse.safeParse(response);
       expect(result.success).toBe(true);
@@ -89,27 +89,27 @@ describe('batch operation actor support', () => {
 
     it('should accept actorType filter', () => {
       const filter: BatchOperationFilter = {
-        actorType: 'user',
+        actorType: 'CLIENT',
       };
-      expect(filter.actorType).toBe('user');
+      expect(filter.actorType).toBe('CLIENT');
     });
 
     it('should accept both actor filters', () => {
       const filter: BatchOperationFilter = {
         actorId: 'user-123',
-        actorType: 'user',
+        actorType: 'USER',
       };
       expect(filter.actorId).toBe('user-123');
-      expect(filter.actorType).toBe('user');
+      expect(filter.actorType).toBe('USER');
     });
 
-    it('should accept advanced actor filters', () => {
+    it('should accept advanced actorId filter (actorType only supports enum)', () => {
       const filter: BatchOperationFilter = {
         actorId: { $eq: 'user-123' },
-        actorType: { $in: ['user', 'service'] },
+        actorType: 'USER',
       };
       expect(filter.actorId).toEqual({ $eq: 'user-123' });
-      expect(filter.actorType).toEqual({ $in: ['user', 'service'] });
+      expect(filter.actorType).toBe('USER');
     });
   });
 
@@ -124,7 +124,7 @@ describe('batch operation actor support', () => {
 
     it('should validate filter with actorType', () => {
       const filter = {
-        actorType: 'user',
+        actorType: 'CLIENT',
       };
       const result = zBatchOperationFilter.safeParse(filter);
       expect(result.success).toBe(true);
@@ -133,7 +133,7 @@ describe('batch operation actor support', () => {
     it('should validate filter with both actor fields', () => {
       const filter = {
         actorId: 'user-123',
-        actorType: 'user',
+        actorType: 'USER',
       };
       const result = zBatchOperationFilter.safeParse(filter);
       expect(result.success).toBe(true);
@@ -191,7 +191,7 @@ describe('batch operation actor support', () => {
         // Verify the request body contains actor filter and sort
         const body = await input.json();
         expect(body.filter?.actorId).toBe('user-123');
-        expect(body.filter?.actorType).toBe('user');
+        expect(body.filter?.actorType).toBe('USER');
         expect(body.sort).toContainEqual({ field: 'actorId', order: 'asc' });
         expect(body.sort).toContainEqual({ field: 'actorType', order: 'desc' });
 
@@ -202,7 +202,7 @@ describe('batch operation actor support', () => {
                 batchOperationKey: '1001',
                 state: 'COMPLETED',
                 actorId: 'user-123',
-                actorType: 'user',
+                actorType: 'USER',
               },
               {
                 batchOperationKey: '1002',
@@ -222,7 +222,7 @@ describe('batch operation actor support', () => {
         {
           filter: {
             actorId: 'user-123',
-            actorType: 'user',
+            actorType: 'USER',
           },
           sort: [
             { field: 'actorId', order: 'asc' },
@@ -235,7 +235,7 @@ describe('batch operation actor support', () => {
       // Verify the response includes actor fields
       expect(result.items).toHaveLength(2);
       expect(result.items?.[0].actorId).toBe('user-123');
-      expect(result.items?.[0].actorType).toBe('user');
+      expect(result.items?.[0].actorType).toBe('USER');
       expect(result.items?.[1].actorId).toBeNull();
       expect(result.items?.[1].actorType).toBeNull();
       expect(fetchMock).toHaveBeenCalledTimes(1);

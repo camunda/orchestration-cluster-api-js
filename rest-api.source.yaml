@@ -11879,6 +11879,12 @@ components:
         - UPDATE_VARIABLE
         - DELETE_DECISION_DEFINITION
         - DELETE_PROCESS_DEFINITION
+    BatchOperationActorTypeEnum:
+      description: The type of the actor. Available for batch operations created since 8.9.
+      type: string
+      enum:
+        - CLIENT
+        - USER
     BatchOperationCreatedResult:
       description: The created batch operation.
       type: object
@@ -11946,7 +11952,7 @@ components:
         actorType:
           description: The type of the actor that created the batch operation.
           allOf:
-            - $ref: "#/components/schemas/BasicStringFilterProperty"
+            - $ref: "#/components/schemas/BatchOperationActorTypeEnum"
     BatchOperationTypeFilterProperty:
       description: BatchOperationTypeEnum property with full advanced search capabilities.
       type: object
@@ -12173,9 +12179,10 @@ components:
           description: The ID of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
           nullable: true
         actorType:
-          type: string
           description: The type of the actor that created this batch operation. May be null for legacy batch operations or when actor information is not available.
           nullable: true
+          allOf:
+            - $ref: "#/components/schemas/BatchOperationActorTypeEnum"
         errors:
           description: The errors that occurred per partition during the batch operation.
           type: array
