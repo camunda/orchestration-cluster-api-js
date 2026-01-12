@@ -1,6 +1,6 @@
 {
-  "operations": 166,
-  "tests": 167,
+  "operations": 167,
+  "tests": 169,
   "missing": [],
   "ignored": [],
   "files": [
@@ -85,6 +85,7 @@
     "getProcessInstanceSequenceFlows.test.ts",
     "getProcessInstanceStatistics.test.ts",
     "getProcessInstanceStatisticsByDefinition.test.ts",
+    "getProcessInstanceStatisticsByError.test.ts",
     "getResource.test.ts",
     "getResourceContent.test.ts",
     "getRole.test.ts",
@@ -141,6 +142,7 @@
     "searchRolesForGroup.test.ts",
     "searchRolesForTenant.test.ts",
     "searchTenants.test.ts",
+    "searchUserTaskAuditLogs.test.ts",
     "searchUserTaskVariables.test.ts",
     "searchUserTasks.test.ts",
     "searchUsers.test.ts",

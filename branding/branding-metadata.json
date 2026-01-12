@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:3c3967f45fbc12624bc2b81db0cae6bf5afb61e035c54b201c6efa176b350057",
+  "specHash": "sha256:effb40a8b830ddb3f3f9054d3c1585e782180ac35fdc5b9bb178f1bbe259d6db",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1344,9 +1344,13 @@
         {
           "branchType": "branded-ref",
           "ref": "InferredAncestorKeyInstruction"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "UseSourceParentKeyInstruction"
         }
       ],
-      "tsType": "DirectAncestorKeyInstruction | InferredAncestorKeyInstruction",
+      "tsType": "DirectAncestorKeyInstruction | InferredAncestorKeyInstruction | UseSourceParentKeyInstruction",
       "zod": {
         "schemaName": "zAncestorScopeInstruction"
       },
@@ -1670,6 +1674,31 @@
       "stableId": "decision-instance-state-filter-property"
     },
     {
+      "name": "DeploymentKeyFilterProperty",
+      "kind": "hybrid-union",
+      "description": "DeploymentKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "DeploymentKey"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedDeploymentKeyFilter"
+        }
+      ],
+      "tsType": "string | AdvancedDeploymentKeyFilter",
+      "zod": {
+        "schemaName": "zDeploymentKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/DeploymentKeyFilterProperty"
+      },
+      "stableId": "deployment-key-filter-property"
+    },
+    {
       "name": "ElementInstanceKeyFilterProperty",
       "kind": "hybrid-union",
       "description": "ElementInstanceKey property with full advanced search capabilities.",
@@ -1743,6 +1772,31 @@
         "schemaPointer": "#/components/schemas/EntityTypeFilterProperty"
       },
       "stableId": "entity-type-filter-property"
+    },
+    {
+      "name": "FormKeyFilterProperty",
+      "kind": "hybrid-union",
+      "description": "FormKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "FormKey"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedFormKeyFilter"
+        }
+      ],
+      "tsType": "string | AdvancedFormKeyFilter",
+      "zod": {
+        "schemaName": "zFormKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/FormKeyFilterProperty"
+      },
+      "stableId": "form-key-filter-property"
     },
     {
       "name": "IncidentErrorTypeFilterProperty",
@@ -2185,6 +2239,31 @@
       "stableId": "resource-key"
     },
     {
+      "name": "ResourceKeyFilterProperty",
+      "kind": "hybrid-union",
+      "description": "ResourceKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "ResourceKey"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedResourceKeyFilter"
+        }
+      ],
+      "tsType": "string | AdvancedResourceKeyFilter",
+      "zod": {
+        "schemaName": "zResourceKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ResourceKeyFilterProperty"
+      },
+      "stableId": "resource-key-filter-property"
+    },
+    {
       "name": "ScopeKeyFilterProperty",
       "kind": "hybrid-union",
       "description": "ScopeKey property with full advanced search capabilities.",
@@ -2349,7 +2428,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 32,
-    "totalUnionWrappers": 41,
+    "totalUnionWrappers": 44,
     "implicitCamundaKeys": []
   }
 }

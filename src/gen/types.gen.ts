@@ -14,45 +14,48 @@ type _heyapi_9_ = string;
 type _heyapi_10_ = string;
 type _heyapi_11_ = string;
 type _heyapi_12_ = string;
-type _heyapi_28_ = string;
-type _heyapi_29_ = string;
-type _heyapi_30_ = string;
-type _heyapi_56_ = string;
-type _heyapi_57_ = string;
-type _heyapi_58_ = string;
-type _heyapi_64_ = string;
-type _heyapi_115_ = string;
-type _heyapi_141_ = string;
-type _heyapi_147_ = string;
-type _heyapi_151_ = string;
+type _heyapi_13_ = string;
+type _heyapi_14_ = string;
+type _heyapi_15_ = string;
+type _heyapi_19_ = string;
+type _heyapi_20_ = string;
+type _heyapi_33_ = string;
+type _heyapi_34_ = string;
+type _heyapi_35_ = string;
+type _heyapi_61_ = string;
+type _heyapi_62_ = string;
+type _heyapi_63_ = string;
+type _heyapi_69_ = string;
+type _heyapi_120_ = string;
+type _heyapi_146_ = string;
 type _heyapi_152_ = string;
-type _heyapi_170_ = string;
-type _heyapi_171_ = string;
-type _heyapi_200_ = string;
-type _heyapi_233_ = string;
-type _heyapi_234_ = string;
-type _heyapi_245_ = string;
-type _heyapi_246_ = string;
-type _heyapi_247_ = string;
-type _heyapi_368_ = string;
-type _heyapi_369_ = string;
-type _heyapi_370_ = string;
+type _heyapi_156_ = string;
+type _heyapi_174_ = string;
+type _heyapi_175_ = string;
+type _heyapi_236_ = string;
+type _heyapi_237_ = string;
+type _heyapi_248_ = string;
+type _heyapi_249_ = string;
+type _heyapi_250_ = string;
 type _heyapi_371_ = string;
-type _heyapi_427_ = string;
-type _heyapi_468_ = string;
-type _heyapi_469_ = string;
-type _heyapi_470_ = string;
+type _heyapi_372_ = string;
+type _heyapi_373_ = string;
+type _heyapi_374_ = string;
+type _heyapi_430_ = string;
 type _heyapi_471_ = string;
 type _heyapi_472_ = string;
 type _heyapi_473_ = string;
 type _heyapi_474_ = string;
-type _heyapi_490_ = string;
-type _heyapi_491_ = string;
-type _heyapi_497_ = string;
-type _heyapi_498_ = string;
-type _heyapi_816_ = string;
-type _heyapi_857_ = string;
-type _heyapi_858_ = string;
+type _heyapi_475_ = string;
+type _heyapi_476_ = string;
+type _heyapi_477_ = string;
+type _heyapi_493_ = string;
+type _heyapi_494_ = string;
+type _heyapi_500_ = string;
+type _heyapi_501_ = string;
+type _heyapi_819_ = string;
+type _heyapi_865_ = string;
+type _heyapi_866_ = string;
 
 export type ClientOptions = {
     baseUrl: '{schema}://{host}:{port}/v2' | (string & {});
@@ -220,7 +223,7 @@ export type SearchAuditLogsData = {
             /**
              * AuditLogOperationTypeEnum property with full advanced search capabilities.
              */
-            operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UPDATE' | 'UNKNOWN' | {
+            operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UNKNOWN' | 'UPDATE' | {
                 /**
                  * Checks for equality with the provided value.
                  */
@@ -253,7 +256,7 @@ export type SearchAuditLogsData = {
             /**
              * The result status of the operation.
              */
-            result?: 'SUCCESS' | 'FAIL';
+            result?: 'FAIL' | 'SUCCESS';
             /**
              * Date-time property with full advanced search capabilities.
              */
@@ -321,11 +324,11 @@ export type SearchAuditLogsData = {
             /**
              * The type of actor who performed the operation.
              */
-            actorType?: 'USER' | 'CLIENT';
+            actorType?: 'ANONYMOUS' | 'CLIENT' | 'UNKNOWN' | 'USER';
             /**
              * AuditLogEntityTypeEnum property with full advanced search capabilities.
              */
-            entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'RESOURCE' | 'VARIABLE' | {
+            entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE' | {
                 /**
                  * Checks for equality with the provided value.
                  */
@@ -351,7 +354,7 @@ export type SearchAuditLogsData = {
             /**
              * AuditLogCategoryEnum property with full advanced search capabilities.
              */
-            category?: 'DEPLOYED_RESOURCES' | 'USER_TASKS' | 'ADMIN' | {
+            category?: 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS' | {
                 /**
                  * Checks for equality with the provided value.
                  */
@@ -369,6 +372,81 @@ export type SearchAuditLogsData = {
                  */
                 $in?: Array<_heyapi_12_>;
                 $like?: _heyapi_9_;
+            };
+            /**
+             * DeploymentKey property with full advanced search capabilities.
+             */
+            deploymentKey?: _heyapi_4_ | {
+                /**
+                 * Checks for equality with the provided value.
+                 */
+                $eq?: _heyapi_13_;
+                /**
+                 * Checks for inequality with the provided value.
+                 */
+                $neq?: _heyapi_13_;
+                /**
+                 * Checks if the current property exists.
+                 */
+                $exists?: boolean;
+                /**
+                 * Checks if the property matches any of the provided values.
+                 */
+                $in?: Array<_heyapi_13_>;
+                /**
+                 * Checks if the property matches none of the provided values.
+                 */
+                $notIn?: Array<_heyapi_13_>;
+            };
+            /**
+             * FormKey property with full advanced search capabilities.
+             */
+            formKey?: _heyapi_4_ | {
+                /**
+                 * Checks for equality with the provided value.
+                 */
+                $eq?: _heyapi_14_;
+                /**
+                 * Checks for inequality with the provided value.
+                 */
+                $neq?: _heyapi_14_;
+                /**
+                 * Checks if the current property exists.
+                 */
+                $exists?: boolean;
+                /**
+                 * Checks if the property matches any of the provided values.
+                 */
+                $in?: Array<_heyapi_14_>;
+                /**
+                 * Checks if the property matches none of the provided values.
+                 */
+                $notIn?: Array<_heyapi_14_>;
+            };
+            /**
+             * ResourceKey property with full advanced search capabilities.
+             */
+            resourceKey?: _heyapi_5_ | _heyapi_4_ | {
+                /**
+                 * Checks for equality with the provided value.
+                 */
+                $eq?: _heyapi_15_;
+                /**
+                 * Checks for inequality with the provided value.
+                 */
+                $neq?: _heyapi_15_;
+                /**
+                 * Checks if the current property exists.
+                 */
+                $exists?: boolean;
+                /**
+                 * Checks if the property matches any of the provided values.
+                 */
+                $in?: Array<_heyapi_15_>;
+                /**
+                 * Checks if the property matches none of the provided values.
+                 */
+                $notIn?: Array<_heyapi_15_>;
             };
         };
     };
@@ -508,11 +586,11 @@ export type SearchAuditLogsResponses = {
             /**
              * The type of entity affected by the operation.
              */
-            entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'RESOURCE' | 'VARIABLE';
+            entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE';
             /**
              * The type of operation performed.
              */
-            operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UPDATE' | 'UNKNOWN';
+            operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UNKNOWN' | 'UPDATE';
             /**
              * System-generated key for an batch operation.
              */
@@ -532,7 +610,7 @@ export type SearchAuditLogsResponses = {
             /**
              * The type of actor who performed the operation.
              */
-            actorType?: 'USER' | 'CLIENT';
+            actorType?: 'ANONYMOUS' | 'CLIENT' | 'UNKNOWN' | 'USER';
             /**
              * The unique identifier of the tenant.
              */
@@ -540,7 +618,7 @@ export type SearchAuditLogsResponses = {
             /**
              * The result status of the operation.
              */
-            result?: 'SUCCESS' | 'FAIL';
+            result?: 'FAIL' | 'SUCCESS';
             /**
              * Additional notes about the operation.
              */
@@ -548,7 +626,7 @@ export type SearchAuditLogsResponses = {
             /**
              * The category of the audit log operation.
              */
-            category?: 'DEPLOYED_RESOURCES' | 'USER_TASKS' | 'ADMIN';
+            category?: 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS';
             /**
              * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
              */
@@ -593,6 +671,18 @@ export type SearchAuditLogsResponses = {
              * System-generated key for a decision evaluation.
              */
             decisionEvaluationKey?: _heyapi_4_;
+            /**
+             * Key for a deployment.
+             */
+            deploymentKey?: _heyapi_4_;
+            /**
+             * System-generated key for a deployed form.
+             */
+            formKey?: _heyapi_4_;
+            /**
+             * The system-assigned key for this resource.
+             */
+            resourceKey?: _heyapi_5_ | _heyapi_19_ | _heyapi_4_ | _heyapi_20_;
         }>;
     };
 };
@@ -736,11 +826,11 @@ export type GetAuditLogResponses = {
         /**
          * The type of entity affected by the operation.
          */
-        entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'RESOURCE' | 'VARIABLE';
+        entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE';
         /**
          * The type of operation performed.
          */
-        operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UPDATE' | 'UNKNOWN';
+        operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UNKNOWN' | 'UPDATE';
         /**
          * System-generated key for an batch operation.
          */
@@ -760,7 +850,7 @@ export type GetAuditLogResponses = {
         /**
          * The type of actor who performed the operation.
          */
-        actorType?: 'USER' | 'CLIENT';
+        actorType?: 'ANONYMOUS' | 'CLIENT' | 'UNKNOWN' | 'USER';
         /**
          * The unique identifier of the tenant.
          */
@@ -768,7 +858,7 @@ export type GetAuditLogResponses = {
         /**
          * The result status of the operation.
          */
-        result?: 'SUCCESS' | 'FAIL';
+        result?: 'FAIL' | 'SUCCESS';
         /**
          * Additional notes about the operation.
          */
@@ -776,7 +866,7 @@ export type GetAuditLogResponses = {
         /**
          * The category of the audit log operation.
          */
-        category?: 'DEPLOYED_RESOURCES' | 'USER_TASKS' | 'ADMIN';
+        category?: 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS';
         /**
          * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
          */
@@ -821,6 +911,18 @@ export type GetAuditLogResponses = {
          * System-generated key for a decision evaluation.
          */
         decisionEvaluationKey?: _heyapi_4_;
+        /**
+         * Key for a deployment.
+         */
+        deploymentKey?: _heyapi_4_;
+        /**
+         * System-generated key for a deployed form.
+         */
+        formKey?: _heyapi_4_;
+        /**
+         * The system-assigned key for this resource.
+         */
+        resourceKey?: _heyapi_5_ | _heyapi_19_ | _heyapi_4_ | _heyapi_20_;
     };
 };
 
@@ -1013,7 +1115,7 @@ export type CreateAuthorizationData = {
          * The ID of the owner of the permissions.
          */
         ownerId: string;
-        ownerType: _heyapi_28_;
+        ownerType: _heyapi_33_;
         /**
          * The name of the resource property on which this authorization is based.
          */
@@ -1021,11 +1123,11 @@ export type CreateAuthorizationData = {
         /**
          * The type of resource to add permissions to.
          */
-        resourceType: _heyapi_29_;
+        resourceType: _heyapi_34_;
         /**
          * The permission types to add.
          */
-        permissionTypes: Array<_heyapi_30_>;
+        permissionTypes: Array<_heyapi_35_>;
     };
     path?: never;
     query?: never;
@@ -1787,7 +1889,7 @@ export type UpdateAuthorizationData = {
          * The ID of the owner of the permissions.
          */
         ownerId: string;
-        ownerType: _heyapi_28_;
+        ownerType: _heyapi_33_;
         /**
          * The name of the resource property on which this authorization is based.
          */
@@ -1795,11 +1897,11 @@ export type UpdateAuthorizationData = {
         /**
          * The type of resource to add permissions to.
          */
-        resourceType: _heyapi_29_;
+        resourceType: _heyapi_34_;
         /**
          * The permission types to add.
          */
-        permissionTypes: Array<_heyapi_30_>;
+        permissionTypes: Array<_heyapi_35_>;
     };
     path: {
         /**
@@ -2016,7 +2118,7 @@ export type SearchBatchOperationItemsData = {
             /**
              * The key of the item, e.g. a process instance key.
              */
-            itemKey?: _heyapi_56_;
+            itemKey?: _heyapi_61_;
             /**
              * ProcessInstanceKey property with full advanced search capabilities.
              */
@@ -2053,7 +2155,7 @@ export type SearchBatchOperationItemsData = {
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_57_;
+                $neq?: _heyapi_62_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -2061,7 +2163,7 @@ export type SearchBatchOperationItemsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_57_>;
+                $in?: Array<_heyapi_62_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -2082,11 +2184,11 @@ export type SearchBatchOperationItemsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_58_;
+                $eq?: _heyapi_63_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_58_;
+                $neq?: _heyapi_63_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -2094,7 +2196,7 @@ export type SearchBatchOperationItemsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_58_>;
+                $in?: Array<_heyapi_63_>;
                 $like?: _heyapi_9_;
             };
         };
@@ -2319,11 +2421,11 @@ export type SearchBatchOperationsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_58_;
+                $eq?: _heyapi_63_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_58_;
+                $neq?: _heyapi_63_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -2331,7 +2433,7 @@ export type SearchBatchOperationsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_58_>;
+                $in?: Array<_heyapi_63_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -2352,11 +2454,11 @@ export type SearchBatchOperationsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_64_;
+                $eq?: _heyapi_69_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_64_;
+                $neq?: _heyapi_69_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -2364,7 +2466,7 @@ export type SearchBatchOperationsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_64_>;
+                $in?: Array<_heyapi_69_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -3931,11 +4033,11 @@ export type SearchClusterVariablesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_115_;
+                $eq?: _heyapi_120_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_115_;
+                $neq?: _heyapi_120_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -3943,7 +4045,7 @@ export type SearchClusterVariablesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_115_>;
+                $in?: Array<_heyapi_120_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -5101,11 +5203,11 @@ export type SearchCorrelatedMessageSubscriptionsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_141_;
+                $eq?: _heyapi_146_;
                 /**
                  * Checks for equality with the provided value.
                  */
-                $neq?: _heyapi_141_;
+                $neq?: _heyapi_146_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -5113,11 +5215,11 @@ export type SearchCorrelatedMessageSubscriptionsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_141_>;
+                $in?: Array<_heyapi_146_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_141_>;
+                $notIn?: Array<_heyapi_146_>;
             };
             /**
              * The tenant ID associated with this correlated message subscription.
@@ -5356,7 +5458,7 @@ export type EvaluateDecisionData = {
         /**
          * The tenant ID of the decision.
          */
-        tenantId?: _heyapi_147_;
+        tenantId?: _heyapi_152_;
     };
     path?: never;
     query?: never;
@@ -5479,7 +5581,7 @@ export type EvaluateDecisionResponses = {
         /**
          * The ID of the decision which failed during evaluation.
          */
-        failedDecisionDefinitionId: _heyapi_151_;
+        failedDecisionDefinitionId: _heyapi_156_;
         /**
          * Message describing why the decision which was evaluated failed.
          */
@@ -5513,7 +5615,7 @@ export type EvaluateDecisionResponses = {
             /**
              * The ID of the decision which was evaluated.
              */
-            decisionDefinitionId?: _heyapi_151_;
+            decisionDefinitionId?: _heyapi_156_;
             /**
              * The name of the decision which was evaluated.
              */
@@ -5534,7 +5636,7 @@ export type EvaluateDecisionResponses = {
             /**
              * The tenant ID of the evaluated decision.
              */
-            tenantId?: _heyapi_147_;
+            tenantId?: _heyapi_152_;
             /**
              * The decision rules that matched within this decision evaluation.
              */
@@ -5569,7 +5671,7 @@ export type EvaluateDecisionResponses = {
             /**
              * The unique key identifying the decision which was evaluate.
              */
-            decisionDefinitionKey?: _heyapi_152_;
+            decisionDefinitionKey?: _heyapi_20_;
             /**
              * System-generated key for a decision evaluation instance.
              */
@@ -6275,11 +6377,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_170_;
+                $eq?: _heyapi_174_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_170_;
+                $neq?: _heyapi_174_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -6287,11 +6389,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_170_>;
+                $in?: Array<_heyapi_174_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_170_>;
+                $notIn?: Array<_heyapi_174_>;
             };
             /**
              * DecisionInstanceStateEnum property with full advanced search capabilities.
@@ -6300,11 +6402,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_171_;
+                $eq?: _heyapi_175_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_171_;
+                $neq?: _heyapi_175_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -6312,11 +6414,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_171_>;
+                $in?: Array<_heyapi_175_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_171_>;
+                $notIn?: Array<_heyapi_175_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -6410,11 +6512,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_152_;
+                $eq?: _heyapi_20_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_152_;
+                $neq?: _heyapi_20_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -6422,11 +6524,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_152_>;
+                $in?: Array<_heyapi_20_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_152_>;
+                $notIn?: Array<_heyapi_20_>;
             };
             /**
              * ElementInstanceKey property with full advanced search capabilities.
@@ -6456,15 +6558,15 @@ export type SearchDecisionInstancesData = {
             /**
              * DecisionDefinitionKey property with full advanced search capabilities.
              */
-            rootDecisionDefinitionKey?: _heyapi_152_ | {
+            rootDecisionDefinitionKey?: _heyapi_20_ | {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_152_;
+                $eq?: _heyapi_20_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_152_;
+                $neq?: _heyapi_20_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -6472,11 +6574,11 @@ export type SearchDecisionInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_152_>;
+                $in?: Array<_heyapi_20_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_152_>;
+                $notIn?: Array<_heyapi_20_>;
             };
         };
     };
@@ -6690,7 +6792,7 @@ export type SearchDecisionInstancesResponses = {
             /**
              * The key of the root decision definition.
              */
-            rootDecisionDefinitionKey?: _heyapi_152_;
+            rootDecisionDefinitionKey?: _heyapi_20_;
         }>;
     };
 };
@@ -6912,7 +7014,7 @@ export type GetDecisionInstanceResponses = {
         /**
          * The key of the root decision definition.
          */
-        rootDecisionDefinitionKey?: _heyapi_152_;
+        rootDecisionDefinitionKey?: _heyapi_20_;
     } & {
         /**
          * The evaluated inputs of the decision instance.
@@ -7658,7 +7760,7 @@ export type CreateDeploymentResponses = {
                 /**
                  * The tenant ID of the deployed process.
                  */
-                tenantId: _heyapi_147_;
+                tenantId: _heyapi_152_;
                 /**
                  * System-generated key for a deployed process definition.
                  */
@@ -7683,7 +7785,7 @@ export type CreateDeploymentResponses = {
                 /**
                  * The tenant ID of the deployed decision.
                  */
-                tenantId?: _heyapi_147_;
+                tenantId?: _heyapi_152_;
                 /**
                  * The dmn ID of the decision requirements graph that this decision is part of, as parsed during deployment.
                  *
@@ -7709,12 +7811,12 @@ export type CreateDeploymentResponses = {
                 /**
                  * The tenant ID of the deployed decision requirements.
                  */
-                tenantId?: _heyapi_147_;
+                tenantId?: _heyapi_152_;
                 /**
                  * The assigned decision requirements key, which acts as a unique identifier for this decision requirements.
                  *
                  */
-                decisionRequirementsKey?: _heyapi_200_;
+                decisionRequirementsKey?: _heyapi_19_;
             };
             /**
              * A deployed form.
@@ -7726,7 +7828,7 @@ export type CreateDeploymentResponses = {
                 formId?: string;
                 version?: number;
                 resourceName?: string;
-                tenantId?: _heyapi_147_;
+                tenantId?: _heyapi_152_;
                 /**
                  * System-generated key for a deployed form.
                  */
@@ -7739,11 +7841,11 @@ export type CreateDeploymentResponses = {
                 resourceId?: string;
                 resourceName?: string;
                 version?: number;
-                tenantId?: _heyapi_147_;
+                tenantId?: _heyapi_152_;
                 /**
                  * The system-assigned key for this resource.
                  */
-                resourceKey?: _heyapi_5_ | _heyapi_200_ | _heyapi_4_ | _heyapi_152_;
+                resourceKey?: _heyapi_5_ | _heyapi_19_ | _heyapi_4_ | _heyapi_20_;
             };
         }>;
     };
@@ -8720,11 +8822,11 @@ export type SearchElementInstancesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -8732,7 +8834,7 @@ export type SearchElementInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -8823,7 +8925,7 @@ export type SearchElementInstancesData = {
             /**
              * The end date of this element instance.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * The scope key of this element instance. If provided with a process instance key it will return element instances that are immediate children of the process instance. If provided with an element instance key it will return element instances that are immediate children of the element instance.
              *
@@ -9346,11 +9448,11 @@ export type SearchElementInstanceIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_245_;
+                $eq?: _heyapi_248_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_245_;
+                $neq?: _heyapi_248_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -9358,11 +9460,11 @@ export type SearchElementInstanceIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_245_>;
+                $in?: Array<_heyapi_248_>;
                 /**
                  * Checks if the property does not match any of the provided values.
                  */
-                $notIn?: Array<_heyapi_245_>;
+                $notIn?: Array<_heyapi_248_>;
                 $like?: _heyapi_9_;
             };
             errorMessage?: _heyapi_11_;
@@ -9414,11 +9516,11 @@ export type SearchElementInstanceIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_246_;
+                $eq?: _heyapi_249_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_246_;
+                $neq?: _heyapi_249_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -9426,11 +9528,11 @@ export type SearchElementInstanceIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_246_>;
+                $in?: Array<_heyapi_249_>;
                 /**
                  * Checks if the property does not match any of the provided values.
                  */
-                $notIn?: Array<_heyapi_246_>;
+                $notIn?: Array<_heyapi_249_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -9544,11 +9646,11 @@ export type SearchElementInstanceIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_247_;
+                $eq?: _heyapi_250_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_247_;
+                $neq?: _heyapi_250_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -9556,11 +9658,11 @@ export type SearchElementInstanceIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_247_>;
+                $in?: Array<_heyapi_250_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_247_>;
+                $notIn?: Array<_heyapi_250_>;
             };
         };
     };
@@ -13068,11 +13170,11 @@ export type SearchIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_245_;
+                $eq?: _heyapi_248_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_245_;
+                $neq?: _heyapi_248_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -13080,11 +13182,11 @@ export type SearchIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_245_>;
+                $in?: Array<_heyapi_248_>;
                 /**
                  * Checks if the property does not match any of the provided values.
                  */
-                $notIn?: Array<_heyapi_245_>;
+                $notIn?: Array<_heyapi_248_>;
                 $like?: _heyapi_9_;
             };
             errorMessage?: _heyapi_11_;
@@ -13136,11 +13238,11 @@ export type SearchIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_246_;
+                $eq?: _heyapi_249_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_246_;
+                $neq?: _heyapi_249_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -13148,11 +13250,11 @@ export type SearchIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_246_>;
+                $in?: Array<_heyapi_249_>;
                 /**
                  * Checks if the property does not match any of the provided values.
                  */
-                $notIn?: Array<_heyapi_246_>;
+                $notIn?: Array<_heyapi_249_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -13266,11 +13368,11 @@ export type SearchIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_247_;
+                $eq?: _heyapi_250_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_247_;
+                $neq?: _heyapi_250_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -13278,11 +13380,11 @@ export type SearchIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_247_>;
+                $in?: Array<_heyapi_250_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_247_>;
+                $notIn?: Array<_heyapi_250_>;
             };
         };
     };
@@ -13823,202 +13925,6 @@ export type ResolveIncidentResponses = {
 
 export type ResolveIncidentResponse = ResolveIncidentResponses[keyof ResolveIncidentResponses];
 
-export type GetIncidentProcessInstanceStatisticsData = {
-    body?: {
-        /**
-         * Offset-based pagination
-         *
-         * Pagination parameters for process instance statistics with active incidents.
-         */
-        page?: {
-            /**
-             * The index of items to start searching from.
-             */
-            from?: number;
-            /**
-             * The maximum number of items to return in one request.
-             */
-            limit?: number;
-        };
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'errorMessage' | 'activeInstancesWithErrorCount';
-            /**
-             * The order in which to sort the related field.
-             */
-            order?: 'ASC' | 'DESC';
-        }>;
-    };
-    path?: never;
-    query?: never;
-    url: '/incidents/statistics/process-instances';
-};
-
-export type GetIncidentProcessInstanceStatisticsErrors = {
-    /**
-     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
-     *
-     */
-    400: {
-        /**
-         * A URI identifying the problem type.
-         */
-        type?: string;
-        /**
-         * A summary of the problem type.
-         */
-        title?: string;
-        /**
-         * The HTTP status code for this problem.
-         */
-        status?: number;
-        /**
-         * An explanation of the problem in more detail.
-         */
-        detail?: string;
-        /**
-         * A URI path identifying the origin of the problem.
-         */
-        instance?: string;
-    };
-    /**
-     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
-     *
-     */
-    401: {
-        /**
-         * A URI identifying the problem type.
-         */
-        type?: string;
-        /**
-         * A summary of the problem type.
-         */
-        title?: string;
-        /**
-         * The HTTP status code for this problem.
-         */
-        status?: number;
-        /**
-         * An explanation of the problem in more detail.
-         */
-        detail?: string;
-        /**
-         * A URI path identifying the origin of the problem.
-         */
-        instance?: string;
-    };
-    /**
-     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
-     *
-     */
-    403: {
-        /**
-         * A URI identifying the problem type.
-         */
-        type?: string;
-        /**
-         * A summary of the problem type.
-         */
-        title?: string;
-        /**
-         * The HTTP status code for this problem.
-         */
-        status?: number;
-        /**
-         * An explanation of the problem in more detail.
-         */
-        detail?: string;
-        /**
-         * A URI path identifying the origin of the problem.
-         */
-        instance?: string;
-    };
-    /**
-     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
-     *
-     */
-    500: {
-        /**
-         * A URI identifying the problem type.
-         */
-        type?: string;
-        /**
-         * A summary of the problem type.
-         */
-        title?: string;
-        /**
-         * The HTTP status code for this problem.
-         */
-        status?: number;
-        /**
-         * An explanation of the problem in more detail.
-         */
-        detail?: string;
-        /**
-         * A URI path identifying the origin of the problem.
-         */
-        instance?: string;
-    };
-};
-
-export type GetIncidentProcessInstanceStatisticsError = GetIncidentProcessInstanceStatisticsErrors[keyof GetIncidentProcessInstanceStatisticsErrors];
-
-export type GetIncidentProcessInstanceStatisticsResponses = {
-    /**
-     * The incident statistics result.
-     */
-    200: {
-        /**
-         * Pagination information about the search results.
-         */
-        page: {
-            /**
-             * Total items matching the criteria.
-             */
-            totalItems: number;
-            /**
-             * Indicates whether there are more items matching the criteria beyond the returned items.
-             * This is useful for determining if additional requests are needed to retrieve all results.
-             *
-             */
-            hasMoreTotalItems?: boolean;
-            /**
-             * The start cursor in a search query result set.
-             */
-            startCursor?: string;
-            /**
-             * The end cursor in a search query result set.
-             */
-            endCursor?: string;
-        };
-    } & {
-        /**
-         * The incident statistics results.
-         */
-        items?: Array<{
-            /**
-             * A hash code representing the error details of an incident.
-             */
-            errorHashCode?: number;
-            /**
-             * Error message which describes the error in more detail.
-             */
-            errorMessage?: string;
-            /**
-             * The number of active process instances with this error.
-             */
-            activeInstancesWithErrorCount?: number;
-        }>;
-    };
-};
-
-export type GetIncidentProcessInstanceStatisticsResponse = GetIncidentProcessInstanceStatisticsResponses[keyof GetIncidentProcessInstanceStatisticsResponses];
-
 export type GetProcessInstanceStatisticsByDefinitionData = {
     body: {
         /**
@@ -14053,7 +13959,7 @@ export type GetProcessInstanceStatisticsByDefinitionData = {
             /**
              * The aggregated field by which the process instance statistics are sorted.
              */
-            field: 'activeInstancesWithErrorCount' | 'processDefinitionId' | 'processDefinitionKey' | 'processDefinitionName' | 'processDefinitionVersion' | 'tenantId';
+            field: 'activeInstancesWithErrorCount' | 'processDefinitionKey' | 'tenantId';
             /**
              * The order in which to sort the related field.
              */
@@ -14242,6 +14148,207 @@ export type GetProcessInstanceStatisticsByDefinitionResponses = {
 };
 
 export type GetProcessInstanceStatisticsByDefinitionResponse = GetProcessInstanceStatisticsByDefinitionResponses[keyof GetProcessInstanceStatisticsByDefinitionResponses];
+
+export type GetProcessInstanceStatisticsByErrorData = {
+    body?: {
+        /**
+         * Offset-based pagination
+         *
+         * Pagination parameters for process instance statistics grouped by incident error.
+         *
+         */
+        page?: {
+            /**
+             * The index of items to start searching from.
+             */
+            from?: number;
+            /**
+             * The maximum number of items to return in one request.
+             */
+            limit?: number;
+        };
+        /**
+         * Sorting criteria for process instance statistics grouped by incident error.
+         */
+        sort?: Array<{
+            /**
+             * The field to sort the incident error statistics by.
+             */
+            field: 'errorMessage' | 'activeInstancesWithErrorCount';
+            /**
+             * The order in which to sort the related field.
+             */
+            order?: 'ASC' | 'DESC';
+        }>;
+    };
+    path?: never;
+    query?: never;
+    url: '/incidents/statistics/process-instances-by-error';
+};
+
+export type GetProcessInstanceStatisticsByErrorErrors = {
+    /**
+     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
+     *
+     */
+    400: {
+        /**
+         * A URI identifying the problem type.
+         */
+        type?: string;
+        /**
+         * A summary of the problem type.
+         */
+        title?: string;
+        /**
+         * The HTTP status code for this problem.
+         */
+        status?: number;
+        /**
+         * An explanation of the problem in more detail.
+         */
+        detail?: string;
+        /**
+         * A URI path identifying the origin of the problem.
+         */
+        instance?: string;
+    };
+    /**
+     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
+     *
+     */
+    401: {
+        /**
+         * A URI identifying the problem type.
+         */
+        type?: string;
+        /**
+         * A summary of the problem type.
+         */
+        title?: string;
+        /**
+         * The HTTP status code for this problem.
+         */
+        status?: number;
+        /**
+         * An explanation of the problem in more detail.
+         */
+        detail?: string;
+        /**
+         * A URI path identifying the origin of the problem.
+         */
+        instance?: string;
+    };
+    /**
+     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
+     *
+     */
+    403: {
+        /**
+         * A URI identifying the problem type.
+         */
+        type?: string;
+        /**
+         * A summary of the problem type.
+         */
+        title?: string;
+        /**
+         * The HTTP status code for this problem.
+         */
+        status?: number;
+        /**
+         * An explanation of the problem in more detail.
+         */
+        detail?: string;
+        /**
+         * A URI path identifying the origin of the problem.
+         */
+        instance?: string;
+    };
+    /**
+     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
+     *
+     */
+    500: {
+        /**
+         * A URI identifying the problem type.
+         */
+        type?: string;
+        /**
+         * A summary of the problem type.
+         */
+        title?: string;
+        /**
+         * The HTTP status code for this problem.
+         */
+        status?: number;
+        /**
+         * An explanation of the problem in more detail.
+         */
+        detail?: string;
+        /**
+         * A URI path identifying the origin of the problem.
+         */
+        instance?: string;
+    };
+};
+
+export type GetProcessInstanceStatisticsByErrorError = GetProcessInstanceStatisticsByErrorErrors[keyof GetProcessInstanceStatisticsByErrorErrors];
+
+export type GetProcessInstanceStatisticsByErrorResponses = {
+    /**
+     * The statistics about process instances with incident, grouped by error hash code are
+     * successfully returned.
+     *
+     */
+    200: {
+        /**
+         * Pagination information about the search results.
+         */
+        page: {
+            /**
+             * Total items matching the criteria.
+             */
+            totalItems: number;
+            /**
+             * Indicates whether there are more items matching the criteria beyond the returned items.
+             * This is useful for determining if additional requests are needed to retrieve all results.
+             *
+             */
+            hasMoreTotalItems?: boolean;
+            /**
+             * The start cursor in a search query result set.
+             */
+            startCursor?: string;
+            /**
+             * The end cursor in a search query result set.
+             */
+            endCursor?: string;
+        };
+    } & {
+        /**
+         * Statistics of active process instances grouped by incident error.
+         *
+         */
+        items?: Array<{
+            /**
+             * The hash code identifying a specific incident error..
+             */
+            errorHashCode?: number;
+            /**
+             * The error message associated with the incident error hash code.
+             */
+            errorMessage?: string;
+            /**
+             * The number of active process instances that currently have an active incident with this error.
+             *
+             */
+            activeInstancesWithErrorCount?: number;
+        }>;
+    };
+};
+
+export type GetProcessInstanceStatisticsByErrorResponse = GetProcessInstanceStatisticsByErrorResponses[keyof GetProcessInstanceStatisticsByErrorResponses];
 
 export type ActivateJobsData = {
     body: {
@@ -14745,11 +14852,11 @@ export type SearchJobsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_247_;
+                $eq?: _heyapi_250_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_247_;
+                $neq?: _heyapi_250_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -14757,11 +14864,11 @@ export type SearchJobsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_247_>;
+                $in?: Array<_heyapi_250_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_247_>;
+                $notIn?: Array<_heyapi_250_>;
             };
             /**
              * JobKindEnum property with full advanced search capabilities.
@@ -14770,11 +14877,11 @@ export type SearchJobsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_368_;
+                $eq?: _heyapi_371_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_368_;
+                $neq?: _heyapi_371_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -14782,7 +14889,7 @@ export type SearchJobsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_368_>;
+                $in?: Array<_heyapi_371_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -14803,11 +14910,11 @@ export type SearchJobsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_369_;
+                $eq?: _heyapi_372_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_369_;
+                $neq?: _heyapi_372_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -14815,7 +14922,7 @@ export type SearchJobsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_369_>;
+                $in?: Array<_heyapi_372_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -14916,11 +15023,11 @@ export type SearchJobsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_370_;
+                $eq?: _heyapi_373_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_370_;
+                $neq?: _heyapi_373_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -14928,7 +15035,7 @@ export type SearchJobsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_370_>;
+                $in?: Array<_heyapi_373_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -14938,7 +15045,7 @@ export type SearchJobsData = {
             /**
              * String property with full advanced search capabilities.
              */
-            type?: string | (_heyapi_371_ & {
+            type?: string | (_heyapi_374_ & {
                 $like?: _heyapi_9_;
             });
             /**
@@ -14948,11 +15055,11 @@ export type SearchJobsData = {
             /**
              * When the job was created. Field is present for jobs created after 8.9.
              */
-            creationTime?: _heyapi_234_;
+            creationTime?: _heyapi_237_;
             /**
              * When the job was last updated. Field is present for jobs created after 8.9.
              */
-            lastUpdateTime?: _heyapi_234_;
+            lastUpdateTime?: _heyapi_237_;
         };
     };
     path?: never;
@@ -16947,11 +17054,11 @@ export type SearchMessageSubscriptionsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_141_;
+                $eq?: _heyapi_146_;
                 /**
                  * Checks for equality with the provided value.
                  */
-                $neq?: _heyapi_141_;
+                $neq?: _heyapi_146_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -16959,11 +17066,11 @@ export type SearchMessageSubscriptionsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_141_>;
+                $in?: Array<_heyapi_146_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_141_>;
+                $notIn?: Array<_heyapi_146_>;
             };
             /**
              * ProcessDefinitionKey property with full advanced search capabilities.
@@ -17089,11 +17196,11 @@ export type SearchMessageSubscriptionsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_427_;
+                $eq?: _heyapi_430_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_427_;
+                $neq?: _heyapi_430_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -17101,7 +17208,7 @@ export type SearchMessageSubscriptionsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_427_>;
+                $in?: Array<_heyapi_430_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -18017,11 +18124,11 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_141_;
+                $eq?: _heyapi_146_;
                 /**
                  * Checks for equality with the provided value.
                  */
-                $neq?: _heyapi_141_;
+                $neq?: _heyapi_146_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -18029,11 +18136,11 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_141_>;
+                $in?: Array<_heyapi_146_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_141_>;
+                $notIn?: Array<_heyapi_146_>;
             };
             /**
              * ProcessDefinitionKey property with full advanced search capabilities.
@@ -18159,11 +18266,11 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_427_;
+                $eq?: _heyapi_430_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_427_;
+                $neq?: _heyapi_430_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -18171,7 +18278,7 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_427_>;
+                $in?: Array<_heyapi_430_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -19025,7 +19132,7 @@ export type GetProcessDefinitionStatisticsData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -19033,11 +19140,11 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -19045,7 +19152,7 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -19131,7 +19238,7 @@ export type GetProcessDefinitionStatisticsData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -19176,11 +19283,11 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -19188,7 +19295,7 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -19278,23 +19385,23 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * The start date.
                  */
-                startDate?: _heyapi_234_;
+                startDate?: _heyapi_237_;
                 /**
                  * The end date.
                  */
-                endDate?: _heyapi_234_;
+                endDate?: _heyapi_237_;
                 /**
                  * ProcessInstanceStateEnum property with full advanced search capabilities.
                  */
-                state?: _heyapi_468_ | {
+                state?: _heyapi_471_ | {
                     /**
                      * Checks for equality with the provided value.
                      */
-                    $eq?: _heyapi_468_;
+                    $eq?: _heyapi_471_;
                     /**
                      * Checks for inequality with the provided value.
                      */
-                    $neq?: _heyapi_468_;
+                    $neq?: _heyapi_471_;
                     /**
                      * Checks if the current property exists.
                      */
@@ -19302,7 +19409,7 @@ export type GetProcessDefinitionStatisticsData = {
                     /**
                      * Checks if the property matches any of the provided values.
                      */
-                    $in?: Array<_heyapi_468_>;
+                    $in?: Array<_heyapi_471_>;
                     $like?: _heyapi_9_;
                 };
                 /**
@@ -19316,19 +19423,19 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * The process instance variables.
                  */
-                variables?: Array<_heyapi_470_>;
+                variables?: Array<_heyapi_473_>;
                 /**
                  * The key of this process instance.
                  */
-                processInstanceKey?: _heyapi_469_;
+                processInstanceKey?: _heyapi_472_;
                 /**
                  * The parent process instance key.
                  */
-                parentProcessInstanceKey?: _heyapi_469_;
+                parentProcessInstanceKey?: _heyapi_472_;
                 /**
                  * The parent element instance key.
                  */
-                parentElementInstanceKey?: _heyapi_471_;
+                parentElementInstanceKey?: _heyapi_474_;
                 /**
                  * The batch operation id.
                  */
@@ -19344,7 +19451,7 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * The state of the element instances associated with the process instance.
                  */
-                elementInstanceState?: _heyapi_472_;
+                elementInstanceState?: _heyapi_475_;
                 /**
                  * The element id associated with the process instance.
                  */
@@ -19356,8 +19463,8 @@ export type GetProcessDefinitionStatisticsData = {
                 /**
                  * The incident error hash code, associated with this process.
                  */
-                incidentErrorHashCode?: _heyapi_473_;
-                tags?: _heyapi_474_;
+                incidentErrorHashCode?: _heyapi_476_;
+                tags?: _heyapi_477_;
             }>;
         };
     };
@@ -19964,7 +20071,7 @@ export type CreateProcessInstanceData = {
              * The id of the element that, once completed or terminated, will cause the process to be terminated.
              *
              */
-            afterElementId: _heyapi_490_;
+            afterElementId: _heyapi_493_;
         }>;
         /**
          * Wait for the process instance to complete. If the process instance completion does
@@ -20017,7 +20124,7 @@ export type CreateProcessInstanceData = {
              * For now, however, the start instruction is implicitly a "startBeforeElement" instruction
              *
              */
-            elementId: _heyapi_490_;
+            elementId: _heyapi_493_;
         }>;
         /**
          * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
@@ -20036,13 +20143,13 @@ export type CreateProcessInstanceData = {
              * The id of the element that, once completed or terminated, will cause the process to be terminated.
              *
              */
-            afterElementId: _heyapi_490_;
+            afterElementId: _heyapi_493_;
         }>;
         /**
          * The tenant id of the process definition.
          */
-        tenantId?: _heyapi_147_;
-        operationReference?: _heyapi_491_;
+        tenantId?: _heyapi_152_;
+        operationReference?: _heyapi_494_;
         /**
          * Wait for the process instance to complete. If the process instance completion does
          * not occur within the requestTimeout, the request will be closed. This can lead to a 504
@@ -20062,7 +20169,7 @@ export type CreateProcessInstanceData = {
          *
          */
         fetchVariables?: Array<string>;
-        tags?: _heyapi_474_;
+        tags?: _heyapi_477_;
     };
     path?: never;
     query?: never;
@@ -20268,7 +20375,7 @@ export type CancelProcessInstancesBatchOperationData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -20276,11 +20383,11 @@ export type CancelProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -20288,7 +20395,7 @@ export type CancelProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -20374,7 +20481,7 @@ export type CancelProcessInstancesBatchOperationData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -20419,11 +20526,11 @@ export type CancelProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -20431,7 +20538,7 @@ export type CancelProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -20495,7 +20602,7 @@ export type CancelProcessInstancesBatchOperationData = {
             /**
              * The process definition version.
              */
-            processDefinitionVersion?: _heyapi_473_;
+            processDefinitionVersion?: _heyapi_476_;
             /**
              * The process definition version tag.
              */
@@ -20559,7 +20666,7 @@ export type CancelProcessInstancesBatchOperationData = {
              * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
              *
              */
-            $or?: Array<_heyapi_497_ & {
+            $or?: Array<_heyapi_500_ & {
                 /**
                  * The process definition id.
                  */
@@ -20571,7 +20678,7 @@ export type CancelProcessInstancesBatchOperationData = {
                 /**
                  * The process definition version.
                  */
-                processDefinitionVersion?: _heyapi_473_;
+                processDefinitionVersion?: _heyapi_476_;
                 /**
                  * The process definition version tag.
                  */
@@ -20579,7 +20686,7 @@ export type CancelProcessInstancesBatchOperationData = {
                 /**
                  * The process definition key.
                  */
-                processDefinitionKey?: _heyapi_498_;
+                processDefinitionKey?: _heyapi_501_;
             }>;
         };
         /**
@@ -20770,7 +20877,7 @@ export type DeleteProcessInstancesBatchOperationData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -20778,11 +20885,11 @@ export type DeleteProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -20790,7 +20897,7 @@ export type DeleteProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -20876,7 +20983,7 @@ export type DeleteProcessInstancesBatchOperationData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -20921,11 +21028,11 @@ export type DeleteProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -20933,7 +21040,7 @@ export type DeleteProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -20997,7 +21104,7 @@ export type DeleteProcessInstancesBatchOperationData = {
             /**
              * The process definition version.
              */
-            processDefinitionVersion?: _heyapi_473_;
+            processDefinitionVersion?: _heyapi_476_;
             /**
              * The process definition version tag.
              */
@@ -21061,7 +21168,7 @@ export type DeleteProcessInstancesBatchOperationData = {
              * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
              *
              */
-            $or?: Array<_heyapi_497_ & {
+            $or?: Array<_heyapi_500_ & {
                 /**
                  * The process definition id.
                  */
@@ -21073,7 +21180,7 @@ export type DeleteProcessInstancesBatchOperationData = {
                 /**
                  * The process definition version.
                  */
-                processDefinitionVersion?: _heyapi_473_;
+                processDefinitionVersion?: _heyapi_476_;
                 /**
                  * The process definition version tag.
                  */
@@ -21081,7 +21188,7 @@ export type DeleteProcessInstancesBatchOperationData = {
                 /**
                  * The process definition key.
                  */
-                processDefinitionKey?: _heyapi_498_;
+                processDefinitionKey?: _heyapi_501_;
             }>;
         };
         /**
@@ -21272,7 +21379,7 @@ export type ResolveIncidentsBatchOperationData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -21280,11 +21387,11 @@ export type ResolveIncidentsBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -21292,7 +21399,7 @@ export type ResolveIncidentsBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -21378,7 +21485,7 @@ export type ResolveIncidentsBatchOperationData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -21423,11 +21530,11 @@ export type ResolveIncidentsBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -21435,7 +21542,7 @@ export type ResolveIncidentsBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -21499,7 +21606,7 @@ export type ResolveIncidentsBatchOperationData = {
             /**
              * The process definition version.
              */
-            processDefinitionVersion?: _heyapi_473_;
+            processDefinitionVersion?: _heyapi_476_;
             /**
              * The process definition version tag.
              */
@@ -21563,7 +21670,7 @@ export type ResolveIncidentsBatchOperationData = {
              * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
              *
              */
-            $or?: Array<_heyapi_497_ & {
+            $or?: Array<_heyapi_500_ & {
                 /**
                  * The process definition id.
                  */
@@ -21575,7 +21682,7 @@ export type ResolveIncidentsBatchOperationData = {
                 /**
                  * The process definition version.
                  */
-                processDefinitionVersion?: _heyapi_473_;
+                processDefinitionVersion?: _heyapi_476_;
                 /**
                  * The process definition version tag.
                  */
@@ -21583,7 +21690,7 @@ export type ResolveIncidentsBatchOperationData = {
                 /**
                  * The process definition key.
                  */
-                processDefinitionKey?: _heyapi_498_;
+                processDefinitionKey?: _heyapi_501_;
             }>;
         };
         /**
@@ -21771,7 +21878,7 @@ export type MigrateProcessInstancesBatchOperationData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -21779,11 +21886,11 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -21791,7 +21898,7 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -21877,7 +21984,7 @@ export type MigrateProcessInstancesBatchOperationData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -21922,11 +22029,11 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -21934,7 +22041,7 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -21998,7 +22105,7 @@ export type MigrateProcessInstancesBatchOperationData = {
             /**
              * The process definition version.
              */
-            processDefinitionVersion?: _heyapi_473_;
+            processDefinitionVersion?: _heyapi_476_;
             /**
              * The process definition version tag.
              */
@@ -22062,7 +22169,7 @@ export type MigrateProcessInstancesBatchOperationData = {
              * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
              *
              */
-            $or?: Array<_heyapi_497_ & {
+            $or?: Array<_heyapi_500_ & {
                 /**
                  * The process definition id.
                  */
@@ -22074,7 +22181,7 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * The process definition version.
                  */
-                processDefinitionVersion?: _heyapi_473_;
+                processDefinitionVersion?: _heyapi_476_;
                 /**
                  * The process definition version tag.
                  */
@@ -22082,7 +22189,7 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * The process definition key.
                  */
-                processDefinitionKey?: _heyapi_498_;
+                processDefinitionKey?: _heyapi_501_;
             }>;
         };
         /**
@@ -22105,7 +22212,7 @@ export type MigrateProcessInstancesBatchOperationData = {
                 /**
                  * The element id to migrate into.
                  */
-                targetElementId: _heyapi_490_;
+                targetElementId: _heyapi_493_;
             }>;
         };
         /**
@@ -22298,7 +22405,7 @@ export type ModifyProcessInstancesBatchOperationData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -22306,11 +22413,11 @@ export type ModifyProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -22318,7 +22425,7 @@ export type ModifyProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -22404,7 +22511,7 @@ export type ModifyProcessInstancesBatchOperationData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -22449,11 +22556,11 @@ export type ModifyProcessInstancesBatchOperationData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -22461,7 +22568,7 @@ export type ModifyProcessInstancesBatchOperationData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -22525,7 +22632,7 @@ export type ModifyProcessInstancesBatchOperationData = {
             /**
              * The process definition version.
              */
-            processDefinitionVersion?: _heyapi_473_;
+            processDefinitionVersion?: _heyapi_476_;
             /**
              * The process definition version tag.
              */
@@ -22589,7 +22696,7 @@ export type ModifyProcessInstancesBatchOperationData = {
              * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
              *
              */
-            $or?: Array<_heyapi_497_ & {
+            $or?: Array<_heyapi_500_ & {
                 /**
                  * The process definition id.
                  */
@@ -22601,7 +22708,7 @@ export type ModifyProcessInstancesBatchOperationData = {
                 /**
                  * The process definition version.
                  */
-                processDefinitionVersion?: _heyapi_473_;
+                processDefinitionVersion?: _heyapi_476_;
                 /**
                  * The process definition version tag.
                  */
@@ -22609,7 +22716,7 @@ export type ModifyProcessInstancesBatchOperationData = {
                 /**
                  * The process definition key.
                  */
-                processDefinitionKey?: _heyapi_498_;
+                processDefinitionKey?: _heyapi_501_;
             }>;
         };
         /**
@@ -22623,7 +22730,7 @@ export type ModifyProcessInstancesBatchOperationData = {
             /**
              * The target element ID.
              */
-            targetElementId: _heyapi_490_;
+            targetElementId: _heyapi_493_;
         }>;
         /**
          * A reference key chosen by the user that will be part of all records resulting from this operation.
@@ -22863,7 +22970,7 @@ export type SearchProcessInstancesData = {
             /**
              * The end date.
              */
-            endDate?: _heyapi_234_;
+            endDate?: _heyapi_237_;
             /**
              * ProcessInstanceStateEnum property with full advanced search capabilities.
              */
@@ -22871,11 +22978,11 @@ export type SearchProcessInstancesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_468_;
+                $eq?: _heyapi_471_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_468_;
+                $neq?: _heyapi_471_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -22883,7 +22990,7 @@ export type SearchProcessInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_468_>;
+                $in?: Array<_heyapi_471_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -22969,7 +23076,7 @@ export type SearchProcessInstancesData = {
             /**
              * The parent process instance key.
              */
-            parentProcessInstanceKey?: _heyapi_469_;
+            parentProcessInstanceKey?: _heyapi_472_;
             /**
              * ElementInstanceKey property with full advanced search capabilities.
              */
@@ -23014,11 +23121,11 @@ export type SearchProcessInstancesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_233_;
+                $eq?: _heyapi_236_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_233_;
+                $neq?: _heyapi_236_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -23026,7 +23133,7 @@ export type SearchProcessInstancesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_233_>;
+                $in?: Array<_heyapi_236_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -23090,7 +23197,7 @@ export type SearchProcessInstancesData = {
             /**
              * The process definition version.
              */
-            processDefinitionVersion?: _heyapi_473_;
+            processDefinitionVersion?: _heyapi_476_;
             /**
              * The process definition version tag.
              */
@@ -23154,7 +23261,7 @@ export type SearchProcessInstancesData = {
              * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
              *
              */
-            $or?: Array<_heyapi_497_ & {
+            $or?: Array<_heyapi_500_ & {
                 /**
                  * The process definition id.
                  */
@@ -23166,7 +23273,7 @@ export type SearchProcessInstancesData = {
                 /**
                  * The process definition version.
                  */
-                processDefinitionVersion?: _heyapi_473_;
+                processDefinitionVersion?: _heyapi_476_;
                 /**
                  * The process definition version tag.
                  */
@@ -23174,7 +23281,7 @@ export type SearchProcessInstancesData = {
                 /**
                  * The process definition key.
                  */
-                processDefinitionKey?: _heyapi_498_;
+                processDefinitionKey?: _heyapi_501_;
             }>;
         };
     };
@@ -24070,9 +24177,18 @@ export type DeleteProcessInstanceError = DeleteProcessInstanceErrors[keyof Delet
 
 export type DeleteProcessInstanceResponses = {
     /**
-     * The process instance will be deleted.
+     * The created batch operation.
      */
-    204: void;
+    200: {
+        /**
+         * System-generated key for an batch operation.
+         */
+        batchOperationKey?: string;
+        /**
+         * The type of the batch operation.
+         */
+        batchOperationType?: 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_PROCESS_DEFINITION' | 'DELETE_PROCESS_INSTANCE' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'UPDATE_VARIABLE';
+    };
 };
 
 export type DeleteProcessInstanceResponse = DeleteProcessInstanceResponses[keyof DeleteProcessInstanceResponses];
@@ -24343,11 +24459,11 @@ export type SearchProcessInstanceIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_245_;
+                $eq?: _heyapi_248_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_245_;
+                $neq?: _heyapi_248_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -24355,11 +24471,11 @@ export type SearchProcessInstanceIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_245_>;
+                $in?: Array<_heyapi_248_>;
                 /**
                  * Checks if the property does not match any of the provided values.
                  */
-                $notIn?: Array<_heyapi_245_>;
+                $notIn?: Array<_heyapi_248_>;
                 $like?: _heyapi_9_;
             };
             errorMessage?: _heyapi_11_;
@@ -24411,11 +24527,11 @@ export type SearchProcessInstanceIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_246_;
+                $eq?: _heyapi_249_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_246_;
+                $neq?: _heyapi_249_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -24423,11 +24539,11 @@ export type SearchProcessInstanceIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_246_>;
+                $in?: Array<_heyapi_249_>;
                 /**
                  * Checks if the property does not match any of the provided values.
                  */
-                $notIn?: Array<_heyapi_246_>;
+                $notIn?: Array<_heyapi_249_>;
                 $like?: _heyapi_9_;
             };
             /**
@@ -24541,11 +24657,11 @@ export type SearchProcessInstanceIncidentsData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_247_;
+                $eq?: _heyapi_250_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_247_;
+                $neq?: _heyapi_250_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -24553,11 +24669,11 @@ export type SearchProcessInstanceIncidentsData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_247_>;
+                $in?: Array<_heyapi_250_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_247_>;
+                $notIn?: Array<_heyapi_250_>;
             };
         };
     };
@@ -24811,7 +24927,7 @@ export type MigrateProcessInstanceData = {
             /**
              * The element id to migrate into.
              */
-            targetElementId: _heyapi_490_;
+            targetElementId: _heyapi_493_;
         }>;
         /**
          * A reference key chosen by the user that will be part of all records resulting from this operation.
@@ -25035,7 +25151,7 @@ export type ModifyProcessInstanceData = {
                  * The id of the source element for the move instruction.
                  *
                  */
-                sourceElementId: _heyapi_490_;
+                sourceElementId: _heyapi_493_;
             } | {
                 /**
                  * The type of source element instruction.
@@ -25050,7 +25166,7 @@ export type ModifyProcessInstanceData = {
             /**
              * The target element id.
              */
-            targetElementId: _heyapi_490_;
+            targetElementId: _heyapi_493_;
             /**
              * Defines the ancestor scope for the created element instances. The default behavior resembles
              * a "direct" scope instruction with an `ancestorElementInstanceKey` of `"-1"`.
@@ -25069,6 +25185,11 @@ export type ModifyProcessInstanceData = {
                  *
                  */
                 ancestorElementInstanceKey: string | _heyapi_7_;
+            } | {
+                /**
+                 * The type of ancestor scope instruction.
+                 */
+                ancestorScopeType: string;
             } | {
                 /**
                  * The type of ancestor scope instruction.
@@ -25102,7 +25223,7 @@ export type ModifyProcessInstanceData = {
             /**
              * The id of the elements to terminate. The element instances are determined at runtime.
              */
-            elementId: _heyapi_490_;
+            elementId: _heyapi_493_;
         } | {
             /**
              * The key of the element instance to terminate.
@@ -33762,11 +33883,11 @@ export type SearchUserTasksData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_816_;
+                $eq?: _heyapi_819_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_816_;
+                $neq?: _heyapi_819_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -33774,7 +33895,7 @@ export type SearchUserTasksData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_816_>;
+                $in?: Array<_heyapi_819_>;
                 /**
                  * Checks if the property matches the provided like value.
                  *
@@ -33917,15 +34038,15 @@ export type SearchUserTasksData = {
             /**
              * The user task completion date.
              */
-            completionDate?: _heyapi_234_;
+            completionDate?: _heyapi_237_;
             /**
              * The user task follow-up date.
              */
-            followUpDate?: _heyapi_234_;
+            followUpDate?: _heyapi_237_;
             /**
              * The user task due date.
              */
-            dueDate?: _heyapi_234_;
+            dueDate?: _heyapi_237_;
             processInstanceVariables?: Array<{
                 /**
                  * Name of the variable.
@@ -34997,6 +35118,276 @@ export type AssignUserTaskResponses = {
 
 export type AssignUserTaskResponse = AssignUserTaskResponses[keyof AssignUserTaskResponses];
 
+export type SearchUserTaskAuditLogsData = {
+    /**
+     * User task search query request.
+     */
+    body?: {
+        /**
+         * Pagination criteria. Can use offset-based pagination (from/limit) OR cursor-based pagination (after/before + limit), but not both.
+         */
+        page?: {
+            /**
+             * The maximum number of items to return in one request.
+             */
+            limit?: number;
+        } | {
+            /**
+             * The index of items to start searching from.
+             */
+            from?: number;
+            /**
+             * The maximum number of items to return in one request.
+             */
+            limit?: number;
+        } | {
+            /**
+             * The end cursor in a search query result set.
+             */
+            after: string;
+            /**
+             * The maximum number of items to return in one request.
+             */
+            limit?: number;
+        } | {
+            /**
+             * The start cursor in a search query result set.
+             */
+            before: string;
+            /**
+             * The maximum number of items to return in one request.
+             */
+            limit?: number;
+        };
+    } & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'actorId' | 'actorType' | 'annotation' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
+            /**
+             * The order in which to sort the related field.
+             */
+            order?: 'ASC' | 'DESC';
+        }>;
+    };
+    path: {
+        /**
+         * Zeebe Engine resource key (Java long serialized as string)
+         */
+        userTaskKey: string;
+    };
+    query?: never;
+    url: '/user-tasks/{userTaskKey}/audit-logs/search';
+};
+
+export type SearchUserTaskAuditLogsErrors = {
+    /**
+     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
+     *
+     */
+    400: {
+        /**
+         * A URI identifying the problem type.
+         */
+        type?: string;
+        /**
+         * A summary of the problem type.
+         */
+        title?: string;
+        /**
+         * The HTTP status code for this problem.
+         */
+        status?: number;
+        /**
+         * An explanation of the problem in more detail.
+         */
+        detail?: string;
+        /**
+         * A URI path identifying the origin of the problem.
+         */
+        instance?: string;
+    };
+    /**
+     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
+     *
+     */
+    500: {
+        /**
+         * A URI identifying the problem type.
+         */
+        type?: string;
+        /**
+         * A summary of the problem type.
+         */
+        title?: string;
+        /**
+         * The HTTP status code for this problem.
+         */
+        status?: number;
+        /**
+         * An explanation of the problem in more detail.
+         */
+        detail?: string;
+        /**
+         * A URI path identifying the origin of the problem.
+         */
+        instance?: string;
+    };
+};
+
+export type SearchUserTaskAuditLogsError = SearchUserTaskAuditLogsErrors[keyof SearchUserTaskAuditLogsErrors];
+
+export type SearchUserTaskAuditLogsResponses = {
+    /**
+     * Audit log search response.
+     */
+    200: {
+        /**
+         * Pagination information about the search results.
+         */
+        page: {
+            /**
+             * Total items matching the criteria.
+             */
+            totalItems: number;
+            /**
+             * Indicates whether there are more items matching the criteria beyond the returned items.
+             * This is useful for determining if additional requests are needed to retrieve all results.
+             *
+             */
+            hasMoreTotalItems?: boolean;
+            /**
+             * The start cursor in a search query result set.
+             */
+            startCursor?: string;
+            /**
+             * The end cursor in a search query result set.
+             */
+            endCursor?: string;
+        };
+    } & {
+        /**
+         * The matching audit logs.
+         */
+        items?: Array<{
+            /**
+             * Zeebe Engine resource key (Java long serialized as string)
+             */
+            auditLogKey?: string;
+            /**
+             * The key of the entity this audit log refers to.
+             */
+            entityKey?: string;
+            /**
+             * The type of entity affected by the operation.
+             */
+            entityType?: 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE';
+            /**
+             * The type of operation performed.
+             */
+            operationType?: 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UNKNOWN' | 'UPDATE';
+            /**
+             * System-generated key for an batch operation.
+             */
+            batchOperationKey?: string;
+            /**
+             * The type of the batch operation.
+             */
+            batchOperationType?: 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_PROCESS_DEFINITION' | 'DELETE_PROCESS_INSTANCE' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'UPDATE_VARIABLE';
+            /**
+             * The timestamp when the operation occurred.
+             */
+            timestamp?: string;
+            /**
+             * The ID of the actor who performed the operation.
+             */
+            actorId?: string;
+            /**
+             * The type of actor who performed the operation.
+             */
+            actorType?: 'ANONYMOUS' | 'CLIENT' | 'UNKNOWN' | 'USER';
+            /**
+             * The unique identifier of the tenant.
+             */
+            tenantId?: string;
+            /**
+             * The result status of the operation.
+             */
+            result?: 'FAIL' | 'SUCCESS';
+            /**
+             * Additional notes about the operation.
+             */
+            annotation?: string;
+            /**
+             * The category of the audit log operation.
+             */
+            category?: 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS';
+            /**
+             * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
+             */
+            processDefinitionId?: string;
+            /**
+             * System-generated key for a deployed process definition.
+             */
+            processDefinitionKey?: _heyapi_4_;
+            /**
+             * System-generated key for a process instance.
+             */
+            processInstanceKey?: _heyapi_4_;
+            /**
+             * System-generated key for a element instance.
+             */
+            elementInstanceKey?: _heyapi_4_;
+            /**
+             * Zeebe Engine resource key (Java long serialized as string)
+             */
+            jobKey?: string;
+            /**
+             * System-generated key for a user task.
+             */
+            userTaskKey?: _heyapi_4_;
+            /**
+             * The decision requirements ID.
+             */
+            decisionRequirementsId?: string;
+            /**
+             * System-generated key for a deployed decision requirements definition.
+             */
+            decisionRequirementsKey?: _heyapi_4_;
+            /**
+             * Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
+             */
+            decisionDefinitionId?: string;
+            /**
+             * System-generated key for a decision definition.
+             */
+            decisionDefinitionKey?: _heyapi_4_;
+            /**
+             * System-generated key for a decision evaluation.
+             */
+            decisionEvaluationKey?: _heyapi_4_;
+            /**
+             * Key for a deployment.
+             */
+            deploymentKey?: _heyapi_4_;
+            /**
+             * System-generated key for a deployed form.
+             */
+            formKey?: _heyapi_4_;
+            /**
+             * The system-assigned key for this resource.
+             */
+            resourceKey?: _heyapi_5_ | _heyapi_19_ | _heyapi_4_ | _heyapi_20_;
+        }>;
+    };
+};
+
+export type SearchUserTaskAuditLogsResponse = SearchUserTaskAuditLogsResponses[keyof SearchUserTaskAuditLogsResponses];
+
 export type CompleteUserTaskData = {
     body?: {
         /**
@@ -35703,11 +36094,11 @@ export type SearchVariablesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_857_;
+                $eq?: _heyapi_865_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_857_;
+                $neq?: _heyapi_865_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -35715,11 +36106,11 @@ export type SearchVariablesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_857_>;
+                $in?: Array<_heyapi_865_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_857_>;
+                $notIn?: Array<_heyapi_865_>;
             };
             /**
              * ScopeKey property with full advanced search capabilities.
@@ -35728,11 +36119,11 @@ export type SearchVariablesData = {
                 /**
                  * Checks for equality with the provided value.
                  */
-                $eq?: _heyapi_858_;
+                $eq?: _heyapi_866_;
                 /**
                  * Checks for inequality with the provided value.
                  */
-                $neq?: _heyapi_858_;
+                $neq?: _heyapi_866_;
                 /**
                  * Checks if the current property exists.
                  */
@@ -35740,11 +36131,11 @@ export type SearchVariablesData = {
                 /**
                  * Checks if the property matches any of the provided values.
                  */
-                $in?: Array<_heyapi_858_>;
+                $in?: Array<_heyapi_866_>;
                 /**
                  * Checks if the property matches none of the provided values.
                  */
-                $notIn?: Array<_heyapi_858_>;
+                $notIn?: Array<_heyapi_866_>;
             };
             /**
              * ProcessInstanceKey property with full advanced search capabilities.
@@ -36145,7 +36536,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:3c3967f45fbc12624bc2b81db0cae6bf5afb61e035c54b201c6efa176b350057
+// specHash=sha256:effb40a8b830ddb3f3f9054d3c1585e782180ac35fdc5b9bb178f1bbe259d6db
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

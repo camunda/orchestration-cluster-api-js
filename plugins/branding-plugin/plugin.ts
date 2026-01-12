@@ -354,6 +354,46 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
               src = lines.join('\n');
               data = src;
             }
+
+            // openapi-ts sometimes emits internal `_heyapi_*` identifiers in the Zod output
+            // variables (referenced within lazy schemas) but fails to emit their definitions.
+            // We synthesize them here (as z.string()) to prevent ReferenceErrors at runtime.
+            try {
+              const matches = src.match(/_heyapi_\d+_/g) || [];
+              const unique = Array.from(new Set(matches));
+              // Check if variable is defined (const, let, var, or export const...)
+              const missing = unique.filter(
+                (name) => !new RegExp(`\\b(?:const|let|var|function) ${name}\\b`).test(src)
+              );
+
+              if (missing.length) {
+                const missingDefs = missing
+                  .map((name) => `const ${name} = z.unknown();`)
+                  .join('\n');
+
+                // Insert before the first export to ensure they are available to all schemas
+                const firstExportIdx = src.search(/^export const/m);
+                if (firstExportIdx !== -1) {
+                  src =
+                    src.slice(0, firstExportIdx) +
+                    '// branding-plugin synthesized identifiers (missing in upstream gen)\n' +
+                    missingDefs +
+                    '\n\n' +
+                    src.slice(firstExportIdx);
+                } else {
+                  src += '\n\n// branding-plugin synthesized identifiers\n' + missingDefs;
+                }
+                console.log(
+                  `[branding-plugin] synthesized ${missing.length} missing _heyapi_* definitions in zod.gen.ts`
+                );
+                data = src;
+              }
+            } catch (e) {
+              console.warn(
+                '[branding-plugin] failed to synthesize _heyapi_* definitions for zod',
+                e
+              );
+            }
           }
           // Append helper namespaces to types file (after branding) so users can import from one place.
           if (filePath.endsWith(targetTypesSuffix)) {

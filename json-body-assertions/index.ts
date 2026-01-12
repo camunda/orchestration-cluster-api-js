@@ -3,6 +3,7 @@ import {
   validateResponseShape as _baseValidateResponseShape,
   validateResponse as _baseValidateResponse,
 } from 'assert-json-body';
+
 import type { PlaywrightAPIResponse } from 'assert-json-body';
 
 export const RESPONSE_INDEX = {
@@ -210,12 +211,12 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
-  '/incidents/statistics/process-instances': {
+  '/incidents/statistics/process-instances-by-definition': {
     POST: {
       '200': 1,
     },
   },
-  '/incidents/statistics/process-instances-by-definition': {
+  '/incidents/statistics/process-instances-by-error': {
     POST: {
       '200': 1,
     },
@@ -345,6 +346,11 @@ export const RESPONSE_INDEX = {
   },
   '/process-instances/{processInstanceKey}/call-hierarchy': {
     GET: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/deletion': {
+    POST: {
       '200': 1,
     },
   },
@@ -494,6 +500,11 @@ export const RESPONSE_INDEX = {
   },
   '/user-tasks/{userTaskKey}': {
     GET: {
+      '200': 1,
+    },
+  },
+  '/user-tasks/{userTaskKey}/audit-logs/search': {
+    POST: {
       '200': 1,
     },
   },

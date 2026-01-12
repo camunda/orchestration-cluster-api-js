@@ -512,6 +512,192 @@
                                 ]
                               }
                             ]
+                          },
+                          "deploymentKey": {
+                            "description": "The deployment key filter.",
+                            "allOf": [
+                              {
+                                "description": "DeploymentKey property with full advanced search capabilities.",
+                                "type": "object",
+                                "oneOf": [
+                                  {
+                                    "type": "string",
+                                    "title": "Exact match",
+                                    "description": "Matches the value exactly.",
+                                    "allOf": [
+                                      {
+                                        "$ref": "#/paths/~1deployments/post/responses/200/content/application~1json/schema/properties/deploymentKey/allOf/0"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "title": "Advanced filter",
+                                    "description": "Advanced DeploymentKey filter.",
+                                    "type": "object",
+                                    "properties": {
+                                      "$eq": {
+                                        "description": "Checks for equality with the provided value.",
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/paths/~1deployments/post/responses/200/content/application~1json/schema/properties/deploymentKey/allOf/0"
+                                          }
+                                        ]
+                                      },
+                                      "$neq": {
+                                        "description": "Checks for inequality with the provided value.",
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/paths/~1deployments/post/responses/200/content/application~1json/schema/properties/deploymentKey/allOf/0"
+                                          }
+                                        ]
+                                      },
+                                      "$exists": {
+                                        "description": "Checks if the current property exists.",
+                                        "type": "boolean"
+                                      },
+                                      "$in": {
+                                        "description": "Checks if the property matches any of the provided values.",
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/paths/~1deployments/post/responses/200/content/application~1json/schema/properties/deploymentKey/allOf/0"
+                                        }
+                                      },
+                                      "$notIn": {
+                                        "description": "Checks if the property matches none of the provided values.",
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/paths/~1deployments/post/responses/200/content/application~1json/schema/properties/deploymentKey/allOf/0"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "formKey": {
+                            "description": "The form key filter.",
+                            "allOf": [
+                              {
+                                "description": "FormKey property with full advanced search capabilities.",
+                                "type": "object",
+                                "oneOf": [
+                                  {
+                                    "type": "string",
+                                    "title": "Exact match",
+                                    "description": "Matches the value exactly.",
+                                    "allOf": [
+                                      {
+                                        "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "title": "Advanced filter",
+                                    "description": "Advanced FormKey filter.",
+                                    "type": "object",
+                                    "properties": {
+                                      "$eq": {
+                                        "description": "Checks for equality with the provided value.",
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
+                                          }
+                                        ]
+                                      },
+                                      "$neq": {
+                                        "description": "Checks for inequality with the provided value.",
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
+                                          }
+                                        ]
+                                      },
+                                      "$exists": {
+                                        "description": "Checks if the current property exists.",
+                                        "type": "boolean"
+                                      },
+                                      "$in": {
+                                        "description": "Checks if the property matches any of the provided values.",
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
+                                        }
+                                      },
+                                      "$notIn": {
+                                        "description": "Checks if the property matches none of the provided values.",
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "resourceKey": {
+                            "description": "The resource key filter.",
+                            "allOf": [
+                              {
+                                "description": "ResourceKey property with full advanced search capabilities.",
+                                "type": "object",
+                                "oneOf": [
+                                  {
+                                    "type": "string",
+                                    "title": "Exact match",
+                                    "description": "Matches the value exactly.",
+                                    "allOf": [
+                                      {
+                                        "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "title": "Advanced filter",
+                                    "description": "Advanced ResourceKey filter.",
+                                    "type": "object",
+                                    "properties": {
+                                      "$eq": {
+                                        "description": "Checks for equality with the provided value.",
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema"
+                                          }
+                                        ]
+                                      },
+                                      "$neq": {
+                                        "description": "Checks for inequality with the provided value.",
+                                        "allOf": [
+                                          {
+                                            "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema"
+                                          }
+                                        ]
+                                      },
+                                      "$exists": {
+                                        "description": "Checks if the current property exists.",
+                                        "type": "boolean"
+                                      },
+                                      "$in": {
+                                        "description": "Checks if the property matches any of the provided values.",
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema"
+                                        }
+                                      },
+                                      "$notIn": {
+                                        "description": "Checks if the property matches none of the provided values.",
+                                        "type": "array",
+                                        "items": {
+                                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
                           }
                         }
                       }
@@ -625,11 +811,11 @@
                         "INCIDENT",
                         "MAPPING_RULE",
                         "PROCESS_INSTANCE",
+                        "RESOURCE",
                         "ROLE",
                         "TENANT",
                         "USER",
                         "USER_TASK",
-                        "RESOURCE",
                         "VARIABLE"
                       ]
                     },
@@ -649,8 +835,8 @@
                         "RESUME",
                         "SUSPEND",
                         "UNASSIGN",
-                        "UPDATE",
-                        "UNKNOWN"
+                        "UNKNOWN",
+                        "UPDATE"
                       ]
                     },
                     "batchOperationKey": {
@@ -682,8 +868,10 @@
                       "type": "string",
                       "description": "The type of actor who performed the operation.",
                       "enum": [
-                        "USER",
-                        "CLIENT"
+                        "ANONYMOUS",
+                        "CLIENT",
+                        "UNKNOWN",
+                        "USER"
                       ]
                     },
                     "tenantId": {
@@ -698,8 +886,8 @@
                       "type": "string",
                       "description": "The result status of the operation.",
                       "enum": [
-                        "SUCCESS",
-                        "FAIL"
+                        "FAIL",
+                        "SUCCESS"
                       ]
                     },
                     "annotation": {
@@ -710,9 +898,9 @@
                       "type": "string",
                       "description": "The category of the audit log operation.",
                       "enum": [
+                        "ADMIN",
                         "DEPLOYED_RESOURCES",
-                        "USER_TASKS",
-                        "ADMIN"
+                        "USER_TASKS"
                       ]
                     },
                     "processDefinitionId": {
@@ -814,6 +1002,30 @@
                         }
                       ],
                       "description": "The key of the decision evaluation."
+                    },
+                    "deploymentKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/paths/~1deployments/post/responses/200/content/application~1json/schema/properties/deploymentKey/allOf/0"
+                        }
+                      ],
+                      "description": "The key of the deployment."
+                    },
+                    "formKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
+                        }
+                      ],
+                      "description": "The key of the form."
+                    },
+                    "resourceKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema"
+                        }
+                      ],
+                      "description": "The system-assigned key for this resource."
                     }
                   }
                 }
@@ -8412,131 +8624,6 @@
         }
       }
     },
-    "/incidents/statistics/process-instances": {
-      "post": {
-        "x-eventually-consistent": true,
-        "tags": [
-          "Incident"
-        ],
-        "operationId": "getIncidentProcessInstanceStatistics",
-        "summary": "Get incident process instance statistics",
-        "description": "Returns aggregated statistics for process instances with active incidents,\ngrouped by error hash code.\n",
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "page": {
-                    "description": "Pagination parameters for process instance statistics with active incidents.",
-                    "allOf": [
-                      {
-                        "type": "object",
-                        "title": "Offset-based pagination",
-                        "properties": {
-                          "from": {
-                            "description": "The index of items to start searching from.",
-                            "type": "integer",
-                            "format": "int32",
-                            "minimum": 0
-                          },
-                          "limit": {
-                            "description": "The maximum number of items to return in one request.",
-                            "type": "integer",
-                            "format": "int32",
-                            "default": 100,
-                            "minimum": 1
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "errorMessage",
-                            "activeInstancesWithErrorCount"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The incident statistics result.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/paths/~1groups~1{groupId}~1roles~1search/post/responses/200/content/application~1json/schema"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The incident statistics results.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "errorHashCode": {
-                            "type": "integer",
-                            "format": "int32",
-                            "description": "A hash code representing the error details of an incident."
-                          },
-                          "errorMessage": {
-                            "type": "string",
-                            "description": "Error message which describes the error in more detail."
-                          },
-                          "activeInstancesWithErrorCount": {
-                            "type": "integer",
-                            "format": "int64",
-                            "description": "The number of active process instances with this error."
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/paths/~1clock/put/responses/400"
-          },
-          "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
-          },
-          "403": {
-            "$ref": "#/paths/~1roles/post/responses/403"
-          },
-          "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
-          }
-        }
-      }
-    },
     "/incidents/statistics/process-instances-by-definition": {
       "post": {
         "x-eventually-consistent": true,
@@ -8576,7 +8663,7 @@
                     "description": "Pagination parameters for the aggregated process instance statistics.",
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1incidents~1statistics~1process-instances/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
+                        "$ref": "#/paths/~1incidents~1statistics~1process-instances-by-error/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
                       }
                     ]
                   },
@@ -8591,10 +8678,7 @@
                           "type": "string",
                           "enum": [
                             "activeInstancesWithErrorCount",
-                            "processDefinitionId",
                             "processDefinitionKey",
-                            "processDefinitionName",
-                            "processDefinitionVersion",
                             "tenantId"
                           ]
                         },
@@ -8655,6 +8739,131 @@
                             "type": "integer",
                             "format": "int64",
                             "description": "The number of active process instances that currently have an incident\nwith the specified error hash code.\n"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/incidents/statistics/process-instances-by-error": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Incident"
+        ],
+        "operationId": "getProcessInstanceStatisticsByError",
+        "summary": "Get process instance statistics by error",
+        "description": "Returns statistics for active process instances that currently have active incidents,\ngrouped by incident error hash code.\n",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "page": {
+                    "description": "Pagination parameters for process instance statistics grouped by incident error.\n",
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "title": "Offset-based pagination",
+                        "properties": {
+                          "from": {
+                            "description": "The index of items to start searching from.",
+                            "type": "integer",
+                            "format": "int32",
+                            "minimum": 0
+                          },
+                          "limit": {
+                            "description": "The maximum number of items to return in one request.",
+                            "type": "integer",
+                            "format": "int32",
+                            "default": 100,
+                            "minimum": 1
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "sort": {
+                    "description": "Sorting criteria for process instance statistics grouped by incident error.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "description": "The field to sort the incident error statistics by.",
+                          "type": "string",
+                          "enum": [
+                            "errorMessage",
+                            "activeInstancesWithErrorCount"
+                          ]
+                        },
+                        "order": {
+                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
+                        }
+                      },
+                      "required": [
+                        "field"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The statistics about process instances with incident, grouped by error hash code are\nsuccessfully returned.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/paths/~1groups~1{groupId}~1roles~1search/post/responses/200/content/application~1json/schema"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "Statistics of active process instances grouped by incident error.\n",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "errorHashCode": {
+                            "type": "integer",
+                            "format": "int32",
+                            "description": "The hash code identifying a specific incident error.."
+                          },
+                          "errorMessage": {
+                            "type": "string",
+                            "description": "The error message associated with the incident error hash code."
+                          },
+                          "activeInstancesWithErrorCount": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The number of active process instances that currently have an active incident with this error.\n"
                           }
                         }
                       }
@@ -9034,7 +9243,7 @@
                                 }
                               },
                               {
-                                "$ref": "#/paths/~1incidents~1statistics~1process-instances/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
+                                "$ref": "#/paths/~1incidents~1statistics~1process-instances-by-error/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
                               },
                               {
                                 "$ref": "#/paths/~1process-definitions~1statistics~1message-subscriptions/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
@@ -11930,7 +12139,7 @@
                   "page": {
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1incidents~1statistics~1process-instances/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
+                        "$ref": "#/paths/~1incidents~1statistics~1process-instances-by-error/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
                       }
                     ]
                   },
@@ -12570,7 +12779,7 @@
                     "description": "Pagination criteria.",
                     "allOf": [
                       {
-                        "$ref": "#/paths/~1incidents~1statistics~1process-instances/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
+                        "$ref": "#/paths/~1incidents~1statistics~1process-instances-by-error/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
                       }
                     ]
                   },
@@ -14017,8 +14226,15 @@
           }
         },
         "responses": {
-          "204": {
-            "description": "The process instance will be deleted."
+          "200": {
+            "description": "The operation to delete the process instance was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1process-instances~1deletion/post/responses/200/content/application~1json/schema"
+                }
+              }
+            }
           },
           "401": {
             "$ref": "#/paths/~1roles/post/responses/401"
@@ -14444,7 +14660,8 @@
                             "propertyName": "ancestorScopeType",
                             "mapping": {
                               "direct": "#/components/schemas/DirectAncestorKeyInstruction",
-                              "inferred": "#/components/schemas/InferredAncestorKeyInstruction"
+                              "inferred": "#/components/schemas/InferredAncestorKeyInstruction",
+                              "sourceParent": "#/components/schemas/UseSourceParentKeyInstruction"
                             }
                           },
                           "oneOf": [
@@ -14483,6 +14700,20 @@
                                   "description": "The type of ancestor scope instruction.",
                                   "type": "string",
                                   "example": "inferred"
+                                }
+                              },
+                              "required": [
+                                "ancestorScopeType"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "description": "Instructs the engine to use the source's direct parent key as the ancestor scope key for the target element. This is a simpler alternative to `inferred` that skips hierarchy traversal and directly uses the source's parent key. This is useful when the source and target elements are siblings within the same flow scope.\n",
+                              "properties": {
+                                "ancestorScopeType": {
+                                  "description": "The type of ancestor scope instruction.",
+                                  "type": "string",
+                                  "example": "sourceParent"
                                 }
                               },
                               "required": [
@@ -19416,6 +19647,72 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        }
+      }
+    },
+    "/user-tasks/{userTaskKey}/audit-logs/search": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "User task"
+        ],
+        "operationId": "searchUserTaskAuditLogs",
+        "summary": "Search user task audit logs",
+        "description": "Search for user task audit logs based on given criteria.",
+        "parameters": [
+          {
+            "name": "userTaskKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the user task.",
+            "schema": {
+              "$ref": "#/paths/~1user-tasks~1{userTaskKey}/get/parameters/0/schema"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
+                  }
+                ],
+                "description": "User task search query request.",
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "sort": {
+                    "description": "Sort field criteria.",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/sort/items"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user task audit log search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1audit-logs~1search/post/responses/200/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
           }
         }
       }

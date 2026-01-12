@@ -1,5 +1,5 @@
 // AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import { createCamundaClient, ProcessInstanceKey, Tag } from '../../dist';
 import { validateResponseShape } from '../../json-body-assertions';
@@ -31,7 +31,7 @@ describe('searchProcessInstances', () => {
       { path: '/process-instances/search', method: 'POST', status: '200' },
       search
     );
-    // expect(search.items[0].tags?.[0]).toBe(tag);
+    expect(search.items[0].tags?.[0]).toBe(tag);
     await camunda.cancelProcessInstance({ processInstanceKey: process.processInstanceKey });
   }, 12_000);
 

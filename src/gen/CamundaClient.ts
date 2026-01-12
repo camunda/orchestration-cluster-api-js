@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 166
+// Operations: 167
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -374,14 +374,6 @@ type getIncidentConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
 };
-type getIncidentProcessInstanceStatisticsOptions = Parameters<typeof Sdk.getIncidentProcessInstanceStatistics>[0];
-type getIncidentProcessInstanceStatisticsBody = (NonNullable<getIncidentProcessInstanceStatisticsOptions> extends { body?: infer B } ? B : never);
-type getIncidentProcessInstanceStatisticsInput = getIncidentProcessInstanceStatisticsBody;
-/** Management of eventual consistency **/
-type getIncidentProcessInstanceStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncidentProcessInstanceStatistics>> 
-};
 type getLicenseOptions = Parameters<typeof Sdk.getLicense>[0];
 type getLicenseInput = void;
 type getMappingRuleOptions = Parameters<typeof Sdk.getMappingRule>[0];
@@ -481,6 +473,14 @@ type getProcessInstanceStatisticsByDefinitionInput = getProcessInstanceStatistic
 type getProcessInstanceStatisticsByDefinitionConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>> 
+};
+type getProcessInstanceStatisticsByErrorOptions = Parameters<typeof Sdk.getProcessInstanceStatisticsByError>[0];
+type getProcessInstanceStatisticsByErrorBody = (NonNullable<getProcessInstanceStatisticsByErrorOptions> extends { body?: infer B } ? B : never);
+type getProcessInstanceStatisticsByErrorInput = getProcessInstanceStatisticsByErrorBody;
+/** Management of eventual consistency **/
+type getProcessInstanceStatisticsByErrorConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>> 
 };
 type getResourceOptions = Parameters<typeof Sdk.getResource>[0];
 type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
@@ -924,6 +924,15 @@ type searchUsersForTenantInput = searchUsersForTenantBody & { tenantId: searchUs
 type searchUsersForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForTenant>> 
+};
+type searchUserTaskAuditLogsOptions = Parameters<typeof Sdk.searchUserTaskAuditLogs>[0];
+type searchUserTaskAuditLogsBody = (NonNullable<searchUserTaskAuditLogsOptions> extends { body?: infer B } ? B : never);
+type searchUserTaskAuditLogsPathParam_userTaskKey = (NonNullable<searchUserTaskAuditLogsOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+type searchUserTaskAuditLogsInput = searchUserTaskAuditLogsBody & { userTaskKey: searchUserTaskAuditLogsPathParam_userTaskKey };
+/** Management of eventual consistency **/
+type searchUserTaskAuditLogsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskAuditLogs>> 
 };
 type searchUserTasksOptions = Parameters<typeof Sdk.searchUserTasks>[0];
 type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
@@ -5627,71 +5636,6 @@ export class CamundaClient {
   }
 
   /**
-   * Get incident process instance statistics
-   *
-   * Returns aggregated statistics for process instances with active incidents,
-   * grouped by error hash code.
-   *
-    *
-   * @operationId getIncidentProcessInstanceStatistics
-   * @tags Incident
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
-   */
-  getIncidentProcessInstanceStatistics(input: getIncidentProcessInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getIncidentProcessInstanceStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getIncidentProcessInstanceStatistics>>;
-  getIncidentProcessInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getIncidentProcessInstanceStatisticsConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const maybe = await this._validation.gateRequest('getIncidentProcessInstanceStatistics', Schemas.zGetIncidentProcessInstanceStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getIncidentProcessInstanceStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getIncidentProcessInstanceStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetIncidentProcessInstanceStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schema = Schemas.zGetIncidentProcessInstanceStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getIncidentProcessInstanceStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getIncidentProcessInstanceStatistics', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
-    });
-  }
-
-  /**
    * Get license status
    *
    * Obtains the status of the current Camunda license.
@@ -6503,6 +6447,71 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByDefinition', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get process instance statistics by error
+   *
+   * Returns statistics for active process instances that currently have active incidents,
+   * grouped by incident error hash code.
+   *
+    *
+   * @operationId getProcessInstanceStatisticsByError
+   * @tags Incident
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessInstanceStatisticsByError(input: getProcessInstanceStatisticsByErrorInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>>;
+  getProcessInstanceStatisticsByError(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getProcessInstanceStatisticsByError', Schemas.zGetProcessInstanceStatisticsByErrorData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessInstanceStatisticsByError(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatisticsByError', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessInstanceStatisticsByErrorResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetProcessInstanceStatisticsByErrorResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessInstanceStatisticsByError', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }
@@ -10258,6 +10267,71 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('searchUsersForTenant', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Search user task audit logs
+   *
+   * Search for user task audit logs based on given criteria.
+    *
+   * @operationId searchUserTaskAuditLogs
+   * @tags User task
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchUserTaskAuditLogs(input: searchUserTaskAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskAuditLogs>>;
+  searchUserTaskAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { userTaskKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { userTaskKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchUserTaskAuditLogs', Schemas.zSearchUserTaskAuditLogsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchUserTaskAuditLogs(opts);
+        let data = this._evaluateResponse(_raw, 'searchUserTaskAuditLogs', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchUserTaskAuditLogsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchUserTaskAuditLogsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchUserTaskAuditLogs', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchUserTaskAuditLogs', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }
