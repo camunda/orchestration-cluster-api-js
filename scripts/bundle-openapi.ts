@@ -4,7 +4,6 @@ import path from 'node:path';
 import SwaggerParser from '@apidevtools/swagger-parser';
 import { parse as parseYaml } from 'yaml';
 
-
 import { listFilesRecursive } from './openapi-load';
 import {
   LOCAL_BUNDLED_SPEC_PATH,
