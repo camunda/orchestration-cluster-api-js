@@ -10,9 +10,9 @@ import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
-const REPO = 'https://github.com/camunda/camunda-orchestration-cluster-api.git';
-const BRANCH = 'main';
-const REL_PATH = '/specification/rest-api.yaml';
+const REPO = 'https://github.com/camunda/camunda';
+const BRANCH = 'stable/8.8';
+const REL_PATH = 'zeebe/gateway-protocol/src/main/proto/rest-api.yaml';
 
 const baseDir = process.cwd();
 const externalDir = join(baseDir, 'external-spec');
@@ -46,7 +46,7 @@ if (existsSync(workDir)) {
   rmSync(workDir, { recursive: true, force: true });
 }
 
-run(`git clone --depth 1 --filter=blob:none --sparse ${REPO} ${workDir}`);
+run(`git clone --depth 1 --filter=blob:none --sparse --branch ${BRANCH} ${REPO} ${workDir}`);
 // Ensure sparse-checkout is in non-cone mode to allow selecting a single file path
 run(`git -C ${workDir} sparse-checkout init --no-cone`);
 run(`git -C ${workDir} sparse-checkout set ${REL_PATH}`);
