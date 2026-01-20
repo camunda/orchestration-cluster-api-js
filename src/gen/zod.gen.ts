@@ -1752,6 +1752,11 @@ export const zAuthorizationCreateResult = z.object({
 });
 
 /**
+ * System-generated key for a conditional evaluation.
+ */
+export const zConditionalEvaluationKey = zLongKey;
+
+/**
  * Key for a deployment.
  */
 export const zDeploymentKey = zLongKey;
@@ -1859,6 +1864,8 @@ export const zProcessInstanceReference = z.object({
 });
 
 export const zEvaluateConditionalResult = z.object({
+    conditionalEvaluationKey: zConditionalEvaluationKey,
+    tenantId: zTenantId,
     processInstances: z.array(zProcessInstanceReference).register(z.globalRegistry, {
         description: 'List of process instances created. If no root-level conditional start events evaluated to true, the list will be empty.'
     })
@@ -2647,6 +2654,11 @@ export const zBatchOperationItemResponse = z.object({
     }))
 });
 
+export const zDeleteResourceResponse = z.object({
+    resourceKey: zResourceKey,
+    batchOperation: z.optional(zBatchOperationCreatedResult)
+});
+
 /**
  * A reference key chosen by the user that will be part of all records resulting from this operation.
  * Must be > 0 if provided.
@@ -2658,7 +2670,10 @@ export const zOperationReference = z.coerce.bigint().gte(BigInt(1)).register(z.g
 
 export const zDeleteResourceRequest = z.union([
     z.object({
-        operationReference: z.optional(zOperationReference)
+        operationReference: z.optional(zOperationReference),
+        deleteHistory: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n'
+        })).default(false)
     }),
     z.null()
 ]);
@@ -8338,7 +8353,10 @@ export const zGetResourceContentResponse = z.string().register(z.globalRegistry,
 export const zDeleteResourceData = z.object({
     body: z.optional(z.union([
         z.object({
-            operationReference: z.optional(zOperationReference)
+            operationReference: z.optional(zOperationReference),
+            deleteHistory: z.optional(z.boolean().register(z.globalRegistry, {
+                description: 'Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n'
+            })).default(false)
         }),
         z.null()
     ])),
@@ -8347,6 +8365,11 @@ export const zDeleteResourceData = z.object({
     }),
     query: z.optional(z.never())
 });
+
+/**
+ * The resource is deleted.
+ */
+export const zDeleteResourceResponse2 = zDeleteResourceResponse;
 
 export const zCreateRoleData = z.object({
     body: z.optional(zRoleCreateRequest),

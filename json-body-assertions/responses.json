@@ -1,10 +1,10 @@
 {
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
-    "commit": "75bda57808c418bdb88048a77ffbefe8b7f16858",
-    "generatedAt": "2026-01-12T05:45:24.772Z",
+    "commit": "da98cb9d656a37c539bbb84cb370f07c4d41705e",
+    "generatedAt": "2026-01-20T21:04:29.031Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "dfc05f99e4c96e807ecbc3ed86f3f137be09461c09a2222964c51dac71409d42"
+    "specSha256": "901825b62c1a8b509a37874e785007044ff82d5d78ff34f4f2a64117101093ea"
   },
   "responses": [
     {
@@ -510,6 +510,7 @@
                     "DECISION_REQUIREMENTS_DEFINITION",
                     "DOCUMENT",
                     "EXPRESSION",
+                    "GLOBAL_LISTENER",
                     "GROUP",
                     "MAPPING_RULE",
                     "MESSAGE",
@@ -573,6 +574,7 @@
               "DECISION_REQUIREMENTS_DEFINITION",
               "DOCUMENT",
               "EXPRESSION",
+              "GLOBAL_LISTENER",
               "GROUP",
               "MAPPING_RULE",
               "MESSAGE",
@@ -1092,6 +1094,10 @@
       "schema": {
         "required": [
           {
+            "name": "conditionalEvaluationKey",
+            "type": "string"
+          },
+          {
             "name": "processInstances",
             "type": "array<object>",
             "children": {
@@ -1107,6 +1113,10 @@
                 }
               ]
             }
+          },
+          {
+            "name": "tenantId",
+            "type": "string"
           }
         ],
         "optional": []
@@ -5013,6 +5023,49 @@
           {
             "name": "versionTag",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/resources/{resourceKey}/deletion",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "resourceKey",
+            "type": "string"
+          }
+        ],
+        "optional": [
+          {
+            "name": "batchOperation",
+            "type": "schema",
+            "children": {
+              "required": [],
+              "optional": [
+                {
+                  "name": "batchOperationKey",
+                  "type": "string"
+                },
+                {
+                  "name": "batchOperationType",
+                  "type": "string",
+                  "enumValues": [
+                    "ADD_VARIABLE",
+                    "CANCEL_PROCESS_INSTANCE",
+                    "DELETE_DECISION_DEFINITION",
+                    "DELETE_PROCESS_DEFINITION",
+                    "DELETE_PROCESS_INSTANCE",
+                    "MIGRATE_PROCESS_INSTANCE",
+                    "MODIFY_PROCESS_INSTANCE",
+                    "RESOLVE_INCIDENT",
+                    "UPDATE_VARIABLE"
+                  ]
+                }
+              ]
+            }
           }
         ]
       }

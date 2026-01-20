@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:3670926048e847662279347a67a152496556ff950e23aeea6746b2744bc9771c",
+  "specHash": "sha256:5be1d6d92dced92001bcf821e50581627f373dd547ed869ab90fbc71d0fa4663",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -166,6 +166,42 @@
         "deprecated": false
       },
       "stableId": "batch-operation-key"
+    },
+    {
+      "name": "ConditionalEvaluationKey",
+      "semanticType": "ConditionalEvaluationKey",
+      "category": "other",
+      "description": "System-generated key for a conditional evaluation.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {},
+      "examples": [
+        "2251799813687654"
+      ],
+      "brand": {
+        "tsType": "CamundaKey<'ConditionalEvaluationKey'>"
+      },
+      "zod": {
+        "schemaName": "zConditionalEvaluationKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ConditionalEvaluationKey"
+      },
+      "extensions": {
+        "x-semantic-type": "ConditionalEvaluationKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "conditional-evaluation-key"
     },
     {
       "name": "DecisionDefinitionId",
@@ -2504,7 +2540,7 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 32,
+    "totalPrimaryKeys": 33,
     "totalUnionWrappers": 47,
     "implicitCamundaKeys": []
   }

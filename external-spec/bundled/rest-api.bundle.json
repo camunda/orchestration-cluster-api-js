@@ -8393,6 +8393,12 @@
                 "properties": {
                   "operationReference": {
                     "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
+                  },
+                  "deleteHistory": {
+                    "description": "Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n",
+                    "type": "boolean",
+                    "required": false,
+                    "default": false
                   }
                 }
               }
@@ -8401,7 +8407,14 @@
         },
         "responses": {
           "200": {
-            "description": "The resource is deleted."
+            "description": "The resource is deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResourceResponse"
+                }
+              }
+            }
           },
           "400": {
             "$ref": "#/paths/~1clock/put/responses/400"
@@ -14987,9 +15000,30 @@
       "EvaluateConditionalResult": {
         "type": "object",
         "required": [
-          "processInstances"
+          "processInstances",
+          "conditionalEvaluationKey",
+          "tenantId"
+        ],
+        "x-semantic-provider": [
+          "conditionalEvaluationKey"
         ],
         "properties": {
+          "conditionalEvaluationKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ConditionalEvaluationKey"
+              }
+            ],
+            "description": "The unique key of the conditional evaluation operation."
+          },
+          "tenantId": {
+            "description": "The tenant ID of the conditional evaluation operation.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TenantId"
+              }
+            ]
+          },
           "processInstances": {
             "type": "array",
             "items": {
@@ -14998,6 +15032,18 @@
             "description": "List of process instances created. If no root-level conditional start events evaluated to true, the list will be empty."
           }
         }
+      },
+      "ConditionalEvaluationKey": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/LongKey"
+          }
+        ],
+        "description": "System-generated key for a conditional evaluation.",
+        "format": "ConditionalEvaluationKey",
+        "x-semantic-type": "ConditionalEvaluationKey",
+        "example": "2251799813687654",
+        "type": "string"
       },
       "ProcessInstanceReference": {
         "type": "object",
@@ -16333,6 +16379,36 @@
         "properties": {
           "operationReference": {
             "$ref": "#/components/schemas/OperationReference"
+          },
+          "deleteHistory": {
+            "description": "Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n",
+            "type": "boolean",
+            "required": false,
+            "default": false
+          }
+        }
+      },
+      "DeleteResourceResponse": {
+        "type": "object",
+        "required": [
+          "resourceKey"
+        ],
+        "properties": {
+          "resourceKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ResourceKey"
+              }
+            ],
+            "description": "The system-assigned key for this resource, requested to be deleted."
+          },
+          "batchOperation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BatchOperationCreatedResult"
+              }
+            ],
+            "description": "The batch operation created for asynchronously deleting the historic data.\n\nThis field is only populated when the request `deleteHistory` is set to `true` and the resource\nis a process definition. For other resource types (decisions, forms, generic resources),\nthis field will not be present in the response.\n"
           }
         }
       },
@@ -17839,6 +17915,7 @@
             ]
           },
           "errorMessage": {
+            "description": "The error message of this incident.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/StringFilterProperty"

@@ -1275,10 +1275,23 @@ export type ConditionalEvaluationInstruction = {
 
 export type EvaluateConditionalResult = {
     /**
+     * The unique key of the conditional evaluation operation.
+     */
+    conditionalEvaluationKey: ConditionalEvaluationKey;
+    /**
+     * The tenant ID of the conditional evaluation operation.
+     */
+    tenantId: TenantId;
+    /**
      * List of process instances created. If no root-level conditional start events evaluated to true, the list will be empty.
      */
     processInstances: Array<ProcessInstanceReference>;
 };
+
+/**
+ * System-generated key for a conditional evaluation.
+ */
+export type ConditionalEvaluationKey = CamundaKey<'ConditionalEvaluationKey'>;
 
 export type ProcessInstanceReference = {
     /**
@@ -2029,7 +2042,34 @@ export type DeploymentResourceResult = {
 
 export type DeleteResourceRequest = {
     operationReference?: OperationReference;
+    /**
+     * Indicates if the historic data of a process resource should be deleted via a
+     * batch operation asynchronously.
+     *
+     * This flag is only effective for process resources. For other resource types
+     * (decisions, forms, generic resources), this flag is ignored and no history
+     * will be deleted. In those cases, the `batchOperation` field in the response
+     * will not be populated.
+     *
+     */
+    deleteHistory?: boolean;
 } | null;
+
+export type DeleteResourceResponse = {
+    /**
+     * The system-assigned key for this resource, requested to be deleted.
+     */
+    resourceKey: ResourceKey;
+    /**
+     * The batch operation created for asynchronously deleting the historic data.
+     *
+     * This field is only populated when the request `deleteHistory` is set to `true` and the resource
+     * is a process definition. For other resource types (decisions, forms, generic resources),
+     * this field will not be present in the response.
+     *
+     */
+    batchOperation?: BatchOperationCreatedResult;
+};
 
 export type ResourceResult = {
     /**
@@ -2888,6 +2928,9 @@ export type IncidentFilter = {
      * Incident error type with a defined set of values.
      */
     errorType?: IncidentErrorTypeFilterProperty;
+    /**
+     * The error message of this incident.
+     */
     errorMessage?: StringFilterProperty;
     /**
      * The element ID associated to this incident.
@@ -13187,6 +13230,17 @@ export type GetResourceContentResponse = GetResourceContentResponses[keyof GetRe
 export type DeleteResourceData = {
     body?: {
         operationReference?: OperationReference;
+        /**
+         * Indicates if the historic data of a process resource should be deleted via a
+         * batch operation asynchronously.
+         *
+         * This flag is only effective for process resources. For other resource types
+         * (decisions, forms, generic resources), this flag is ignored and no history
+         * will be deleted. In those cases, the `batchOperation` field in the response
+         * will not be populated.
+         *
+         */
+        deleteHistory?: boolean;
     } | null;
     path: {
         /**
@@ -13227,8 +13281,10 @@ export type DeleteResourceResponses = {
     /**
      * The resource is deleted.
      */
-    200: unknown;
+    200: DeleteResourceResponse;
 };
+
+export type DeleteResourceResponse2 = DeleteResourceResponses[keyof DeleteResourceResponses];
 
 export type CreateRoleData = {
     body?: RoleCreateRequest;
@@ -16361,7 +16417,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:3670926048e847662279347a67a152496556ff950e23aeea6746b2744bc9771c
+// specHash=sha256:5be1d6d92dced92001bcf821e50581627f373dd547ed869ab90fbc71d0fa4663
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -16409,6 +16465,16 @@ export namespace BatchOperationKey {
     return value as any;
   }
   export function getValue(key: BatchOperationKey): string { return key; }
+  export function isValid(value: string): boolean {
+    return true;
+  }
+}
+// System-generated key for a conditional evaluation.
+export namespace ConditionalEvaluationKey {
+  export function assumeExists(value: string): ConditionalEvaluationKey {
+    return value as any;
+  }
+  export function getValue(key: ConditionalEvaluationKey): string { return key; }
   export function isValid(value: string): boolean {
     return true;
   }

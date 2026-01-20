@@ -379,6 +379,11 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
+  '/resources/{resourceKey}/deletion': {
+    POST: {
+      '200': 1,
+    },
+  },
   '/roles': {
     POST: {
       '201': 1,

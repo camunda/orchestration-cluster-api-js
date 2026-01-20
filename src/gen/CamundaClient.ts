@@ -4269,6 +4269,13 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteResourceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteResource', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
         return data;
         } catch(e) {
           // Defer normalization to outer executeWithHttpRetry boundary
