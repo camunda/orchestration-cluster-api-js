@@ -51,6 +51,45 @@ function rewriteInternalRefs(root: unknown): void {
   }
 }
 
+function findPathLocalLikeRefs(
+  root: unknown,
+  maxSamples = 5
+): { count: number; samples: string[] } {
+  let count = 0;
+  const samples: string[] = [];
+  const stack: unknown[] = [root];
+
+  while (stack.length) {
+    const cur = stack.pop();
+    if (!cur) continue;
+
+    if (Array.isArray(cur)) {
+      for (const item of cur) stack.push(item);
+      continue;
+    }
+
+    if (!isRecord(cur)) continue;
+
+    const rawRef = cur['$ref'];
+    const normalizedRef = typeof rawRef === 'string' ? normalizeInternalRef(rawRef) : undefined;
+
+    if (
+      normalizedRef &&
+      normalizedRef.startsWith('#/paths/') &&
+      /\/properties\/(\$like|%24like)$/.test(normalizedRef)
+    ) {
+      count++;
+      if (samples.length < maxSamples) samples.push(String(rawRef));
+    }
+
+    for (const value of Object.values(cur)) {
+      stack.push(value);
+    }
+  }
+
+  return { count, samples };
+}
+
 function rewriteExternalRefsToLocal(root: any) {
   const stack: any[] = [root];
   while (stack.length) {
@@ -180,6 +219,27 @@ async function main(): Promise<void> {
     if (seen.has(root)) return;
     seen.add(root);
 
+    // Work around SwaggerParser.bundle occasionally emitting internal `#/paths/...` refs for
+    // LikeFilter that end up being self-referential after bundling. This breaks downstream
+    // tooling (notably @hey-api/openapi-ts) and also prevents our signature-based hoisting
+    // from recognizing higher-level filter schemas.
+    //
+    // In the upstream spec, `$like` always points at `#/components/schemas/LikeFilter`.
+    {
+      const rawRef = root['$ref'];
+      const normalizedRef = typeof rawRef === 'string' ? normalizeInternalRef(rawRef) : undefined;
+
+      if (
+        normalizedRef &&
+        normalizedRef.startsWith('#/paths/') &&
+        /\/properties\/\$like$/.test(normalizedRef) &&
+        componentSchemas['LikeFilter']
+      ) {
+        root['$ref'] = '#/components/schemas/LikeFilter';
+        return;
+      }
+    }
+
     if (componentValues.has(root)) {
       // This object IS a component definition root. Don't replace it with a ref to itself.
       // But traverse its children to normalize them.
@@ -264,6 +324,23 @@ async function main(): Promise<void> {
 
   safeNormalize(bundled);
   rewriteInternalRefs(bundled);
+
+  // Fail fast if the bundled spec still contains path-local $like refs.
+  // These are a known trigger for openapi-ts generating unresolved `_heyapi_*` placeholders.
+  const allowPathLocalLikeRefs = process.env.CAMUNDA_SDK_ALLOW_PATH_LOCAL_LIKE_REFS === '1';
+  const { count: pathLocalLikeRefCount, samples: pathLocalLikeRefSamples } =
+    findPathLocalLikeRefs(bundled);
+  if (pathLocalLikeRefCount > 0 && !allowPathLocalLikeRefs) {
+    const exampleText = pathLocalLikeRefSamples.length
+      ? `\nExamples:\n- ${pathLocalLikeRefSamples.join('\n- ')}`
+      : '';
+    throw new Error(
+      `[bundle-openapi] Found ${pathLocalLikeRefCount} path-local $like refs (e.g. #/paths/.../properties/$like). ` +
+        `These commonly cause @hey-api/openapi-ts to generate unresolved _heyapi_* placeholder types. ` +
+        `Fix the bundling normalization (see scripts/bundle-openapi.ts) or set CAMUNDA_SDK_ALLOW_PATH_LOCAL_LIKE_REFS=1 to bypass.` +
+        exampleText
+    );
+  }
 
   fs.writeFileSync(LOCAL_BUNDLED_SPEC_PATH, JSON.stringify(bundled, null, 2) + '\n', 'utf8');
 

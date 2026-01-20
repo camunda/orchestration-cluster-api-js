@@ -17,7 +17,9 @@ function safeExec(cmd) {
     // Lazy require to avoid making this file ESM.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { execSync } = require('node:child_process');
-    return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+    return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString()
+      .trim();
   } catch {
     return '';
   }
@@ -47,7 +49,9 @@ function stableMinorFromRef(refName) {
   //
   // This allows `latest` to be a pointer branch (same commit as a stable/* head) while
   // still enforcing stable-line version ranges.
-  const stableRefsRaw = safeExec("git for-each-ref --format='%(refname:short)' refs/remotes/origin/stable");
+  const stableRefsRaw = safeExec(
+    "git for-each-ref --format='%(refname:short)' refs/remotes/origin/stable"
+  );
   const stableRefs = stableRefsRaw
     .split('\n')
     .map((s) => s.trim())
@@ -55,7 +59,9 @@ function stableMinorFromRef(refName) {
 
   for (const stableRef of stableRefs) {
     // Is refName reachable from stableRef?
-    const ok = safeExec(`git merge-base --is-ancestor ${refName} ${stableRef} && echo yes || echo no`);
+    const ok = safeExec(
+      `git merge-base --is-ancestor ${refName} ${stableRef} && echo yes || echo no`
+    );
     if (ok === 'yes') {
       const m = /^origin\/stable\/(\d+\.\d+)$/.exec(stableRef);
       if (m) return m[1];
@@ -125,7 +131,9 @@ module.exports = {
     },
 
     // `latest` is a pointer branch; constrain it to the currently promoted stable line.
-    ...(promotedStableMinor ? [stableStreamBranchConfig('latest', promotedStableMinor)] : ['latest']),
+    ...(promotedStableMinor
+      ? [stableStreamBranchConfig('latest', promotedStableMinor)]
+      : ['latest']),
 
     ...(stableMinor ? [maintenanceBranchConfig(branch, stableMinor)] : []),
   ]),

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:effb40a8b830ddb3f3f9054d3c1585e782180ac35fdc5b9bb178f1bbe259d6db",
+  "specHash": "sha256:3670926048e847662279347a67a152496556ff950e23aeea6746b2744bc9771c",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -10,6 +10,44 @@
     "namespaceFactories": true
   },
   "keys": [
+    {
+      "name": "AuditLogEntityKey",
+      "semanticType": "AuditLogEntityKey",
+      "category": "other",
+      "description": "System-generated entity key for an audit log entry.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "format": "AuditLogEntityKey"
+      },
+      "examples": [
+        "22517998136843567"
+      ],
+      "brand": {
+        "tsType": "CamundaKey<'AuditLogEntityKey'>"
+      },
+      "zod": {
+        "schemaName": "zAuditLogEntityKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AuditLogEntityKey"
+      },
+      "extensions": {
+        "x-semantic-type": "AuditLogEntityKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "audit-log-entity-key"
+    },
     {
       "name": "AuditLogKey",
       "semanticType": "AuditLogKey",
@@ -761,42 +799,6 @@
       ]
     },
     {
-      "name": "MessageCorrelationKey",
-      "semanticType": "MessageCorrelationKey",
-      "category": "other",
-      "description": "System-generated key for a message correlation.",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [],
-        "inlineFragments": 0
-      },
-      "constraints": {},
-      "examples": [
-        "2251799813634265"
-      ],
-      "brand": {
-        "tsType": "CamundaKey<'MessageCorrelationKey'>"
-      },
-      "zod": {
-        "schemaName": "zMessageCorrelationKey",
-        "transformPipeline": [
-          "brand-cast"
-        ]
-      },
-      "source": {
-        "schemaPointer": "#/components/schemas/MessageCorrelationKey"
-      },
-      "extensions": {
-        "x-semantic-type": "MessageCorrelationKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "message-correlation-key"
-    },
-    {
       "name": "MessageKey",
       "semanticType": "MessageKey",
       "category": "other",
@@ -1360,6 +1362,56 @@
       "stableId": "ancestor-scope-instruction"
     },
     {
+      "name": "AuditLogActorTypeFilterProperty",
+      "kind": "hybrid-union",
+      "description": "AuditLogActorTypeEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "AuditLogActorTypeEnum"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedActorTypeFilter"
+        }
+      ],
+      "tsType": "string | AdvancedActorTypeFilter",
+      "zod": {
+        "schemaName": "zAuditLogActorTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AuditLogActorTypeFilterProperty"
+      },
+      "stableId": "audit-log-actor-type-filter-property"
+    },
+    {
+      "name": "AuditLogEntityKeyFilterProperty",
+      "kind": "hybrid-union",
+      "description": "EntityKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "AuditLogEntityKey"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAuditLogEntityKeyFilter"
+        }
+      ],
+      "tsType": "string | AdvancedAuditLogEntityKeyFilter",
+      "zod": {
+        "schemaName": "zAuditLogEntityKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AuditLogEntityKeyFilterProperty"
+      },
+      "stableId": "audit-log-entity-key-filter-property"
+    },
+    {
       "name": "AuditLogKeyFilterProperty",
       "kind": "hybrid-union",
       "description": "AuditLogKey property with full advanced search capabilities.",
@@ -1383,6 +1435,31 @@
         "schemaPointer": "#/components/schemas/AuditLogKeyFilterProperty"
       },
       "stableId": "audit-log-key-filter-property"
+    },
+    {
+      "name": "AuditLogResultFilterProperty",
+      "kind": "hybrid-union",
+      "description": "AuditLogResultEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "AuditLogResultEnum"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedResultFilter"
+        }
+      ],
+      "tsType": "string | AdvancedResultFilter",
+      "zod": {
+        "schemaName": "zAuditLogResultFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AuditLogResultFilterProperty"
+      },
+      "stableId": "audit-log-result-filter-property"
     },
     {
       "name": "AuthorizationRequest",
@@ -2428,7 +2505,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 32,
-    "totalUnionWrappers": 44,
+    "totalUnionWrappers": 47,
     "implicitCamundaKeys": []
   }
 }

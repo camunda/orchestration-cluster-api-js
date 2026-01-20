@@ -15,10 +15,7 @@ export type AuditLogResult = {
      * The unique key of the audit log entry.
      */
     auditLogKey?: AuditLogKey;
-    /**
-     * The key of the entity this audit log refers to.
-     */
-    entityKey?: string;
+    entityKey?: AuditLogEntityKey;
     entityType?: AuditLogEntityTypeEnum;
     operationType?: AuditLogOperationTypeEnum;
     /**
@@ -155,7 +152,7 @@ export type AuditLogFilter = {
     /**
      * The result search filter.
      */
-    result?: AuditLogResultEnum;
+    result?: AuditLogResultFilterProperty;
     /**
      * The timestamp search filter.
      */
@@ -167,7 +164,11 @@ export type AuditLogFilter = {
     /**
      * The actor type search filter.
      */
-    actorType?: AuditLogActorTypeEnum;
+    actorType?: AuditLogActorTypeFilterProperty;
+    /**
+     * The entity key search filter.
+     */
+    entityKey?: AuditLogEntityKeyFilterProperty;
     /**
      * The entity type search filter.
      */
@@ -205,6 +206,11 @@ export type AuditLogSearchQueryResult = SearchQueryResponse & {
 };
 
 /**
+ * System-generated entity key for an audit log entry.
+ */
+export type AuditLogEntityKey = CamundaKey<'AuditLogEntityKey'>;
+
+/**
  * The type of entity affected by the operation.
  */
 export type AuditLogEntityTypeEnum = 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE';
@@ -228,6 +234,39 @@ export type AuditLogResultEnum = 'FAIL' | 'SUCCESS';
  * The category of the audit log operation.
  */
 export type AuditLogCategoryEnum = 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS';
+
+/**
+ * EntityKey property with full advanced search capabilities.
+ */
+export type AuditLogEntityKeyFilterProperty = AuditLogEntityKey | AdvancedAuditLogEntityKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced entityKey filter.
+ */
+export type AdvancedAuditLogEntityKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AuditLogEntityKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AuditLogEntityKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AuditLogEntityKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AuditLogEntityKey>;
+};
 
 /**
  * AuditLogEntityTypeEnum property with full advanced search capabilities.
@@ -316,6 +355,66 @@ export type AdvancedCategoryFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<AuditLogCategoryEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * AuditLogResultEnum property with full advanced search capabilities.
+ */
+export type AuditLogResultFilterProperty = AuditLogResultEnum | AdvancedResultFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AuditLogResultEnum filter.
+ */
+export type AdvancedResultFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AuditLogResultEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AuditLogResultEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AuditLogResultEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * AuditLogActorTypeEnum property with full advanced search capabilities.
+ */
+export type AuditLogActorTypeFilterProperty = AuditLogActorTypeEnum | AdvancedActorTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AuditLogActorTypeEnum filter.
+ */
+export type AdvancedActorTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AuditLogActorTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AuditLogActorTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AuditLogActorTypeEnum>;
     $like?: LikeFilter;
 };
 
@@ -498,12 +597,12 @@ export type AuthorizationCreateResult = {
 /**
  * Specifies the type of permissions.
  */
-export type PermissionTypeEnum = 'ACCESS' | 'CANCEL_PROCESS_INSTANCE' | 'CLAIM' | 'COMPLETE' | 'CREATE' | 'CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT' | 'CREATE_DECISION_INSTANCE' | 'CREATE_PROCESS_INSTANCE' | 'DELETE' | 'DELETE_DECISION_INSTANCE' | 'DELETE_DRD' | 'DELETE_FORM' | 'DELETE_PROCESS' | 'DELETE_PROCESS_INSTANCE' | 'DELETE_RESOURCE' | 'EVALUATE' | 'MODIFY_PROCESS_INSTANCE' | 'READ' | 'READ_DECISION_DEFINITION' | 'READ_DECISION_INSTANCE' | 'READ_PROCESS_DEFINITION' | 'READ_PROCESS_INSTANCE' | 'READ_USAGE_METRIC' | 'READ_USER_TASK' | 'UPDATE' | 'UPDATE_PROCESS_INSTANCE' | 'UPDATE_USER_TASK';
+export type PermissionTypeEnum = 'ACCESS' | 'CANCEL_PROCESS_INSTANCE' | 'CLAIM' | 'COMPLETE' | 'CREATE' | 'CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT' | 'CREATE_DECISION_INSTANCE' | 'CREATE_PROCESS_INSTANCE' | 'CREATE_TASK_LISTENER' | 'DELETE' | 'DELETE_DECISION_INSTANCE' | 'DELETE_DRD' | 'DELETE_FORM' | 'DELETE_PROCESS' | 'DELETE_PROCESS_INSTANCE' | 'DELETE_RESOURCE' | 'DELETE_TASK_LISTENER' | 'EVALUATE' | 'MODIFY_PROCESS_INSTANCE' | 'READ' | 'READ_DECISION_DEFINITION' | 'READ_DECISION_INSTANCE' | 'READ_JOB_METRIC' | 'READ_PROCESS_DEFINITION' | 'READ_PROCESS_INSTANCE' | 'READ_USAGE_METRIC' | 'READ_USER_TASK' | 'READ_TASK_LISTENER' | 'UPDATE' | 'UPDATE_PROCESS_INSTANCE' | 'UPDATE_USER_TASK' | 'UPDATE_TASK_LISTENER';
 
 /**
  * The type of resource to add/remove permissions to/from.
  */
-export type ResourceTypeEnum = 'AUDIT_LOG' | 'AUTHORIZATION' | 'BATCH' | 'CLUSTER_VARIABLE' | 'COMPONENT' | 'DECISION_DEFINITION' | 'DECISION_REQUIREMENTS_DEFINITION' | 'DOCUMENT' | 'EXPRESSION' | 'GROUP' | 'MAPPING_RULE' | 'MESSAGE' | 'PROCESS_DEFINITION' | 'RESOURCE' | 'ROLE' | 'SYSTEM' | 'TENANT' | 'USER' | 'USER_TASK';
+export type ResourceTypeEnum = 'AUDIT_LOG' | 'AUTHORIZATION' | 'BATCH' | 'CLUSTER_VARIABLE' | 'COMPONENT' | 'DECISION_DEFINITION' | 'DECISION_REQUIREMENTS_DEFINITION' | 'DOCUMENT' | 'EXPRESSION' | 'GLOBAL_LISTENER' | 'GROUP' | 'MAPPING_RULE' | 'MESSAGE' | 'PROCESS_DEFINITION' | 'RESOURCE' | 'ROLE' | 'SYSTEM' | 'TENANT' | 'USER' | 'USER_TASK';
 
 /**
  * The type of the owner of permissions.
@@ -1233,6 +1332,13 @@ export type DecisionDefinitionFilter = {
      * The DMN name of the decision definition.
      */
     name?: string;
+    /**
+     * Whether to only return the latest version of each decision definition.
+     * When using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.
+     * The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
+     *
+     */
+    isLatestVersion?: boolean;
     /**
      * The assigned version of the decision definition.
      */
@@ -4409,7 +4515,7 @@ export type MessageSubscriptionResult = {
     /**
      * The correlation key of the message subscription.
      */
-    correlationKey?: MessageCorrelationKey;
+    correlationKey?: string;
     tenantId?: TenantId;
 };
 
@@ -4685,11 +4791,6 @@ export type MessageSubscriptionKeyFilterProperty = MessageSubscriptionKey | Adva
  * System-generated key for a message subscription.
  */
 export type MessageSubscriptionKey = CamundaKey<'MessageSubscriptionKey'>;
-
-/**
- * System-generated key for a message correlation.
- */
-export type MessageCorrelationKey = CamundaKey<'MessageCorrelationKey'>;
 
 /**
  * System-generated key for an message.
@@ -6689,6 +6790,7 @@ export type UserTaskAuditLogSearchQueryRequest = SearchQueryRequest & {
      * Sort field criteria.
      */
     sort?: Array<AuditLogSearchQuerySortRequest>;
+    filter?: UserTaskAuditLogFilter;
 };
 
 /**
@@ -6734,6 +6836,32 @@ export type AdvancedUserTaskStateFilter = {
      */
     $in?: Array<UserTaskStateEnum>;
     $like?: LikeFilter;
+};
+
+/**
+ * The user task audit log search filters.
+ */
+export type UserTaskAuditLogFilter = {
+    /**
+     * The audit log operation type search filter.
+     */
+    operationType?: OperationTypeFilterProperty;
+    /**
+     * The audit log result search filter.
+     */
+    result?: AuditLogResultFilterProperty;
+    /**
+     * The audit log timestamp filter.
+     */
+    timestamp?: DateTimeFilterProperty;
+    /**
+     * The actor type search filter.
+     */
+    actorType?: AuditLogActorTypeFilterProperty;
+    /**
+     * The actor ID search filter.
+     */
+    actorId?: StringFilterProperty;
 };
 
 export type UserRequest = {
@@ -7043,10 +7171,7 @@ export type SearchAuditLogsResponses = {
              * The unique key of the audit log entry.
              */
             auditLogKey?: AuditLogKey;
-            /**
-             * The key of the entity this audit log refers to.
-             */
-            entityKey?: string;
+            entityKey?: AuditLogEntityKey;
             entityType?: AuditLogEntityTypeEnum;
             operationType?: AuditLogOperationTypeEnum;
             /**
@@ -7180,10 +7305,7 @@ export type GetAuditLogResponses = {
          * The unique key of the audit log entry.
          */
         auditLogKey?: AuditLogKey;
-        /**
-         * The key of the entity this audit log refers to.
-         */
-        entityKey?: string;
+        entityKey?: AuditLogEntityKey;
         entityType?: AuditLogEntityTypeEnum;
         operationType?: AuditLogOperationTypeEnum;
         /**
@@ -10297,144 +10419,7 @@ export type ActivateJobsResponses = {
 export type ActivateJobsResponse = ActivateJobsResponses[keyof ActivateJobsResponses];
 
 export type SearchJobsData = {
-    /**
-     * Job search request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<JobSearchQuerySortRequest>;
-        /**
-         * Job search filter.
-         */
-        filter?: {
-            /**
-             * When the job can next be activated.
-             */
-            deadline?: DateTimeFilterProperty | null;
-            /**
-             * The reason provided by the user task listener for denying the work.
-             */
-            deniedReason?: StringFilterProperty;
-            /**
-             * The element ID associated with the job.
-             */
-            elementId?: StringFilterProperty;
-            /**
-             * The element instance key associated with the job.
-             */
-            elementInstanceKey?: ElementInstanceKeyFilterProperty;
-            /**
-             * When the job ended.
-             */
-            endTime?: DateTimeFilterProperty;
-            /**
-             * The error code provided for the failed job.
-             */
-            errorCode?: StringFilterProperty;
-            /**
-             * The error message that provides additional context for a failed job.
-             */
-            errorMessage?: StringFilterProperty;
-            /**
-             * Indicates whether the job has failed with retries left.
-             */
-            hasFailedWithRetriesLeft?: boolean;
-            /**
-             * Indicates whether the user task listener denies the work.
-             */
-            isDenied?: boolean | null;
-            /**
-             * The key, a unique identifier for the job.
-             */
-            jobKey?: JobKeyFilterProperty;
-            /**
-             * The kind of the job.
-             */
-            kind?: JobKindFilterProperty;
-            /**
-             * JobListenerEventTypeEnum property with full advanced search capabilities.
-             */
-            listenerEventType?: JobListenerEventTypeEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: JobListenerEventTypeEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: JobListenerEventTypeEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<JobListenerEventTypeEnum>;
-                $like?: LikeFilter;
-            };
-            /**
-             * The process definition ID associated with the job.
-             */
-            processDefinitionId?: StringFilterProperty;
-            /**
-             * The process definition key associated with the job.
-             */
-            processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
-            /**
-             * The process instance key associated with the job.
-             */
-            processInstanceKey?: ProcessInstanceKeyFilterProperty;
-            /**
-             * The number of retries left.
-             */
-            retries?: IntegerFilterProperty;
-            /**
-             * JobStateEnum property with full advanced search capabilities.
-             */
-            state?: JobStateEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: JobStateEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: JobStateEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<JobStateEnum>;
-                $like?: LikeFilter;
-            };
-            /**
-             * The tenant ID.
-             */
-            tenantId?: StringFilterProperty;
-            /**
-             * The type of the job.
-             */
-            type?: StringFilterProperty;
-            /**
-             * The name of the worker for this job.
-             */
-            worker?: StringFilterProperty;
-            /**
-             * When the job was created. Field is present for jobs created after 8.9.
-             */
-            creationTime?: DateTimeFilterProperty;
-            /**
-             * When the job was last updated. Field is present for jobs created after 8.9.
-             */
-            lastUpdateTime?: DateTimeFilterProperty;
-        };
-    };
+    body?: JobSearchQuery;
     path?: never;
     query?: never;
     url: '/jobs/search';
@@ -11066,27 +11051,9 @@ export type SearchMessageSubscriptionsData = {
              */
             elementInstanceKey?: ElementInstanceKeyFilterProperty;
             /**
-             * MessageSubscriptionStateEnum with full advanced search capabilities.
+             * The message subscription state.
              */
-            messageSubscriptionState?: MessageSubscriptionStateEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: MessageSubscriptionStateEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: MessageSubscriptionStateEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<MessageSubscriptionStateEnum>;
-                $like?: LikeFilter;
-            };
+            messageSubscriptionState?: MessageSubscriptionStateFilterProperty;
             /**
              * The last updated date of the message subscription.
              */
@@ -11176,7 +11143,7 @@ export type SearchMessageSubscriptionsResponses = {
             /**
              * The correlation key of the message subscription.
              */
-            correlationKey?: MessageCorrelationKey;
+            correlationKey?: string;
             tenantId?: TenantId;
         }>;
     };
@@ -11353,27 +11320,9 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsData = {
              */
             elementInstanceKey?: ElementInstanceKeyFilterProperty;
             /**
-             * MessageSubscriptionStateEnum with full advanced search capabilities.
+             * The message subscription state.
              */
-            messageSubscriptionState?: MessageSubscriptionStateEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: MessageSubscriptionStateEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: MessageSubscriptionStateEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<MessageSubscriptionStateEnum>;
-                $like?: LikeFilter;
-            };
+            messageSubscriptionState?: MessageSubscriptionStateFilterProperty;
             /**
              * The last updated date of the message subscription.
              */
@@ -11615,27 +11564,9 @@ export type GetProcessDefinitionStatisticsData = {
              */
             endDate?: DateTimeFilterProperty;
             /**
-             * ProcessInstanceStateEnum property with full advanced search capabilities.
+             * The process instance state.
              */
-            state?: ProcessInstanceStateEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: ProcessInstanceStateEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: ProcessInstanceStateEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<ProcessInstanceStateEnum>;
-                $like?: LikeFilter;
-            };
+            state?: ProcessInstanceStateFilterProperty;
             /**
              * Whether this process instance has a related incident or not.
              */
@@ -12395,9 +12326,86 @@ export type SearchProcessInstancesData = {
             order?: SortOrderEnum;
         }>;
         /**
-         * The process instance search filters.
+         * Process instance search filter.
          */
-        filter?: ProcessInstanceFilter;
+        filter?: BaseProcessInstanceFilterFields & {
+            /**
+             * The process definition id.
+             */
+            processDefinitionId?: StringFilterProperty;
+            /**
+             * The process definition name.
+             */
+            processDefinitionName?: StringFilterProperty;
+            /**
+             * The process definition version.
+             */
+            processDefinitionVersion?: IntegerFilterProperty;
+            /**
+             * The process definition version tag.
+             */
+            processDefinitionVersionTag?: StringFilterProperty;
+            /**
+             * The process definition key.
+             */
+            processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+        } & {
+            /**
+             * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+             *
+             * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+             * <br>
+             * <em>Example:</em>
+             *
+             * ```json
+             * {
+             * "state": "ACTIVE",
+             * "tenantId": 123,
+             * "$or": [
+             * { "processDefinitionId": "process_v1" },
+             * { "processDefinitionId": "process_v2", "hasIncident": true }
+             * ]
+             * }
+             * ```
+             * This matches process instances that:
+             *
+             * <ul style="padding-left: 20px; margin-left: 20px;">
+             * <li style="list-style-type: disc;">are in <em>ACTIVE</em> state</li>
+             * <li style="list-style-type: disc;">have tenant id equal to <em>123</em></li>
+             * <li style="list-style-type: disc;">and match either:
+             * <ul style="padding-left: 20px; margin-left: 20px;">
+             * <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>
+             * <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>
+             * </ul>
+             * </li>
+             * </ul>
+             * <br>
+             * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+             *
+             */
+            $or?: Array<BaseProcessInstanceFilterFields & {
+                /**
+                 * The process definition id.
+                 */
+                processDefinitionId?: StringFilterProperty;
+                /**
+                 * The process definition name.
+                 */
+                processDefinitionName?: StringFilterProperty;
+                /**
+                 * The process definition version.
+                 */
+                processDefinitionVersion?: IntegerFilterProperty;
+                /**
+                 * The process definition version tag.
+                 */
+                processDefinitionVersionTag?: StringFilterProperty;
+                /**
+                 * The process definition key.
+                 */
+                processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+            }>;
+        };
     };
     path?: never;
     query?: never;
@@ -15397,27 +15405,9 @@ export type SearchUserTasksData = {
          */
         filter?: {
             /**
-             * UserTaskStateEnum property with full advanced search capabilities.
+             * The user task state.
              */
-            state?: UserTaskStateEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: UserTaskStateEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: UserTaskStateEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<UserTaskStateEnum>;
-                $like?: LikeFilter;
-            };
+            state?: UserTaskStateFilterProperty;
             /**
              * The assignee of the user task.
              */
@@ -15899,6 +15889,7 @@ export type SearchUserTaskAuditLogsData = {
          * Sort field criteria.
          */
         sort?: Array<AuditLogSearchQuerySortRequest>;
+        filter?: UserTaskAuditLogFilter;
     };
     path: {
         /**
@@ -15936,10 +15927,7 @@ export type SearchUserTaskAuditLogsResponses = {
              * The unique key of the audit log entry.
              */
             auditLogKey?: AuditLogKey;
-            /**
-             * The key of the entity this audit log refers to.
-             */
-            entityKey?: string;
+            entityKey?: AuditLogEntityKey;
             entityType?: AuditLogEntityTypeEnum;
             operationType?: AuditLogOperationTypeEnum;
             /**
@@ -16170,7 +16158,12 @@ export type SearchUserTaskVariablesData = {
         /**
          * The user task variable search filters.
          */
-        filter?: UserTaskVariableFilter;
+        filter?: {
+            /**
+             * Name of the variable.
+             */
+            name?: StringFilterProperty;
+        };
     };
     path: {
         /**
@@ -16368,13 +16361,23 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:effb40a8b830ddb3f3f9054d3c1585e782180ac35fdc5b9bb178f1bbe259d6db
+// specHash=sha256:3670926048e847662279347a67a152496556ff950e23aeea6746b2744bc9771c
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
 `);
   if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);
+}
+// System-generated entity key for an audit log entry.
+export namespace AuditLogEntityKey {
+  export function assumeExists(value: string): AuditLogEntityKey {
+    return value as any;
+  }
+  export function getValue(key: AuditLogEntityKey): string { return key; }
+  export function isValid(value: string): boolean {
+    return true;
+  }
 }
 // System-generated key for an audit log entry.
 export namespace AuditLogKey {
@@ -16602,16 +16605,6 @@ export namespace JobKey {
       assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
-  }
-}
-// System-generated key for a message correlation.
-export namespace MessageCorrelationKey {
-  export function assumeExists(value: string): MessageCorrelationKey {
-    return value as any;
-  }
-  export function getValue(key: MessageCorrelationKey): string { return key; }
-  export function isValid(value: string): boolean {
-    return true;
   }
 }
 // System-generated key for an message.

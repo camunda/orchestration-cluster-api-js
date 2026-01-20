@@ -16,6 +16,10 @@ docs
 .camunda-sdk-captures
 PROMPT*
 
+# CI / local artifacts
+next-version.out
+scripts/_debug_*
+
 # Env files
 .*.env
 

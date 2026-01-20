@@ -5,6 +5,13 @@ import { __zodAugmentApplied } from '../zod-augment';
 void __zodAugmentApplied; // ensure module retained for prototype patch // branding-plugin zod augmentation
 
 /**
+ * System-generated entity key for an audit log entry.
+ */
+export const zAuditLogEntityKey = z.string().register(z.globalRegistry, {
+    description: 'System-generated entity key for an audit log entry.'
+});
+
+/**
  * The type of entity affected by the operation.
  */
 export const zAuditLogEntityTypeEnum = z.enum([
@@ -81,6 +88,35 @@ export const zAuditLogCategoryEnum = z.enum([
 });
 
 /**
+ * Advanced filter
+ *
+ * Advanced entityKey filter.
+ */
+export const zAdvancedAuditLogEntityKeyFilter = z.object({
+    '$eq': z.optional(zAuditLogEntityKey),
+    '$neq': z.optional(zAuditLogEntityKey),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAuditLogEntityKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zAuditLogEntityKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced entityKey filter.'
+});
+
+/**
+ * EntityKey property with full advanced search capabilities.
+ */
+export const zAuditLogEntityKeyFilterProperty = z.union([
+    zAuditLogEntityKey,
+    zAdvancedAuditLogEntityKeyFilter
+]);
+
+/**
  * Specifies the type of permissions.
  */
 export const zPermissionTypeEnum = z.enum([
@@ -99,6 +135,7 @@ export const zPermissionTypeEnum = z.enum([
     'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
     'CREATE_DECISION_INSTANCE',
     'CREATE_PROCESS_INSTANCE',
+    'CREATE_TASK_LISTENER',
     'DELETE',
     'DELETE_DECISION_INSTANCE',
     'DELETE_DRD',
@@ -106,18 +143,22 @@ export const zPermissionTypeEnum = z.enum([
     'DELETE_PROCESS',
     'DELETE_PROCESS_INSTANCE',
     'DELETE_RESOURCE',
+    'DELETE_TASK_LISTENER',
     'EVALUATE',
     'MODIFY_PROCESS_INSTANCE',
     'READ',
     'READ_DECISION_DEFINITION',
     'READ_DECISION_INSTANCE',
+    'READ_JOB_METRIC',
     'READ_PROCESS_DEFINITION',
     'READ_PROCESS_INSTANCE',
     'READ_USAGE_METRIC',
     'READ_USER_TASK',
+    'READ_TASK_LISTENER',
     'UPDATE',
     'UPDATE_PROCESS_INSTANCE',
-    'UPDATE_USER_TASK'
+    'UPDATE_USER_TASK',
+    'UPDATE_TASK_LISTENER'
 ]).register(z.globalRegistry, {
     description: 'Specifies the type of permissions.'
 });
@@ -135,6 +176,7 @@ export const zResourceTypeEnum = z.enum([
     'DECISION_REQUIREMENTS_DEFINITION',
     'DOCUMENT',
     'EXPRESSION',
+    'GLOBAL_LISTENER',
     'GROUP',
     'MAPPING_RULE',
     'MESSAGE',
@@ -667,6 +709,60 @@ export const zAdvancedCategoryFilter = z.object({
 export const zCategoryFilterProperty = z.union([
     zAuditLogCategoryEnum,
     zAdvancedCategoryFilter
+]);
+
+/**
+ * Advanced filter
+ *
+ * Advanced AuditLogResultEnum filter.
+ */
+export const zAdvancedResultFilter = z.object({
+    '$eq': z.optional(zAuditLogResultEnum),
+    '$neq': z.optional(zAuditLogResultEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAuditLogResultEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced AuditLogResultEnum filter.'
+});
+
+/**
+ * AuditLogResultEnum property with full advanced search capabilities.
+ */
+export const zAuditLogResultFilterProperty = z.union([
+    zAuditLogResultEnum,
+    zAdvancedResultFilter
+]);
+
+/**
+ * Advanced filter
+ *
+ * Advanced AuditLogActorTypeEnum filter.
+ */
+export const zAdvancedActorTypeFilter = z.object({
+    '$eq': z.optional(zAuditLogActorTypeEnum),
+    '$neq': z.optional(zAuditLogActorTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAuditLogActorTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced AuditLogActorTypeEnum filter.'
+});
+
+/**
+ * AuditLogActorTypeEnum property with full advanced search capabilities.
+ */
+export const zAuditLogActorTypeFilterProperty = z.union([
+    zAuditLogActorTypeEnum,
+    zAdvancedActorTypeFilter
 ]);
 
 /**
@@ -2246,6 +2342,9 @@ export const zDecisionDefinitionFilter = z.object({
     name: z.optional(z.string().register(z.globalRegistry, {
         description: 'The DMN name of the decision definition.'
     })),
+    isLatestVersion: z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Whether to only return the latest version of each decision definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\n'
+    })),
     version: z.optional(z.int().register(z.globalRegistry, {
         description: 'The assigned version of the decision definition.'
     })),
@@ -2583,9 +2682,7 @@ export const zAuditLogKey = zLongKey;
  */
 export const zAuditLogResult = z.object({
     auditLogKey: z.optional(zAuditLogKey),
-    entityKey: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The key of the entity this audit log refers to.'
-    })),
+    entityKey: z.optional(zAuditLogEntityKey),
     entityType: z.optional(zAuditLogEntityTypeEnum),
     operationType: z.optional(zAuditLogOperationTypeEnum),
     batchOperationKey: z.optional(zBatchOperationKey),
@@ -3022,10 +3119,11 @@ export const zAuditLogFilter = z.object({
     processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
     elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
     operationType: z.optional(zOperationTypeFilterProperty),
-    result: z.optional(zAuditLogResultEnum),
+    result: z.optional(zAuditLogResultFilterProperty),
     timestamp: z.optional(zDateTimeFilterProperty),
     actorId: z.optional(zStringFilterProperty),
-    actorType: z.optional(zAuditLogActorTypeEnum),
+    actorType: z.optional(zAuditLogActorTypeFilterProperty),
+    entityKey: z.optional(zAuditLogEntityKeyFilterProperty),
     entityType: z.optional(zEntityTypeFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
     category: z.optional(zCategoryFilterProperty),
@@ -3207,6 +3305,26 @@ export const zMessageSubscriptionStateFilterProperty = z.union([
  */
 export const zMessageSubscriptionKey = zLongKey;
 
+export const zMessageSubscriptionResult = z.object({
+    messageSubscriptionKey: z.optional(zMessageSubscriptionKey),
+    processDefinitionId: z.optional(zProcessDefinitionId),
+    processDefinitionKey: z.optional(zProcessDefinitionKey),
+    processInstanceKey: z.optional(zProcessInstanceKey),
+    elementId: z.optional(zElementId),
+    elementInstanceKey: z.optional(zElementInstanceKey),
+    messageSubscriptionState: z.optional(zMessageSubscriptionStateEnum),
+    lastUpdatedDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
+        description: 'The last updated date of the message subscription.'
+    })),
+    messageName: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The name of the message associated with the message subscription.'
+    })),
+    correlationKey: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The correlation key of the message subscription.'
+    })),
+    tenantId: z.optional(zTenantId)
+});
+
 /**
  * Advanced filter
  *
@@ -3273,29 +3391,6 @@ export const zCorrelatedMessageSubscriptionFilter = z.object({
     tenantId: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Correlated message subscriptions search filter.'
-});
-
-/**
- * System-generated key for a message correlation.
- */
-export const zMessageCorrelationKey = zLongKey;
-
-export const zMessageSubscriptionResult = z.object({
-    messageSubscriptionKey: z.optional(zMessageSubscriptionKey),
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
-    elementId: z.optional(zElementId),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    messageSubscriptionState: z.optional(zMessageSubscriptionStateEnum),
-    lastUpdatedDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
-        description: 'The last updated date of the message subscription.'
-    })),
-    messageName: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the message associated with the message subscription.'
-    })),
-    correlationKey: z.optional(zMessageCorrelationKey),
-    tenantId: z.optional(zTenantId)
 });
 
 /**
@@ -5348,17 +5443,6 @@ export const zUserTaskVariableSearchQuerySortRequest = z.object({
 });
 
 /**
- * User task search query request.
- */
-export const zUserTaskAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.object({
-    sort: z.optional(z.array(zAuditLogSearchQuerySortRequest).register(z.globalRegistry, {
-        description: 'Sort field criteria.'
-    }))
-}).register(z.globalRegistry, {
-    description: 'User task search query request.'
-}));
-
-/**
  * The state of the user task.
  */
 export const zUserTaskStateEnum = z.enum([
@@ -5485,6 +5569,31 @@ export const zUserTaskStateFilterProperty = z.union([
     zUserTaskStateEnum,
     zAdvancedUserTaskStateFilter
 ]);
+
+/**
+ * The user task audit log search filters.
+ */
+export const zUserTaskAuditLogFilter = z.object({
+    operationType: z.optional(zOperationTypeFilterProperty),
+    result: z.optional(zAuditLogResultFilterProperty),
+    timestamp: z.optional(zDateTimeFilterProperty),
+    actorType: z.optional(zAuditLogActorTypeFilterProperty),
+    actorId: z.optional(zStringFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'The user task audit log search filters.'
+});
+
+/**
+ * User task search query request.
+ */
+export const zUserTaskAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zAuditLogSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zUserTaskAuditLogFilter)
+}).register(z.globalRegistry, {
+    description: 'User task search query request.'
+}));
 
 export const zUserRequest = z.object({
     password: z.string().register(z.globalRegistry, {
@@ -5879,9 +5988,7 @@ export const zSearchAuditLogsData = z.object({
 export const zSearchAuditLogsResponse = zSearchQueryResponse.and(z.object({
     items: z.optional(z.array(z.object({
         auditLogKey: z.optional(zAuditLogKey),
-        entityKey: z.optional(z.string().register(z.globalRegistry, {
-            description: 'The key of the entity this audit log refers to.'
-        })),
+        entityKey: z.optional(zAuditLogEntityKey),
         entityType: z.optional(zAuditLogEntityTypeEnum),
         operationType: z.optional(zAuditLogOperationTypeEnum),
         batchOperationKey: z.optional(zBatchOperationKey),
@@ -5937,9 +6044,7 @@ export const zGetAuditLogData = z.object({
  */
 export const zGetAuditLogResponse = z.object({
     auditLogKey: z.optional(zAuditLogKey),
-    entityKey: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The key of the entity this audit log refers to.'
-    })),
+    entityKey: z.optional(zAuditLogEntityKey),
     entityType: z.optional(zAuditLogEntityTypeEnum),
     operationType: z.optional(zAuditLogOperationTypeEnum),
     batchOperationKey: z.optional(zBatchOperationKey),
@@ -7084,77 +7189,7 @@ export const zActivateJobsResponse = z.object({
 });
 
 export const zSearchJobsData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(zJobSearchQuerySortRequest).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        })),
-        filter: z.optional(z.object({
-            deadline: z.optional(z.union([
-                zDateTimeFilterProperty,
-                z.null()
-            ])),
-            deniedReason: z.optional(zStringFilterProperty),
-            elementId: z.optional(zStringFilterProperty),
-            elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
-            endTime: z.optional(zDateTimeFilterProperty),
-            errorCode: z.optional(zStringFilterProperty),
-            errorMessage: z.optional(zStringFilterProperty),
-            hasFailedWithRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
-                description: 'Indicates whether the job has failed with retries left.'
-            })),
-            isDenied: z.optional(z.union([
-                z.boolean(),
-                z.null()
-            ])),
-            jobKey: z.optional(zJobKeyFilterProperty),
-            kind: z.optional(zJobKindFilterProperty),
-            listenerEventType: z.optional(z.union([
-                zJobListenerEventTypeEnum,
-                z.object({
-                    '$eq': z.optional(zJobListenerEventTypeEnum),
-                    '$neq': z.optional(zJobListenerEventTypeEnum),
-                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
-                        description: 'Checks if the current property exists.'
-                    })),
-                    '$in': z.optional(z.array(zJobListenerEventTypeEnum).register(z.globalRegistry, {
-                        description: 'Checks if the property matches any of the provided values.'
-                    })),
-                    '$like': z.optional(zLikeFilter)
-                }).register(z.globalRegistry, {
-                    description: 'Advanced JobListenerEventTypeEnum filter.'
-                })
-            ])),
-            processDefinitionId: z.optional(zStringFilterProperty),
-            processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
-            processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
-            retries: z.optional(zIntegerFilterProperty),
-            state: z.optional(z.union([
-                zJobStateEnum,
-                z.object({
-                    '$eq': z.optional(zJobStateEnum),
-                    '$neq': z.optional(zJobStateEnum),
-                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
-                        description: 'Checks if the current property exists.'
-                    })),
-                    '$in': z.optional(z.array(zJobStateEnum).register(z.globalRegistry, {
-                        description: 'Checks if the property matches any of the provided values.'
-                    })),
-                    '$like': z.optional(zLikeFilter)
-                }).register(z.globalRegistry, {
-                    description: 'Advanced JobStateEnum filter.'
-                })
-            ])),
-            tenantId: z.optional(zStringFilterProperty),
-            type: z.optional(zStringFilterProperty),
-            worker: z.optional(zStringFilterProperty),
-            creationTime: z.optional(zDateTimeFilterProperty),
-            lastUpdateTime: z.optional(zDateTimeFilterProperty)
-        }).register(z.globalRegistry, {
-            description: 'Job search filter.'
-        }))
-    }).register(z.globalRegistry, {
-        description: 'Job search request.'
-    }))),
+    body: z.optional(zJobSearchQuery),
     path: z.optional(z.never()),
     query: z.optional(z.never())
 });
@@ -7425,22 +7460,7 @@ export const zSearchMessageSubscriptionsData = z.object({
             processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
             elementId: z.optional(zStringFilterProperty),
             elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
-            messageSubscriptionState: z.optional(z.union([
-                zMessageSubscriptionStateEnum,
-                z.object({
-                    '$eq': z.optional(zMessageSubscriptionStateEnum),
-                    '$neq': z.optional(zMessageSubscriptionStateEnum),
-                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
-                        description: 'Checks if the current property exists.'
-                    })),
-                    '$in': z.optional(z.array(zMessageSubscriptionStateEnum).register(z.globalRegistry, {
-                        description: 'Checks if the property matches any of the provided values.'
-                    })),
-                    '$like': z.optional(zLikeFilter)
-                }).register(z.globalRegistry, {
-                    description: 'Advanced MessageSubscriptionStateEnum filter'
-                })
-            ])),
+            messageSubscriptionState: z.optional(zMessageSubscriptionStateFilterProperty),
             lastUpdatedDate: z.optional(zDateTimeFilterProperty),
             messageName: z.optional(zStringFilterProperty),
             correlationKey: z.optional(zStringFilterProperty),
@@ -7471,7 +7491,9 @@ export const zSearchMessageSubscriptionsResponse = zSearchQueryResponse.and(z.ob
         messageName: z.optional(z.string().register(z.globalRegistry, {
             description: 'The name of the message associated with the message subscription.'
         })),
-        correlationKey: z.optional(zMessageCorrelationKey),
+        correlationKey: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The correlation key of the message subscription.'
+        })),
         tenantId: z.optional(zTenantId)
     })).register(z.globalRegistry, {
         description: 'The matching message subscriptions.'
@@ -7546,22 +7568,7 @@ export const zGetProcessDefinitionMessageSubscriptionStatisticsData = z.object({
             processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
             elementId: z.optional(zStringFilterProperty),
             elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
-            messageSubscriptionState: z.optional(z.union([
-                zMessageSubscriptionStateEnum,
-                z.object({
-                    '$eq': z.optional(zMessageSubscriptionStateEnum),
-                    '$neq': z.optional(zMessageSubscriptionStateEnum),
-                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
-                        description: 'Checks if the current property exists.'
-                    })),
-                    '$in': z.optional(z.array(zMessageSubscriptionStateEnum).register(z.globalRegistry, {
-                        description: 'Checks if the property matches any of the provided values.'
-                    })),
-                    '$like': z.optional(zLikeFilter)
-                }).register(z.globalRegistry, {
-                    description: 'Advanced MessageSubscriptionStateEnum filter'
-                })
-            ])),
+            messageSubscriptionState: z.optional(zMessageSubscriptionStateFilterProperty),
             lastUpdatedDate: z.optional(zDateTimeFilterProperty),
             messageName: z.optional(zStringFilterProperty),
             correlationKey: z.optional(zStringFilterProperty),
@@ -7649,22 +7656,7 @@ export const zGetProcessDefinitionStatisticsData = z.object({
         filter: z.optional(z.object({
             startDate: z.optional(zDateTimeFilterProperty),
             endDate: z.optional(zDateTimeFilterProperty),
-            state: z.optional(z.union([
-                zProcessInstanceStateEnum,
-                z.object({
-                    '$eq': z.optional(zProcessInstanceStateEnum),
-                    '$neq': z.optional(zProcessInstanceStateEnum),
-                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
-                        description: 'Checks if the current property exists.'
-                    })),
-                    '$in': z.optional(z.array(zProcessInstanceStateEnum).register(z.globalRegistry, {
-                        description: 'Checks if the property matches any of the provided values.'
-                    })),
-                    '$like': z.optional(zLikeFilter)
-                }).register(z.globalRegistry, {
-                    description: 'Advanced ProcessInstanceStateEnum filter.'
-                })
-            ])),
+            state: z.optional(zProcessInstanceStateFilterProperty),
             hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
                 description: 'Whether this process instance has a related incident or not.'
             })),
@@ -7980,7 +7972,27 @@ export const zSearchProcessInstancesData = z.object({
         })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         })),
-        filter: z.optional(zProcessInstanceFilter)
+        filter: z.optional(zBaseProcessInstanceFilterFields.and(z.object({
+            processDefinitionId: z.optional(zStringFilterProperty),
+            processDefinitionName: z.optional(zStringFilterProperty),
+            processDefinitionVersion: z.optional(zIntegerFilterProperty),
+            processDefinitionVersionTag: z.optional(zStringFilterProperty),
+            processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty)
+        }).register(z.globalRegistry, {
+            description: 'Process instance search filter.'
+        })).and(z.object({
+            '$or': z.optional(z.array(zBaseProcessInstanceFilterFields.and(z.object({
+                processDefinitionId: z.optional(zStringFilterProperty),
+                processDefinitionName: z.optional(zStringFilterProperty),
+                processDefinitionVersion: z.optional(zIntegerFilterProperty),
+                processDefinitionVersionTag: z.optional(zStringFilterProperty),
+                processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty)
+            }).register(z.globalRegistry, {
+                description: 'Process instance search filter.'
+            }))).register(z.globalRegistry, {
+                description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "state": "ACTIVE",\n  "tenantId": 123,\n  "$or": [\n    { "processDefinitionId": "process_v1" },\n    { "processDefinitionId": "process_v2", "hasIncident": true }\n  ]\n}\n```\nThis matches process instances that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">are in <em>ACTIVE</em> state</li>\n  <li style="list-style-type: disc;">have tenant id equal to <em>123</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>\n      <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+            }))
+        })))
     }).register(z.globalRegistry, {
         description: 'Process instance search request.'
     }))),
@@ -9165,22 +9177,7 @@ export const zSearchUserTasksData = z.object({
             description: 'Sort field criteria.'
         })),
         filter: z.optional(z.object({
-            state: z.optional(z.union([
-                zUserTaskStateEnum,
-                z.object({
-                    '$eq': z.optional(zUserTaskStateEnum),
-                    '$neq': z.optional(zUserTaskStateEnum),
-                    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
-                        description: 'Checks if the current property exists.'
-                    })),
-                    '$in': z.optional(z.array(zUserTaskStateEnum).register(z.globalRegistry, {
-                        description: 'Checks if the property matches any of the provided values.'
-                    })),
-                    '$like': z.optional(zLikeFilter)
-                }).register(z.globalRegistry, {
-                    description: 'Advanced UserTaskStateEnum filter.'
-                })
-            ])),
+            state: z.optional(zUserTaskStateFilterProperty),
             assignee: z.optional(zStringFilterProperty),
             priority: z.optional(zIntegerFilterProperty),
             elementId: z.optional(zElementId),
@@ -9387,7 +9384,8 @@ export const zSearchUserTaskAuditLogsData = z.object({
     body: z.optional(zSearchQueryRequest.and(z.object({
         sort: z.optional(z.array(zAuditLogSearchQuerySortRequest).register(z.globalRegistry, {
             description: 'Sort field criteria.'
-        }))
+        })),
+        filter: z.optional(zUserTaskAuditLogFilter)
     }).register(z.globalRegistry, {
         description: 'User task search query request.'
     }))),
@@ -9403,9 +9401,7 @@ export const zSearchUserTaskAuditLogsData = z.object({
 export const zSearchUserTaskAuditLogsResponse = zSearchQueryResponse.and(z.object({
     items: z.optional(z.array(z.object({
         auditLogKey: z.optional(zAuditLogKey),
-        entityKey: z.optional(z.string().register(z.globalRegistry, {
-            description: 'The key of the entity this audit log refers to.'
-        })),
+        entityKey: z.optional(zAuditLogEntityKey),
         entityType: z.optional(zAuditLogEntityTypeEnum),
         operationType: z.optional(zAuditLogOperationTypeEnum),
         batchOperationKey: z.optional(zBatchOperationKey),
@@ -9507,7 +9503,11 @@ export const zSearchUserTaskVariablesData = z.object({
         })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         })),
-        filter: z.optional(zUserTaskVariableFilter)
+        filter: z.optional(z.object({
+            name: z.optional(zStringFilterProperty)
+        }).register(z.globalRegistry, {
+            description: 'The user task variable search filters.'
+        }))
     }).register(z.globalRegistry, {
         description: 'User task search query request.'
     }))),

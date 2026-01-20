@@ -236,8 +236,7 @@
                       "description": "The unique key of the audit log entry."
                     },
                     "entityKey": {
-                      "type": "string",
-                      "description": "The key of the entity this audit log refers to."
+                      "$ref": "#/components/schemas/AuditLogEntityKey"
                     },
                     "entityType": {
                       "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
@@ -4512,305 +4511,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Job search request.",
-                "type": "object",
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/JobSearchQuerySortRequest"
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "Job search filter.",
-                        "type": "object",
-                        "properties": {
-                          "deadline": {
-                            "description": "When the job can next be activated.",
-                            "nullable": true,
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ]
-                          },
-                          "deniedReason": {
-                            "description": "The reason provided by the user task listener for denying the work.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "elementId": {
-                            "description": "The element ID associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "elementInstanceKey": {
-                            "description": "The element instance key associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "endTime": {
-                            "description": "When the job ended.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ]
-                          },
-                          "errorCode": {
-                            "description": "The error code provided for the failed job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "errorMessage": {
-                            "description": "The error message that provides additional context for a failed job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "hasFailedWithRetriesLeft": {
-                            "description": "Indicates whether the job has failed with retries left.",
-                            "type": "boolean"
-                          },
-                          "isDenied": {
-                            "description": "Indicates whether the user task listener denies the work.",
-                            "type": "boolean",
-                            "nullable": true
-                          },
-                          "jobKey": {
-                            "description": "The key, a unique identifier for the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/JobKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "kind": {
-                            "description": "The kind of the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/JobKindFilterProperty"
-                              }
-                            ]
-                          },
-                          "listenerEventType": {
-                            "description": "The listener event type of the job.",
-                            "allOf": [
-                              {
-                                "description": "JobListenerEventTypeEnum property with full advanced search capabilities.",
-                                "type": "object",
-                                "oneOf": [
-                                  {
-                                    "type": "string",
-                                    "title": "Exact match",
-                                    "description": "Matches the value exactly.",
-                                    "allOf": [
-                                      {
-                                        "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "title": "Advanced filter",
-                                    "description": "Advanced JobListenerEventTypeEnum filter.",
-                                    "type": "object",
-                                    "properties": {
-                                      "$eq": {
-                                        "description": "Checks for equality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$neq": {
-                                        "description": "Checks for inequality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$exists": {
-                                        "description": "Checks if the current property exists.",
-                                        "type": "boolean"
-                                      },
-                                      "$in": {
-                                        "description": "Checks if the property matches any of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-                                        }
-                                      },
-                                      "$like": {
-                                        "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/kind/allOf/0/oneOf/1/properties/$like"
-                                      }
-                                    }
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          "processDefinitionId": {
-                            "description": "The process definition ID associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "processDefinitionKey": {
-                            "description": "The process definition key associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "processInstanceKey": {
-                            "description": "The process instance key associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "retries": {
-                            "description": "The number of retries left.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/IntegerFilterProperty"
-                              }
-                            ]
-                          },
-                          "state": {
-                            "description": "The state of the job.",
-                            "allOf": [
-                              {
-                                "description": "JobStateEnum property with full advanced search capabilities.",
-                                "type": "object",
-                                "oneOf": [
-                                  {
-                                    "type": "string",
-                                    "title": "Exact match",
-                                    "description": "Matches the value exactly.",
-                                    "format": "JobStateEnum",
-                                    "allOf": [
-                                      {
-                                        "$ref": "#/components/schemas/JobStateEnum"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "title": "Advanced filter",
-                                    "description": "Advanced JobStateEnum filter.",
-                                    "type": "object",
-                                    "properties": {
-                                      "$eq": {
-                                        "description": "Checks for equality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/JobStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$neq": {
-                                        "description": "Checks for inequality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/JobStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$exists": {
-                                        "description": "Checks if the current property exists.",
-                                        "type": "boolean"
-                                      },
-                                      "$in": {
-                                        "description": "Checks if the property matches any of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/components/schemas/JobStateEnum"
-                                        }
-                                      },
-                                      "$like": {
-                                        "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/kind/allOf/0/oneOf/1/properties/$like"
-                                      }
-                                    }
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          "tenantId": {
-                            "description": "The tenant ID.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "type": {
-                            "description": "The type of the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "worker": {
-                            "description": "The name of the worker for this job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "creationTime": {
-                            "description": "When the job was created. Field is present for jobs created after 8.9.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ]
-                          },
-                          "lastUpdateTime": {
-                            "description": "When the job was last updated. Field is present for jobs created after 8.9.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    ],
-                    "description": "The job search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/JobSearchQuery"
               }
             }
           }
@@ -5655,7 +5356,7 @@
                 "additionalProperties": false,
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "properties": {
@@ -5707,7 +5408,7 @@
                           "processDefinitionKey": {
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/ProcessDefinitionKeyFilterProperty"
+                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processDefinitionKey/allOf/0"
                               }
                             ],
                             "description": "The process definition key associated with this correlated message subscription. This only works for data created with 8.9 and later."
@@ -5723,7 +5424,7 @@
                           "processInstanceKey": {
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
+                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
                               }
                             ],
                             "description": "The process instance key associated with this message subscription."
@@ -5739,7 +5440,7 @@
                           "elementInstanceKey": {
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
+                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/elementInstanceKey/allOf/0"
                               }
                             ],
                             "description": "The element instance key associated with this message subscription."
@@ -5747,57 +5448,7 @@
                           "messageSubscriptionState": {
                             "allOf": [
                               {
-                                "description": "MessageSubscriptionStateEnum with full advanced search capabilities.",
-                                "type": "object",
-                                "oneOf": [
-                                  {
-                                    "type": "string",
-                                    "title": "Exact match",
-                                    "description": "Matches the value exactly.",
-                                    "allOf": [
-                                      {
-                                        "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "title": "Advanced filter",
-                                    "description": "Advanced MessageSubscriptionStateEnum filter",
-                                    "type": "object",
-                                    "properties": {
-                                      "$eq": {
-                                        "description": "Checks for equality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$neq": {
-                                        "description": "Checks for inequality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$exists": {
-                                        "description": "Checks if the current property exists.",
-                                        "type": "boolean"
-                                      },
-                                      "$in": {
-                                        "description": "Checks if the property matches any of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
-                                        }
-                                      },
-                                      "$like": {
-                                        "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/kind/allOf/0/oneOf/1/properties/$like"
-                                      }
-                                    }
-                                  }
-                                ]
+                                "$ref": "#/components/schemas/MessageSubscriptionStateFilterProperty"
                               }
                             ],
                             "description": "The message subscription state."
@@ -5924,11 +5575,7 @@
                             "type": "string"
                           },
                           "correlationKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/MessageCorrelationKey"
-                              }
-                            ],
+                            "type": "string",
                             "description": "The correlation key of the message subscription."
                           },
                           "tenantId": {
@@ -6091,7 +5738,7 @@
                 "additionalProperties": false,
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "properties": {
@@ -6474,57 +6121,7 @@
                               "state": {
                                 "allOf": [
                                   {
-                                    "description": "ProcessInstanceStateEnum property with full advanced search capabilities.",
-                                    "type": "object",
-                                    "oneOf": [
-                                      {
-                                        "type": "string",
-                                        "title": "Exact match",
-                                        "description": "Matches the value exactly.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/ProcessInstanceStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                        "title": "Advanced filter",
-                                        "description": "Advanced ProcessInstanceStateEnum filter.",
-                                        "type": "object",
-                                        "properties": {
-                                          "$eq": {
-                                            "description": "Checks for equality with the provided value.",
-                                            "allOf": [
-                                              {
-                                                "$ref": "#/components/schemas/ProcessInstanceStateEnum"
-                                              }
-                                            ]
-                                          },
-                                          "$neq": {
-                                            "description": "Checks for inequality with the provided value.",
-                                            "allOf": [
-                                              {
-                                                "$ref": "#/components/schemas/ProcessInstanceStateEnum"
-                                              }
-                                            ]
-                                          },
-                                          "$exists": {
-                                            "description": "Checks if the current property exists.",
-                                            "type": "boolean"
-                                          },
-                                          "$in": {
-                                            "description": "Checks if the property matches any of the provided values.",
-                                            "type": "array",
-                                            "items": {
-                                              "$ref": "#/components/schemas/ProcessInstanceStateEnum"
-                                            }
-                                          },
-                                          "$like": {
-                                            "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/kind/allOf/0/oneOf/1/properties/$like"
-                                          }
-                                        }
-                                      }
-                                    ]
+                                    "$ref": "#/components/schemas/ProcessInstanceStateFilterProperty"
                                   }
                                 ],
                                 "description": "The process instance state."
@@ -6551,7 +6148,7 @@
                               "processInstanceKey": {
                                 "allOf": [
                                   {
-                                    "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
+                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
                                   }
                                 ],
                                 "description": "The key of this process instance."
@@ -6559,7 +6156,7 @@
                               "parentProcessInstanceKey": {
                                 "allOf": [
                                   {
-                                    "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
+                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
                                   }
                                 ],
                                 "description": "The parent process instance key."
@@ -6567,7 +6164,7 @@
                               "parentElementInstanceKey": {
                                 "allOf": [
                                   {
-                                    "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
+                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/elementInstanceKey/allOf/0"
                                   }
                                 ],
                                 "description": "The parent element instance key."
@@ -6615,7 +6212,7 @@
                               "incidentErrorHashCode": {
                                 "allOf": [
                                   {
-                                    "$ref": "#/components/schemas/IntegerFilterProperty"
+                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/retries/allOf/0"
                                   }
                                 ],
                                 "description": "The incident error hash code, associated with this process."
@@ -7542,7 +7139,7 @@
                 "additionalProperties": false,
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "properties": {
@@ -7583,7 +7180,72 @@
                   "filter": {
                     "allOf": [
                       {
-                        "$ref": "#/components/schemas/ProcessInstanceFilter"
+                        "description": "Process instance search filter.",
+                        "allOf": [
+                          {
+                            "description": "Process instance search filter.",
+                            "type": "object",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BaseProcessInstanceFilterFields"
+                              }
+                            ],
+                            "properties": {
+                              "processDefinitionId": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/components/schemas/StringFilterProperty"
+                                  }
+                                ],
+                                "description": "The process definition id."
+                              },
+                              "processDefinitionName": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/components/schemas/StringFilterProperty"
+                                  }
+                                ],
+                                "description": "The process definition name."
+                              },
+                              "processDefinitionVersion": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/retries/allOf/0"
+                                  }
+                                ],
+                                "description": "The process definition version."
+                              },
+                              "processDefinitionVersionTag": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/components/schemas/StringFilterProperty"
+                                  }
+                                ],
+                                "description": "The process definition version tag."
+                              },
+                              "processDefinitionKey": {
+                                "allOf": [
+                                  {
+                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processDefinitionKey/allOf/0"
+                                  }
+                                ],
+                                "description": "The process definition key."
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "$or": {
+                                "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"state\": \"ACTIVE\",\n  \"tenantId\": 123,\n  \"$or\": [\n    { \"processDefinitionId\": \"process_v1\" },\n    { \"processDefinitionId\": \"process_v2\", \"hasIncident\": true }\n  ]\n}\n```\nThis matches process instances that:\n\n<ul style=\"padding-left: 20px; margin-left: 20px;\">\n  <li style=\"list-style-type: disc;\">are in <em>ACTIVE</em> state</li>\n  <li style=\"list-style-type: disc;\">have tenant id equal to <em>123</em></li>\n  <li style=\"list-style-type: disc;\">and match either:\n    <ul style=\"padding-left: 20px; margin-left: 20px;\">\n      <li style=\"list-style-type: circle;\"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>\n      <li style=\"list-style-type: circle;\"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/paths/~1process-instances~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/allOf/0"
+                                }
+                              }
+                            }
+                          }
+                        ]
                       }
                     ],
                     "description": "The process instance search filters."
@@ -9064,7 +8726,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -9283,7 +8945,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -9692,7 +9354,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -10179,7 +9841,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "properties": {
@@ -10444,7 +10106,7 @@
                 "additionalProperties": false,
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -10631,7 +10293,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -11137,7 +10799,7 @@
                 "additionalProperties": false,
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -11399,7 +11061,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "type": "object",
@@ -11648,7 +11310,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "properties": {
@@ -11688,57 +11350,7 @@
                           "state": {
                             "allOf": [
                               {
-                                "description": "UserTaskStateEnum property with full advanced search capabilities.",
-                                "type": "object",
-                                "oneOf": [
-                                  {
-                                    "type": "string",
-                                    "title": "Exact match",
-                                    "description": "Matches the value exactly.",
-                                    "allOf": [
-                                      {
-                                        "$ref": "#/components/schemas/UserTaskStateEnum"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "title": "Advanced filter",
-                                    "description": "Advanced UserTaskStateEnum filter.",
-                                    "type": "object",
-                                    "properties": {
-                                      "$eq": {
-                                        "description": "Checks for equality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/UserTaskStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$neq": {
-                                        "description": "Checks for inequality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/components/schemas/UserTaskStateEnum"
-                                          }
-                                        ]
-                                      },
-                                      "$exists": {
-                                        "description": "Checks if the current property exists.",
-                                        "type": "boolean"
-                                      },
-                                      "$in": {
-                                        "description": "Checks if the property matches any of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/components/schemas/UserTaskStateEnum"
-                                        }
-                                      },
-                                      "$like": {
-                                        "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/kind/allOf/0/oneOf/1/properties/$like"
-                                      }
-                                    }
-                                  }
-                                ]
+                                "$ref": "#/components/schemas/UserTaskStateFilterProperty"
                               }
                             ],
                             "description": "The user task state."
@@ -11754,7 +11366,7 @@
                           "priority": {
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/IntegerFilterProperty"
+                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/retries/allOf/0"
                               }
                             ],
                             "description": "The priority of the user task."
@@ -12338,7 +11950,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "description": "User task search query request.",
@@ -12351,6 +11963,9 @@
                     "items": {
                       "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/sort/items"
                     }
+                  },
+                  "filter": {
+                    "$ref": "#/components/schemas/UserTaskAuditLogFilter"
                   }
                 }
               }
@@ -12577,7 +12192,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "description": "User task search query request.",
@@ -12614,7 +12229,18 @@
                   "filter": {
                     "allOf": [
                       {
-                        "$ref": "#/components/schemas/UserTaskVariableFilter"
+                        "description": "The user task variable search filters.",
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/properties/actorId/allOf/0"
+                              }
+                            ],
+                            "description": "Name of the variable."
+                          }
+                        }
                       }
                     ],
                     "description": "The user task variable search filters."
@@ -12674,7 +12300,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
+                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
                   }
                 ],
                 "properties": {
@@ -12716,7 +12342,7 @@
                             "description": "Name of the variable.",
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/StringFilterProperty"
+                                "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/properties/actorId/allOf/0"
                               }
                             ]
                           },
@@ -12724,7 +12350,7 @@
                             "description": "The value of the variable.",
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/StringFilterProperty"
+                                "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/properties/actorId/allOf/0"
                               }
                             ]
                           },
@@ -12814,7 +12440,7 @@
                             "description": "The key of the process instance of this variable.",
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
+                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
                               }
                             ]
                           }
@@ -12936,8 +12562,7 @@
             "description": "The unique key of the audit log entry."
           },
           "entityKey": {
-            "type": "string",
-            "description": "The key of the entity this audit log refers to."
+            "$ref": "#/components/schemas/AuditLogEntityKey"
           },
           "entityType": {
             "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
@@ -13218,7 +12843,7 @@
             "description": "The result search filter.",
             "allOf": [
               {
-                "$ref": "#/components/schemas/AuditLogResultEnum"
+                "$ref": "#/components/schemas/AuditLogResultFilterProperty"
               }
             ]
           },
@@ -13242,7 +12867,15 @@
             "description": "The actor type search filter.",
             "allOf": [
               {
-                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+                "$ref": "#/components/schemas/AuditLogActorTypeFilterProperty"
+              }
+            ]
+          },
+          "entityKey": {
+            "description": "The entity key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityKeyFilterProperty"
               }
             ]
           },
@@ -13314,6 +12947,13 @@
           }
         }
       },
+      "AuditLogEntityKey": {
+        "description": "System-generated entity key for an audit log entry.",
+        "format": "AuditLogEntityKey",
+        "x-semantic-type": "AuditLogEntityKey",
+        "example": "22517998136843567",
+        "type": "string"
+      },
       "AuditLogEntityTypeEnum": {
         "type": "string",
         "description": "The type of entity affected by the operation.",
@@ -13379,6 +13019,66 @@
           "DEPLOYED_RESOURCES",
           "USER_TASKS"
         ]
+      },
+      "AuditLogEntityKeyFilterProperty": {
+        "description": "EntityKey property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Exact match",
+            "description": "Matches the value exactly.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityKey"
+              }
+            ]
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedAuditLogEntityKeyFilter"
+          }
+        ]
+      },
+      "AdvancedAuditLogEntityKeyFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced entityKey filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityKey"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityKey"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogEntityKey"
+            }
+          },
+          "$notIn": {
+            "description": "Checks if the property matches none of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogEntityKey"
+            }
+          }
+        }
       },
       "EntityTypeFilterProperty": {
         "description": "AuditLogEntityTypeEnum property with full advanced search capabilities.",
@@ -13541,6 +13241,118 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AuditLogCategoryEnum"
+            }
+          },
+          "$like": {
+            "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "AuditLogResultFilterProperty": {
+        "description": "AuditLogResultEnum property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Exact match",
+            "description": "Matches the value exactly.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogResultEnum"
+              }
+            ]
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedResultFilter"
+          }
+        ]
+      },
+      "AdvancedResultFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced AuditLogResultEnum filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogResultEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogResultEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogResultEnum"
+            }
+          },
+          "$like": {
+            "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "AuditLogActorTypeFilterProperty": {
+        "description": "AuditLogActorTypeEnum property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Exact match",
+            "description": "Matches the value exactly.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+              }
+            ]
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedActorTypeFilter"
+          }
+        ]
+      },
+      "AdvancedActorTypeFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced AuditLogActorTypeEnum filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogActorTypeEnum"
             }
           },
           "$like": {
@@ -13914,6 +13726,7 @@
           "CREATE_BATCH_OPERATION_RESOLVE_INCIDENT",
           "CREATE_DECISION_INSTANCE",
           "CREATE_PROCESS_INSTANCE",
+          "CREATE_TASK_LISTENER",
           "DELETE",
           "DELETE_DECISION_INSTANCE",
           "DELETE_DRD",
@@ -13921,18 +13734,22 @@
           "DELETE_PROCESS",
           "DELETE_PROCESS_INSTANCE",
           "DELETE_RESOURCE",
+          "DELETE_TASK_LISTENER",
           "EVALUATE",
           "MODIFY_PROCESS_INSTANCE",
           "READ",
           "READ_DECISION_DEFINITION",
           "READ_DECISION_INSTANCE",
+          "READ_JOB_METRIC",
           "READ_PROCESS_DEFINITION",
           "READ_PROCESS_INSTANCE",
           "READ_USAGE_METRIC",
           "READ_USER_TASK",
+          "READ_TASK_LISTENER",
           "UPDATE",
           "UPDATE_PROCESS_INSTANCE",
-          "UPDATE_USER_TASK"
+          "UPDATE_USER_TASK",
+          "UPDATE_TASK_LISTENER"
         ]
       },
       "ResourceTypeEnum": {
@@ -13948,6 +13765,7 @@
           "DECISION_REQUIREMENTS_DEFINITION",
           "DOCUMENT",
           "EXPRESSION",
+          "GLOBAL_LISTENER",
           "GROUP",
           "MAPPING_RULE",
           "MESSAGE",
@@ -15289,6 +15107,10 @@
           "name": {
             "type": "string",
             "description": "The DMN name of the decision definition."
+          },
+          "isLatestVersion": {
+            "description": "Whether to only return the latest version of each decision definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\n",
+            "type": "boolean"
           },
           "version": {
             "type": "integer",
@@ -20946,11 +20768,7 @@
             "type": "string"
           },
           "correlationKey": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MessageCorrelationKey"
-              }
-            ],
+            "type": "string",
             "description": "The correlation key of the message subscription."
           },
           "tenantId": {
@@ -21505,18 +21323,6 @@
         "format": "MessageSubscriptionKey",
         "x-semantic-type": "MessageSubscriptionKey",
         "example": "2251799813632456",
-        "type": "string",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/LongKey"
-          }
-        ]
-      },
-      "MessageCorrelationKey": {
-        "description": "System-generated key for a message correlation.",
-        "format": "MessageCorrelationKey",
-        "x-semantic-type": "MessageCorrelationKey",
-        "example": "2251799813634265",
         "type": "string",
         "allOf": [
           {
@@ -24840,6 +24646,9 @@
             "items": {
               "$ref": "#/components/schemas/AuditLogSearchQuerySortRequest"
             }
+          },
+          "filter": {
+            "$ref": "#/components/schemas/UserTaskAuditLogFilter"
           }
         }
       },
@@ -24925,6 +24734,52 @@
           },
           "$like": {
             "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "UserTaskAuditLogFilter": {
+        "description": "The user task audit log search filters.",
+        "type": "object",
+        "properties": {
+          "operationType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OperationTypeFilterProperty"
+              }
+            ],
+            "description": "The audit log operation type search filter."
+          },
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogResultFilterProperty"
+              }
+            ],
+            "description": "The audit log result search filter."
+          },
+          "timestamp": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DateTimeFilterProperty"
+              }
+            ],
+            "description": "The audit log timestamp filter."
+          },
+          "actorType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogActorTypeFilterProperty"
+              }
+            ],
+            "description": "The actor type search filter."
+          },
+          "actorId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
+            "description": "The actor ID search filter."
           }
         }
       },

@@ -78,8 +78,7 @@ components:
             - $ref: 'keys.yaml#/components/schemas/AuditLogKey'
           description: The unique key of the audit log entry.
         entityKey:
-          type: string
-          description: The key of the entity this audit log refers to.
+          $ref: '#/components/schemas/AuditLogEntityKey'
         entityType:
           $ref: '#/components/schemas/AuditLogEntityTypeEnum'
         operationType:
@@ -249,7 +248,7 @@ components:
         result:
           description: The result search filter.
           allOf:
-            - $ref: "#/components/schemas/AuditLogResultEnum"
+            - $ref: '#/components/schemas/AuditLogResultFilterProperty'
         timestamp:
           description: The timestamp search filter.
           allOf:
@@ -261,7 +260,11 @@ components:
         actorType:
           description: The actor type search filter.
           allOf:
-            - $ref: '#/components/schemas/AuditLogActorTypeEnum'
+            - $ref: '#/components/schemas/AuditLogActorTypeFilterProperty'
+        entityKey:
+          description: The entity key search filter.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogEntityKeyFilterProperty'
         entityType:
           description: The entity type search filter.
           allOf:
@@ -298,6 +301,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuditLogResult'
+
+    AuditLogEntityKey:
+      description: System-generated entity key for an audit log entry.
+      format: AuditLogEntityKey
+      x-semantic-type: AuditLogEntityKey
+      example: "22517998136843567"
+      type: string
 
     ## Enums
 
@@ -363,6 +373,44 @@ components:
         - USER_TASKS
 
     ## Filters
+
+    AuditLogEntityKeyFilterProperty:
+      description: EntityKey property with full advanced search capabilities.
+      type: object
+      oneOf:
+        - type: string
+          title: Exact match
+          description: Matches the value exactly.
+          allOf:
+            - $ref: "#/components/schemas/AuditLogEntityKey"
+        - $ref: '#/components/schemas/AdvancedAuditLogEntityKeyFilter'
+
+    AdvancedAuditLogEntityKeyFilter:
+      title: Advanced filter
+      description: Advanced entityKey filter.
+      type: object
+      properties:
+        $eq:
+          description: Checks for equality with the provided value.
+          allOf:
+            - $ref: "#/components/schemas/AuditLogEntityKey"
+        $neq:
+          description: Checks for inequality with the provided value.
+          allOf:
+            - $ref: "#/components/schemas/AuditLogEntityKey"
+        $exists:
+          description: Checks if the current property exists.
+          type: boolean
+        $in:
+          description: Checks if the property matches any of the provided values.
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogEntityKey"
+        $notIn:
+          description: Checks if the property matches none of the provided values.
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditLogEntityKey"
 
     EntityTypeFilterProperty:
       description: AuditLogEntityTypeEnum property with full advanced search capabilities.
@@ -466,5 +514,75 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AuditLogCategoryEnum'
+        $like:
+          $ref: 'filters.yaml#/components/schemas/LikeFilter'
+
+    AuditLogResultFilterProperty:
+      description: AuditLogResultEnum property with full advanced search capabilities.
+      type: object
+      oneOf:
+        - type: string
+          title: Exact match
+          description: Matches the value exactly.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogResultEnum'
+        - $ref: '#/components/schemas/AdvancedResultFilter'
+
+    AdvancedResultFilter:
+      title: Advanced filter
+      description: Advanced AuditLogResultEnum filter.
+      type: object
+      properties:
+        $eq:
+          description: Checks for equality with the provided value.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogResultEnum'
+        $neq:
+          description: Checks for inequality with the provided value.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogResultEnum'
+        $exists:
+          description: Checks if the current property exists.
+          type: boolean
+        $in:
+          description: Checks if the property matches any of the provided values.
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLogResultEnum'
+        $like:
+          $ref: 'filters.yaml#/components/schemas/LikeFilter'
+
+    AuditLogActorTypeFilterProperty:
+      description: AuditLogActorTypeEnum property with full advanced search capabilities.
+      type: object
+      oneOf:
+        - type: string
+          title: Exact match
+          description: Matches the value exactly.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogActorTypeEnum'
+        - $ref: '#/components/schemas/AdvancedActorTypeFilter'
+
+    AdvancedActorTypeFilter:
+      title: Advanced filter
+      description: Advanced AuditLogActorTypeEnum filter.
+      type: object
+      properties:
+        $eq:
+          description: Checks for equality with the provided value.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogActorTypeEnum'
+        $neq:
+          description: Checks for inequality with the provided value.
+          allOf:
+            - $ref: '#/components/schemas/AuditLogActorTypeEnum'
+        $exists:
+          description: Checks if the current property exists.
+          type: boolean
+        $in:
+          description: Checks if the property matches any of the provided values.
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLogActorTypeEnum'
         $like:
           $ref: 'filters.yaml#/components/schemas/LikeFilter'
