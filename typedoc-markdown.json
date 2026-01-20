@@ -21,5 +21,5 @@
   "sidebar": {
     "pretty": true
   }, 
-  "docsPath": "api-tools/typescript/docs-md"
+  "docsPath": "apis-tools/typescript/sdk-api-docs"
 }
