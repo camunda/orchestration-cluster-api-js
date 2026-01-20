@@ -182,6 +182,26 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: npx semantic-release
+
+      - name: Promote npm dist-tag `latest` (if current stable line)
+        if: steps.next_version.outputs.publish_needed == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # Only promote when this stable/* branch is the currently promoted stable line.
+          # We define that as: the `latest` git branch points to a commit that is reachable from this branch.
+          git fetch origin latest:refs/remotes/origin/latest
+
+          if git merge-base --is-ancestor origin/latest HEAD; then
+            PKG=$(node -p "require('./package.json').name")
+            VER="${{ steps.next_version.outputs.version }}"
+            echo "Promoting $PKG@$VER to npm dist-tag latest"
+            npm dist-tag add "$PKG@$VER" latest
+          else
+            echo "Skipping dist-tag promotion: origin/latest is not on this stable line."
+          fi
       - name: Build Docs
         if: false
         run: npm run docs:api

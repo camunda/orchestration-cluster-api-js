@@ -57,7 +57,35 @@ module.exports = {
     ...(stableMinor ? [maintenanceBranchConfig(branch, stableMinor)] : []),
   ]),
   plugins: [
-    '@semantic-release/commit-analyzer',
+    [
+      '@semantic-release/commit-analyzer',
+      {
+        // This repo uses a "mutated semver" policy:
+        // - Patch: normal changes (including features)
+        // - Minor: reserved for Camunda server minor line bumps (e.g. 8.8 -> 8.9)
+        // - Major: reserved for Camunda server major line bumps (e.g. 8.x -> 9.x)
+        //
+        // Conventional commits still used for readability, but release type is controlled here.
+        releaseRules: [
+          // Default behavior in semantic-release would bump minor for `feat:`; override to patch.
+          { type: 'feat', release: 'patch' },
+          // Keep common patch-worthy types explicit.
+          { type: 'fix', release: 'patch' },
+          { type: 'perf', release: 'patch' },
+          { type: 'revert', release: 'patch' },
+
+          // Breaking changes should not automatically bump major/minor in this scheme.
+          // Use explicit `server:` commits below for line bumps.
+          { breaking: true, release: 'patch' },
+
+          // Explicit server-line bumps:
+          // - `server: ...` => minor bump (e.g. 8.8 -> 8.9)
+          // - `server-major: ...` => major bump (e.g. 8.x -> 9.0)
+          { type: 'server', release: 'minor' },
+          { type: 'server-major', release: 'major' },
+        ],
+      },
+    ],
     '@semantic-release/release-notes-generator',
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     ['@semantic-release/npm', { npmPublish: true }],

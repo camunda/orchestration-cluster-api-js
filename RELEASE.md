@@ -16,10 +16,10 @@ Promotion is done by fast-forwarding `latest` to a different `stable/<major>.<mi
 
 ### Workflows (what runs)
 
-| Workflow file                                                         | Triggers                    | Purpose                                                                                                                   |
-| --------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/orchestration-cluster-api-release.yml`             | push to `main` or `latest`  | validate, regenerate (if needed), publish (`alpha` from `main`, `latest` from `latest`), deploy docs from `latest` only  |
-| `.github/workflows/orchestration-cluster-api-release-maintenance.yml` | push to `stable/**`         | validate, regenerate (if needed), publish maintenance to the matching dist-tag, no docs                                   |
+| Workflow file                                                         | Triggers                   | Purpose                                                                                                                 |
+| --------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/orchestration-cluster-api-release.yml`             | push to `main` or `latest` | validate, regenerate (if needed), publish (`alpha` from `main`, `latest` from `latest`), deploy docs from `latest` only |
+| `.github/workflows/orchestration-cluster-api-release-maintenance.yml` | push to `stable/**`        | validate, regenerate (if needed), publish maintenance to the matching dist-tag, no docs                                 |
 
 Both workflows have the same shape:
 
@@ -53,6 +53,16 @@ Both workflows have the same shape:
 2. Push triggers `.github/workflows/orchestration-cluster-api-release-maintenance.yml`.
 3. semantic-release publishes to the dist-tag matching the branch (e.g. `8.8`).
 
+### Versioning rules (mutated semver)
+
+This repo uses Conventional Commits for readability, but the release type mapping is customized:
+
+- `fix:` / `feat:` / `perf:` / `revert:` => patch bump
+- `server:` => minor bump (reserved for Camunda server minor line bumps, e.g. `8.8` → `8.9`)
+- `server-major:` => major bump (reserved for Camunda server major line bumps, e.g. `8.x` → `9.0`)
+
+This is configured in `release.config.cjs` via `@semantic-release/commit-analyzer` `releaseRules`.
+
 ### Promotion procedure (move `latest` forward)
 
 When a new stable line is ready (e.g. moving from `stable/8.8` to `stable/8.9`):
@@ -76,6 +86,8 @@ When a new stable line is ready (e.g. moving from `stable/8.8` to `stable/8.9`):
    ```
 
 After promotion, pushes to `latest` publish to `latest`.
+
+Additionally, maintenance releases from `stable/<major>.<minor>` will automatically update the npm dist-tag `latest` when (and only when) the `latest` git branch points into that stable line.
 
 ### Troubleshooting
 
