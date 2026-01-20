@@ -1,90 +1,109 @@
-## Release & Branch Strategy
+## Release workflows & procedures
 
-### Goals
+This repo publishes to npm using `semantic-release` plus GitHub Actions.
 
-1. Published npm artifact exactly matches the tip of `main`.
-2. No publish if generated sources cannot be committed (fast‑forward guarantee).
-3. Deterministic generation: spec snapshot retained; no volatile build metadata file.
-4. Zero infinite CI loops (semantic-release commit includes `[skip ci]`).
+### Branch model (what publishes where)
 
-### Pipeline Overview
+The publishing behavior is defined in `release.config.cjs`.
 
-1. `generate` job: build, generate SDK from latest spec, run unit + integration tests, snapshot spec, commit drift (if any) from canonical Node 22.x leg as `fix(gen): regenerate artifacts` to a staging branch `release/stage/<run-id>`.
-2. `merge` job: fast-forward `main` to staging branch if drift occurred.
-3. `publish` job (runs on `main`): semantic-release dry run → if release needed (e.g. `fix:` / `feat:` present) bump `package.json` (no tag yet), rebuild (embeds version), smoke test, commit `chore(release): vX.Y.Z`, run semantic-release (publishes, tags, updates CHANGELOG, commits assets), build & deploy docs.
+| Branch                                       | What it is                                    | npm dist-tag / channel         |
+| -------------------------------------------- | --------------------------------------------- | ------------------------------ |
+| `main`                                       | next-minor development stream                 | `alpha` (pre-releases)         |
+| `latest`                                     | current stable stream                         | `latest`                       |
+| `stable/<major>.<minor>` (e.g. `stable/8.8`) | maintenance stream for a specific stable line | `<major>.<minor>` (e.g. `8.8`) |
 
-No post‑publish mutation: tag points at the commit containing final generated artifacts + bumped version.
+Promotion is done by fast-forwarding `latest` to a different `stable/<major>.<minor>` branch.
 
-### Artifacts
+### Workflows (what runs)
 
-| File                              | Purpose                                    |
-| --------------------------------- | ------------------------------------------ |
-| `spec-snapshots/spec-<sha>.yaml`  | Immutable copy of spec used for that build |
-| `branding/branding-metadata.json` | Branded key metadata for auditing changes  |
+| Workflow file                                                         | Triggers                    | Purpose                                                                                                                   |
+| --------------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/orchestration-cluster-api-release.yml`             | push to `main` or `latest`  | validate, regenerate (if needed), publish (`alpha` from `main`, `latest` from `latest`), deploy docs from `latest` only  |
+| `.github/workflows/orchestration-cluster-api-release-maintenance.yml` | push to `stable/**`         | validate, regenerate (if needed), publish maintenance to the matching dist-tag, no docs                                   |
 
-`BUILDINFO.json` was removed (previously stored commit/run/version hashes) to eliminate redundant drift sources. Reproducibility is ensured by deterministic regeneration + clean diff checks.
+Both workflows have the same shape:
 
-### Commit Conventions
+1. **Generate & Test**: `npm ci` → `npm run build` → unit + integration tests → snapshot spec → detect drift → commit drift from the canonical Node 22.x leg.
+2. **Version & Publish**: dry-run semantic-release to compute next version → if needed, bump `package.json`, rebuild, smoke tests, push bump commit → run semantic-release to publish.
 
-| Pattern                          | Effect / Release impact                                      |
-| -------------------------------- | ------------------------------------------------------------ |
-| `fix(gen): regenerate artifacts` | Triggers patch release if no higher type present             |
-| `feat: ...`                      | Triggers minor (or major if breaking) per conventional rules |
-| `fix: ...`                       | Triggers patch                                               |
-| `chore(release): vX.Y.Z`         | Version bump commit created before semantic-release run      |
-| `[skip ci]`                      | Added by semantic-release asset commit to prevent loop       |
+### Required secrets and permissions
 
-Pure `ci:` / generic `chore:` (non `chore(release)`) commits do not release.
+- `NPM_TOKEN` (repo secret): required for `npm whoami` and publishing via `@semantic-release/npm`.
+- `GITHUB_TOKEN` (provided by Actions): required for tags and pushing release commits.
+- Workflow permissions must include `contents: write` and `id-token: write` (already configured).
 
-### Failure Modes & Guards
+### Day-to-day usage
 
-| Failure                          | Guard / Behavior                                           |
-| -------------------------------- | ---------------------------------------------------------- |
-| Generated diff not committed     | No staging commit → merge/publish proceed without drift    |
-| Non-fast-forward (main advanced) | FF merge fails → workflow stops; next run regenerates      |
-| Upstream spec changes mid-run    | Publish rebuild sees new spec diff → new run will capture  |
-| Missing release-worthy commits   | Dry run sets `publish_needed=false`; publish steps skipped |
+**Alpha releases (from `main`)**
 
-### Local Reproduction
+1. Merge conventional commits (e.g. `feat:`, `fix:`) into `main`.
+2. Push/merge triggers `.github/workflows/orchestration-cluster-api-release.yml`.
+3. If a release is required, semantic-release publishes a prerelease to the `alpha` dist-tag.
 
+**Latest stable releases (from `latest`)**
+
+1. Ensure `latest` points at the desired stable line (see “Promotion” below).
+2. Merge conventional commits into `latest` (usually by merging/cherry-picking from the corresponding `stable/<major>.<minor>`).
+3. Push/merge triggers `.github/workflows/orchestration-cluster-api-release.yml`.
+4. If a release is required, semantic-release publishes to `latest` and deploys docs.
+
+**Maintenance releases (from `stable/<major>.<minor>`)**
+
+1. Cherry-pick fixes into the relevant `stable/<major>.<minor>` branch.
+2. Push triggers `.github/workflows/orchestration-cluster-api-release-maintenance.yml`.
+3. semantic-release publishes to the dist-tag matching the branch (e.g. `8.8`).
+
+### Promotion procedure (move `latest` forward)
+
+When a new stable line is ready (e.g. moving from `stable/8.8` to `stable/8.9`):
+
+1. Create the new stable branch from the desired commit:
+
+   ```sh
+   git checkout main
+   git pull
+   git checkout -b stable/8.9
+   git push -u origin stable/8.9
+   ```
+
+2. Fast-forward `latest` to the new stable branch:
+
+   ```sh
+   git checkout stable/8.9
+   git pull
+   git branch -f latest
+   git push -u origin latest
+   ```
+
+After promotion, pushes to `latest` publish to `latest`.
+
+### Troubleshooting
+
+**`ERELEASEBRANCHES` (“problematic branches is []”)**
+
+This almost always means semantic-release can’t see the configured release branch(es) on the remote.
+
+- Ensure `latest` exists on the remote:
+
+  ```sh
+  git checkout stable/8.8
+   git branch -f latest
+   git push -u origin latest
+  ```
+
+**Re-run without publishing**
+
+Use `scripts/next-version.mjs` (the workflows do this) or run locally:
+
+```sh
+npm ci
+node scripts/next-version.mjs
 ```
+
+### Local reproduction
+
+```sh
 npm ci
 npm run build
-sha256sum rest-api.source.yaml
-# Optional: semantic-release dry run to inspect next version
 npx semantic-release --dry-run --no-ci
 ```
-
-### Adding New Release Assets
-
-1. Add to `release.config.cjs` GitHub plugin assets array.
-2. Ensure workflow creates the file before semantic-release step.
-
-### When No Code Changes
-
-If no spec drift and no conventional commits since last tag (feat/fix), dry run finds no release; version bump + publish steps are skipped.
-
-### Known Limitations
-
-- Upstream spec is implicitly “latest”; pin with a ref file if stricter reproducibility required.
-- Fast-forward only; divergent commits landing between staging and merge abort the run.
-- Manual bump logic plus semantic-release still produces an additional asset commit (CHANGELOG). Acceptable duplication.
-
-### Future Enhancements
-
-- Scheduled drift check detecting spec changes without corresponding conventional commits.
-- Contract test verifying branded keys coverage in generated types.
-- Optional rule set (releaseRules) to treat certain `refactor:` or scoped `chore:` commits as patch.
-
-### Notable Changes
-
-#### Added CAMUNDA_DEFAULT_TENANT_ID (minor)
-
-Introduces a new configuration variable `CAMUNDA_DEFAULT_TENANT_ID` (default `<default>`). Hydration exposes this as `config.defaultTenantId`. Future helper methods may implicitly use this when an operation's tenantId is optional and not supplied. Explicit tenantId arguments always take precedence. No migration required; set to a custom tenant string if you operate primarily in a non-`<default>` tenant context.
-
-#### Body-level tenantId default injection
-
-Operations with an optional `tenantId` field in the request body will now have that field auto-populated from `config.defaultTenantId` if omitted. This occurs before request validation so strict/fanatical modes treat the injected value as part of the validated shape. Path parameters are unaffected (still explicit). Set `CAMUNDA_DEFAULT_TENANT_ID` to change the default.
-
-Trace-level log event emitted when injection occurs:
-`tenant.default.inject` with data `{ op, tenant }`. Enable via `CAMUNDA_SDK_LOG_LEVEL=trace` (or programmatic log level) to observe.
