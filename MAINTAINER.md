@@ -31,7 +31,7 @@ Each step is idempotent given identical upstream spec + environment.
 
 ## 2. Spec Acquisition & Reproducibility
 
-- Upstream repository: `camunda/camunda-orchestration-cluster-api` (branch: `main`).
+- Upstream repository: `camunda/camunda` (branch: `stable/8.8`).
 - Sparse checkout uses non‑cone mode + single file path.
 - Result is ephemeral (ignored by git). We intentionally keep an immutable copy (`rest-api.upstream.yaml`) per run for diffing.
 

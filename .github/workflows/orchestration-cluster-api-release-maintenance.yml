@@ -1,10 +1,9 @@
-name: Orchestration Cluster API JS - Release (alpha & latest)
+name: Orchestration Cluster API JS - Release (maintenance)
 
 on:
   push:
     branches:
-      - main
-      - latest
+      - 'stable/**'
   workflow_dispatch:
 
 concurrency:
@@ -16,6 +15,7 @@ permissions:
   packages: write   # required for npm publish via semantic-release
   pull-requests: read
   id-token: write # to enable use of OIDC for trusted publishing and npm provenance
+
 
 jobs:
   generate:
@@ -80,8 +80,8 @@ jobs:
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
           # Exclude workflow files from auto-format drift commits
-          git restore .github/workflows/orchestration-cluster-api-release.yml || true
           git restore .github/workflows/orchestration-cluster-api-release-maintenance.yml || true
+          git restore .github/workflows/orchestration-cluster-api-release.yml || true
           git add -A
           git commit -m "fix(gen): regenerate artifacts"
       - name: Upload logs (always)
@@ -96,19 +96,19 @@ jobs:
       changed: ${{ steps.detect.outputs.changed }}
 
   merge:
-    name: Fast-forward main (if drift)
+    name: Fast-forward ${{ github.ref_name }} (if drift)
     needs: generate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Fast-forward main
+      - name: Fast-forward ${{ github.ref_name }}
         if: needs.generate.outputs.changed == 'true'
         run: |
           set -e
           # Generation committed directly on the triggering branch by pushing from the action runner; no staging branch
-          echo "Drift committed during generate; main already updated."
+          echo "Drift committed during generate; ${{ github.ref_name }} already updated."
       - name: No drift – skip fast-forward
         if: needs.generate.outputs.changed != 'true'
         run: echo "No generated drift detected; fast-forward skipped."
@@ -183,10 +183,10 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
         run: npx semantic-release
       - name: Build Docs
-        if: steps.next_version.outputs.publish_needed == 'true' && github.ref_name == 'latest'
+        if: false
         run: npm run docs:api
       - name: Deploy Docs
-        if: steps.next_version.outputs.publish_needed == 'true' && github.ref_name == 'latest'
+        if: false
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs
