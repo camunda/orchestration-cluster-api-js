@@ -89,6 +89,14 @@ After promotion, pushes to `latest` publish to `latest`.
 
 Additionally, maintenance releases from `stable/<major>.<minor>` will automatically update the npm dist-tag `latest` when (and only when) the `latest` git branch points into that stable line.
 
+#### Automatic `latest` dist-tag promotion (how it behaves day-to-day)
+
+- When you are staying on the same stable line (e.g. continuing to ship `stable/8.8`), you do **not** need to move the `latest` git branch on every change. As long as `latest` points somewhere on the `stable/8.8` history, releases from `stable/8.8` will keep promoting npm dist-tag `latest`.
+- When you are changing the current stable line (e.g. `stable/8.8` → `stable/8.9`), you must move the `latest` git branch once (fast-forward) to the new line. After that:
+  - releases from the new line will promote npm dist-tag `latest`
+  - releases from the old line will stop promoting npm dist-tag `latest`
+- Docs deployment (GitHub Pages) still only runs from pushes to the `latest` git branch via `.github/workflows/orchestration-cluster-api-release.yml`.
+
 ### Troubleshooting
 
 **`ERELEASEBRANCHES` (“problematic branches is []”)**
