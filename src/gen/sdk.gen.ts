@@ -622,7 +622,7 @@ export const searchUserTasks = <ThrowOnError extends boolean = true>(options?: O
 
 /**
  * Search user task variables
- * Search for user task variables based on given criteria.
+ * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
  *
  */
 export const searchUserTaskVariables = <ThrowOnError extends boolean = true>(options: Options<SearchUserTaskVariablesData, ThrowOnError>) => {
@@ -640,7 +640,7 @@ export const searchUserTaskVariables = <ThrowOnError extends boolean = true>(opt
 
 /**
  * Search variables
- * Search for process and local variables based on given criteria.
+ * Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.
  *
  */
 export const searchVariables = <ThrowOnError extends boolean = true>(options?: Options<SearchVariablesData, ThrowOnError>) => {

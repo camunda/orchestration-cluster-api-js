@@ -122,11 +122,6 @@ export const zJobKey = zLongKey;
 export const zMessageSubscriptionKey = zLongKey;
 
 /**
- * System-generated key for a message correlation.
- */
-export const zMessageCorrelationKey = zLongKey;
-
-/**
  * Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
  */
 export const zDecisionDefinitionId = z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
@@ -1705,9 +1700,7 @@ export const zIncidentFilter = z.object({
         description: 'Error message which describes the error in more detail.'
     })),
     elementId: z.optional(zElementId),
-    creationTime: z.optional(z.iso.datetime().register(z.globalRegistry, {
-        description: 'Date of incident creation.'
-    })),
+    creationTime: z.optional(zDateTimeFilterProperty),
     state: z.optional(z.enum([
         'ACTIVE',
         'MIGRATED',
@@ -1888,7 +1881,9 @@ export const zMessageSubscriptionResult = z.object({
     messageName: z.optional(z.string().register(z.globalRegistry, {
         description: 'The name of the message associated with the message subscription.'
     })),
-    correlationKey: z.optional(zMessageCorrelationKey),
+    correlationKey: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The correlation key of the message subscription.'
+    })),
     tenantId: z.optional(zTenantId)
 });
 
@@ -3318,7 +3313,6 @@ export const zJobSearchQuerySortRequest = z.object({
         'endTime',
         'errorCode',
         'errorMessage',
-        'hasFailedWithRetriesLeft',
         'isDenied',
         'jobKey',
         'kind',
@@ -3504,9 +3498,9 @@ export const zJobSearchResult = z.object({
         z.string(),
         z.null()
     ])),
-    hasFailedWithRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
+    hasFailedWithRetriesLeft: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the job has failed with retries left.'
-    })),
+    }),
     isDenied: z.optional(z.union([
         z.boolean(),
         z.null()
@@ -3558,7 +3552,7 @@ export const zProblemDetail = z.object({
     detail: z.optional(z.string().register(z.globalRegistry, {
         description: 'An explanation of the problem in more detail.'
     })),
-    instance: z.optional(z.string().register(z.globalRegistry, {
+    instance: z.optional(z.url().register(z.globalRegistry, {
         description: 'A URI path identifying the origin of the problem.'
     }))
 }).register(z.globalRegistry, {
@@ -3910,7 +3904,7 @@ export const zMessageCorrelationRequest = z.object({
  */
 export const zMessageCorrelationResult = z.object({
     tenantId: z.optional(zTenantId),
-    messageKey: z.optional(zMessageCorrelationKey),
+    messageKey: z.optional(zMessageKey),
     processInstanceKey: z.optional(zProcessInstanceKey)
 }).register(z.globalRegistry, {
     description: 'The message key of the correlated message, as well as the first process instance key it\ncorrelated with.\n'
@@ -5294,7 +5288,11 @@ export const zSearchUserTaskVariablesData = z.object({
     path: z.object({
         userTaskKey: zUserTaskKey
     }),
-    query: z.optional(z.never())
+    query: z.optional(z.object({
+        truncateValues: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
+        }))
+    }))
 });
 
 /**
@@ -5306,7 +5304,11 @@ export const zSearchUserTaskVariablesResponse = zVariableSearchQueryResult;
 export const zSearchVariablesData = z.object({
     body: z.optional(zVariableSearchQuery),
     path: z.optional(z.never()),
-    query: z.optional(z.never())
+    query: z.optional(z.object({
+        truncateValues: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
+        }))
+    }))
 });
 
 /**

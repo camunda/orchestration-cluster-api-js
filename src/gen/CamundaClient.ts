@@ -799,7 +799,8 @@ type searchUserTasksConsistency = {
 type searchUserTaskVariablesOptions = Parameters<typeof Sdk.searchUserTaskVariables>[0];
 type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends { body?: infer B } ? B : never);
 type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey };
+type searchUserTaskVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
+type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey; truncateValues: searchUserTaskVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchUserTaskVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -807,7 +808,8 @@ type searchUserTaskVariablesConsistency = {
 };
 type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
 type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
-type searchVariablesInput = searchVariablesBody;
+type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
+type searchVariablesInput = searchVariablesBody & { truncateValues: searchVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -8858,7 +8860,7 @@ export class CamundaClient {
 
   /**
    * Search user task variables
-   * Search for user task variables based on given criteria.
+   * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
    *
     *
    * @operationId searchUserTaskVariables
@@ -8870,9 +8872,10 @@ export class CamundaClient {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
-      const { userTaskKey, ..._body } = arg || {};
+      const { userTaskKey, truncateValues, ..._body } = arg || {};
       let envelope: any = {};
       envelope.path = { userTaskKey };
+      envelope.query = { truncateValues };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('searchUserTaskVariables', Schemas.zSearchUserTaskVariablesData, envelope);
@@ -8880,6 +8883,7 @@ export class CamundaClient {
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
+      if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
@@ -8923,7 +8927,7 @@ export class CamundaClient {
 
   /**
    * Search variables
-   * Search for process and local variables based on given criteria.
+   * Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.
    *
     *
    * @operationId searchVariables
@@ -8935,14 +8939,16 @@ export class CamundaClient {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
-      const _body = arg;
+      const { truncateValues, ..._body } = arg || {};
       let envelope: any = {};
+      envelope.query = { truncateValues };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('searchVariables', Schemas.zSearchVariablesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {

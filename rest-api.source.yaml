@@ -154,9 +154,8 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
         "500":
-          description: >
-            An Internal Error occurred.
-            More details are provided in the response body. If the response body contains RESOURCE_EXHAUSTED, this signals back pressure.
+          description: |
+            An Internal Error occurred. More details are provided in the response body. If the response body contains RESOURCE_EXHAUSTED, this signals back pressure.
           content:
             application/problem+json:
               schema:
@@ -485,6 +484,8 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
       x-eventually-consistent: true
+      x-operation-kind:
+        kind: query
     put:
       tags:
         - Tenant
@@ -525,6 +526,8 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
       x-eventually-consistent: false
+      x-operation-kind:
+        kind: update
     delete:
       tags:
         - Tenant
@@ -555,6 +558,8 @@ paths:
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
       x-eventually-consistent: false
+      x-operation-kind:
+        kind: delete
   /tenants/{tenantId}/users/{username}:
     put:
       tags:
@@ -659,6 +664,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenantUserSearchResult"
       x-eventually-consistent: true
+      x-operation-kind:
+        kind: query
   /tenants/{tenantId}/clients/search:
     post:
       tags:
@@ -686,6 +693,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenantClientSearchResult"
       x-eventually-consistent: true
+      x-operation-kind:
+        kind: query
   /tenants/{tenantId}/groups/search:
     post:
       tags:
@@ -713,6 +722,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/TenantGroupSearchResult"
       x-eventually-consistent: true
+      x-operation-kind:
+        kind: query
   /tenants/{tenantId}/roles/search:
     post:
       tags:
@@ -740,6 +751,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/RoleSearchQueryResult"
       x-eventually-consistent: true
+      x-operation-kind:
+        kind: query
   /tenants/{tenantId}/clients/{clientId}:
     put:
       tags:
@@ -1393,7 +1406,7 @@ paths:
       operationId: searchUserTaskVariables
       summary: Search user task variables
       description: |
-        Search for user task variables based on given criteria.
+        Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
       parameters:
         - name: userTaskKey
           in: path
@@ -1401,6 +1414,12 @@ paths:
           description: The key of the user task.
           schema:
             $ref: "#/components/schemas/UserTaskKey"
+        - name: truncateValues
+          in: query
+          required: false
+          description: When true (default), long variable values in the response are truncated. When false, full variable values are returned.
+          schema:
+            type: boolean
       requestBody:
         required: false
         content:
@@ -1426,7 +1445,14 @@ paths:
       operationId: searchVariables
       summary: Search variables
       description: |
-        Search for process and local variables based on given criteria.
+        Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.
+      parameters:
+        - name: truncateValues
+          in: query
+          required: false
+          description: When true (default), long variable values in the response are truncated. When false, full variable values are returned.
+          schema:
+            type: boolean
       requestBody:
         required: false
         content:
@@ -5675,14 +5701,6 @@ components:
       type: string
       allOf:
         - $ref: "#/components/schemas/LongKey"
-    MessageCorrelationKey:
-      description: System-generated key for a message correlation.
-      format: MessageCorrelationKey
-      x-semantic-type: MessageCorrelationKey
-      example: "2251799813634265"
-      type: string
-      allOf:
-        - $ref: "#/components/schemas/LongKey"
     DecisionDefinitionKey:
       description: System-generated key for a decision definition.
       format: DecisionDefinitionKey
@@ -5953,8 +5971,6 @@ components:
     UserTaskSearchQueryResult:
       description: User task search query response.
       type: object
-      required: 
-        - items
       allOf:
         - $ref: "#/components/schemas/SearchQueryResponse"
       properties:
@@ -5963,6 +5979,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UserTaskResult"
+      required:
+        - items
     UserTaskFilter:
       description: User task filter request.
       type: object
@@ -6272,19 +6290,19 @@ components:
       type: object
       allOf:
         - $ref: "#/components/schemas/SearchQueryResponse"
-      required:
-        - items
       properties:
         items:
           description: The matching variables.
           type: array
           items:
             $ref: "#/components/schemas/VariableSearchResult"
+      required:
+        - items
     VariableSearchResult:
       description: Variable search response item.
       type: object
-      required: 
-        - value 
+      required:
+        - value
         - isTruncated
       allOf:
         - $ref: "#/components/schemas/VariableResultBase"
@@ -6300,20 +6318,20 @@ components:
       type: object
       allOf:
         - $ref: "#/components/schemas/VariableResultBase"
-      required:
-        - value
       properties:
         value:
           description: Full value of this variable.
           type: string
+      required:
+        - value
     VariableResultBase:
       description: Variable response item.
       type: object
       required:
-        - name 
-        - processInstanceKey 
-        - tenantId 
-        - variableKey 
+        - name
+        - processInstanceKey
+        - tenantId
+        - variableKey
         - scopeKey
       properties:
         name:
@@ -7775,9 +7793,9 @@ components:
           allOf:
             - $ref: "#/components/schemas/ElementId"
         creationTime:
-          type: string
+          allOf:
+            - $ref: "#/components/schemas/DateTimeFilterProperty"
           description: Date of incident creation.
-          format: date-time
         state:
           type: string
           description: State of this incident with a defined set of values.
@@ -8026,8 +8044,7 @@ components:
           description: The name of the message associated with the message subscription.
           type: string
         correlationKey:
-          allOf:
-            - $ref: "#/components/schemas/MessageCorrelationKey"
+          type: string
           description: The correlation key of the message subscription.
         tenantId:
           $ref: "#/components/schemas/TenantId"
@@ -10035,7 +10052,6 @@ components:
             - endTime
             - errorCode
             - errorMessage
-            - hasFailedWithRetriesLeft
             - isDenied
             - jobKey
             - kind
@@ -10139,7 +10155,7 @@ components:
     JobSearchQueryResult:
       description: Job search response.
       type: object
-      required: 
+      required:
         - items
       allOf:
         - $ref: "#/components/schemas/SearchQueryResponse"
@@ -10155,6 +10171,7 @@ components:
         - customHeaders
         - elementId
         - elementInstanceKey
+        - hasFailedWithRetriesLeft
         - jobKey
         - kind
         - listenerEventType
@@ -10405,6 +10422,7 @@ components:
           example: Request property [maxJobsToActivates] cannot be parsed
         instance:
           type: string
+          format: uri
           description: A URI path identifying the origin of the problem.
           example: /v2/jobs/activation
     SearchQueryRequest:
@@ -11041,7 +11059,7 @@ components:
             - $ref: "#/components/schemas/TenantId"
         messageKey:
           allOf:
-            - $ref: "#/components/schemas/MessageCorrelationKey"
+            - $ref: "#/components/schemas/MessageKey"
           description: The key of the correlated message
         processInstanceKey:
           description: The key of the first process instance the message correlated with
@@ -12343,9 +12361,8 @@ components:
           schema:
             $ref: "#/components/schemas/ProblemDetail"
     UnsupportedMediaType:
-      description: >
-        The server cannot process the request because the media type (Content-Type) of the request payload is not supported 
-        by the server for the requested resource and method.
+      description: |
+        The server cannot process the request because the media type (Content-Type) of the request payload is not supported  by the server for the requested resource and method.
       content:
         application/problem+json:
           schema:

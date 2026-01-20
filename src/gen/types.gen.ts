@@ -94,11 +94,6 @@ export type JobKey = CamundaKey<'JobKey'>;
 export type MessageSubscriptionKey = CamundaKey<'MessageSubscriptionKey'>;
 
 /**
- * System-generated key for a message correlation.
- */
-export type MessageCorrelationKey = CamundaKey<'MessageCorrelationKey'>;
-
-/**
  * System-generated key for a decision definition.
  */
 export type DecisionDefinitionKey = CamundaKey<'DecisionDefinitionKey'>;
@@ -1869,7 +1864,7 @@ export type IncidentFilter = {
     /**
      * Date of incident creation.
      */
-    creationTime?: string;
+    creationTime?: DateTimeFilterProperty;
     /**
      * State of this incident with a defined set of values.
      */
@@ -2082,7 +2077,7 @@ export type MessageSubscriptionResult = {
     /**
      * The correlation key of the message subscription.
      */
-    correlationKey?: MessageCorrelationKey;
+    correlationKey?: string;
     tenantId?: TenantId;
 };
 
@@ -3694,7 +3689,7 @@ export type JobSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
+    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
     order?: SortOrderEnum;
 };
 
@@ -3832,7 +3827,7 @@ export type JobSearchResult = {
     /**
      * Indicates whether the job has failed with retries left.
      */
-    hasFailedWithRetriesLeft?: boolean;
+    hasFailedWithRetriesLeft: boolean;
     /**
      * Indicates whether the user task listener denies the work.
      */
@@ -4571,7 +4566,7 @@ export type MessageCorrelationResult = {
     /**
      * The key of the correlated message
      */
-    messageKey?: MessageCorrelationKey;
+    messageKey?: MessageKey;
     /**
      * The key of the first process instance the message correlated with
      */
@@ -7267,7 +7262,12 @@ export type SearchUserTaskVariablesData = {
          */
         userTaskKey: UserTaskKey;
     };
-    query?: never;
+    query?: {
+        /**
+         * When true (default), long variable values in the response are truncated. When false, full variable values are returned.
+         */
+        truncateValues?: boolean;
+    };
     url: '/user-tasks/{userTaskKey}/variables/search';
 };
 
@@ -7298,7 +7298,12 @@ export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[k
 export type SearchVariablesData = {
     body?: VariableSearchQuery;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * When true (default), long variable values in the response are truncated. When false, full variable values are returned.
+         */
+        truncateValues?: boolean;
+    };
     url: '/variables/search';
 };
 
@@ -12066,7 +12071,7 @@ export type ClientOptions = {
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:c6c3f5f4c9c24b7b7d6873e31f72d83db79418de81dc00f09a21843b4ce0d507
+// specHash=sha256:4028962dc377e3635003e1ac7f3f66509668ebd5b4b8d34bf38a1e0e9a3d404e
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -12292,20 +12297,6 @@ export namespace JobKey {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
-      return true;
-    } catch { return false; }
-  }
-}
-// System-generated key for a message correlation.
-export namespace MessageCorrelationKey {
-  export function assumeExists(value: string): MessageCorrelationKey {
-    assertConstraint(value, 'MessageCorrelationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
-    return value as any;
-  }
-  export function getValue(key: MessageCorrelationKey): string { return key; }
-  export function isValid(value: string): boolean {
-    try {
-      assertConstraint(value, 'MessageCorrelationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
   }
