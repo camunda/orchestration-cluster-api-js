@@ -156,19 +156,19 @@ type createDeploymentBody = (NonNullable<createDeploymentOptions> extends { body
 type createDeploymentInput = Omit<createDeploymentBody, 'resources'> & { resources: File[] };
 type createDocumentOptions = Parameters<typeof Sdk.createDocument>[0];
 type createDocumentBody = (NonNullable<createDocumentOptions> extends { body?: infer B } ? B : never);
-type createDocumentQueryParam_storeId = (NonNullable<createDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type createDocumentQueryParam_documentId = (NonNullable<createDocumentOptions> extends { query: { documentId: infer Q } } ? Q : any);
-type createDocumentInput = createDocumentBody & { storeId: createDocumentQueryParam_storeId; documentId: createDocumentQueryParam_documentId };
+type createDocumentQueryParam_storeId = (NonNullable<createDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
+type createDocumentQueryParam_documentId = (NonNullable<createDocumentOptions> extends { query?: { documentId?: infer Q } } ? Q : any);
+type createDocumentInput = createDocumentBody & { storeId?: createDocumentQueryParam_storeId; documentId?: createDocumentQueryParam_documentId };
 type createDocumentLinkOptions = Parameters<typeof Sdk.createDocumentLink>[0];
 type createDocumentLinkBody = (NonNullable<createDocumentLinkOptions> extends { body?: infer B } ? B : never);
 type createDocumentLinkPathParam_documentId = (NonNullable<createDocumentLinkOptions> extends { path: { documentId: infer P } } ? P : any);
-type createDocumentLinkQueryParam_storeId = (NonNullable<createDocumentLinkOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type createDocumentLinkQueryParam_contentHash = (NonNullable<createDocumentLinkOptions> extends { query: { contentHash: infer Q } } ? Q : any);
-type createDocumentLinkInput = createDocumentLinkBody & { documentId: createDocumentLinkPathParam_documentId; storeId: createDocumentLinkQueryParam_storeId; contentHash: createDocumentLinkQueryParam_contentHash };
+type createDocumentLinkQueryParam_storeId = (NonNullable<createDocumentLinkOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
+type createDocumentLinkQueryParam_contentHash = (NonNullable<createDocumentLinkOptions> extends { query?: { contentHash?: infer Q } } ? Q : any);
+type createDocumentLinkInput = createDocumentLinkBody & { documentId: createDocumentLinkPathParam_documentId; storeId?: createDocumentLinkQueryParam_storeId; contentHash?: createDocumentLinkQueryParam_contentHash };
 type createDocumentsOptions = Parameters<typeof Sdk.createDocuments>[0];
 type createDocumentsBody = (NonNullable<createDocumentsOptions> extends { body?: infer B } ? B : never);
-type createDocumentsQueryParam_storeId = (NonNullable<createDocumentsOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type createDocumentsInput = createDocumentsBody & { storeId: createDocumentsQueryParam_storeId };
+type createDocumentsQueryParam_storeId = (NonNullable<createDocumentsOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
+type createDocumentsInput = createDocumentsBody & { storeId?: createDocumentsQueryParam_storeId };
 type createElementInstanceVariablesOptions = Parameters<typeof Sdk.createElementInstanceVariables>[0];
 type createElementInstanceVariablesBody = (NonNullable<createElementInstanceVariablesOptions> extends { body?: infer B } ? B : never);
 type createElementInstanceVariablesPathParam_elementInstanceKey = (NonNullable<createElementInstanceVariablesOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
@@ -208,8 +208,8 @@ type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthoriz
 type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
 type deleteDocumentOptions = Parameters<typeof Sdk.deleteDocument>[0];
 type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
-type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type deleteDocumentInput = { documentId: deleteDocumentPathParam_documentId; storeId: deleteDocumentQueryParam_storeId };
+type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
+type deleteDocumentInput = { documentId: deleteDocumentPathParam_documentId; storeId?: deleteDocumentQueryParam_storeId };
 type deleteGlobalClusterVariableOptions = Parameters<typeof Sdk.deleteGlobalClusterVariable>[0];
 type deleteGlobalClusterVariablePathParam_name = (NonNullable<deleteGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
 type deleteGlobalClusterVariableInput = { name: deleteGlobalClusterVariablePathParam_name };
@@ -339,9 +339,9 @@ type getDecisionRequirementsXmlConsistency = {
 };
 type getDocumentOptions = Parameters<typeof Sdk.getDocument>[0];
 type getDocumentPathParam_documentId = (NonNullable<getDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
-type getDocumentQueryParam_storeId = (NonNullable<getDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type getDocumentQueryParam_contentHash = (NonNullable<getDocumentOptions> extends { query: { contentHash: infer Q } } ? Q : any);
-type getDocumentInput = { documentId: getDocumentPathParam_documentId; storeId: getDocumentQueryParam_storeId; contentHash: getDocumentQueryParam_contentHash };
+type getDocumentQueryParam_storeId = (NonNullable<getDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
+type getDocumentQueryParam_contentHash = (NonNullable<getDocumentOptions> extends { query?: { contentHash?: infer Q } } ? Q : any);
+type getDocumentInput = { documentId: getDocumentPathParam_documentId; storeId?: getDocumentQueryParam_storeId; contentHash?: getDocumentQueryParam_contentHash };
 type getElementInstanceOptions = Parameters<typeof Sdk.getElementInstance>[0];
 type getElementInstancePathParam_elementInstanceKey = (NonNullable<getElementInstanceOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
 type getElementInstanceInput = { elementInstanceKey: getElementInstancePathParam_elementInstanceKey };
@@ -526,11 +526,11 @@ type getTenantClusterVariableConsistency = {
 type getTopologyOptions = Parameters<typeof Sdk.getTopology>[0];
 type getTopologyInput = void;
 type getUsageMetricsOptions = Parameters<typeof Sdk.getUsageMetrics>[0];
-type getUsageMetricsQueryParam_startTime = (NonNullable<getUsageMetricsOptions> extends { query: { startTime: infer Q } } ? Q : any);
-type getUsageMetricsQueryParam_endTime = (NonNullable<getUsageMetricsOptions> extends { query: { endTime: infer Q } } ? Q : any);
-type getUsageMetricsQueryParam_tenantId = (NonNullable<getUsageMetricsOptions> extends { query: { tenantId: infer Q } } ? Q : any);
-type getUsageMetricsQueryParam_withTenants = (NonNullable<getUsageMetricsOptions> extends { query: { withTenants: infer Q } } ? Q : any);
-type getUsageMetricsInput = { startTime: getUsageMetricsQueryParam_startTime; endTime: getUsageMetricsQueryParam_endTime; tenantId: getUsageMetricsQueryParam_tenantId; withTenants: getUsageMetricsQueryParam_withTenants };
+type getUsageMetricsQueryParam_startTime = (NonNullable<getUsageMetricsOptions> extends { query?: { startTime?: infer Q } } ? Q : any);
+type getUsageMetricsQueryParam_endTime = (NonNullable<getUsageMetricsOptions> extends { query?: { endTime?: infer Q } } ? Q : any);
+type getUsageMetricsQueryParam_tenantId = (NonNullable<getUsageMetricsOptions> extends { query?: { tenantId?: infer Q } } ? Q : any);
+type getUsageMetricsQueryParam_withTenants = (NonNullable<getUsageMetricsOptions> extends { query?: { withTenants?: infer Q } } ? Q : any);
+type getUsageMetricsInput = { startTime: getUsageMetricsQueryParam_startTime; endTime: getUsageMetricsQueryParam_endTime; tenantId?: getUsageMetricsQueryParam_tenantId; withTenants?: getUsageMetricsQueryParam_withTenants };
 /** Management of eventual consistency **/
 type getUsageMetricsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -690,8 +690,8 @@ type searchClientsForTenantConsistency = {
 };
 type searchClusterVariablesOptions = Parameters<typeof Sdk.searchClusterVariables>[0];
 type searchClusterVariablesBody = (NonNullable<searchClusterVariablesOptions> extends { body?: infer B } ? B : never);
-type searchClusterVariablesQueryParam_truncateValues = (NonNullable<searchClusterVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
-type searchClusterVariablesInput = searchClusterVariablesBody & { truncateValues: searchClusterVariablesQueryParam_truncateValues };
+type searchClusterVariablesQueryParam_truncateValues = (NonNullable<searchClusterVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+type searchClusterVariablesInput = searchClusterVariablesBody & { truncateValues?: searchClusterVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchClusterVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -945,8 +945,8 @@ type searchUserTasksConsistency = {
 type searchUserTaskVariablesOptions = Parameters<typeof Sdk.searchUserTaskVariables>[0];
 type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends { body?: infer B } ? B : never);
 type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type searchUserTaskVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
-type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey; truncateValues: searchUserTaskVariablesQueryParam_truncateValues };
+type searchUserTaskVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey; truncateValues?: searchUserTaskVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchUserTaskVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -954,8 +954,8 @@ type searchUserTaskVariablesConsistency = {
 };
 type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
 type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
-type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
-type searchVariablesInput = searchVariablesBody & { truncateValues: searchVariablesQueryParam_truncateValues };
+type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+type searchVariablesInput = searchVariablesBody & { truncateValues?: searchVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */

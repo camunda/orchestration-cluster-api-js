@@ -43,15 +43,15 @@ describe('searchUserTasks', () => {
           pollIntervalMs: 1_000,
           predicate: async (results) => {
             // polling memoization - handles idempotency with eventually consistent mutation
-            const current = results.items.filter((item) => !last.has(item.userTaskKey));
+            const current = results.items!.filter((item) => !last.has(item.userTaskKey!));
             last.clear();
-            results.items.forEach((task) => last.add(task.userTaskKey));
+            results.items!.forEach((task) => last.add(task.userTaskKey!));
             for (const userTask of current) {
               // console.log(
               //   `Claiming task ${userTask.userTaskKey} from process ${userTask.processInstanceKey}`
               // );
               await camunda.assignUserTask({
-                userTaskKey: userTask.userTaskKey,
+                userTaskKey: userTask.userTaskKey!,
                 assignee: 'jwulf',
               });
 
@@ -59,7 +59,7 @@ describe('searchUserTasks', () => {
               //   `Completing user task ${userTask.userTaskKey} from process ${userTask.processInstanceKey}`
               // );
               await camunda.completeUserTask({
-                userTaskKey: userTask.userTaskKey,
+                userTaskKey: userTask.userTaskKey!,
                 variables: {
                   userTaskCompleted: true,
                 },
@@ -93,11 +93,12 @@ describe('searchUserTasks', () => {
         filter: {
           processInstanceKey,
         },
+        truncateValues: true,
       },
       { consistency: { waitUpToMs: 5_000 } }
     );
-    const finalValues = variables.items
-      .map((item) => ({ [item.name]: item.value }))
+    const finalValues = variables
+      .items!.map((item) => ({ [item.name!]: item.value }))
       .reduce((curr, prev) => ({ ...curr, ...prev }), {});
     // console.log(`Process instance ${processInstanceKey} completed with variables:`, JSON.stringify(finalValues, null, 2));
     expect(finalValues.userTaskCompleted).toBe('true');
