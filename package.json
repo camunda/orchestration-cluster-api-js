@@ -65,7 +65,7 @@
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "lint-staged": "lint-staged",
+    "lint-staged": "npx lint-staged",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "release": "semantic-release",
