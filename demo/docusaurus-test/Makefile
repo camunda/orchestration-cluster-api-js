@@ -33,7 +33,7 @@ copy-sdk-docs:
 	@echo "Integrating sidebar into camunda-docs..."
 	@# Add SDK API docs reference to the TypeScript section in sidebars.js if not already present
 	@if ! grep -q "oca-client-docs/typedoc-sidebar" $(CAMUNDA_DOCS_DIR)/sidebars.js; then \
-		sed -i '' 's|"apis-tools/typescript/eventual-consistency",|"apis-tools/typescript/eventual-consistency",\n            {\n              type: "category",\n              label: "SDK API Reference",\n              items: require("./docs/apis-tools/typescript/oca-client-docs/typedoc-sidebar.cjs"),\n            },|' $(CAMUNDA_DOCS_DIR)/sidebars.js; \
+		sed -i '' 's|"apis-tools/typescript/eventual-consistency",|"apis-tools/typescript/eventual-consistency",\n            {\n              type: "category",\n              label: "Orchestration Cluster API Client Reference",\n              items: require("./docs/apis-tools/typescript/oca-client-docs/typedoc-sidebar.cjs"),\n            },|' $(CAMUNDA_DOCS_DIR)/sidebars.js; \
 		echo "Sidebar updated."; \
 	else \
 		echo "Sidebar already contains SDK API docs reference."; \
