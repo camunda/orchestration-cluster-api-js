@@ -140,6 +140,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
+          registry-url: 'https://registry.npmjs.org'
+          always-auth: true
           cache: 'npm'
           cache-dependency-path: package.json
       - name: Install deps
@@ -147,12 +149,14 @@ jobs:
       - name: Smoke test npm permissions
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }} 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm whoami
       - name: Determine next version (dry-run)
         id: next_version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -e
           node scripts/next-version.mjs > next-version.out 2>&1 || {
@@ -194,6 +198,8 @@ jobs:
         if: steps.next_version.outputs.publish_needed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: npx semantic-release
       - name: Build Docs
