@@ -92,7 +92,8 @@ describe('searchUserTasks', () => {
       {
         filter: {
           processInstanceKey,
-        }
+        },
+        truncateValues: true,
       },
       { consistency: { waitUpToMs: 5_000 } }
     );
