@@ -50,51 +50,7 @@ jobs:
           path: _generation-drift.patch
       - name: Unit Tests
         run: npm test
-      - name: Configure Integration Stack
-        working-directory: docker
-        if: matrix.stack == 'full'
-        run: |
-          # Extract CAMUNDA_VERSION from existing .env to use for other components
-          # We source it if it's safe, or just grep it.
-          CAMUNDA_VERSION=$(grep CAMUNDA_VERSION .env | cut -d '=' -f2)
-          echo "Discovered CAMUNDA_VERSION=${CAMUNDA_VERSION}"
-          
-          # Create .env needed by docker-compose-full.yaml
-          cat <<EOF >> .env
-          ORCHESTRATION_CLIENT_ID=zeebe
-          ORCHESTRATION_CLIENT_SECRET=zeebesecret
-          HOST=localhost
-          KEYCLOAK_HOST=keycloak
-          CONNECTORS_CLIENT_ID=connectors
-          CONNECTORS_CLIENT_SECRET=connectorssecret
-          OPTIMIZE_CLIENT_SECRET=optimizesecret
-          POSTGRES_DB=bitnami_postgresql
-          POSTGRES_USER=bn_postgresql
-          POSTGRES_PASSWORD=bitnami
-          CONSOLE_CLIENT_SECRET=consolesecret
-          KEYCLOAK_ADMIN_USER=admin
-          KEYCLOAK_ADMIN_PASSWORD=admin
-          RESOURCE_AUTHORIZATIONS_ENABLED=false
-          KEYCLOAK_SERVER_VERSION=20.0.3
-          ELASTIC_VERSION=8.12.1
-          CAMUNDA_CONNECTORS_VERSION=${CAMUNDA_VERSION}
-          CAMUNDA_OPTIMIZE_VERSION=${CAMUNDA_VERSION}
-          CAMUNDA_IDENTITY_VERSION=${CAMUNDA_VERSION}
-          CAMUNDA_WEB_MODELER_VERSION=${CAMUNDA_VERSION}
-          CAMUNDA_CONSOLE_VERSION=${CAMUNDA_VERSION}
-          MAILPIT_VERSION=v1.15
-          WEBMODELER_DB_NAME=webmodeler
-          WEBMODELER_DB_USER=webmodeler
-          WEBMODELER_DB_PASSWORD=webmodeler
-          WEBMODELER_PUSHER_APP_ID=app-id
-          WEBMODELER_PUSHER_KEY=key
-          WEBMODELER_PUSHER_SECRET=secret
-          WEBMODELER_MAIL_FROM_ADDRESS=noreply@example.com
-          EOF
-          
-          # Create connector-secrets.txt (can be empty but must exist)
-          touch connector-secrets.txt
-
+  
       - name: Start Integration Stack
         working-directory: docker
         run: |
