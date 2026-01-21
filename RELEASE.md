@@ -10,11 +10,12 @@ The publishing behavior is defined in `release.config.cjs`.
 | -------------------------------------------- | --------------------------------------------- | ------------------------------ |
 | `main`                                       | next-minor development stream                 | `alpha` (pre-releases)         |
 | `latest`                                     | optional stable stream branch                 | `latest`                       |
-| `stable/<major>.<minor>` (e.g. `stable/8.8`) | maintenance stream for a specific stable line | `<major>.<minor>` (e.g. `8.8`) |
+| `stable/<major>.<minor>` (e.g. `stable/8.8`) | maintenance stream for a specific stable line | `stable-<major>.<minor>` (e.g. `stable-8.8`) |
 
 The currently promoted stable line is configured via the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` (e.g. `8.8`).
 
 - Maintenance releases from `stable/<major>.<minor>` publish to the matching dist-tag (e.g. `8.8`).
+- Maintenance releases from `stable/<major>.<minor>` publish to the matching dist-tag (e.g. `stable-8.8`).
 - If that stable branch matches `CAMUNDA_SDK_CURRENT_STABLE_MINOR`, the workflow also promotes the same version to npm dist-tag `latest`.
 
 ### Workflows (what runs)
@@ -53,7 +54,7 @@ Both workflows have the same shape:
 
 1. Cherry-pick fixes into the relevant `stable/<major>.<minor>` branch.
 2. Push triggers `.github/workflows/orchestration-cluster-api-release-maintenance.yml`.
-3. semantic-release publishes to the dist-tag matching the branch (e.g. `8.8`).
+3. semantic-release publishes to the dist-tag matching the branch (e.g. `stable-8.8`).
 
 ### Versioning rules (mutated semver)
 
@@ -120,7 +121,7 @@ git tag v8.8.0
 git push --follow-tags
 
 # Publish (requires npm auth)
-npm publish --tag 8.8
+npm publish --tag stable-8.8
 npm dist-tag add @camunda8/orchestration-cluster-api@8.8.0 latest
 ```
 

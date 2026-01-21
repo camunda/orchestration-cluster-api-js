@@ -30,6 +30,12 @@ function stableMinorFromBranch(branch) {
   return m ? m[1] : null;
 }
 
+function stableDistTagForMinor(minor) {
+  // npm dist-tags must NOT be a valid SemVer version or range.
+  // Tags like "8.8" are considered a SemVer range by npm and are rejected.
+  return `stable-${minor}`;
+}
+
 function currentStableMinorFromEnv() {
   const raw =
     process.env.CAMUNDA_SDK_CURRENT_STABLE_MINOR ||
@@ -50,8 +56,8 @@ function maintenanceBranchConfig(branchName, minor) {
   return {
     name: branchName,
     range: `${minor}.x`,
-    // Publish maintenance line under a dedicated dist-tag (e.g. 8.8)
-    channel: minor,
+    // Publish maintenance line under a dedicated dist-tag (e.g. stable-8.8)
+    channel: stableDistTagForMinor(minor),
   };
 }
 
@@ -72,7 +78,7 @@ module.exports = {
   // Branch model:
   // - main: alpha prereleases for the next stable line (npm dist-tag: alpha)
   // - latest: optional stable stream branch (npm dist-tag: latest)
-  // - stable/<major>.<minor>: maintenance stream for that minor (npm dist-tag: <major>.<minor>)
+  // - stable/<major>.<minor>: maintenance stream for that minor (npm dist-tag: stable-<major>.<minor>)
   //
   // Stable-line selection:
   // - The currently promoted stable minor is configured via `CAMUNDA_SDK_CURRENT_STABLE_MINOR`.
