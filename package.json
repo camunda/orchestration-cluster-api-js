@@ -1,7 +1,7 @@
 {
   "name": "@camunda8/orchestration-cluster-api",
   "private": false,
-  "version": "1.2.3",
+  "version": "8.9.0-alpha.1",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -66,7 +66,7 @@
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "lint-staged": "lint-staged",
+    "lint-staged": "npx lint-staged",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "release": "semantic-release",
