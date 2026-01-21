@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   generate:
-    name: Generate & Test (Node ${{ matrix.node }})
+    name: Generate & Test (Node ${{ matrix.node }} ${{ matrix.stack }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
