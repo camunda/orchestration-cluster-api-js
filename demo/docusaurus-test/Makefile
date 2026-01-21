@@ -1,6 +1,6 @@
 # Makefile for testing documentation integration with camunda-docs
 
-CAMUNDA_DOCS_DIR := ../camunda-docs
+CAMUNDA_DOCS_DIR := ../../../camunda-docs
 SDK_ROOT := ../..
 SDK_DOCS_SRC := $(SDK_ROOT)/docs-md
 SDK_DOCS_DEST := $(CAMUNDA_DOCS_DIR)/docs/apis-tools/typescript/sdk-api-docs
