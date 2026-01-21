@@ -1,11 +1,11 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
 
 describe('completeJob', () => {
   it('can complete with result', async () => {
     const _camunda = createCamundaClient();
-    const filepath = './tests-integration/fixtures/test-job-process.bpmn';
+    const filepath = './tests-integration/fixtures/test-complete-job-process.bpmn';
     const deployment = await _camunda.deployResourcesFromFiles([filepath]);
 
     const process = await _camunda.createProcessInstance({
@@ -14,7 +14,7 @@ describe('completeJob', () => {
 
     const jobsResponse = await _camunda.activateJobs({
       maxJobsToActivate: 1,
-      type: 'test-job',
+      type: 'test-complete-job',
       timeout: 30000,
     });
 

@@ -4,7 +4,7 @@ import { describe, it } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 describe('searchJobs', () => {
-  it('can search Jobs', { timeout: 10_000} , async () => {
+  it('can search Jobs', { timeout: 10_000 }, async () => {
     const camunda = createCamundaClient();
     const res = await camunda.deployResourcesFromFiles([
       './tests-integration/fixtures/test-job-process.bpmn',
