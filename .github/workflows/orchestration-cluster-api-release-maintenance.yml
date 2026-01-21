@@ -25,6 +25,10 @@ jobs:
       fail-fast: false
       matrix:
         node: [20.x, 22.x, 24.x]
+        stack: [simple]
+        include:
+          - node: 22.x
+            stack: full
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +49,12 @@ jobs:
         run: npm test
       - name: Start Integration Stack
         working-directory: docker
-        run: docker compose up -d
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            docker compose -f docker-compose-full.yaml up -d
+          else
+            docker compose -f docker-compose.yaml up -d
+          fi
       - name: Wait for Services Healthy
         run: |
           set -e
@@ -218,15 +227,6 @@ jobs:
           else
             echo "Skipping dist-tag promotion: ${BRANCH_MINOR} is not the current stable minor (${CURRENT_MINOR})."
           fi
-      - name: Build Docs
-        if: false
-        run: npm run docs:api
-      - name: Deploy Docs
-        if: false
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: docs
-          branch: gh-pages
       - name: Upload release analysis logs (always)
         if: always()
         uses: actions/upload-artifact@v4
