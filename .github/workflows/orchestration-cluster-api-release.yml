@@ -67,7 +67,7 @@ jobs:
           done
           [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
       - name: Integration Tests
-        run: npm run test:integration
+        run: npm run test:integration     
       - name: Snapshot Spec & Metadata
         run: |
           set -e

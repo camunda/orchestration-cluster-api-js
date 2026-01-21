@@ -68,12 +68,7 @@ jobs:
           done
           [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
       - name: Integration Tests
-        run: |
-          if [ "${{ matrix.stack }}" == "full" ]; then
-            CAMUNDA_REST_ADDRESS=http://localhost:8088 npm run test:integration
-          else
-            npm run test:integration
-          fi        
+        run: npm run test:integration      
       - name: Snapshot Spec & Metadata
         run: |
           set -e

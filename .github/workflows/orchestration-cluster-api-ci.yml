@@ -76,11 +76,7 @@ jobs:
           done
           [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
       - name: Integration Tests
-        run: |
-          if [ "${{ matrix.stack }}" == "full" ]; then
-            export CAMUNDA_REST_ADDRESS=http://localhost:8088
-          fi
-          npm run test:integration
+        run: npm run test:integration
       - name: Capture Docker Logs (always)
         if: always()
         run: |
