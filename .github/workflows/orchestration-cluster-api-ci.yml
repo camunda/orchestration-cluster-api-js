@@ -12,6 +12,10 @@ jobs:
     strategy:
       matrix:
         node: [20.x, 22.x, 24.x]
+        stack: [simple]
+        include:
+          - node: 22.x
+            stack: full
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,16 +43,66 @@ jobs:
           fi
       - name: Upload Drift Patch
         # Only upload a single canonical drift patch from Node 20.x to avoid artifact 409 conflicts
-        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x'
+        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x' && matrix.stack == 'simple'
         uses: actions/upload-artifact@v4
         with:
           name: generation-drift
           path: _generation-drift.patch
       - name: Unit Tests
         run: npm test
+      - name: Configure Integration Stack
+        working-directory: docker
+        if: matrix.stack == 'full'
+        run: |
+          # Extract CAMUNDA_VERSION from existing .env to use for other components
+          # We source it if it's safe, or just grep it.
+          CAMUNDA_VERSION=$(grep CAMUNDA_VERSION .env | cut -d '=' -f2)
+          echo "Discovered CAMUNDA_VERSION=${CAMUNDA_VERSION}"
+          
+          # Create .env needed by docker-compose-full.yaml
+          cat <<EOF >> .env
+          ORCHESTRATION_CLIENT_ID=zeebe
+          ORCHESTRATION_CLIENT_SECRET=zeebesecret
+          HOST=localhost
+          KEYCLOAK_HOST=keycloak
+          CONNECTORS_CLIENT_ID=connectors
+          CONNECTORS_CLIENT_SECRET=connectorssecret
+          OPTIMIZE_CLIENT_SECRET=optimizesecret
+          POSTGRES_DB=bitnami_postgresql
+          POSTGRES_USER=bn_postgresql
+          POSTGRES_PASSWORD=bitnami
+          CONSOLE_CLIENT_SECRET=consolesecret
+          KEYCLOAK_ADMIN_USER=admin
+          KEYCLOAK_ADMIN_PASSWORD=admin
+          RESOURCE_AUTHORIZATIONS_ENABLED=false
+          KEYCLOAK_SERVER_VERSION=20.0.3
+          ELASTIC_VERSION=8.12.1
+          CAMUNDA_CONNECTORS_VERSION=${CAMUNDA_VERSION}
+          CAMUNDA_OPTIMIZE_VERSION=${CAMUNDA_VERSION}
+          CAMUNDA_IDENTITY_VERSION=${CAMUNDA_VERSION}
+          CAMUNDA_WEB_MODELER_VERSION=${CAMUNDA_VERSION}
+          CAMUNDA_CONSOLE_VERSION=${CAMUNDA_VERSION}
+          MAILPIT_VERSION=v1.15
+          WEBMODELER_DB_NAME=webmodeler
+          WEBMODELER_DB_USER=webmodeler
+          WEBMODELER_DB_PASSWORD=webmodeler
+          WEBMODELER_PUSHER_APP_ID=app-id
+          WEBMODELER_PUSHER_KEY=key
+          WEBMODELER_PUSHER_SECRET=secret
+          WEBMODELER_MAIL_FROM_ADDRESS=noreply@example.com
+          EOF
+          
+          # Create connector-secrets.txt (can be empty but must exist)
+          touch connector-secrets.txt
+
       - name: Start Integration Stack
         working-directory: docker
-        run: docker compose up -d
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            docker compose -f docker-compose-full.yaml up -d
+          else
+            docker compose -f docker-compose.yaml up -d
+          fi
       - name: Wait for Services Healthy
         run: |
           set -e
@@ -59,25 +113,42 @@ jobs:
             [ "$code" = "200" ] && echo "Broker healthy" && break
             attempts=$((attempts+1))
             sleep 5
+            # Optional: Check if containers are still running
+            if [ "${{ matrix.stack }}" == "full" ]; then
+              docker compose -f docker/docker-compose-full.yaml ps -q | xargs docker inspect -f '{{.State.Status}}' | grep -v running || true
+            fi
           done
           [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
       - name: Integration Tests
-        run: npm run test:integration
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            export CAMUNDA_REST_ADDRESS=http://localhost:8088
+          fi
+          npm run test:integration
       - name: Capture Docker Logs (always)
         if: always()
         run: |
           mkdir -p _logs
-          docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
+          COMPOSE_FILE="docker/docker-compose.yaml"
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            COMPOSE_FILE="docker/docker-compose-full.yaml"
+          fi
+          docker compose -f $COMPOSE_FILE logs > ../_logs/compose.log 2>&1 || true
       - name: Shutdown Integration Stack (always)
         if: always()
         working-directory: docker
-        run: docker compose down -v || true
+        run: |
+          COMPOSE_FILE="docker-compose.yaml"
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            COMPOSE_FILE="docker-compose-full.yaml"
+          fi
+          docker compose -f $COMPOSE_FILE down -v || true
       - name: Upload Logs Artifact (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          # Include node version so parallel matrix legs don't conflict
-          name: integration-docker-logs-${{ matrix.node }}
+          # Include node version and stack so parallel matrix legs don't conflict
+          name: integration-docker-logs-${{ matrix.node }}-${{ matrix.stack }}
           path: _logs/compose.log
       - name: Append Job Summary
         if: always()
@@ -85,7 +156,7 @@ jobs:
           status="${{ job.status }}"
           driftFlag="${{ steps.drift.outputs.drift }}"
           {
-            echo "### Node ${{ matrix.node }} Summary";
+            echo "### Node ${{ matrix.node }} (${{ matrix.stack }}) Summary";
             echo "- Status: ${status}";
             if [ "${driftFlag}" = "true" ]; then
               echo "- Generation Drift: detected";

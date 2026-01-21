@@ -1,7 +1,7 @@
 services:
   camunda:
-    image: camunda/camunda:${CAMUNDA_DOCKER_IMAGE_VERSION:-8.9.0-alpha3}
-    # If you want to override via env like the framework: set CAMUNDA_DOCKER_IMAGE_VERSION externally
+    image: camunda/camunda:${CAMUNDA_VERSION}
+    # If you want to override via env like the framework: set CAMUNDA_VERSION externally
     container_name: camunda-engine
     environment:
       SPRING_PROFILES_ACTIVE: 'broker,consolidated-auth'

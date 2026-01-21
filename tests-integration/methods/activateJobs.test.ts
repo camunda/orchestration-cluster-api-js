@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { createCamundaClient, JobActionReceiptSymbol } from '../../dist';
 
 describe('activateJobs', () => {
-  it('returns enriched jobs with action methods', async () => {
+  it('returns enriched jobs with action methods', { timeout: 20_000 }, async () => {
     const camunda = createCamundaClient();
     const res = await camunda.deployResourcesFromFiles([
       './tests-integration/fixtures/test-job-process.bpmn',
