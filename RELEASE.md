@@ -16,10 +16,10 @@ Promotion is done by fast-forwarding `latest` to a different `stable/<major>.<mi
 
 ### Workflows (what runs)
 
-| Workflow file                                                         | Triggers                   | Purpose                                                                                                                 |
-| --------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/orchestration-cluster-api-release.yml`             | push to `main` or `latest` | validate, regenerate (if needed), publish (`alpha` from `main`, `latest` from `latest`), deploy docs from `latest` only |
-| `.github/workflows/orchestration-cluster-api-release-maintenance.yml` | push to `stable/**`        | validate, regenerate (if needed), publish maintenance to the matching dist-tag, no docs                                 |
+| Workflow file                                                         | Triggers                   | Purpose                                                                                                                   |
+| --------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/orchestration-cluster-api-release.yml`             | push to `main` or `latest` | validate, regenerate (if needed), publish (`alpha` from `main`, `latest` from `latest`), deploy dev docs from `main` only |
+| `.github/workflows/orchestration-cluster-api-release-maintenance.yml` | push to `stable/**`        | validate, regenerate (if needed), publish maintenance to the matching dist-tag, no docs                                   |
 
 Both workflows have the same shape:
 
@@ -45,7 +45,7 @@ Both workflows have the same shape:
 1. Ensure `latest` points at the desired stable line (see “Promotion” below).
 2. Merge conventional commits into `latest` (usually by merging/cherry-picking from the corresponding `stable/<major>.<minor>`).
 3. Push/merge triggers `.github/workflows/orchestration-cluster-api-release.yml`.
-4. If a release is required, semantic-release publishes to `latest` and deploys docs.
+4. If a release is required, semantic-release publishes to `latest`.
 
 **Maintenance releases (from `stable/<major>.<minor>`)**
 
@@ -95,7 +95,8 @@ Additionally, maintenance releases from `stable/<major>.<minor>` will automatica
 - When you are changing the current stable line (e.g. `stable/8.8` → `stable/8.9`), you must move the `latest` git branch once (fast-forward) to the new line. After that:
   - releases from the new line will promote npm dist-tag `latest`
   - releases from the old line will stop promoting npm dist-tag `latest`
-- Docs deployment (GitHub Pages) still only runs from pushes to the `latest` git branch via `.github/workflows/orchestration-cluster-api-release.yml`.
+- Dev docs deployment (GitHub Pages) currently only runs from pushes to the `main` git branch via `.github/workflows/orchestration-cluster-api-release.yml`.
+- Stable documentation is handled separately (out of scope for this workflow).
 
 ### Troubleshooting
 

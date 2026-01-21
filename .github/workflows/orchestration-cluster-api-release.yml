@@ -203,10 +203,10 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
         run: npx semantic-release
       - name: Build Docs
-        if: steps.next_version.outputs.publish_needed == 'true' && github.ref_name == 'latest'
+        if: github.ref_name == 'main'
         run: npm run docs:api
       - name: Deploy Docs
-        if: steps.next_version.outputs.publish_needed == 'true' && github.ref_name == 'latest'
+        if: github.ref_name == 'main'
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs
