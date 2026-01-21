@@ -27,7 +27,7 @@ make integrate
 
 This will:
 - Generate markdown docs from the SDK TypeScript source
-- Copy them to `camunda-docs/docs/apis-tools/typescript/sdk-api-docs/`
+- Copy them to `camunda-docs/docs/apis-tools/typescript/oca-client-docs/`
 - Fix internal links for the Docusaurus environment
 - Update the sidebars.js to include the SDK API Reference section
 
