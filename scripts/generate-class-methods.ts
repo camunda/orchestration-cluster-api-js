@@ -108,7 +108,7 @@ function main() {
     eventual: boolean;
     verb: string;
     pathParams: string[];
-    queryParams: string[];
+    queryParams: Array<{ name: string; required: boolean }>;
     optionalTenantIdInBody: boolean;
   }
   const ops: OpMeta[] = [];
@@ -124,7 +124,7 @@ function main() {
         .map((p) => p.name!) as string[];
       const queryParams = params
         .filter((p) => p.in === 'query' && !!p.name)
-        .map((p) => p.name!) as string[];
+        .map((p) => ({ name: p.name!, required: !!p.required }));
       const hasPQ = params.some((p) => p.in === 'path' || p.in === 'query');
       const hasBody = !!op.requestBody && hasJsonLike(op.requestBody);
       const bodyOnly = !!(hasBody && !hasPQ);
@@ -194,7 +194,7 @@ function main() {
       );
     for (const qp of o.queryParams)
       support.push(
-        `type ${o.opId}QueryParam_${qp} = (NonNullable<${o.opId}Options> extends { query: { ${qp}: infer Q } } ? Q : any);`
+        `type ${o.opId}QueryParam_${qp.name} = (NonNullable<${o.opId}Options> extends { query?: { ${qp.name}?: infer Q } } ? Q : any);`
       );
     // Build unified Input type (domain-only).
     const pieces: string[] = [];
@@ -203,7 +203,7 @@ function main() {
       const extras: string[] = [];
       for (const pp of o.pathParams) extras.push(`${pp}: ${o.opId}PathParam_${pp}`);
       for (const qp of o.queryParams)
-        extras.push(`${qp}${o.bodyOnly ? '?' : ''}: ${o.opId}QueryParam_${qp}`); // query optional by default (cannot infer required easily without spec extension here)
+        extras.push(`${qp.name}${qp.required ? '' : '?'}: ${o.opId}QueryParam_${qp.name}`);
       if (extras.length) pieces.push(`{ ${extras.join('; ')} }`);
       if (o.opId === 'createDeployment') {
         // Enforce File[] resources at the public input surface (Blob not allowed)
@@ -308,7 +308,8 @@ type ${o.opId}Consistency = {
     const hasInputs = o.hasBody || o.pathParams.length || o.queryParams.length;
     if (hasInputs) {
       // Destructure and separate
-      const allParamNames = [...o.pathParams, ...o.queryParams];
+      const queryParamNames = o.queryParams.map((q) => q.name);
+      const allParamNames = [...o.pathParams, ...queryParamNames];
       if (o.hasBody) {
         if (allParamNames.length) {
           methods.push(`      const { ${allParamNames.join(', ')}, ..._body } = arg || {};`);
@@ -322,7 +323,7 @@ type ${o.opId}Consistency = {
       if (o.pathParams.length)
         methods.push(`      envelope.path = { ${o.pathParams.join(', ')} };`);
       if (o.queryParams.length)
-        methods.push(`      envelope.query = { ${o.queryParams.join(', ')} };`);
+        methods.push(`      envelope.query = { ${queryParamNames.join(', ')} };`);
       if (o.hasBody) methods.push('      envelope.body = _body;');
       if (o.hasBody && o.optionalTenantIdInBody) {
         methods.push(
