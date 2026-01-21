@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
 import { cancelActiveInstancesForDefinitions } from '../setup/cancelTasks';
@@ -29,10 +29,10 @@ describe('updateJob', () => {
       },
       { consistency: { waitUpToMs: 10_000 } }
     );
-    const job1 = response.items[0];
-    expect(job1.retries).toBe(3);
+    const job1 = response.items?.[0];
+    expect(job1!.retries).toBe(3);
 
-    await camunda.updateJob({ changeset: { retries: 4 }, jobKey: job1.jobKey });
+    await camunda.updateJob({ changeset: { retries: 4 }, jobKey: job1!.jobKey });
 
     const jobs = await camunda.activateJobs({
       type: 'test-job',

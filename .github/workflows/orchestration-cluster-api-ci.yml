@@ -12,6 +12,10 @@ jobs:
     strategy:
       matrix:
         node: [20.x, 22.x, 24.x]
+        stack: [simple]
+        include:
+          - node: 22.x
+            stack: full
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,16 +43,22 @@ jobs:
           fi
       - name: Upload Drift Patch
         # Only upload a single canonical drift patch from Node 20.x to avoid artifact 409 conflicts
-        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x'
+        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x' && matrix.stack == 'simple'
         uses: actions/upload-artifact@v4
         with:
           name: generation-drift
           path: _generation-drift.patch
       - name: Unit Tests
         run: npm test
+  
       - name: Start Integration Stack
         working-directory: docker
-        run: docker compose up -d
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            docker compose -f docker-compose-full.yaml up -d
+          else
+            docker compose -f docker-compose.yaml up -d
+          fi
       - name: Wait for Services Healthy
         run: |
           set -e
@@ -59,6 +69,10 @@ jobs:
             [ "$code" = "200" ] && echo "Broker healthy" && break
             attempts=$((attempts+1))
             sleep 5
+            # Optional: Check if containers are still running
+            if [ "${{ matrix.stack }}" == "full" ]; then
+              docker compose -f docker/docker-compose-full.yaml ps -q | xargs docker inspect -f '{{.State.Status}}' | grep -v running || true
+            fi
           done
           [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
       - name: Integration Tests
@@ -67,17 +81,26 @@ jobs:
         if: always()
         run: |
           mkdir -p _logs
-          docker compose -f docker/docker-compose.yaml logs > ../_logs/compose.log 2>&1 || true
+          COMPOSE_FILE="docker/docker-compose.yaml"
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            COMPOSE_FILE="docker/docker-compose-full.yaml"
+          fi
+          docker compose -f $COMPOSE_FILE logs > ../_logs/compose.log 2>&1 || true
       - name: Shutdown Integration Stack (always)
         if: always()
         working-directory: docker
-        run: docker compose down -v || true
+        run: |
+          COMPOSE_FILE="docker-compose.yaml"
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            COMPOSE_FILE="docker-compose-full.yaml"
+          fi
+          docker compose -f $COMPOSE_FILE down -v || true
       - name: Upload Logs Artifact (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          # Include node version so parallel matrix legs don't conflict
-          name: integration-docker-logs-${{ matrix.node }}
+          # Include node version and stack so parallel matrix legs don't conflict
+          name: integration-docker-logs-${{ matrix.node }}-${{ matrix.stack }}
           path: _logs/compose.log
       - name: Append Job Summary
         if: always()
@@ -85,7 +108,7 @@ jobs:
           status="${{ job.status }}"
           driftFlag="${{ steps.drift.outputs.drift }}"
           {
-            echo "### Node ${{ matrix.node }} Summary";
+            echo "### Node ${{ matrix.node }} (${{ matrix.stack }}) Summary";
             echo "- Status: ${status}";
             if [ "${driftFlag}" = "true" ]; then
               echo "- Generation Drift: detected";

@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 146
+// Operations: 167
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -173,6 +173,9 @@ type createElementInstanceVariablesOptions = Parameters<typeof Sdk.createElement
 type createElementInstanceVariablesBody = (NonNullable<createElementInstanceVariablesOptions> extends { body?: infer B } ? B : never);
 type createElementInstanceVariablesPathParam_elementInstanceKey = (NonNullable<createElementInstanceVariablesOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
 type createElementInstanceVariablesInput = createElementInstanceVariablesBody & { elementInstanceKey: createElementInstanceVariablesPathParam_elementInstanceKey };
+type createGlobalClusterVariableOptions = Parameters<typeof Sdk.createGlobalClusterVariable>[0];
+type createGlobalClusterVariableBody = (NonNullable<createGlobalClusterVariableOptions> extends { body?: infer B } ? B : never);
+type createGlobalClusterVariableInput = createGlobalClusterVariableBody;
 type createGroupOptions = Parameters<typeof Sdk.createGroup>[0];
 type createGroupBody = (NonNullable<createGroupOptions> extends { body?: infer B } ? B : never);
 type createGroupInput = createGroupBody;
@@ -188,6 +191,10 @@ type createRoleInput = createRoleBody;
 type createTenantOptions = Parameters<typeof Sdk.createTenant>[0];
 type createTenantBody = (NonNullable<createTenantOptions> extends { body?: infer B } ? B : never);
 type createTenantInput = createTenantBody;
+type createTenantClusterVariableOptions = Parameters<typeof Sdk.createTenantClusterVariable>[0];
+type createTenantClusterVariableBody = (NonNullable<createTenantClusterVariableOptions> extends { body?: infer B } ? B : never);
+type createTenantClusterVariablePathParam_tenantId = (NonNullable<createTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
+type createTenantClusterVariableInput = createTenantClusterVariableBody & { tenantId: createTenantClusterVariablePathParam_tenantId };
 type createUserOptions = Parameters<typeof Sdk.createUser>[0];
 type createUserBody = (NonNullable<createUserOptions> extends { body?: infer B } ? B : never);
 type createUserInput = createUserBody;
@@ -203,12 +210,32 @@ type deleteDocumentOptions = Parameters<typeof Sdk.deleteDocument>[0];
 type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
 type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
 type deleteDocumentInput = { documentId: deleteDocumentPathParam_documentId; storeId: deleteDocumentQueryParam_storeId };
+type deleteGlobalClusterVariableOptions = Parameters<typeof Sdk.deleteGlobalClusterVariable>[0];
+type deleteGlobalClusterVariablePathParam_name = (NonNullable<deleteGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
+type deleteGlobalClusterVariableInput = { name: deleteGlobalClusterVariablePathParam_name };
 type deleteGroupOptions = Parameters<typeof Sdk.deleteGroup>[0];
 type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 type deleteGroupInput = { groupId: deleteGroupPathParam_groupId };
 type deleteMappingRuleOptions = Parameters<typeof Sdk.deleteMappingRule>[0];
 type deleteMappingRulePathParam_mappingRuleId = (NonNullable<deleteMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
 type deleteMappingRuleInput = { mappingRuleId: deleteMappingRulePathParam_mappingRuleId };
+type deleteProcessInstanceOptions = Parameters<typeof Sdk.deleteProcessInstance>[0];
+type deleteProcessInstanceBody = (NonNullable<deleteProcessInstanceOptions> extends { body?: infer B } ? B : never);
+type deleteProcessInstancePathParam_processInstanceKey = (NonNullable<deleteProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+type deleteProcessInstanceInput = deleteProcessInstanceBody & { processInstanceKey: deleteProcessInstancePathParam_processInstanceKey };
+/** Management of eventual consistency **/
+type deleteProcessInstanceConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteProcessInstance>> 
+};
+type deleteProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.deleteProcessInstancesBatchOperation>[0];
+type deleteProcessInstancesBatchOperationBody = (NonNullable<deleteProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
+type deleteProcessInstancesBatchOperationInput = deleteProcessInstancesBatchOperationBody;
+/** Management of eventual consistency **/
+type deleteProcessInstancesBatchOperationConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteProcessInstancesBatchOperation>> 
+};
 type deleteResourceOptions = Parameters<typeof Sdk.deleteResource>[0];
 type deleteResourceBody = (NonNullable<deleteResourceOptions> extends { body?: infer B } ? B : never);
 type deleteResourcePathParam_resourceKey = (NonNullable<deleteResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
@@ -219,6 +246,10 @@ type deleteRoleInput = { roleId: deleteRolePathParam_roleId };
 type deleteTenantOptions = Parameters<typeof Sdk.deleteTenant>[0];
 type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
 type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
+type deleteTenantClusterVariableOptions = Parameters<typeof Sdk.deleteTenantClusterVariable>[0];
+type deleteTenantClusterVariablePathParam_tenantId = (NonNullable<deleteTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
+type deleteTenantClusterVariablePathParam_name = (NonNullable<deleteTenantClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
+type deleteTenantClusterVariableInput = { tenantId: deleteTenantClusterVariablePathParam_tenantId; name: deleteTenantClusterVariablePathParam_name };
 type deleteUserOptions = Parameters<typeof Sdk.deleteUser>[0];
 type deleteUserPathParam_username = (NonNullable<deleteUserOptions> extends { path: { username: infer P } } ? P : any);
 type deleteUserInput = { username: deleteUserPathParam_username };
@@ -227,13 +258,27 @@ type deleteUserConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteUser>> 
 };
+type evaluateConditionalsOptions = Parameters<typeof Sdk.evaluateConditionals>[0];
+type evaluateConditionalsBody = (NonNullable<evaluateConditionalsOptions> extends { body?: infer B } ? B : never);
+type evaluateConditionalsInput = evaluateConditionalsBody;
 type evaluateDecisionOptions = Parameters<typeof Sdk.evaluateDecision>[0];
 type evaluateDecisionBody = (NonNullable<evaluateDecisionOptions> extends { body?: infer B } ? B : never);
 type evaluateDecisionInput = evaluateDecisionBody;
+type evaluateExpressionOptions = Parameters<typeof Sdk.evaluateExpression>[0];
+type evaluateExpressionBody = (NonNullable<evaluateExpressionOptions> extends { body?: infer B } ? B : never);
+type evaluateExpressionInput = evaluateExpressionBody;
 type failJobOptions = Parameters<typeof Sdk.failJob>[0];
 type failJobBody = (NonNullable<failJobOptions> extends { body?: infer B } ? B : never);
 type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends { path: { jobKey: infer P } } ? P : any);
 type failJobInput = failJobBody & { jobKey: failJobPathParam_jobKey };
+type getAuditLogOptions = Parameters<typeof Sdk.getAuditLog>[0];
+type getAuditLogPathParam_auditLogKey = (NonNullable<getAuditLogOptions> extends { path: { auditLogKey: infer P } } ? P : any);
+type getAuditLogInput = { auditLogKey: getAuditLogPathParam_auditLogKey };
+/** Management of eventual consistency **/
+type getAuditLogConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAuditLog>> 
+};
 type getAuthenticationOptions = Parameters<typeof Sdk.getAuthentication>[0];
 type getAuthenticationInput = void;
 type getAuthorizationOptions = Parameters<typeof Sdk.getAuthorization>[0];
@@ -305,6 +350,14 @@ type getElementInstanceConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getElementInstance>> 
 };
+type getGlobalClusterVariableOptions = Parameters<typeof Sdk.getGlobalClusterVariable>[0];
+type getGlobalClusterVariablePathParam_name = (NonNullable<getGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
+type getGlobalClusterVariableInput = { name: getGlobalClusterVariablePathParam_name };
+/** Management of eventual consistency **/
+type getGlobalClusterVariableConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalClusterVariable>> 
+};
 type getGroupOptions = Parameters<typeof Sdk.getGroup>[0];
 type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 type getGroupInput = { groupId: getGroupPathParam_groupId };
@@ -338,6 +391,31 @@ type getProcessDefinitionInput = { processDefinitionKey: getProcessDefinitionPat
 type getProcessDefinitionConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinition>> 
+};
+type getProcessDefinitionInstanceStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionInstanceStatistics>[0];
+type getProcessDefinitionInstanceStatisticsBody = (NonNullable<getProcessDefinitionInstanceStatisticsOptions> extends { body?: infer B } ? B : never);
+type getProcessDefinitionInstanceStatisticsInput = getProcessDefinitionInstanceStatisticsBody;
+/** Management of eventual consistency **/
+type getProcessDefinitionInstanceStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionInstanceStatistics>> 
+};
+type getProcessDefinitionInstanceVersionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>[0];
+type getProcessDefinitionInstanceVersionStatisticsBody = (NonNullable<getProcessDefinitionInstanceVersionStatisticsOptions> extends { body?: infer B } ? B : never);
+type getProcessDefinitionInstanceVersionStatisticsPathParam_processDefinitionId = (NonNullable<getProcessDefinitionInstanceVersionStatisticsOptions> extends { path: { processDefinitionId: infer P } } ? P : any);
+type getProcessDefinitionInstanceVersionStatisticsInput = getProcessDefinitionInstanceVersionStatisticsBody & { processDefinitionId: getProcessDefinitionInstanceVersionStatisticsPathParam_processDefinitionId };
+/** Management of eventual consistency **/
+type getProcessDefinitionInstanceVersionStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>> 
+};
+type getProcessDefinitionMessageSubscriptionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>[0];
+type getProcessDefinitionMessageSubscriptionStatisticsBody = (NonNullable<getProcessDefinitionMessageSubscriptionStatisticsOptions> extends { body?: infer B } ? B : never);
+type getProcessDefinitionMessageSubscriptionStatisticsInput = getProcessDefinitionMessageSubscriptionStatisticsBody;
+/** Management of eventual consistency **/
+type getProcessDefinitionMessageSubscriptionStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>> 
 };
 type getProcessDefinitionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionStatistics>[0];
 type getProcessDefinitionStatisticsBody = (NonNullable<getProcessDefinitionStatisticsOptions> extends { body?: infer B } ? B : never);
@@ -388,6 +466,22 @@ type getProcessInstanceStatisticsConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatistics>> 
 };
+type getProcessInstanceStatisticsByDefinitionOptions = Parameters<typeof Sdk.getProcessInstanceStatisticsByDefinition>[0];
+type getProcessInstanceStatisticsByDefinitionBody = (NonNullable<getProcessInstanceStatisticsByDefinitionOptions> extends { body?: infer B } ? B : never);
+type getProcessInstanceStatisticsByDefinitionInput = getProcessInstanceStatisticsByDefinitionBody;
+/** Management of eventual consistency **/
+type getProcessInstanceStatisticsByDefinitionConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>> 
+};
+type getProcessInstanceStatisticsByErrorOptions = Parameters<typeof Sdk.getProcessInstanceStatisticsByError>[0];
+type getProcessInstanceStatisticsByErrorBody = (NonNullable<getProcessInstanceStatisticsByErrorOptions> extends { body?: infer B } ? B : never);
+type getProcessInstanceStatisticsByErrorInput = getProcessInstanceStatisticsByErrorBody;
+/** Management of eventual consistency **/
+type getProcessInstanceStatisticsByErrorConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>> 
+};
 type getResourceOptions = Parameters<typeof Sdk.getResource>[0];
 type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
 type getResourceInput = { resourceKey: getResourcePathParam_resourceKey };
@@ -419,6 +513,15 @@ type getTenantInput = { tenantId: getTenantPathParam_tenantId };
 type getTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getTenant>> 
+};
+type getTenantClusterVariableOptions = Parameters<typeof Sdk.getTenantClusterVariable>[0];
+type getTenantClusterVariablePathParam_tenantId = (NonNullable<getTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
+type getTenantClusterVariablePathParam_name = (NonNullable<getTenantClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
+type getTenantClusterVariableInput = { tenantId: getTenantClusterVariablePathParam_tenantId; name: getTenantClusterVariablePathParam_name };
+/** Management of eventual consistency **/
+type getTenantClusterVariableConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getTenantClusterVariable>> 
 };
 type getTopologyOptions = Parameters<typeof Sdk.getTopology>[0];
 type getTopologyInput = void;
@@ -509,6 +612,14 @@ type resolveIncidentsBatchOperationConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>> 
 };
+type resolveProcessInstanceIncidentsOptions = Parameters<typeof Sdk.resolveProcessInstanceIncidents>[0];
+type resolveProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<resolveProcessInstanceIncidentsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+type resolveProcessInstanceIncidentsInput = { processInstanceKey: resolveProcessInstanceIncidentsPathParam_processInstanceKey };
+/** Management of eventual consistency **/
+type resolveProcessInstanceIncidentsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.resolveProcessInstanceIncidents>> 
+};
 type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0];
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
@@ -517,6 +628,14 @@ type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey:
 type resumeBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.resumeBatchOperation>> 
+};
+type searchAuditLogsOptions = Parameters<typeof Sdk.searchAuditLogs>[0];
+type searchAuditLogsBody = (NonNullable<searchAuditLogsOptions> extends { body?: infer B } ? B : never);
+type searchAuditLogsInput = searchAuditLogsBody;
+/** Management of eventual consistency **/
+type searchAuditLogsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAuditLogs>> 
 };
 type searchAuthorizationsOptions = Parameters<typeof Sdk.searchAuthorizations>[0];
 type searchAuthorizationsBody = (NonNullable<searchAuthorizationsOptions> extends { body?: infer B } ? B : never);
@@ -569,6 +688,15 @@ type searchClientsForTenantConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForTenant>> 
 };
+type searchClusterVariablesOptions = Parameters<typeof Sdk.searchClusterVariables>[0];
+type searchClusterVariablesBody = (NonNullable<searchClusterVariablesOptions> extends { body?: infer B } ? B : never);
+type searchClusterVariablesQueryParam_truncateValues = (NonNullable<searchClusterVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
+type searchClusterVariablesInput = searchClusterVariablesBody & { truncateValues: searchClusterVariablesQueryParam_truncateValues };
+/** Management of eventual consistency **/
+type searchClusterVariablesConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClusterVariables>> 
+};
 type searchCorrelatedMessageSubscriptionsOptions = Parameters<typeof Sdk.searchCorrelatedMessageSubscriptions>[0];
 type searchCorrelatedMessageSubscriptionsBody = (NonNullable<searchCorrelatedMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
 type searchCorrelatedMessageSubscriptionsInput = searchCorrelatedMessageSubscriptionsBody;
@@ -600,6 +728,15 @@ type searchDecisionRequirementsInput = searchDecisionRequirementsBody;
 type searchDecisionRequirementsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionRequirements>> 
+};
+type searchElementInstanceIncidentsOptions = Parameters<typeof Sdk.searchElementInstanceIncidents>[0];
+type searchElementInstanceIncidentsBody = (NonNullable<searchElementInstanceIncidentsOptions> extends { body?: infer B } ? B : never);
+type searchElementInstanceIncidentsPathParam_elementInstanceKey = (NonNullable<searchElementInstanceIncidentsOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
+type searchElementInstanceIncidentsInput = searchElementInstanceIncidentsBody & { elementInstanceKey: searchElementInstanceIncidentsPathParam_elementInstanceKey };
+/** Management of eventual consistency **/
+type searchElementInstanceIncidentsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchElementInstanceIncidents>> 
 };
 type searchElementInstancesOptions = Parameters<typeof Sdk.searchElementInstances>[0];
 type searchElementInstancesBody = (NonNullable<searchElementInstancesOptions> extends { body?: infer B } ? B : never);
@@ -788,6 +925,15 @@ type searchUsersForTenantConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForTenant>> 
 };
+type searchUserTaskAuditLogsOptions = Parameters<typeof Sdk.searchUserTaskAuditLogs>[0];
+type searchUserTaskAuditLogsBody = (NonNullable<searchUserTaskAuditLogsOptions> extends { body?: infer B } ? B : never);
+type searchUserTaskAuditLogsPathParam_userTaskKey = (NonNullable<searchUserTaskAuditLogsOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+type searchUserTaskAuditLogsInput = searchUserTaskAuditLogsBody & { userTaskKey: searchUserTaskAuditLogsPathParam_userTaskKey };
+/** Management of eventual consistency **/
+type searchUserTaskAuditLogsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskAuditLogs>> 
+};
 type searchUserTasksOptions = Parameters<typeof Sdk.searchUserTasks>[0];
 type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
 type searchUserTasksInput = searchUserTasksBody;
@@ -799,7 +945,8 @@ type searchUserTasksConsistency = {
 type searchUserTaskVariablesOptions = Parameters<typeof Sdk.searchUserTaskVariables>[0];
 type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends { body?: infer B } ? B : never);
 type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey };
+type searchUserTaskVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
+type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey; truncateValues: searchUserTaskVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchUserTaskVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -807,7 +954,8 @@ type searchUserTaskVariablesConsistency = {
 };
 type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
 type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
-type searchVariablesInput = searchVariablesBody;
+type searchVariablesQueryParam_truncateValues = (NonNullable<searchVariablesOptions> extends { query: { truncateValues: infer Q } } ? Q : any);
+type searchVariablesInput = searchVariablesBody & { truncateValues: searchVariablesQueryParam_truncateValues };
 /** Management of eventual consistency **/
 type searchVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -1383,6 +1531,7 @@ export class CamundaClient {
   // Generated methods
   /**
    * Activate activities within an ad-hoc sub-process
+   *
    * Activates selected activities within an ad-hoc sub-process identified by element ID.
    * The provided element IDs must exist within the ad-hoc sub-process instance identified by the
    * provided adHocSubProcessInstanceKey.
@@ -1445,6 +1594,7 @@ export class CamundaClient {
 
   /**
    * Activate jobs
+   *
    * Iterate through all known partitions and activate jobs up to the requested maximum.
    *
     *
@@ -1504,6 +1654,7 @@ export class CamundaClient {
 
   /**
    * Assign a client to a group
+   *
    * Assigns a client to a group, making it a member of the group.
    * Members of the group inherit the group authorizations, roles, and tenant assignments.
    *
@@ -1563,6 +1714,7 @@ export class CamundaClient {
 
   /**
    * Assign a client to a tenant
+   *
    * Assign the client to the specified tenant.
    * The client can then access tenant data and perform authorized actions.
    *
@@ -1622,6 +1774,7 @@ export class CamundaClient {
 
   /**
    * Assign a group to a tenant
+   *
    * Assigns a group to a specified tenant.
    * Group members (users, clients) can then access tenant data and perform authorized actions.
    *
@@ -1681,8 +1834,8 @@ export class CamundaClient {
 
   /**
    * Assign a mapping rule to a group
-   * Assigns a mapping rule to a group.
    *
+   * Assigns a mapping rule to a group.
     *
    * @operationId assignMappingRuleToGroup
    * @tags Group
@@ -1739,6 +1892,7 @@ export class CamundaClient {
 
   /**
    * Assign a mapping rule to a tenant
+   *
    * Assign a single mapping rule to a specified tenant.
     *
    * @operationId assignMappingRuleToTenant
@@ -1796,9 +1950,8 @@ export class CamundaClient {
 
   /**
    * Assign a role to a client
-   * Assigns the specified role to the client.
-   * The client will inherit the authorizations associated with this role.
    *
+   * Assigns the specified role to the client. The client will inherit the authorizations associated with this role.
     *
    * @operationId assignRoleToClient
    * @tags Role
@@ -1855,9 +2008,8 @@ export class CamundaClient {
 
   /**
    * Assign a role to a group
-   * Assigns the specified role to the group.
-   * Every member of the group (user or client) will inherit the authorizations associated with this role.
    *
+   * Assigns the specified role to the group. Every member of the group (user or client) will inherit the authorizations associated with this role.
     *
    * @operationId assignRoleToGroup
    * @tags Role
@@ -1914,8 +2066,8 @@ export class CamundaClient {
 
   /**
    * Assign a role to a mapping rule
-   * Assigns a role to a mapping rule.
    *
+   * Assigns a role to a mapping rule.
     *
    * @operationId assignRoleToMappingRule
    * @tags Role
@@ -1972,6 +2124,7 @@ export class CamundaClient {
 
   /**
    * Assign a role to a tenant
+   *
    * Assigns a role to a specified tenant.
    * Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
    *
@@ -2031,9 +2184,8 @@ export class CamundaClient {
 
   /**
    * Assign a role to a user
-   * Assigns the specified role to the user.
-   * The user will inherit the authorizations associated with this role.
    *
+   * Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
     *
    * @operationId assignRoleToUser
    * @tags Role
@@ -2090,6 +2242,7 @@ export class CamundaClient {
 
   /**
    * Assign user task
+   *
    * Assigns a user task with the given key to the given assignee.
     *
    * @operationId assignUserTask
@@ -2149,6 +2302,7 @@ export class CamundaClient {
 
   /**
    * Assign a user to a group
+   *
    * Assigns a user to a group, making the user a member of the group.
    * Group members inherit the group authorizations, roles, and tenant assignments.
    *
@@ -2208,6 +2362,7 @@ export class CamundaClient {
 
   /**
    * Assign a user to a tenant
+   *
    * Assign a single user to a specified tenant. The user can then access tenant data and perform authorized actions.
     *
    * @operationId assignUserToTenant
@@ -2265,6 +2420,7 @@ export class CamundaClient {
 
   /**
    * Broadcast signal
+   *
    * Broadcasts a signal.
     *
    * @operationId broadcastSignal
@@ -2326,6 +2482,7 @@ export class CamundaClient {
 
   /**
    * Cancel Batch operation
+   *
    * Cancels a running batch operation.
    * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
@@ -2392,7 +2549,8 @@ export class CamundaClient {
 
   /**
    * Cancel process instance
-   * Cancels a running process instance. As a cancelation includes more than just the removal of the process instance resource, the cancelation resource must be posted.
+   *
+   * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted.
     *
    * @operationId cancelProcessInstance
    * @tags Process instance
@@ -2450,7 +2608,8 @@ export class CamundaClient {
   }
 
   /**
-   * Create a batch operation to cancel process instances
+   * Cancel process instances (batch)
+   *
    * Cancels multiple running process instances.
    * Since only ACTIVE root instances can be cancelled, any given filters for state and
    * parentProcessInstanceKey are ignored and overridden during this batch operation.
@@ -2517,6 +2676,7 @@ export class CamundaClient {
 
   /**
    * Complete job
+   *
    * Complete a job with the given payload, which allows completing the associated service task.
    *
     *
@@ -2577,6 +2737,7 @@ export class CamundaClient {
 
   /**
    * Complete user task
+   *
    * Completes a user task with the given key.
     *
    * @operationId completeUserTask
@@ -2636,6 +2797,7 @@ export class CamundaClient {
 
   /**
    * Correlate message
+   *
    * Publishes a message and correlates it to a subscription.
    * If correlation is successful it will return the first process instance key the message correlated with.
    * The message is not buffered.
@@ -2701,6 +2863,7 @@ export class CamundaClient {
 
   /**
    * Create admin user
+   *
    * Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
     *
    * @operationId createAdminUser
@@ -2742,13 +2905,6 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
-        if (this._validation.settings.res !== 'none') {
-          const _schema = Schemas.zCreateAdminUserResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createAdminUser', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
         return data;
         } catch(e) {
           // Defer normalization to outer executeWithHttpRetry boundary
@@ -2763,6 +2919,7 @@ export class CamundaClient {
 
   /**
    * Create authorization
+   *
    * Create the authorization.
     *
    * @operationId createAuthorization
@@ -2820,6 +2977,7 @@ export class CamundaClient {
 
   /**
    * Deploy resources
+   *
    * Deploys one or more resources (e.g. processes, decision models, or forms).
    * This is an atomic call, i.e. either all resources are deployed or none of them are.
    *
@@ -2899,6 +3057,7 @@ export class CamundaClient {
 
   /**
    * Upload document
+   *
    * Upload a document to the Camunda 8 cluster.
    *
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
@@ -2961,6 +3120,7 @@ export class CamundaClient {
 
   /**
    * Create document link
+   *
    * Create a link to a document in the Camunda 8 cluster.
    *
    * Note that this is currently supported for document stores of type: AWS, GCP
@@ -3025,6 +3185,7 @@ export class CamundaClient {
 
   /**
    * Upload multiple documents
+   *
    * Upload multiple documents to the Camunda 8 cluster.
    *
    * The caller must provide a file name for each document, which will be used in case of a multi-status response
@@ -3099,6 +3260,7 @@ export class CamundaClient {
 
   /**
    * Update element instance variables
+   *
    * Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.
    * Specify the element instance in the `elementInstanceKey` parameter.
    *
@@ -3159,9 +3321,65 @@ export class CamundaClient {
   }
 
   /**
+   * Create a global-scoped cluster variable
+    *
+   * @operationId createGlobalClusterVariable
+   * @tags Cluster Variable
+   */
+  createGlobalClusterVariable(input: createGlobalClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.createGlobalClusterVariable>>;
+  createGlobalClusterVariable(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('createGlobalClusterVariable', Schemas.zCreateGlobalClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.createGlobalClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'createGlobalClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zCreateGlobalClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zCreateGlobalClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createGlobalClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false });
+    });
+  }
+
+  /**
    * Create group
-   * Create a new group.
    *
+   * Create a new group.
     *
    * @operationId createGroup
    * @tags Group
@@ -3218,6 +3436,7 @@ export class CamundaClient {
 
   /**
    * Create mapping rule
+   *
    * Create a new mapping rule
    *
     *
@@ -3276,9 +3495,10 @@ export class CamundaClient {
 
   /**
    * Create process instance
+   *
    * Creates and starts an instance of the specified process.
    * The process definition to use to create the instance can be specified either using its unique key
-   * (as returned by Deploy resources), or using the BPMN process ID and a version.
+   * (as returned by Deploy resources), or using the BPMN process id and a version.
    *
    * Waits for the completion of the process instance before returning a result
    * when awaitCompletion is enabled.
@@ -3293,6 +3513,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('createProcessInstance', Schemas.zCreateProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -3339,8 +3563,8 @@ export class CamundaClient {
 
   /**
    * Create role
-   * Create a new role.
    *
+   * Create a new role.
     *
    * @operationId createRole
    * @tags Role
@@ -3397,6 +3621,7 @@ export class CamundaClient {
 
   /**
    * Create tenant
+   *
    * Creates a new tenant.
     *
    * @operationId createTenant
@@ -3453,7 +3678,66 @@ export class CamundaClient {
   }
 
   /**
+   * Create a tenant-scoped cluster variable
+    *
+   * @operationId createTenantClusterVariable
+   * @tags Cluster Variable
+   */
+  createTenantClusterVariable(input: createTenantClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.createTenantClusterVariable>>;
+  createTenantClusterVariable(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { tenantId, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { tenantId };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('createTenantClusterVariable', Schemas.zCreateTenantClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.createTenantClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'createTenantClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zCreateTenantClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zCreateTenantClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createTenantClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'createTenantClusterVariable', exempt: false });
+    });
+  }
+
+  /**
    * Create user
+   *
    * Create a new user.
     *
    * @operationId createUser
@@ -3516,6 +3800,7 @@ export class CamundaClient {
 
   /**
    * Delete authorization
+   *
    * Deletes the authorization with the given key.
     *
    * @operationId deleteAuthorization
@@ -3573,6 +3858,7 @@ export class CamundaClient {
 
   /**
    * Delete document
+   *
    * Delete a document from the Camunda 8 cluster.
    *
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
@@ -3634,9 +3920,65 @@ export class CamundaClient {
   }
 
   /**
+   * Delete a global-scoped cluster variable
+    *
+   * @operationId deleteGlobalClusterVariable
+   * @tags Cluster Variable
+   */
+  deleteGlobalClusterVariable(input: deleteGlobalClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalClusterVariable>>;
+  deleteGlobalClusterVariable(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { name } = arg || {};
+      let envelope: any = {};
+      envelope.path = { name };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteGlobalClusterVariable', Schemas.zDeleteGlobalClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteGlobalClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'deleteGlobalClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteGlobalClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteGlobalClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteGlobalClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false });
+    });
+  }
+
+  /**
    * Delete group
-   * Deletes the group with the given ID.
    *
+   * Deletes the group with the given ID.
     *
    * @operationId deleteGroup
    * @tags Group
@@ -3693,6 +4035,7 @@ export class CamundaClient {
 
   /**
    * Delete a mapping rule
+   *
    * Deletes the mapping rule with the given ID.
    *
     *
@@ -3750,7 +4093,139 @@ export class CamundaClient {
   }
 
   /**
+   * Delete process instance
+   *
+   * Deletes a process instance. Only instances that are completed or terminated can be deleted.
+    *
+   * @operationId deleteProcessInstance
+   * @tags Process instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  deleteProcessInstance(input: deleteProcessInstanceInput, /** Management of eventual consistency **/ consistencyManagement: deleteProcessInstanceConsistency): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstance>>;
+  deleteProcessInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: deleteProcessInstanceConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { processInstanceKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { processInstanceKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteProcessInstance', Schemas.zDeleteProcessInstanceData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteProcessInstance(opts);
+        let data = this._evaluateResponse(_raw, 'deleteProcessInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteProcessInstanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteProcessInstanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteProcessInstance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('deleteProcessInstance', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Delete process instances (batch)
+   *
+   * Delete multiple process instances. This will delete the historic data from secondary storage.
+   * Only process instances in a final state (COMPLETED or TERMINATED) can be deleted.
+   * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+   *
+    *
+   * @operationId deleteProcessInstancesBatchOperation
+   * @tags Process instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  deleteProcessInstancesBatchOperation(input: deleteProcessInstancesBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: deleteProcessInstancesBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstancesBatchOperation>>;
+  deleteProcessInstancesBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: deleteProcessInstancesBatchOperationConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteProcessInstancesBatchOperation', Schemas.zDeleteProcessInstancesBatchOperationData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteProcessInstancesBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'deleteProcessInstancesBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteProcessInstancesBatchOperationResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteProcessInstancesBatchOperationResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteProcessInstancesBatchOperation', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('deleteProcessInstancesBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Delete resource
+   *
    * Deletes a deployed resource.
    * This can be a process definition, decision requirements definition, or form definition
    * deployed using the deploy resources endpoint. Specify the resource you want to delete in the `resourceKey` parameter.
@@ -3794,6 +4269,13 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteResourceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteResource', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
         return data;
         } catch(e) {
           // Defer normalization to outer executeWithHttpRetry boundary
@@ -3806,8 +4288,8 @@ export class CamundaClient {
 
   /**
    * Delete role
-   * Deletes the role with the given ID.
    *
+   * Deletes the role with the given ID.
     *
    * @operationId deleteRole
    * @tags Role
@@ -3864,6 +4346,7 @@ export class CamundaClient {
 
   /**
    * Delete tenant
+   *
    * Deletes an existing tenant.
     *
    * @operationId deleteTenant
@@ -3920,9 +4403,65 @@ export class CamundaClient {
   }
 
   /**
+   * Delete a tenant-scoped cluster variable
+    *
+   * @operationId deleteTenantClusterVariable
+   * @tags Cluster Variable
+   */
+  deleteTenantClusterVariable(input: deleteTenantClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.deleteTenantClusterVariable>>;
+  deleteTenantClusterVariable(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { tenantId, name } = arg || {};
+      let envelope: any = {};
+      envelope.path = { tenantId, name };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteTenantClusterVariable', Schemas.zDeleteTenantClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteTenantClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'deleteTenantClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteTenantClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteTenantClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteTenantClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteTenantClusterVariable', exempt: false });
+    });
+  }
+
+  /**
    * Delete user
-   * Deletes a user.
    *
+   * Deletes a user.
     *
    * @operationId deleteUser
    * @tags User
@@ -3983,7 +4522,73 @@ export class CamundaClient {
   }
 
   /**
+   * Evaluate root level conditional start events
+   *
+   * Evaluates root-level conditional start events for process definitions.
+   * If the evaluation is successful, it will return the keys of all created process instances, along with their associated process definition key.
+   * Multiple root-level conditional start events of the same process definition can trigger if their conditions evaluate to true.
+   *
+    *
+   * @operationId evaluateConditionals
+   * @tags Conditional
+   */
+  evaluateConditionals(input: evaluateConditionalsInput): CancelablePromise<_DataOf<typeof Sdk.evaluateConditionals>>;
+  evaluateConditionals(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateConditionals', tenant: this._config.defaultTenantId }]);
+      }
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('evaluateConditionals', Schemas.zEvaluateConditionalsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.evaluateConditionals(opts);
+        let data = this._evaluateResponse(_raw, 'evaluateConditionals', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zEvaluateConditionalsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zEvaluateConditionalsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('evaluateConditionals', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'evaluateConditionals', exempt: false });
+    });
+  }
+
+  /**
    * Evaluate decision
+   *
    * Evaluates a decision.
    * You specify the decision to evaluate either by using its unique key (as returned by
    * DeployResource), or using the decision ID. When using the decision ID, the latest deployed
@@ -3999,6 +4604,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateDecision', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('evaluateDecision', Schemas.zEvaluateDecisionData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -4044,8 +4653,71 @@ export class CamundaClient {
   }
 
   /**
+   * Evaluate an expression
+   *
+   * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
+    *
+   * @operationId evaluateExpression
+   * @tags Expression
+   */
+  evaluateExpression(input: evaluateExpressionInput): CancelablePromise<_DataOf<typeof Sdk.evaluateExpression>>;
+  evaluateExpression(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateExpression', tenant: this._config.defaultTenantId }]);
+      }
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('evaluateExpression', Schemas.zEvaluateExpressionData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.evaluateExpression(opts);
+        let data = this._evaluateResponse(_raw, 'evaluateExpression', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zEvaluateExpressionResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zEvaluateExpressionResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('evaluateExpression', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'evaluateExpression', exempt: false });
+    });
+  }
+
+  /**
    * Fail job
-   * Mark the job as failed
+   *
+   * Mark the job as failed.
    *
     *
    * @operationId failJob
@@ -4104,7 +4776,71 @@ export class CamundaClient {
   }
 
   /**
+   * Get audit log
+   *
+   * Get an audit log entry by auditLogKey.
+    *
+   * @operationId getAuditLog
+   * @tags Audit Log
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getAuditLog(input: getAuditLogInput, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency): CancelablePromise<_DataOf<typeof Sdk.getAuditLog>>;
+  getAuditLog(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { auditLogKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { auditLogKey };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getAuditLog', Schemas.zGetAuditLogData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getAuditLog(opts);
+        let data = this._evaluateResponse(_raw, 'getAuditLog', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetAuditLogResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetAuditLogResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getAuditLog', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getAuditLog', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Get current user
+   *
    * Retrieves the current authenticated user.
     *
    * @operationId getAuthentication
@@ -4153,6 +4889,7 @@ export class CamundaClient {
 
   /**
    * Get authorization
+   *
    * Get authorization by the given key.
     *
    * @operationId getAuthorization
@@ -4215,6 +4952,7 @@ export class CamundaClient {
 
   /**
    * Get batch operation
+   *
    * Get batch operation by key.
     *
    * @operationId getBatchOperation
@@ -4277,8 +5015,8 @@ export class CamundaClient {
 
   /**
    * Get decision definition
-   * Returns a decision definition by key.
    *
+   * Returns a decision definition by key.
     *
    * @operationId getDecisionDefinition
    * @tags Decision definition
@@ -4340,8 +5078,8 @@ export class CamundaClient {
 
   /**
    * Get decision definition XML
-   * Returns decision definition as XML.
    *
+   * Returns decision definition as XML.
     *
    * @operationId getDecisionDefinitionXML
    * @tags Decision definition
@@ -4403,8 +5141,8 @@ export class CamundaClient {
 
   /**
    * Get decision instance
-   * Returns a decision instance.
    *
+   * Returns a decision instance.
     *
    * @operationId getDecisionInstance
    * @tags Decision instance
@@ -4466,8 +5204,8 @@ export class CamundaClient {
 
   /**
    * Get decision requirements
-   * Returns Decision Requirements as JSON.
    *
+   * Returns Decision Requirements as JSON.
     *
    * @operationId getDecisionRequirements
    * @tags Decision requirements
@@ -4529,8 +5267,8 @@ export class CamundaClient {
 
   /**
    * Get decision requirements XML
-   * Returns decision requirements as XML.
    *
+   * Returns decision requirements as XML.
     *
    * @operationId getDecisionRequirementsXML
    * @tags Decision requirements
@@ -4592,6 +5330,7 @@ export class CamundaClient {
 
   /**
    * Download document
+   *
    * Download a document from the Camunda 8 cluster.
    *
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
@@ -4654,8 +5393,8 @@ export class CamundaClient {
 
   /**
    * Get element instance
-   * Returns element instance as JSON.
    *
+   * Returns element instance as JSON.
     *
    * @operationId getElementInstance
    * @tags Element instance
@@ -4716,9 +5455,70 @@ export class CamundaClient {
   }
 
   /**
+   * Get a global-scoped cluster variable
+    *
+   * @operationId getGlobalClusterVariable
+   * @tags Cluster Variable
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getGlobalClusterVariable(input: getGlobalClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalClusterVariable>>;
+  getGlobalClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { name } = arg || {};
+      let envelope: any = {};
+      envelope.path = { name };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getGlobalClusterVariable', Schemas.zGetGlobalClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getGlobalClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'getGlobalClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetGlobalClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetGlobalClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getGlobalClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getGlobalClusterVariable', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Get group
-   * Get a group by its ID.
    *
+   * Get a group by its ID.
     *
    * @operationId getGroup
    * @tags Group
@@ -4780,6 +5580,7 @@ export class CamundaClient {
 
   /**
    * Get incident
+   *
    * Returns incident as JSON.
    *
     *
@@ -4843,6 +5644,7 @@ export class CamundaClient {
 
   /**
    * Get license status
+   *
    * Obtains the status of the current Camunda license.
     *
    * @operationId getLicense
@@ -4891,6 +5693,7 @@ export class CamundaClient {
 
   /**
    * Get a mapping rule
+   *
    * Gets the mapping rule with the given ID.
    *
     *
@@ -4954,8 +5757,8 @@ export class CamundaClient {
 
   /**
    * Get process definition
-   * Returns process definition as JSON.
    *
+   * Returns process definition as JSON.
     *
    * @operationId getProcessDefinition
    * @tags Process definition
@@ -5016,9 +5819,203 @@ export class CamundaClient {
   }
 
   /**
-   * Get process definition statistics
-   * Get statistics about elements in currently running process instances by process definition key and search filter.
+   * Get process instance statistics
    *
+   * Get statistics about process instances, grouped by process definition and tenant.
+   *
+    *
+   * @operationId getProcessDefinitionInstanceStatistics
+   * @tags Process definition
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessDefinitionInstanceStatistics(input: getProcessDefinitionInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceStatistics>>;
+  getProcessDefinitionInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getProcessDefinitionInstanceStatistics', Schemas.zGetProcessDefinitionInstanceStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessDefinitionInstanceStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessDefinitionInstanceStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessDefinitionInstanceStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetProcessDefinitionInstanceStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessDefinitionInstanceStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessDefinitionInstanceStatistics', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get process instance statistics by version
+   *
+   * Get statistics about process instances, grouped by version for a given process definition.
+   *
+    *
+   * @operationId getProcessDefinitionInstanceVersionStatistics
+   * @tags Process definition
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessDefinitionInstanceVersionStatistics(input: getProcessDefinitionInstanceVersionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>>;
+  getProcessDefinitionInstanceVersionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { processDefinitionId, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { processDefinitionId };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getProcessDefinitionInstanceVersionStatistics', Schemas.zGetProcessDefinitionInstanceVersionStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessDefinitionInstanceVersionStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessDefinitionInstanceVersionStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessDefinitionInstanceVersionStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetProcessDefinitionInstanceVersionStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessDefinitionInstanceVersionStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessDefinitionInstanceVersionStatistics', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get message subscription statistics
+   *
+   * Get message subscription statistics, grouped by process definition.
+   *
+    *
+   * @operationId getProcessDefinitionMessageSubscriptionStatistics
+   * @tags Process definition
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessDefinitionMessageSubscriptionStatistics(input: getProcessDefinitionMessageSubscriptionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>>;
+  getProcessDefinitionMessageSubscriptionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getProcessDefinitionMessageSubscriptionStatistics', Schemas.zGetProcessDefinitionMessageSubscriptionStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessDefinitionMessageSubscriptionStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessDefinitionMessageSubscriptionStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessDefinitionMessageSubscriptionStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetProcessDefinitionMessageSubscriptionStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessDefinitionMessageSubscriptionStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessDefinitionMessageSubscriptionStatistics', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get process definition statistics
+   *
+   * Get statistics about elements in currently running process instances by process definition key and search filter.
     *
    * @operationId getProcessDefinitionStatistics
    * @tags Process definition
@@ -5082,8 +6079,8 @@ export class CamundaClient {
 
   /**
    * Get process definition XML
-   * Returns process definition as XML.
    *
+   * Returns process definition as XML.
     *
    * @operationId getProcessDefinitionXML
    * @tags Process definition
@@ -5145,8 +6142,8 @@ export class CamundaClient {
 
   /**
    * Get process instance
-   * Get the process instance by the process instance key.
    *
+   * Get the process instance by the process instance key.
     *
    * @operationId getProcessInstance
    * @tags Process instance
@@ -5207,9 +6204,9 @@ export class CamundaClient {
   }
 
   /**
-   * Get call hierarchy for process instance
-   * Returns the call hierarchy for a given process instance, showing its ancestry up to the root instance.
+   * Get call hierarchy
    *
+   * Returns the call hierarchy for a given process instance, showing its ancestry up to the root instance.
     *
    * @operationId getProcessInstanceCallHierarchy
    * @tags Process instance
@@ -5270,9 +6267,9 @@ export class CamundaClient {
   }
 
   /**
-   * Get process instance sequence flows
-   * Get sequence flows taken by the process instance.
+   * Get sequence flows
    *
+   * Get sequence flows taken by the process instance.
     *
    * @operationId getProcessInstanceSequenceFlows
    * @tags Process instance
@@ -5333,9 +6330,9 @@ export class CamundaClient {
   }
 
   /**
-   * Get process instance statistics
-   * Get statistics about elements by the process instance key.
+   * Get element instance statistics
    *
+   * Get statistics about elements by the process instance key.
     *
    * @operationId getProcessInstanceStatistics
    * @tags Process instance
@@ -5396,7 +6393,139 @@ export class CamundaClient {
   }
 
   /**
+   * Get process instance statistics by definition
+   *
+   * Returns statistics for active process instances with incidents, grouped by process
+   * definition. The result set is scoped to a specific incident error hash code, which must be
+   * provided as a filter in the request body.
+   *
+    *
+   * @operationId getProcessInstanceStatisticsByDefinition
+   * @tags Incident
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessInstanceStatisticsByDefinition(input: getProcessInstanceStatisticsByDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>>;
+  getProcessInstanceStatisticsByDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getProcessInstanceStatisticsByDefinition', Schemas.zGetProcessInstanceStatisticsByDefinitionData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessInstanceStatisticsByDefinition(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatisticsByDefinition', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessInstanceStatisticsByDefinitionResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetProcessInstanceStatisticsByDefinitionResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessInstanceStatisticsByDefinition', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByDefinition', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get process instance statistics by error
+   *
+   * Returns statistics for active process instances that currently have active incidents,
+   * grouped by incident error hash code.
+   *
+    *
+   * @operationId getProcessInstanceStatisticsByError
+   * @tags Incident
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessInstanceStatisticsByError(input: getProcessInstanceStatisticsByErrorInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>>;
+  getProcessInstanceStatisticsByError(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getProcessInstanceStatisticsByError', Schemas.zGetProcessInstanceStatisticsByErrorData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessInstanceStatisticsByError(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceStatisticsByError', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessInstanceStatisticsByErrorResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetProcessInstanceStatisticsByErrorResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessInstanceStatisticsByError', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Get resource
+   *
    * Returns a deployed resource.
    * :::info
    * Currently, this endpoint only supports RPA resources.
@@ -5458,6 +6587,7 @@ export class CamundaClient {
 
   /**
    * Get resource content
+   *
    * Returns the content of a deployed resource.
    * :::info
    * Currently, this endpoint only supports RPA resources.
@@ -5519,8 +6649,8 @@ export class CamundaClient {
 
   /**
    * Get role
-   * Get a role by its ID.
    *
+   * Get a role by its ID.
     *
    * @operationId getRole
    * @tags Role
@@ -5582,8 +6712,8 @@ export class CamundaClient {
 
   /**
    * Get process start form
-   * Get the start form of a process.
    *
+   * Get the start form of a process.
    * Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
    *
     *
@@ -5647,6 +6777,7 @@ export class CamundaClient {
 
   /**
    * Get cluster status
+   *
    * Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
     *
    * @operationId getStatus
@@ -5695,6 +6826,7 @@ export class CamundaClient {
 
   /**
    * Get tenant
+   *
    * Retrieves a single tenant by tenant ID.
     *
    * @operationId getTenant
@@ -5756,7 +6888,69 @@ export class CamundaClient {
   }
 
   /**
+   * Get a tenant-scoped cluster variable
+    *
+   * @operationId getTenantClusterVariable
+   * @tags Cluster Variable
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getTenantClusterVariable(input: getTenantClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency): CancelablePromise<_DataOf<typeof Sdk.getTenantClusterVariable>>;
+  getTenantClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { tenantId, name } = arg || {};
+      let envelope: any = {};
+      envelope.path = { tenantId, name };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getTenantClusterVariable', Schemas.zGetTenantClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getTenantClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'getTenantClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetTenantClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetTenantClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getTenantClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getTenantClusterVariable', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Get cluster topology
+   *
    * Obtains the current topology of the cluster the gateway is part of.
     *
    * @operationId getTopology
@@ -5805,6 +6999,7 @@ export class CamundaClient {
 
   /**
    * Get usage metrics
+   *
    * Retrieve the usage metrics based on given criteria.
     *
    * @operationId getUsageMetrics
@@ -5867,8 +7062,8 @@ export class CamundaClient {
 
   /**
    * Get user
-   * Get a user by its username.
    *
+   * Get a user by its username.
     *
    * @operationId getUser
    * @tags User
@@ -5930,8 +7125,8 @@ export class CamundaClient {
 
   /**
    * Get user task
-   * Get the user task by the user task key.
    *
+   * Get the user task by the user task key.
     *
    * @operationId getUserTask
    * @tags User task
@@ -5993,8 +7188,8 @@ export class CamundaClient {
 
   /**
    * Get user task form
-   * Get the form of a user task.
    *
+   * Get the form of a user task.
    * Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
    *
     *
@@ -6058,8 +7253,8 @@ export class CamundaClient {
 
   /**
    * Get variable
-   * Get the variable by the variable key.
    *
+   * Get the variable by the variable key.
     *
    * @operationId getVariable
    * @tags Variable
@@ -6121,6 +7316,7 @@ export class CamundaClient {
 
   /**
    * Migrate process instance
+   *
    * Migrates a process instance to a new process definition.
    * This request can contain multiple mapping instructions to define mapping between the active
    * process instance's elements and target process definition elements.
@@ -6186,8 +7382,9 @@ export class CamundaClient {
   }
 
   /**
-   * Create a batch operation to migrate process instances
-   * Migrate multiple instances of process instances.
+   * Migrate process instances (batch)
+   *
+   * Migrate multiple process instances.
    * Since only process instances with ACTIVE state can be migrated, any given
    * filters for state are ignored and overridden during this batch operation.
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
@@ -6253,6 +7450,7 @@ export class CamundaClient {
 
   /**
    * Modify process instance
+   *
    * Modifies a running process instance.
    * This request can contain multiple instructions to activate an element of the process or
    * to terminate an active instance of an element.
@@ -6317,7 +7515,8 @@ export class CamundaClient {
   }
 
   /**
-   * Create a batch operation to modify process instances
+   * Modify process instances (batch)
+   *
    * Modify multiple process instances.
    * Since only process instances with ACTIVE state can be modified, any given
    * filters for state are ignored and overridden during this batch operation.
@@ -6386,7 +7585,8 @@ export class CamundaClient {
 
   /**
    * Pin internal clock (alpha)
-   * Set a precise, static time for the Zeebe engine’s internal clock.
+   *
+   * Set a precise, static time for the Zeebe engine's internal clock.
    * When the clock is pinned, it remains at the specified time and does not advance.
    * To change the time, the clock must be pinned again with a new timestamp.
    *
@@ -6449,6 +7649,7 @@ export class CamundaClient {
 
   /**
    * Publish message
+   *
    * Publishes a single message.
    * Messages are published to specific partitions computed from their correlation keys.
    * Messages can be buffered.
@@ -6515,7 +7716,8 @@ export class CamundaClient {
 
   /**
    * Reset internal clock (alpha)
-   * Resets the Zeebe engine’s internal clock to the current system time, enabling it to tick in real-time.
+   *
+   * Resets the Zeebe engine's internal clock to the current system time, enabling it to tick in real-time.
    * This operation is useful for returning the clock to
    * normal behavior after it has been pinned to a specific time.
    *
@@ -6569,7 +7771,9 @@ export class CamundaClient {
 
   /**
    * Resolve incident
-   * Marks the incident as resolved; most likely a call to Update job will be necessary to reset the job’s retries, followed by this call.
+   *
+   * Marks the incident as resolved; most likely a call to Update job will be necessary
+   * to reset the job's retries, followed by this call.
    *
     *
    * @operationId resolveIncident
@@ -6628,7 +7832,8 @@ export class CamundaClient {
   }
 
   /**
-   * Create a batch operation to resolve incidents of process instances
+   * Resolve related incidents (batch)
+   *
    * Resolves multiple instances of process instances.
    * Since only process instances with ACTIVE state can have unresolved incidents, any given
    * filters for state are ignored and overridden during this batch operation.
@@ -6694,7 +7899,71 @@ export class CamundaClient {
   }
 
   /**
+   * Resolve related incidents
+   *
+   * Creates a batch operation to resolve multiple incidents of a process instance.
+    *
+   * @operationId resolveProcessInstanceIncidents
+   * @tags Process instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  resolveProcessInstanceIncidents(input: resolveProcessInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: resolveProcessInstanceIncidentsConsistency): CancelablePromise<_DataOf<typeof Sdk.resolveProcessInstanceIncidents>>;
+  resolveProcessInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: resolveProcessInstanceIncidentsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { processInstanceKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { processInstanceKey };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('resolveProcessInstanceIncidents', Schemas.zResolveProcessInstanceIncidentsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.resolveProcessInstanceIncidents(opts);
+        let data = this._evaluateResponse(_raw, 'resolveProcessInstanceIncidents', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zResolveProcessInstanceIncidentsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zResolveProcessInstanceIncidentsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('resolveProcessInstanceIncidents', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('resolveProcessInstanceIncidents', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Resume Batch operation
+   *
    * Resumes a suspended batch operation.
    * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
@@ -6760,9 +8029,72 @@ export class CamundaClient {
   }
 
   /**
-   * Search authorizations
-   * Search for authorizations based on given criteria.
+   * Search audit logs
    *
+   * Search for audit logs based on given criteria.
+    *
+   * @operationId searchAuditLogs
+   * @tags Audit Log
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchAuditLogs(input: searchAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchAuditLogs>>;
+  searchAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchAuditLogs', Schemas.zSearchAuditLogsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchAuditLogs(opts);
+        let data = this._evaluateResponse(_raw, 'searchAuditLogs', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchAuditLogsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchAuditLogsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchAuditLogs', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchAuditLogs', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Search authorizations
+   *
+   * Search for authorizations based on given criteria.
     *
    * @operationId searchAuthorizations
    * @tags Authorization
@@ -6824,6 +8156,7 @@ export class CamundaClient {
 
   /**
    * Search batch operation items
+   *
    * Search for batch operation items based on given criteria.
     *
    * @operationId searchBatchOperationItems
@@ -6886,6 +8219,7 @@ export class CamundaClient {
 
   /**
    * Search batch operations
+   *
    * Search for batch operations based on given criteria.
     *
    * @operationId searchBatchOperations
@@ -6948,8 +8282,8 @@ export class CamundaClient {
 
   /**
    * Search group clients
-   * Search clients assigned to a group.
    *
+   * Search clients assigned to a group.
     *
    * @operationId searchClientsForGroup
    * @tags Group
@@ -7013,8 +8347,8 @@ export class CamundaClient {
 
   /**
    * Search role clients
-   * Search clients with assigned role.
    *
+   * Search clients with assigned role.
     *
    * @operationId searchClientsForRole
    * @tags Role
@@ -7078,6 +8412,7 @@ export class CamundaClient {
 
   /**
    * Search clients for tenant
+   *
    * Retrieves a filtered and sorted list of clients for a specified tenant.
     *
    * @operationId searchClientsForTenant
@@ -7141,7 +8476,71 @@ export class CamundaClient {
   }
 
   /**
+   * Search for cluster variables based on given criteria. By default, long variable values in the response are truncated.
+    *
+   * @operationId searchClusterVariables
+   * @tags Cluster Variable
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchClusterVariables(input: searchClusterVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchClusterVariables>>;
+  searchClusterVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { truncateValues, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.query = { truncateValues };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchClusterVariables', Schemas.zSearchClusterVariablesData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchClusterVariables(opts);
+        let data = this._evaluateResponse(_raw, 'searchClusterVariables', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchClusterVariablesResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchClusterVariablesResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchClusterVariables', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchClusterVariables', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Search correlated message subscriptions
+   *
    * Search correlated message subscriptions based on given criteria.
     *
    * @operationId searchCorrelatedMessageSubscriptions
@@ -7204,8 +8603,8 @@ export class CamundaClient {
 
   /**
    * Search decision definitions
-   * Search for decision definitions based on given criteria.
    *
+   * Search for decision definitions based on given criteria.
     *
    * @operationId searchDecisionDefinitions
    * @tags Decision definition
@@ -7267,8 +8666,8 @@ export class CamundaClient {
 
   /**
    * Search decision instances
-   * Search for decision instances based on given criteria.
    *
+   * Search for decision instances based on given criteria.
     *
    * @operationId searchDecisionInstances
    * @tags Decision instance
@@ -7330,8 +8729,8 @@ export class CamundaClient {
 
   /**
    * Search decision requirements
-   * Search for decision requirements based on given criteria.
    *
+   * Search for decision requirements based on given criteria.
     *
    * @operationId searchDecisionRequirements
    * @tags Decision requirements
@@ -7392,9 +8791,81 @@ export class CamundaClient {
   }
 
   /**
-   * Search element instances
-   * Search for element instances based on given criteria.
+   * Search for incidents of a specific element instance
    *
+   * Search for incidents caused by the specified element instance, including incidents of any child instances created from this element instance.
+   *
+   * Although the `elementInstanceKey` is provided as a path parameter to indicate the root element instance,
+   * you may also include an `elementInstanceKey` within the filter object to narrow results to specific
+   * child element instances. This is useful, for example, if you want to isolate incidents associated with
+   * nested or subordinate elements within the given element instance while excluding incidents directly tied
+   * to the root element itself.
+   *
+    *
+   * @operationId searchElementInstanceIncidents
+   * @tags Element instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchElementInstanceIncidents(input: searchElementInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchElementInstanceIncidents>>;
+  searchElementInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { elementInstanceKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { elementInstanceKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchElementInstanceIncidents', Schemas.zSearchElementInstanceIncidentsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchElementInstanceIncidents(opts);
+        let data = this._evaluateResponse(_raw, 'searchElementInstanceIncidents', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchElementInstanceIncidentsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchElementInstanceIncidentsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchElementInstanceIncidents', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchElementInstanceIncidents', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Search element instances
+   *
+   * Search for element instances based on given criteria.
     *
    * @operationId searchElementInstances
    * @tags Element instance
@@ -7456,6 +8927,7 @@ export class CamundaClient {
 
   /**
    * Search groups for tenant
+   *
    * Retrieves a filtered and sorted list of groups for a specified tenant.
     *
    * @operationId searchGroupIdsForTenant
@@ -7520,8 +8992,8 @@ export class CamundaClient {
 
   /**
    * Search groups
-   * Search for groups based on given criteria.
    *
+   * Search for groups based on given criteria.
     *
    * @operationId searchGroups
    * @tags Group
@@ -7583,8 +9055,8 @@ export class CamundaClient {
 
   /**
    * Search role groups
-   * Search groups with assigned role.
    *
+   * Search groups with assigned role.
     *
    * @operationId searchGroupsForRole
    * @tags Role
@@ -7648,6 +9120,7 @@ export class CamundaClient {
 
   /**
    * Search incidents
+   *
    * Search for incidents based on given criteria.
    *
     *
@@ -7711,6 +9184,7 @@ export class CamundaClient {
 
   /**
    * Search jobs
+   *
    * Search for jobs based on given criteria.
     *
    * @operationId searchJobs
@@ -7773,6 +9247,7 @@ export class CamundaClient {
 
   /**
    * Search mapping rules
+   *
    * Search for mapping rules based on given criteria.
    *
     *
@@ -7836,8 +9311,8 @@ export class CamundaClient {
 
   /**
    * Search group mapping rules
-   * Search mapping rules assigned to a group.
    *
+   * Search mapping rules assigned to a group.
     *
    * @operationId searchMappingRulesForGroup
    * @tags Group
@@ -7901,8 +9376,8 @@ export class CamundaClient {
 
   /**
    * Search role mapping rules
-   * Search mapping rules with assigned role.
    *
+   * Search mapping rules with assigned role.
     *
    * @operationId searchMappingRulesForRole
    * @tags Role
@@ -7966,6 +9441,7 @@ export class CamundaClient {
 
   /**
    * Search mapping rules for tenant
+   *
    * Retrieves a filtered and sorted list of MappingRules for a specified tenant.
     *
    * @operationId searchMappingRulesForTenant
@@ -8030,8 +9506,8 @@ export class CamundaClient {
 
   /**
    * Search message subscriptions
-   * Search for message subscriptions based on given criteria.
    *
+   * Search for message subscriptions based on given criteria.
     *
    * @operationId searchMessageSubscriptions
    * @tags Message subscription
@@ -8093,8 +9569,8 @@ export class CamundaClient {
 
   /**
    * Search process definitions
-   * Search for process definitions based on given criteria.
    *
+   * Search for process definitions based on given criteria.
     *
    * @operationId searchProcessDefinitions
    * @tags Process definition
@@ -8155,8 +9631,14 @@ export class CamundaClient {
   }
 
   /**
-   * Search for incidents associated with a process instance
+   * Search related incidents
+   *
    * Search for incidents caused by the process instance or any of its called process or decision instances.
+   *
+   * Although the `processInstanceKey` is provided as a path parameter to indicate the root process instance,
+   * you may also include a `processInstanceKey` within the filter object to narrow results to specific
+   * child process instances. This is useful, for example, if you want to isolate incidents associated with
+   * subprocesses or called processes under the root instance while excluding incidents directly tied to the root.
    *
     *
    * @operationId searchProcessInstanceIncidents
@@ -8221,8 +9703,8 @@ export class CamundaClient {
 
   /**
    * Search process instances
-   * Search for process instances based on given criteria.
    *
+   * Search for process instances based on given criteria.
     *
    * @operationId searchProcessInstances
    * @tags Process instance
@@ -8284,8 +9766,8 @@ export class CamundaClient {
 
   /**
    * Search roles
-   * Search for roles based on given criteria.
    *
+   * Search for roles based on given criteria.
     *
    * @operationId searchRoles
    * @tags Role
@@ -8347,8 +9829,8 @@ export class CamundaClient {
 
   /**
    * Search group roles
-   * Search roles assigned to a group.
    *
+   * Search roles assigned to a group.
     *
    * @operationId searchRolesForGroup
    * @tags Group
@@ -8412,6 +9894,7 @@ export class CamundaClient {
 
   /**
    * Search roles for tenant
+   *
    * Retrieves a filtered and sorted list of roles for a specified tenant.
     *
    * @operationId searchRolesForTenant
@@ -8476,6 +9959,7 @@ export class CamundaClient {
 
   /**
    * Search tenants
+   *
    * Retrieves a filtered and sorted list of tenants.
     *
    * @operationId searchTenants
@@ -8538,8 +10022,8 @@ export class CamundaClient {
 
   /**
    * Search users
-   * Search for users based on given criteria.
    *
+   * Search for users based on given criteria.
     *
    * @operationId searchUsers
    * @tags User
@@ -8601,8 +10085,8 @@ export class CamundaClient {
 
   /**
    * Search group users
-   * Search users assigned to a group.
    *
+   * Search users assigned to a group.
     *
    * @operationId searchUsersForGroup
    * @tags Group
@@ -8666,8 +10150,8 @@ export class CamundaClient {
 
   /**
    * Search role users
-   * Search users with assigned role.
    *
+   * Search users with assigned role.
     *
    * @operationId searchUsersForRole
    * @tags Role
@@ -8731,6 +10215,7 @@ export class CamundaClient {
 
   /**
    * Search users for tenant
+   *
    * Retrieves a filtered and sorted list of users for a specified tenant.
     *
    * @operationId searchUsersForTenant
@@ -8794,9 +10279,74 @@ export class CamundaClient {
   }
 
   /**
-   * Search user tasks
-   * Search for user tasks based on given criteria.
+   * Search user task audit logs
    *
+   * Search for user task audit logs based on given criteria.
+    *
+   * @operationId searchUserTaskAuditLogs
+   * @tags User task
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchUserTaskAuditLogs(input: searchUserTaskAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskAuditLogs>>;
+  searchUserTaskAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { userTaskKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { userTaskKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchUserTaskAuditLogs', Schemas.zSearchUserTaskAuditLogsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchUserTaskAuditLogs(opts);
+        let data = this._evaluateResponse(_raw, 'searchUserTaskAuditLogs', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchUserTaskAuditLogsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchUserTaskAuditLogsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchUserTaskAuditLogs', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchUserTaskAuditLogs', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Search user tasks
+   *
+   * Search for user tasks based on given criteria.
     *
    * @operationId searchUserTasks
    * @tags User task
@@ -8858,8 +10408,8 @@ export class CamundaClient {
 
   /**
    * Search user task variables
-   * Search for user task variables based on given criteria.
    *
+   * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
     *
    * @operationId searchUserTaskVariables
    * @tags User task
@@ -8870,9 +10420,10 @@ export class CamundaClient {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
-      const { userTaskKey, ..._body } = arg || {};
+      const { userTaskKey, truncateValues, ..._body } = arg || {};
       let envelope: any = {};
       envelope.path = { userTaskKey };
+      envelope.query = { truncateValues };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('searchUserTaskVariables', Schemas.zSearchUserTaskVariablesData, envelope);
@@ -8880,6 +10431,7 @@ export class CamundaClient {
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
+      if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
@@ -8923,8 +10475,8 @@ export class CamundaClient {
 
   /**
    * Search variables
-   * Search for process and local variables based on given criteria.
    *
+   * Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.
     *
    * @operationId searchVariables
    * @tags Variable
@@ -8935,14 +10487,16 @@ export class CamundaClient {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
-      const _body = arg;
+      const { truncateValues, ..._body } = arg || {};
       let envelope: any = {};
+      envelope.query = { truncateValues };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('searchVariables', Schemas.zSearchVariablesData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
@@ -8986,6 +10540,7 @@ export class CamundaClient {
 
   /**
    * Suspend Batch operation
+   *
    * Suspends a running batch operation.
    * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
@@ -9052,6 +10607,7 @@ export class CamundaClient {
 
   /**
    * Throw error for job
+   *
    * Reports a business error (i.e. non-technical) that occurs while processing a job.
    *
     *
@@ -9112,6 +10668,7 @@ export class CamundaClient {
 
   /**
    * Unassign a client from a group
+   *
    * Unassigns a client from a group.
    * The client is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
    *
@@ -9171,6 +10728,7 @@ export class CamundaClient {
 
   /**
    * Unassign a client from a tenant
+   *
    * Unassigns the client from the specified tenant.
    * The client can no longer access tenant data.
    *
@@ -9230,6 +10788,7 @@ export class CamundaClient {
 
   /**
    * Unassign a group from a tenant
+   *
    * Unassigns a group from a specified tenant.
    * Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
    *
@@ -9289,8 +10848,8 @@ export class CamundaClient {
 
   /**
    * Unassign a mapping rule from a group
-   * Unassigns a mapping rule from a group.
    *
+   * Unassigns a mapping rule from a group.
     *
    * @operationId unassignMappingRuleFromGroup
    * @tags Group
@@ -9347,6 +10906,7 @@ export class CamundaClient {
 
   /**
    * Unassign a mapping rule from a tenant
+   *
    * Unassigns a single mapping rule from a specified tenant without deleting the rule.
     *
    * @operationId unassignMappingRuleFromTenant
@@ -9404,9 +10964,8 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a client
-   * Unassigns the specified role from the client.
-   * The client will no longer inherit the authorizations associated with this role.
    *
+   * Unassigns the specified role from the client. The client will no longer inherit the authorizations associated with this role.
     *
    * @operationId unassignRoleFromClient
    * @tags Role
@@ -9463,9 +11022,8 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a group
-   * Unassigns the specified role from the group.
-   * All group members (user or client) no longer inherit the authorizations associated with this role.
    *
+   * Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
     *
    * @operationId unassignRoleFromGroup
    * @tags Role
@@ -9522,8 +11080,8 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a mapping rule
-   * Unassigns a role from a mapping rule.
    *
+   * Unassigns a role from a mapping rule.
     *
    * @operationId unassignRoleFromMappingRule
    * @tags Role
@@ -9580,6 +11138,7 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a tenant
+   *
    * Unassigns a role from a specified tenant.
    * Users, Clients or Groups, that have the role assigned, will no longer have access to the
    * tenant's data - unless they are assigned directly to the tenant.
@@ -9640,9 +11199,8 @@ export class CamundaClient {
 
   /**
    * Unassign a role from a user
-   * Unassigns a role from a user.
-   * The user will no longer inherit the authorizations associated with this role.
    *
+   * Unassigns a role from a user. The user will no longer inherit the authorizations associated with this role.
     *
    * @operationId unassignRoleFromUser
    * @tags Role
@@ -9699,6 +11257,7 @@ export class CamundaClient {
 
   /**
    * Unassign a user from a group
+   *
    * Unassigns a user from a group.
    * The user is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
    *
@@ -9758,6 +11317,7 @@ export class CamundaClient {
 
   /**
    * Unassign a user from a tenant
+   *
    * Unassigns the user from the specified tenant.
    * The user can no longer access tenant data.
    *
@@ -9817,6 +11377,7 @@ export class CamundaClient {
 
   /**
    * Unassign user task
+   *
    * Removes the assignee of a task with the given key.
     *
    * @operationId unassignUserTask
@@ -9874,6 +11435,7 @@ export class CamundaClient {
 
   /**
    * Update authorization
+   *
    * Update the authorization with the given key.
     *
    * @operationId updateAuthorization
@@ -9933,8 +11495,8 @@ export class CamundaClient {
 
   /**
    * Update group
-   * Update a group with the given ID.
    *
+   * Update a group with the given ID.
     *
    * @operationId updateGroup
    * @tags Group
@@ -9993,6 +11555,7 @@ export class CamundaClient {
 
   /**
    * Update job
+   *
    * Update a job with the given key.
     *
    * @operationId updateJob
@@ -10052,6 +11615,7 @@ export class CamundaClient {
 
   /**
    * Update mapping rule
+   *
    * Update a mapping rule.
    *
     *
@@ -10112,8 +11676,8 @@ export class CamundaClient {
 
   /**
    * Update role
-   * Update a role with the given ID.
    *
+   * Update a role with the given ID.
     *
    * @operationId updateRole
    * @tags Role
@@ -10172,6 +11736,7 @@ export class CamundaClient {
 
   /**
    * Update tenant
+   *
    * Updates an existing tenant.
     *
    * @operationId updateTenant
@@ -10231,8 +11796,8 @@ export class CamundaClient {
 
   /**
    * Update user
-   * Updates a user.
    *
+   * Updates a user.
     *
    * @operationId updateUser
    * @tags User
@@ -10296,6 +11861,7 @@ export class CamundaClient {
 
   /**
    * Update user task
+   *
    * Update a user task with the given key.
     *
    * @operationId updateUserTask

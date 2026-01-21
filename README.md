@@ -114,7 +114,7 @@ Controlled by `CAMUNDA_SDK_VALIDATION` (or `config` override). Grammar:
 
 ```
 none | warn | strict | req:<mode>[,res:<mode>] | res:<mode>[,req:<mode>]
-<mode> = none|warn|strict
+<mode> = none|warn|strict|fanatical
 ```
 
 Examples:

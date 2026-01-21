@@ -9,9 +9,9 @@ Green‑field documentation of the current (post‑refactor) architecture. End�
 `npm run build` orchestrates a linear, deterministic pipeline:
 
 1. `clean` – purge `dist/`, `src/gen/`, `src/facade/`.
-2. `fetch:spec` – sparse clone upstream repo (single file: `specification/rest-api.yaml`) → materialize as:
-   - `external-spec/rest-api.upstream.yaml` (kept for traceability)
-   - `rest-api.source.yaml` (consumed by downstream steps)
+2. `fetch:spec` – sparse clone upstream repo (directory: `zeebe/gateway-protocol/src/main/proto/v2`) → materialize as:
+   - `external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/*` (kept for traceability)
+   - Entry file: `external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml` (consumed by downstream steps)
 3. `preprocess` – analyze semantic key schemas (`x-semantic-type` | `x-semantic-key`) → emit branding metadata.
 4. `generate:sdk` – invoke `@hey-api/openapi-ts` (with branding plugin) → produce raw generated trio:
    - `src/gen/types.gen.ts`
@@ -31,14 +31,14 @@ Each step is idempotent given identical upstream spec + environment.
 
 ## 2. Spec Acquisition & Reproducibility
 
-- Upstream repository: `camunda/camunda` (branch: `stable/8.8`).
+- Upstream repository: `camunda/camunda` (branch: `main`).
 - Sparse checkout uses non‑cone mode + single file path.
-- Result is ephemeral (ignored by git). We intentionally keep an immutable copy (`rest-api.upstream.yaml`) per run for diffing.
+- Result is ephemeral (ignored by git). We intentionally keep an immutable copy (the checked-out spec directory) per run for diffing.
 
 Enhancements (optional, not yet implemented):
 
 - Pin a specific commit/tag via `ORCH_SPEC_REF` env var.
-- Store SHA256 next to `rest-api.upstream.yaml` for provenance.
+- Store SHA256 next to the fetched upstream spec directory for provenance.
 - Offline fallback: reuse last downloaded spec if network unavailable.
 
 ---
@@ -78,7 +78,7 @@ Generated files are entirely disposable; never edit them manually—change input
 
 Reads:
 
-- `rest-api.source.yaml`
+- `external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml`
 - `sdk.gen.ts` (harvest JSDoc & argument shapes)
 - `zod.gen.ts` (presence test for response schemas & void markers)
 
@@ -169,14 +169,14 @@ Current version is pre-release (`0.0.0-dev`). Before publishing:
 
 ## 12. Troubleshooting
 
-| Issue                                | Likely Cause                          | Action                                                           |
-| ------------------------------------ | ------------------------------------- | ---------------------------------------------------------------- |
-| Missing branded key alias            | Absent `x-semantic-type`              | Add vendor extension to schema & rerun.                          |
-| Operation absent in `CamundaClient`  | Sanitization or missing `operationId` | Ensure unique `operationId` in spec.                             |
-| Wrong input type (path/query mixing) | Generator inference gap               | Patch `generate-class-methods.ts` logic (add case).              |
-| Spec fetch fails                     | Network / repo moved                  | Retry; if persistent, add offline fallback (future enhancement). |
-| Branding metadata empty              | Spec path mismatch or no markers      | Confirm `rest-api.source.yaml` & markers present.                |
-| Validation modes ignored             | Env var mis-specified                 | Use lowercase or explicit `req:`, `res:` pairs.                  |
+| Issue                                | Likely Cause                          | Action                                                                |
+| ------------------------------------ | ------------------------------------- | --------------------------------------------------------------------- |
+| Missing branded key alias            | Absent `x-semantic-type`              | Add vendor extension to schema & rerun.                               |
+| Operation absent in `CamundaClient`  | Sanitization or missing `operationId` | Ensure unique `operationId` in spec.                                  |
+| Wrong input type (path/query mixing) | Generator inference gap               | Patch `generate-class-methods.ts` logic (add case).                   |
+| Spec fetch fails                     | Network / repo moved                  | Retry; if persistent, add offline fallback (future enhancement).      |
+| Branding metadata empty              | Spec path mismatch or no markers      | Confirm `external-spec/upstream/.../rest-api.yaml` & markers present. |
+| Validation modes ignored             | Env var mis-specified                 | Use lowercase or explicit `req:`, `res:` pairs.                       |
 
 ---
 

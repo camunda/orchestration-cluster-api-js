@@ -22,7 +22,10 @@ export function evaluateSdkResponse(raw: any, opts: EvalOptions) {
   } else if (status >= 400) {
     // Non-candidate HTTP error: synthesize an HttpSdkError early for clearer stack
     const prob = raw.error && typeof raw.error === 'object' ? raw.error : raw;
-    const msg = prob.title || prob.detail || prob.message || `HTTP ${status}`;
+    let msg = prob.title || prob.detail || prob.message || `HTTP ${status}`;
+    if (prob.title && prob.detail && prob.title !== prob.detail) {
+      msg = `${prob.title} [${opts.opId}]: ${prob.detail}`;
+    }
     const err: any = new Error(msg);
     err.name = 'HttpSdkError';
     err.status = status;

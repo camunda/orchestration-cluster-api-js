@@ -7,12 +7,12 @@ import {
 import type { PlaywrightAPIResponse } from 'assert-json-body';
 
 export const RESPONSE_INDEX = {
-  '/topology': {
-    GET: {
+  '/audit-logs/search': {
+    POST: {
       '200': 1,
     },
   },
-  '/license': {
+  '/audit-logs/{auditLogKey}': {
     GET: {
       '200': 1,
     },
@@ -22,171 +22,73 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
-  '/jobs/activation': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/jobs/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/tenants': {
+  '/authorizations': {
     POST: {
       '201': 1,
     },
   },
-  '/tenants/{tenantId}': {
-    GET: {
-      '200': 1,
-    },
-    PUT: {
-      '200': 1,
-    },
-  },
-  '/tenants/{tenantId}/users/search': {
+  '/authorizations/search': {
     POST: {
       '200': 1,
     },
   },
-  '/tenants/{tenantId}/clients/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/tenants/{tenantId}/groups/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/tenants/{tenantId}/roles/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/tenants/{tenantId}/mapping-rules/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/tenants/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/user-tasks/{userTaskKey}': {
+  '/authorizations/{authorizationKey}': {
     GET: {
       '200': 1,
     },
   },
-  '/user-tasks/{userTaskKey}/form': {
+  '/batch-operation-items/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/batch-operations/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/batch-operations/{batchOperationKey}': {
     GET: {
       '200': 1,
     },
   },
-  '/user-tasks/search': {
+  '/cluster-variables/global': {
     POST: {
       '200': 1,
     },
   },
-  '/user-tasks/{userTaskKey}/variables/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/variables/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/variables/{variableKey}': {
+  '/cluster-variables/global/{name}': {
     GET: {
       '200': 1,
     },
   },
-  '/process-definitions/search': {
+  '/cluster-variables/search': {
     POST: {
       '200': 1,
     },
   },
-  '/process-definitions/{processDefinitionKey}': {
+  '/cluster-variables/tenants/{tenantId}': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/cluster-variables/tenants/{tenantId}/{name}': {
     GET: {
       '200': 1,
     },
   },
-  '/process-definitions/{processDefinitionKey}/form': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/process-definitions/{processDefinitionKey}/statistics/element-instances': {
+  '/conditionals/evaluation': {
     POST: {
       '200': 1,
     },
   },
-  '/process-instances': {
+  '/correlated-message-subscriptions/search': {
     POST: {
       '200': 1,
     },
   },
-  '/process-instances/{processInstanceKey}': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/process-instances/{processInstanceKey}/sequence-flows': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/process-instances/{processInstanceKey}/statistics/element-instances': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/process-instances/search': {
+  '/decision-definitions/evaluation': {
     POST: {
-      '200': 1,
-    },
-  },
-  '/process-instances/{processInstanceKey}/incidents/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/process-instances/cancellation': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/process-instances/incident-resolution': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/process-instances/migration': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/process-instances/modification': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/process-instances/{processInstanceKey}/call-hierarchy': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/element-instances/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/element-instances/{elementInstanceKey}': {
-    GET: {
       '200': 1,
     },
   },
@@ -196,16 +98,6 @@ export const RESPONSE_INDEX = {
     },
   },
   '/decision-definitions/{decisionDefinitionKey}': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/decision-requirements/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/decision-requirements/{decisionRequirementsKey}': {
     GET: {
       '200': 1,
     },
@@ -220,136 +112,17 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
-  '/decision-definitions/evaluation': {
+  '/decision-requirements/search': {
     POST: {
       '200': 1,
     },
   },
-  '/authorizations': {
-    POST: {
-      '201': 1,
-    },
-  },
-  '/authorizations/{authorizationKey}': {
+  '/decision-requirements/{decisionRequirementsKey}': {
     GET: {
       '200': 1,
     },
   },
-  '/authorizations/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/roles': {
-    POST: {
-      '201': 1,
-    },
-  },
-  '/roles/{roleId}': {
-    GET: {
-      '200': 1,
-    },
-    PUT: {
-      '200': 1,
-    },
-  },
-  '/roles/{roleId}/users/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/roles/{roleId}/clients/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/roles/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/roles/{roleId}/groups/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/roles/{roleId}/mapping-rules/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/groups': {
-    POST: {
-      '201': 1,
-    },
-  },
-  '/groups/{groupId}': {
-    GET: {
-      '200': 1,
-    },
-    PUT: {
-      '200': 1,
-    },
-  },
-  '/groups/{groupId}/users/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/groups/{groupId}/mapping-rules/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/groups/{groupId}/roles/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/groups/{groupId}/clients/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/groups/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/mapping-rules': {
-    POST: {
-      '201': 1,
-    },
-  },
-  '/mapping-rules/{mappingRuleId}': {
-    GET: {
-      '200': 1,
-    },
-    PUT: {
-      '200': 1,
-    },
-  },
-  '/mapping-rules/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/messages/publication': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/messages/correlation': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/correlated-message-subscriptions/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/message-subscriptions/search': {
+  '/deployments': {
     POST: {
       '200': 1,
     },
@@ -370,6 +143,343 @@ export const RESPONSE_INDEX = {
       '201': 1,
     },
   },
+  '/element-instances/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/element-instances/{elementInstanceKey}': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/element-instances/{elementInstanceKey}/incidents/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/expression/evaluation': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/groups': {
+    POST: {
+      '201': 1,
+    },
+  },
+  '/groups/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/groups/{groupId}': {
+    GET: {
+      '200': 1,
+    },
+    PUT: {
+      '200': 1,
+    },
+  },
+  '/groups/{groupId}/clients/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/groups/{groupId}/mapping-rules/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/groups/{groupId}/roles/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/groups/{groupId}/users/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/incidents/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/incidents/{incidentKey}': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/incidents/statistics/process-instances-by-definition': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/incidents/statistics/process-instances-by-error': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/jobs/activation': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/jobs/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/license': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/mapping-rules': {
+    POST: {
+      '201': 1,
+    },
+  },
+  '/mapping-rules/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/mapping-rules/{mappingRuleId}': {
+    GET: {
+      '200': 1,
+    },
+    PUT: {
+      '200': 1,
+    },
+  },
+  '/message-subscriptions/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/messages/correlation': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/messages/publication': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/statistics/message-subscriptions': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/statistics/process-instances': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/{processDefinitionKey}': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/{processDefinitionKey}/form': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/{processDefinitionKey}/statistics/element-instances': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-definitions/{processDefinitionId}/statistics/process-instances': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/cancellation': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/deletion': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/incident-resolution': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/migration': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/modification': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/call-hierarchy': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/deletion': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/incident-resolution': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/incidents/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/sequence-flows': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/process-instances/{processInstanceKey}/statistics/element-instances': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/resources/{resourceKey}': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/resources/{resourceKey}/deletion': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/roles': {
+    POST: {
+      '201': 1,
+    },
+  },
+  '/roles/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/roles/{roleId}': {
+    GET: {
+      '200': 1,
+    },
+    PUT: {
+      '200': 1,
+    },
+  },
+  '/roles/{roleId}/clients/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/roles/{roleId}/groups/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/roles/{roleId}/mapping-rules/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/roles/{roleId}/users/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/signals/broadcast': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/system/usage-metrics': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/tenants': {
+    POST: {
+      '201': 1,
+    },
+  },
+  '/tenants/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/tenants/{tenantId}': {
+    GET: {
+      '200': 1,
+    },
+    PUT: {
+      '200': 1,
+    },
+  },
+  '/tenants/{tenantId}/clients/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/tenants/{tenantId}/groups/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/tenants/{tenantId}/mapping-rules/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/tenants/{tenantId}/roles/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/tenants/{tenantId}/users/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/topology': {
+    GET: {
+      '200': 1,
+    },
+  },
   '/users': {
     POST: {
       '201': 1,
@@ -388,58 +498,38 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
-  '/setup/user': {
-    POST: {
-      '201': 1,
-    },
-  },
-  '/incidents/search': {
+  '/user-tasks/search': {
     POST: {
       '200': 1,
     },
   },
-  '/incidents/{incidentKey}': {
+  '/user-tasks/{userTaskKey}': {
     GET: {
       '200': 1,
     },
   },
-  '/system/usage-metrics': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/deployments': {
+  '/user-tasks/{userTaskKey}/audit-logs/search': {
     POST: {
       '200': 1,
     },
   },
-  '/resources/{resourceKey}': {
+  '/user-tasks/{userTaskKey}/form': {
     GET: {
       '200': 1,
     },
   },
-  '/resources/{resourceKey}/content': {
+  '/user-tasks/{userTaskKey}/variables/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/variables/search': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/variables/{variableKey}': {
     GET: {
-      '200': 1,
-    },
-  },
-  '/signals/broadcast': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/batch-operations/{batchOperationKey}': {
-    GET: {
-      '200': 1,
-    },
-  },
-  '/batch-operations/search': {
-    POST: {
-      '200': 1,
-    },
-  },
-  '/batch-operation-items/search': {
-    POST: {
       '200': 1,
     },
   },
@@ -490,7 +580,7 @@ export function validateResponseShape<
   );
 }
 export function validateResponse<
-  P extends RoutePath = RoutePath,
+  P extends RoutePath,
   M extends MethodFor<P>,
   S extends StatusFor<P, M>,
 >(
