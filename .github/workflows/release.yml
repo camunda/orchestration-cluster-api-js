@@ -29,7 +29,7 @@ jobs:
           - node: 22.x
             stack: full
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
@@ -126,7 +126,7 @@ jobs:
     needs: generate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -151,7 +151,7 @@ jobs:
         packages: write   # required for npm publish via semantic-release
         pull-requests: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -159,11 +159,10 @@ jobs:
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
-          always-auth: true
           cache: 'npm'
           cache-dependency-path: package.json
 
@@ -224,8 +223,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        # See: https://github.com/actions/setup-node/issues/1440#issuecomment-3571890875
-        run: NODE_AUTH_TOKEN="" npx semantic-release
+        run: npx semantic-release
 
       - name: Promote npm dist-tag `latest` (if current stable line)
         if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref, 'refs/heads/stable/')
