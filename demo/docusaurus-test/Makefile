@@ -29,6 +29,7 @@ copy-sdk-docs:
 	rm -rf $(SDK_DOCS_DEST)/_media
 	@echo "Fixing sidebar doc IDs..."
 	@# Fix the sidebar IDs to use correct Docusaurus path
+	sed -i '' 's|../../../docs-md/@camunda8/|apis-tools/typescript/oca-client-docs/@camunda8/|g' $(SDK_DOCS_DEST)/typedoc-sidebar.cjs
 	sed -i '' 's|../../../docs-md/|apis-tools/typescript/oca-client-docs/|g' $(SDK_DOCS_DEST)/typedoc-sidebar.cjs
 	@echo "Integrating sidebar into camunda-docs..."
 	@# Add SDK API docs reference to the TypeScript section in sidebars.js if not already present

@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["src/index.ts", "src/logger.ts", "src/fp/index.ts"],
+  "entryPoints": ["src/index.ts"],
   "out": "docs-md",
   "plugin": ["typedoc-plugin-markdown", "typedoc-docusaurus-theme", "typedoc-plugin-frontmatter"],
   "exclude": [
@@ -21,5 +21,5 @@
   "sidebar": {
     "pretty": true
   }, 
-  "docsPath": "apis-tools/typescript/sdk-api-docs"
+  "docsPath": "apis-tools/typescript/oca-client-docs"
 }
