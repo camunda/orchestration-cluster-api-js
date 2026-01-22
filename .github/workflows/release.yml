@@ -161,7 +161,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
           always-auth: true
           cache: 'npm'
@@ -224,7 +224,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        run: npx semantic-release
+        # See: https://github.com/actions/setup-node/issues/1440#issuecomment-3571890875
+        run: NODE_AUTH_TOKEN="" npx semantic-release
 
       - name: Promote npm dist-tag `latest` (if current stable line)
         if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref, 'refs/heads/stable/')
