@@ -1,4 +1,4 @@
-name: Orchestration Cluster API JS - PR & Branch CI
+name: PR & Branch CI
 
 on:
   push:
