@@ -165,8 +165,15 @@ jobs:
       - name: Install deps
         run: npm ci --ignore-scripts
 
-      - name: Smoke test npm token
-        run: NODE_AUTH_TOKEN="" npm whoami
+      - name: Smoke GitHub ID token and exchange for npm
+        shell: bash
+        run: |
+          set -euo pipefail
+          REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
+          HOST=${REG#*://}; HOST=${HOST%%/*}
+          ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
+          PKG=$(jq -r '.name|@uri' package.json)
+          curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d ""
 
       - name: Determine next version (dry-run)
         id: next_version
