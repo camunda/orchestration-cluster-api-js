@@ -169,9 +169,8 @@ jobs:
       - name: Install deps
         run: npm ci
 
-    # Commenting this out as it fails. It looks like this was rolled into semantic-release. See: https://github.com/npm/cli/issues/8525
-    #   - name: Smoke test npm token
-    #     run: npm whoami
+      - name: Smoke test npm token
+        run: npm whoami
 
       - name: Determine next version (dry-run)
         id: next_version
