@@ -15,7 +15,6 @@ permissions:
   contents: write   # required for pushing version bump commit, tags, CHANGELOG
   packages: write   # required for npm publish via semantic-release
   pull-requests: read
-  id-token: write   # enable OIDC (npm trusted publishing) and npm provenance
 
 jobs:
   generate:
@@ -146,6 +145,11 @@ jobs:
     name: Version & Publish (${{ github.ref_name }})
     needs: merge
     runs-on: ubuntu-latest
+    permissions:
+        id-token: write   # enable OIDC (npm trusted publishing) and npm provenance
+        contents: write   # required for pushing version bump commit, tags, CHANGELOG
+        packages: write   # required for npm publish via semantic-release
+        pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
