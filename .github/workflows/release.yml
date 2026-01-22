@@ -1,8 +1,9 @@
-name: Orchestration Cluster API JS - Release (maintenance)
+name: Orchestration Cluster API JS - Release
 
 on:
   push:
     branches:
+      - main
       - 'stable/**'
   workflow_dispatch:
 
@@ -14,12 +15,11 @@ permissions:
   contents: write   # required for pushing version bump commit, tags, CHANGELOG
   packages: write   # required for npm publish via semantic-release
   pull-requests: read
-  id-token: write # to enable use of OIDC for trusted publishing and npm provenance
-
+  id-token: write   # enable OIDC (npm trusted publishing) and npm provenance
 
 jobs:
   generate:
-    name: Generate & Test (Node ${{ matrix.node }})
+    name: Generate & Test (Node ${{ matrix.node }} ${{ matrix.stack }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,20 +33,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Export stable line config
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
           cache-dependency-path: package.json
+
       - name: Install deps
         run: npm ci
+
       - name: Generate & Build
         run: npm run build
+
       - name: Unit Tests
         run: npm test
+
       - name: Start Integration Stack
         working-directory: docker
         run: |
@@ -55,6 +61,7 @@ jobs:
           else
             docker compose -f docker-compose.yaml up -d
           fi
+
       - name: Wait for Services Healthy
         run: |
           set -e
@@ -67,43 +74,51 @@ jobs:
             attempts=$((attempts+1))
           done
           [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
+
       - name: Integration Tests
-        run: npm run test:integration      
+        run: npm run test:integration
+
       - name: Snapshot Spec & Metadata
         run: |
           set -e
-          HASH=$(sha256sum rest-api.source.yaml | cut -d ' ' -f1)
-          SNAP=spec-snapshots/spec-${HASH}.yaml
+          SPEC_DIR=external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2
+          # Deterministic hash over the whole spec directory (multi-file refs).
+          HASH=$(find "$SPEC_DIR" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f1)
+          SNAP=spec-snapshots/spec-${HASH}.tgz
           mkdir -p spec-snapshots
           if [ ! -f "$SNAP" ]; then
-            cp rest-api.source.yaml "$SNAP"
+            tar -czf "$SNAP" -C "$SPEC_DIR" .
             echo "Created new spec snapshot: $SNAP"
           else
             echo "Spec snapshot already exists: $SNAP (no overwrite)"
           fi
-          echo "spec snapshot: spec-snapshots/spec-${HASH}.yaml"
+          echo "spec snapshot: spec-snapshots/spec-${HASH}.tgz"
+
       - name: Detect generated drift
         id: detect
         run: |
           if git diff --quiet; then echo "changed=false" >> $GITHUB_OUTPUT; else echo "changed=true" >> $GITHUB_OUTPUT; fi
+
       - name: Commit generated artifacts (canonical)
         if: steps.detect.outputs.changed == 'true' && matrix.node == '22.x'
         run: |
           git config user.name 'github-actions'
           git config user.email 'actions@github.com'
           # Exclude workflow files from auto-format drift commits
-          git restore .github/workflows/orchestration-cluster-api-release-maintenance.yml || true
-          git restore .github/workflows/orchestration-cluster-api-release.yml || true
+          git restore .github/workflows/release.yml || true
           git add -A
           git commit -m "fix(gen): regenerate artifacts"
+
       - name: Upload logs (always)
         if: always()
         working-directory: docker
         run: docker compose logs || true
+
       - name: Shutdown Integration Stack (always)
         if: always()
         working-directory: docker
         run: docker compose down -v || true
+
     outputs:
       changed: ${{ steps.detect.outputs.changed }}
 
@@ -115,12 +130,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Fast-forward ${{ github.ref_name }}
         if: needs.generate.outputs.changed == 'true'
         run: |
           set -e
           # Generation committed directly on the triggering branch by pushing from the action runner; no staging branch
           echo "Drift committed during generate; ${{ github.ref_name }} already updated."
+
       - name: No drift – skip fast-forward
         if: needs.generate.outputs.changed != 'true'
         run: echo "No generated drift detected; fast-forward skipped."
@@ -129,13 +146,17 @@ jobs:
     name: Version & Publish (${{ github.ref_name }})
     needs: merge
     runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Export stable line config
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
@@ -143,19 +164,31 @@ jobs:
           always-auth: true
           cache: 'npm'
           cache-dependency-path: package.json
+
       - name: Install deps
         run: npm ci
-      - name: Smoke test npm permissions
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }} 
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Configure npm auth (token optional)
+        run: |
+          set -euo pipefail
+          # If the repo has a project .npmrc that hard-requires a token, it can break OIDC-based publishing.
+          # We only create an auth .npmrc when a token is explicitly provided.
+          if [ -f .npmrc ]; then
+            mv .npmrc .npmrc.repo.bak
+          fi
+
+          if [ -n "${NPM_TOKEN:-}" ]; then
+            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          fi
+
+      - name: Smoke test npm token (optional)
+        if: env.NPM_TOKEN != ''
         run: npm whoami
+
       - name: Determine next version (dry-run)
         id: next_version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -e
           node scripts/next-version.mjs > next-version.out 2>&1 || {
@@ -177,14 +210,17 @@ jobs:
             echo "publish_needed=true" >> $GITHUB_OUTPUT
             echo "version=$VER" >> $GITHUB_OUTPUT
           fi
+
       - name: Bump version & regenerate artifacts
         if: steps.next_version.outputs.publish_needed == 'true'
         run: |
           npm version ${{ steps.next_version.outputs.version }} --no-git-tag-version
           npm run build
+
       - name: Smoke tests (post-bump)
         if: steps.next_version.outputs.publish_needed == 'true'
         run: npm test -- --run
+
       - name: Commit version bump & regenerated artifacts
         if: steps.next_version.outputs.publish_needed == 'true'
         run: |
@@ -193,19 +229,16 @@ jobs:
           git add -A
           git commit -m "chore(release): v${{ steps.next_version.outputs.version }}"
           git push origin "HEAD:${{ github.ref_name }}"
+
       - name: Publish (semantic-release)
         if: steps.next_version.outputs.publish_needed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: npx semantic-release
 
       - name: Promote npm dist-tag `latest` (if current stable line)
-        if: steps.next_version.outputs.publish_needed == 'true'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref, 'refs/heads/stable/')
         run: |
           set -euo pipefail
 
@@ -231,6 +264,18 @@ jobs:
           else
             echo "Skipping dist-tag promotion: ${BRANCH_MINOR} is not the current stable minor (${CURRENT_MINOR})."
           fi
+
+      - name: Build Docs
+        if: github.ref_name == 'main'
+        run: npm run docs:api
+
+      - name: Deploy Docs
+        if: github.ref_name == 'main'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs
+          branch: gh-pages
+
       - name: Upload release analysis logs (always)
         if: always()
         uses: actions/upload-artifact@v4
