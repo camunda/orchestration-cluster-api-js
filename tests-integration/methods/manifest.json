@@ -1,6 +1,6 @@
 {
-  "operations": 167,
-  "tests": 169,
+  "operations": 168,
+  "tests": 170,
   "missing": [],
   "ignored": [],
   "files": [
@@ -69,6 +69,7 @@
     "getDocument.test.ts",
     "getElementInstance.test.ts",
     "getGlobalClusterVariable.test.ts",
+    "getGlobalJobStatistics.test.ts",
     "getGroup.test.ts",
     "getIncident.test.ts",
     "getIncidentProcessInstanceStatistics.test.ts",

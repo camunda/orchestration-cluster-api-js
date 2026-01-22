@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 167
+// Operations: 168
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -357,6 +357,14 @@ type getGlobalClusterVariableInput = { name: getGlobalClusterVariablePathParam_n
 type getGlobalClusterVariableConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalClusterVariable>> 
+};
+type getGlobalJobStatisticsOptions = Parameters<typeof Sdk.getGlobalJobStatistics>[0];
+type getGlobalJobStatisticsBody = (NonNullable<getGlobalJobStatisticsOptions> extends { body?: infer B } ? B : never);
+type getGlobalJobStatisticsInput = getGlobalJobStatisticsBody;
+/** Management of eventual consistency **/
+type getGlobalJobStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalJobStatistics>> 
 };
 type getGroupOptions = Parameters<typeof Sdk.getGroup>[0];
 type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends { path: { groupId: infer P } } ? P : any);
@@ -4226,10 +4234,19 @@ export class CamundaClient {
   /**
    * Delete resource
    *
-   * Deletes a deployed resource.
-   * This can be a process definition, decision requirements definition, or form definition
-   * deployed using the deploy resources endpoint. Specify the resource you want to delete in the `resourceKey` parameter.
+   * Deletes a deployed resource. This can be a process definition, decision requirements
+   * definition, or form definition deployed using the deploy resources endpoint. Specify the
+   * resource you want to delete in the `resourceKey` parameter.
    *
+   * Once a resource has been deleted it cannot be recovered. If the resource needs to be
+   * available again, a new deployment of the resource is required.
+   *
+   * By default, only the resource itself is deleted from the runtime state. To also delete the
+   * historic data associated with a resource, set the `deleteHistory` flag in the request body
+   * to `true`. The historic data is deleted asynchronously via a batch operation. The details of
+   * the created batch operation are included in the response. Note that history deletion is only
+   * supported for process resources; for other resource types this flag is ignored and no history
+   * will be deleted.
     *
    * @operationId deleteResource
    * @tags Resource
@@ -5511,6 +5528,70 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getGlobalClusterVariable', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Global job statistics
+   *
+   * Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
+   *
+    *
+   * @operationId getGlobalJobStatistics
+   * @tags Job metrics
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getGlobalJobStatistics(input: getGlobalJobStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalJobStatistics>>;
+  getGlobalJobStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getGlobalJobStatistics', Schemas.zGetGlobalJobStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getGlobalJobStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getGlobalJobStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetGlobalJobStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetGlobalJobStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getGlobalJobStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getGlobalJobStatistics', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }

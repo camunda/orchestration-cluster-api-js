@@ -92,6 +92,9 @@
       "name": "Job"
     },
     {
+      "name": "Job metrics"
+    },
+    {
       "name": "License"
     },
     {
@@ -729,7 +732,75 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BatchOperationItemSearchQuery"
+                "description": "Batch operation item search request.",
+                "additionalProperties": false,
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SearchQueryRequest"
+                  }
+                ],
+                "properties": {
+                  "sort": {
+                    "description": "Sort field criteria.",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/BatchOperationItemSearchQuerySortRequest"
+                    }
+                  },
+                  "filter": {
+                    "allOf": [
+                      {
+                        "description": "Batch operation item filter request.",
+                        "type": "object",
+                        "properties": {
+                          "batchOperationKey": {
+                            "description": "The key (or operate legacy ID) of the batch operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BasicStringFilterProperty"
+                              }
+                            ]
+                          },
+                          "itemKey": {
+                            "description": "The key of the item, e.g. a process instance key.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BasicStringFilterProperty"
+                              }
+                            ]
+                          },
+                          "processInstanceKey": {
+                            "description": "The process instance key of the processed item.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
+                              }
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "description": "The state of the batch operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BatchOperationItemStateFilterProperty"
+                              }
+                            ]
+                          },
+                          "operationType": {
+                            "description": "The type of the batch operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/batchOperationType/allOf/0"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "description": "The batch operation item search filters."
+                  }
+                }
               }
             }
           }
@@ -775,7 +846,74 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BatchOperationSearchQuery"
+                "additionalProperties": false,
+                "description": "Batch operation search request.",
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SearchQueryRequest"
+                  }
+                ],
+                "properties": {
+                  "sort": {
+                    "description": "Sort field criteria.",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/BatchOperationSearchQuerySortRequest"
+                    }
+                  },
+                  "filter": {
+                    "allOf": [
+                      {
+                        "description": "Batch operation filter request.",
+                        "type": "object",
+                        "properties": {
+                          "batchOperationKey": {
+                            "description": "The key (or operate legacy ID) of the batch operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BasicStringFilterProperty"
+                              }
+                            ]
+                          },
+                          "operationType": {
+                            "description": "The type of the batch operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/batchOperationType/allOf/0"
+                              }
+                            ]
+                          },
+                          "state": {
+                            "description": "The state of the batch operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BatchOperationStateFilterProperty"
+                              }
+                            ]
+                          },
+                          "actorType": {
+                            "description": "The type of the actor who performed the operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+                              }
+                            ]
+                          },
+                          "actorId": {
+                            "description": "The ID of the actor who performed the operation.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/StringFilterProperty"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ],
+                    "description": "The batch operation search filters."
+                  }
+                }
               }
             }
           }
@@ -1993,7 +2131,137 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DecisionInstanceSearchQuery"
+                "type": "object",
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SearchQueryRequest"
+                  }
+                ],
+                "properties": {
+                  "sort": {
+                    "description": "Sort field criteria.",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DecisionInstanceSearchQuerySortRequest"
+                    }
+                  },
+                  "filter": {
+                    "description": "The decision instance search filters.",
+                    "allOf": [
+                      {
+                        "description": "Decision instance search filter.",
+                        "type": "object",
+                        "properties": {
+                          "decisionEvaluationInstanceKey": {
+                            "description": "The key of the decision evaluation instance.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/DecisionEvaluationInstanceKeyFilterProperty"
+                              }
+                            ]
+                          },
+                          "state": {
+                            "description": "The state of the decision instance.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/DecisionInstanceStateFilterProperty"
+                              }
+                            ]
+                          },
+                          "evaluationFailure": {
+                            "type": "string",
+                            "description": "The evaluation failure of the decision instance."
+                          },
+                          "evaluationDate": {
+                            "description": "The evaluation date of the decision instance.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/DateTimeFilterProperty"
+                              }
+                            ]
+                          },
+                          "decisionDefinitionId": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/DecisionDefinitionId"
+                              }
+                            ],
+                            "description": "The ID of the DMN decision."
+                          },
+                          "decisionDefinitionName": {
+                            "type": "string",
+                            "description": "The name of the DMN decision."
+                          },
+                          "decisionDefinitionVersion": {
+                            "type": "integer",
+                            "format": "int32",
+                            "description": "The version of the decision."
+                          },
+                          "decisionDefinitionType": {
+                            "$ref": "#/components/schemas/DecisionDefinitionTypeEnum"
+                          },
+                          "tenantId": {
+                            "description": "The tenant ID of the decision instance.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/TenantId"
+                              }
+                            ]
+                          },
+                          "decisionEvaluationKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/DecisionEvaluationKey"
+                              }
+                            ],
+                            "description": "The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.\n"
+                          },
+                          "processDefinitionKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessDefinitionKey"
+                              }
+                            ],
+                            "description": "The key of the process definition."
+                          },
+                          "processInstanceKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessInstanceKey"
+                              }
+                            ],
+                            "description": "The key of the process instance."
+                          },
+                          "decisionDefinitionKey": {
+                            "description": "The key of the decision.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionDefinitionKey/allOf/0"
+                              }
+                            ]
+                          },
+                          "elementInstanceKey": {
+                            "description": "The key of the element instance this decision instance is linked to.",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
+                              }
+                            ]
+                          },
+                          "rootDecisionDefinitionKey": {
+                            "description": "The key of the root decision definition.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionDefinitionKey/allOf/0"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
               }
             }
           }
@@ -5032,6 +5300,51 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        }
+      }
+    },
+    "/jobs/statistics/global": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Job metrics"
+        ],
+        "operationId": "getGlobalJobStatistics",
+        "summary": "Global job statistics",
+        "description": "Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalJobStatisticsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Global job metrics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalJobStatisticsQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
           }
         }
       }
@@ -8370,7 +8683,7 @@
         ],
         "operationId": "deleteResource",
         "summary": "Delete resource",
-        "description": "Deletes a deployed resource.\nThis can be a process definition, decision requirements definition, or form definition\ndeployed using the deploy resources endpoint. Specify the resource you want to delete in the `resourceKey` parameter.\n",
+        "description": "Deletes a deployed resource. This can be a process definition, decision requirements\ndefinition, or form definition deployed using the deploy resources endpoint. Specify the\nresource you want to delete in the `resourceKey` parameter.\n\nOnce a resource has been deleted it cannot be recovered. If the resource needs to be\navailable again, a new deployment of the resource is required.\n\nBy default, only the resource itself is deleted from the runtime state. To also delete the\nhistoric data associated with a resource, set the `deleteHistory` flag in the request body\nto `true`. The historic data is deleted asynchronously via a batch operation. The details of\nthe created batch operation are included in the response. Note that history deletion is only\nsupported for process resources; for other resource types this flag is ignored and no history\nwill be deleted.",
         "parameters": [
           {
             "name": "resourceKey",
@@ -12917,7 +13230,7 @@
             ]
           },
           "deploymentKey": {
-            "description": "The deployment key filter.",
+            "description": "The deployment key search filter.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/DeploymentKeyFilterProperty"
@@ -12925,7 +13238,7 @@
             ]
           },
           "formKey": {
-            "description": "The form key filter.",
+            "description": "The form key search filter.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/FormKeyFilterProperty"
@@ -12933,10 +13246,82 @@
             ]
           },
           "resourceKey": {
-            "description": "The resource key filter.",
+            "description": "The resource key search filter.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ResourceKeyFilterProperty"
+              }
+            ]
+          },
+          "batchOperationType": {
+            "description": "The batch operation type search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BatchOperationTypeFilterProperty"
+              }
+            ]
+          },
+          "processDefinitionId": {
+            "description": "The process definition ID search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          },
+          "jobKey": {
+            "description": "The job key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobKeyFilterProperty"
+              }
+            ]
+          },
+          "userTaskKey": {
+            "description": "The user task key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BasicStringFilterProperty"
+              }
+            ]
+          },
+          "decisionRequirementsId": {
+            "description": "The decision requirements ID search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          },
+          "decisionRequirementsKey": {
+            "description": "The decision requirements key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionRequirementsKeyFilterProperty"
+              }
+            ]
+          },
+          "decisionDefinitionId": {
+            "description": "The decision definition ID search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          },
+          "decisionDefinitionKey": {
+            "description": "The decision definition key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionDefinitionKeyFilterProperty"
+              }
+            ]
+          },
+          "decisionEvaluationKey": {
+            "description": "The decision evaluation key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionEvaluationKeyFilterProperty"
               }
             ]
           }
@@ -13915,7 +14300,7 @@
             "description": "The type of the actor who performed the operation.",
             "allOf": [
               {
-                "$ref": "#/components/schemas/BatchOperationActorTypeEnum"
+                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
               }
             ]
           },
@@ -13975,7 +14360,7 @@
             "format": "date-time"
           },
           "actorType": {
-            "$ref": "#/components/schemas/BatchOperationActorTypeEnum"
+            "$ref": "#/components/schemas/AuditLogActorTypeEnum"
           },
           "actorId": {
             "type": "string",
@@ -14396,14 +14781,6 @@
           "MODIFY_PROCESS_INSTANCE",
           "RESOLVE_INCIDENT",
           "UPDATE_VARIABLE"
-        ]
-      },
-      "BatchOperationActorTypeEnum": {
-        "description": "The type of the actor. Available for batch operations created since 8.9.",
-        "type": "string",
-        "enum": [
-          "CLIENT",
-          "USER"
         ]
       },
       "BatchOperationTypeFilterProperty": {
@@ -18483,6 +18860,104 @@
           "field"
         ]
       },
+      "GlobalJobStatisticsQuery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "filter"
+        ],
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/GlobalJobStatisticsFilter"
+          }
+        }
+      },
+      "GlobalJobStatisticsFilter": {
+        "description": "Filters for global job statistics query.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-28T15:51:28.071Z"
+          },
+          "to": {
+            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:28.071Z"
+          },
+          "jobType": {
+            "description": "Optional job type to limit the aggregation to a single job type.",
+            "type": "string",
+            "example": "fetch-customer-data"
+          }
+        }
+      },
+      "GlobalJobStatisticsQueryResult": {
+        "description": "Global job statistics query result.",
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "description": "List of aggregated job statistics.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalJobStatisticsItem"
+            }
+          }
+        }
+      },
+      "GlobalJobStatisticsItem": {
+        "description": "Aggregated job metrics for a time bucket.",
+        "type": "object",
+        "required": [
+          "created",
+          "completed",
+          "failed"
+        ],
+        "properties": {
+          "created": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "completed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "failed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          }
+        }
+      },
+      "StatusMetric": {
+        "description": "Metric for a single job status.",
+        "type": "object",
+        "required": [
+          "count",
+          "lastUpdatedAt"
+        ],
+        "properties": {
+          "count": {
+            "description": "Number of jobs in this status.",
+            "type": "integer",
+            "format": "int64",
+            "example": 145
+          },
+          "lastUpdatedAt": {
+            "description": "ISO 8601 timestamp of the last update for this status.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:28.071Z"
+          }
+        }
+      },
       "JobActivationRequest": {
         "type": "object",
         "additionalProperties": false,
@@ -20411,6 +20886,126 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/FormKey"
+            }
+          }
+        }
+      },
+      "DecisionEvaluationKeyFilterProperty": {
+        "description": "DecisionEvaluationKey property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Exact match",
+            "description": "Matches the value exactly.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionEvaluationKey"
+              }
+            ]
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedDecisionEvaluationKeyFilter"
+          }
+        ]
+      },
+      "AdvancedDecisionEvaluationKeyFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced DecisionEvaluationKey filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionEvaluationKey"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionEvaluationKey"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionEvaluationKey"
+            }
+          },
+          "$notIn": {
+            "description": "Checks if the property matches none of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionEvaluationKey"
+            }
+          }
+        }
+      },
+      "DecisionRequirementsKeyFilterProperty": {
+        "description": "DecisionRequirementsKey property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "string",
+            "title": "Exact match",
+            "description": "Matches the value exactly.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionRequirementsKey"
+              }
+            ]
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedDecisionRequirementsKeyFilter"
+          }
+        ]
+      },
+      "AdvancedDecisionRequirementsKeyFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced DecisionRequirementsKey filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionRequirementsKey"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionRequirementsKey"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionRequirementsKey"
+            }
+          },
+          "$notIn": {
+            "description": "Checks if the property matches none of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionRequirementsKey"
             }
           }
         }

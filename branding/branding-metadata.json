@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:5be1d6d92dced92001bcf821e50581627f373dd547ed869ab90fbc71d0fa4663",
+  "specHash": "sha256:38bf9493807aafa46514894ba7b8082f7d9ea579ffcdc25f1ccc2643586c54a8",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1762,6 +1762,31 @@
       "stableId": "decision-evaluation-instruction"
     },
     {
+      "name": "DecisionEvaluationKeyFilterProperty",
+      "kind": "hybrid-union",
+      "description": "DecisionEvaluationKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "DecisionEvaluationKey"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedDecisionEvaluationKeyFilter"
+        }
+      ],
+      "tsType": "string | AdvancedDecisionEvaluationKeyFilter",
+      "zod": {
+        "schemaName": "zDecisionEvaluationKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/DecisionEvaluationKeyFilterProperty"
+      },
+      "stableId": "decision-evaluation-key-filter-property"
+    },
+    {
       "name": "DecisionInstanceStateFilterProperty",
       "kind": "hybrid-union",
       "description": "DecisionInstanceStateEnum property with full advanced search capabilities.",
@@ -1785,6 +1810,31 @@
         "schemaPointer": "#/components/schemas/DecisionInstanceStateFilterProperty"
       },
       "stableId": "decision-instance-state-filter-property"
+    },
+    {
+      "name": "DecisionRequirementsKeyFilterProperty",
+      "kind": "hybrid-union",
+      "description": "DecisionRequirementsKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "other",
+          "refs": [
+            "DecisionRequirementsKey"
+          ]
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedDecisionRequirementsKeyFilter"
+        }
+      ],
+      "tsType": "string | AdvancedDecisionRequirementsKeyFilter",
+      "zod": {
+        "schemaName": "zDecisionRequirementsKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/DecisionRequirementsKeyFilterProperty"
+      },
+      "stableId": "decision-requirements-key-filter-property"
     },
     {
       "name": "DeploymentKeyFilterProperty",
@@ -2541,7 +2591,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 33,
-    "totalUnionWrappers": 47,
+    "totalUnionWrappers": 49,
     "implicitCamundaKeys": []
   }
 }

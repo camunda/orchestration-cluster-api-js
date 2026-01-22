@@ -321,16 +321,6 @@ export const zBatchOperationTypeEnum = z.enum([
     description: 'The type of the batch operation.'
 });
 
-/**
- * The type of the actor. Available for batch operations created since 8.9.
- */
-export const zBatchOperationActorTypeEnum = z.enum([
-    'CLIENT',
-    'USER'
-]).register(z.globalRegistry, {
-    description: 'The type of the actor. Available for batch operations created since 8.9.'
-});
-
 export const zClockPinRequest = z.object({
     timestamp: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The exact time in epoch milliseconds to which the clock should be pinned.'
@@ -991,7 +981,7 @@ export const zBatchOperationFilter = z.object({
     batchOperationKey: z.optional(zBasicStringFilterProperty),
     operationType: z.optional(zBatchOperationTypeFilterProperty),
     state: z.optional(zBatchOperationStateFilterProperty),
-    actorType: z.optional(zBatchOperationActorTypeEnum),
+    actorType: z.optional(zAuditLogActorTypeEnum),
     actorId: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Batch operation filter request.'
@@ -1398,6 +1388,63 @@ export const zIncidentProcessInstanceStatisticsByDefinitionFilter = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Filter for the incident process instance statistics by definition query.'
+});
+
+/**
+ * Filters for global job statistics query.
+ */
+export const zGlobalJobStatisticsFilter = z.object({
+    from: z.iso.datetime().register(z.globalRegistry, {
+        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    to: z.iso.datetime().register(z.globalRegistry, {
+        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    jobType: z.optional(z.string().register(z.globalRegistry, {
+        description: 'Optional job type to limit the aggregation to a single job type.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Filters for global job statistics query.'
+});
+
+export const zGlobalJobStatisticsQuery = z.object({
+    filter: zGlobalJobStatisticsFilter
+});
+
+/**
+ * Metric for a single job status.
+ */
+export const zStatusMetric = z.object({
+    count: z.coerce.bigint().register(z.globalRegistry, {
+        description: 'Number of jobs in this status.'
+    }),
+    lastUpdatedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'ISO 8601 timestamp of the last update for this status.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Metric for a single job status.'
+});
+
+/**
+ * Aggregated job metrics for a time bucket.
+ */
+export const zGlobalJobStatisticsItem = z.object({
+    created: zStatusMetric,
+    completed: zStatusMetric,
+    failed: zStatusMetric
+}).register(z.globalRegistry, {
+    description: 'Aggregated job metrics for a time bucket.'
+});
+
+/**
+ * Global job statistics query result.
+ */
+export const zGlobalJobStatisticsQueryResult = z.object({
+    items: z.array(zGlobalJobStatisticsItem).register(z.globalRegistry, {
+        description: 'List of aggregated job statistics.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Global job statistics query result.'
 });
 
 export const zJobActivationRequest = z.object({
@@ -2612,7 +2659,7 @@ export const zBatchOperationResponse = z.object({
     endDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
         description: 'The end date of the batch operation.'
     })),
-    actorType: z.optional(zBatchOperationActorTypeEnum),
+    actorType: z.optional(zAuditLogActorTypeEnum),
     actorId: z.optional(z.string().register(z.globalRegistry, {
         description: 'The ID of the actor who performed the operation. Available for batch operations created since 8.9.'
     })),
@@ -3126,6 +3173,64 @@ export const zFormKeyFilterProperty = z.union([
 ]);
 
 /**
+ * Advanced filter
+ *
+ * Advanced DecisionEvaluationKey filter.
+ */
+export const zAdvancedDecisionEvaluationKeyFilter = z.object({
+    '$eq': z.optional(zDecisionEvaluationKey),
+    '$neq': z.optional(zDecisionEvaluationKey),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zDecisionEvaluationKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zDecisionEvaluationKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced DecisionEvaluationKey filter.'
+});
+
+/**
+ * DecisionEvaluationKey property with full advanced search capabilities.
+ */
+export const zDecisionEvaluationKeyFilterProperty = z.union([
+    zDecisionEvaluationKey,
+    zAdvancedDecisionEvaluationKeyFilter
+]);
+
+/**
+ * Advanced filter
+ *
+ * Advanced DecisionRequirementsKey filter.
+ */
+export const zAdvancedDecisionRequirementsKeyFilter = z.object({
+    '$eq': z.optional(zDecisionRequirementsKey),
+    '$neq': z.optional(zDecisionRequirementsKey),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zDecisionRequirementsKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zDecisionRequirementsKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced DecisionRequirementsKey filter.'
+});
+
+/**
+ * DecisionRequirementsKey property with full advanced search capabilities.
+ */
+export const zDecisionRequirementsKeyFilterProperty = z.union([
+    zDecisionRequirementsKey,
+    zAdvancedDecisionRequirementsKeyFilter
+]);
+
+/**
  * Audit log filter request
  */
 export const zAuditLogFilter = z.object({
@@ -3144,7 +3249,16 @@ export const zAuditLogFilter = z.object({
     category: z.optional(zCategoryFilterProperty),
     deploymentKey: z.optional(zDeploymentKeyFilterProperty),
     formKey: z.optional(zFormKeyFilterProperty),
-    resourceKey: z.optional(zResourceKeyFilterProperty)
+    resourceKey: z.optional(zResourceKeyFilterProperty),
+    batchOperationType: z.optional(zBatchOperationTypeFilterProperty),
+    processDefinitionId: z.optional(zStringFilterProperty),
+    jobKey: z.optional(zJobKeyFilterProperty),
+    userTaskKey: z.optional(zBasicStringFilterProperty),
+    decisionRequirementsId: z.optional(zStringFilterProperty),
+    decisionRequirementsKey: z.optional(zDecisionRequirementsKeyFilterProperty),
+    decisionDefinitionId: z.optional(zStringFilterProperty),
+    decisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty),
+    decisionEvaluationKey: z.optional(zDecisionEvaluationKeyFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Audit log filter request'
 });
@@ -6174,7 +6288,22 @@ export const zUpdateAuthorizationResponse = z.void().register(z.globalRegistry, 
 });
 
 export const zSearchBatchOperationItemsData = z.object({
-    body: z.optional(zBatchOperationItemSearchQuery),
+    body: z.optional(zSearchQueryRequest.and(z.object({
+        sort: z.optional(z.array(zBatchOperationItemSearchQuerySortRequest).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        })),
+        filter: z.optional(z.object({
+            batchOperationKey: z.optional(zBasicStringFilterProperty),
+            itemKey: z.optional(zBasicStringFilterProperty),
+            processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+            state: z.optional(zBatchOperationItemStateFilterProperty),
+            operationType: z.optional(zBatchOperationTypeFilterProperty)
+        }).register(z.globalRegistry, {
+            description: 'Batch operation item filter request.'
+        }))
+    }).register(z.globalRegistry, {
+        description: 'Batch operation item search request.'
+    }))),
     path: z.optional(z.never()),
     query: z.optional(z.never())
 });
@@ -6185,7 +6314,22 @@ export const zSearchBatchOperationItemsData = z.object({
 export const zSearchBatchOperationItemsResponse = zBatchOperationItemSearchQueryResult;
 
 export const zSearchBatchOperationsData = z.object({
-    body: z.optional(zBatchOperationSearchQuery),
+    body: z.optional(zSearchQueryRequest.and(z.object({
+        sort: z.optional(z.array(zBatchOperationSearchQuerySortRequest).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        })),
+        filter: z.optional(z.object({
+            batchOperationKey: z.optional(zBasicStringFilterProperty),
+            operationType: z.optional(zBatchOperationTypeFilterProperty),
+            state: z.optional(zBatchOperationStateFilterProperty),
+            actorType: z.optional(zAuditLogActorTypeEnum),
+            actorId: z.optional(zStringFilterProperty)
+        }).register(z.globalRegistry, {
+            description: 'Batch operation filter request.'
+        }))
+    }).register(z.globalRegistry, {
+        description: 'Batch operation search request.'
+    }))),
     path: z.optional(z.never()),
     query: z.optional(z.never())
 });
@@ -6504,7 +6648,36 @@ export const zGetDecisionDefinitionXmlResponse = z.string().register(z.globalReg
 });
 
 export const zSearchDecisionInstancesData = z.object({
-    body: z.optional(zDecisionInstanceSearchQuery),
+    body: z.optional(zSearchQueryRequest.and(z.object({
+        sort: z.optional(z.array(zDecisionInstanceSearchQuerySortRequest).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        })),
+        filter: z.optional(z.object({
+            decisionEvaluationInstanceKey: z.optional(zDecisionEvaluationInstanceKeyFilterProperty),
+            state: z.optional(zDecisionInstanceStateFilterProperty),
+            evaluationFailure: z.optional(z.string().register(z.globalRegistry, {
+                description: 'The evaluation failure of the decision instance.'
+            })),
+            evaluationDate: z.optional(zDateTimeFilterProperty),
+            decisionDefinitionId: z.optional(zDecisionDefinitionId),
+            decisionDefinitionName: z.optional(z.string().register(z.globalRegistry, {
+                description: 'The name of the DMN decision.'
+            })),
+            decisionDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+                description: 'The version of the decision.'
+            })),
+            decisionDefinitionType: z.optional(zDecisionDefinitionTypeEnum),
+            tenantId: z.optional(zTenantId),
+            decisionEvaluationKey: z.optional(zDecisionEvaluationKey),
+            processDefinitionKey: z.optional(zProcessDefinitionKey),
+            processInstanceKey: z.optional(zProcessInstanceKey),
+            decisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty),
+            elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
+            rootDecisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty)
+        }).register(z.globalRegistry, {
+            description: 'Decision instance search filter.'
+        }))
+    }))),
     path: z.optional(z.never()),
     query: z.optional(z.never())
 });
@@ -7366,6 +7539,17 @@ export const zFailJobData = z.object({
 export const zFailJobResponse = z.void().register(z.globalRegistry, {
     description: 'The job is failed.'
 });
+
+export const zGetGlobalJobStatisticsData = z.object({
+    body: zGlobalJobStatisticsQuery,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * Global job metrics
+ */
+export const zGetGlobalJobStatisticsResponse = zGlobalJobStatisticsQueryResult;
 
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),

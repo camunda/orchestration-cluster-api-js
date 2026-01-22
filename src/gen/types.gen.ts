@@ -182,17 +182,53 @@ export type AuditLogFilter = {
      */
     category?: CategoryFilterProperty;
     /**
-     * The deployment key filter.
+     * The deployment key search filter.
      */
     deploymentKey?: DeploymentKeyFilterProperty;
     /**
-     * The form key filter.
+     * The form key search filter.
      */
     formKey?: FormKeyFilterProperty;
     /**
-     * The resource key filter.
+     * The resource key search filter.
      */
     resourceKey?: ResourceKeyFilterProperty;
+    /**
+     * The batch operation type search filter.
+     */
+    batchOperationType?: BatchOperationTypeFilterProperty;
+    /**
+     * The process definition ID search filter.
+     */
+    processDefinitionId?: StringFilterProperty;
+    /**
+     * The job key search filter.
+     */
+    jobKey?: JobKeyFilterProperty;
+    /**
+     * The user task key search filter.
+     */
+    userTaskKey?: BasicStringFilterProperty;
+    /**
+     * The decision requirements ID search filter.
+     */
+    decisionRequirementsId?: StringFilterProperty;
+    /**
+     * The decision requirements key search filter.
+     */
+    decisionRequirementsKey?: DecisionRequirementsKeyFilterProperty;
+    /**
+     * The decision definition ID search filter.
+     */
+    decisionDefinitionId?: StringFilterProperty;
+    /**
+     * The decision definition key search filter.
+     */
+    decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+    /**
+     * The decision evaluation key search filter.
+     */
+    decisionEvaluationKey?: DecisionEvaluationKeyFilterProperty;
 };
 
 /**
@@ -666,7 +702,7 @@ export type BatchOperationFilter = {
     /**
      * The type of the actor who performed the operation.
      */
-    actorType?: BatchOperationActorTypeEnum;
+    actorType?: AuditLogActorTypeEnum;
     /**
      * The ID of the actor who performed the operation.
      */
@@ -698,7 +734,7 @@ export type BatchOperationResponse = {
      * The end date of the batch operation.
      */
     endDate?: string;
-    actorType?: BatchOperationActorTypeEnum;
+    actorType?: AuditLogActorTypeEnum;
     /**
      * The ID of the actor who performed the operation. Available for batch operations created since 8.9.
      */
@@ -928,11 +964,6 @@ export type BatchOperationStateEnum = 'ACTIVE' | 'CANCELED' | 'COMPLETED' | 'CRE
  * The type of the batch operation.
  */
 export type BatchOperationTypeEnum = 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_PROCESS_DEFINITION' | 'DELETE_PROCESS_INSTANCE' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'UPDATE_VARIABLE';
-
-/**
- * The type of the actor. Available for batch operations created since 8.9.
- */
-export type BatchOperationActorTypeEnum = 'CLIENT' | 'USER';
 
 /**
  * BatchOperationTypeEnum property with full advanced search capabilities.
@@ -3216,6 +3247,63 @@ export type IncidentProcessInstanceStatisticsByDefinitionQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
+export type GlobalJobStatisticsQuery = {
+    filter: GlobalJobStatisticsFilter;
+};
+
+/**
+ * Filters for global job statistics query.
+ */
+export type GlobalJobStatisticsFilter = {
+    /**
+     * Start of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    from: string;
+    /**
+     * End of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    to: string;
+    /**
+     * Optional job type to limit the aggregation to a single job type.
+     */
+    jobType?: string;
+};
+
+/**
+ * Global job statistics query result.
+ */
+export type GlobalJobStatisticsQueryResult = {
+    /**
+     * List of aggregated job statistics.
+     */
+    items: Array<GlobalJobStatisticsItem>;
+};
+
+/**
+ * Aggregated job metrics for a time bucket.
+ */
+export type GlobalJobStatisticsItem = {
+    created: StatusMetric;
+    completed: StatusMetric;
+    failed: StatusMetric;
+};
+
+/**
+ * Metric for a single job status.
+ */
+export type StatusMetric = {
+    /**
+     * Number of jobs in this status.
+     */
+    count: number;
+    /**
+     * ISO 8601 timestamp of the last update for this status.
+     */
+    lastUpdatedAt: string;
+};
+
 export type JobActivationRequest = {
     /**
      * The job type, as defined in the BPMN process (e.g. <zeebe:taskDefinition type="payment-service" />)
@@ -4289,6 +4377,72 @@ export type AdvancedFormKeyFilter = {
      * Checks if the property matches none of the provided values.
      */
     $notIn?: Array<FormKey>;
+};
+
+/**
+ * DecisionEvaluationKey property with full advanced search capabilities.
+ */
+export type DecisionEvaluationKeyFilterProperty = DecisionEvaluationKey | AdvancedDecisionEvaluationKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced DecisionEvaluationKey filter.
+ */
+export type AdvancedDecisionEvaluationKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: DecisionEvaluationKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: DecisionEvaluationKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<DecisionEvaluationKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<DecisionEvaluationKey>;
+};
+
+/**
+ * DecisionRequirementsKey property with full advanced search capabilities.
+ */
+export type DecisionRequirementsKeyFilterProperty = DecisionRequirementsKey | AdvancedDecisionRequirementsKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced DecisionRequirementsKey filter.
+ */
+export type AdvancedDecisionRequirementsKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: DecisionRequirementsKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: DecisionRequirementsKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<DecisionRequirementsKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<DecisionRequirementsKey>;
 };
 
 /**
@@ -7684,7 +7838,40 @@ export type UpdateAuthorizationResponses = {
 export type UpdateAuthorizationResponse = UpdateAuthorizationResponses[keyof UpdateAuthorizationResponses];
 
 export type SearchBatchOperationItemsData = {
-    body?: BatchOperationItemSearchQuery;
+    /**
+     * Batch operation item search request.
+     */
+    body?: SearchQueryRequest & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<BatchOperationItemSearchQuerySortRequest>;
+        /**
+         * Batch operation item filter request.
+         */
+        filter?: {
+            /**
+             * The key (or operate legacy ID) of the batch operation.
+             */
+            batchOperationKey?: BasicStringFilterProperty;
+            /**
+             * The key of the item, e.g. a process instance key.
+             */
+            itemKey?: BasicStringFilterProperty;
+            /**
+             * The process instance key of the processed item.
+             */
+            processInstanceKey?: ProcessInstanceKeyFilterProperty;
+            /**
+             * The state of the batch operation.
+             */
+            state?: BatchOperationItemStateFilterProperty;
+            /**
+             * The type of the batch operation.
+             */
+            operationType?: BatchOperationTypeFilterProperty;
+        };
+    };
     path?: never;
     query?: never;
     url: '/batch-operation-items/search';
@@ -7713,7 +7900,40 @@ export type SearchBatchOperationItemsResponses = {
 export type SearchBatchOperationItemsResponse = SearchBatchOperationItemsResponses[keyof SearchBatchOperationItemsResponses];
 
 export type SearchBatchOperationsData = {
-    body?: BatchOperationSearchQuery;
+    /**
+     * Batch operation search request.
+     */
+    body?: SearchQueryRequest & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<BatchOperationSearchQuerySortRequest>;
+        /**
+         * Batch operation filter request.
+         */
+        filter?: {
+            /**
+             * The key (or operate legacy ID) of the batch operation.
+             */
+            batchOperationKey?: BasicStringFilterProperty;
+            /**
+             * The type of the batch operation.
+             */
+            operationType?: BatchOperationTypeFilterProperty;
+            /**
+             * The state of the batch operation.
+             */
+            state?: BatchOperationStateFilterProperty;
+            /**
+             * The type of the actor who performed the operation.
+             */
+            actorType?: AuditLogActorTypeEnum;
+            /**
+             * The ID of the actor who performed the operation.
+             */
+            actorId?: StringFilterProperty;
+        };
+    };
     path?: never;
     query?: never;
     url: '/batch-operations/search';
@@ -8610,7 +8830,75 @@ export type GetDecisionDefinitionXmlResponses = {
 export type GetDecisionDefinitionXmlResponse = GetDecisionDefinitionXmlResponses[keyof GetDecisionDefinitionXmlResponses];
 
 export type SearchDecisionInstancesData = {
-    body?: DecisionInstanceSearchQuery;
+    body?: SearchQueryRequest & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<DecisionInstanceSearchQuerySortRequest>;
+        /**
+         * Decision instance search filter.
+         */
+        filter?: {
+            /**
+             * The key of the decision evaluation instance.
+             */
+            decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKeyFilterProperty;
+            /**
+             * The state of the decision instance.
+             */
+            state?: DecisionInstanceStateFilterProperty;
+            /**
+             * The evaluation failure of the decision instance.
+             */
+            evaluationFailure?: string;
+            /**
+             * The evaluation date of the decision instance.
+             */
+            evaluationDate?: DateTimeFilterProperty;
+            /**
+             * The ID of the DMN decision.
+             */
+            decisionDefinitionId?: DecisionDefinitionId;
+            /**
+             * The name of the DMN decision.
+             */
+            decisionDefinitionName?: string;
+            /**
+             * The version of the decision.
+             */
+            decisionDefinitionVersion?: number;
+            decisionDefinitionType?: DecisionDefinitionTypeEnum;
+            /**
+             * The tenant ID of the decision instance.
+             */
+            tenantId?: TenantId;
+            /**
+             * The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.
+             *
+             */
+            decisionEvaluationKey?: DecisionEvaluationKey;
+            /**
+             * The key of the process definition.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The key of the process instance.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            /**
+             * The key of the decision.
+             */
+            decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+            /**
+             * The key of the element instance this decision instance is linked to.
+             */
+            elementInstanceKey?: ElementInstanceKeyFilterProperty;
+            /**
+             * The key of the root decision definition.
+             */
+            rootDecisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+        };
+    };
     path?: never;
     query?: never;
     url: '/decision-instances/search';
@@ -10821,6 +11109,43 @@ export type FailJobResponses = {
 };
 
 export type FailJobResponse = FailJobResponses[keyof FailJobResponses];
+
+export type GetGlobalJobStatisticsData = {
+    body: GlobalJobStatisticsQuery;
+    path?: never;
+    query?: never;
+    url: '/jobs/statistics/global';
+};
+
+export type GetGlobalJobStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetGlobalJobStatisticsError = GetGlobalJobStatisticsErrors[keyof GetGlobalJobStatisticsErrors];
+
+export type GetGlobalJobStatisticsResponses = {
+    /**
+     * Global job metrics
+     */
+    200: GlobalJobStatisticsQueryResult;
+};
+
+export type GetGlobalJobStatisticsResponse = GetGlobalJobStatisticsResponses[keyof GetGlobalJobStatisticsResponses];
 
 export type GetLicenseData = {
     body?: never;
@@ -16417,7 +16742,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:5be1d6d92dced92001bcf821e50581627f373dd547ed869ab90fbc71d0fa4663
+// specHash=sha256:38bf9493807aafa46514894ba7b8082f7d9ea579ffcdc25f1ccc2643586c54a8
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
