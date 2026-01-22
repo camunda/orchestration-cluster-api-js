@@ -164,13 +164,13 @@ jobs:
           node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-          cache-dependency-path: package.json
+          cache-dependency-path: package-lock.json
 
       - name: Install deps
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Smoke test npm token
-        run: npm whoami
+        run: NODE_AUTH_TOKEN="" npm whoami
 
       - name: Determine next version (dry-run)
         id: next_version
@@ -222,7 +222,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        run: npx semantic-release
+        run: NODE_AUTH_TOKEN="" npx semantic-release
 
       - name: Promote npm dist-tag `latest` (if current stable line)
         if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref, 'refs/heads/stable/')
