@@ -146,8 +146,8 @@ jobs:
     name: Version & Publish (${{ github.ref_name }})
     needs: merge
     runs-on: ubuntu-latest
-    env:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    # env:
+    #   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -181,8 +181,7 @@ jobs:
             echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
           fi
 
-      - name: Smoke test npm token (optional)
-        if: env.NPM_TOKEN != ''
+      - name: Smoke test npm token
         run: npm whoami
 
       - name: Determine next version (dry-run)
