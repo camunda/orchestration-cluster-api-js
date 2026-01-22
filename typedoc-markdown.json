@@ -2,6 +2,7 @@
   "entryPoints": ["src/index.ts"],
   "out": "docs-md",
   "plugin": ["typedoc-plugin-markdown", "typedoc-docusaurus-theme", "typedoc-plugin-frontmatter"],
+  "groupOrder": ["Classes", "Functions", "Interfaces", "Namespaces", "Type Aliases"],
   "exclude": [
     "**/node_modules/**",
     "**/tests/**",
