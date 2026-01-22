@@ -146,8 +146,6 @@ jobs:
     name: Version & Publish (${{ github.ref_name }})
     needs: merge
     runs-on: ubuntu-latest
-    # env:
-    #   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -167,19 +165,6 @@ jobs:
 
       - name: Install deps
         run: npm ci
-
-      - name: Configure npm auth (token optional)
-        run: |
-          set -euo pipefail
-          # If the repo has a project .npmrc that hard-requires a token, it can break OIDC-based publishing.
-          # We only create an auth .npmrc when a token is explicitly provided.
-          if [ -f .npmrc ]; then
-            mv .npmrc .npmrc.repo.bak
-          fi
-
-          if [ -n "${NPM_TOKEN:-}" ]; then
-            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-          fi
 
       - name: Smoke test npm token
         run: npm whoami
