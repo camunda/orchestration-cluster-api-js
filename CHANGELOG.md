@@ -1,3 +1,17 @@
+## [1.2.4-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.3...v1.2.4-alpha.1) (2026-01-22)
+
+### Bug Fixes
+
+- correctly type optional parameters ([8fef8c8](https://github.com/camunda/orchestration-cluster-api-js/commit/8fef8c8a4bc69a3dd86b76ac1e01431d97607050))
+- enhance response validation error message ([d138134](https://github.com/camunda/orchestration-cluster-api-js/commit/d1381348f46c187e8321fdec088b7654b70c4fa8))
+- handle multi-part spec ([86ac930](https://github.com/camunda/orchestration-cluster-api-js/commit/86ac930e3b599126cf5446bcaa323089049bb4ef))
+- **spec:** prevent path-local $like refs breaking dts build ([3b75200](https://github.com/camunda/orchestration-cluster-api-js/commit/3b75200caeffb198f072668567cff7e34f5700f0))
+
+### Features
+
+- build 8.9 from monorepo spec ([a80303d](https://github.com/camunda/orchestration-cluster-api-js/commit/a80303d3a54f2d6db77c428f46848f131bd8bf42))
+- build from 8.9 spec ([e4ab53c](https://github.com/camunda/orchestration-cluster-api-js/commit/e4ab53cd253ca5d1fcf2d0bf0626c8d26c7da49c))
+
 ## [1.2.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.2...v1.2.3) (2025-12-05)
 
 ### Bug Fixes
