@@ -78,7 +78,8 @@
     "docker:es:start": "docker compose -f docker/docker-compose-es.yaml up -d",
     "docker:es:stop": "docker compose -f docker/docker-compose-es.yaml down && npm run docker:es:cleanup",
     "docker:es:cleanup": "docker volume rm docker_elastic && docker volume rm docker_zeebe && docker volume rm docker_prometheus-data && docker volume rm docker_grafana-data",
-    "docs:api": "rm -rf docs/* && typedoc"
+    "docs:api": "rm -rf docs/* && typedoc",
+    "docs:api:md": "rm -rf docs-md/* && typedoc --options typedoc-markdown.json"
   },
   "files": [
     "dist",
@@ -126,6 +127,8 @@
     "tsup": "^8.0.2",
     "tsx": "^4.7.0",
     "typedoc": "^0.28.0",
+    "typedoc-docusaurus-theme": "^1.4.2",
+    "typedoc-plugin-frontmatter": "^1.3.0",
     "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^5.4.5",
     "vitest": "^3.2.4",

@@ -1,0 +1,35 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs-md",
+  "plugin": ["typedoc-plugin-markdown", "typedoc-docusaurus-theme", "typedoc-plugin-frontmatter"],
+  "groupOrder": ["Classes", "Functions", "Interfaces", "Namespaces", "Type Aliases"],
+  "blockTags": [
+    "@category", "@categoryDescription", "@default", "@defaultValue", "@deprecated",
+    "@example", "@group", "@groupDescription", "@hidden", "@ignore", "@inheritDoc",
+    "@internal", "@label", "@license", "@link", "@module", "@overload",
+    "@packageDocumentation", "@param", "@privateRemarks", "@property", "@remarks",
+    "@returns", "@satisfies", "@sealed", "@see", "@since", "@template", "@throws",
+    "@type", "@typeParam", "@virtual",
+    "@description", "@operationId", "@tags", "@consistency"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/tests-integration/**",
+    "camundacon/**",
+    "scripts/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "hideGenerator": true,
+  "skipErrorChecking": true,
+  "frontmatterGlobals": {
+    "mdx" : {
+      "format": "md"
+    }
+  },
+  "sidebar": {
+    "pretty": true
+  }, 
+  "docsPath": "apis-tools/typescript/oca-client-docs"
+}
