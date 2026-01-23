@@ -12,18 +12,6 @@ function currentBranchName() {
   }
 }
 
-function parseMajorMinor(minor) {
-  const m = /^(\d+)\.(\d+)$/.exec(String(minor));
-  if (!m) return null;
-  return { major: Number(m[1]), minor: Number(m[2]) };
-}
-
-function incMinor(majorMinor) {
-  const parsed = parseMajorMinor(majorMinor);
-  if (!parsed) return null;
-  return `${parsed.major}.${parsed.minor + 1}`;
-}
-
 function stableMinorFromBranch(branch) {
   // stable/<major>.<minor> (e.g. stable/8.8)
   const m = /^stable\/(\d+\.\d+)$/.exec(branch);
@@ -34,16 +22,6 @@ function stableDistTagForMinor(minor) {
   // npm dist-tags must NOT be a valid SemVer version or range.
   // Tags like "8.8" are considered a SemVer range by npm and are rejected.
   return `stable-${minor}`;
-}
-
-function currentStableMinorFromEnv() {
-  const raw =
-    process.env.CAMUNDA_SDK_CURRENT_STABLE_MINOR ||
-    process.env.CURRENT_STABLE_MINOR ||
-    process.env.STABLE_MINOR;
-  if (!raw) return null;
-  const parsed = parseMajorMinor(raw);
-  return parsed ? `${parsed.major}.${parsed.minor}` : null;
 }
 
 const branch = currentBranchName();
@@ -131,7 +109,10 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        assets: ['package.json', 'src/runtime/version.ts', 'src/gen/**'],
+        // GitHub release assets must have unique names. Uploading folders directly (e.g. `src/gen/**`)
+        // causes collisions (multiple `index.ts`, etc). The release workflow generates a single,
+        // versioned tarball under `release-assets/` for upload.
+        assets: ['release-assets/*.tgz'],
       },
     ],
   ],

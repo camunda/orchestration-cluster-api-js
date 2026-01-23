@@ -151,6 +151,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch semantic-release git notes
+        run: |
+          # semantic-release stores channel information in git notes.
+          # Ensure refs/notes/* are available in CI so prerelease bootstraps are recognized.
+          git fetch origin '+refs/notes/*:refs/notes/*' || echo "No git notes refs fetched"
+
       - name: Export stable line config
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
@@ -210,6 +216,17 @@ jobs:
       - name: Smoke tests (post-bump)
         if: steps.next_version.outputs.publish_needed == 'true'
         run: npm test -- --run
+
+      - name: Prepare GitHub release assets
+        if: steps.next_version.outputs.publish_needed == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          VER="${{ steps.next_version.outputs.version }}"
+          OUT="release-assets/orchestration-cluster-api-${VER}-sources.tgz"
+          # Include the generated SDK sources and version markers as a single asset.
+          tar -czf "$OUT" package.json src/runtime/version.ts src/gen dist
+          echo "Prepared $OUT"
 
       - name: Commit version bump & regenerated artifacts
         if: steps.next_version.outputs.publish_needed == 'true'
