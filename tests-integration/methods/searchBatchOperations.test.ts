@@ -1,4 +1,3 @@
-// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
 import { describe, it, expect, vi } from 'vitest';
 
 import createClient from '../../src';
