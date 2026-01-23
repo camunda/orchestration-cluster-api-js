@@ -81,18 +81,38 @@ jobs:
       - name: Snapshot Spec & Metadata
         run: |
           set -e
-          SPEC_DIR=external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2
-          # Deterministic hash over the whole spec directory (multi-file refs).
-          HASH=$(find "$SPEC_DIR" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f1)
-          SNAP=spec-snapshots/spec-${HASH}.tgz
+
           mkdir -p spec-snapshots
-          if [ ! -f "$SNAP" ]; then
-            tar -czf "$SNAP" -C "$SPEC_DIR" .
-            echo "Created new spec snapshot: $SNAP"
+
+          # `main` uses the multi-file gateway-protocol proto spec directory.
+          # `stable/*` uses a single unified OpenAPI YAML fetched by `scripts/fetch-spec.ts`.
+          if [ -f external-spec/rest-api.upstream.yaml ]; then
+            SPEC_FILE=external-spec/rest-api.upstream.yaml
+            HASH=$(sha256sum "$SPEC_FILE" | cut -d ' ' -f1)
+            SNAP=spec-snapshots/spec-${HASH}.tgz
+            if [ ! -f "$SNAP" ]; then
+              tar -czf "$SNAP" \
+                external-spec/rest-api.upstream.yaml \
+                rest-api.source.yaml \
+                branding/branding-metadata.json
+              echo "Created new spec snapshot: $SNAP"
+            else
+              echo "Spec snapshot already exists: $SNAP (no overwrite)"
+            fi
+            echo "spec snapshot: spec-snapshots/spec-${HASH}.tgz"
           else
-            echo "Spec snapshot already exists: $SNAP (no overwrite)"
+            SPEC_DIR=external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2
+            # Deterministic hash over the whole spec directory (multi-file refs).
+            HASH=$(find "$SPEC_DIR" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f1)
+            SNAP=spec-snapshots/spec-${HASH}.tgz
+            if [ ! -f "$SNAP" ]; then
+              tar -czf "$SNAP" -C "$SPEC_DIR" .
+              echo "Created new spec snapshot: $SNAP"
+            else
+              echo "Spec snapshot already exists: $SNAP (no overwrite)"
+            fi
+            echo "spec snapshot: spec-snapshots/spec-${HASH}.tgz"
           fi
-          echo "spec snapshot: spec-snapshots/spec-${HASH}.tgz"
 
       - name: Detect generated drift
         id: detect
@@ -210,6 +230,17 @@ jobs:
       - name: Smoke tests (post-bump)
         if: steps.next_version.outputs.publish_needed == 'true'
         run: npm test -- --run
+
+      - name: Prepare GitHub release assets
+        if: steps.next_version.outputs.publish_needed == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          VER="${{ steps.next_version.outputs.version }}"
+          OUT="release-assets/orchestration-cluster-api-${VER}-sources.tgz"
+          # Include the generated SDK sources and version markers as a single asset.
+          tar -czf "$OUT" package.json src/runtime/version.ts src/gen dist
+          echo "Prepared $OUT"
 
       - name: Commit version bump & regenerated artifacts
         if: steps.next_version.outputs.publish_needed == 'true'

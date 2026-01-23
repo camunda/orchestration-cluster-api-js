@@ -12,18 +12,6 @@ function currentBranchName() {
   }
 }
 
-function parseMajorMinor(minor) {
-  const m = /^(\d+)\.(\d+)$/.exec(String(minor));
-  if (!m) return null;
-  return { major: Number(m[1]), minor: Number(m[2]) };
-}
-
-function incMinor(majorMinor) {
-  const parsed = parseMajorMinor(majorMinor);
-  if (!parsed) return null;
-  return `${parsed.major}.${parsed.minor + 1}`;
-}
-
 function stableMinorFromBranch(branch) {
   // stable/<major>.<minor> (e.g. stable/8.8)
   const m = /^stable\/(\d+\.\d+)$/.exec(branch);
@@ -36,22 +24,9 @@ function stableDistTagForMinor(minor) {
   return `stable-${minor}`;
 }
 
-function currentStableMinorFromEnv() {
-  const raw =
-    process.env.CAMUNDA_SDK_CURRENT_STABLE_MINOR ||
-    process.env.CURRENT_STABLE_MINOR ||
-    process.env.STABLE_MINOR;
-  if (!raw) return null;
-  const parsed = parseMajorMinor(raw);
-  return parsed ? `${parsed.major}.${parsed.minor}` : null;
-}
-
 const branch = currentBranchName();
 const stableMinor = stableMinorFromBranch(branch);
-// The currently promoted stable line is set explicitly via a repo variable / env var.
-// This avoids relying on a `latest` pointer branch to infer the stable line.
-const currentStableMinor = currentStableMinorFromEnv();
-const nextStableMinor = currentStableMinor ? incMinor(currentStableMinor) : null;
+
 function maintenanceBranchConfig(branchName, minor) {
   return {
     name: branchName,
@@ -130,14 +105,14 @@ module.exports = {
       },
     ],
     '@semantic-release/release-notes-generator',
-    ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     ['@semantic-release/npm', { npmPublish: true }],
     [
-      '@semantic-release/git',
+      '@semantic-release/github',
       {
-        assets: ['CHANGELOG.md', 'package.json', 'src/runtime/version.ts', 'src/gen/**'],
-        // Keep commit message compact; full notes are in CHANGELOG.md and GitHub release.
-        message: 'chore(release): ${nextRelease.version} [skip ci]',
+        // GitHub release assets must have unique names. Uploading folders directly (e.g. `src/gen/**`)
+        // causes collisions (multiple `index.ts`, etc). The release workflow generates a single,
+        // versioned tarball under `release-assets/` for upload.
+        assets: ['release-assets/*.tgz'],
       },
     ],
   ],
