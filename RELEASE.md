@@ -141,6 +141,34 @@ npm publish --tag alpha
 
 After that, semantic-release will continue within each line (e.g. `8.8.1`, `8.8.2`, `8.9.0-alpha.2`, ...).
 
+#### Important: semantic-release channel notes (required for bootstraps)
+
+This repo uses semantic-release "channels" (e.g. `alpha`, `stable-8.8`) and semantic-release tracks channel membership via git notes refs named `refs/notes/semantic-release-v<version>`.
+
+If you publish a bootstrap version manually (tag + `npm publish`) without creating the matching notes ref, semantic-release will usually ignore that tag when computing the next version for that channel and can "fall back" to the last semantic-release-managed version (historically the `1.x` line).
+
+To make a manual bootstrap tag visible to semantic-release, add and push the notes ref for that version.
+
+Example (alpha bootstrap on `main`):
+
+```sh
+git notes --ref=refs/notes/semantic-release-v8.9.0-alpha.1 add \
+  -m '{"channels":["alpha"]}' \
+  $(git rev-list -n 1 v8.9.0-alpha.1)
+
+git push origin refs/notes/semantic-release-v8.9.0-alpha.1
+```
+
+Example (maintenance bootstrap on `stable/8.8`):
+
+```sh
+git notes --ref=refs/notes/semantic-release-v8.8.0 add \
+  -m '{"channels":["stable-8.8"]}' \
+  $(git rev-list -n 1 v8.8.0)
+
+git push origin refs/notes/semantic-release-v8.8.0
+```
+
 ### Troubleshooting
 
 **`ERELEASEBRANCHES` (“problematic branches is []”)**

@@ -48,10 +48,7 @@ function currentStableMinorFromEnv() {
 
 const branch = currentBranchName();
 const stableMinor = stableMinorFromBranch(branch);
-// The currently promoted stable line is set explicitly via a repo variable / env var.
-// This avoids relying on a `latest` pointer branch to infer the stable line.
-const currentStableMinor = currentStableMinorFromEnv();
-const nextStableMinor = currentStableMinor ? incMinor(currentStableMinor) : null;
+
 function maintenanceBranchConfig(branchName, minor) {
   return {
     name: branchName,
