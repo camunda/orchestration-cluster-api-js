@@ -34,6 +34,7 @@ describe('searchUserTasks', () => {
       {
         filter: {
           state: 'CREATED',
+          processInstanceKey,
         },
       },
       {
@@ -95,12 +96,22 @@ describe('searchUserTasks', () => {
         },
         truncateValues: true,
       },
-      { consistency: { waitUpToMs: 5_000 } }
+      {
+        consistency: {
+          waitUpToMs: 5_000,
+          predicate: (variables) => {
+            const vars = variables
+              .items!.map((item) => ({ [item.name!]: item.value }))
+              .reduce((curr, prev) => ({ ...curr, ...prev }), {});
+            return vars.userTaskCompleted === 'true';
+          },
+        },
+      }
     );
     const finalValues = variables
       .items!.map((item) => ({ [item.name as string]: item.value }))
       .reduce((curr, prev) => ({ ...curr, ...prev }), {});
-    // console.log(`Process instance ${processInstanceKey} completed with variables:`, JSON.stringify(finalValues, null, 2));
+
     expect(finalValues.userTaskCompleted).toBe('true');
     userTaskPoller.cancel();
   });
