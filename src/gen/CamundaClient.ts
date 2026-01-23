@@ -47,873 +47,873 @@ function deepFreeze<T>(obj: T): T {
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
-type activateAdHocSubProcessActivitiesBody = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends { body?: infer B } ? B : never);
-type activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends { path: { adHocSubProcessInstanceKey: infer P } } ? P : any);
-type activateAdHocSubProcessActivitiesInput = activateAdHocSubProcessActivitiesBody & { adHocSubProcessInstanceKey: activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey };
+export type activateAdHocSubProcessActivitiesBody = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends { body?: infer B } ? B : never);
+export type activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey = (NonNullable<activateAdHocSubProcessActivitiesOptions> extends { path: { adHocSubProcessInstanceKey: infer P } } ? P : any);
+export type activateAdHocSubProcessActivitiesInput = activateAdHocSubProcessActivitiesBody & { adHocSubProcessInstanceKey: activateAdHocSubProcessActivitiesPathParam_adHocSubProcessInstanceKey };
 type activateJobsOptions = Parameters<typeof Sdk.activateJobs>[0];
-type activateJobsBody = (NonNullable<activateJobsOptions> extends { body?: infer B } ? B : never);
-type activateJobsInput = activateJobsBody;
+export type activateJobsBody = (NonNullable<activateJobsOptions> extends { body?: infer B } ? B : never);
+export type activateJobsInput = activateJobsBody;
 type assignClientToGroupOptions = Parameters<typeof Sdk.assignClientToGroup>[0];
-type assignClientToGroupPathParam_groupId = (NonNullable<assignClientToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignClientToGroupPathParam_clientId = (NonNullable<assignClientToGroupOptions> extends { path: { clientId: infer P } } ? P : any);
-type assignClientToGroupInput = { groupId: assignClientToGroupPathParam_groupId; clientId: assignClientToGroupPathParam_clientId };
+export type assignClientToGroupPathParam_groupId = (NonNullable<assignClientToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type assignClientToGroupPathParam_clientId = (NonNullable<assignClientToGroupOptions> extends { path: { clientId: infer P } } ? P : any);
+export type assignClientToGroupInput = { groupId: assignClientToGroupPathParam_groupId; clientId: assignClientToGroupPathParam_clientId };
 type assignClientToTenantOptions = Parameters<typeof Sdk.assignClientToTenant>[0];
-type assignClientToTenantPathParam_tenantId = (NonNullable<assignClientToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignClientToTenantPathParam_clientId = (NonNullable<assignClientToTenantOptions> extends { path: { clientId: infer P } } ? P : any);
-type assignClientToTenantInput = { tenantId: assignClientToTenantPathParam_tenantId; clientId: assignClientToTenantPathParam_clientId };
+export type assignClientToTenantPathParam_tenantId = (NonNullable<assignClientToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type assignClientToTenantPathParam_clientId = (NonNullable<assignClientToTenantOptions> extends { path: { clientId: infer P } } ? P : any);
+export type assignClientToTenantInput = { tenantId: assignClientToTenantPathParam_tenantId; clientId: assignClientToTenantPathParam_clientId };
 type assignGroupToTenantOptions = Parameters<typeof Sdk.assignGroupToTenant>[0];
-type assignGroupToTenantPathParam_tenantId = (NonNullable<assignGroupToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignGroupToTenantPathParam_groupId = (NonNullable<assignGroupToTenantOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignGroupToTenantInput = { tenantId: assignGroupToTenantPathParam_tenantId; groupId: assignGroupToTenantPathParam_groupId };
+export type assignGroupToTenantPathParam_tenantId = (NonNullable<assignGroupToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type assignGroupToTenantPathParam_groupId = (NonNullable<assignGroupToTenantOptions> extends { path: { groupId: infer P } } ? P : any);
+export type assignGroupToTenantInput = { tenantId: assignGroupToTenantPathParam_tenantId; groupId: assignGroupToTenantPathParam_groupId };
 type assignMappingRuleToGroupOptions = Parameters<typeof Sdk.assignMappingRuleToGroup>[0];
-type assignMappingRuleToGroupPathParam_groupId = (NonNullable<assignMappingRuleToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignMappingRuleToGroupPathParam_mappingRuleId = (NonNullable<assignMappingRuleToGroupOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type assignMappingRuleToGroupInput = { groupId: assignMappingRuleToGroupPathParam_groupId; mappingRuleId: assignMappingRuleToGroupPathParam_mappingRuleId };
+export type assignMappingRuleToGroupPathParam_groupId = (NonNullable<assignMappingRuleToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type assignMappingRuleToGroupPathParam_mappingRuleId = (NonNullable<assignMappingRuleToGroupOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type assignMappingRuleToGroupInput = { groupId: assignMappingRuleToGroupPathParam_groupId; mappingRuleId: assignMappingRuleToGroupPathParam_mappingRuleId };
 type assignMappingRuleToTenantOptions = Parameters<typeof Sdk.assignMappingRuleToTenant>[0];
-type assignMappingRuleToTenantPathParam_tenantId = (NonNullable<assignMappingRuleToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignMappingRuleToTenantPathParam_mappingRuleId = (NonNullable<assignMappingRuleToTenantOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type assignMappingRuleToTenantInput = { tenantId: assignMappingRuleToTenantPathParam_tenantId; mappingRuleId: assignMappingRuleToTenantPathParam_mappingRuleId };
+export type assignMappingRuleToTenantPathParam_tenantId = (NonNullable<assignMappingRuleToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type assignMappingRuleToTenantPathParam_mappingRuleId = (NonNullable<assignMappingRuleToTenantOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type assignMappingRuleToTenantInput = { tenantId: assignMappingRuleToTenantPathParam_tenantId; mappingRuleId: assignMappingRuleToTenantPathParam_mappingRuleId };
 type assignRoleToClientOptions = Parameters<typeof Sdk.assignRoleToClient>[0];
-type assignRoleToClientPathParam_roleId = (NonNullable<assignRoleToClientOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToClientPathParam_clientId = (NonNullable<assignRoleToClientOptions> extends { path: { clientId: infer P } } ? P : any);
-type assignRoleToClientInput = { roleId: assignRoleToClientPathParam_roleId; clientId: assignRoleToClientPathParam_clientId };
+export type assignRoleToClientPathParam_roleId = (NonNullable<assignRoleToClientOptions> extends { path: { roleId: infer P } } ? P : any);
+export type assignRoleToClientPathParam_clientId = (NonNullable<assignRoleToClientOptions> extends { path: { clientId: infer P } } ? P : any);
+export type assignRoleToClientInput = { roleId: assignRoleToClientPathParam_roleId; clientId: assignRoleToClientPathParam_clientId };
 type assignRoleToGroupOptions = Parameters<typeof Sdk.assignRoleToGroup>[0];
-type assignRoleToGroupPathParam_roleId = (NonNullable<assignRoleToGroupOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToGroupPathParam_groupId = (NonNullable<assignRoleToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignRoleToGroupInput = { roleId: assignRoleToGroupPathParam_roleId; groupId: assignRoleToGroupPathParam_groupId };
+export type assignRoleToGroupPathParam_roleId = (NonNullable<assignRoleToGroupOptions> extends { path: { roleId: infer P } } ? P : any);
+export type assignRoleToGroupPathParam_groupId = (NonNullable<assignRoleToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type assignRoleToGroupInput = { roleId: assignRoleToGroupPathParam_roleId; groupId: assignRoleToGroupPathParam_groupId };
 type assignRoleToMappingRuleOptions = Parameters<typeof Sdk.assignRoleToMappingRule>[0];
-type assignRoleToMappingRulePathParam_roleId = (NonNullable<assignRoleToMappingRuleOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToMappingRulePathParam_mappingRuleId = (NonNullable<assignRoleToMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type assignRoleToMappingRuleInput = { roleId: assignRoleToMappingRulePathParam_roleId; mappingRuleId: assignRoleToMappingRulePathParam_mappingRuleId };
+export type assignRoleToMappingRulePathParam_roleId = (NonNullable<assignRoleToMappingRuleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type assignRoleToMappingRulePathParam_mappingRuleId = (NonNullable<assignRoleToMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type assignRoleToMappingRuleInput = { roleId: assignRoleToMappingRulePathParam_roleId; mappingRuleId: assignRoleToMappingRulePathParam_mappingRuleId };
 type assignRoleToTenantOptions = Parameters<typeof Sdk.assignRoleToTenant>[0];
-type assignRoleToTenantPathParam_tenantId = (NonNullable<assignRoleToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignRoleToTenantPathParam_roleId = (NonNullable<assignRoleToTenantOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToTenantInput = { tenantId: assignRoleToTenantPathParam_tenantId; roleId: assignRoleToTenantPathParam_roleId };
+export type assignRoleToTenantPathParam_tenantId = (NonNullable<assignRoleToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type assignRoleToTenantPathParam_roleId = (NonNullable<assignRoleToTenantOptions> extends { path: { roleId: infer P } } ? P : any);
+export type assignRoleToTenantInput = { tenantId: assignRoleToTenantPathParam_tenantId; roleId: assignRoleToTenantPathParam_roleId };
 type assignRoleToUserOptions = Parameters<typeof Sdk.assignRoleToUser>[0];
-type assignRoleToUserPathParam_roleId = (NonNullable<assignRoleToUserOptions> extends { path: { roleId: infer P } } ? P : any);
-type assignRoleToUserPathParam_username = (NonNullable<assignRoleToUserOptions> extends { path: { username: infer P } } ? P : any);
-type assignRoleToUserInput = { roleId: assignRoleToUserPathParam_roleId; username: assignRoleToUserPathParam_username };
+export type assignRoleToUserPathParam_roleId = (NonNullable<assignRoleToUserOptions> extends { path: { roleId: infer P } } ? P : any);
+export type assignRoleToUserPathParam_username = (NonNullable<assignRoleToUserOptions> extends { path: { username: infer P } } ? P : any);
+export type assignRoleToUserInput = { roleId: assignRoleToUserPathParam_roleId; username: assignRoleToUserPathParam_username };
 type assignUserTaskOptions = Parameters<typeof Sdk.assignUserTask>[0];
-type assignUserTaskBody = (NonNullable<assignUserTaskOptions> extends { body?: infer B } ? B : never);
-type assignUserTaskPathParam_userTaskKey = (NonNullable<assignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type assignUserTaskInput = assignUserTaskBody & { userTaskKey: assignUserTaskPathParam_userTaskKey };
+export type assignUserTaskBody = (NonNullable<assignUserTaskOptions> extends { body?: infer B } ? B : never);
+export type assignUserTaskPathParam_userTaskKey = (NonNullable<assignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type assignUserTaskInput = assignUserTaskBody & { userTaskKey: assignUserTaskPathParam_userTaskKey };
 type assignUserToGroupOptions = Parameters<typeof Sdk.assignUserToGroup>[0];
-type assignUserToGroupPathParam_groupId = (NonNullable<assignUserToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type assignUserToGroupPathParam_username = (NonNullable<assignUserToGroupOptions> extends { path: { username: infer P } } ? P : any);
-type assignUserToGroupInput = { groupId: assignUserToGroupPathParam_groupId; username: assignUserToGroupPathParam_username };
+export type assignUserToGroupPathParam_groupId = (NonNullable<assignUserToGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type assignUserToGroupPathParam_username = (NonNullable<assignUserToGroupOptions> extends { path: { username: infer P } } ? P : any);
+export type assignUserToGroupInput = { groupId: assignUserToGroupPathParam_groupId; username: assignUserToGroupPathParam_username };
 type assignUserToTenantOptions = Parameters<typeof Sdk.assignUserToTenant>[0];
-type assignUserToTenantPathParam_tenantId = (NonNullable<assignUserToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type assignUserToTenantPathParam_username = (NonNullable<assignUserToTenantOptions> extends { path: { username: infer P } } ? P : any);
-type assignUserToTenantInput = { tenantId: assignUserToTenantPathParam_tenantId; username: assignUserToTenantPathParam_username };
+export type assignUserToTenantPathParam_tenantId = (NonNullable<assignUserToTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type assignUserToTenantPathParam_username = (NonNullable<assignUserToTenantOptions> extends { path: { username: infer P } } ? P : any);
+export type assignUserToTenantInput = { tenantId: assignUserToTenantPathParam_tenantId; username: assignUserToTenantPathParam_username };
 type broadcastSignalOptions = Parameters<typeof Sdk.broadcastSignal>[0];
-type broadcastSignalBody = (NonNullable<broadcastSignalOptions> extends { body?: infer B } ? B : never);
-type broadcastSignalInput = broadcastSignalBody;
+export type broadcastSignalBody = (NonNullable<broadcastSignalOptions> extends { body?: infer B } ? B : never);
+export type broadcastSignalInput = broadcastSignalBody;
 type cancelBatchOperationOptions = Parameters<typeof Sdk.cancelBatchOperation>[0];
-type cancelBatchOperationBody = (NonNullable<cancelBatchOperationOptions> extends { body?: infer B } ? B : never);
-type cancelBatchOperationPathParam_batchOperationKey = (NonNullable<cancelBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-type cancelBatchOperationInput = cancelBatchOperationBody & { batchOperationKey: cancelBatchOperationPathParam_batchOperationKey };
+export type cancelBatchOperationBody = (NonNullable<cancelBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type cancelBatchOperationPathParam_batchOperationKey = (NonNullable<cancelBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
+export type cancelBatchOperationInput = cancelBatchOperationBody & { batchOperationKey: cancelBatchOperationPathParam_batchOperationKey };
 /** Management of eventual consistency **/
-type cancelBatchOperationConsistency = { 
+export type cancelBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.cancelBatchOperation>> 
 };
 type cancelProcessInstanceOptions = Parameters<typeof Sdk.cancelProcessInstance>[0];
-type cancelProcessInstanceBody = (NonNullable<cancelProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type cancelProcessInstancePathParam_processInstanceKey = (NonNullable<cancelProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type cancelProcessInstanceInput = cancelProcessInstanceBody & { processInstanceKey: cancelProcessInstancePathParam_processInstanceKey };
+export type cancelProcessInstanceBody = (NonNullable<cancelProcessInstanceOptions> extends { body?: infer B } ? B : never);
+export type cancelProcessInstancePathParam_processInstanceKey = (NonNullable<cancelProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type cancelProcessInstanceInput = cancelProcessInstanceBody & { processInstanceKey: cancelProcessInstancePathParam_processInstanceKey };
 type cancelProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.cancelProcessInstancesBatchOperation>[0];
-type cancelProcessInstancesBatchOperationBody = (NonNullable<cancelProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-type cancelProcessInstancesBatchOperationInput = cancelProcessInstancesBatchOperationBody;
+export type cancelProcessInstancesBatchOperationBody = (NonNullable<cancelProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type cancelProcessInstancesBatchOperationInput = cancelProcessInstancesBatchOperationBody;
 /** Management of eventual consistency **/
-type cancelProcessInstancesBatchOperationConsistency = { 
+export type cancelProcessInstancesBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>> 
 };
 type completeJobOptions = Parameters<typeof Sdk.completeJob>[0];
-type completeJobBody = (NonNullable<completeJobOptions> extends { body?: infer B } ? B : never);
-type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends { path: { jobKey: infer P } } ? P : any);
-type completeJobInput = completeJobBody & { jobKey: completeJobPathParam_jobKey };
+export type completeJobBody = (NonNullable<completeJobOptions> extends { body?: infer B } ? B : never);
+export type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends { path: { jobKey: infer P } } ? P : any);
+export type completeJobInput = completeJobBody & { jobKey: completeJobPathParam_jobKey };
 type completeUserTaskOptions = Parameters<typeof Sdk.completeUserTask>[0];
-type completeUserTaskBody = (NonNullable<completeUserTaskOptions> extends { body?: infer B } ? B : never);
-type completeUserTaskPathParam_userTaskKey = (NonNullable<completeUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type completeUserTaskInput = completeUserTaskBody & { userTaskKey: completeUserTaskPathParam_userTaskKey };
+export type completeUserTaskBody = (NonNullable<completeUserTaskOptions> extends { body?: infer B } ? B : never);
+export type completeUserTaskPathParam_userTaskKey = (NonNullable<completeUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type completeUserTaskInput = completeUserTaskBody & { userTaskKey: completeUserTaskPathParam_userTaskKey };
 type correlateMessageOptions = Parameters<typeof Sdk.correlateMessage>[0];
-type correlateMessageBody = (NonNullable<correlateMessageOptions> extends { body?: infer B } ? B : never);
-type correlateMessageInput = correlateMessageBody;
+export type correlateMessageBody = (NonNullable<correlateMessageOptions> extends { body?: infer B } ? B : never);
+export type correlateMessageInput = correlateMessageBody;
 type createAdminUserOptions = Parameters<typeof Sdk.createAdminUser>[0];
-type createAdminUserBody = (NonNullable<createAdminUserOptions> extends { body?: infer B } ? B : never);
-type createAdminUserInput = createAdminUserBody;
+export type createAdminUserBody = (NonNullable<createAdminUserOptions> extends { body?: infer B } ? B : never);
+export type createAdminUserInput = createAdminUserBody;
 /** Management of eventual consistency **/
-type createAdminUserConsistency = { 
+export type createAdminUserConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.createAdminUser>> 
 };
 type createAuthorizationOptions = Parameters<typeof Sdk.createAuthorization>[0];
-type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
-type createAuthorizationInput = createAuthorizationBody;
+export type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
+export type createAuthorizationInput = createAuthorizationBody;
 type createDeploymentOptions = Parameters<typeof Sdk.createDeployment>[0];
-type createDeploymentBody = (NonNullable<createDeploymentOptions> extends { body?: infer B } ? B : never);
-type createDeploymentInput = Omit<createDeploymentBody, 'resources'> & { resources: File[] };
+export type createDeploymentBody = (NonNullable<createDeploymentOptions> extends { body?: infer B } ? B : never);
+export type createDeploymentInput = Omit<createDeploymentBody, 'resources'> & { resources: File[] };
 type createDocumentOptions = Parameters<typeof Sdk.createDocument>[0];
-type createDocumentBody = (NonNullable<createDocumentOptions> extends { body?: infer B } ? B : never);
+export type createDocumentBody = (NonNullable<createDocumentOptions> extends { body?: infer B } ? B : never);
 type createDocumentQueryParam_storeId = (NonNullable<createDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
 type createDocumentQueryParam_documentId = (NonNullable<createDocumentOptions> extends { query: { documentId: infer Q } } ? Q : any);
-type createDocumentInput = createDocumentBody & { storeId: createDocumentQueryParam_storeId; documentId: createDocumentQueryParam_documentId };
+export type createDocumentInput = createDocumentBody & { storeId: createDocumentQueryParam_storeId; documentId: createDocumentQueryParam_documentId };
 type createDocumentLinkOptions = Parameters<typeof Sdk.createDocumentLink>[0];
-type createDocumentLinkBody = (NonNullable<createDocumentLinkOptions> extends { body?: infer B } ? B : never);
-type createDocumentLinkPathParam_documentId = (NonNullable<createDocumentLinkOptions> extends { path: { documentId: infer P } } ? P : any);
+export type createDocumentLinkBody = (NonNullable<createDocumentLinkOptions> extends { body?: infer B } ? B : never);
+export type createDocumentLinkPathParam_documentId = (NonNullable<createDocumentLinkOptions> extends { path: { documentId: infer P } } ? P : any);
 type createDocumentLinkQueryParam_storeId = (NonNullable<createDocumentLinkOptions> extends { query: { storeId: infer Q } } ? Q : any);
 type createDocumentLinkQueryParam_contentHash = (NonNullable<createDocumentLinkOptions> extends { query: { contentHash: infer Q } } ? Q : any);
-type createDocumentLinkInput = createDocumentLinkBody & { documentId: createDocumentLinkPathParam_documentId; storeId: createDocumentLinkQueryParam_storeId; contentHash: createDocumentLinkQueryParam_contentHash };
+export type createDocumentLinkInput = createDocumentLinkBody & { documentId: createDocumentLinkPathParam_documentId; storeId: createDocumentLinkQueryParam_storeId; contentHash: createDocumentLinkQueryParam_contentHash };
 type createDocumentsOptions = Parameters<typeof Sdk.createDocuments>[0];
-type createDocumentsBody = (NonNullable<createDocumentsOptions> extends { body?: infer B } ? B : never);
+export type createDocumentsBody = (NonNullable<createDocumentsOptions> extends { body?: infer B } ? B : never);
 type createDocumentsQueryParam_storeId = (NonNullable<createDocumentsOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type createDocumentsInput = createDocumentsBody & { storeId: createDocumentsQueryParam_storeId };
+export type createDocumentsInput = createDocumentsBody & { storeId: createDocumentsQueryParam_storeId };
 type createElementInstanceVariablesOptions = Parameters<typeof Sdk.createElementInstanceVariables>[0];
-type createElementInstanceVariablesBody = (NonNullable<createElementInstanceVariablesOptions> extends { body?: infer B } ? B : never);
-type createElementInstanceVariablesPathParam_elementInstanceKey = (NonNullable<createElementInstanceVariablesOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
-type createElementInstanceVariablesInput = createElementInstanceVariablesBody & { elementInstanceKey: createElementInstanceVariablesPathParam_elementInstanceKey };
+export type createElementInstanceVariablesBody = (NonNullable<createElementInstanceVariablesOptions> extends { body?: infer B } ? B : never);
+export type createElementInstanceVariablesPathParam_elementInstanceKey = (NonNullable<createElementInstanceVariablesOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
+export type createElementInstanceVariablesInput = createElementInstanceVariablesBody & { elementInstanceKey: createElementInstanceVariablesPathParam_elementInstanceKey };
 type createGroupOptions = Parameters<typeof Sdk.createGroup>[0];
-type createGroupBody = (NonNullable<createGroupOptions> extends { body?: infer B } ? B : never);
-type createGroupInput = createGroupBody;
+export type createGroupBody = (NonNullable<createGroupOptions> extends { body?: infer B } ? B : never);
+export type createGroupInput = createGroupBody;
 type createMappingRuleOptions = Parameters<typeof Sdk.createMappingRule>[0];
-type createMappingRuleBody = (NonNullable<createMappingRuleOptions> extends { body?: infer B } ? B : never);
-type createMappingRuleInput = createMappingRuleBody;
+export type createMappingRuleBody = (NonNullable<createMappingRuleOptions> extends { body?: infer B } ? B : never);
+export type createMappingRuleInput = createMappingRuleBody;
 type createProcessInstanceOptions = Parameters<typeof Sdk.createProcessInstance>[0];
-type createProcessInstanceBody = (NonNullable<createProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type createProcessInstanceInput = createProcessInstanceBody;
+export type createProcessInstanceBody = (NonNullable<createProcessInstanceOptions> extends { body?: infer B } ? B : never);
+export type createProcessInstanceInput = createProcessInstanceBody;
 type createRoleOptions = Parameters<typeof Sdk.createRole>[0];
-type createRoleBody = (NonNullable<createRoleOptions> extends { body?: infer B } ? B : never);
-type createRoleInput = createRoleBody;
+export type createRoleBody = (NonNullable<createRoleOptions> extends { body?: infer B } ? B : never);
+export type createRoleInput = createRoleBody;
 type createTenantOptions = Parameters<typeof Sdk.createTenant>[0];
-type createTenantBody = (NonNullable<createTenantOptions> extends { body?: infer B } ? B : never);
-type createTenantInput = createTenantBody;
+export type createTenantBody = (NonNullable<createTenantOptions> extends { body?: infer B } ? B : never);
+export type createTenantInput = createTenantBody;
 type createUserOptions = Parameters<typeof Sdk.createUser>[0];
-type createUserBody = (NonNullable<createUserOptions> extends { body?: infer B } ? B : never);
-type createUserInput = createUserBody;
+export type createUserBody = (NonNullable<createUserOptions> extends { body?: infer B } ? B : never);
+export type createUserInput = createUserBody;
 /** Management of eventual consistency **/
-type createUserConsistency = { 
+export type createUserConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.createUser>> 
 };
 type deleteAuthorizationOptions = Parameters<typeof Sdk.deleteAuthorization>[0];
-type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
-type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
+export type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
+export type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
 type deleteDocumentOptions = Parameters<typeof Sdk.deleteDocument>[0];
-type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
+export type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
 type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
-type deleteDocumentInput = { documentId: deleteDocumentPathParam_documentId; storeId: deleteDocumentQueryParam_storeId };
+export type deleteDocumentInput = { documentId: deleteDocumentPathParam_documentId; storeId: deleteDocumentQueryParam_storeId };
 type deleteGroupOptions = Parameters<typeof Sdk.deleteGroup>[0];
-type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type deleteGroupInput = { groupId: deleteGroupPathParam_groupId };
+export type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type deleteGroupInput = { groupId: deleteGroupPathParam_groupId };
 type deleteMappingRuleOptions = Parameters<typeof Sdk.deleteMappingRule>[0];
-type deleteMappingRulePathParam_mappingRuleId = (NonNullable<deleteMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type deleteMappingRuleInput = { mappingRuleId: deleteMappingRulePathParam_mappingRuleId };
+export type deleteMappingRulePathParam_mappingRuleId = (NonNullable<deleteMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type deleteMappingRuleInput = { mappingRuleId: deleteMappingRulePathParam_mappingRuleId };
 type deleteResourceOptions = Parameters<typeof Sdk.deleteResource>[0];
-type deleteResourceBody = (NonNullable<deleteResourceOptions> extends { body?: infer B } ? B : never);
-type deleteResourcePathParam_resourceKey = (NonNullable<deleteResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
-type deleteResourceInput = deleteResourceBody & { resourceKey: deleteResourcePathParam_resourceKey };
+export type deleteResourceBody = (NonNullable<deleteResourceOptions> extends { body?: infer B } ? B : never);
+export type deleteResourcePathParam_resourceKey = (NonNullable<deleteResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
+export type deleteResourceInput = deleteResourceBody & { resourceKey: deleteResourcePathParam_resourceKey };
 type deleteRoleOptions = Parameters<typeof Sdk.deleteRole>[0];
-type deleteRolePathParam_roleId = (NonNullable<deleteRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type deleteRoleInput = { roleId: deleteRolePathParam_roleId };
+export type deleteRolePathParam_roleId = (NonNullable<deleteRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type deleteRoleInput = { roleId: deleteRolePathParam_roleId };
 type deleteTenantOptions = Parameters<typeof Sdk.deleteTenant>[0];
-type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
+export type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
 type deleteUserOptions = Parameters<typeof Sdk.deleteUser>[0];
-type deleteUserPathParam_username = (NonNullable<deleteUserOptions> extends { path: { username: infer P } } ? P : any);
-type deleteUserInput = { username: deleteUserPathParam_username };
+export type deleteUserPathParam_username = (NonNullable<deleteUserOptions> extends { path: { username: infer P } } ? P : any);
+export type deleteUserInput = { username: deleteUserPathParam_username };
 /** Management of eventual consistency **/
-type deleteUserConsistency = { 
+export type deleteUserConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteUser>> 
 };
 type evaluateDecisionOptions = Parameters<typeof Sdk.evaluateDecision>[0];
-type evaluateDecisionBody = (NonNullable<evaluateDecisionOptions> extends { body?: infer B } ? B : never);
-type evaluateDecisionInput = evaluateDecisionBody;
+export type evaluateDecisionBody = (NonNullable<evaluateDecisionOptions> extends { body?: infer B } ? B : never);
+export type evaluateDecisionInput = evaluateDecisionBody;
 type failJobOptions = Parameters<typeof Sdk.failJob>[0];
-type failJobBody = (NonNullable<failJobOptions> extends { body?: infer B } ? B : never);
-type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends { path: { jobKey: infer P } } ? P : any);
-type failJobInput = failJobBody & { jobKey: failJobPathParam_jobKey };
+export type failJobBody = (NonNullable<failJobOptions> extends { body?: infer B } ? B : never);
+export type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends { path: { jobKey: infer P } } ? P : any);
+export type failJobInput = failJobBody & { jobKey: failJobPathParam_jobKey };
 type getAuthenticationOptions = Parameters<typeof Sdk.getAuthentication>[0];
-type getAuthenticationInput = void;
+export type getAuthenticationInput = void;
 type getAuthorizationOptions = Parameters<typeof Sdk.getAuthorization>[0];
-type getAuthorizationPathParam_authorizationKey = (NonNullable<getAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
-type getAuthorizationInput = { authorizationKey: getAuthorizationPathParam_authorizationKey };
+export type getAuthorizationPathParam_authorizationKey = (NonNullable<getAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
+export type getAuthorizationInput = { authorizationKey: getAuthorizationPathParam_authorizationKey };
 /** Management of eventual consistency **/
-type getAuthorizationConsistency = { 
+export type getAuthorizationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAuthorization>> 
 };
 type getBatchOperationOptions = Parameters<typeof Sdk.getBatchOperation>[0];
-type getBatchOperationPathParam_batchOperationKey = (NonNullable<getBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-type getBatchOperationInput = { batchOperationKey: getBatchOperationPathParam_batchOperationKey };
+export type getBatchOperationPathParam_batchOperationKey = (NonNullable<getBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
+export type getBatchOperationInput = { batchOperationKey: getBatchOperationPathParam_batchOperationKey };
 /** Management of eventual consistency **/
-type getBatchOperationConsistency = { 
+export type getBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getBatchOperation>> 
 };
 type getDecisionDefinitionOptions = Parameters<typeof Sdk.getDecisionDefinition>[0];
-type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
-type getDecisionDefinitionInput = { decisionDefinitionKey: getDecisionDefinitionPathParam_decisionDefinitionKey };
+export type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
+export type getDecisionDefinitionInput = { decisionDefinitionKey: getDecisionDefinitionPathParam_decisionDefinitionKey };
 /** Management of eventual consistency **/
-type getDecisionDefinitionConsistency = { 
+export type getDecisionDefinitionConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionDefinition>> 
 };
 type getDecisionDefinitionXmlOptions = Parameters<typeof Sdk.getDecisionDefinitionXml>[0];
-type getDecisionDefinitionXmlPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionXmlOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
-type getDecisionDefinitionXmlInput = { decisionDefinitionKey: getDecisionDefinitionXmlPathParam_decisionDefinitionKey };
+export type getDecisionDefinitionXmlPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionXmlOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
+export type getDecisionDefinitionXmlInput = { decisionDefinitionKey: getDecisionDefinitionXmlPathParam_decisionDefinitionKey };
 /** Management of eventual consistency **/
-type getDecisionDefinitionXmlConsistency = { 
+export type getDecisionDefinitionXmlConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionDefinitionXml>> 
 };
 type getDecisionInstanceOptions = Parameters<typeof Sdk.getDecisionInstance>[0];
-type getDecisionInstancePathParam_decisionEvaluationInstanceKey = (NonNullable<getDecisionInstanceOptions> extends { path: { decisionEvaluationInstanceKey: infer P } } ? P : any);
-type getDecisionInstanceInput = { decisionEvaluationInstanceKey: getDecisionInstancePathParam_decisionEvaluationInstanceKey };
+export type getDecisionInstancePathParam_decisionEvaluationInstanceKey = (NonNullable<getDecisionInstanceOptions> extends { path: { decisionEvaluationInstanceKey: infer P } } ? P : any);
+export type getDecisionInstanceInput = { decisionEvaluationInstanceKey: getDecisionInstancePathParam_decisionEvaluationInstanceKey };
 /** Management of eventual consistency **/
-type getDecisionInstanceConsistency = { 
+export type getDecisionInstanceConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionInstance>> 
 };
 type getDecisionRequirementsOptions = Parameters<typeof Sdk.getDecisionRequirements>[0];
-type getDecisionRequirementsPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsOptions> extends { path: { decisionRequirementsKey: infer P } } ? P : any);
-type getDecisionRequirementsInput = { decisionRequirementsKey: getDecisionRequirementsPathParam_decisionRequirementsKey };
+export type getDecisionRequirementsPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsOptions> extends { path: { decisionRequirementsKey: infer P } } ? P : any);
+export type getDecisionRequirementsInput = { decisionRequirementsKey: getDecisionRequirementsPathParam_decisionRequirementsKey };
 /** Management of eventual consistency **/
-type getDecisionRequirementsConsistency = { 
+export type getDecisionRequirementsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionRequirements>> 
 };
 type getDecisionRequirementsXmlOptions = Parameters<typeof Sdk.getDecisionRequirementsXml>[0];
-type getDecisionRequirementsXmlPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsXmlOptions> extends { path: { decisionRequirementsKey: infer P } } ? P : any);
-type getDecisionRequirementsXmlInput = { decisionRequirementsKey: getDecisionRequirementsXmlPathParam_decisionRequirementsKey };
+export type getDecisionRequirementsXmlPathParam_decisionRequirementsKey = (NonNullable<getDecisionRequirementsXmlOptions> extends { path: { decisionRequirementsKey: infer P } } ? P : any);
+export type getDecisionRequirementsXmlInput = { decisionRequirementsKey: getDecisionRequirementsXmlPathParam_decisionRequirementsKey };
 /** Management of eventual consistency **/
-type getDecisionRequirementsXmlConsistency = { 
+export type getDecisionRequirementsXmlConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getDecisionRequirementsXml>> 
 };
 type getDocumentOptions = Parameters<typeof Sdk.getDocument>[0];
-type getDocumentPathParam_documentId = (NonNullable<getDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
+export type getDocumentPathParam_documentId = (NonNullable<getDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
 type getDocumentQueryParam_storeId = (NonNullable<getDocumentOptions> extends { query: { storeId: infer Q } } ? Q : any);
 type getDocumentQueryParam_contentHash = (NonNullable<getDocumentOptions> extends { query: { contentHash: infer Q } } ? Q : any);
-type getDocumentInput = { documentId: getDocumentPathParam_documentId; storeId: getDocumentQueryParam_storeId; contentHash: getDocumentQueryParam_contentHash };
+export type getDocumentInput = { documentId: getDocumentPathParam_documentId; storeId: getDocumentQueryParam_storeId; contentHash: getDocumentQueryParam_contentHash };
 type getElementInstanceOptions = Parameters<typeof Sdk.getElementInstance>[0];
-type getElementInstancePathParam_elementInstanceKey = (NonNullable<getElementInstanceOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
-type getElementInstanceInput = { elementInstanceKey: getElementInstancePathParam_elementInstanceKey };
+export type getElementInstancePathParam_elementInstanceKey = (NonNullable<getElementInstanceOptions> extends { path: { elementInstanceKey: infer P } } ? P : any);
+export type getElementInstanceInput = { elementInstanceKey: getElementInstancePathParam_elementInstanceKey };
 /** Management of eventual consistency **/
-type getElementInstanceConsistency = { 
+export type getElementInstanceConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getElementInstance>> 
 };
 type getGroupOptions = Parameters<typeof Sdk.getGroup>[0];
-type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type getGroupInput = { groupId: getGroupPathParam_groupId };
+export type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type getGroupInput = { groupId: getGroupPathParam_groupId };
 /** Management of eventual consistency **/
-type getGroupConsistency = { 
+export type getGroupConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGroup>> 
 };
 type getIncidentOptions = Parameters<typeof Sdk.getIncident>[0];
-type getIncidentPathParam_incidentKey = (NonNullable<getIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
-type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey };
+export type getIncidentPathParam_incidentKey = (NonNullable<getIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
+export type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey };
 /** Management of eventual consistency **/
-type getIncidentConsistency = { 
+export type getIncidentConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
 };
 type getLicenseOptions = Parameters<typeof Sdk.getLicense>[0];
-type getLicenseInput = void;
+export type getLicenseInput = void;
 type getMappingRuleOptions = Parameters<typeof Sdk.getMappingRule>[0];
-type getMappingRulePathParam_mappingRuleId = (NonNullable<getMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type getMappingRuleInput = { mappingRuleId: getMappingRulePathParam_mappingRuleId };
+export type getMappingRulePathParam_mappingRuleId = (NonNullable<getMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type getMappingRuleInput = { mappingRuleId: getMappingRulePathParam_mappingRuleId };
 /** Management of eventual consistency **/
-type getMappingRuleConsistency = { 
+export type getMappingRuleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getMappingRule>> 
 };
 type getProcessDefinitionOptions = Parameters<typeof Sdk.getProcessDefinition>[0];
-type getProcessDefinitionPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-type getProcessDefinitionInput = { processDefinitionKey: getProcessDefinitionPathParam_processDefinitionKey };
+export type getProcessDefinitionPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
+export type getProcessDefinitionInput = { processDefinitionKey: getProcessDefinitionPathParam_processDefinitionKey };
 /** Management of eventual consistency **/
-type getProcessDefinitionConsistency = { 
+export type getProcessDefinitionConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinition>> 
 };
 type getProcessDefinitionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionStatistics>[0];
-type getProcessDefinitionStatisticsBody = (NonNullable<getProcessDefinitionStatisticsOptions> extends { body?: infer B } ? B : never);
-type getProcessDefinitionStatisticsPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionStatisticsOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-type getProcessDefinitionStatisticsInput = getProcessDefinitionStatisticsBody & { processDefinitionKey: getProcessDefinitionStatisticsPathParam_processDefinitionKey };
+export type getProcessDefinitionStatisticsBody = (NonNullable<getProcessDefinitionStatisticsOptions> extends { body?: infer B } ? B : never);
+export type getProcessDefinitionStatisticsPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionStatisticsOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
+export type getProcessDefinitionStatisticsInput = getProcessDefinitionStatisticsBody & { processDefinitionKey: getProcessDefinitionStatisticsPathParam_processDefinitionKey };
 /** Management of eventual consistency **/
-type getProcessDefinitionStatisticsConsistency = { 
+export type getProcessDefinitionStatisticsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionStatistics>> 
 };
 type getProcessDefinitionXmlOptions = Parameters<typeof Sdk.getProcessDefinitionXml>[0];
-type getProcessDefinitionXmlPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionXmlOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-type getProcessDefinitionXmlInput = { processDefinitionKey: getProcessDefinitionXmlPathParam_processDefinitionKey };
+export type getProcessDefinitionXmlPathParam_processDefinitionKey = (NonNullable<getProcessDefinitionXmlOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
+export type getProcessDefinitionXmlInput = { processDefinitionKey: getProcessDefinitionXmlPathParam_processDefinitionKey };
 /** Management of eventual consistency **/
-type getProcessDefinitionXmlConsistency = { 
+export type getProcessDefinitionXmlConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessDefinitionXml>> 
 };
 type getProcessInstanceOptions = Parameters<typeof Sdk.getProcessInstance>[0];
-type getProcessInstancePathParam_processInstanceKey = (NonNullable<getProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type getProcessInstanceInput = { processInstanceKey: getProcessInstancePathParam_processInstanceKey };
+export type getProcessInstancePathParam_processInstanceKey = (NonNullable<getProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type getProcessInstanceInput = { processInstanceKey: getProcessInstancePathParam_processInstanceKey };
 /** Management of eventual consistency **/
-type getProcessInstanceConsistency = { 
+export type getProcessInstanceConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstance>> 
 };
 type getProcessInstanceCallHierarchyOptions = Parameters<typeof Sdk.getProcessInstanceCallHierarchy>[0];
-type getProcessInstanceCallHierarchyPathParam_processInstanceKey = (NonNullable<getProcessInstanceCallHierarchyOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type getProcessInstanceCallHierarchyInput = { processInstanceKey: getProcessInstanceCallHierarchyPathParam_processInstanceKey };
+export type getProcessInstanceCallHierarchyPathParam_processInstanceKey = (NonNullable<getProcessInstanceCallHierarchyOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type getProcessInstanceCallHierarchyInput = { processInstanceKey: getProcessInstanceCallHierarchyPathParam_processInstanceKey };
 /** Management of eventual consistency **/
-type getProcessInstanceCallHierarchyConsistency = { 
+export type getProcessInstanceCallHierarchyConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceCallHierarchy>> 
 };
 type getProcessInstanceSequenceFlowsOptions = Parameters<typeof Sdk.getProcessInstanceSequenceFlows>[0];
-type getProcessInstanceSequenceFlowsPathParam_processInstanceKey = (NonNullable<getProcessInstanceSequenceFlowsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type getProcessInstanceSequenceFlowsInput = { processInstanceKey: getProcessInstanceSequenceFlowsPathParam_processInstanceKey };
+export type getProcessInstanceSequenceFlowsPathParam_processInstanceKey = (NonNullable<getProcessInstanceSequenceFlowsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type getProcessInstanceSequenceFlowsInput = { processInstanceKey: getProcessInstanceSequenceFlowsPathParam_processInstanceKey };
 /** Management of eventual consistency **/
-type getProcessInstanceSequenceFlowsConsistency = { 
+export type getProcessInstanceSequenceFlowsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceSequenceFlows>> 
 };
 type getProcessInstanceStatisticsOptions = Parameters<typeof Sdk.getProcessInstanceStatistics>[0];
-type getProcessInstanceStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceStatisticsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type getProcessInstanceStatisticsInput = { processInstanceKey: getProcessInstanceStatisticsPathParam_processInstanceKey };
+export type getProcessInstanceStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceStatisticsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type getProcessInstanceStatisticsInput = { processInstanceKey: getProcessInstanceStatisticsPathParam_processInstanceKey };
 /** Management of eventual consistency **/
-type getProcessInstanceStatisticsConsistency = { 
+export type getProcessInstanceStatisticsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatistics>> 
 };
 type getResourceOptions = Parameters<typeof Sdk.getResource>[0];
-type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
-type getResourceInput = { resourceKey: getResourcePathParam_resourceKey };
+export type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
+export type getResourceInput = { resourceKey: getResourcePathParam_resourceKey };
 type getResourceContentOptions = Parameters<typeof Sdk.getResourceContent>[0];
-type getResourceContentPathParam_resourceKey = (NonNullable<getResourceContentOptions> extends { path: { resourceKey: infer P } } ? P : any);
-type getResourceContentInput = { resourceKey: getResourceContentPathParam_resourceKey };
+export type getResourceContentPathParam_resourceKey = (NonNullable<getResourceContentOptions> extends { path: { resourceKey: infer P } } ? P : any);
+export type getResourceContentInput = { resourceKey: getResourceContentPathParam_resourceKey };
 type getRoleOptions = Parameters<typeof Sdk.getRole>[0];
-type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type getRoleInput = { roleId: getRolePathParam_roleId };
+export type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type getRoleInput = { roleId: getRolePathParam_roleId };
 /** Management of eventual consistency **/
-type getRoleConsistency = { 
+export type getRoleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getRole>> 
 };
 type getStartProcessFormOptions = Parameters<typeof Sdk.getStartProcessForm>[0];
-type getStartProcessFormPathParam_processDefinitionKey = (NonNullable<getStartProcessFormOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
-type getStartProcessFormInput = { processDefinitionKey: getStartProcessFormPathParam_processDefinitionKey };
+export type getStartProcessFormPathParam_processDefinitionKey = (NonNullable<getStartProcessFormOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
+export type getStartProcessFormInput = { processDefinitionKey: getStartProcessFormPathParam_processDefinitionKey };
 /** Management of eventual consistency **/
-type getStartProcessFormConsistency = { 
+export type getStartProcessFormConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getStartProcessForm>> 
 };
 type getStatusOptions = Parameters<typeof Sdk.getStatus>[0];
-type getStatusInput = void;
+export type getStatusInput = void;
 type getTenantOptions = Parameters<typeof Sdk.getTenant>[0];
-type getTenantPathParam_tenantId = (NonNullable<getTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type getTenantInput = { tenantId: getTenantPathParam_tenantId };
+export type getTenantPathParam_tenantId = (NonNullable<getTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type getTenantInput = { tenantId: getTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type getTenantConsistency = { 
+export type getTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getTenant>> 
 };
 type getTopologyOptions = Parameters<typeof Sdk.getTopology>[0];
-type getTopologyInput = void;
+export type getTopologyInput = void;
 type getUsageMetricsOptions = Parameters<typeof Sdk.getUsageMetrics>[0];
 type getUsageMetricsQueryParam_startTime = (NonNullable<getUsageMetricsOptions> extends { query: { startTime: infer Q } } ? Q : any);
 type getUsageMetricsQueryParam_endTime = (NonNullable<getUsageMetricsOptions> extends { query: { endTime: infer Q } } ? Q : any);
 type getUsageMetricsQueryParam_tenantId = (NonNullable<getUsageMetricsOptions> extends { query: { tenantId: infer Q } } ? Q : any);
 type getUsageMetricsQueryParam_withTenants = (NonNullable<getUsageMetricsOptions> extends { query: { withTenants: infer Q } } ? Q : any);
-type getUsageMetricsInput = { startTime: getUsageMetricsQueryParam_startTime; endTime: getUsageMetricsQueryParam_endTime; tenantId: getUsageMetricsQueryParam_tenantId; withTenants: getUsageMetricsQueryParam_withTenants };
+export type getUsageMetricsInput = { startTime: getUsageMetricsQueryParam_startTime; endTime: getUsageMetricsQueryParam_endTime; tenantId: getUsageMetricsQueryParam_tenantId; withTenants: getUsageMetricsQueryParam_withTenants };
 /** Management of eventual consistency **/
-type getUsageMetricsConsistency = { 
+export type getUsageMetricsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUsageMetrics>> 
 };
 type getUserOptions = Parameters<typeof Sdk.getUser>[0];
-type getUserPathParam_username = (NonNullable<getUserOptions> extends { path: { username: infer P } } ? P : any);
-type getUserInput = { username: getUserPathParam_username };
+export type getUserPathParam_username = (NonNullable<getUserOptions> extends { path: { username: infer P } } ? P : any);
+export type getUserInput = { username: getUserPathParam_username };
 /** Management of eventual consistency **/
-type getUserConsistency = { 
+export type getUserConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUser>> 
 };
 type getUserTaskOptions = Parameters<typeof Sdk.getUserTask>[0];
-type getUserTaskPathParam_userTaskKey = (NonNullable<getUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type getUserTaskInput = { userTaskKey: getUserTaskPathParam_userTaskKey };
+export type getUserTaskPathParam_userTaskKey = (NonNullable<getUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type getUserTaskInput = { userTaskKey: getUserTaskPathParam_userTaskKey };
 /** Management of eventual consistency **/
-type getUserTaskConsistency = { 
+export type getUserTaskConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUserTask>> 
 };
 type getUserTaskFormOptions = Parameters<typeof Sdk.getUserTaskForm>[0];
-type getUserTaskFormPathParam_userTaskKey = (NonNullable<getUserTaskFormOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type getUserTaskFormInput = { userTaskKey: getUserTaskFormPathParam_userTaskKey };
+export type getUserTaskFormPathParam_userTaskKey = (NonNullable<getUserTaskFormOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type getUserTaskFormInput = { userTaskKey: getUserTaskFormPathParam_userTaskKey };
 /** Management of eventual consistency **/
-type getUserTaskFormConsistency = { 
+export type getUserTaskFormConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getUserTaskForm>> 
 };
 type getVariableOptions = Parameters<typeof Sdk.getVariable>[0];
-type getVariablePathParam_variableKey = (NonNullable<getVariableOptions> extends { path: { variableKey: infer P } } ? P : any);
-type getVariableInput = { variableKey: getVariablePathParam_variableKey };
+export type getVariablePathParam_variableKey = (NonNullable<getVariableOptions> extends { path: { variableKey: infer P } } ? P : any);
+export type getVariableInput = { variableKey: getVariablePathParam_variableKey };
 /** Management of eventual consistency **/
-type getVariableConsistency = { 
+export type getVariableConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getVariable>> 
 };
 type migrateProcessInstanceOptions = Parameters<typeof Sdk.migrateProcessInstance>[0];
-type migrateProcessInstanceBody = (NonNullable<migrateProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type migrateProcessInstancePathParam_processInstanceKey = (NonNullable<migrateProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type migrateProcessInstanceInput = migrateProcessInstanceBody & { processInstanceKey: migrateProcessInstancePathParam_processInstanceKey };
+export type migrateProcessInstanceBody = (NonNullable<migrateProcessInstanceOptions> extends { body?: infer B } ? B : never);
+export type migrateProcessInstancePathParam_processInstanceKey = (NonNullable<migrateProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type migrateProcessInstanceInput = migrateProcessInstanceBody & { processInstanceKey: migrateProcessInstancePathParam_processInstanceKey };
 type migrateProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.migrateProcessInstancesBatchOperation>[0];
-type migrateProcessInstancesBatchOperationBody = (NonNullable<migrateProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-type migrateProcessInstancesBatchOperationInput = migrateProcessInstancesBatchOperationBody;
+export type migrateProcessInstancesBatchOperationBody = (NonNullable<migrateProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type migrateProcessInstancesBatchOperationInput = migrateProcessInstancesBatchOperationBody;
 /** Management of eventual consistency **/
-type migrateProcessInstancesBatchOperationConsistency = { 
+export type migrateProcessInstancesBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>> 
 };
 type modifyProcessInstanceOptions = Parameters<typeof Sdk.modifyProcessInstance>[0];
-type modifyProcessInstanceBody = (NonNullable<modifyProcessInstanceOptions> extends { body?: infer B } ? B : never);
-type modifyProcessInstancePathParam_processInstanceKey = (NonNullable<modifyProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type modifyProcessInstanceInput = modifyProcessInstanceBody & { processInstanceKey: modifyProcessInstancePathParam_processInstanceKey };
+export type modifyProcessInstanceBody = (NonNullable<modifyProcessInstanceOptions> extends { body?: infer B } ? B : never);
+export type modifyProcessInstancePathParam_processInstanceKey = (NonNullable<modifyProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type modifyProcessInstanceInput = modifyProcessInstanceBody & { processInstanceKey: modifyProcessInstancePathParam_processInstanceKey };
 type modifyProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.modifyProcessInstancesBatchOperation>[0];
-type modifyProcessInstancesBatchOperationBody = (NonNullable<modifyProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
-type modifyProcessInstancesBatchOperationInput = modifyProcessInstancesBatchOperationBody;
+export type modifyProcessInstancesBatchOperationBody = (NonNullable<modifyProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type modifyProcessInstancesBatchOperationInput = modifyProcessInstancesBatchOperationBody;
 /** Management of eventual consistency **/
-type modifyProcessInstancesBatchOperationConsistency = { 
+export type modifyProcessInstancesBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>> 
 };
 type pinClockOptions = Parameters<typeof Sdk.pinClock>[0];
-type pinClockBody = (NonNullable<pinClockOptions> extends { body?: infer B } ? B : never);
-type pinClockInput = pinClockBody;
+export type pinClockBody = (NonNullable<pinClockOptions> extends { body?: infer B } ? B : never);
+export type pinClockInput = pinClockBody;
 type publishMessageOptions = Parameters<typeof Sdk.publishMessage>[0];
-type publishMessageBody = (NonNullable<publishMessageOptions> extends { body?: infer B } ? B : never);
-type publishMessageInput = publishMessageBody;
+export type publishMessageBody = (NonNullable<publishMessageOptions> extends { body?: infer B } ? B : never);
+export type publishMessageInput = publishMessageBody;
 type resetClockOptions = Parameters<typeof Sdk.resetClock>[0];
-type resetClockInput = void;
+export type resetClockInput = void;
 type resolveIncidentOptions = Parameters<typeof Sdk.resolveIncident>[0];
-type resolveIncidentBody = (NonNullable<resolveIncidentOptions> extends { body?: infer B } ? B : never);
-type resolveIncidentPathParam_incidentKey = (NonNullable<resolveIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
-type resolveIncidentInput = resolveIncidentBody & { incidentKey: resolveIncidentPathParam_incidentKey };
+export type resolveIncidentBody = (NonNullable<resolveIncidentOptions> extends { body?: infer B } ? B : never);
+export type resolveIncidentPathParam_incidentKey = (NonNullable<resolveIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
+export type resolveIncidentInput = resolveIncidentBody & { incidentKey: resolveIncidentPathParam_incidentKey };
 type resolveIncidentsBatchOperationOptions = Parameters<typeof Sdk.resolveIncidentsBatchOperation>[0];
-type resolveIncidentsBatchOperationBody = (NonNullable<resolveIncidentsBatchOperationOptions> extends { body?: infer B } ? B : never);
-type resolveIncidentsBatchOperationInput = resolveIncidentsBatchOperationBody;
+export type resolveIncidentsBatchOperationBody = (NonNullable<resolveIncidentsBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type resolveIncidentsBatchOperationInput = resolveIncidentsBatchOperationBody;
 /** Management of eventual consistency **/
-type resolveIncidentsBatchOperationConsistency = { 
+export type resolveIncidentsBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>> 
 };
 type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0];
-type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
-type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
+export type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
+export type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
 /** Management of eventual consistency **/
-type resumeBatchOperationConsistency = { 
+export type resumeBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.resumeBatchOperation>> 
 };
 type searchAuthorizationsOptions = Parameters<typeof Sdk.searchAuthorizations>[0];
-type searchAuthorizationsBody = (NonNullable<searchAuthorizationsOptions> extends { body?: infer B } ? B : never);
-type searchAuthorizationsInput = searchAuthorizationsBody;
+export type searchAuthorizationsBody = (NonNullable<searchAuthorizationsOptions> extends { body?: infer B } ? B : never);
+export type searchAuthorizationsInput = searchAuthorizationsBody;
 /** Management of eventual consistency **/
-type searchAuthorizationsConsistency = { 
+export type searchAuthorizationsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAuthorizations>> 
 };
 type searchBatchOperationItemsOptions = Parameters<typeof Sdk.searchBatchOperationItems>[0];
-type searchBatchOperationItemsBody = (NonNullable<searchBatchOperationItemsOptions> extends { body?: infer B } ? B : never);
-type searchBatchOperationItemsInput = searchBatchOperationItemsBody;
+export type searchBatchOperationItemsBody = (NonNullable<searchBatchOperationItemsOptions> extends { body?: infer B } ? B : never);
+export type searchBatchOperationItemsInput = searchBatchOperationItemsBody;
 /** Management of eventual consistency **/
-type searchBatchOperationItemsConsistency = { 
+export type searchBatchOperationItemsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchBatchOperationItems>> 
 };
 type searchBatchOperationsOptions = Parameters<typeof Sdk.searchBatchOperations>[0];
-type searchBatchOperationsBody = (NonNullable<searchBatchOperationsOptions> extends { body?: infer B } ? B : never);
-type searchBatchOperationsInput = searchBatchOperationsBody;
+export type searchBatchOperationsBody = (NonNullable<searchBatchOperationsOptions> extends { body?: infer B } ? B : never);
+export type searchBatchOperationsInput = searchBatchOperationsBody;
 /** Management of eventual consistency **/
-type searchBatchOperationsConsistency = { 
+export type searchBatchOperationsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchBatchOperations>> 
 };
 type searchClientsForGroupOptions = Parameters<typeof Sdk.searchClientsForGroup>[0];
-type searchClientsForGroupBody = (NonNullable<searchClientsForGroupOptions> extends { body?: infer B } ? B : never);
-type searchClientsForGroupPathParam_groupId = (NonNullable<searchClientsForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type searchClientsForGroupInput = searchClientsForGroupBody & { groupId: searchClientsForGroupPathParam_groupId };
+export type searchClientsForGroupBody = (NonNullable<searchClientsForGroupOptions> extends { body?: infer B } ? B : never);
+export type searchClientsForGroupPathParam_groupId = (NonNullable<searchClientsForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type searchClientsForGroupInput = searchClientsForGroupBody & { groupId: searchClientsForGroupPathParam_groupId };
 /** Management of eventual consistency **/
-type searchClientsForGroupConsistency = { 
+export type searchClientsForGroupConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForGroup>> 
 };
 type searchClientsForRoleOptions = Parameters<typeof Sdk.searchClientsForRole>[0];
-type searchClientsForRoleBody = (NonNullable<searchClientsForRoleOptions> extends { body?: infer B } ? B : never);
-type searchClientsForRolePathParam_roleId = (NonNullable<searchClientsForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type searchClientsForRoleInput = searchClientsForRoleBody & { roleId: searchClientsForRolePathParam_roleId };
+export type searchClientsForRoleBody = (NonNullable<searchClientsForRoleOptions> extends { body?: infer B } ? B : never);
+export type searchClientsForRolePathParam_roleId = (NonNullable<searchClientsForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type searchClientsForRoleInput = searchClientsForRoleBody & { roleId: searchClientsForRolePathParam_roleId };
 /** Management of eventual consistency **/
-type searchClientsForRoleConsistency = { 
+export type searchClientsForRoleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForRole>> 
 };
 type searchClientsForTenantOptions = Parameters<typeof Sdk.searchClientsForTenant>[0];
-type searchClientsForTenantBody = (NonNullable<searchClientsForTenantOptions> extends { body?: infer B } ? B : never);
-type searchClientsForTenantPathParam_tenantId = (NonNullable<searchClientsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type searchClientsForTenantInput = searchClientsForTenantBody & { tenantId: searchClientsForTenantPathParam_tenantId };
+export type searchClientsForTenantBody = (NonNullable<searchClientsForTenantOptions> extends { body?: infer B } ? B : never);
+export type searchClientsForTenantPathParam_tenantId = (NonNullable<searchClientsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type searchClientsForTenantInput = searchClientsForTenantBody & { tenantId: searchClientsForTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type searchClientsForTenantConsistency = { 
+export type searchClientsForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchClientsForTenant>> 
 };
 type searchCorrelatedMessageSubscriptionsOptions = Parameters<typeof Sdk.searchCorrelatedMessageSubscriptions>[0];
-type searchCorrelatedMessageSubscriptionsBody = (NonNullable<searchCorrelatedMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
-type searchCorrelatedMessageSubscriptionsInput = searchCorrelatedMessageSubscriptionsBody;
+export type searchCorrelatedMessageSubscriptionsBody = (NonNullable<searchCorrelatedMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
+export type searchCorrelatedMessageSubscriptionsInput = searchCorrelatedMessageSubscriptionsBody;
 /** Management of eventual consistency **/
-type searchCorrelatedMessageSubscriptionsConsistency = { 
+export type searchCorrelatedMessageSubscriptionsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>> 
 };
 type searchDecisionDefinitionsOptions = Parameters<typeof Sdk.searchDecisionDefinitions>[0];
-type searchDecisionDefinitionsBody = (NonNullable<searchDecisionDefinitionsOptions> extends { body?: infer B } ? B : never);
-type searchDecisionDefinitionsInput = searchDecisionDefinitionsBody;
+export type searchDecisionDefinitionsBody = (NonNullable<searchDecisionDefinitionsOptions> extends { body?: infer B } ? B : never);
+export type searchDecisionDefinitionsInput = searchDecisionDefinitionsBody;
 /** Management of eventual consistency **/
-type searchDecisionDefinitionsConsistency = { 
+export type searchDecisionDefinitionsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionDefinitions>> 
 };
 type searchDecisionInstancesOptions = Parameters<typeof Sdk.searchDecisionInstances>[0];
-type searchDecisionInstancesBody = (NonNullable<searchDecisionInstancesOptions> extends { body?: infer B } ? B : never);
-type searchDecisionInstancesInput = searchDecisionInstancesBody;
+export type searchDecisionInstancesBody = (NonNullable<searchDecisionInstancesOptions> extends { body?: infer B } ? B : never);
+export type searchDecisionInstancesInput = searchDecisionInstancesBody;
 /** Management of eventual consistency **/
-type searchDecisionInstancesConsistency = { 
+export type searchDecisionInstancesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionInstances>> 
 };
 type searchDecisionRequirementsOptions = Parameters<typeof Sdk.searchDecisionRequirements>[0];
-type searchDecisionRequirementsBody = (NonNullable<searchDecisionRequirementsOptions> extends { body?: infer B } ? B : never);
-type searchDecisionRequirementsInput = searchDecisionRequirementsBody;
+export type searchDecisionRequirementsBody = (NonNullable<searchDecisionRequirementsOptions> extends { body?: infer B } ? B : never);
+export type searchDecisionRequirementsInput = searchDecisionRequirementsBody;
 /** Management of eventual consistency **/
-type searchDecisionRequirementsConsistency = { 
+export type searchDecisionRequirementsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchDecisionRequirements>> 
 };
 type searchElementInstancesOptions = Parameters<typeof Sdk.searchElementInstances>[0];
-type searchElementInstancesBody = (NonNullable<searchElementInstancesOptions> extends { body?: infer B } ? B : never);
-type searchElementInstancesInput = searchElementInstancesBody;
+export type searchElementInstancesBody = (NonNullable<searchElementInstancesOptions> extends { body?: infer B } ? B : never);
+export type searchElementInstancesInput = searchElementInstancesBody;
 /** Management of eventual consistency **/
-type searchElementInstancesConsistency = { 
+export type searchElementInstancesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchElementInstances>> 
 };
 type searchGroupIdsForTenantOptions = Parameters<typeof Sdk.searchGroupIdsForTenant>[0];
-type searchGroupIdsForTenantBody = (NonNullable<searchGroupIdsForTenantOptions> extends { body?: infer B } ? B : never);
-type searchGroupIdsForTenantPathParam_tenantId = (NonNullable<searchGroupIdsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type searchGroupIdsForTenantInput = searchGroupIdsForTenantBody & { tenantId: searchGroupIdsForTenantPathParam_tenantId };
+export type searchGroupIdsForTenantBody = (NonNullable<searchGroupIdsForTenantOptions> extends { body?: infer B } ? B : never);
+export type searchGroupIdsForTenantPathParam_tenantId = (NonNullable<searchGroupIdsForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type searchGroupIdsForTenantInput = searchGroupIdsForTenantBody & { tenantId: searchGroupIdsForTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type searchGroupIdsForTenantConsistency = { 
+export type searchGroupIdsForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGroupIdsForTenant>> 
 };
 type searchGroupsOptions = Parameters<typeof Sdk.searchGroups>[0];
-type searchGroupsBody = (NonNullable<searchGroupsOptions> extends { body?: infer B } ? B : never);
-type searchGroupsInput = searchGroupsBody;
+export type searchGroupsBody = (NonNullable<searchGroupsOptions> extends { body?: infer B } ? B : never);
+export type searchGroupsInput = searchGroupsBody;
 /** Management of eventual consistency **/
-type searchGroupsConsistency = { 
+export type searchGroupsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGroups>> 
 };
 type searchGroupsForRoleOptions = Parameters<typeof Sdk.searchGroupsForRole>[0];
-type searchGroupsForRoleBody = (NonNullable<searchGroupsForRoleOptions> extends { body?: infer B } ? B : never);
-type searchGroupsForRolePathParam_roleId = (NonNullable<searchGroupsForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type searchGroupsForRoleInput = searchGroupsForRoleBody & { roleId: searchGroupsForRolePathParam_roleId };
+export type searchGroupsForRoleBody = (NonNullable<searchGroupsForRoleOptions> extends { body?: infer B } ? B : never);
+export type searchGroupsForRolePathParam_roleId = (NonNullable<searchGroupsForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type searchGroupsForRoleInput = searchGroupsForRoleBody & { roleId: searchGroupsForRolePathParam_roleId };
 /** Management of eventual consistency **/
-type searchGroupsForRoleConsistency = { 
+export type searchGroupsForRoleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGroupsForRole>> 
 };
 type searchIncidentsOptions = Parameters<typeof Sdk.searchIncidents>[0];
-type searchIncidentsBody = (NonNullable<searchIncidentsOptions> extends { body?: infer B } ? B : never);
-type searchIncidentsInput = searchIncidentsBody;
+export type searchIncidentsBody = (NonNullable<searchIncidentsOptions> extends { body?: infer B } ? B : never);
+export type searchIncidentsInput = searchIncidentsBody;
 /** Management of eventual consistency **/
-type searchIncidentsConsistency = { 
+export type searchIncidentsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchIncidents>> 
 };
 type searchJobsOptions = Parameters<typeof Sdk.searchJobs>[0];
-type searchJobsBody = (NonNullable<searchJobsOptions> extends { body?: infer B } ? B : never);
-type searchJobsInput = searchJobsBody;
+export type searchJobsBody = (NonNullable<searchJobsOptions> extends { body?: infer B } ? B : never);
+export type searchJobsInput = searchJobsBody;
 /** Management of eventual consistency **/
-type searchJobsConsistency = { 
+export type searchJobsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchJobs>> 
 };
 type searchMappingRuleOptions = Parameters<typeof Sdk.searchMappingRule>[0];
-type searchMappingRuleBody = (NonNullable<searchMappingRuleOptions> extends { body?: infer B } ? B : never);
-type searchMappingRuleInput = searchMappingRuleBody;
+export type searchMappingRuleBody = (NonNullable<searchMappingRuleOptions> extends { body?: infer B } ? B : never);
+export type searchMappingRuleInput = searchMappingRuleBody;
 /** Management of eventual consistency **/
-type searchMappingRuleConsistency = { 
+export type searchMappingRuleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRule>> 
 };
 type searchMappingRulesForGroupOptions = Parameters<typeof Sdk.searchMappingRulesForGroup>[0];
-type searchMappingRulesForGroupBody = (NonNullable<searchMappingRulesForGroupOptions> extends { body?: infer B } ? B : never);
-type searchMappingRulesForGroupPathParam_groupId = (NonNullable<searchMappingRulesForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type searchMappingRulesForGroupInput = searchMappingRulesForGroupBody & { groupId: searchMappingRulesForGroupPathParam_groupId };
+export type searchMappingRulesForGroupBody = (NonNullable<searchMappingRulesForGroupOptions> extends { body?: infer B } ? B : never);
+export type searchMappingRulesForGroupPathParam_groupId = (NonNullable<searchMappingRulesForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type searchMappingRulesForGroupInput = searchMappingRulesForGroupBody & { groupId: searchMappingRulesForGroupPathParam_groupId };
 /** Management of eventual consistency **/
-type searchMappingRulesForGroupConsistency = { 
+export type searchMappingRulesForGroupConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForGroup>> 
 };
 type searchMappingRulesForRoleOptions = Parameters<typeof Sdk.searchMappingRulesForRole>[0];
-type searchMappingRulesForRoleBody = (NonNullable<searchMappingRulesForRoleOptions> extends { body?: infer B } ? B : never);
-type searchMappingRulesForRolePathParam_roleId = (NonNullable<searchMappingRulesForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type searchMappingRulesForRoleInput = searchMappingRulesForRoleBody & { roleId: searchMappingRulesForRolePathParam_roleId };
+export type searchMappingRulesForRoleBody = (NonNullable<searchMappingRulesForRoleOptions> extends { body?: infer B } ? B : never);
+export type searchMappingRulesForRolePathParam_roleId = (NonNullable<searchMappingRulesForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type searchMappingRulesForRoleInput = searchMappingRulesForRoleBody & { roleId: searchMappingRulesForRolePathParam_roleId };
 /** Management of eventual consistency **/
-type searchMappingRulesForRoleConsistency = { 
+export type searchMappingRulesForRoleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForRole>> 
 };
 type searchMappingRulesForTenantOptions = Parameters<typeof Sdk.searchMappingRulesForTenant>[0];
-type searchMappingRulesForTenantBody = (NonNullable<searchMappingRulesForTenantOptions> extends { body?: infer B } ? B : never);
-type searchMappingRulesForTenantPathParam_tenantId = (NonNullable<searchMappingRulesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type searchMappingRulesForTenantInput = searchMappingRulesForTenantBody & { tenantId: searchMappingRulesForTenantPathParam_tenantId };
+export type searchMappingRulesForTenantBody = (NonNullable<searchMappingRulesForTenantOptions> extends { body?: infer B } ? B : never);
+export type searchMappingRulesForTenantPathParam_tenantId = (NonNullable<searchMappingRulesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type searchMappingRulesForTenantInput = searchMappingRulesForTenantBody & { tenantId: searchMappingRulesForTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type searchMappingRulesForTenantConsistency = { 
+export type searchMappingRulesForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMappingRulesForTenant>> 
 };
 type searchMessageSubscriptionsOptions = Parameters<typeof Sdk.searchMessageSubscriptions>[0];
-type searchMessageSubscriptionsBody = (NonNullable<searchMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
-type searchMessageSubscriptionsInput = searchMessageSubscriptionsBody;
+export type searchMessageSubscriptionsBody = (NonNullable<searchMessageSubscriptionsOptions> extends { body?: infer B } ? B : never);
+export type searchMessageSubscriptionsInput = searchMessageSubscriptionsBody;
 /** Management of eventual consistency **/
-type searchMessageSubscriptionsConsistency = { 
+export type searchMessageSubscriptionsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMessageSubscriptions>> 
 };
 type searchProcessDefinitionsOptions = Parameters<typeof Sdk.searchProcessDefinitions>[0];
-type searchProcessDefinitionsBody = (NonNullable<searchProcessDefinitionsOptions> extends { body?: infer B } ? B : never);
-type searchProcessDefinitionsInput = searchProcessDefinitionsBody;
+export type searchProcessDefinitionsBody = (NonNullable<searchProcessDefinitionsOptions> extends { body?: infer B } ? B : never);
+export type searchProcessDefinitionsInput = searchProcessDefinitionsBody;
 /** Management of eventual consistency **/
-type searchProcessDefinitionsConsistency = { 
+export type searchProcessDefinitionsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessDefinitions>> 
 };
 type searchProcessInstanceIncidentsOptions = Parameters<typeof Sdk.searchProcessInstanceIncidents>[0];
-type searchProcessInstanceIncidentsBody = (NonNullable<searchProcessInstanceIncidentsOptions> extends { body?: infer B } ? B : never);
-type searchProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<searchProcessInstanceIncidentsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
-type searchProcessInstanceIncidentsInput = searchProcessInstanceIncidentsBody & { processInstanceKey: searchProcessInstanceIncidentsPathParam_processInstanceKey };
+export type searchProcessInstanceIncidentsBody = (NonNullable<searchProcessInstanceIncidentsOptions> extends { body?: infer B } ? B : never);
+export type searchProcessInstanceIncidentsPathParam_processInstanceKey = (NonNullable<searchProcessInstanceIncidentsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type searchProcessInstanceIncidentsInput = searchProcessInstanceIncidentsBody & { processInstanceKey: searchProcessInstanceIncidentsPathParam_processInstanceKey };
 /** Management of eventual consistency **/
-type searchProcessInstanceIncidentsConsistency = { 
+export type searchProcessInstanceIncidentsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessInstanceIncidents>> 
 };
 type searchProcessInstancesOptions = Parameters<typeof Sdk.searchProcessInstances>[0];
-type searchProcessInstancesBody = (NonNullable<searchProcessInstancesOptions> extends { body?: infer B } ? B : never);
-type searchProcessInstancesInput = searchProcessInstancesBody;
+export type searchProcessInstancesBody = (NonNullable<searchProcessInstancesOptions> extends { body?: infer B } ? B : never);
+export type searchProcessInstancesInput = searchProcessInstancesBody;
 /** Management of eventual consistency **/
-type searchProcessInstancesConsistency = { 
+export type searchProcessInstancesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessInstances>> 
 };
 type searchRolesOptions = Parameters<typeof Sdk.searchRoles>[0];
-type searchRolesBody = (NonNullable<searchRolesOptions> extends { body?: infer B } ? B : never);
-type searchRolesInput = searchRolesBody;
+export type searchRolesBody = (NonNullable<searchRolesOptions> extends { body?: infer B } ? B : never);
+export type searchRolesInput = searchRolesBody;
 /** Management of eventual consistency **/
-type searchRolesConsistency = { 
+export type searchRolesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchRoles>> 
 };
 type searchRolesForGroupOptions = Parameters<typeof Sdk.searchRolesForGroup>[0];
-type searchRolesForGroupBody = (NonNullable<searchRolesForGroupOptions> extends { body?: infer B } ? B : never);
-type searchRolesForGroupPathParam_groupId = (NonNullable<searchRolesForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type searchRolesForGroupInput = searchRolesForGroupBody & { groupId: searchRolesForGroupPathParam_groupId };
+export type searchRolesForGroupBody = (NonNullable<searchRolesForGroupOptions> extends { body?: infer B } ? B : never);
+export type searchRolesForGroupPathParam_groupId = (NonNullable<searchRolesForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type searchRolesForGroupInput = searchRolesForGroupBody & { groupId: searchRolesForGroupPathParam_groupId };
 /** Management of eventual consistency **/
-type searchRolesForGroupConsistency = { 
+export type searchRolesForGroupConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchRolesForGroup>> 
 };
 type searchRolesForTenantOptions = Parameters<typeof Sdk.searchRolesForTenant>[0];
-type searchRolesForTenantBody = (NonNullable<searchRolesForTenantOptions> extends { body?: infer B } ? B : never);
-type searchRolesForTenantPathParam_tenantId = (NonNullable<searchRolesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type searchRolesForTenantInput = searchRolesForTenantBody & { tenantId: searchRolesForTenantPathParam_tenantId };
+export type searchRolesForTenantBody = (NonNullable<searchRolesForTenantOptions> extends { body?: infer B } ? B : never);
+export type searchRolesForTenantPathParam_tenantId = (NonNullable<searchRolesForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type searchRolesForTenantInput = searchRolesForTenantBody & { tenantId: searchRolesForTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type searchRolesForTenantConsistency = { 
+export type searchRolesForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchRolesForTenant>> 
 };
 type searchTenantsOptions = Parameters<typeof Sdk.searchTenants>[0];
-type searchTenantsBody = (NonNullable<searchTenantsOptions> extends { body?: infer B } ? B : never);
-type searchTenantsInput = searchTenantsBody;
+export type searchTenantsBody = (NonNullable<searchTenantsOptions> extends { body?: infer B } ? B : never);
+export type searchTenantsInput = searchTenantsBody;
 /** Management of eventual consistency **/
-type searchTenantsConsistency = { 
+export type searchTenantsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchTenants>> 
 };
 type searchUsersOptions = Parameters<typeof Sdk.searchUsers>[0];
-type searchUsersBody = (NonNullable<searchUsersOptions> extends { body?: infer B } ? B : never);
-type searchUsersInput = searchUsersBody;
+export type searchUsersBody = (NonNullable<searchUsersOptions> extends { body?: infer B } ? B : never);
+export type searchUsersInput = searchUsersBody;
 /** Management of eventual consistency **/
-type searchUsersConsistency = { 
+export type searchUsersConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsers>> 
 };
 type searchUsersForGroupOptions = Parameters<typeof Sdk.searchUsersForGroup>[0];
-type searchUsersForGroupBody = (NonNullable<searchUsersForGroupOptions> extends { body?: infer B } ? B : never);
-type searchUsersForGroupPathParam_groupId = (NonNullable<searchUsersForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type searchUsersForGroupInput = searchUsersForGroupBody & { groupId: searchUsersForGroupPathParam_groupId };
+export type searchUsersForGroupBody = (NonNullable<searchUsersForGroupOptions> extends { body?: infer B } ? B : never);
+export type searchUsersForGroupPathParam_groupId = (NonNullable<searchUsersForGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type searchUsersForGroupInput = searchUsersForGroupBody & { groupId: searchUsersForGroupPathParam_groupId };
 /** Management of eventual consistency **/
-type searchUsersForGroupConsistency = { 
+export type searchUsersForGroupConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForGroup>> 
 };
 type searchUsersForRoleOptions = Parameters<typeof Sdk.searchUsersForRole>[0];
-type searchUsersForRoleBody = (NonNullable<searchUsersForRoleOptions> extends { body?: infer B } ? B : never);
-type searchUsersForRolePathParam_roleId = (NonNullable<searchUsersForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type searchUsersForRoleInput = searchUsersForRoleBody & { roleId: searchUsersForRolePathParam_roleId };
+export type searchUsersForRoleBody = (NonNullable<searchUsersForRoleOptions> extends { body?: infer B } ? B : never);
+export type searchUsersForRolePathParam_roleId = (NonNullable<searchUsersForRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type searchUsersForRoleInput = searchUsersForRoleBody & { roleId: searchUsersForRolePathParam_roleId };
 /** Management of eventual consistency **/
-type searchUsersForRoleConsistency = { 
+export type searchUsersForRoleConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForRole>> 
 };
 type searchUsersForTenantOptions = Parameters<typeof Sdk.searchUsersForTenant>[0];
-type searchUsersForTenantBody = (NonNullable<searchUsersForTenantOptions> extends { body?: infer B } ? B : never);
-type searchUsersForTenantPathParam_tenantId = (NonNullable<searchUsersForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type searchUsersForTenantInput = searchUsersForTenantBody & { tenantId: searchUsersForTenantPathParam_tenantId };
+export type searchUsersForTenantBody = (NonNullable<searchUsersForTenantOptions> extends { body?: infer B } ? B : never);
+export type searchUsersForTenantPathParam_tenantId = (NonNullable<searchUsersForTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type searchUsersForTenantInput = searchUsersForTenantBody & { tenantId: searchUsersForTenantPathParam_tenantId };
 /** Management of eventual consistency **/
-type searchUsersForTenantConsistency = { 
+export type searchUsersForTenantConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForTenant>> 
 };
 type searchUserTasksOptions = Parameters<typeof Sdk.searchUserTasks>[0];
-type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
-type searchUserTasksInput = searchUserTasksBody;
+export type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
+export type searchUserTasksInput = searchUserTasksBody;
 /** Management of eventual consistency **/
-type searchUserTasksConsistency = { 
+export type searchUserTasksConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTasks>> 
 };
 type searchUserTaskVariablesOptions = Parameters<typeof Sdk.searchUserTaskVariables>[0];
-type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends { body?: infer B } ? B : never);
-type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey };
+export type searchUserTaskVariablesBody = (NonNullable<searchUserTaskVariablesOptions> extends { body?: infer B } ? B : never);
+export type searchUserTaskVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type searchUserTaskVariablesInput = searchUserTaskVariablesBody & { userTaskKey: searchUserTaskVariablesPathParam_userTaskKey };
 /** Management of eventual consistency **/
-type searchUserTaskVariablesConsistency = { 
+export type searchUserTaskVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskVariables>> 
 };
 type searchVariablesOptions = Parameters<typeof Sdk.searchVariables>[0];
-type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
-type searchVariablesInput = searchVariablesBody;
+export type searchVariablesBody = (NonNullable<searchVariablesOptions> extends { body?: infer B } ? B : never);
+export type searchVariablesInput = searchVariablesBody;
 /** Management of eventual consistency **/
-type searchVariablesConsistency = { 
+export type searchVariablesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchVariables>> 
 };
 type suspendBatchOperationOptions = Parameters<typeof Sdk.suspendBatchOperation>[0];
-type suspendBatchOperationBody = (NonNullable<suspendBatchOperationOptions> extends { body?: infer B } ? B : never);
-type suspendBatchOperationPathParam_batchOperationKey = (NonNullable<suspendBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
-type suspendBatchOperationInput = suspendBatchOperationBody & { batchOperationKey: suspendBatchOperationPathParam_batchOperationKey };
+export type suspendBatchOperationBody = (NonNullable<suspendBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type suspendBatchOperationPathParam_batchOperationKey = (NonNullable<suspendBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
+export type suspendBatchOperationInput = suspendBatchOperationBody & { batchOperationKey: suspendBatchOperationPathParam_batchOperationKey };
 /** Management of eventual consistency **/
-type suspendBatchOperationConsistency = { 
+export type suspendBatchOperationConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.suspendBatchOperation>> 
 };
 type throwJobErrorOptions = Parameters<typeof Sdk.throwJobError>[0];
-type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
-type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
-type throwJobErrorInput = throwJobErrorBody & { jobKey: throwJobErrorPathParam_jobKey };
+export type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
+export type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
+export type throwJobErrorInput = throwJobErrorBody & { jobKey: throwJobErrorPathParam_jobKey };
 type unassignClientFromGroupOptions = Parameters<typeof Sdk.unassignClientFromGroup>[0];
-type unassignClientFromGroupPathParam_groupId = (NonNullable<unassignClientFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignClientFromGroupPathParam_clientId = (NonNullable<unassignClientFromGroupOptions> extends { path: { clientId: infer P } } ? P : any);
-type unassignClientFromGroupInput = { groupId: unassignClientFromGroupPathParam_groupId; clientId: unassignClientFromGroupPathParam_clientId };
+export type unassignClientFromGroupPathParam_groupId = (NonNullable<unassignClientFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type unassignClientFromGroupPathParam_clientId = (NonNullable<unassignClientFromGroupOptions> extends { path: { clientId: infer P } } ? P : any);
+export type unassignClientFromGroupInput = { groupId: unassignClientFromGroupPathParam_groupId; clientId: unassignClientFromGroupPathParam_clientId };
 type unassignClientFromTenantOptions = Parameters<typeof Sdk.unassignClientFromTenant>[0];
-type unassignClientFromTenantPathParam_tenantId = (NonNullable<unassignClientFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignClientFromTenantPathParam_clientId = (NonNullable<unassignClientFromTenantOptions> extends { path: { clientId: infer P } } ? P : any);
-type unassignClientFromTenantInput = { tenantId: unassignClientFromTenantPathParam_tenantId; clientId: unassignClientFromTenantPathParam_clientId };
+export type unassignClientFromTenantPathParam_tenantId = (NonNullable<unassignClientFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type unassignClientFromTenantPathParam_clientId = (NonNullable<unassignClientFromTenantOptions> extends { path: { clientId: infer P } } ? P : any);
+export type unassignClientFromTenantInput = { tenantId: unassignClientFromTenantPathParam_tenantId; clientId: unassignClientFromTenantPathParam_clientId };
 type unassignGroupFromTenantOptions = Parameters<typeof Sdk.unassignGroupFromTenant>[0];
-type unassignGroupFromTenantPathParam_tenantId = (NonNullable<unassignGroupFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignGroupFromTenantPathParam_groupId = (NonNullable<unassignGroupFromTenantOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignGroupFromTenantInput = { tenantId: unassignGroupFromTenantPathParam_tenantId; groupId: unassignGroupFromTenantPathParam_groupId };
+export type unassignGroupFromTenantPathParam_tenantId = (NonNullable<unassignGroupFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type unassignGroupFromTenantPathParam_groupId = (NonNullable<unassignGroupFromTenantOptions> extends { path: { groupId: infer P } } ? P : any);
+export type unassignGroupFromTenantInput = { tenantId: unassignGroupFromTenantPathParam_tenantId; groupId: unassignGroupFromTenantPathParam_groupId };
 type unassignMappingRuleFromGroupOptions = Parameters<typeof Sdk.unassignMappingRuleFromGroup>[0];
-type unassignMappingRuleFromGroupPathParam_groupId = (NonNullable<unassignMappingRuleFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignMappingRuleFromGroupPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromGroupOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type unassignMappingRuleFromGroupInput = { groupId: unassignMappingRuleFromGroupPathParam_groupId; mappingRuleId: unassignMappingRuleFromGroupPathParam_mappingRuleId };
+export type unassignMappingRuleFromGroupPathParam_groupId = (NonNullable<unassignMappingRuleFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type unassignMappingRuleFromGroupPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromGroupOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type unassignMappingRuleFromGroupInput = { groupId: unassignMappingRuleFromGroupPathParam_groupId; mappingRuleId: unassignMappingRuleFromGroupPathParam_mappingRuleId };
 type unassignMappingRuleFromTenantOptions = Parameters<typeof Sdk.unassignMappingRuleFromTenant>[0];
-type unassignMappingRuleFromTenantPathParam_tenantId = (NonNullable<unassignMappingRuleFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignMappingRuleFromTenantPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromTenantOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type unassignMappingRuleFromTenantInput = { tenantId: unassignMappingRuleFromTenantPathParam_tenantId; mappingRuleId: unassignMappingRuleFromTenantPathParam_mappingRuleId };
+export type unassignMappingRuleFromTenantPathParam_tenantId = (NonNullable<unassignMappingRuleFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type unassignMappingRuleFromTenantPathParam_mappingRuleId = (NonNullable<unassignMappingRuleFromTenantOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type unassignMappingRuleFromTenantInput = { tenantId: unassignMappingRuleFromTenantPathParam_tenantId; mappingRuleId: unassignMappingRuleFromTenantPathParam_mappingRuleId };
 type unassignRoleFromClientOptions = Parameters<typeof Sdk.unassignRoleFromClient>[0];
-type unassignRoleFromClientPathParam_roleId = (NonNullable<unassignRoleFromClientOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromClientPathParam_clientId = (NonNullable<unassignRoleFromClientOptions> extends { path: { clientId: infer P } } ? P : any);
-type unassignRoleFromClientInput = { roleId: unassignRoleFromClientPathParam_roleId; clientId: unassignRoleFromClientPathParam_clientId };
+export type unassignRoleFromClientPathParam_roleId = (NonNullable<unassignRoleFromClientOptions> extends { path: { roleId: infer P } } ? P : any);
+export type unassignRoleFromClientPathParam_clientId = (NonNullable<unassignRoleFromClientOptions> extends { path: { clientId: infer P } } ? P : any);
+export type unassignRoleFromClientInput = { roleId: unassignRoleFromClientPathParam_roleId; clientId: unassignRoleFromClientPathParam_clientId };
 type unassignRoleFromGroupOptions = Parameters<typeof Sdk.unassignRoleFromGroup>[0];
-type unassignRoleFromGroupPathParam_roleId = (NonNullable<unassignRoleFromGroupOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromGroupPathParam_groupId = (NonNullable<unassignRoleFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignRoleFromGroupInput = { roleId: unassignRoleFromGroupPathParam_roleId; groupId: unassignRoleFromGroupPathParam_groupId };
+export type unassignRoleFromGroupPathParam_roleId = (NonNullable<unassignRoleFromGroupOptions> extends { path: { roleId: infer P } } ? P : any);
+export type unassignRoleFromGroupPathParam_groupId = (NonNullable<unassignRoleFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type unassignRoleFromGroupInput = { roleId: unassignRoleFromGroupPathParam_roleId; groupId: unassignRoleFromGroupPathParam_groupId };
 type unassignRoleFromMappingRuleOptions = Parameters<typeof Sdk.unassignRoleFromMappingRule>[0];
-type unassignRoleFromMappingRulePathParam_roleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromMappingRulePathParam_mappingRuleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type unassignRoleFromMappingRuleInput = { roleId: unassignRoleFromMappingRulePathParam_roleId; mappingRuleId: unassignRoleFromMappingRulePathParam_mappingRuleId };
+export type unassignRoleFromMappingRulePathParam_roleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type unassignRoleFromMappingRulePathParam_mappingRuleId = (NonNullable<unassignRoleFromMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type unassignRoleFromMappingRuleInput = { roleId: unassignRoleFromMappingRulePathParam_roleId; mappingRuleId: unassignRoleFromMappingRulePathParam_mappingRuleId };
 type unassignRoleFromTenantOptions = Parameters<typeof Sdk.unassignRoleFromTenant>[0];
-type unassignRoleFromTenantPathParam_tenantId = (NonNullable<unassignRoleFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignRoleFromTenantPathParam_roleId = (NonNullable<unassignRoleFromTenantOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromTenantInput = { tenantId: unassignRoleFromTenantPathParam_tenantId; roleId: unassignRoleFromTenantPathParam_roleId };
+export type unassignRoleFromTenantPathParam_tenantId = (NonNullable<unassignRoleFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type unassignRoleFromTenantPathParam_roleId = (NonNullable<unassignRoleFromTenantOptions> extends { path: { roleId: infer P } } ? P : any);
+export type unassignRoleFromTenantInput = { tenantId: unassignRoleFromTenantPathParam_tenantId; roleId: unassignRoleFromTenantPathParam_roleId };
 type unassignRoleFromUserOptions = Parameters<typeof Sdk.unassignRoleFromUser>[0];
-type unassignRoleFromUserPathParam_roleId = (NonNullable<unassignRoleFromUserOptions> extends { path: { roleId: infer P } } ? P : any);
-type unassignRoleFromUserPathParam_username = (NonNullable<unassignRoleFromUserOptions> extends { path: { username: infer P } } ? P : any);
-type unassignRoleFromUserInput = { roleId: unassignRoleFromUserPathParam_roleId; username: unassignRoleFromUserPathParam_username };
+export type unassignRoleFromUserPathParam_roleId = (NonNullable<unassignRoleFromUserOptions> extends { path: { roleId: infer P } } ? P : any);
+export type unassignRoleFromUserPathParam_username = (NonNullable<unassignRoleFromUserOptions> extends { path: { username: infer P } } ? P : any);
+export type unassignRoleFromUserInput = { roleId: unassignRoleFromUserPathParam_roleId; username: unassignRoleFromUserPathParam_username };
 type unassignUserFromGroupOptions = Parameters<typeof Sdk.unassignUserFromGroup>[0];
-type unassignUserFromGroupPathParam_groupId = (NonNullable<unassignUserFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type unassignUserFromGroupPathParam_username = (NonNullable<unassignUserFromGroupOptions> extends { path: { username: infer P } } ? P : any);
-type unassignUserFromGroupInput = { groupId: unassignUserFromGroupPathParam_groupId; username: unassignUserFromGroupPathParam_username };
+export type unassignUserFromGroupPathParam_groupId = (NonNullable<unassignUserFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type unassignUserFromGroupPathParam_username = (NonNullable<unassignUserFromGroupOptions> extends { path: { username: infer P } } ? P : any);
+export type unassignUserFromGroupInput = { groupId: unassignUserFromGroupPathParam_groupId; username: unassignUserFromGroupPathParam_username };
 type unassignUserFromTenantOptions = Parameters<typeof Sdk.unassignUserFromTenant>[0];
-type unassignUserFromTenantPathParam_tenantId = (NonNullable<unassignUserFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type unassignUserFromTenantPathParam_username = (NonNullable<unassignUserFromTenantOptions> extends { path: { username: infer P } } ? P : any);
-type unassignUserFromTenantInput = { tenantId: unassignUserFromTenantPathParam_tenantId; username: unassignUserFromTenantPathParam_username };
+export type unassignUserFromTenantPathParam_tenantId = (NonNullable<unassignUserFromTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type unassignUserFromTenantPathParam_username = (NonNullable<unassignUserFromTenantOptions> extends { path: { username: infer P } } ? P : any);
+export type unassignUserFromTenantInput = { tenantId: unassignUserFromTenantPathParam_tenantId; username: unassignUserFromTenantPathParam_username };
 type unassignUserTaskOptions = Parameters<typeof Sdk.unassignUserTask>[0];
-type unassignUserTaskPathParam_userTaskKey = (NonNullable<unassignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type unassignUserTaskInput = { userTaskKey: unassignUserTaskPathParam_userTaskKey };
+export type unassignUserTaskPathParam_userTaskKey = (NonNullable<unassignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type unassignUserTaskInput = { userTaskKey: unassignUserTaskPathParam_userTaskKey };
 type updateAuthorizationOptions = Parameters<typeof Sdk.updateAuthorization>[0];
-type updateAuthorizationBody = (NonNullable<updateAuthorizationOptions> extends { body?: infer B } ? B : never);
-type updateAuthorizationPathParam_authorizationKey = (NonNullable<updateAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
-type updateAuthorizationInput = updateAuthorizationBody & { authorizationKey: updateAuthorizationPathParam_authorizationKey };
+export type updateAuthorizationBody = (NonNullable<updateAuthorizationOptions> extends { body?: infer B } ? B : never);
+export type updateAuthorizationPathParam_authorizationKey = (NonNullable<updateAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
+export type updateAuthorizationInput = updateAuthorizationBody & { authorizationKey: updateAuthorizationPathParam_authorizationKey };
 type updateGroupOptions = Parameters<typeof Sdk.updateGroup>[0];
-type updateGroupBody = (NonNullable<updateGroupOptions> extends { body?: infer B } ? B : never);
-type updateGroupPathParam_groupId = (NonNullable<updateGroupOptions> extends { path: { groupId: infer P } } ? P : any);
-type updateGroupInput = updateGroupBody & { groupId: updateGroupPathParam_groupId };
+export type updateGroupBody = (NonNullable<updateGroupOptions> extends { body?: infer B } ? B : never);
+export type updateGroupPathParam_groupId = (NonNullable<updateGroupOptions> extends { path: { groupId: infer P } } ? P : any);
+export type updateGroupInput = updateGroupBody & { groupId: updateGroupPathParam_groupId };
 type updateJobOptions = Parameters<typeof Sdk.updateJob>[0];
-type updateJobBody = (NonNullable<updateJobOptions> extends { body?: infer B } ? B : never);
-type updateJobPathParam_jobKey = (NonNullable<updateJobOptions> extends { path: { jobKey: infer P } } ? P : any);
-type updateJobInput = updateJobBody & { jobKey: updateJobPathParam_jobKey };
+export type updateJobBody = (NonNullable<updateJobOptions> extends { body?: infer B } ? B : never);
+export type updateJobPathParam_jobKey = (NonNullable<updateJobOptions> extends { path: { jobKey: infer P } } ? P : any);
+export type updateJobInput = updateJobBody & { jobKey: updateJobPathParam_jobKey };
 type updateMappingRuleOptions = Parameters<typeof Sdk.updateMappingRule>[0];
-type updateMappingRuleBody = (NonNullable<updateMappingRuleOptions> extends { body?: infer B } ? B : never);
-type updateMappingRulePathParam_mappingRuleId = (NonNullable<updateMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
-type updateMappingRuleInput = updateMappingRuleBody & { mappingRuleId: updateMappingRulePathParam_mappingRuleId };
+export type updateMappingRuleBody = (NonNullable<updateMappingRuleOptions> extends { body?: infer B } ? B : never);
+export type updateMappingRulePathParam_mappingRuleId = (NonNullable<updateMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
+export type updateMappingRuleInput = updateMappingRuleBody & { mappingRuleId: updateMappingRulePathParam_mappingRuleId };
 type updateRoleOptions = Parameters<typeof Sdk.updateRole>[0];
-type updateRoleBody = (NonNullable<updateRoleOptions> extends { body?: infer B } ? B : never);
-type updateRolePathParam_roleId = (NonNullable<updateRoleOptions> extends { path: { roleId: infer P } } ? P : any);
-type updateRoleInput = updateRoleBody & { roleId: updateRolePathParam_roleId };
+export type updateRoleBody = (NonNullable<updateRoleOptions> extends { body?: infer B } ? B : never);
+export type updateRolePathParam_roleId = (NonNullable<updateRoleOptions> extends { path: { roleId: infer P } } ? P : any);
+export type updateRoleInput = updateRoleBody & { roleId: updateRolePathParam_roleId };
 type updateTenantOptions = Parameters<typeof Sdk.updateTenant>[0];
-type updateTenantBody = (NonNullable<updateTenantOptions> extends { body?: infer B } ? B : never);
-type updateTenantPathParam_tenantId = (NonNullable<updateTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
-type updateTenantInput = updateTenantBody & { tenantId: updateTenantPathParam_tenantId };
+export type updateTenantBody = (NonNullable<updateTenantOptions> extends { body?: infer B } ? B : never);
+export type updateTenantPathParam_tenantId = (NonNullable<updateTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
+export type updateTenantInput = updateTenantBody & { tenantId: updateTenantPathParam_tenantId };
 type updateUserOptions = Parameters<typeof Sdk.updateUser>[0];
-type updateUserBody = (NonNullable<updateUserOptions> extends { body?: infer B } ? B : never);
-type updateUserPathParam_username = (NonNullable<updateUserOptions> extends { path: { username: infer P } } ? P : any);
-type updateUserInput = updateUserBody & { username: updateUserPathParam_username };
+export type updateUserBody = (NonNullable<updateUserOptions> extends { body?: infer B } ? B : never);
+export type updateUserPathParam_username = (NonNullable<updateUserOptions> extends { path: { username: infer P } } ? P : any);
+export type updateUserInput = updateUserBody & { username: updateUserPathParam_username };
 /** Management of eventual consistency **/
-type updateUserConsistency = { 
+export type updateUserConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.updateUser>> 
 };
 type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
-type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
-type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
-type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
+export type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
+export type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;

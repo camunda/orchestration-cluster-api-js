@@ -19,7 +19,7 @@ let text = fs.readFileSync(file, 'utf8');
 // Pattern: "type someName = " at the start of a line (not already exported)
 const typePattern = /^(type\s+(\w+(?:Input|Consistency|PathParam_\w+|Body))\s*=)/gm;
 
-let exportedTypes: string[] = [];
+const exportedTypes: string[] = [];
 let count = 0;
 
 text = text.replace(typePattern, (match, fullDecl, typeName) => {
