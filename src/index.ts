@@ -26,4 +26,6 @@ export {
 // Public type for client construction options
 export type { CamundaOptions } from './gen/CamundaClient';
 export type { EnrichedActivatedJob } from './runtime/jobActions';
+// Re-export internal operation types under a Types namespace for documentation
+export * as Types from './gen/CamundaClient';
 export default createCamundaClient;

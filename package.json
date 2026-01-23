@@ -47,7 +47,7 @@
     "clean": "rimraf dist src/gen src/facade",
     "fetch:spec": "tsx scripts/fetch-spec.ts",
     "generate": "npm run clean && npm run fetch:spec && npm run _pipeline:generate",
-    "_pipeline:generate": "npm run preprocess && npm run generate:sdk && tsx scripts/postprocess-deployment-schema.ts && npm run generate:class && npm run generate:facade && npm run gate && tsx scripts/postprocess-zod-augment.ts && tsx scripts/postprocess-activate-jobs-enrich.ts && npm run scaffold:methods && npm run validate:scaffolds && npm run test",
+    "_pipeline:generate": "npm run preprocess && npm run generate:sdk && tsx scripts/postprocess-deployment-schema.ts && tsx scripts/postprocess-export-types.ts && npm run generate:class && npm run generate:facade && npm run gate && tsx scripts/postprocess-zod-augment.ts && tsx scripts/postprocess-activate-jobs-enrich.ts && npm run scaffold:methods && npm run validate:scaffolds && npm run test",
     "generate:local": "npm run clean && cp ../rest-api.domain.yaml ./rest-api.source.yaml && npm run _pipeline:generate",
     "scaffold:methods": "tsx scripts/generate-test-scaffolds.ts",
     "validate:scaffolds": "tsx scripts/validate-test-scaffolds.ts",
