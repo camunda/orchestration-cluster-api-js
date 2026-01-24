@@ -154,7 +154,7 @@ jobs:
       - name: Fetch semantic-release git notes
         run: |
           # semantic-release stores channel information in git notes.
-          # Ensure refs/notes/* are available in CI so prerelease bootstraps are recognized.
+          # Ensure refs/notes/* are available in CI so channel history is recognized.
           git fetch origin '+refs/notes/*:refs/notes/*' || echo "No git notes refs fetched"
 
       - name: Export stable line config

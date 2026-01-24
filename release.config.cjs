@@ -24,8 +24,15 @@ function stableDistTagForMinor(minor) {
   return `stable-${minor}`;
 }
 
+function envCurrentStableMinor() {
+  // Expected format: <major>.<minor> (e.g. 8.8)
+  const v = (process.env.CAMUNDA_SDK_CURRENT_STABLE_MINOR || '').trim();
+  return /^\d+\.\d+$/.test(v) ? v : null;
+}
+
 const branch = currentBranchName();
 const stableMinor = stableMinorFromBranch(branch);
+const currentStableMinor = envCurrentStableMinor();
 
 function maintenanceBranchConfig(branchName, minor) {
   return {
@@ -52,27 +59,39 @@ function dedupeBranches(branches) {
 module.exports = {
   // Branch model:
   // - main: alpha prereleases for the next stable line (npm dist-tag: alpha)
-  // - latest: optional stable stream branch (npm dist-tag: latest)
-  // - stable/<major>.<minor>: maintenance stream for that minor (npm dist-tag: stable-<major>.<minor>)
+  // - stable/<major>.<minor>: stable releases for the configured current stable minor
+  // - stable/<major>.<minor> (other): maintenance stream for that minor (npm dist-tag: stable-<major>.<minor>)
   //
   // Stable-line selection:
   // - The currently promoted stable minor is configured via `CAMUNDA_SDK_CURRENT_STABLE_MINOR`.
   // - Workflows use that value to decide which stable/* line should also be npm dist-tagged as `latest`.
   branches: dedupeBranches([
     // Alpha prereleases are published from `main`.
-    // Bootstrapping to a new major/minor (e.g. 8.9.0-alpha.1) is handled as a one-time procedure.
+    // `main` always publishes prereleases to the `alpha` channel.
     {
       name: 'main',
       prerelease: 'alpha',
       channel: 'alpha',
     },
 
-    // Optional stable stream branch.
-    // Note: We intentionally do NOT constrain `latest` with a `range`, as that turns it into a
-    // maintenance branch and can break semantic-release branch validation.
-    'latest',
+    // The configured current stable line is the single semantic-release "release branch".
+    // This must exist on the remote repository.
+    ...(currentStableMinor
+      ? [
+          {
+            name: `stable/${currentStableMinor}`,
+            // Publish this line under a stable-<minor> dist-tag. The workflow can optionally
+            // promote this version to the npm dist-tag `latest`.
+            channel: stableDistTagForMinor(currentStableMinor),
+          },
+        ]
+      : []),
 
-    ...(stableMinor ? [maintenanceBranchConfig(branch, stableMinor)] : []),
+    // Any other stable/* branch publishes as a maintenance line (range <minor>.x).
+    // IMPORTANT: Do not treat the current stable line as maintenance as well.
+    ...(stableMinor && stableMinor !== currentStableMinor
+      ? [maintenanceBranchConfig(branch, stableMinor)]
+      : []),
   ]),
   plugins: [
     [

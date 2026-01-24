@@ -100,15 +100,14 @@ refactor(auth): simplify token refresh jitter logic
 
 ## Branching & Releases
 
-Semantic-release publishes from `main` only. Use feature branches and PRs; merge commits should follow conventional syntax to produce changelog entries.
+Releases are performed by GitHub Actions using semantic-release:
 
-Dry-run release locally:
+- `main` publishes alpha prereleases.
+- `stable/<major>.<minor>` publishes stable patch releases for that minor line.
 
-```
-npx semantic-release --dry-run
-```
+Use feature branches and PRs; merge commits should follow conventional syntax to produce changelog entries.
 
-(Will report no publication if not on `main`.)
+To understand what will be released, prefer inspecting the CI logs/artifacts for the release workflow (it runs semantic-release in dry-run mode as part of the pipeline).
 
 ## Testing Strategy
 
