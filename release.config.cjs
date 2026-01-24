@@ -24,8 +24,15 @@ function stableDistTagForMinor(minor) {
   return `stable-${minor}`;
 }
 
+function envCurrentStableMinor() {
+  // Expected format: <major>.<minor> (e.g. 8.8)
+  const v = (process.env.CAMUNDA_SDK_CURRENT_STABLE_MINOR || '').trim();
+  return /^\d+\.\d+$/.test(v) ? v : null;
+}
+
 const branch = currentBranchName();
 const stableMinor = stableMinorFromBranch(branch);
+const currentStableMinor = envCurrentStableMinor();
 
 function maintenanceBranchConfig(branchName, minor) {
   return {
@@ -52,8 +59,8 @@ function dedupeBranches(branches) {
 module.exports = {
   // Branch model:
   // - main: alpha prereleases for the next stable line (npm dist-tag: alpha)
-  // - latest: optional stable stream branch (npm dist-tag: latest)
-  // - stable/<major>.<minor>: maintenance stream for that minor (npm dist-tag: stable-<major>.<minor>)
+  // - stable/<major>.<minor>: stable releases for the configured current stable minor
+  // - stable/<major>.<minor> (other): maintenance stream for that minor (npm dist-tag: stable-<major>.<minor>)
   //
   // Stable-line selection:
   // - The currently promoted stable minor is configured via `CAMUNDA_SDK_CURRENT_STABLE_MINOR`.
@@ -67,10 +74,24 @@ module.exports = {
       channel: 'alpha',
     },
 
-    // On stable/* branches, ensure the maintenance branch has higher precedence than the legacy
-    // `latest` branch (which may still carry pre-8.x versions). This avoids semantic-release
-    // constraining stable/* to an impossible upper bound like `<1.x`.
-    ...(stableMinor ? [maintenanceBranchConfig(branch, stableMinor)] : []),
+    // The configured current stable line is the single semantic-release "release branch".
+    // This must exist on the remote repository.
+    ...(currentStableMinor
+      ? [
+          {
+            name: `stable/${currentStableMinor}`,
+            // Publish this line under a stable-<minor> dist-tag. The workflow can optionally
+            // promote this version to the npm dist-tag `latest`.
+            channel: stableDistTagForMinor(currentStableMinor),
+          },
+        ]
+      : []),
+
+    // Any other stable/* branch publishes as a maintenance line (range <minor>.x).
+    // IMPORTANT: Do not treat the current stable line as maintenance as well.
+    ...(stableMinor && stableMinor !== currentStableMinor
+      ? [maintenanceBranchConfig(branch, stableMinor)]
+      : []),
   ]),
   plugins: [
     [
