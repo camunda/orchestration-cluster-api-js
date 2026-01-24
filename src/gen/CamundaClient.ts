@@ -3295,6 +3295,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'createProcessInstance', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('createProcessInstance', Schemas.zCreateProcessInstanceData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
@@ -3753,10 +3757,15 @@ export class CamundaClient {
 
   /**
    * Delete resource
-   * Deletes a deployed resource.
-   * This can be a process definition, decision requirements definition, or form definition
-   * deployed using the deploy resources endpoint. Specify the resource you want to delete in the `resourceKey` parameter.
+   * Deletes a deployed resource. This can be a process definition, decision requirements
+   * definition, or form definition deployed using the deploy resources endpoint. Specify the
+   * resource you want to delete in the `resourceKey` parameter.
    *
+   * Once a resource has been deleted it cannot be recovered. If the resource needs to be
+   * available again, a new deployment of the resource is required.
+   *
+   * Only the resource itself is deleted from the runtime state. Deleting historic data
+   * associated with a resource is not supported.
     *
    * @operationId deleteResource
    * @tags Resource
@@ -4001,6 +4010,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && (envelope.body.tenantId === undefined || envelope.body.tenantId === null)) {
+        envelope.body.tenantId = this._config.defaultTenantId;
+        this._log.trace(() => ['tenant.default.inject', { op: 'evaluateDecision', tenant: this._config.defaultTenantId }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('evaluateDecision', Schemas.zEvaluateDecisionData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;

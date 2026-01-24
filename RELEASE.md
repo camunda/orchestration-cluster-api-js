@@ -6,10 +6,10 @@ This repo publishes to npm using `semantic-release` plus GitHub Actions.
 
 The publishing behavior is defined in `release.config.cjs`.
 
-| Branch                                       | What it is                                    | npm dist-tag / channel         |
-| -------------------------------------------- | --------------------------------------------- | ------------------------------ |
-| `main`                                       | next-minor development stream                 | `alpha` (pre-releases)         |
-| `latest`                                     | optional stable stream branch                 | `latest`                       |
+| Branch                                       | What it is                                    | npm dist-tag / channel                       |
+| -------------------------------------------- | --------------------------------------------- | -------------------------------------------- |
+| `main`                                       | next-minor development stream                 | `alpha` (pre-releases)                       |
+| `latest`                                     | optional stable stream branch                 | `latest`                                     |
 | `stable/<major>.<minor>` (e.g. `stable/8.8`) | maintenance stream for a specific stable line | `stable-<major>.<minor>` (e.g. `stable-8.8`) |
 
 The currently promoted stable line is configured via the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` (e.g. `8.8`).

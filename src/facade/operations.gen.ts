@@ -985,10 +985,15 @@ export function deleteMappingRule(options?: Parameters<typeof _deleteMappingRule
 
 /**
  * Delete resource
- * Deletes a deployed resource.
- * This can be a process definition, decision requirements definition, or form definition
- * deployed using the deploy resources endpoint. Specify the resource you want to delete in the `resourceKey` parameter.
+ * Deletes a deployed resource. This can be a process definition, decision requirements
+ * definition, or form definition deployed using the deploy resources endpoint. Specify the
+ * resource you want to delete in the `resourceKey` parameter.
  *
+ * Once a resource has been deleted it cannot be recovered. If the resource needs to be
+ * available again, a new deployment of the resource is required.
+ *
+ * Only the resource itself is deleted from the runtime state. Deleting historic data
+ * associated with a resource is not supported.
   *
  * @operationId deleteResource
  * @tags Resource
@@ -2179,4 +2184,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=791830380d949822 totalWrappers=146 elements=942 physicalLines=2181
+// SENTINEL_FACADE_PREWRITE hash=09b611f540cbce08 totalWrappers=146 elements=942 physicalLines=2186

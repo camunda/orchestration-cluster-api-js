@@ -135,7 +135,9 @@ function main() {
       if (bodyOnly && op.requestBody?.content) {
         for (const mt of Object.values(op.requestBody.content)) {
           const schema = mt?.schema as OA3Schema | undefined;
-          const variants = schema?.oneOf || schema?.anyOf;
+          // Note: requestBody schema may be a $ref to a union schema. Resolve first.
+          const resolvedTop = resolveSchema(schema, spec);
+          const variants = resolvedTop?.oneOf || resolvedTop?.anyOf;
           if (Array.isArray(variants) && variants.length > 1) {
             for (const v of variants) {
               if (v && typeof v === 'object' && '$ref' in v && typeof v.$ref === 'string') {
@@ -150,8 +152,7 @@ function main() {
               optionalTenantIdInBody = true;
             }
           } else {
-            const resolved = resolveSchema(schema, spec);
-            if (resolved && hasOptionalTenantId(resolved)) optionalTenantIdInBody = true;
+            if (resolvedTop && hasOptionalTenantId(resolvedTop)) optionalTenantIdInBody = true;
           }
         }
       }

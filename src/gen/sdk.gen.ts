@@ -2257,10 +2257,15 @@ export const createDeployment = <ThrowOnError extends boolean = true>(options: O
 
 /**
  * Delete resource
- * Deletes a deployed resource.
- * This can be a process definition, decision requirements definition, or form definition
- * deployed using the deploy resources endpoint. Specify the resource you want to delete in the `resourceKey` parameter.
+ * Deletes a deployed resource. This can be a process definition, decision requirements
+ * definition, or form definition deployed using the deploy resources endpoint. Specify the
+ * resource you want to delete in the `resourceKey` parameter.
  *
+ * Once a resource has been deleted it cannot be recovered. If the resource needs to be
+ * available again, a new deployment of the resource is required.
+ *
+ * Only the resource itself is deleted from the runtime state. Deleting historic data
+ * associated with a resource is not supported.
  */
 export const deleteResource = <ThrowOnError extends boolean = true>(options: Options<DeleteResourceData, ThrowOnError>) => {
     return (options.client ?? _heyApiClient).post<DeleteResourceResponses, DeleteResourceErrors, ThrowOnError>({
