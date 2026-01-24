@@ -32,9 +32,11 @@ Both workflows have the same shape:
 
 ### Required secrets and permissions
 
-- `NPM_TOKEN` (repo secret): required for `npm whoami` and publishing via `@semantic-release/npm`.
+- No long-lived `NPM_TOKEN` is required. Publishing uses npm OIDC Trusted Publishing.
 - `GITHUB_TOKEN` (provided by Actions): required for tags and pushing release commits.
 - Workflow permissions must include `contents: write` and `id-token: write` (already configured).
+
+Note: npm currently does not support authenticating `npm dist-tag add` directly via OIDC (see https://github.com/npm/cli/issues/8547). The workflow works around this by exchanging a GitHub OIDC token for a short-lived npm access token and using it for the dist-tag promotion command.
 
 ### Day-to-day usage
 

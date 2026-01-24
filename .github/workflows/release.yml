@@ -193,7 +193,13 @@ jobs:
           HOST=${REG#*://}; HOST=${HOST%%/*}
           ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
           PKG=$(jq -r '.name|@uri' package.json)
-          curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d ""
+          # Workaround for https://github.com/npm/cli/issues/8547:
+          # `npm dist-tag add` cannot authenticate via OIDC directly yet, so we exchange the
+          # GitHub OIDC token for an npm access token and reuse it later.
+          EXCHANGE=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d "")
+          NPM_OIDC_TOKEN=$(echo "$EXCHANGE" | jq -er '.token // .npmToken // .access_token // .accessToken')
+          echo "::add-mask::$NPM_OIDC_TOKEN"
+          echo "NPM_OIDC_TOKEN=$NPM_OIDC_TOKEN" >> "$GITHUB_ENV"
 
       - name: Determine next version (dry-run)
         id: next_version
@@ -281,7 +287,9 @@ jobs:
             PKG=$(node -p "require('./package.json').name")
             VER="${{ steps.next_version.outputs.version }}"
             echo "Promoting $PKG@$VER to npm dist-tag latest"
-            npm dist-tag add "$PKG@$VER" latest
+            # Workaround for https://github.com/npm/cli/issues/8547 (Trusted Publishing + dist-tag).
+            # Reuse the exchanged npm token from the earlier OIDC smoke/exchange step.
+            NODE_AUTH_TOKEN="${NPM_OIDC_TOKEN:-}" npm dist-tag add "$PKG@$VER" latest
           else
             echo "Skipping dist-tag promotion: ${BRANCH_MINOR} is not the current stable minor (${CURRENT_MINOR})."
           fi
