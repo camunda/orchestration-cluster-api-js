@@ -179,7 +179,10 @@ jobs:
           HOST=${REG#*://}; HOST=${HOST%%/*}
           ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
           PKG=$(jq -r '.name|@uri' package.json)
-          curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d ""
+          RESP=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d "")
+          TOKEN=$(echo "$RESP" | jq -er '.token')
+          echo "::add-mask::$TOKEN"
+          echo "NPM_OIDC_EXCHANGED_TOKEN=$TOKEN" >> "$GITHUB_ENV"
 
       - name: Determine next version (dry-run)
         id: next_version
@@ -267,7 +270,21 @@ jobs:
             PKG=$(node -p "require('./package.json').name")
             VER="${{ steps.next_version.outputs.version }}"
             echo "Promoting $PKG@$VER to npm dist-tag latest"
-            npm dist-tag add "$PKG@$VER" latest
+
+            # npm Trusted Publishing (OIDC) cannot currently authenticate `npm dist-tag add` directly.
+            # Workaround: exchange the GitHub OIDC token for a short-lived npm access token and use
+            # it specifically for dist-tag operations.
+            if [ -z "${NPM_OIDC_EXCHANGED_TOKEN:-}" ]; then
+              REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
+              HOST=${REG#*://}; HOST=${HOST%%/*}
+              ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
+              PKG_URI=$(node -p "encodeURIComponent(require('./package.json').name)")
+              RESP=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG_URI" -d "")
+              NPM_OIDC_EXCHANGED_TOKEN=$(echo "$RESP" | jq -er '.token')
+              echo "::add-mask::$NPM_OIDC_EXCHANGED_TOKEN"
+            fi
+
+            NODE_AUTH_TOKEN="$NPM_OIDC_EXCHANGED_TOKEN" npm dist-tag add "$PKG@$VER" latest
           else
             echo "Skipping dist-tag promotion: ${BRANCH_MINOR} is not the current stable minor (${CURRENT_MINOR})."
           fi

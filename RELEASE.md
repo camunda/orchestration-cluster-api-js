@@ -60,6 +60,8 @@ The workflow needs:
 
 Publishing uses npm OIDC/provenance in CI. No long-lived `NPM_TOKEN` is required.
 
+Note: npm currently does not support running `npm dist-tag add` directly via Trusted Publishing OIDC. The release workflow works around this by exchanging the GitHub OIDC token for a short-lived npm access token and using it only for dist-tag promotion.
+
 ### Day-to-day usage
 
 **Alpha releases (from `main`)**
