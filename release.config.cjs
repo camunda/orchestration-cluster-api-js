@@ -71,11 +71,6 @@ module.exports = {
     // `latest` branch (which may still carry pre-8.x versions). This avoids semantic-release
     // constraining stable/* to an impossible upper bound like `<1.x`.
     ...(stableMinor ? [maintenanceBranchConfig(branch, stableMinor)] : []),
-
-    // Optional stable stream branch.
-    // Note: We intentionally do NOT constrain `latest` with a `range`, as that turns it into a
-    // maintenance branch and can break semantic-release branch validation.
-    'latest',
   ]),
   plugins: [
     [
