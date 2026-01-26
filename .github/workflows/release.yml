@@ -288,8 +288,24 @@ jobs:
             VER="${{ steps.next_version.outputs.version }}"
             echo "Promoting $PKG@$VER to npm dist-tag latest"
             # Workaround for https://github.com/npm/cli/issues/8547 (Trusted Publishing + dist-tag).
-            # Reuse the exchanged npm token from the earlier OIDC smoke/exchange step.
-            NODE_AUTH_TOKEN="${NPM_OIDC_TOKEN:-}" npm dist-tag add "$PKG@$VER" latest
+            # The exchanged npm token is short-lived; exchange just-in-time so it doesn't expire
+            # before we run `npm dist-tag add`.
+            REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
+            HOST=${REG#*://}; HOST=${HOST%%/*}
+            ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
+            PKG_URI=$(node -p "encodeURIComponent(require('./package.json').name)")
+            EXCHANGE=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG_URI" -d "")
+            NPM_OIDC_TOKEN=$(echo "$EXCHANGE" | jq -er '.token // .npmToken // .access_token // .accessToken')
+            echo "::add-mask::$NPM_OIDC_TOKEN"
+
+            # Use a temporary npm userconfig so auth is applied only for dist-tag.
+            TMP_NPMRC=$(mktemp)
+            {
+              echo "//${HOST}/:_authToken=${NPM_OIDC_TOKEN}"
+              echo "registry=${REG}/"
+              echo "@camunda8:registry=${REG}/"
+            } > "$TMP_NPMRC"
+            NPM_CONFIG_USERCONFIG="$TMP_NPMRC" npm dist-tag add "$PKG@$VER" latest
           else
             echo "Skipping dist-tag promotion: ${BRANCH_MINOR} is not the current stable minor (${CURRENT_MINOR})."
           fi
