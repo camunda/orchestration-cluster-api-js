@@ -131,6 +131,11 @@ module.exports = {
         // causes collisions (multiple `index.ts`, etc). The release workflow generates a single,
         // versioned tarball under `release-assets/` for upload.
         assets: ['release-assets/*.tgz'],
+
+        // Leave a trace on referenced issues/PRs when a release succeeds.
+        // NOTE: automatic issue closing still depends on merges into the default branch.
+        successComment:
+          'Released in `${nextRelease.gitTag}` (npm: `@camunda8/orchestration-cluster-api@${nextRelease.version}`).',
       },
     ],
   ],

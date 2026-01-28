@@ -14,7 +14,8 @@ concurrency:
 permissions:
   contents: write   # required for pushing version bump commit, tags, CHANGELOG
   packages: write   # required for npm publish via semantic-release
-  pull-requests: read
+  pull-requests: write
+  issues: write
   id-token: write # Required for OIDC
 
 jobs:
