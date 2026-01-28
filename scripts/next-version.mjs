@@ -12,7 +12,7 @@ function safeErrorToString(err) {
         if (typeof v === 'bigint') return v.toString();
         return v;
       },
-      2,
+      2
     );
   } catch {
     try {

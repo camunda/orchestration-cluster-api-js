@@ -6,11 +6,11 @@ This repo publishes to npm using `semantic-release` plus GitHub Actions.
 
 The publishing behavior is defined in `release.config.cjs`.
 
-| Branch                                       | What it is                                    | npm dist-tag / channel                       |
-| -------------------------------------------- | --------------------------------------------- | -------------------------------------------- |
-| `main`                                       | next-minor development stream                 | `alpha` (pre-releases)                       |
-| `stable/<major>.<minor>` (current)           | current stable stream                         | `latest`                                     |
-| `stable/<major>.<minor>` (other)             | maintenance stream for a stable line          | `<major>.<minor>-stable` (e.g. `8.8-stable`) |
+| Branch                             | What it is                           | npm dist-tag / channel                       |
+| ---------------------------------- | ------------------------------------ | -------------------------------------------- |
+| `main`                             | next-minor development stream        | `alpha` (pre-releases)                       |
+| `stable/<major>.<minor>` (current) | current stable stream                | `latest`                                     |
+| `stable/<major>.<minor>` (other)   | maintenance stream for a stable line | `<major>.<minor>-stable` (e.g. `8.8-stable`) |
 
 The currently promoted stable line is configured via the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` (e.g. `8.8`).
 
@@ -21,9 +21,9 @@ The currently promoted stable line is configured via the GitHub repo variable `C
 
 ### Workflows (what runs)
 
-| Workflow file                                                         | Triggers            | Purpose                                                                                       |
-| --------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------- |
-| `.github/workflows/release.yml`                                       | push to `main`/`stable/**` | validate, regenerate (if needed), publish (alpha from `main`; stable tags from `stable/**`); deploy docs from `main` only |
+| Workflow file                   | Triggers                   | Purpose                                                                                                                   |
+| ------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/release.yml` | push to `main`/`stable/**` | validate, regenerate (if needed), publish (alpha from `main`; stable tags from `stable/**`); deploy docs from `main` only |
 
 The workflow has the same shape:
 

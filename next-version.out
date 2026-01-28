@@ -1,49 +1,54 @@
 release_branch=stable/8.8
-[10:46:48 AM] [semantic-release] › ℹ  Running semantic-release version 25.0.2
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/npm"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/github"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "analyzeCommits" from "@semantic-release/commit-analyzer"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "generateNotes" from "@semantic-release/release-notes-generator"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/npm"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/npm"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/github"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/npm"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/github"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "success" from "@semantic-release/github"
-[10:46:49 AM] [semantic-release] › ✔  Loaded plugin "fail" from "@semantic-release/github"
-[10:46:50 AM] [semantic-release] › ⚠  Run automated release from branch stable/8.8 on repository git+https://github.com/camunda/orchestration-cluster-api-js.git in dry-run mode
-[10:46:50 AM] [semantic-release] › ✔  Allowed to push to the Git repository
-[10:46:50 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/npm"
-[10:46:50 AM] [semantic-release] [@semantic-release/npm] › ℹ  Verifying OIDC context for publishing from GitHub Actions
+[3:56:34 PM] [semantic-release] › ℹ  Running semantic-release version 25.0.2
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/npm"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "verifyConditions" from "@semantic-release/github"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "analyzeCommits" from "@semantic-release/commit-analyzer"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "generateNotes" from "@semantic-release/release-notes-generator"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "prepare" from "@semantic-release/npm"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/npm"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "publish" from "@semantic-release/github"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/npm"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "addChannel" from "@semantic-release/github"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "success" from "@semantic-release/github"
+[3:56:34 PM] [semantic-release] › ✔  Loaded plugin "fail" from "@semantic-release/github"
+[3:56:35 PM] [semantic-release] › ⚠  Run automated release from branch stable/8.8 on repository git+https://github.com/camunda/orchestration-cluster-api-js.git in dry-run mode
+[3:56:35 PM] [semantic-release] › ✔  Allowed to push to the Git repository
+[3:56:35 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/npm"
+[3:56:35 PM] [semantic-release] [@semantic-release/npm] › ℹ  Verifying OIDC context for publishing from GitHub Actions
 ::debug::ID token url is [secure]&audience=npm%253Aregistry.npmjs.org
-::add-mask::eyJhbGciOiJSUzI1NiIsImtpZCI6IjM4ODI2YjE3LTZhMzAtNWY5Yi1iMTY5LThiZWI4MjAyZjcyMyIsInR5cCI6IkpXVCIsIng1dCI6InlrTmFZNHFNX3RhNGsyVGdaT0NFWUxrY1lsQSJ9.eyJhY3RvciI6Imp3dWxmIiwiYWN0b3JfaWQiOiI0MDY5NzUiLCJhdWQiOiJucG06cmVnaXN0cnkubnBtanMub3JnIiwiYmFzZV9yZWYiOiIiLCJjaGVja19ydW5faWQiOiI2MTQ1OTkwMjM0NyIsImVudGVycHJpc2UiOiJjYW11bmRhIiwiZW50ZXJwcmlzZV9pZCI6IjE1MjQiLCJldmVudF9uYW1lIjoicHVzaCIsImV4cCI6MTc2OTQyNDcxMCwiaGVhZF9yZWYiOiIiLCJpYXQiOjE3Njk0MjQ0MTAsImlzcyI6Imh0dHBzOi8vdG9rZW4uYWN0aW9ucy5naXRodWJ1c2VyY29udGVudC5jb20iLCJqb2Jfd29ya2Zsb3dfcmVmIjoiY2FtdW5kYS9vcmNoZXN0cmF0aW9uLWNsdXN0ZXItYXBpLWpzLy5naXRodWIvd29ya2Zsb3dzL3JlbGVhc2UueW1sQHJlZnMvaGVhZHMvc3RhYmxlLzguOCIsImpvYl93b3JrZmxvd19zaGEiOiIxZTQyNzM5MGZlMjJhNTQzN2UxNzliYjAyMmIzNGIxMzZjYzE2MTg3IiwianRpIjoiZTVjODhkZjUtMzg1My00ZWE1LTgwODQtZTdkY2ZmNjVjZjkyIiwibmJmIjoxNzY5NDI0MTEwLCJyZWYiOiJyZWZzL2hlYWRzL3N0YWJsZS84LjgiLCJyZWZfcHJvdGVjdGVkIjoidHJ1ZSIsInJlZl90eXBlIjoiYnJhbmNoIiwicmVwb3NpdG9yeSI6ImNhbXVuZGEvb3JjaGVzdHJhdGlvbi1jbHVzdGVyLWFwaS1qcyIsInJlcG9zaXRvcnlfaWQiOiIxMDU1Mjk2OTI1IiwicmVwb3NpdG9yeV9vd25lciI6ImNhbXVuZGEiLCJyZXBvc2l0b3J5X293bmVyX2lkIjoiMjQ0MzgzOCIsInJlcG9zaXRvcnlfdmlzaWJpbGl0eSI6InB1YmxpYyIsInJ1bl9hdHRlbXB0IjoiMiIsInJ1bl9pZCI6IjIxMzU0NTI1NjA1IiwicnVuX251bWJlciI6IjMwIiwicnVubmVyX2Vudmlyb25tZW50IjoiZ2l0aHViLWhvc3RlZCIsInNoYSI6IjFlNDI3MzkwZmUyMmE1NDM3ZTE3OWJiMDIyYjM0YjEzNmNjMTYxODciLCJzdWIiOiJyZXBvOmNhbXVuZGEvb3JjaGVzdHJhdGlvbi1jbHVzdGVyLWFwaS1qczpyZWY6cmVmcy9oZWFkcy9zdGFibGUvOC44Iiwid29ya2Zsb3ciOiJSZWxlYXNlIiwid29ya2Zsb3dfcmVmIjoiY2FtdW5kYS9vcmNoZXN0cmF0aW9uLWNsdXN0ZXItYXBpLWpzLy5naXRodWIvd29ya2Zsb3dzL3JlbGVhc2UueW1sQHJlZnMvaGVhZHMvc3RhYmxlLzguOCIsIndvcmtmbG93X3NoYSI6IjFlNDI3MzkwZmUyMmE1NDM3ZTE3OWJiMDIyYjM0YjEzNmNjMTYxODcifQ.LoSgmV6rzFPxQoCid41DyQ9_8UqFuW-QqEPGE42I8um0K1RHr0fq7HRxcKvCCxPxw1-S7nw2YRrDLEl0xfwh1LRjm5MC3QMsXPjXY6UuquCe1vZH1z-Ljm48wfyf5ZLFQt_1UT_Vksi7LmHoDeqnlxeRa0VzMcCDm27kQ_bBe5__TpnGVFY_PhMahUGSsNQ94vNjBLVnLyoY-_Ih7qtNXROK0_TZnoXE0dZm_9cd9ghDw0zpPCqTOC4jVOQz9PNHJbqTWXrPFT-we6svRCOL4koMe2xW6Lckyl5PJ9LC1zcHGh99LBgRw_Nc6gK40G1bajO4iwaoq28ZvlrD7huqwQ
-[10:46:51 AM] [semantic-release] [@semantic-release/npm] › ℹ  OIDC token exchange with the npm registry succeeded
-[10:46:51 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/npm"
-[10:46:51 AM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/github"
-[10:46:51 AM] [semantic-release] [@semantic-release/github] › ℹ  Verify GitHub authentication (https://api.github.com)
-[10:46:51 AM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/github"
-[10:46:51 AM] [semantic-release] › ℹ  Found git tag v8.8.2 associated with version 8.8.2 on branch stable/8.8
-[10:46:51 AM] [semantic-release] › ℹ  Found 1 commits since last release
-[10:46:51 AM] [semantic-release] › ℹ  Start step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
-[10:46:51 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: fix: request new token for npm dist-tag
-[10:46:51 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is patch
-[10:46:51 AM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analysis of 1 commits complete: patch release
-[10:46:51 AM] [semantic-release] › ✔  Completed step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
-[10:46:51 AM] [semantic-release] › ℹ  The next release version is 8.8.3
-[10:46:51 AM] [semantic-release] › ℹ  Start step "generateNotes" of plugin "@semantic-release/release-notes-generator"
-[10:46:51 AM] [semantic-release] › ✔  Completed step "generateNotes" of plugin "@semantic-release/release-notes-generator"
-[10:46:51 AM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/npm" in dry-run mode
-[10:46:51 AM] [semantic-release] › ⚠  Skip v8.8.3 tag creation in dry-run mode
-[10:46:51 AM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/npm" in dry-run mode
-[10:46:51 AM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/github" in dry-run mode
-[10:46:51 AM] [semantic-release] › ⚠  Skip step "success" of plugin "@semantic-release/github" in dry-run mode
-[10:46:51 AM] [semantic-release] › ✔  Published release 8.8.3 on stable-8.8 channel
-[10:46:51 AM] [semantic-release] › ℹ  Release note for version 8.8.3:
-## 8.8.3 (https://github.com/camunda/orchestration-cluster-api-js/compare/v8.8.2...v8.8.3) (2026-01-26)
+::add-mask::eyJhbGciOiJSUzI1NiIsImtpZCI6IjM4ODI2YjE3LTZhMzAtNWY5Yi1iMTY5LThiZWI4MjAyZjcyMyIsInR5cCI6IkpXVCIsIng1dCI6InlrTmFZNHFNX3RhNGsyVGdaT0NFWUxrY1lsQSJ9.eyJhY3RvciI6Imp3dWxmIiwiYWN0b3JfaWQiOiI0MDY5NzUiLCJhdWQiOiJucG06cmVnaXN0cnkubnBtanMub3JnIiwiYmFzZV9yZWYiOiIiLCJjaGVja19ydW5faWQiOiI2MTc1OTQwMjcyOCIsImVudGVycHJpc2UiOiJjYW11bmRhIiwiZW50ZXJwcmlzZV9pZCI6IjE1MjQiLCJldmVudF9uYW1lIjoicHVzaCIsImV4cCI6MTc2OTYxNjA5NSwiaGVhZF9yZWYiOiIiLCJpYXQiOjE3Njk2MTU3OTUsImlzcyI6Imh0dHBzOi8vdG9rZW4uYWN0aW9ucy5naXRodWJ1c2VyY29udGVudC5jb20iLCJqb2Jfd29ya2Zsb3dfcmVmIjoiY2FtdW5kYS9vcmNoZXN0cmF0aW9uLWNsdXN0ZXItYXBpLWpzLy5naXRodWIvd29ya2Zsb3dzL3JlbGVhc2UueW1sQHJlZnMvaGVhZHMvc3RhYmxlLzguOCIsImpvYl93b3JrZmxvd19zaGEiOiIyY2IxZTFmZWVjMWIwZjBjMmQ3NGU5Yjg4MzY5NmY4MWM3OTY3NWYzIiwianRpIjoiYWQzZjQxY2ItNWI0MS00NWU3LTk5YWYtNTYzZTRmODYzMzEwIiwibmJmIjoxNzY5NjE1NDk1LCJyZWYiOiJyZWZzL2hlYWRzL3N0YWJsZS84LjgiLCJyZWZfcHJvdGVjdGVkIjoidHJ1ZSIsInJlZl90eXBlIjoiYnJhbmNoIiwicmVwb3NpdG9yeSI6ImNhbXVuZGEvb3JjaGVzdHJhdGlvbi1jbHVzdGVyLWFwaS1qcyIsInJlcG9zaXRvcnlfaWQiOiIxMDU1Mjk2OTI1IiwicmVwb3NpdG9yeV9vd25lciI6ImNhbXVuZGEiLCJyZXBvc2l0b3J5X293bmVyX2lkIjoiMjQ0MzgzOCIsInJlcG9zaXRvcnlfdmlzaWJpbGl0eSI6InB1YmxpYyIsInJ1bl9hdHRlbXB0IjoiMSIsInJ1bl9pZCI6IjIxNDQ1MTMxNjQ3IiwicnVuX251bWJlciI6IjM0IiwicnVubmVyX2Vudmlyb25tZW50IjoiZ2l0aHViLWhvc3RlZCIsInNoYSI6IjJjYjFlMWZlZWMxYjBmMGMyZDc0ZTliODgzNjk2ZjgxYzc5Njc1ZjMiLCJzdWIiOiJyZXBvOmNhbXVuZGEvb3JjaGVzdHJhdGlvbi1jbHVzdGVyLWFwaS1qczpyZWY6cmVmcy9oZWFkcy9zdGFibGUvOC44Iiwid29ya2Zsb3ciOiJSZWxlYXNlIiwid29ya2Zsb3dfcmVmIjoiY2FtdW5kYS9vcmNoZXN0cmF0aW9uLWNsdXN0ZXItYXBpLWpzLy5naXRodWIvd29ya2Zsb3dzL3JlbGVhc2UueW1sQHJlZnMvaGVhZHMvc3RhYmxlLzguOCIsIndvcmtmbG93X3NoYSI6IjJjYjFlMWZlZWMxYjBmMGMyZDc0ZTliODgzNjk2ZjgxYzc5Njc1ZjMifQ.1Eg6IIfgVKB_64OUH2hdARSMr6bWZHxQxING9Y8mkj3g2cCeOyjCSCAZAJ0R2Aswm3_Z2dSpBkY225X3q6iZp8IvxHuE4uKC-APwTr5w0cMtwaUU_enLtVmIHacIpheW5dHyNHQJA7c5OhydDZKmAEsYCr3tU5bdQaojW9sNLrfiYOkuMKDKU5xcgdwAMBdRLRYluivaTwiJX_FyBzbTqfM0IvZmvGsRlQNIHQtGLAtqI3PDu6IjeHPkwalhPSUAW_4ICwRCpjivkhGw7HP0LYg22mvIpIJ3sWH1RJQ74gqnRrPtQvBbUnkbdLQy1OraCOL_g7scVaJXcGIhdI90Lg
+[3:56:36 PM] [semantic-release] [@semantic-release/npm] › ℹ  OIDC token exchange with the npm registry succeeded
+[3:56:36 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/npm"
+[3:56:36 PM] [semantic-release] › ℹ  Start step "verifyConditions" of plugin "@semantic-release/github"
+[3:56:36 PM] [semantic-release] [@semantic-release/github] › ℹ  Verify GitHub authentication (https://api.github.com)
+[3:56:36 PM] [semantic-release] › ✔  Completed step "verifyConditions" of plugin "@semantic-release/github"
+[3:56:36 PM] [semantic-release] › ℹ  Found git tag v8.8.3 associated with version 8.8.3 on branch stable/8.8
+[3:56:37 PM] [semantic-release] › ℹ  Found 3 commits since last release
+[3:56:37 PM] [semantic-release] › ℹ  Start step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: ci: debug release next-version
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The commit should not trigger a release
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: fix: handle next version robustly
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is patch
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analyzing commit: fix: tag current stable minor as latest on publish
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  The release type for the commit is patch
+[3:56:37 PM] [semantic-release] [@semantic-release/commit-analyzer] › ℹ  Analysis of 3 commits complete: patch release
+[3:56:37 PM] [semantic-release] › ✔  Completed step "analyzeCommits" of plugin "@semantic-release/commit-analyzer"
+[3:56:37 PM] [semantic-release] › ℹ  The next release version is 8.8.4
+[3:56:37 PM] [semantic-release] › ℹ  Start step "generateNotes" of plugin "@semantic-release/release-notes-generator"
+[3:56:37 PM] [semantic-release] › ✔  Completed step "generateNotes" of plugin "@semantic-release/release-notes-generator"
+[3:56:37 PM] [semantic-release] › ⚠  Skip step "prepare" of plugin "@semantic-release/npm" in dry-run mode
+[3:56:37 PM] [semantic-release] › ⚠  Skip v8.8.4 tag creation in dry-run mode
+[3:56:37 PM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/npm" in dry-run mode
+[3:56:37 PM] [semantic-release] › ⚠  Skip step "publish" of plugin "@semantic-release/github" in dry-run mode
+[3:56:37 PM] [semantic-release] › ⚠  Skip step "success" of plugin "@semantic-release/github" in dry-run mode
+[3:56:37 PM] [semantic-release] › ✔  Published release 8.8.4 on latest channel
+[3:56:37 PM] [semantic-release] › ℹ  Release note for version 8.8.4:
+## 8.8.4 (https://github.com/camunda/orchestration-cluster-api-js/compare/v8.8.3...v8.8.4) (2026-01-28)
 
 ### Bug Fixes
 
-    * request new token for npm dist-tag ([1e42739](https://github.com/camunda/orchestration-cluster-api-js/commit/1e427390fe22a5437e179bb022b34b136cc16187))
+    * handle next version robustly ([3cd7b1d](https://github.com/camunda/orchestration-cluster-api-js/commit/3cd7b1d63db298a6c858acda53635b79887343ff))
+    * tag current stable minor as latest on publish ([24d3d9b](https://github.com/camunda/orchestration-cluster-api-js/commit/24d3d9bac345b0cb963c36e23068bb633f000b39))
 
-release_channel=stable-8.8
-next_version=8.8.3
+release_channel=latest
+next_version=8.8.4
