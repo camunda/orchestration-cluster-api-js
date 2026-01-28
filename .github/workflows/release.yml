@@ -199,6 +199,19 @@ jobs:
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
 
+      - name: Debug release branch evaluation
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "github.ref_name=${{ github.ref_name }}"
+          echo "GITHUB_REF_NAME=${GITHUB_REF_NAME:-}"
+          echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${CAMUNDA_SDK_CURRENT_STABLE_MINOR:-}"
+          echo "Evaluated release.config.cjs branches:"
+          node - <<'NODE'
+          const cfg = require('./release.config.cjs');
+          console.log(JSON.stringify(cfg.branches, null, 2));
+          NODE
+
       - uses: actions/setup-node@v6
         with:
           node-version: 24.x
