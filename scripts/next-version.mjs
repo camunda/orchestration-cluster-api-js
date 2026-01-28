@@ -2,6 +2,27 @@
 import { execSync } from 'node:child_process';
 import semanticRelease from 'semantic-release';
 
+function safeErrorToString(err) {
+  try {
+    if (err instanceof Error) return err.stack || err.message;
+    if (typeof err === 'string') return err;
+    return JSON.stringify(
+      err,
+      (_k, v) => {
+        if (typeof v === 'bigint') return v.toString();
+        return v;
+      },
+      2,
+    );
+  } catch {
+    try {
+      return String(err);
+    } catch {
+      return '[unprintable error]';
+    }
+  }
+}
+
 function safeCurrentBranch() {
   // Prefer CI-provided ref name when available.
   if (process.env.GITHUB_REF_NAME) return process.env.GITHUB_REF_NAME;
@@ -33,7 +54,8 @@ async function main() {
     }
   } catch (err) {
     console.error('[next-version] semantic-release dry-run failed');
-    console.error(err);
+    // Avoid util.inspect crashes on exotic error objects.
+    console.error(safeErrorToString(err));
     process.exit(1);
   }
 }
