@@ -21,7 +21,7 @@ function stableMinorFromBranch(branch) {
 function stableDistTagForMinor(minor) {
   // npm dist-tags must NOT be a valid SemVer version or range.
   // Tags like "8.8" are considered a SemVer range by npm and are rejected.
-  return `stable-${minor}`;
+  return `${minor}-stable`;
 }
 
 function envCurrentStableMinor() {
@@ -38,7 +38,7 @@ function maintenanceBranchConfig(branchName, minor) {
   return {
     name: branchName,
     range: `${minor}.x`,
-    // Publish maintenance line under a dedicated dist-tag (e.g. stable-8.8)
+    // Publish maintenance line under a dedicated dist-tag (e.g. 8.8-stable)
     channel: stableDistTagForMinor(minor),
   };
 }
@@ -59,12 +59,12 @@ function dedupeBranches(branches) {
 module.exports = {
   // Branch model:
   // - main: alpha prereleases for the next stable line (npm dist-tag: alpha)
-  // - stable/<major>.<minor>: stable releases for the configured current stable minor
-  // - stable/<major>.<minor> (other): maintenance stream for that minor (npm dist-tag: stable-<major>.<minor>)
+  // - stable/<major>.<minor> (current): stable releases (npm dist-tag: latest)
+  // - stable/<major>.<minor> (other): maintenance stream for that minor (npm dist-tag: <major>.<minor>-stable)
   //
   // Stable-line selection:
   // - The currently promoted stable minor is configured via `CAMUNDA_SDK_CURRENT_STABLE_MINOR`.
-  // - Workflows use that value to decide which stable/* line should also be npm dist-tagged as `latest`.
+  // - Publishing to npm dist-tag `latest` is done in a one-shot `npm publish --tag latest` (no separate `npm dist-tag` step).
   branches: dedupeBranches([
     // Alpha prereleases are published from `main`.
     // Bootstrapping to a new major/minor (e.g. 8.9.0-alpha.1) is handled as a one-time procedure.
@@ -80,9 +80,9 @@ module.exports = {
       ? [
           {
             name: `stable/${currentStableMinor}`,
-            // Publish this line under a stable-<minor> dist-tag. The workflow can optionally
-            // promote this version to the npm dist-tag `latest`.
-            channel: stableDistTagForMinor(currentStableMinor),
+            range: `${currentStableMinor}.x`,
+            // Publish the current stable line directly to npm dist-tag `latest`.
+            channel: 'latest',
           },
         ]
       : []),
