@@ -165,11 +165,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch semantic-release git notes
+      - name: Fetch remote refs for semantic-release
         run: |
+          set -euo pipefail
+          # semantic-release validates that configured release branches exist on the remote.
+          # actions/checkout may only fetch the triggering ref, so fetch all heads explicitly.
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
           # semantic-release stores channel information in git notes.
-          # Ensure refs/notes/* are available in CI so channel history is recognized.
-          git fetch origin '+refs/notes/*:refs/notes/*' || echo "No git notes refs fetched"
+          git fetch origin '+refs/notes/*:refs/notes/*' || true
 
       - name: Export stable line config
         run: |
@@ -192,11 +195,9 @@ jobs:
         run: |
           set -e
           node scripts/next-version.mjs > next-version.out 2>&1 || {
-            echo 'publish_needed=false' >> $GITHUB_OUTPUT
-            echo 'version=' >> $GITHUB_OUTPUT
             echo 'Semantic-release dry-run failed:'
             cat next-version.out
-            exit 0
+            exit 1
           }
           echo "semantic-release summary:";
           grep -E '^(release_branch|release_channel|next_version)=' next-version.out || true

@@ -80,7 +80,6 @@ module.exports = {
       ? [
           {
             name: `stable/${currentStableMinor}`,
-            range: `${currentStableMinor}.x`,
             // Publish the current stable line directly to npm dist-tag `latest`.
             channel: 'latest',
           },
