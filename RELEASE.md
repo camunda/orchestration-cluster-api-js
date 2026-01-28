@@ -6,7 +6,7 @@ The process is intentionally simple:
 
 - `main` publishes **alpha** prereleases for the next stable minor.
 - `stable/<major>.<minor>` publishes **stable** patch releases for that minor line.
-- A single stable line (configured via a GitHub repo variable) is treated as the “current stable” and gets promoted to npm dist-tag `latest`.
+- A single stable line (configured via a GitHub repo variable) is treated as the “current stable” and publishes to npm dist-tag `latest`.
 
 ### Branch model
 
@@ -16,12 +16,13 @@ The publishing behavior is defined in `release.config.cjs` and wired to the GitH
 
 Semantic-release uses that value to treat `stable/<minor>` as the primary stable release branch.
 
-| Branch                   | Type               | What it publishes   | npm dist-tag / channel                       |
-| ------------------------ | ------------------ | ------------------- | -------------------------------------------- |
-| `main`                   | prerelease         | `8.(n+1).0-alpha.*` | `alpha`                                      |
-| `stable/<major>.<minor>` | stable/maintenance | `8.<minor>.x`       | `stable-<major>.<minor>` (e.g. `stable-8.8`) |
+| Branch                             | Type        | What it publishes   | npm dist-tag / channel                       |
+| ---------------------------------- | ----------- | ------------------- | -------------------------------------------- |
+| `main`                             | prerelease  | `8.(n+1).0-alpha.*` | `alpha`                                      |
+| `stable/<major>.<minor>` (current) | stable      | `<major>.<minor>.x` | `latest`                                     |
+| `stable/<major>.<minor>` (other)   | maintenance | `<major>.<minor>.x` | `<major>.<minor>-stable` (e.g. `8.7-stable`) |
 
-Additionally, the workflow promotes the configured current stable line to npm dist-tag `latest`.
+Dist-tags are set at publish time via `npm publish --tag <tag>` (no separate `npm dist-tag` step in CI).
 
 ### Workflow
 
@@ -40,7 +41,6 @@ High level, the workflow does:
 1. **Generate & Test**: install deps, build (including code generation), run unit + integration tests.
 2. **Version determination**: run a semantic-release dry-run to compute `next_version`.
 3. **Publish** (only when a release is needed): bump `package.json`, rebuild, run smoke tests, commit/push the bump, then run semantic-release publish.
-4. **Promote dist-tag `latest`** (stable branches only): if `GITHUB_REF_NAME` matches `CAMUNDA_SDK_CURRENT_STABLE_MINOR`, add npm dist-tag `latest`.
 
 ### Authentication and required configuration
 
@@ -60,8 +60,6 @@ The workflow needs:
 
 Publishing uses npm OIDC/provenance in CI. No long-lived `NPM_TOKEN` is required.
 
-Note: npm currently does not support running `npm dist-tag add` directly via Trusted Publishing OIDC. The release workflow works around this by exchanging the GitHub OIDC token for a short-lived npm access token and using it only for dist-tag promotion.
-
 ### Day-to-day usage
 
 **Alpha releases (from `main`)**
@@ -74,8 +72,8 @@ Note: npm currently does not support running `npm dist-tag add` directly via Tru
 
 - Cherry-pick fixes into the target `stable/<major>.<minor>` branch.
 - A push to that branch triggers the release workflow.
-- semantic-release publishes to dist-tag `stable-<major>.<minor>`.
-- If that branch is the current stable line (`CAMUNDA_SDK_CURRENT_STABLE_MINOR`), the workflow also promotes the same version to npm dist-tag `latest`.
+- semantic-release publishes to dist-tag `latest` if that branch is the configured current stable line (`CAMUNDA_SDK_CURRENT_STABLE_MINOR`).
+- Otherwise it publishes to dist-tag `<major>.<minor>-stable` (e.g. `8.7-stable`).
 
 ### Promotion procedure (switch current stable line)
 
@@ -94,8 +92,8 @@ git push -u origin stable/8.9
 
 After promotion:
 
-- Releases from `stable/8.9` will be the “current stable” and will be promoted to npm dist-tag `latest`.
-- Releases from older stable branches (e.g. `stable/8.8`) will continue to publish to their own `stable-8.8` dist-tag, but will not be promoted to `latest`.
+- Releases from `stable/8.9` will be the “current stable” and will publish to npm dist-tag `latest`.
+- Releases from older stable branches (e.g. `stable/8.7`) will publish to `8.7-stable`.
 
 ### Versioning rules (mutated semver)
 

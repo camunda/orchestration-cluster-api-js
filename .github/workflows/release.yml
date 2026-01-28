@@ -99,6 +99,20 @@ jobs:
         run: |
           if git diff --quiet; then echo "changed=false" >> $GITHUB_OUTPUT; else echo "changed=true" >> $GITHUB_OUTPUT; fi
 
+      - name: Smoke GitHub OIDC token exchange for npm publish (before committing drift)
+        if: steps.detect.outputs.changed == 'true' && matrix.stack == 'simple'
+        shell: bash
+        run: |
+          set -euo pipefail
+          REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
+          HOST=${REG#*://}; HOST=${HOST%%/*}
+          ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
+          PKG=$(jq -r '.name|@uri' package.json)
+          RESP=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d "")
+          TOKEN=$(echo "$RESP" | jq -er '.token')
+          echo "::add-mask::$TOKEN"
+          [ -n "$TOKEN" ]
+
       - name: Commit generated artifacts (canonical)
         if: steps.detect.outputs.changed == 'true' && matrix.stack == 'simple'
         run: |
@@ -171,19 +185,6 @@ jobs:
       - name: Install deps
         run: npm ci --ignore-scripts
 
-      - name: Smoke GitHub ID token and exchange for npm
-        shell: bash
-        run: |
-          set -euo pipefail
-          REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
-          HOST=${REG#*://}; HOST=${HOST%%/*}
-          ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
-          PKG=$(jq -r '.name|@uri' package.json)
-          RESP=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d "")
-          TOKEN=$(echo "$RESP" | jq -er '.token')
-          echo "::add-mask::$TOKEN"
-          echo "NPM_OIDC_EXCHANGED_TOKEN=$TOKEN" >> "$GITHUB_ENV"
-
       - name: Determine next version (dry-run)
         id: next_version
         env:
@@ -246,48 +247,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
         run: NODE_AUTH_TOKEN="" npx semantic-release
-
-      - name: Promote npm dist-tag `latest` (if current stable line)
-        if: steps.next_version.outputs.publish_needed == 'true' && startsWith(github.ref, 'refs/heads/stable/')
-        run: |
-          set -euo pipefail
-
-          # Only promote when this stable/* branch corresponds to the configured current stable minor.
-          CURRENT_MINOR="${CAMUNDA_SDK_CURRENT_STABLE_MINOR:-}"
-          BRANCH_MINOR=$(echo "${GITHUB_REF_NAME}" | sed -n 's#^stable/\([0-9]\+\.[0-9]\+\)$#\1#p')
-
-          if [ -z "${CURRENT_MINOR}" ]; then
-            echo "Skipping dist-tag promotion: CAMUNDA_SDK_CURRENT_STABLE_MINOR is not set."
-            exit 0
-          fi
-
-          if [ -z "${BRANCH_MINOR}" ]; then
-            echo "Skipping dist-tag promotion: could not parse stable minor from branch ${GITHUB_REF_NAME}."
-            exit 0
-          fi
-
-          if [ "${BRANCH_MINOR}" = "${CURRENT_MINOR}" ]; then
-            PKG=$(node -p "require('./package.json').name")
-            VER="${{ steps.next_version.outputs.version }}"
-            echo "Promoting $PKG@$VER to npm dist-tag latest"
-
-            # npm Trusted Publishing (OIDC) cannot currently authenticate `npm dist-tag add` directly.
-            # Workaround: exchange the GitHub OIDC token for a short-lived npm access token and use
-            # it specifically for dist-tag operations.
-            # The exchanged token is short-lived, so exchange it just-in-time (do not reuse a token
-            # captured earlier in the job).
-            REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
-            HOST=${REG#*://}; HOST=${HOST%%/*}
-            ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
-            PKG_URI=$(node -p "encodeURIComponent(require('./package.json').name)")
-            RESP=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG_URI" -d "")
-            NPM_OIDC_EXCHANGED_TOKEN=$(echo "$RESP" | jq -er '.token')
-            echo "::add-mask::$NPM_OIDC_EXCHANGED_TOKEN"
-
-            NODE_AUTH_TOKEN="$NPM_OIDC_EXCHANGED_TOKEN" npm dist-tag add "$PKG@$VER" latest
-          else
-            echo "Skipping dist-tag promotion: ${BRANCH_MINOR} is not the current stable minor (${CURRENT_MINOR})."
-          fi
 
       - name: Build Docs
         if: github.ref_name == 'main'
