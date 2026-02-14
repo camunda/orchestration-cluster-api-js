@@ -57,6 +57,7 @@ export type AuditLogResult = {
      * The key of the process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The key of the element instance.
      */
@@ -101,6 +102,24 @@ export type AuditLogResult = {
      * The system-assigned key for this resource.
      */
     resourceKey?: ResourceKey;
+    /**
+     * The key of the related entity. The content depends on the operation type and entity type.
+     * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
+     *
+     */
+    relatedEntityKey?: AuditLogEntityKey;
+    /**
+     * The type of the related entity. The content depends on the operation type and entity type.
+     * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
+     *
+     */
+    relatedEntityType?: AuditLogEntityTypeEnum;
+    /**
+     * Additional description of the entity affected by the operation.
+     * For example, for variable operations, this will contain the variable name.
+     *
+     */
+    entityDescription?: string;
 };
 
 export type AuditLogSearchQuerySortRequest = {
@@ -229,6 +248,18 @@ export type AuditLogFilter = {
      * The decision evaluation key search filter.
      */
     decisionEvaluationKey?: DecisionEvaluationKeyFilterProperty;
+    /**
+     * The related entity key search filter.
+     */
+    relatedEntityKey?: AuditLogEntityKeyFilterProperty;
+    /**
+     * The related entity type search filter.
+     */
+    relatedEntityType?: EntityTypeFilterProperty;
+    /**
+     * The entity description filter.
+     */
+    entityDescription?: StringFilterProperty;
 };
 
 /**
@@ -249,7 +280,7 @@ export type AuditLogEntityKey = CamundaKey<'AuditLogEntityKey'>;
 /**
  * The type of entity affected by the operation.
  */
-export type AuditLogEntityTypeEnum = 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE';
+export type AuditLogEntityTypeEnum = 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE' | 'CLIENT';
 
 /**
  * The type of operation performed.
@@ -841,6 +872,7 @@ export type BatchOperationItemResponse = {
      * the process instance key of the processed item.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * State of the item.
      */
@@ -853,6 +885,17 @@ export type BatchOperationItemResponse = {
      * the error message from the engine in case of a failed operation.
      */
     errorMessage?: string;
+};
+
+/**
+ * The decision instance filter that defines which decision instances should be deleted.
+ */
+export type DecisionInstanceDeletionBatchOperationRequest = {
+    /**
+     * The decision instance filter.
+     */
+    filter: DecisionInstanceFilter;
+    operationReference?: OperationReference;
 };
 
 /**
@@ -963,7 +1006,7 @@ export type BatchOperationStateEnum = 'ACTIVE' | 'CANCELED' | 'COMPLETED' | 'CRE
 /**
  * The type of the batch operation.
  */
-export type BatchOperationTypeEnum = 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_PROCESS_DEFINITION' | 'DELETE_PROCESS_INSTANCE' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'UPDATE_VARIABLE';
+export type BatchOperationTypeEnum = 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_DECISION_INSTANCE' | 'DELETE_PROCESS_DEFINITION' | 'DELETE_PROCESS_INSTANCE' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'UPDATE_VARIABLE';
 
 /**
  * BatchOperationTypeEnum property with full advanced search capabilities.
@@ -1074,6 +1117,15 @@ export type CreateClusterVariableRequest = {
     name: string;
     /**
      * The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
+     */
+    value: {
+        [key: string]: unknown;
+    };
+};
+
+export type UpdateClusterVariableRequest = {
+    /**
+     * The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
      */
     value: {
         [key: string]: unknown;
@@ -1687,7 +1739,15 @@ export type DecisionInstanceFilter = {
      * The key of the root decision definition.
      */
     rootDecisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+    /**
+     * The key of the decision requirements definition.
+     */
+    decisionRequirementsKey?: DecisionRequirementsKeyFilterProperty;
 };
+
+export type DeleteDecisionInstanceRequest = {
+    operationReference?: OperationReference;
+} | null;
 
 export type DecisionInstanceSearchQueryResult = SearchQueryResponse & {
     /**
@@ -1740,6 +1800,7 @@ export type DecisionInstanceResult = {
      * The key of the process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The key of the decision.
      */
@@ -2479,6 +2540,7 @@ export type ElementInstanceResult = {
      * The process instance key associated to this element instance.
      */
     processInstanceKey: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The process definition key associated to this element instance.
      */
@@ -2759,7 +2821,7 @@ export type GroupUpdateRequest = {
     /**
      * The new description of the group.
      */
-    description: string;
+    description?: string;
 };
 
 export type GroupUpdateResult = {
@@ -3126,6 +3188,7 @@ export type IncidentResult = {
      * The process instance key associated to this incident.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The element instance key associated to this incident.
      */
@@ -3247,47 +3310,17 @@ export type IncidentProcessInstanceStatisticsByDefinitionQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
-export type GlobalJobStatisticsQuery = {
-    filter: GlobalJobStatisticsFilter;
-};
-
-/**
- * Filters for global job statistics query.
- */
-export type GlobalJobStatisticsFilter = {
-    /**
-     * Start of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    from: string;
-    /**
-     * End of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    to: string;
-    /**
-     * Optional job type to limit the aggregation to a single job type.
-     */
-    jobType?: string;
-};
-
 /**
  * Global job statistics query result.
  */
 export type GlobalJobStatisticsQueryResult = {
-    /**
-     * List of aggregated job statistics.
-     */
-    items: Array<GlobalJobStatisticsItem>;
-};
-
-/**
- * Aggregated job metrics for a time bucket.
- */
-export type GlobalJobStatisticsItem = {
     created: StatusMetric;
     completed: StatusMetric;
     failed: StatusMetric;
+    /**
+     * True if some data is missing because internal limits were reached and some metrics were not recorded.
+     */
+    isIncomplete: boolean;
 };
 
 /**
@@ -3335,6 +3368,11 @@ export type JobActivationRequest = {
      * A list of IDs of tenants for which to activate jobs.
      */
     tenantIds?: Array<TenantId>;
+    /**
+     * The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.
+     *
+     */
+    tenantFilter?: TenantFilterEnum;
 };
 
 /**
@@ -3644,6 +3682,7 @@ export type JobSearchResult = {
      * The process instance key associated with the job.
      */
     processInstanceKey: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The amount of retries left to this job.
      */
@@ -3853,6 +3892,12 @@ export type JobChangeset = {
 };
 
 /**
+ * The tenant filtering strategy for job activation. Determines whether to use tenant IDs provided in the request or tenant IDs assigned to the authenticated principal.
+ *
+ */
+export type TenantFilterEnum = 'PROVIDED' | 'ASSIGNED';
+
+/**
  * The state of the job.
  */
 export type JobStateEnum = 'CANCELED' | 'COMPLETED' | 'CREATED' | 'ERROR_THROWN' | 'FAILED' | 'MIGRATED' | 'RETRIES_UPDATED' | 'TIMED_OUT';
@@ -3966,6 +4011,14 @@ export type LongKey = string;
  * System-generated key for a process instance.
  */
 export type ProcessInstanceKey = CamundaKey<'ProcessInstanceKey'>;
+
+/**
+ * The key of the root process instance. The root process instance is the top-level
+ * ancestor in the process instance hierarchy. This field is only present for data
+ * belonging to process instance hierarchies created in version 8.9 or later.
+ *
+ */
+export type RootProcessInstanceKey = CamundaKey<'RootProcessInstanceKey'>;
 
 /**
  * System-generated key for a deployed process definition.
@@ -4692,6 +4745,7 @@ export type MessageSubscriptionResult = {
      * The process instance key associated with this message subscription.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The element ID associated with this message subscription.
      */
@@ -4833,6 +4887,7 @@ export type CorrelatedMessageSubscriptionResult = {
      * The process instance key associated with this correlated message subscription.
      */
     processInstanceKey: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The subscription key that received the message.
      */
@@ -5270,13 +5325,17 @@ export type ProcessDefinitionInstanceVersionStatisticsQuery = {
     /**
      * The process definition instance version statistics search filters.
      */
-    filter?: ProcessDefinitionInstanceVersionStatisticsFilter;
+    filter: ProcessDefinitionInstanceVersionStatisticsFilter;
 };
 
 /**
  * Process definition instance version statistics search filter.
  */
 export type ProcessDefinitionInstanceVersionStatisticsFilter = {
+    /**
+     * The ID of the process definition to retrieve version statistics for.
+     */
+    processDefinitionId: ProcessDefinitionId;
     /**
      * Tenant ID of this process definition.
      */
@@ -5414,6 +5473,12 @@ export type ProcessInstanceCreationInstructionByKey = {
      *
      */
     processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.
+     * It's here for backwards-compatibility only as previous releases accepted it in request bodies.
+     *
+     */
+    processDefinitionVersion?: number;
     /**
      * JSON object that will instantiate the variables for the root variable scope
      * of the process instance.
@@ -5780,6 +5845,7 @@ export type ProcessInstanceResult = {
      * The parent element instance key.
      */
     parentElementInstanceKey?: ElementInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     tags?: TagSet;
 };
 
@@ -5828,6 +5894,7 @@ export type ProcessInstanceSequenceFlowResult = {
      * The key of this process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The process definition key.
      */
@@ -6160,7 +6227,7 @@ export type RoleUpdateRequest = {
     /**
      * The description of the new role.
      */
-    description: string;
+    description?: string;
 };
 
 export type RoleUpdateResult = {
@@ -6519,7 +6586,7 @@ export type TenantUpdateRequest = {
     /**
      * The new description of the tenant.
      */
-    description: string;
+    description?: string;
 };
 
 export type TenantUpdateResult = {
@@ -6722,7 +6789,7 @@ export type UserTaskFilter = {
      * The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
      *
      */
-    name?: string;
+    name?: StringFilterProperty;
     /**
      * The candidate group for this user task.
      */
@@ -6867,6 +6934,7 @@ export type UserTaskResult = {
      * The key of the process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
     /**
      * The key of the form.
      */
@@ -7289,6 +7357,7 @@ export type VariableResultBase = {
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKey;
+    rootProcessInstanceKey?: RootProcessInstanceKey;
 };
 
 export type VariableValueFilterProperty = {
@@ -7410,6 +7479,7 @@ export type SearchAuditLogsResponses = {
              * The key of the process instance.
              */
             processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             /**
              * The key of the element instance.
              */
@@ -7454,6 +7524,24 @@ export type SearchAuditLogsResponses = {
              * The system-assigned key for this resource.
              */
             resourceKey?: ResourceKey;
+            /**
+             * The key of the related entity. The content depends on the operation type and entity type.
+             * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
+             *
+             */
+            relatedEntityKey?: AuditLogEntityKey;
+            /**
+             * The type of the related entity. The content depends on the operation type and entity type.
+             * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
+             *
+             */
+            relatedEntityType?: AuditLogEntityTypeEnum;
+            /**
+             * Additional description of the entity affected by the operation.
+             * For example, for variable operations, this will contain the variable name.
+             *
+             */
+            entityDescription?: string;
         }>;
     };
 };
@@ -7544,6 +7632,7 @@ export type GetAuditLogResponses = {
          * The key of the process instance.
          */
         processInstanceKey?: ProcessInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
         /**
          * The key of the element instance.
          */
@@ -7588,6 +7677,24 @@ export type GetAuditLogResponses = {
          * The system-assigned key for this resource.
          */
         resourceKey?: ResourceKey;
+        /**
+         * The key of the related entity. The content depends on the operation type and entity type.
+         * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
+         *
+         */
+        relatedEntityKey?: AuditLogEntityKey;
+        /**
+         * The type of the related entity. The content depends on the operation type and entity type.
+         * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
+         *
+         */
+        relatedEntityType?: AuditLogEntityTypeEnum;
+        /**
+         * Additional description of the entity affected by the operation.
+         * For example, for variable operations, this will contain the variable name.
+         *
+         */
+        entityDescription?: string;
     };
 };
 
@@ -7894,7 +8001,39 @@ export type SearchBatchOperationItemsResponses = {
     /**
      * The batch operation search result.
      */
-    200: BatchOperationItemSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching batch operation items.
+         */
+        items?: Array<{
+            operationType?: BatchOperationTypeEnum;
+            /**
+             * The key (or operate legacy ID) of the batch operation.
+             */
+            batchOperationKey?: BatchOperationKey;
+            /**
+             * Key of the item, e.g. a process instance key.
+             */
+            itemKey?: string;
+            /**
+             * the process instance key of the processed item.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * State of the item.
+             */
+            state?: 'ACTIVE' | 'COMPLETED' | 'SKIPPED' | 'CANCELED' | 'FAILED';
+            /**
+             * the date this item was processed.
+             */
+            processedDate?: string;
+            /**
+             * the error message from the engine in case of a failed operation.
+             */
+            errorMessage?: string;
+        }>;
+    };
 };
 
 export type SearchBatchOperationItemsResponse = SearchBatchOperationItemsResponses[keyof SearchBatchOperationItemsResponses];
@@ -8328,6 +8467,52 @@ export type GetGlobalClusterVariableResponses = {
 
 export type GetGlobalClusterVariableResponse = GetGlobalClusterVariableResponses[keyof GetGlobalClusterVariableResponses];
 
+export type UpdateGlobalClusterVariableData = {
+    body: UpdateClusterVariableRequest;
+    path: {
+        /**
+         * The name of the cluster variable
+         */
+        name: string;
+    };
+    query?: never;
+    url: '/cluster-variables/global/{name}';
+};
+
+export type UpdateGlobalClusterVariableErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * Cluster variable not found
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type UpdateGlobalClusterVariableError = UpdateGlobalClusterVariableErrors[keyof UpdateGlobalClusterVariableErrors];
+
+export type UpdateGlobalClusterVariableResponses = {
+    /**
+     * Cluster variable updated successfully
+     */
+    200: ClusterVariableResult;
+};
+
+export type UpdateGlobalClusterVariableResponse = UpdateGlobalClusterVariableResponses[keyof UpdateGlobalClusterVariableResponses];
+
 export type SearchClusterVariablesData = {
     /**
      * Cluster variable search query request.
@@ -8578,6 +8763,56 @@ export type GetTenantClusterVariableResponses = {
 
 export type GetTenantClusterVariableResponse = GetTenantClusterVariableResponses[keyof GetTenantClusterVariableResponses];
 
+export type UpdateTenantClusterVariableData = {
+    body: UpdateClusterVariableRequest;
+    path: {
+        /**
+         * The tenant ID
+         */
+        tenantId: TenantId;
+        /**
+         * The name of the cluster variable
+         */
+        name: string;
+    };
+    query?: never;
+    url: '/cluster-variables/tenants/{tenantId}/{name}';
+};
+
+export type UpdateTenantClusterVariableErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * Cluster variable not found
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type UpdateTenantClusterVariableError = UpdateTenantClusterVariableErrors[keyof UpdateTenantClusterVariableErrors];
+
+export type UpdateTenantClusterVariableResponses = {
+    /**
+     * Cluster variable updated successfully
+     */
+    200: ClusterVariableResult;
+};
+
+export type UpdateTenantClusterVariableResponse = UpdateTenantClusterVariableResponses[keyof UpdateTenantClusterVariableResponses];
+
 export type EvaluateConditionalsData = {
     body: ConditionalEvaluationInstruction;
     path?: never;
@@ -8655,7 +8890,62 @@ export type SearchCorrelatedMessageSubscriptionsResponses = {
     /**
      * The correlated message subscriptions search result.
      */
-    200: CorrelatedMessageSubscriptionSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching correlated message subscriptions.
+         */
+        items?: Array<{
+            /**
+             * The correlation key of the message.
+             */
+            correlationKey: string;
+            /**
+             * The time when the message was correlated.
+             */
+            correlationTime: string;
+            /**
+             * The element ID that received the message.
+             */
+            elementId: string;
+            /**
+             * The element instance key that received the message.
+             */
+            elementInstanceKey?: ElementInstanceKey;
+            /**
+             * The message key.
+             */
+            messageKey: MessageKey;
+            /**
+             * The name of the message.
+             */
+            messageName: string;
+            /**
+             * The partition ID that correlated the message.
+             */
+            partitionId: number;
+            /**
+             * The process definition ID associated with this correlated message subscription.
+             */
+            processDefinitionId: ProcessDefinitionId;
+            /**
+             * The process definition key associated with this correlated message subscription.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The process instance key associated with this correlated message subscription.
+             */
+            processInstanceKey: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * The subscription key that received the message.
+             */
+            subscriptionKey: MessageSubscriptionKey;
+            /**
+             * The tenant ID associated with this correlated message subscription.
+             */
+            tenantId: TenantId;
+        }>;
+    };
 };
 
 export type SearchCorrelatedMessageSubscriptionsResponse = SearchCorrelatedMessageSubscriptionsResponses[keyof SearchCorrelatedMessageSubscriptionsResponses];
@@ -8897,6 +9187,10 @@ export type SearchDecisionInstancesData = {
              * The key of the root decision definition.
              */
             rootDecisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+            /**
+             * The key of the decision requirements definition.
+             */
+            decisionRequirementsKey?: DecisionRequirementsKeyFilterProperty;
         };
     };
     path?: never;
@@ -8929,7 +9223,69 @@ export type SearchDecisionInstancesResponses = {
     /**
      * The decision instance search result.
      */
-    200: DecisionInstanceSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching decision instances.
+         */
+        items?: Array<{
+            decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKey;
+            state?: DecisionInstanceStateEnum;
+            /**
+             * The evaluation date of the decision instance.
+             */
+            evaluationDate?: string;
+            /**
+             * The evaluation failure of the decision instance.
+             */
+            evaluationFailure?: string;
+            /**
+             * The ID of the DMN decision.
+             */
+            decisionDefinitionId?: DecisionDefinitionId;
+            /**
+             * The name of the DMN decision.
+             */
+            decisionDefinitionName?: string;
+            /**
+             * The version of the decision.
+             */
+            decisionDefinitionVersion?: number;
+            decisionDefinitionType?: DecisionDefinitionTypeEnum;
+            /**
+             * The result of the decision instance.
+             */
+            result?: string;
+            /**
+             * The tenant ID of the decision instance.
+             */
+            tenantId?: TenantId;
+            /**
+             * The key of the decision evaluation where this instance was created.
+             */
+            decisionEvaluationKey?: DecisionEvaluationKey;
+            /**
+             * The key of the process definition.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The key of the process instance.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * The key of the decision.
+             */
+            decisionDefinitionKey?: DecisionDefinitionKey;
+            /**
+             * The key of the element instance this decision instance is linked to.
+             */
+            elementInstanceKey?: ElementInstanceKey;
+            /**
+             * The key of the root decision definition.
+             */
+            rootDecisionDefinitionKey?: DecisionDefinitionKey;
+        }>;
+    };
 };
 
 export type SearchDecisionInstancesResponse = SearchDecisionInstancesResponses[keyof SearchDecisionInstancesResponses];
@@ -8976,10 +9332,235 @@ export type GetDecisionInstanceResponses = {
     /**
      * The decision instance is successfully returned.
      */
-    200: DecisionInstanceGetQueryResult;
+    200: {
+        decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKey;
+        state?: DecisionInstanceStateEnum;
+        /**
+         * The evaluation date of the decision instance.
+         */
+        evaluationDate?: string;
+        /**
+         * The evaluation failure of the decision instance.
+         */
+        evaluationFailure?: string;
+        /**
+         * The ID of the DMN decision.
+         */
+        decisionDefinitionId?: DecisionDefinitionId;
+        /**
+         * The name of the DMN decision.
+         */
+        decisionDefinitionName?: string;
+        /**
+         * The version of the decision.
+         */
+        decisionDefinitionVersion?: number;
+        decisionDefinitionType?: DecisionDefinitionTypeEnum;
+        /**
+         * The result of the decision instance.
+         */
+        result?: string;
+        /**
+         * The tenant ID of the decision instance.
+         */
+        tenantId?: TenantId;
+        /**
+         * The key of the decision evaluation where this instance was created.
+         */
+        decisionEvaluationKey?: DecisionEvaluationKey;
+        /**
+         * The key of the process definition.
+         */
+        processDefinitionKey?: ProcessDefinitionKey;
+        /**
+         * The key of the process instance.
+         */
+        processInstanceKey?: ProcessInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
+        /**
+         * The key of the decision.
+         */
+        decisionDefinitionKey?: DecisionDefinitionKey;
+        /**
+         * The key of the element instance this decision instance is linked to.
+         */
+        elementInstanceKey?: ElementInstanceKey;
+        /**
+         * The key of the root decision definition.
+         */
+        rootDecisionDefinitionKey?: DecisionDefinitionKey;
+    } & {
+        /**
+         * The evaluated inputs of the decision instance.
+         *
+         */
+        evaluatedInputs?: Array<EvaluatedDecisionInputItem>;
+        /**
+         * The matched rules of the decision instance.
+         *
+         */
+        matchedRules?: Array<MatchedDecisionRuleItem>;
+    };
 };
 
 export type GetDecisionInstanceResponse = GetDecisionInstanceResponses[keyof GetDecisionInstanceResponses];
+
+export type DeleteDecisionInstanceData = {
+    body?: DeleteProcessInstanceRequest;
+    path: {
+        /**
+         * The key of the decision instance to delete.
+         */
+        decisionInstanceKey: DecisionInstanceKey;
+    };
+    query?: never;
+    url: '/decision-instances/{decisionInstanceKey}/deletion';
+};
+
+export type DeleteDecisionInstanceErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The decision instance is not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteDecisionInstanceError = DeleteDecisionInstanceErrors[keyof DeleteDecisionInstanceErrors];
+
+export type DeleteDecisionInstanceResponses = {
+    /**
+     * The decision instance is marked for deletion.
+     */
+    204: void;
+};
+
+export type DeleteDecisionInstanceResponse = DeleteDecisionInstanceResponses[keyof DeleteDecisionInstanceResponses];
+
+export type DeleteDecisionInstancesBatchOperationData = {
+    /**
+     * The decision instance filter that defines which decision instances should be deleted.
+     */
+    body: {
+        /**
+         * Decision instance search filter.
+         */
+        filter: {
+            /**
+             * The key of the decision evaluation instance.
+             */
+            decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKeyFilterProperty;
+            /**
+             * The state of the decision instance.
+             */
+            state?: DecisionInstanceStateFilterProperty;
+            /**
+             * The evaluation failure of the decision instance.
+             */
+            evaluationFailure?: string;
+            /**
+             * The evaluation date of the decision instance.
+             */
+            evaluationDate?: DateTimeFilterProperty;
+            /**
+             * The ID of the DMN decision.
+             */
+            decisionDefinitionId?: DecisionDefinitionId;
+            /**
+             * The name of the DMN decision.
+             */
+            decisionDefinitionName?: string;
+            /**
+             * The version of the decision.
+             */
+            decisionDefinitionVersion?: number;
+            decisionDefinitionType?: DecisionDefinitionTypeEnum;
+            /**
+             * The tenant ID of the decision instance.
+             */
+            tenantId?: TenantId;
+            /**
+             * The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.
+             *
+             */
+            decisionEvaluationKey?: DecisionEvaluationKey;
+            /**
+             * The key of the process definition.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The key of the process instance.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            /**
+             * The key of the decision.
+             */
+            decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+            /**
+             * The key of the element instance this decision instance is linked to.
+             */
+            elementInstanceKey?: ElementInstanceKeyFilterProperty;
+            /**
+             * The key of the root decision definition.
+             */
+            rootDecisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
+            /**
+             * The key of the decision requirements definition.
+             */
+            decisionRequirementsKey?: DecisionRequirementsKeyFilterProperty;
+        };
+        operationReference?: OperationReference;
+    };
+    path?: never;
+    query?: never;
+    url: '/decision-instances/deletion';
+};
+
+export type DeleteDecisionInstancesBatchOperationErrors = {
+    /**
+     * The decision instance batch operation failed. More details are provided in the response body.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type DeleteDecisionInstancesBatchOperationError = DeleteDecisionInstancesBatchOperationErrors[keyof DeleteDecisionInstancesBatchOperationErrors];
+
+export type DeleteDecisionInstancesBatchOperationResponses = {
+    /**
+     * The batch operation request was created.
+     */
+    200: BatchOperationCreatedResult;
+};
+
+export type DeleteDecisionInstancesBatchOperationResponse = DeleteDecisionInstancesBatchOperationResponses[keyof DeleteDecisionInstancesBatchOperationResponses];
 
 export type SearchDecisionRequirementsData = {
     body?: DecisionRequirementsSearchQuery;
@@ -9485,7 +10066,66 @@ export type SearchElementInstancesResponses = {
     /**
      * The element instance search result.
      */
-    200: ElementInstanceSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching element instances.
+         */
+        items?: Array<{
+            /**
+             * The process definition ID associated to this element instance.
+             */
+            processDefinitionId: ProcessDefinitionId;
+            /**
+             * Date when element instance started.
+             */
+            startDate: string;
+            /**
+             * Date when element instance finished.
+             */
+            endDate?: string;
+            /**
+             * The element ID for this element instance.
+             */
+            elementId: ElementId;
+            /**
+             * The element name for this element instance.
+             */
+            elementName: string;
+            /**
+             * Type of element as defined set of values.
+             */
+            type: 'UNSPECIFIED' | 'PROCESS' | 'SUB_PROCESS' | 'EVENT_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS_INNER_INSTANCE' | 'START_EVENT' | 'INTERMEDIATE_CATCH_EVENT' | 'INTERMEDIATE_THROW_EVENT' | 'BOUNDARY_EVENT' | 'END_EVENT' | 'SERVICE_TASK' | 'RECEIVE_TASK' | 'USER_TASK' | 'MANUAL_TASK' | 'TASK' | 'EXCLUSIVE_GATEWAY' | 'INCLUSIVE_GATEWAY' | 'PARALLEL_GATEWAY' | 'EVENT_BASED_GATEWAY' | 'SEQUENCE_FLOW' | 'MULTI_INSTANCE_BODY' | 'CALL_ACTIVITY' | 'BUSINESS_RULE_TASK' | 'SCRIPT_TASK' | 'SEND_TASK' | 'UNKNOWN';
+            /**
+             * State of element instance as defined set of values.
+             */
+            state: ElementInstanceStateEnum;
+            /**
+             * Shows whether this element instance has an incident. If true also an incidentKey is provided.
+             */
+            hasIncident: boolean;
+            /**
+             * The tenant ID of the incident.
+             */
+            tenantId: TenantId;
+            /**
+             * The assigned key, which acts as a unique identifier for this element instance.
+             */
+            elementInstanceKey: ElementInstanceKey;
+            /**
+             * The process instance key associated to this element instance.
+             */
+            processInstanceKey: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * The process definition key associated to this element instance.
+             */
+            processDefinitionKey: ProcessDefinitionKey;
+            /**
+             * Incident key associated with this element instance.
+             */
+            incidentKey?: IncidentKey;
+        }>;
+    };
 };
 
 export type SearchElementInstancesResponse = SearchElementInstancesResponses[keyof SearchElementInstancesResponses];
@@ -9533,7 +10173,61 @@ export type GetElementInstanceResponses = {
     /**
      * The element instance is successfully returned.
      */
-    200: ElementInstanceResult;
+    200: {
+        /**
+         * The process definition ID associated to this element instance.
+         */
+        processDefinitionId: ProcessDefinitionId;
+        /**
+         * Date when element instance started.
+         */
+        startDate: string;
+        /**
+         * Date when element instance finished.
+         */
+        endDate?: string;
+        /**
+         * The element ID for this element instance.
+         */
+        elementId: ElementId;
+        /**
+         * The element name for this element instance.
+         */
+        elementName: string;
+        /**
+         * Type of element as defined set of values.
+         */
+        type: 'UNSPECIFIED' | 'PROCESS' | 'SUB_PROCESS' | 'EVENT_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS_INNER_INSTANCE' | 'START_EVENT' | 'INTERMEDIATE_CATCH_EVENT' | 'INTERMEDIATE_THROW_EVENT' | 'BOUNDARY_EVENT' | 'END_EVENT' | 'SERVICE_TASK' | 'RECEIVE_TASK' | 'USER_TASK' | 'MANUAL_TASK' | 'TASK' | 'EXCLUSIVE_GATEWAY' | 'INCLUSIVE_GATEWAY' | 'PARALLEL_GATEWAY' | 'EVENT_BASED_GATEWAY' | 'SEQUENCE_FLOW' | 'MULTI_INSTANCE_BODY' | 'CALL_ACTIVITY' | 'BUSINESS_RULE_TASK' | 'SCRIPT_TASK' | 'SEND_TASK' | 'UNKNOWN';
+        /**
+         * State of element instance as defined set of values.
+         */
+        state: ElementInstanceStateEnum;
+        /**
+         * Shows whether this element instance has an incident. If true also an incidentKey is provided.
+         */
+        hasIncident: boolean;
+        /**
+         * The tenant ID of the incident.
+         */
+        tenantId: TenantId;
+        /**
+         * The assigned key, which acts as a unique identifier for this element instance.
+         */
+        elementInstanceKey: ElementInstanceKey;
+        /**
+         * The process instance key associated to this element instance.
+         */
+        processInstanceKey: ProcessInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
+        /**
+         * The process definition key associated to this element instance.
+         */
+        processDefinitionKey: ProcessDefinitionKey;
+        /**
+         * Incident key associated with this element instance.
+         */
+        incidentKey?: IncidentKey;
+    };
 };
 
 export type GetElementInstanceResponse = GetElementInstanceResponses[keyof GetElementInstanceResponses];
@@ -9579,7 +10273,53 @@ export type SearchElementInstanceIncidentsResponses = {
     /**
      * The element instance incident search result.
      */
-    200: IncidentSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching incidents.
+         */
+        items?: Array<{
+            /**
+             * The process definition ID associated to this incident.
+             */
+            processDefinitionId?: ProcessDefinitionId;
+            errorType?: IncidentErrorTypeEnum;
+            /**
+             * Error message which describes the error in more detail.
+             */
+            errorMessage?: string;
+            /**
+             * The element ID associated to this incident.
+             */
+            elementId?: ElementId;
+            creationTime?: string;
+            state?: IncidentStateEnum;
+            /**
+             * The tenant ID of the incident.
+             */
+            tenantId?: TenantId;
+            /**
+             * The assigned key, which acts as a unique identifier for this incident.
+             */
+            incidentKey?: IncidentKey;
+            /**
+             * The process definition key associated to this incident.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The process instance key associated to this incident.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * The element instance key associated to this incident.
+             */
+            elementInstanceKey?: ElementInstanceKey;
+            /**
+             * The job key, if exists, associated with this incident.
+             */
+            jobKey?: JobKey;
+        }>;
+    };
 };
 
 export type SearchElementInstanceIncidentsResponse = SearchElementInstanceIncidentsResponses[keyof SearchElementInstanceIncidentsResponses];
@@ -10428,7 +11168,53 @@ export type SearchIncidentsResponses = {
     /**
      * The incident search result.
      */
-    200: IncidentSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching incidents.
+         */
+        items?: Array<{
+            /**
+             * The process definition ID associated to this incident.
+             */
+            processDefinitionId?: ProcessDefinitionId;
+            errorType?: IncidentErrorTypeEnum;
+            /**
+             * Error message which describes the error in more detail.
+             */
+            errorMessage?: string;
+            /**
+             * The element ID associated to this incident.
+             */
+            elementId?: ElementId;
+            creationTime?: string;
+            state?: IncidentStateEnum;
+            /**
+             * The tenant ID of the incident.
+             */
+            tenantId?: TenantId;
+            /**
+             * The assigned key, which acts as a unique identifier for this incident.
+             */
+            incidentKey?: IncidentKey;
+            /**
+             * The process definition key associated to this incident.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The process instance key associated to this incident.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * The element instance key associated to this incident.
+             */
+            elementInstanceKey?: ElementInstanceKey;
+            /**
+             * The job key, if exists, associated with this incident.
+             */
+            jobKey?: JobKey;
+        }>;
+    };
 };
 
 export type SearchIncidentsResponse = SearchIncidentsResponses[keyof SearchIncidentsResponses];
@@ -10474,7 +11260,48 @@ export type GetIncidentResponses = {
     /**
      * The incident is successfully returned.
      */
-    200: IncidentResult;
+    200: {
+        /**
+         * The process definition ID associated to this incident.
+         */
+        processDefinitionId?: ProcessDefinitionId;
+        errorType?: IncidentErrorTypeEnum;
+        /**
+         * Error message which describes the error in more detail.
+         */
+        errorMessage?: string;
+        /**
+         * The element ID associated to this incident.
+         */
+        elementId?: ElementId;
+        creationTime?: string;
+        state?: IncidentStateEnum;
+        /**
+         * The tenant ID of the incident.
+         */
+        tenantId?: TenantId;
+        /**
+         * The assigned key, which acts as a unique identifier for this incident.
+         */
+        incidentKey?: IncidentKey;
+        /**
+         * The process definition key associated to this incident.
+         */
+        processDefinitionKey?: ProcessDefinitionKey;
+        /**
+         * The process instance key associated to this incident.
+         */
+        processInstanceKey?: ProcessInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
+        /**
+         * The element instance key associated to this incident.
+         */
+        elementInstanceKey?: ElementInstanceKey;
+        /**
+         * The job key, if exists, associated with this incident.
+         */
+        jobKey?: JobKey;
+    };
 };
 
 export type GetIncidentResponse = GetIncidentResponses[keyof GetIncidentResponses];
@@ -10846,6 +11673,7 @@ export type SearchJobsResponses = {
              * The process instance key associated with the job.
              */
             processInstanceKey: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             /**
              * The amount of retries left to this job.
              */
@@ -10923,49 +11751,7 @@ export type UpdateJobResponses = {
 export type UpdateJobResponse = UpdateJobResponses[keyof UpdateJobResponses];
 
 export type CompleteJobData = {
-    body?: {
-        /**
-         * The variables to complete the job with.
-         */
-        variables?: {
-            [key: string]: unknown;
-        } | null;
-        /**
-         * The result of the completed job as determined by the worker.
-         *
-         */
-        result?: ({
-            type: 'userTask';
-        } & JobResultUserTask) | {
-            /**
-             * Indicates which elements need to be activated in the ad-hoc subprocess.
-             */
-            activateElements?: Array<{
-                /**
-                 * The element ID to activate.
-                 */
-                elementId?: ElementId;
-                /**
-                 * Variables for the element.
-                 */
-                variables?: {
-                    [key: string]: unknown;
-                };
-            }>;
-            /**
-             * Indicates whether the completion condition of the ad-hoc subprocess is fulfilled.
-             */
-            isCompletionConditionFulfilled?: boolean;
-            /**
-             * Indicates whether the remaining instances of the ad-hoc subprocess should be canceled.
-             */
-            isCancelRemainingInstances?: boolean;
-            /**
-             * Used to distinguish between different types of job results.
-             */
-            type?: string;
-        } | null;
-    };
+    body?: JobCompletionRequest;
     path: {
         /**
          * The key of the job to complete.
@@ -11111,9 +11897,24 @@ export type FailJobResponses = {
 export type FailJobResponse = FailJobResponses[keyof FailJobResponses];
 
 export type GetGlobalJobStatisticsData = {
-    body: GlobalJobStatisticsQuery;
+    body?: never;
     path?: never;
-    query?: never;
+    query: {
+        /**
+         * Start of the time window to filter metrics. ISO 8601 date-time format.
+         *
+         */
+        from: string;
+        /**
+         * End of the time window to filter metrics. ISO 8601 date-time format.
+         *
+         */
+        to: string;
+        /**
+         * Optional job type to limit the aggregation to a single job type.
+         */
+        jobType?: string;
+    };
     url: '/jobs/statistics/global';
 };
 
@@ -11491,6 +12292,7 @@ export type SearchMessageSubscriptionsResponses = {
              * The process instance key associated with this message subscription.
              */
             processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             /**
              * The element ID associated with this message subscription.
              */
@@ -12058,35 +12860,9 @@ export type GetProcessDefinitionStatisticsError = GetProcessDefinitionStatistics
 
 export type GetProcessDefinitionStatisticsResponses = {
     /**
-     * Process definition element statistics query response.
+     * The process definition statistics result.
      */
-    200: {
-        /**
-         * The element statistics.
-         */
-        items?: Array<{
-            /**
-             * The element ID for which the results are aggregated.
-             */
-            elementId?: ElementId;
-            /**
-             * The total number of active instances of the element.
-             */
-            active?: number;
-            /**
-             * The total number of canceled instances of the element.
-             */
-            canceled?: number;
-            /**
-             * The total number of incidents for the element.
-             */
-            incidents?: number;
-            /**
-             * The total number of completed instances of the element.
-             */
-            completed?: number;
-        }>;
-    };
+    200: ProcessDefinitionElementStatisticsQueryResult;
 };
 
 export type GetProcessDefinitionStatisticsResponse = GetProcessDefinitionStatisticsResponses[keyof GetProcessDefinitionStatisticsResponses];
@@ -12145,7 +12921,7 @@ export type GetProcessDefinitionXmlResponses = {
 export type GetProcessDefinitionXmlResponse = GetProcessDefinitionXmlResponses[keyof GetProcessDefinitionXmlResponses];
 
 export type GetProcessDefinitionInstanceVersionStatisticsData = {
-    body?: {
+    body: {
         /**
          * Pagination criteria.
          */
@@ -12163,16 +12939,11 @@ export type GetProcessDefinitionInstanceVersionStatisticsData = {
         /**
          * The process definition instance version statistics search filters.
          */
-        filter?: ProcessDefinitionInstanceVersionStatisticsFilter;
+        filter: ProcessDefinitionInstanceVersionStatisticsFilter;
     };
-    path: {
-        /**
-         * The ID of the process definition.
-         */
-        processDefinitionId: ProcessDefinitionId;
-    };
+    path?: never;
     query?: never;
-    url: '/process-definitions/{processDefinitionId}/statistics/process-instances';
+    url: '/process-definitions/statistics/process-instances-by-version';
 };
 
 export type GetProcessDefinitionInstanceVersionStatisticsErrors = {
@@ -12241,17 +13012,7 @@ export type CreateProcessInstanceData = {
          * after it has been created.
          *
          */
-        startInstructions?: Array<{
-            /**
-             * Future extensions might include:
-             * - different types of start instructions
-             * - ability to set local variables for different flow scopes
-             *
-             * For now, however, the start instruction is implicitly a "startBeforeElement" instruction
-             *
-             */
-            elementId: ElementId;
-        }>;
+        startInstructions?: Array<ProcessInstanceCreationStartInstruction>;
         /**
          * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
          * the process instance. Refer to specific instruction types for more details.
@@ -12260,17 +13021,7 @@ export type CreateProcessInstanceData = {
          * in future releases.
          *
          */
-        runtimeInstructions?: Array<{
-            /**
-             * The type of the runtime instruction
-             */
-            type?: string;
-            /**
-             * The id of the element that, once completed or terminated, will cause the process to be terminated.
-             *
-             */
-            afterElementId: ElementId;
-        }>;
+        runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
         /**
          * Wait for the process instance to complete. If the process instance completion does
          * not occur within the requestTimeout, the request will be closed. This can lead to a 504
@@ -12299,6 +13050,12 @@ export type CreateProcessInstanceData = {
          */
         processDefinitionKey: ProcessDefinitionKey;
         /**
+         * As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.
+         * It's here for backwards-compatibility only as previous releases accepted it in request bodies.
+         *
+         */
+        processDefinitionVersion?: number;
+        /**
          * JSON object that will instantiate the variables for the root variable scope
          * of the process instance.
          *
@@ -12312,17 +13069,7 @@ export type CreateProcessInstanceData = {
          * after it has been created.
          *
          */
-        startInstructions?: Array<{
-            /**
-             * Future extensions might include:
-             * - different types of start instructions
-             * - ability to set local variables for different flow scopes
-             *
-             * For now, however, the start instruction is implicitly a "startBeforeElement" instruction
-             *
-             */
-            elementId: ElementId;
-        }>;
+        startInstructions?: Array<ProcessInstanceCreationStartInstruction>;
         /**
          * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
          * the process instance. Refer to specific instruction types for more details.
@@ -12331,17 +13078,7 @@ export type CreateProcessInstanceData = {
          * in future releases.
          *
          */
-        runtimeInstructions?: Array<{
-            /**
-             * The type of the runtime instruction
-             */
-            type?: string;
-            /**
-             * The id of the element that, once completed or terminated, will cause the process to be terminated.
-             *
-             */
-            afterElementId: ElementId;
-        }>;
+        runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
         /**
          * The tenant id of the process definition.
          */
@@ -12556,28 +13293,9 @@ export type MigrateProcessInstancesBatchOperationData = {
          */
         filter: ProcessInstanceFilter;
         /**
-         * The migration instructions describe how to migrate a process instance from one process definition to another.
-         *
+         * The migration plan.
          */
-        migrationPlan: {
-            /**
-             * The target process definition key.
-             */
-            targetProcessDefinitionKey: ProcessDefinitionKey;
-            /**
-             * The mapping instructions.
-             */
-            mappingInstructions: Array<{
-                /**
-                 * The element id to migrate from.
-                 */
-                sourceElementId: ElementId;
-                /**
-                 * The element id to migrate into.
-                 */
-                targetElementId: ElementId;
-            }>;
-        };
+        migrationPlan: ProcessInstanceMigrationBatchOperationPlan;
         operationReference?: OperationReference;
     };
     path?: never;
@@ -12630,16 +13348,7 @@ export type ModifyProcessInstancesBatchOperationData = {
         /**
          * Instructions for moving tokens between elements.
          */
-        moveInstructions: Array<{
-            /**
-             * The source element ID.
-             */
-            sourceElementId: ElementId;
-            /**
-             * The target element ID.
-             */
-            targetElementId: ElementId;
-        }>;
+        moveInstructions: Array<ProcessInstanceModificationMoveBatchOperationInstruction>;
         operationReference?: OperationReference;
     };
     path?: never;
@@ -12844,6 +13553,7 @@ export type SearchProcessInstancesResponses = {
              * The parent element instance key.
              */
             parentElementInstanceKey?: ElementInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             tags?: TagSet;
         }>;
     };
@@ -12927,6 +13637,7 @@ export type GetProcessInstanceResponses = {
          * The parent element instance key.
          */
         parentElementInstanceKey?: ElementInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
         tags?: TagSet;
     };
 };
@@ -13070,9 +13781,9 @@ export type DeleteProcessInstanceError = DeleteProcessInstanceErrors[keyof Delet
 
 export type DeleteProcessInstanceResponses = {
     /**
-     * The operation to delete the process instance was created.
+     * The process instance is marked for deletion.
      */
-    200: BatchOperationCreatedResult;
+    204: void;
 };
 
 export type DeleteProcessInstanceResponse = DeleteProcessInstanceResponses[keyof DeleteProcessInstanceResponses];
@@ -13165,7 +13876,53 @@ export type SearchProcessInstanceIncidentsResponses = {
     /**
      * The process instance search result.
      */
-    200: IncidentSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching incidents.
+         */
+        items?: Array<{
+            /**
+             * The process definition ID associated to this incident.
+             */
+            processDefinitionId?: ProcessDefinitionId;
+            errorType?: IncidentErrorTypeEnum;
+            /**
+             * Error message which describes the error in more detail.
+             */
+            errorMessage?: string;
+            /**
+             * The element ID associated to this incident.
+             */
+            elementId?: ElementId;
+            creationTime?: string;
+            state?: IncidentStateEnum;
+            /**
+             * The tenant ID of the incident.
+             */
+            tenantId?: TenantId;
+            /**
+             * The assigned key, which acts as a unique identifier for this incident.
+             */
+            incidentKey?: IncidentKey;
+            /**
+             * The process definition key associated to this incident.
+             */
+            processDefinitionKey?: ProcessDefinitionKey;
+            /**
+             * The process instance key associated to this incident.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+            /**
+             * The element instance key associated to this incident.
+             */
+            elementInstanceKey?: ElementInstanceKey;
+            /**
+             * The job key, if exists, associated with this incident.
+             */
+            jobKey?: JobKey;
+        }>;
+    };
 };
 
 export type SearchProcessInstanceIncidentsResponse = SearchProcessInstanceIncidentsResponses[keyof SearchProcessInstanceIncidentsResponses];
@@ -13183,16 +13940,7 @@ export type MigrateProcessInstanceData = {
         /**
          * Element mappings from the source process instance to the target process instance.
          */
-        mappingInstructions: Array<{
-            /**
-             * The element id to migrate from.
-             */
-            sourceElementId: ElementId;
-            /**
-             * The element id to migrate into.
-             */
-            targetElementId: ElementId;
-        }>;
+        mappingInstructions: Array<MigrateProcessInstanceMappingInstruction>;
         operationReference?: OperationReference;
     };
     path: {
@@ -13247,64 +13995,15 @@ export type ModifyProcessInstanceData = {
         /**
          * Instructions describing which elements to activate in which scopes and which variables to create or update.
          */
-        activateInstructions?: Array<{
-            /**
-             * The id of the element to activate.
-             */
-            elementId: ElementId;
-            /**
-             * Instructions describing which variables to create or update.
-             */
-            variableInstructions?: Array<ModifyProcessInstanceVariableInstruction>;
-            /**
-             * The key of the ancestor scope the element instance should be created in.
-             * Set to -1 to create the new element instance within an existing element instance of the
-             * flow scope. If multiple instances of the target element's flow scope exist, choose one
-             * specifically with this property by providing its key.
-             *
-             */
-            ancestorElementInstanceKey?: string | ElementInstanceKey;
-        }>;
+        activateInstructions?: Array<ProcessInstanceModificationActivateInstruction>;
         /**
          * Instructions describing which elements to move from one scope to another.
          */
-        moveInstructions?: Array<{
-            /**
-             * Defines the source element identifier for the move instruction. It can either be a sourceElementId, or sourceElementInstanceKey.
-             *
-             */
-            sourceElementInstruction: {
-                /**
-                 * The type of source element instruction.
-                 */
-                sourceType: string;
-                /**
-                 * The id of the source element for the move instruction.
-                 *
-                 */
-                sourceElementId: ElementId;
-            } | ({
-                sourceType: 'byKey';
-            } & SourceElementInstanceKeyInstruction);
-            /**
-             * The target element id.
-             */
-            targetElementId: ElementId;
-            ancestorScopeInstruction?: AncestorScopeInstruction;
-            /**
-             * Instructions describing which variables to create or update.
-             */
-            variableInstructions?: Array<ModifyProcessInstanceVariableInstruction>;
-        }>;
+        moveInstructions?: Array<ProcessInstanceModificationMoveInstruction>;
         /**
-         * Instruction describing which elements to terminate.
+         * Instructions describing which elements to terminate.
          */
-        terminateInstructions?: Array<{
-            /**
-             * The id of the elements to terminate. The element instances are determined at runtime.
-             */
-            elementId: ElementId;
-        } | ProcessInstanceModificationTerminateByKeyInstruction>;
+        terminateInstructions?: Array<ProcessInstanceModificationTerminateInstruction>;
     };
     path: {
         /**
@@ -13397,6 +14096,7 @@ export type GetProcessInstanceSequenceFlowsResponses = {
              * The key of this process instance.
              */
             processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             /**
              * The process definition key.
              */
@@ -13451,35 +14151,9 @@ export type GetProcessInstanceStatisticsError = GetProcessInstanceStatisticsErro
 
 export type GetProcessInstanceStatisticsResponses = {
     /**
-     * Process instance element statistics query response.
+     * The process instance statistics result.
      */
-    200: {
-        /**
-         * The element statistics.
-         */
-        items?: Array<{
-            /**
-             * The element ID for which the results are aggregated.
-             */
-            elementId?: ElementId;
-            /**
-             * The total number of active instances of the element.
-             */
-            active?: number;
-            /**
-             * The total number of canceled instances of the element.
-             */
-            canceled?: number;
-            /**
-             * The total number of incidents for the element.
-             */
-            incidents?: number;
-            /**
-             * The total number of completed instances of the element.
-             */
-            completed?: number;
-        }>;
-    };
+    200: ProcessInstanceElementStatisticsQueryResult;
 };
 
 export type GetProcessInstanceStatisticsResponse = GetProcessInstanceStatisticsResponses[keyof GetProcessInstanceStatisticsResponses];
@@ -15805,7 +16479,7 @@ export type SearchUserTasksData = {
              * The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
              *
              */
-            name?: string;
+            name?: StringFilterProperty;
             /**
              * The candidate group for this user task.
              */
@@ -15974,6 +16648,7 @@ export type SearchUserTasksResponses = {
              * The key of the process instance.
              */
             processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             /**
              * The key of the form.
              */
@@ -16107,6 +16782,7 @@ export type GetUserTaskResponses = {
          * The key of the process instance.
          */
         processInstanceKey?: ProcessInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
         /**
          * The key of the form.
          */
@@ -16350,6 +17026,7 @@ export type SearchUserTaskAuditLogsResponses = {
              * The key of the process instance.
              */
             processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
             /**
              * The key of the element instance.
              */
@@ -16394,6 +17071,24 @@ export type SearchUserTaskAuditLogsResponses = {
              * The system-assigned key for this resource.
              */
             resourceKey?: ResourceKey;
+            /**
+             * The key of the related entity. The content depends on the operation type and entity type.
+             * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
+             *
+             */
+            relatedEntityKey?: AuditLogEntityKey;
+            /**
+             * The type of the related entity. The content depends on the operation type and entity type.
+             * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
+             *
+             */
+            relatedEntityType?: AuditLogEntityTypeEnum;
+            /**
+             * Additional description of the entity affected by the operation.
+             * For example, for variable operations, this will contain the variable name.
+             *
+             */
+            entityDescription?: string;
         }>;
     };
 };
@@ -16576,9 +17271,45 @@ export type SearchUserTaskVariablesError = SearchUserTaskVariablesErrors[keyof S
 
 export type SearchUserTaskVariablesResponses = {
     /**
-     * The user task variable search result.
+     * Variable search query response.
      */
-    200: VariableSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching variables.
+         */
+        items?: Array<{
+            /**
+             * Name of this variable.
+             */
+            name?: string;
+            /**
+             * Tenant ID of this variable.
+             */
+            tenantId?: TenantId;
+            /**
+             * The key for this variable.
+             */
+            variableKey?: VariableKey;
+            /**
+             * The key of the scope of this variable.
+             */
+            scopeKey?: ScopeKey;
+            /**
+             * The key of the process instance of this variable.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+        } & {
+            /**
+             * Value of this variable. Can be truncated.
+             */
+            value?: string;
+            /**
+             * Whether the value is truncated or not.
+             */
+            isTruncated?: boolean;
+        }>;
+    };
 };
 
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
@@ -16623,30 +17354,9 @@ export type SearchVariablesData = {
              */
             variableKey?: VariableKeyFilterProperty;
             /**
-             * ScopeKey property with full advanced search capabilities.
+             * The key of the scope of this variable.
              */
-            scopeKey?: ScopeKey | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: ScopeKey;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: ScopeKey;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<ScopeKey>;
-                /**
-                 * Checks if the property matches none of the provided values.
-                 */
-                $notIn?: Array<ScopeKey>;
-            };
+            scopeKey?: ScopeKeyFilterProperty;
             /**
              * The key of the process instance of this variable.
              */
@@ -16686,9 +17396,45 @@ export type SearchVariablesError = SearchVariablesErrors[keyof SearchVariablesEr
 
 export type SearchVariablesResponses = {
     /**
-     * The variable search result.
+     * Variable search query response.
      */
-    200: VariableSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching variables.
+         */
+        items?: Array<{
+            /**
+             * Name of this variable.
+             */
+            name?: string;
+            /**
+             * Tenant ID of this variable.
+             */
+            tenantId?: TenantId;
+            /**
+             * The key for this variable.
+             */
+            variableKey?: VariableKey;
+            /**
+             * The key of the scope of this variable.
+             */
+            scopeKey?: ScopeKey;
+            /**
+             * The key of the process instance of this variable.
+             */
+            processInstanceKey?: ProcessInstanceKey;
+            rootProcessInstanceKey?: ProcessInstanceKey;
+        } & {
+            /**
+             * Value of this variable. Can be truncated.
+             */
+            value?: string;
+            /**
+             * Whether the value is truncated or not.
+             */
+            isTruncated?: boolean;
+        }>;
+    };
 };
 
 export type SearchVariablesResponse = SearchVariablesResponses[keyof SearchVariablesResponses];
@@ -16732,9 +17478,36 @@ export type GetVariableError = GetVariableErrors[keyof GetVariableErrors];
 
 export type GetVariableResponses = {
     /**
-     * The variable is successfully returned.
+     * Variable search response item.
      */
-    200: VariableResult;
+    200: {
+        /**
+         * Name of this variable.
+         */
+        name?: string;
+        /**
+         * Tenant ID of this variable.
+         */
+        tenantId?: TenantId;
+        /**
+         * The key for this variable.
+         */
+        variableKey?: VariableKey;
+        /**
+         * The key of the scope of this variable.
+         */
+        scopeKey?: ScopeKey;
+        /**
+         * The key of the process instance of this variable.
+         */
+        processInstanceKey?: ProcessInstanceKey;
+        rootProcessInstanceKey?: ProcessInstanceKey;
+    } & {
+        /**
+         * Full value of this variable.
+         */
+        value?: string;
+    };
 };
 
 export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponses];
@@ -16742,7 +17515,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:38bf9493807aafa46514894ba7b8082f7d9ea579ffcdc25f1ccc2643586c54a8
+// specHash=sha256:18eb685e8457262fc2c47d96ca9751678c99c0a63f61ff0a44e45b63b3d39df1
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -17056,6 +17829,20 @@ export namespace ProcessInstanceKey {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The key of the root process instance. The root process instance is the top-level ancestor in the process instance hierarchy. This field is only present for data belonging to process instance hierarchies created in version 8.9 or later. 
+export namespace RootProcessInstanceKey {
+  export function assumeExists(value: string): RootProcessInstanceKey {
+    assertConstraint(value, 'RootProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  }
+  export function getValue(key: RootProcessInstanceKey): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'RootProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
   }

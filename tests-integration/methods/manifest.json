@@ -1,6 +1,6 @@
 {
-  "operations": 168,
-  "tests": 170,
+  "operations": 172,
+  "tests": 174,
   "missing": [],
   "ignored": [],
   "files": [
@@ -42,6 +42,8 @@
     "createTenantClusterVariable.test.ts",
     "createUser.test.ts",
     "deleteAuthorization.test.ts",
+    "deleteDecisionInstance.test.ts",
+    "deleteDecisionInstancesBatchOperation.test.ts",
     "deleteDocument.test.ts",
     "deleteGlobalClusterVariable.test.ts",
     "deleteGroup.test.ts",
@@ -167,11 +169,13 @@
     "unassignUserFromTenant.test.ts",
     "unassignUserTask.test.ts",
     "updateAuthorization.test.ts",
+    "updateGlobalClusterVariable.test.ts",
     "updateGroup.test.ts",
     "updateJob.test.ts",
     "updateMappingRule.test.ts",
     "updateRole.test.ts",
     "updateTenant.test.ts",
+    "updateTenantClusterVariable.test.ts",
     "updateUser.test.ts",
     "updateUserTask.test.ts"
   ],

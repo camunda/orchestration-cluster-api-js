@@ -317,6 +317,9 @@
                       ],
                       "description": "The key of the process instance."
                     },
+                    "rootProcessInstanceKey": {
+                      "$ref": "#/components/schemas/ProcessInstanceKey"
+                    },
                     "elementInstanceKey": {
                       "allOf": [
                         {
@@ -400,6 +403,26 @@
                         }
                       ],
                       "description": "The system-assigned key for this resource."
+                    },
+                    "relatedEntityKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/AuditLogEntityKey"
+                        }
+                      ],
+                      "description": "The key of the related entity. The content depends on the operation type and entity type.\nFor example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.\n"
+                    },
+                    "relatedEntityType": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
+                        }
+                      ],
+                      "description": "The type of the related entity. The content depends on the operation type and entity type.\nFor example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.\n"
+                    },
+                    "entityDescription": {
+                      "type": "string",
+                      "description": "Additional description of the entity affected by the operation.\nFor example, for variable operations, this will contain the variable name.\n"
                     }
                   }
                 }
@@ -811,7 +834,69 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BatchOperationItemSearchQueryResult"
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching batch operation items.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "operationType": {
+                            "$ref": "#/components/schemas/BatchOperationTypeEnum"
+                          },
+                          "batchOperationKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/BatchOperationKey"
+                              }
+                            ],
+                            "description": "The key (or operate legacy ID) of the batch operation."
+                          },
+                          "itemKey": {
+                            "description": "Key of the item, e.g. a process instance key.",
+                            "type": "string"
+                          },
+                          "processInstanceKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessInstanceKey"
+                              }
+                            ],
+                            "description": "the process instance key of the processed item."
+                          },
+                          "rootProcessInstanceKey": {
+                            "$ref": "#/components/schemas/ProcessInstanceKey"
+                          },
+                          "state": {
+                            "description": "State of the item.",
+                            "type": "string",
+                            "enum": [
+                              "ACTIVE",
+                              "COMPLETED",
+                              "SKIPPED",
+                              "CANCELED",
+                              "FAILED"
+                            ]
+                          },
+                          "processedDate": {
+                            "description": "the date this item was processed.",
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "errorMessage": {
+                            "description": "the error message from the engine in case of a failed operation.",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1343,6 +1428,70 @@
           }
         }
       },
+      "put": {
+        "operationId": "updateGlobalClusterVariable",
+        "x-eventually-consistent": false,
+        "tags": [
+          "Cluster Variable"
+        ],
+        "summary": "Update a global-scoped cluster variable",
+        "description": "Updates the value of an existing global cluster variable.\nThe variable must exist, otherwise a 404 error is returned.\n",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The name of the cluster variable"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClusterVariableRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cluster variable updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClusterVariableResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "Cluster variable not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      },
       "delete": {
         "operationId": "deleteGlobalClusterVariable",
         "x-eventually-consistent": false,
@@ -1707,6 +1856,79 @@
           }
         }
       },
+      "put": {
+        "operationId": "updateTenantClusterVariable",
+        "x-eventually-consistent": false,
+        "tags": [
+          "Cluster Variable"
+        ],
+        "summary": "Update a tenant-scoped cluster variable",
+        "description": "Updates the value of an existing tenant-scoped cluster variable.\nThe variable must exist, otherwise a 404 error is returned.\n",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/TenantId"
+            },
+            "description": "The tenant ID"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The name of the cluster variable"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClusterVariableRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cluster variable updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClusterVariableResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "Cluster variable not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      },
       "delete": {
         "operationId": "deleteTenantClusterVariable",
         "x-eventually-consistent": false,
@@ -1879,7 +2101,116 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CorrelatedMessageSubscriptionSearchQueryResult"
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching correlated message subscriptions.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "correlationKey": {
+                            "description": "The correlation key of the message.",
+                            "type": "string"
+                          },
+                          "correlationTime": {
+                            "description": "The time when the message was correlated.",
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "elementId": {
+                            "description": "The element ID that received the message.",
+                            "type": "string"
+                          },
+                          "elementInstanceKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ElementInstanceKey"
+                              }
+                            ],
+                            "description": "The element instance key that received the message."
+                          },
+                          "messageKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/MessageKey"
+                              }
+                            ],
+                            "description": "The message key."
+                          },
+                          "messageName": {
+                            "description": "The name of the message.",
+                            "type": "string"
+                          },
+                          "partitionId": {
+                            "description": "The partition ID that correlated the message.",
+                            "type": "integer",
+                            "format": "int32"
+                          },
+                          "processDefinitionId": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessDefinitionId"
+                              }
+                            ],
+                            "description": "The process definition ID associated with this correlated message subscription."
+                          },
+                          "processDefinitionKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessDefinitionKey"
+                              }
+                            ],
+                            "description": "The process definition key associated with this correlated message subscription."
+                          },
+                          "processInstanceKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/ProcessInstanceKey"
+                              }
+                            ],
+                            "description": "The process instance key associated with this correlated message subscription."
+                          },
+                          "rootProcessInstanceKey": {
+                            "$ref": "#/components/schemas/ProcessInstanceKey"
+                          },
+                          "subscriptionKey": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/MessageSubscriptionKey"
+                              }
+                            ],
+                            "description": "The subscription key that received the message."
+                          },
+                          "tenantId": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/TenantId"
+                              }
+                            ],
+                            "description": "The tenant ID associated with this correlated message subscription."
+                          }
+                        },
+                        "required": [
+                          "correlationKey",
+                          "correlationTime",
+                          "elementId",
+                          "messageKey",
+                          "messageName",
+                          "partitionId",
+                          "processDefinitionId",
+                          "processInstanceKey",
+                          "subscriptionKey",
+                          "tenantId"
+                        ]
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -2256,6 +2587,14 @@
                                 "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionDefinitionKey/allOf/0"
                               }
                             ]
+                          },
+                          "decisionRequirementsKey": {
+                            "description": "The key of the decision requirements definition.",
+                            "allOf": [
+                              {
+                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionRequirementsKey/allOf/0"
+                              }
+                            ]
                           }
                         }
                       }
@@ -2272,7 +2611,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionInstanceSearchQueryResult"
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching decision instances.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1decision-instances~1{decisionEvaluationInstanceKey}/get/responses/200/content/application~1json/schema/allOf/0"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -2318,7 +2671,130 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/DecisionInstanceGetQueryResult"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "decisionEvaluationInstanceKey": {
+                          "$ref": "#/components/schemas/DecisionEvaluationInstanceKey"
+                        },
+                        "state": {
+                          "$ref": "#/components/schemas/DecisionInstanceStateEnum"
+                        },
+                        "evaluationDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "The evaluation date of the decision instance."
+                        },
+                        "evaluationFailure": {
+                          "type": "string",
+                          "description": "The evaluation failure of the decision instance."
+                        },
+                        "decisionDefinitionId": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/DecisionDefinitionId"
+                            }
+                          ],
+                          "description": "The ID of the DMN decision."
+                        },
+                        "decisionDefinitionName": {
+                          "type": "string",
+                          "description": "The name of the DMN decision."
+                        },
+                        "decisionDefinitionVersion": {
+                          "type": "integer",
+                          "format": "int32",
+                          "description": "The version of the decision."
+                        },
+                        "decisionDefinitionType": {
+                          "$ref": "#/components/schemas/DecisionDefinitionTypeEnum"
+                        },
+                        "result": {
+                          "type": "string",
+                          "description": "The result of the decision instance."
+                        },
+                        "tenantId": {
+                          "description": "The tenant ID of the decision instance.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/TenantId"
+                            }
+                          ]
+                        },
+                        "decisionEvaluationKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/DecisionEvaluationKey"
+                            }
+                          ],
+                          "description": "The key of the decision evaluation where this instance was created."
+                        },
+                        "processDefinitionKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ProcessDefinitionKey"
+                            }
+                          ],
+                          "description": "The key of the process definition."
+                        },
+                        "processInstanceKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ProcessInstanceKey"
+                            }
+                          ],
+                          "description": "The key of the process instance."
+                        },
+                        "rootProcessInstanceKey": {
+                          "$ref": "#/components/schemas/ProcessInstanceKey"
+                        },
+                        "decisionDefinitionKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/DecisionDefinitionKey"
+                            }
+                          ],
+                          "description": "The key of the decision."
+                        },
+                        "elementInstanceKey": {
+                          "description": "The key of the element instance this decision instance is linked to.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ElementInstanceKey"
+                            }
+                          ]
+                        },
+                        "rootDecisionDefinitionKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/DecisionDefinitionKey"
+                            }
+                          ],
+                          "description": "The key of the root decision definition."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "evaluatedInputs": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/EvaluatedDecisionInputItem"
+                          },
+                          "description": "The evaluated inputs of the decision instance.\n"
+                        },
+                        "matchedRules": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MatchedDecisionRuleItem"
+                          },
+                          "description": "The matched rules of the decision instance.\n"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -2341,6 +2817,135 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/decision-instances/{decisionInstanceKey}/deletion": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Decision instance"
+        ],
+        "operationId": "deleteDecisionInstance",
+        "summary": "Delete decision instance",
+        "description": "Delete all associated decision evaluations based on provided key.",
+        "parameters": [
+          {
+            "name": "decisionInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the decision instance to delete.",
+            "schema": {
+              "$ref": "#/components/schemas/DecisionInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteProcessInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The decision instance is marked for deletion."
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The decision instance is not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        }
+      }
+    },
+    "/decision-instances/deletion": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Decision instance"
+        ],
+        "operationId": "deleteDecisionInstancesBatchOperation",
+        "summary": "Delete decision instances (batch)",
+        "description": "Delete multiple decision instances. This will delete the historic data from secondary storage.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "The decision instance filter that defines which decision instances should be deleted.",
+                "properties": {
+                  "filter": {
+                    "allOf": [
+                      {
+                        "$ref": "#/paths/~1decision-instances~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0"
+                      }
+                    ],
+                    "description": "The decision instance filter."
+                  },
+                  "operationReference": {
+                    "$ref": "#/components/schemas/OperationReference"
+                  }
+                },
+                "required": [
+                  "filter"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch operation request was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchOperationCreatedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The decision instance batch operation failed. More details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
@@ -3083,7 +3688,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ElementInstanceSearchQueryResult"
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching element instances.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1element-instances~1{elementInstanceKey}/get/responses/200/content/application~1json/schema"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3129,7 +3748,140 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ElementInstanceResult"
+                  "type": "object",
+                  "required": [
+                    "processDefinitionId",
+                    "startDate",
+                    "elementId",
+                    "elementName",
+                    "type",
+                    "state",
+                    "hasIncident",
+                    "tenantId",
+                    "elementInstanceKey",
+                    "processInstanceKey",
+                    "processDefinitionKey"
+                  ],
+                  "properties": {
+                    "processDefinitionId": {
+                      "description": "The process definition ID associated to this element instance.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProcessDefinitionId"
+                        }
+                      ]
+                    },
+                    "startDate": {
+                      "description": "Date when element instance started.",
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "endDate": {
+                      "description": "Date when element instance finished.",
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "elementId": {
+                      "description": "The element ID for this element instance.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ElementId"
+                        }
+                      ]
+                    },
+                    "elementName": {
+                      "description": "The element name for this element instance.",
+                      "type": "string"
+                    },
+                    "type": {
+                      "description": "Type of element as defined set of values.",
+                      "type": "string",
+                      "enum": [
+                        "UNSPECIFIED",
+                        "PROCESS",
+                        "SUB_PROCESS",
+                        "EVENT_SUB_PROCESS",
+                        "AD_HOC_SUB_PROCESS",
+                        "AD_HOC_SUB_PROCESS_INNER_INSTANCE",
+                        "START_EVENT",
+                        "INTERMEDIATE_CATCH_EVENT",
+                        "INTERMEDIATE_THROW_EVENT",
+                        "BOUNDARY_EVENT",
+                        "END_EVENT",
+                        "SERVICE_TASK",
+                        "RECEIVE_TASK",
+                        "USER_TASK",
+                        "MANUAL_TASK",
+                        "TASK",
+                        "EXCLUSIVE_GATEWAY",
+                        "INCLUSIVE_GATEWAY",
+                        "PARALLEL_GATEWAY",
+                        "EVENT_BASED_GATEWAY",
+                        "SEQUENCE_FLOW",
+                        "MULTI_INSTANCE_BODY",
+                        "CALL_ACTIVITY",
+                        "BUSINESS_RULE_TASK",
+                        "SCRIPT_TASK",
+                        "SEND_TASK",
+                        "UNKNOWN"
+                      ]
+                    },
+                    "state": {
+                      "description": "State of element instance as defined set of values.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ElementInstanceStateEnum"
+                        }
+                      ]
+                    },
+                    "hasIncident": {
+                      "description": "Shows whether this element instance has an incident. If true also an incidentKey is provided.",
+                      "type": "boolean"
+                    },
+                    "tenantId": {
+                      "description": "The tenant ID of the incident.",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/TenantId"
+                        }
+                      ]
+                    },
+                    "elementInstanceKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ElementInstanceKey"
+                        }
+                      ],
+                      "description": "The assigned key, which acts as a unique identifier for this element instance."
+                    },
+                    "processInstanceKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProcessInstanceKey"
+                        }
+                      ],
+                      "description": "The process instance key associated to this element instance."
+                    },
+                    "rootProcessInstanceKey": {
+                      "$ref": "#/components/schemas/ProcessInstanceKey"
+                    },
+                    "processDefinitionKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProcessDefinitionKey"
+                        }
+                      ],
+                      "description": "The process definition key associated to this element instance."
+                    },
+                    "incidentKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/IncidentKey"
+                        }
+                      ],
+                      "description": "Incident key associated with this element instance."
+                    }
+                  }
                 }
               }
             }
@@ -3195,7 +3947,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IncidentSearchQueryResult"
+                  "$ref": "#/paths/~1incidents~1search/post/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -4286,7 +5038,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IncidentSearchQueryResult"
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching incidents.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -4332,7 +5098,98 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IncidentResult"
+                  "type": "object",
+                  "properties": {
+                    "processDefinitionId": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProcessDefinitionId"
+                        }
+                      ],
+                      "description": "The process definition ID associated to this incident."
+                    },
+                    "errorType": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/IncidentErrorTypeEnum"
+                        }
+                      ]
+                    },
+                    "errorMessage": {
+                      "type": "string",
+                      "description": "Error message which describes the error in more detail."
+                    },
+                    "elementId": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ElementId"
+                        }
+                      ],
+                      "description": "The element ID associated to this incident."
+                    },
+                    "creationTime": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "state": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/IncidentStateEnum"
+                        }
+                      ]
+                    },
+                    "tenantId": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/TenantId"
+                        }
+                      ],
+                      "description": "The tenant ID of the incident."
+                    },
+                    "incidentKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/IncidentKey"
+                        }
+                      ],
+                      "description": "The assigned key, which acts as a unique identifier for this incident."
+                    },
+                    "processDefinitionKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProcessDefinitionKey"
+                        }
+                      ],
+                      "description": "The process definition key associated to this incident."
+                    },
+                    "processInstanceKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ProcessInstanceKey"
+                        }
+                      ],
+                      "description": "The process instance key associated to this incident."
+                    },
+                    "rootProcessInstanceKey": {
+                      "$ref": "#/components/schemas/ProcessInstanceKey"
+                    },
+                    "elementInstanceKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/ElementInstanceKey"
+                        }
+                      ],
+                      "description": "The element instance key associated to this incident."
+                    },
+                    "jobKey": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/JobKey"
+                        }
+                      ],
+                      "description": "The job key, if exists, associated with this incident."
+                    }
+                  }
                 }
               }
             }
@@ -4590,7 +5447,7 @@
                           "elementId": {
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
+                                "$ref": "#/components/schemas/ElementId"
                               }
                             ],
                             "description": "The associated task element ID."
@@ -4843,7 +5700,7 @@
                             "description": "The element ID associated with the job.",
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
+                                "$ref": "#/components/schemas/ElementId"
                               }
                             ]
                           },
@@ -4916,6 +5773,9 @@
                               }
                             ],
                             "description": "The process instance key associated with the job."
+                          },
+                          "rootProcessInstanceKey": {
+                            "$ref": "#/components/schemas/ProcessInstanceKey"
                           },
                           "retries": {
                             "description": "The amount of retries left to this job.",
@@ -5060,78 +5920,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "variables": {
-                    "additionalProperties": true,
-                    "description": "The variables to complete the job with.",
-                    "type": "object",
-                    "nullable": true
-                  },
-                  "result": {
-                    "description": "The result of the completed job as determined by the worker.\n",
-                    "discriminator": {
-                      "propertyName": "type",
-                      "mapping": {
-                        "userTask": "#/components/schemas/JobResultUserTask",
-                        "adHocSubProcess": "#/components/schemas/JobResultAdHocSubProcess"
-                      }
-                    },
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/JobResultUserTask"
-                      },
-                      {
-                        "description": "Job result details for an ad‑hoc sub‑process, including elements to activate and flags indicating completion or cancellation behavior.\n",
-                        "type": "object",
-                        "nullable": true,
-                        "properties": {
-                          "activateElements": {
-                            "type": "array",
-                            "description": "Indicates which elements need to be activated in the ad-hoc subprocess.",
-                            "items": {
-                              "description": "Instruction to activate a single BPMN element within an ad‑hoc sub‑process, optionally providing variables scoped to that element.",
-                              "type": "object",
-                              "properties": {
-                                "elementId": {
-                                  "allOf": [
-                                    {
-                                      "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                                    }
-                                  ],
-                                  "description": "The element ID to activate."
-                                },
-                                "variables": {
-                                  "type": "object",
-                                  "additionalProperties": true,
-                                  "description": "Variables for the element."
-                                }
-                              }
-                            }
-                          },
-                          "isCompletionConditionFulfilled": {
-                            "type": "boolean",
-                            "description": "Indicates whether the completion condition of the ad-hoc subprocess is fulfilled.",
-                            "default": false,
-                            "nullable": false
-                          },
-                          "isCancelRemainingInstances": {
-                            "type": "boolean",
-                            "description": "Indicates whether the remaining instances of the ad-hoc subprocess should be canceled.",
-                            "default": false,
-                            "nullable": false
-                          },
-                          "type": {
-                            "description": "Used to distinguish between different types of job results.",
-                            "type": "string",
-                            "example": "adHocSubProcess"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/components/schemas/JobCompletionRequest"
               }
             }
           }
@@ -5305,24 +6094,48 @@
       }
     },
     "/jobs/statistics/global": {
-      "post": {
+      "get": {
         "x-eventually-consistent": true,
         "tags": [
-          "Job metrics"
+          "Job"
         ],
         "operationId": "getGlobalJobStatistics",
         "summary": "Global job statistics",
         "description": "Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GlobalJobStatisticsQuery"
-              }
-            }
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2024-07-28T15:51:28.071Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "example": "2024-07-29T15:51:28.071Z"
+          },
+          {
+            "name": "jobType",
+            "in": "query",
+            "required": false,
+            "description": "Optional job type to limit the aggregation to a single job type.",
+            "schema": {
+              "type": "string"
+            },
+            "example": "fetch-customer-data"
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Global job metrics",
@@ -5859,10 +6672,13 @@
                             ],
                             "description": "The process instance key associated with this message subscription."
                           },
+                          "rootProcessInstanceKey": {
+                            "$ref": "#/components/schemas/ProcessInstanceKey"
+                          },
                           "elementId": {
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
+                                "$ref": "#/components/schemas/ElementId"
                               }
                             ],
                             "description": "The element ID associated with this message subscription."
@@ -6563,17 +7379,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Process definition element statistics query response.",
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "description": "The element statistics.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1process-instances~1{processInstanceKey}~1statistics~1element-instances/get/responses/200/content/application~1json/schema/properties/items/items"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProcessDefinitionElementStatisticsQueryResult"
                 }
               }
             }
@@ -6659,7 +7465,7 @@
         }
       }
     },
-    "/process-definitions/{processDefinitionId}/statistics/process-instances": {
+    "/process-definitions/statistics/process-instances-by-version": {
       "post": {
         "x-eventually-consistent": true,
         "tags": [
@@ -6667,20 +7473,9 @@
         ],
         "operationId": "getProcessDefinitionInstanceVersionStatistics",
         "summary": "Get process instance statistics by version",
-        "description": "Get statistics about process instances, grouped by version for a given process definition.\n",
-        "parameters": [
-          {
-            "name": "processDefinitionId",
-            "in": "path",
-            "required": true,
-            "description": "The ID of the process definition.",
-            "schema": {
-              "$ref": "#/components/schemas/ProcessDefinitionId"
-            }
-          }
-        ],
+        "description": "Get statistics about process instances, grouped by version for a given process definition.\nThe process definition ID must be provided as a required field in the request body filter.\n",
         "requestBody": {
-          "required": false,
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -6729,7 +7524,10 @@
                       }
                     ]
                   }
-                }
+                },
+                "required": [
+                  "filter"
+                ]
               }
             }
           }
@@ -6819,58 +7617,14 @@
                         "description": "List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n",
                         "type": "array",
                         "items": {
-                          "type": "object",
-                          "required": [
-                            "elementId"
-                          ],
-                          "properties": {
-                            "elementId": {
-                              "description": "Future extensions might include:\n  - different types of start instructions\n  - ability to set local variables for different flow scopes\n\nFor now, however, the start instruction is implicitly a \"startBeforeElement\" instruction\n",
-                              "allOf": [
-                                {
-                                  "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                                }
-                              ]
-                            }
-                          }
+                          "$ref": "#/components/schemas/ProcessInstanceCreationStartInstruction"
                         }
                       },
                       "runtimeInstructions": {
                         "description": "Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n",
                         "type": "array",
                         "items": {
-                          "x-polymorphic-schema": true,
-                          "discriminator": {
-                            "propertyName": "type",
-                            "mapping": {
-                              "TERMINATE_PROCESS_INSTANCE": "#/components/schemas/ProcessInstanceCreationTerminateInstruction"
-                            }
-                          },
-                          "oneOf": [
-                            {
-                              "type": "object",
-                              "description": "Terminates the process instance after a specific BPMN element is completed or terminated.\n",
-                              "required": [
-                                "afterElementId"
-                              ],
-                              "properties": {
-                                "type": {
-                                  "description": "The type of the runtime instruction",
-                                  "type": "string",
-                                  "example": "TERMINATE_PROCESS_INSTANCE"
-                                },
-                                "afterElementId": {
-                                  "description": "The id of the element that, once completed or terminated, will cause the process to be terminated.\n",
-                                  "example": "Activity_106kb",
-                                  "allOf": [
-                                    {
-                                      "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          ]
+                          "$ref": "#/components/schemas/ProcessInstanceCreationRuntimeInstruction"
                         }
                       },
                       "awaitCompletion": {
@@ -6913,6 +7667,12 @@
                         ],
                         "description": "The unique key identifying the process definition, for example, returned for a process in the\ndeploy resources endpoint.\n"
                       },
+                      "processDefinitionVersion": {
+                        "description": "As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt's here for backwards-compatibility only as previous releases accepted it in request bodies.\n",
+                        "type": "integer",
+                        "format": "int32",
+                        "default": -1
+                      },
                       "variables": {
                         "description": "JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n",
                         "type": "object",
@@ -6922,14 +7682,14 @@
                         "description": "List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n",
                         "type": "array",
                         "items": {
-                          "$ref": "#/paths/~1process-instances/post/requestBody/content/application~1json/schema/oneOf/0/properties/startInstructions/items"
+                          "$ref": "#/components/schemas/ProcessInstanceCreationStartInstruction"
                         }
                       },
                       "runtimeInstructions": {
                         "description": "Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n",
                         "type": "array",
                         "items": {
-                          "$ref": "#/paths/~1process-instances/post/requestBody/content/application~1json/schema/oneOf/0/properties/runtimeInstructions/items"
+                          "$ref": "#/components/schemas/ProcessInstanceCreationRuntimeInstruction"
                         }
                       },
                       "tenantId": {
@@ -7260,29 +8020,7 @@
                   "migrationPlan": {
                     "allOf": [
                       {
-                        "type": "object",
-                        "description": "The migration instructions describe how to migrate a process instance from one process definition to another.\n",
-                        "properties": {
-                          "targetProcessDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The target process definition key."
-                          },
-                          "mappingInstructions": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/paths/~1process-instances~1{processInstanceKey}~1migration/post/requestBody/content/application~1json/schema/properties/mappingInstructions/items"
-                            },
-                            "description": "The mapping instructions."
-                          }
-                        },
-                        "required": [
-                          "targetProcessDefinitionKey",
-                          "mappingInstructions"
-                        ]
+                        "$ref": "#/components/schemas/ProcessInstanceMigrationBatchOperationPlan"
                       }
                     ],
                     "description": "The migration plan."
@@ -7361,30 +8099,7 @@
                   "moveInstructions": {
                     "type": "array",
                     "items": {
-                      "description": "Instructions describing a move operation. This instruction will terminate all active\nelement instances at `sourceElementId` and activate a new element instance for each\nterminated one at `targetElementId`. The new element instances are created in the parent\nscope of the source element instances.\n",
-                      "type": "object",
-                      "properties": {
-                        "sourceElementId": {
-                          "allOf": [
-                            {
-                              "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                            }
-                          ],
-                          "description": "The source element ID."
-                        },
-                        "targetElementId": {
-                          "allOf": [
-                            {
-                              "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                            }
-                          ],
-                          "description": "The target element ID."
-                        }
-                      },
-                      "required": [
-                        "sourceElementId",
-                        "targetElementId"
-                      ]
+                      "$ref": "#/components/schemas/ProcessInstanceModificationMoveBatchOperationInstruction"
                     },
                     "description": "Instructions for moving tokens between elements."
                   },
@@ -7717,6 +8432,9 @@
                       ],
                       "description": "The parent element instance key."
                     },
+                    "rootProcessInstanceKey": {
+                      "$ref": "#/components/schemas/ProcessInstanceKey"
+                    },
                     "tags": {
                       "$ref": "#/paths/~1process-instances/post/responses/200/content/application~1json/schema/properties/tags"
                     }
@@ -7910,15 +8628,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "The operation to delete the process instance was created.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BatchOperationCreatedResult"
-                }
-              }
-            }
+          "204": {
+            "description": "The process instance is marked for deletion."
           },
           "401": {
             "$ref": "#/paths/~1roles/post/responses/401"
@@ -8047,7 +8758,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IncidentSearchQueryResult"
+                  "$ref": "#/paths/~1incidents~1search/post/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -8118,30 +8829,7 @@
                     "description": "Element mappings from the source process instance to the target process instance.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "description": "The mapping instructions describe how to map elements from the source process definition to the target process definition.\n",
-                      "properties": {
-                        "sourceElementId": {
-                          "description": "The element id to migrate from.",
-                          "allOf": [
-                            {
-                              "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                            }
-                          ]
-                        },
-                        "targetElementId": {
-                          "description": "The element id to migrate into.",
-                          "allOf": [
-                            {
-                              "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                            }
-                          ]
-                        }
-                      },
-                      "required": [
-                        "sourceElementId",
-                        "targetElementId"
-                      ]
+                      "$ref": "#/components/schemas/MigrateProcessInstanceMappingInstruction"
                     }
                   },
                   "operationReference": {
@@ -8227,141 +8915,21 @@
                     "description": "Instructions describing which elements to activate in which scopes and which variables to create or update.",
                     "type": "array",
                     "items": {
-                      "description": "Instruction describing an element to activate.",
-                      "type": "object",
-                      "properties": {
-                        "elementId": {
-                          "description": "The id of the element to activate.",
-                          "allOf": [
-                            {
-                              "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                            }
-                          ]
-                        },
-                        "variableInstructions": {
-                          "description": "Instructions describing which variables to create or update.",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/ModifyProcessInstanceVariableInstruction"
-                          }
-                        },
-                        "ancestorElementInstanceKey": {
-                          "description": "The key of the ancestor scope the element instance should be created in.\nSet to -1 to create the new element instance within an existing element instance of the\nflow scope. If multiple instances of the target element's flow scope exist, choose one\nspecifically with this property by providing its key.\n",
-                          "oneOf": [
-                            {
-                              "type": "string",
-                              "default": "-1"
-                            },
-                            {
-                              "$ref": "#/components/schemas/ElementInstanceKey"
-                            }
-                          ]
-                        }
-                      },
-                      "required": [
-                        "elementId"
-                      ]
+                      "$ref": "#/components/schemas/ProcessInstanceModificationActivateInstruction"
                     }
                   },
                   "moveInstructions": {
                     "description": "Instructions describing which elements to move from one scope to another.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "description": "Instruction describing a move operation. This instruction will terminate active element\ninstances based on the sourceElementInstruction and activate a new element instance for each terminated\none at targetElementId. Note that, for multi-instance activities, only the multi-instance\nbody instances will activate new element instances at the target id.\n",
-                      "properties": {
-                        "sourceElementInstruction": {
-                          "x-polymorphic-schema": true,
-                          "description": "Defines the source element identifier for the move instruction. It can either be a sourceElementId, or sourceElementInstanceKey.\n",
-                          "discriminator": {
-                            "propertyName": "sourceType",
-                            "mapping": {
-                              "byId": "#/components/schemas/SourceElementIdInstruction",
-                              "byKey": "#/components/schemas/SourceElementInstanceKeyInstruction"
-                            }
-                          },
-                          "oneOf": [
-                            {
-                              "type": "object",
-                              "description": "Defines an instruction with a sourceElementId. The move instruction with this sourceType will terminate all active element\ninstances with the sourceElementId and activate a new element instance for each terminated\none at targetElementId.\n",
-                              "properties": {
-                                "sourceType": {
-                                  "description": "The type of source element instruction.",
-                                  "type": "string",
-                                  "example": "byId"
-                                },
-                                "sourceElementId": {
-                                  "description": "The id of the source element for the move instruction.\n",
-                                  "allOf": [
-                                    {
-                                      "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                                    }
-                                  ]
-                                }
-                              },
-                              "required": [
-                                "sourceElementId",
-                                "sourceType"
-                              ]
-                            },
-                            {
-                              "$ref": "#/components/schemas/SourceElementInstanceKeyInstruction"
-                            }
-                          ]
-                        },
-                        "targetElementId": {
-                          "allOf": [
-                            {
-                              "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                            }
-                          ],
-                          "description": "The target element id."
-                        },
-                        "ancestorScopeInstruction": {
-                          "$ref": "#/components/schemas/AncestorScopeInstruction"
-                        },
-                        "variableInstructions": {
-                          "description": "Instructions describing which variables to create or update.",
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/ModifyProcessInstanceVariableInstruction"
-                          }
-                        }
-                      },
-                      "required": [
-                        "sourceElementInstruction",
-                        "targetElementId"
-                      ]
+                      "$ref": "#/components/schemas/ProcessInstanceModificationMoveInstruction"
                     }
                   },
                   "terminateInstructions": {
                     "description": "Instructions describing which elements to terminate.",
                     "type": "array",
                     "items": {
-                      "x-polymorphic-schema": true,
-                      "description": "Instruction describing which elements to terminate.",
-                      "oneOf": [
-                        {
-                          "description": "Instruction describing which elements to terminate. The element instances are determined\nat runtime by the given id.\n",
-                          "type": "object",
-                          "properties": {
-                            "elementId": {
-                              "allOf": [
-                                {
-                                  "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                                }
-                              ],
-                              "description": "The id of the elements to terminate. The element instances are determined at runtime."
-                            }
-                          },
-                          "required": [
-                            "elementId"
-                          ]
-                        },
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceModificationTerminateByKeyInstruction"
-                        }
-                      ]
+                      "$ref": "#/components/schemas/ProcessInstanceModificationTerminateInstruction"
                     }
                   }
                 }
@@ -8443,6 +9011,9 @@
                             ],
                             "description": "The key of this process instance."
                           },
+                          "rootProcessInstanceKey": {
+                            "$ref": "#/components/schemas/ProcessInstanceKey"
+                          },
                           "processDefinitionKey": {
                             "allOf": [
                               {
@@ -8462,7 +9033,7 @@
                           "elementId": {
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
+                                "$ref": "#/components/schemas/ElementId"
                               }
                             ],
                             "description": "The element id for this sequence flow, as provided in the BPMN process."
@@ -8519,48 +9090,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Process instance element statistics query response.",
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "description": "The element statistics.",
-                      "type": "array",
-                      "items": {
-                        "description": "Process element statistics response.",
-                        "type": "object",
-                        "properties": {
-                          "elementId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
-                              }
-                            ],
-                            "description": "The element ID for which the results are aggregated."
-                          },
-                          "active": {
-                            "description": "The total number of active instances of the element.",
-                            "type": "integer",
-                            "format": "int64"
-                          },
-                          "canceled": {
-                            "description": "The total number of canceled instances of the element.",
-                            "type": "integer",
-                            "format": "int64"
-                          },
-                          "incidents": {
-                            "description": "The total number of incidents for the element.",
-                            "type": "integer",
-                            "format": "int64"
-                          },
-                          "completed": {
-                            "description": "The total number of completed instances of the element.",
-                            "type": "integer",
-                            "format": "int64"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProcessInstanceElementStatisticsQueryResult"
                 }
               }
             }
@@ -11700,13 +12230,17 @@
                           "elementId": {
                             "allOf": [
                               {
-                                "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
+                                "$ref": "#/components/schemas/ElementId"
                               }
                             ],
                             "description": "The element ID of the user task."
                           },
                           "name": {
-                            "type": "string",
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/StringFilterProperty"
+                              }
+                            ],
                             "description": "The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.\n"
                           },
                           "candidateGroup": {
@@ -11914,7 +12448,7 @@
                       "description": "The element ID of the user task.",
                       "allOf": [
                         {
-                          "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema/properties/elementId/allOf/0"
+                          "$ref": "#/components/schemas/ElementId"
                         }
                       ]
                     },
@@ -12021,6 +12555,9 @@
                         }
                       ],
                       "description": "The key of the process instance."
+                    },
+                    "rootProcessInstanceKey": {
+                      "$ref": "#/components/schemas/ProcessInstanceKey"
                     },
                     "formKey": {
                       "allOf": [
@@ -12582,7 +13119,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VariableSearchQueryResult"
+                  "$ref": "#/paths/~1variables~1search/post/responses/200/content/application~1json/schema"
                 }
               }
             }
@@ -12704,61 +13241,7 @@
                             "description": "The key of the scope of this variable.",
                             "allOf": [
                               {
-                                "description": "ScopeKey property with full advanced search capabilities.",
-                                "type": "object",
-                                "oneOf": [
-                                  {
-                                    "type": "string",
-                                    "title": "Exact match",
-                                    "description": "Matches the value exactly.",
-                                    "allOf": [
-                                      {
-                                        "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0/properties/scopeKey/allOf/0"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "title": "Advanced filter",
-                                    "description": "Advanced ScopeKey filter.",
-                                    "type": "object",
-                                    "properties": {
-                                      "$eq": {
-                                        "description": "Checks for equality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0/properties/scopeKey/allOf/0"
-                                          }
-                                        ]
-                                      },
-                                      "$neq": {
-                                        "description": "Checks for inequality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0/properties/scopeKey/allOf/0"
-                                          }
-                                        ]
-                                      },
-                                      "$exists": {
-                                        "description": "Checks if the current property exists.",
-                                        "type": "boolean"
-                                      },
-                                      "$in": {
-                                        "description": "Checks if the property matches any of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0/properties/scopeKey/allOf/0"
-                                        }
-                                      },
-                                      "$notIn": {
-                                        "description": "Checks if the property matches none of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0/properties/scopeKey/allOf/0"
-                                        }
-                                      }
-                                    }
-                                  }
-                                ]
+                                "$ref": "#/components/schemas/ScopeKeyFilterProperty"
                               }
                             ]
                           },
@@ -12785,7 +13268,38 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VariableSearchQueryResult"
+                  "description": "Variable search query response.",
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching variables.",
+                      "type": "array",
+                      "items": {
+                        "description": "Variable search response item.",
+                        "type": "object",
+                        "allOf": [
+                          {
+                            "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0"
+                          }
+                        ],
+                        "properties": {
+                          "value": {
+                            "description": "Value of this variable. Can be truncated.",
+                            "type": "string"
+                          },
+                          "isTruncated": {
+                            "description": "Whether the value is truncated or not.",
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -12831,7 +13345,61 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/VariableResult"
+                  "description": "Variable search response item.",
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "description": "Variable response item.",
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "description": "Name of this variable.",
+                          "type": "string"
+                        },
+                        "tenantId": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/TenantId"
+                            }
+                          ],
+                          "description": "Tenant ID of this variable."
+                        },
+                        "variableKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/VariableKey"
+                            }
+                          ],
+                          "description": "The key for this variable."
+                        },
+                        "scopeKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ScopeKey"
+                            }
+                          ],
+                          "description": "The key of the scope of this variable."
+                        },
+                        "processInstanceKey": {
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/ProcessInstanceKey"
+                            }
+                          ],
+                          "description": "The key of the process instance of this variable."
+                        },
+                        "rootProcessInstanceKey": {
+                          "$ref": "#/components/schemas/ProcessInstanceKey"
+                        }
+                      }
+                    }
+                  ],
+                  "properties": {
+                    "value": {
+                      "description": "Full value of this variable.",
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -12966,6 +13534,9 @@
             ],
             "description": "The key of the process instance."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "elementInstanceKey": {
             "allOf": [
               {
@@ -13049,6 +13620,26 @@
               }
             ],
             "description": "The system-assigned key for this resource."
+          },
+          "relatedEntityKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityKey"
+              }
+            ],
+            "description": "The key of the related entity. The content depends on the operation type and entity type.\nFor example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.\n"
+          },
+          "relatedEntityType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
+              }
+            ],
+            "description": "The type of the related entity. The content depends on the operation type and entity type.\nFor example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.\n"
+          },
+          "entityDescription": {
+            "type": "string",
+            "description": "Additional description of the entity affected by the operation.\nFor example, for variable operations, this will contain the variable name.\n"
           }
         }
       },
@@ -13324,6 +13915,30 @@
                 "$ref": "#/components/schemas/DecisionEvaluationKeyFilterProperty"
               }
             ]
+          },
+          "relatedEntityKey": {
+            "description": "The related entity key search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditLogEntityKeyFilterProperty"
+              }
+            ]
+          },
+          "relatedEntityType": {
+            "description": "The related entity type search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EntityTypeFilterProperty"
+              }
+            ]
+          },
+          "entityDescription": {
+            "description": "The entity description filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
           }
         }
       },
@@ -13368,7 +13983,8 @@
           "TENANT",
           "USER",
           "USER_TASK",
-          "VARIABLE"
+          "VARIABLE",
+          "CLIENT"
         ]
       },
       "AuditLogOperationTypeEnum": {
@@ -14551,6 +15167,9 @@
             ],
             "description": "the process instance key of the processed item."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "state": {
             "description": "State of the item.",
             "type": "string",
@@ -14572,6 +15191,27 @@
             "type": "string"
           }
         }
+      },
+      "DecisionInstanceDeletionBatchOperationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The decision instance filter that defines which decision instances should be deleted.",
+        "properties": {
+          "filter": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionInstanceFilter"
+              }
+            ],
+            "description": "The decision instance filter."
+          },
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
+          }
+        },
+        "required": [
+          "filter"
+        ]
       },
       "ProcessInstanceCancellationBatchOperationRequest": {
         "type": "object",
@@ -14775,6 +15415,7 @@
           "ADD_VARIABLE",
           "CANCEL_PROCESS_INSTANCE",
           "DELETE_DECISION_DEFINITION",
+          "DELETE_DECISION_INSTANCE",
           "DELETE_PROCESS_DEFINITION",
           "DELETE_PROCESS_INSTANCE",
           "MIGRATE_PROCESS_INSTANCE",
@@ -14987,6 +15628,18 @@
           "value": {
             "type": "object",
             "description": "The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses."
+          }
+        }
+      },
+      "UpdateClusterVariableRequest": {
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "properties": {
+          "value": {
+            "type": "object",
+            "description": "The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses."
           }
         }
       },
@@ -16064,6 +16717,24 @@
                 "$ref": "#/components/schemas/DecisionDefinitionKeyFilterProperty"
               }
             ]
+          },
+          "decisionRequirementsKey": {
+            "description": "The key of the decision requirements definition.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionRequirementsKeyFilterProperty"
+              }
+            ]
+          }
+        }
+      },
+      "DeleteDecisionInstanceRequest": {
+        "type": "object",
+        "nullable": true,
+        "additionalProperties": false,
+        "properties": {
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
           }
         }
       },
@@ -16157,6 +16828,9 @@
               }
             ],
             "description": "The key of the process instance."
+          },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
           },
           "decisionDefinitionKey": {
             "allOf": [
@@ -17507,6 +18181,9 @@
             ],
             "description": "The process instance key associated to this element instance."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "processDefinitionKey": {
             "allOf": [
               {
@@ -17925,8 +18602,7 @@
           }
         },
         "required": [
-          "name",
-          "description"
+          "name"
         ]
       },
       "GroupUpdateResult": {
@@ -18648,6 +19324,9 @@
             ],
             "description": "The process instance key associated to this incident."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "elementInstanceKey": {
             "allOf": [
               {
@@ -18860,69 +19539,14 @@
           "field"
         ]
       },
-      "GlobalJobStatisticsQuery": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "filter"
-        ],
-        "properties": {
-          "filter": {
-            "$ref": "#/components/schemas/GlobalJobStatisticsFilter"
-          }
-        }
-      },
-      "GlobalJobStatisticsFilter": {
-        "description": "Filters for global job statistics query.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "from",
-          "to"
-        ],
-        "properties": {
-          "from": {
-            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-07-28T15:51:28.071Z"
-          },
-          "to": {
-            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-07-29T15:51:28.071Z"
-          },
-          "jobType": {
-            "description": "Optional job type to limit the aggregation to a single job type.",
-            "type": "string",
-            "example": "fetch-customer-data"
-          }
-        }
-      },
       "GlobalJobStatisticsQueryResult": {
         "description": "Global job statistics query result.",
         "type": "object",
         "required": [
-          "items"
-        ],
-        "properties": {
-          "items": {
-            "description": "List of aggregated job statistics.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GlobalJobStatisticsItem"
-            }
-          }
-        }
-      },
-      "GlobalJobStatisticsItem": {
-        "description": "Aggregated job metrics for a time bucket.",
-        "type": "object",
-        "required": [
           "created",
           "completed",
-          "failed"
+          "failed",
+          "isIncomplete"
         ],
         "properties": {
           "created": {
@@ -18933,6 +19557,11 @@
           },
           "failed": {
             "$ref": "#/components/schemas/StatusMetric"
+          },
+          "isIncomplete": {
+            "description": "True if some data is missing because internal limits were reached and some metrics were not recorded.",
+            "type": "boolean",
+            "example": false
           }
         }
       },
@@ -19008,6 +19637,15 @@
             "items": {
               "$ref": "#/components/schemas/TenantId"
             }
+          },
+          "tenantFilter": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TenantFilterEnum"
+              }
+            ],
+            "description": "The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.\n",
+            "default": "PROVIDED"
           }
         },
         "required": [
@@ -19611,6 +20249,9 @@
             ],
             "description": "The process instance key associated with the job."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "retries": {
             "description": "The amount of retries left to this job.",
             "type": "integer",
@@ -19882,6 +20523,15 @@
           }
         }
       },
+      "TenantFilterEnum": {
+        "description": "The tenant filtering strategy for job activation. Determines whether to use tenant IDs provided in the request or tenant IDs assigned to the authenticated principal.\n",
+        "type": "string",
+        "enum": [
+          "PROVIDED",
+          "ASSIGNED"
+        ],
+        "default": "PROVIDED"
+      },
       "JobStateEnum": {
         "description": "The state of the job.",
         "type": "string",
@@ -20100,6 +20750,18 @@
       },
       "ProcessInstanceKey": {
         "description": "System-generated key for a process instance.",
+        "format": "ProcessInstanceKey",
+        "x-semantic-type": "ProcessInstanceKey",
+        "example": "2251799813690746",
+        "type": "string",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/LongKey"
+          }
+        ]
+      },
+      "RootProcessInstanceKey": {
+        "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
         "format": "ProcessInstanceKey",
         "x-semantic-type": "ProcessInstanceKey",
         "example": "2251799813690746",
@@ -21411,6 +22073,9 @@
             ],
             "description": "The process instance key associated with this message subscription."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "elementId": {
             "allOf": [
               {
@@ -21676,6 +22341,9 @@
               }
             ],
             "description": "The process instance key associated with this correlated message subscription."
+          },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
           },
           "subscriptionKey": {
             "allOf": [
@@ -22477,12 +23145,23 @@
               }
             ]
           }
-        }
+        },
+        "required": [
+          "filter"
+        ]
       },
       "ProcessDefinitionInstanceVersionStatisticsFilter": {
         "description": "Process definition instance version statistics search filter.",
         "type": "object",
         "properties": {
+          "processDefinitionId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessDefinitionId"
+              }
+            ],
+            "description": "The ID of the process definition to retrieve version statistics for."
+          },
           "tenantId": {
             "allOf": [
               {
@@ -22491,7 +23170,10 @@
             ],
             "description": "Tenant ID of this process definition."
           }
-        }
+        },
+        "required": [
+          "processDefinitionId"
+        ]
       },
       "ProcessDefinitionInstanceVersionStatisticsQueryResult": {
         "type": "object",
@@ -22694,6 +23376,12 @@
               }
             ],
             "description": "The unique key identifying the process definition, for example, returned for a process in the\ndeploy resources endpoint.\n"
+          },
+          "processDefinitionVersion": {
+            "description": "As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt's here for backwards-compatibility only as previous releases accepted it in request bodies.\n",
+            "type": "integer",
+            "format": "int32",
+            "default": -1
           },
           "variables": {
             "description": "JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n",
@@ -23239,6 +23927,9 @@
             ],
             "description": "The parent element instance key."
           },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
+          },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
           }
@@ -23322,6 +24013,9 @@
               }
             ],
             "description": "The key of this process instance."
+          },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
           },
           "processDefinitionKey": {
             "allOf": [
@@ -23842,8 +24536,7 @@
           }
         },
         "required": [
-          "name",
-          "description"
+          "name"
         ]
       },
       "RoleUpdateResult": {
@@ -24492,8 +25185,7 @@
           }
         },
         "required": [
-          "name",
-          "description"
+          "name"
         ]
       },
       "TenantUpdateResult": {
@@ -24882,7 +25574,11 @@
             "description": "The element ID of the user task."
           },
           "name": {
-            "type": "string",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
             "description": "The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.\n"
           },
           "candidateGroup": {
@@ -25141,6 +25837,9 @@
               }
             ],
             "description": "The key of the process instance."
+          },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
           },
           "formKey": {
             "allOf": [
@@ -25844,6 +26543,9 @@
               }
             ],
             "description": "The key of the process instance of this variable."
+          },
+          "rootProcessInstanceKey": {
+            "$ref": "#/components/schemas/RootProcessInstanceKey"
           }
         }
       },

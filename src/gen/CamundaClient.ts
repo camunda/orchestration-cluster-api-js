@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 168
+// Operations: 172
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -206,6 +206,23 @@ type createUserConsistency = {
 type deleteAuthorizationOptions = Parameters<typeof Sdk.deleteAuthorization>[0];
 type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
 type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
+type deleteDecisionInstanceOptions = Parameters<typeof Sdk.deleteDecisionInstance>[0];
+type deleteDecisionInstanceBody = (NonNullable<deleteDecisionInstanceOptions> extends { body?: infer B } ? B : never);
+type deleteDecisionInstancePathParam_decisionInstanceKey = (NonNullable<deleteDecisionInstanceOptions> extends { path: { decisionInstanceKey: infer P } } ? P : any);
+type deleteDecisionInstanceInput = deleteDecisionInstanceBody & { decisionInstanceKey: deleteDecisionInstancePathParam_decisionInstanceKey };
+/** Management of eventual consistency **/
+type deleteDecisionInstanceConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteDecisionInstance>> 
+};
+type deleteDecisionInstancesBatchOperationOptions = Parameters<typeof Sdk.deleteDecisionInstancesBatchOperation>[0];
+type deleteDecisionInstancesBatchOperationBody = (NonNullable<deleteDecisionInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
+type deleteDecisionInstancesBatchOperationInput = deleteDecisionInstancesBatchOperationBody;
+/** Management of eventual consistency **/
+type deleteDecisionInstancesBatchOperationConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteDecisionInstancesBatchOperation>> 
+};
 type deleteDocumentOptions = Parameters<typeof Sdk.deleteDocument>[0];
 type deleteDocumentPathParam_documentId = (NonNullable<deleteDocumentOptions> extends { path: { documentId: infer P } } ? P : any);
 type deleteDocumentQueryParam_storeId = (NonNullable<deleteDocumentOptions> extends { query?: { storeId?: infer Q } } ? Q : any);
@@ -359,8 +376,10 @@ type getGlobalClusterVariableConsistency = {
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalClusterVariable>> 
 };
 type getGlobalJobStatisticsOptions = Parameters<typeof Sdk.getGlobalJobStatistics>[0];
-type getGlobalJobStatisticsBody = (NonNullable<getGlobalJobStatisticsOptions> extends { body?: infer B } ? B : never);
-type getGlobalJobStatisticsInput = getGlobalJobStatisticsBody;
+type getGlobalJobStatisticsQueryParam_from = (NonNullable<getGlobalJobStatisticsOptions> extends { query?: { from?: infer Q } } ? Q : any);
+type getGlobalJobStatisticsQueryParam_to = (NonNullable<getGlobalJobStatisticsOptions> extends { query?: { to?: infer Q } } ? Q : any);
+type getGlobalJobStatisticsQueryParam_jobType = (NonNullable<getGlobalJobStatisticsOptions> extends { query?: { jobType?: infer Q } } ? Q : any);
+type getGlobalJobStatisticsInput = { from: getGlobalJobStatisticsQueryParam_from; to: getGlobalJobStatisticsQueryParam_to; jobType?: getGlobalJobStatisticsQueryParam_jobType };
 /** Management of eventual consistency **/
 type getGlobalJobStatisticsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -410,8 +429,7 @@ type getProcessDefinitionInstanceStatisticsConsistency = {
 };
 type getProcessDefinitionInstanceVersionStatisticsOptions = Parameters<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>[0];
 type getProcessDefinitionInstanceVersionStatisticsBody = (NonNullable<getProcessDefinitionInstanceVersionStatisticsOptions> extends { body?: infer B } ? B : never);
-type getProcessDefinitionInstanceVersionStatisticsPathParam_processDefinitionId = (NonNullable<getProcessDefinitionInstanceVersionStatisticsOptions> extends { path: { processDefinitionId: infer P } } ? P : any);
-type getProcessDefinitionInstanceVersionStatisticsInput = getProcessDefinitionInstanceVersionStatisticsBody & { processDefinitionId: getProcessDefinitionInstanceVersionStatisticsPathParam_processDefinitionId };
+type getProcessDefinitionInstanceVersionStatisticsInput = getProcessDefinitionInstanceVersionStatisticsBody;
 /** Management of eventual consistency **/
 type getProcessDefinitionInstanceVersionStatisticsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
@@ -1037,6 +1055,10 @@ type updateAuthorizationOptions = Parameters<typeof Sdk.updateAuthorization>[0];
 type updateAuthorizationBody = (NonNullable<updateAuthorizationOptions> extends { body?: infer B } ? B : never);
 type updateAuthorizationPathParam_authorizationKey = (NonNullable<updateAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
 type updateAuthorizationInput = updateAuthorizationBody & { authorizationKey: updateAuthorizationPathParam_authorizationKey };
+type updateGlobalClusterVariableOptions = Parameters<typeof Sdk.updateGlobalClusterVariable>[0];
+type updateGlobalClusterVariableBody = (NonNullable<updateGlobalClusterVariableOptions> extends { body?: infer B } ? B : never);
+type updateGlobalClusterVariablePathParam_name = (NonNullable<updateGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
+type updateGlobalClusterVariableInput = updateGlobalClusterVariableBody & { name: updateGlobalClusterVariablePathParam_name };
 type updateGroupOptions = Parameters<typeof Sdk.updateGroup>[0];
 type updateGroupBody = (NonNullable<updateGroupOptions> extends { body?: infer B } ? B : never);
 type updateGroupPathParam_groupId = (NonNullable<updateGroupOptions> extends { path: { groupId: infer P } } ? P : any);
@@ -1057,6 +1079,11 @@ type updateTenantOptions = Parameters<typeof Sdk.updateTenant>[0];
 type updateTenantBody = (NonNullable<updateTenantOptions> extends { body?: infer B } ? B : never);
 type updateTenantPathParam_tenantId = (NonNullable<updateTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
 type updateTenantInput = updateTenantBody & { tenantId: updateTenantPathParam_tenantId };
+type updateTenantClusterVariableOptions = Parameters<typeof Sdk.updateTenantClusterVariable>[0];
+type updateTenantClusterVariableBody = (NonNullable<updateTenantClusterVariableOptions> extends { body?: infer B } ? B : never);
+type updateTenantClusterVariablePathParam_tenantId = (NonNullable<updateTenantClusterVariableOptions> extends { path: { tenantId: infer P } } ? P : any);
+type updateTenantClusterVariablePathParam_name = (NonNullable<updateTenantClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
+type updateTenantClusterVariableInput = updateTenantClusterVariableBody & { tenantId: updateTenantClusterVariablePathParam_tenantId; name: updateTenantClusterVariablePathParam_name };
 type updateUserOptions = Parameters<typeof Sdk.updateUser>[0];
 type updateUserBody = (NonNullable<updateUserOptions> extends { body?: infer B } ? B : never);
 type updateUserPathParam_username = (NonNullable<updateUserOptions> extends { path: { username: infer P } } ? P : any);
@@ -3865,6 +3892,136 @@ export class CamundaClient {
   }
 
   /**
+   * Delete decision instance
+   *
+   * Delete all associated decision evaluations based on provided key.
+    *
+   * @operationId deleteDecisionInstance
+   * @tags Decision instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  deleteDecisionInstance(input: deleteDecisionInstanceInput, /** Management of eventual consistency **/ consistencyManagement: deleteDecisionInstanceConsistency): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstance>>;
+  deleteDecisionInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: deleteDecisionInstanceConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { decisionInstanceKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { decisionInstanceKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteDecisionInstance', Schemas.zDeleteDecisionInstanceData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteDecisionInstance(opts);
+        let data = this._evaluateResponse(_raw, 'deleteDecisionInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteDecisionInstanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteDecisionInstanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteDecisionInstance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('deleteDecisionInstance', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Delete decision instances (batch)
+   *
+   * Delete multiple decision instances. This will delete the historic data from secondary storage.
+   * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+   *
+    *
+   * @operationId deleteDecisionInstancesBatchOperation
+   * @tags Decision instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  deleteDecisionInstancesBatchOperation(input: deleteDecisionInstancesBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: deleteDecisionInstancesBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstancesBatchOperation>>;
+  deleteDecisionInstancesBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: deleteDecisionInstancesBatchOperationConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteDecisionInstancesBatchOperation', Schemas.zDeleteDecisionInstancesBatchOperationData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteDecisionInstancesBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'deleteDecisionInstancesBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteDecisionInstancesBatchOperationResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteDecisionInstancesBatchOperationResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteDecisionInstancesBatchOperation', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('deleteDecisionInstancesBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Delete document
    *
    * Delete a document from the Camunda 8 cluster.
@@ -5539,7 +5696,7 @@ export class CamundaClient {
    *
     *
    * @operationId getGlobalJobStatistics
-   * @tags Job metrics
+   * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
   getGlobalJobStatistics(input: getGlobalJobStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalJobStatistics>>;
@@ -5547,15 +5704,15 @@ export class CamundaClient {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
-      const _body = arg;
+      const { from, to, jobType } = arg || {};
       let envelope: any = {};
-      envelope.body = _body;
+      envelope.query = { from, to, jobType };
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('getGlobalJobStatistics', Schemas.zGetGlobalJobStatisticsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
+      if (envelope.query) opts.query = envelope.query;
       const call = async () => {
         try {
         const _raw = await Sdk.getGlobalJobStatistics(opts);
@@ -5591,7 +5748,7 @@ export class CamundaClient {
         }
       };
       const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getGlobalJobStatistics', false, invoke, { ...useConsistency, logger: this._log });
+      if (useConsistency) return eventualPoll('getGlobalJobStatistics', true, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }
@@ -5967,6 +6124,7 @@ export class CamundaClient {
    * Get process instance statistics by version
    *
    * Get statistics about process instances, grouped by version for a given process definition.
+   * The process definition ID must be provided as a required field in the request body filter.
    *
     *
    * @operationId getProcessDefinitionInstanceVersionStatistics
@@ -5978,16 +6136,14 @@ export class CamundaClient {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
-      const { processDefinitionId, ..._body } = arg || {};
+      const _body = arg;
       let envelope: any = {};
-      envelope.path = { processDefinitionId };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('getProcessDefinitionInstanceVersionStatistics', Schemas.zGetProcessDefinitionInstanceVersionStatisticsData, envelope);
         if (this._validation.settings.req === 'strict') envelope = maybe;
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
@@ -11575,6 +11731,68 @@ export class CamundaClient {
   }
 
   /**
+   * Update a global-scoped cluster variable
+   *
+   * Updates the value of an existing global cluster variable.
+   * The variable must exist, otherwise a 404 error is returned.
+   *
+    *
+   * @operationId updateGlobalClusterVariable
+   * @tags Cluster Variable
+   */
+  updateGlobalClusterVariable(input: updateGlobalClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.updateGlobalClusterVariable>>;
+  updateGlobalClusterVariable(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { name, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { name };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('updateGlobalClusterVariable', Schemas.zUpdateGlobalClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.updateGlobalClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'updateGlobalClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zUpdateGlobalClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zUpdateGlobalClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('updateGlobalClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false });
+    });
+  }
+
+  /**
    * Update group
    *
    * Update a group with the given ID.
@@ -11872,6 +12090,68 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false });
+    });
+  }
+
+  /**
+   * Update a tenant-scoped cluster variable
+   *
+   * Updates the value of an existing tenant-scoped cluster variable.
+   * The variable must exist, otherwise a 404 error is returned.
+   *
+    *
+   * @operationId updateTenantClusterVariable
+   * @tags Cluster Variable
+   */
+  updateTenantClusterVariable(input: updateTenantClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.updateTenantClusterVariable>>;
+  updateTenantClusterVariable(arg: any): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { tenantId, name, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { tenantId, name };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('updateTenantClusterVariable', Schemas.zUpdateTenantClusterVariableData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.updateTenantClusterVariable(opts);
+        let data = this._evaluateResponse(_raw, 'updateTenantClusterVariable', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zUpdateTenantClusterVariableResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zUpdateTenantClusterVariableResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('updateTenantClusterVariable', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'updateTenantClusterVariable', exempt: false });
     });
   }
 

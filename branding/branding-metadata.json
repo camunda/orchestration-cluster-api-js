@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:38bf9493807aafa46514894ba7b8082f7d9ea579ffcdc25f1ccc2643586c54a8",
+  "specHash": "sha256:18eb685e8457262fc2c47d96ca9751678c99c0a63f61ff0a44e45b63b3d39df1",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1032,6 +1032,51 @@
         "deprecated": false
       },
       "stableId": "process-instance-key",
+      "notes": [
+        "inherited constraints from LongKey"
+      ]
+    },
+    {
+      "name": "RootProcessInstanceKey",
+      "semanticType": "ProcessInstanceKey",
+      "category": "system-key",
+      "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813690746"
+      ],
+      "brand": {
+        "tsType": "CamundaKey<'RootProcessInstanceKey'>"
+      },
+      "zod": {
+        "schemaName": "zRootProcessInstanceKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/RootProcessInstanceKey"
+      },
+      "extensions": {
+        "x-semantic-type": "ProcessInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "root-process-instance-key",
       "notes": [
         "inherited constraints from LongKey"
       ]
@@ -2590,7 +2635,7 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 33,
+    "totalPrimaryKeys": 34,
     "totalUnionWrappers": 49,
     "implicitCamundaKeys": []
   }
