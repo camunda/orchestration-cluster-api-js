@@ -15,15 +15,19 @@ export {
 export { createCamundaFpClient, type CamundaFpClient, type Either, isLeft, isRight } from './fp-ts';
 export * from './gen/types.gen';
 export { CamundaValidationError, EventualConsistencyTimeoutError } from './runtime/errors';
+// Re-export all public types from CamundaClient (Input, Consistency, CancelablePromise, etc.)
+export * from './gen/CamundaClient';
 // eventualPoll unified with result mode; no separate export
 export {
-  createCamundaClient,
   createCamundaClientLoose,
   type CamundaClientLoose,
   type Loose,
-  CamundaClient,
 };
-// Public type for client construction options
-export type { CamundaOptions } from './gen/CamundaClient';
 export type { EnrichedActivatedJob } from './runtime/jobActions';
+// Runtime types used in public signatures
+export type { CamundaConfig, AuthStrategy, ValidationMode } from './runtime/unifiedConfiguration';
+export type { SupportLogger } from './runtime/supportLogger';
+export type { BackpressureSeverity } from './runtime/backpressure';
+export type { TelemetryHooks } from './runtime/telemetry';
+export type { CreateLoggerOptions } from './runtime/logger';
 export default createCamundaClient;

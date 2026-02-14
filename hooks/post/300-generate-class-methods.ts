@@ -130,17 +130,17 @@ async function main() {
         // Enforce File[] resources at the public input surface (Blob not allowed)
         // createDeploymentBody comes from generated SDK types (still broad); override here.
         support.push(
-          `type ${o.opId}Input = Omit<${o.opId}Body, 'resources'> & { resources: File[] };`
+          `export type ${o.opId}Input = Omit<${o.opId}Body, 'resources'> & { resources: File[] };`
         );
       } else {
-        support.push(`type ${o.opId}Input = ${pieces.join(' & ')};`);
+        support.push(`export type ${o.opId}Input = ${pieces.join(' & ')};`);
       }
     } else {
-      support.push(`type ${o.opId}Input = void;`);
+      support.push(`export type ${o.opId}Input = void;`);
     }
     if (o.eventual)
       support.push(`/** Management of eventual consistency **/
-type ${o.opId}Consistency = { 
+export type ${o.opId}Consistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.${o.opId}>> 
 };`);
