@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:18eb685e8457262fc2c47d96ca9751678c99c0a63f61ff0a44e45b63b3d39df1",
+  "specHash": "sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -26,6 +26,15 @@
       "examples": [
         "22517998136843567"
       ],
+      "extensions": {
+        "x-semantic-type": "AuditLogEntityKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "audit-log-entity-key",
       "brand": {
         "tsType": "CamundaKey<'AuditLogEntityKey'>"
       },
@@ -37,16 +46,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuditLogEntityKey"
-      },
-      "extensions": {
-        "x-semantic-type": "AuditLogEntityKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "audit-log-entity-key"
+      }
     },
     {
       "name": "AuditLogKey",
@@ -68,6 +68,15 @@
       "examples": [
         "22517998136843567"
       ],
+      "extensions": {
+        "x-semantic-type": "AuditLogKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "audit-log-key",
       "brand": {
         "tsType": "CamundaKey<'AuditLogKey'>"
       },
@@ -79,34 +88,37 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuditLogKey"
+      }
+    },
+    {
+      "name": "AuthorizationKey",
+      "semanticType": "AuthorizationKey",
+      "category": "system-key",
+      "description": "System-generated key for an authorization.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
       },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813684332"
+      ],
       "extensions": {
-        "x-semantic-type": "AuditLogKey"
+        "x-semantic-type": "AuthorizationKey"
       },
       "flags": {
         "semanticKey": true,
         "includesLongKeyRef": true,
         "deprecated": false
       },
-      "stableId": "audit-log-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
-    },
-    {
-      "name": "AuthorizationKey",
-      "semanticType": "AuthorizationKey",
-      "category": "other",
-      "description": "System-generated key for an authorization.",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [],
-        "inlineFragments": 0
-      },
-      "constraints": {},
-      "examples": [
-        "2251799813684332"
-      ],
+      "stableId": "authorization-key",
       "brand": {
         "tsType": "CamundaKey<'AuthorizationKey'>"
       },
@@ -118,16 +130,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuthorizationKey"
-      },
-      "extensions": {
-        "x-semantic-type": "AuthorizationKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "authorization-key"
+      }
     },
     {
       "name": "BatchOperationKey",
@@ -145,6 +148,15 @@
       "examples": [
         "2251799813684321"
       ],
+      "extensions": {
+        "x-semantic-type": "BatchOperationKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "batch-operation-key",
       "brand": {
         "tsType": "CamundaKey<'BatchOperationKey'>"
       },
@@ -156,31 +168,37 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationKey"
-      },
-      "extensions": {
-        "x-semantic-type": "BatchOperationKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "batch-operation-key"
+      }
     },
     {
       "name": "ConditionalEvaluationKey",
       "semanticType": "ConditionalEvaluationKey",
-      "category": "other",
+      "category": "system-key",
       "description": "System-generated key for a conditional evaluation.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": [],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
-      "constraints": {},
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
       "examples": [
         "2251799813687654"
       ],
+      "extensions": {
+        "x-semantic-type": "ConditionalEvaluationKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "conditional-evaluation-key",
       "brand": {
         "tsType": "CamundaKey<'ConditionalEvaluationKey'>"
       },
@@ -192,16 +210,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ConditionalEvaluationKey"
-      },
-      "extensions": {
-        "x-semantic-type": "ConditionalEvaluationKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "conditional-evaluation-key"
+      }
     },
     {
       "name": "DecisionDefinitionId",
@@ -222,6 +231,15 @@
       "examples": [
         "new-hire-onboarding-workflow"
       ],
+      "extensions": {
+        "x-semantic-type": "DecisionDefinitionId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "decision-definition-id",
       "brand": {
         "tsType": "CamundaKey<'DecisionDefinitionId'>"
       },
@@ -233,16 +251,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionDefinitionId"
-      },
-      "extensions": {
-        "x-semantic-type": "DecisionDefinitionId"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "decision-definition-id"
+      }
     },
     {
       "name": "DecisionDefinitionKey",
@@ -264,6 +273,15 @@
       "examples": [
         "2251799813326547"
       ],
+      "extensions": {
+        "x-semantic-type": "DecisionDefinitionKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "decision-definition-key",
       "brand": {
         "tsType": "CamundaKey<'DecisionDefinitionKey'>"
       },
@@ -275,19 +293,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionDefinitionKey"
-      },
-      "extensions": {
-        "x-semantic-type": "DecisionDefinitionKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "decision-definition-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "DecisionEvaluationInstanceKey",
@@ -309,6 +315,15 @@
       "examples": [
         "2251799813684367"
       ],
+      "extensions": {
+        "x-semantic-type": "DecisionEvaluationInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "decision-evaluation-instance-key",
       "brand": {
         "tsType": "CamundaKey<'DecisionEvaluationInstanceKey'>"
       },
@@ -320,19 +335,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationInstanceKey"
-      },
-      "extensions": {
-        "x-semantic-type": "DecisionEvaluationInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "decision-evaluation-instance-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "DecisionEvaluationKey",
@@ -354,6 +357,15 @@
       "examples": [
         "2251792362345323"
       ],
+      "extensions": {
+        "x-semantic-type": "DecisionEvaluationKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "decision-evaluation-key",
       "brand": {
         "tsType": "CamundaKey<'DecisionEvaluationKey'>"
       },
@@ -365,19 +377,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationKey"
-      },
-      "extensions": {
-        "x-semantic-type": "DecisionEvaluationKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "decision-evaluation-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "DecisionInstanceKey",
@@ -399,6 +399,15 @@
       "examples": [
         "22517998136843567"
       ],
+      "extensions": {
+        "x-semantic-type": "DecisionInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "decision-instance-key",
       "brand": {
         "tsType": "CamundaKey<'DecisionInstanceKey'>"
       },
@@ -410,19 +419,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionInstanceKey"
-      },
-      "extensions": {
-        "x-semantic-type": "DecisionInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "decision-instance-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "DecisionRequirementsKey",
@@ -444,6 +441,15 @@
       "examples": [
         "2251799813683346"
       ],
+      "extensions": {
+        "x-semantic-type": "DecisionRequirementsKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "decision-requirements-key",
       "brand": {
         "tsType": "CamundaKey<'DecisionRequirementsKey'>"
       },
@@ -455,31 +461,34 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionRequirementsKey"
+      }
+    },
+    {
+      "name": "DeploymentKey",
+      "semanticType": "DeploymentKey",
+      "category": "system-key",
+      "description": "Key for a deployment.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
       },
       "extensions": {
-        "x-semantic-type": "DecisionRequirementsKey"
+        "x-semantic-type": "DeploymentKey"
       },
       "flags": {
         "semanticKey": true,
         "includesLongKeyRef": true,
         "deprecated": false
       },
-      "stableId": "decision-requirements-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
-    },
-    {
-      "name": "DeploymentKey",
-      "semanticType": "DeploymentKey",
-      "category": "other",
-      "description": "Key for a deployment.",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [],
-        "inlineFragments": 0
-      },
-      "constraints": {},
+      "stableId": "deployment-key",
       "brand": {
         "tsType": "CamundaKey<'DeploymentKey'>"
       },
@@ -491,16 +500,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DeploymentKey"
-      },
-      "extensions": {
-        "x-semantic-type": "DeploymentKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "deployment-key"
+      }
     },
     {
       "name": "DocumentId",
@@ -515,6 +515,15 @@
       "constraints": {
         "format": "DocumentId"
       },
+      "extensions": {
+        "x-semantic-type": "DocumentId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "document-id",
       "brand": {
         "tsType": "CamundaKey<'DocumentId'>"
       },
@@ -526,16 +535,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DocumentId"
-      },
-      "extensions": {
-        "x-semantic-type": "DocumentId"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "document-id"
+      }
     },
     {
       "name": "ElementId",
@@ -553,6 +553,15 @@
       "examples": [
         "Activity_106kosb"
       ],
+      "extensions": {
+        "x-semantic-type": "ElementId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "element-id",
       "brand": {
         "tsType": "CamundaKey<'ElementId'>"
       },
@@ -564,16 +573,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementId"
-      },
-      "extensions": {
-        "x-semantic-type": "ElementId"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "element-id"
+      }
     },
     {
       "name": "ElementInstanceKey",
@@ -595,6 +595,15 @@
       "examples": [
         "2251799813686789"
       ],
+      "extensions": {
+        "x-semantic-type": "ElementInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "element-instance-key",
       "brand": {
         "tsType": "CamundaKey<'ElementInstanceKey'>"
       },
@@ -606,19 +615,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementInstanceKey"
-      },
-      "extensions": {
-        "x-semantic-type": "ElementInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "element-instance-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "EndCursor",
@@ -639,6 +636,15 @@
       "examples": [
         "WzIyNTE3OTk4MTM2ODcxMDJd"
       ],
+      "extensions": {
+        "x-semantic-type": "EndCursor"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "end-cursor",
       "brand": {
         "tsType": "CamundaKey<'EndCursor'>"
       },
@@ -650,16 +656,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/EndCursor"
-      },
-      "extensions": {
-        "x-semantic-type": "EndCursor"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "end-cursor"
+      }
     },
     {
       "name": "FormId",
@@ -677,6 +674,15 @@
       "examples": [
         "Form_1nx5hav"
       ],
+      "extensions": {
+        "x-semantic-type": "FormId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "form-id",
       "brand": {
         "tsType": "CamundaKey<'FormId'>"
       },
@@ -688,16 +694,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/FormId"
-      },
-      "extensions": {
-        "x-semantic-type": "FormId"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "form-id"
+      }
     },
     {
       "name": "FormKey",
@@ -719,6 +716,15 @@
       "examples": [
         "2251799813684365"
       ],
+      "extensions": {
+        "x-semantic-type": "FormKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "form-key",
       "brand": {
         "tsType": "CamundaKey<'FormKey'>"
       },
@@ -730,19 +736,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/FormKey"
-      },
-      "extensions": {
-        "x-semantic-type": "FormKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "form-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "IncidentKey",
@@ -764,6 +758,15 @@
       "examples": [
         "2251799813689432"
       ],
+      "extensions": {
+        "x-semantic-type": "IncidentKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "incident-key",
       "brand": {
         "tsType": "CamundaKey<'IncidentKey'>"
       },
@@ -775,19 +778,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/IncidentKey"
-      },
-      "extensions": {
-        "x-semantic-type": "IncidentKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "incident-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "JobKey",
@@ -809,6 +800,15 @@
       "examples": [
         "2251799813653498"
       ],
+      "extensions": {
+        "x-semantic-type": "JobKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "job-key",
       "brand": {
         "tsType": "CamundaKey<'JobKey'>"
       },
@@ -820,34 +820,37 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKey"
+      }
+    },
+    {
+      "name": "MessageKey",
+      "semanticType": "MessageKey",
+      "category": "system-key",
+      "description": "System-generated key for an message.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
       },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813683467"
+      ],
       "extensions": {
-        "x-semantic-type": "JobKey"
+        "x-semantic-type": "MessageKey"
       },
       "flags": {
         "semanticKey": true,
         "includesLongKeyRef": true,
         "deprecated": false
       },
-      "stableId": "job-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
-    },
-    {
-      "name": "MessageKey",
-      "semanticType": "MessageKey",
-      "category": "other",
-      "description": "System-generated key for an message.",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [],
-        "inlineFragments": 0
-      },
-      "constraints": {},
-      "examples": [
-        "2251799813683467"
-      ],
+      "stableId": "message-key",
       "brand": {
         "tsType": "CamundaKey<'MessageKey'>"
       },
@@ -859,31 +862,37 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageKey"
-      },
-      "extensions": {
-        "x-semantic-type": "MessageKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "message-key"
+      }
     },
     {
       "name": "MessageSubscriptionKey",
       "semanticType": "MessageSubscriptionKey",
-      "category": "other",
+      "category": "system-key",
       "description": "System-generated key for a message subscription.",
       "composition": {
         "schemaKind": "allOf",
-        "refs": [],
+        "refs": [
+          "LongKey"
+        ],
         "inlineFragments": 0
       },
-      "constraints": {},
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
       "examples": [
         "2251799813632456"
       ],
+      "extensions": {
+        "x-semantic-type": "MessageSubscriptionKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "message-subscription-key",
       "brand": {
         "tsType": "CamundaKey<'MessageSubscriptionKey'>"
       },
@@ -895,16 +904,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionKey"
-      },
-      "extensions": {
-        "x-semantic-type": "MessageSubscriptionKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "message-subscription-key"
+      }
     },
     {
       "name": "ProcessDefinitionId",
@@ -924,6 +924,15 @@
       "examples": [
         "new-account-onboarding-workflow"
       ],
+      "extensions": {
+        "x-semantic-type": "ProcessDefinitionId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "process-definition-id",
       "brand": {
         "tsType": "CamundaKey<'ProcessDefinitionId'>"
       },
@@ -935,16 +944,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessDefinitionId"
-      },
-      "extensions": {
-        "x-semantic-type": "ProcessDefinitionId"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "process-definition-id"
+      }
     },
     {
       "name": "ProcessDefinitionKey",
@@ -966,6 +966,15 @@
       "examples": [
         "2251799813686749"
       ],
+      "extensions": {
+        "x-semantic-type": "ProcessDefinitionKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "process-definition-key",
       "brand": {
         "tsType": "CamundaKey<'ProcessDefinitionKey'>"
       },
@@ -977,19 +986,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessDefinitionKey"
-      },
-      "extensions": {
-        "x-semantic-type": "ProcessDefinitionKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "process-definition-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "ProcessInstanceKey",
@@ -1011,6 +1008,15 @@
       "examples": [
         "2251799813690746"
       ],
+      "extensions": {
+        "x-semantic-type": "ProcessInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "process-instance-key",
       "brand": {
         "tsType": "CamundaKey<'ProcessInstanceKey'>"
       },
@@ -1022,19 +1028,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceKey"
-      },
-      "extensions": {
-        "x-semantic-type": "ProcessInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "process-instance-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "RootProcessInstanceKey",
@@ -1056,6 +1050,15 @@
       "examples": [
         "2251799813690746"
       ],
+      "extensions": {
+        "x-semantic-type": "ProcessInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "root-process-instance-key",
       "brand": {
         "tsType": "CamundaKey<'RootProcessInstanceKey'>"
       },
@@ -1067,19 +1070,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/RootProcessInstanceKey"
-      },
-      "extensions": {
-        "x-semantic-type": "ProcessInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "root-process-instance-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "ScopeKey",
@@ -1101,6 +1092,15 @@
       "examples": [
         "2251799813683890"
       ],
+      "extensions": {
+        "x-semantic-type": "ScopeKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "scope-key",
       "brand": {
         "tsType": "CamundaKey<'ScopeKey'>"
       },
@@ -1112,34 +1112,37 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/ScopeKey"
+      }
+    },
+    {
+      "name": "SignalKey",
+      "semanticType": "SignalKey",
+      "category": "system-key",
+      "description": "System-generated key for an signal.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
       },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "22517998136987467"
+      ],
       "extensions": {
-        "x-semantic-type": "ScopeKey"
+        "x-semantic-type": "SignalKey"
       },
       "flags": {
         "semanticKey": true,
         "includesLongKeyRef": true,
         "deprecated": false
       },
-      "stableId": "scope-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
-    },
-    {
-      "name": "SignalKey",
-      "semanticType": "SignalKey",
-      "category": "other",
-      "description": "System-generated key for an signal.",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [],
-        "inlineFragments": 0
-      },
-      "constraints": {},
-      "examples": [
-        "22517998136987467"
-      ],
+      "stableId": "signal-key",
       "brand": {
         "tsType": "CamundaKey<'SignalKey'>"
       },
@@ -1151,16 +1154,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/SignalKey"
-      },
-      "extensions": {
-        "x-semantic-type": "SignalKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "signal-key"
+      }
     },
     {
       "name": "StartCursor",
@@ -1181,6 +1175,15 @@
       "examples": [
         "WzIyNTE3OTk4MTM2ODcxMDJd"
       ],
+      "extensions": {
+        "x-semantic-type": "StartCursor"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "start-cursor",
       "brand": {
         "tsType": "CamundaKey<'StartCursor'>"
       },
@@ -1192,16 +1195,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/StartCursor"
-      },
-      "extensions": {
-        "x-semantic-type": "StartCursor"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "start-cursor"
+      }
     },
     {
       "name": "Tag",
@@ -1222,6 +1216,15 @@
       "examples": [
         "business_key:1234"
       ],
+      "extensions": {
+        "x-semantic-type": "Tag"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "tag",
       "brand": {
         "tsType": "CamundaKey<'Tag'>"
       },
@@ -1233,16 +1236,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/Tag"
-      },
-      "extensions": {
-        "x-semantic-type": "Tag"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "tag"
+      }
     },
     {
       "name": "TenantId",
@@ -1263,6 +1257,15 @@
       "examples": [
         "customer-service"
       ],
+      "extensions": {
+        "x-semantic-type": "TenantId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "tenant-id",
       "brand": {
         "tsType": "CamundaKey<'TenantId'>"
       },
@@ -1274,16 +1277,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/TenantId"
-      },
-      "extensions": {
-        "x-semantic-type": "TenantId"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "tenant-id"
+      }
     },
     {
       "name": "Username",
@@ -1304,6 +1298,15 @@
       "examples": [
         "swillis"
       ],
+      "extensions": {
+        "x-semantic-type": "Username"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "username",
       "brand": {
         "tsType": "CamundaKey<'Username'>"
       },
@@ -1315,16 +1318,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/Username"
-      },
-      "extensions": {
-        "x-semantic-type": "Username"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": false,
-        "deprecated": false
-      },
-      "stableId": "username"
+      }
     },
     {
       "name": "UserTaskKey",
@@ -1343,6 +1337,15 @@
         "minLength": 1,
         "maxLength": 25
       },
+      "extensions": {
+        "x-semantic-type": "UserTaskKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "user-task-key",
       "brand": {
         "tsType": "CamundaKey<'UserTaskKey'>"
       },
@@ -1354,19 +1357,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/UserTaskKey"
-      },
-      "extensions": {
-        "x-semantic-type": "UserTaskKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "user-task-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     },
     {
       "name": "VariableKey",
@@ -1388,6 +1379,15 @@
       "examples": [
         "2251799813683287"
       ],
+      "extensions": {
+        "x-semantic-type": "VariableKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "variable-key",
       "brand": {
         "tsType": "CamundaKey<'VariableKey'>"
       },
@@ -1399,19 +1399,7 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/VariableKey"
-      },
-      "extensions": {
-        "x-semantic-type": "VariableKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "variable-key",
-      "notes": [
-        "inherited constraints from LongKey"
-      ]
+      }
     }
   ],
   "unions": [
@@ -1433,14 +1421,14 @@
           "ref": "UseSourceParentKeyInstruction"
         }
       ],
+      "stableId": "ancestor-scope-instruction",
       "tsType": "DirectAncestorKeyInstruction | InferredAncestorKeyInstruction | UseSourceParentKeyInstruction",
       "zod": {
         "schemaName": "zAncestorScopeInstruction"
       },
       "source": {
         "schemaPointer": "#/components/schemas/AncestorScopeInstruction"
-      },
-      "stableId": "ancestor-scope-instruction"
+      }
     },
     {
       "name": "AuditLogActorTypeFilterProperty",
@@ -1448,7 +1436,7 @@
       "description": "AuditLogActorTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogActorTypeEnum"
           ]
@@ -1458,14 +1446,14 @@
           "ref": "AdvancedActorTypeFilter"
         }
       ],
+      "stableId": "audit-log-actor-type-filter-property",
       "tsType": "string | AdvancedActorTypeFilter",
       "zod": {
         "schemaName": "zAuditLogActorTypeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuditLogActorTypeFilterProperty"
-      },
-      "stableId": "audit-log-actor-type-filter-property"
+      }
     },
     {
       "name": "AuditLogEntityKeyFilterProperty",
@@ -1473,7 +1461,7 @@
       "description": "EntityKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogEntityKey"
           ]
@@ -1483,14 +1471,14 @@
           "ref": "AdvancedAuditLogEntityKeyFilter"
         }
       ],
+      "stableId": "audit-log-entity-key-filter-property",
       "tsType": "string | AdvancedAuditLogEntityKeyFilter",
       "zod": {
         "schemaName": "zAuditLogEntityKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuditLogEntityKeyFilterProperty"
-      },
-      "stableId": "audit-log-entity-key-filter-property"
+      }
     },
     {
       "name": "AuditLogKeyFilterProperty",
@@ -1498,7 +1486,7 @@
       "description": "AuditLogKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogKey"
           ]
@@ -1508,14 +1496,14 @@
           "ref": "AdvancedAuditLogKeyFilter"
         }
       ],
+      "stableId": "audit-log-key-filter-property",
       "tsType": "string | AdvancedAuditLogKeyFilter",
       "zod": {
         "schemaName": "zAuditLogKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuditLogKeyFilterProperty"
-      },
-      "stableId": "audit-log-key-filter-property"
+      }
     },
     {
       "name": "AuditLogResultFilterProperty",
@@ -1523,7 +1511,7 @@
       "description": "AuditLogResultEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogResultEnum"
           ]
@@ -1533,14 +1521,14 @@
           "ref": "AdvancedResultFilter"
         }
       ],
+      "stableId": "audit-log-result-filter-property",
       "tsType": "string | AdvancedResultFilter",
       "zod": {
         "schemaName": "zAuditLogResultFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuditLogResultFilterProperty"
-      },
-      "stableId": "audit-log-result-filter-property"
+      }
     },
     {
       "name": "AuthorizationRequest",
@@ -1556,14 +1544,14 @@
           "ref": "AuthorizationPropertyBasedRequest"
         }
       ],
+      "stableId": "authorization-request",
       "tsType": "AuthorizationIdBasedRequest | AuthorizationPropertyBasedRequest",
       "zod": {
         "schemaName": "zAuthorizationRequest"
       },
       "source": {
         "schemaPointer": "#/components/schemas/AuthorizationRequest"
-      },
-      "stableId": "authorization-request"
+      }
     },
     {
       "name": "BasicStringFilterProperty",
@@ -1578,14 +1566,14 @@
           "ref": "BasicStringFilter"
         }
       ],
+      "stableId": "basic-string-filter-property",
       "tsType": "string | BasicStringFilter",
       "zod": {
         "schemaName": "zBasicStringFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/BasicStringFilterProperty"
-      },
-      "stableId": "basic-string-filter-property"
+      }
     },
     {
       "name": "BatchOperationItemStateFilterProperty",
@@ -1593,7 +1581,7 @@
       "description": "BatchOperationItemStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "BatchOperationItemStateEnum"
           ]
@@ -1603,14 +1591,14 @@
           "ref": "AdvancedBatchOperationItemStateFilter"
         }
       ],
+      "stableId": "batch-operation-item-state-filter-property",
       "tsType": "string | AdvancedBatchOperationItemStateFilter",
       "zod": {
         "schemaName": "zBatchOperationItemStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationItemStateFilterProperty"
-      },
-      "stableId": "batch-operation-item-state-filter-property"
+      }
     },
     {
       "name": "BatchOperationStateFilterProperty",
@@ -1618,7 +1606,7 @@
       "description": "BatchOperationStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "BatchOperationStateEnum"
           ]
@@ -1628,14 +1616,14 @@
           "ref": "AdvancedBatchOperationStateFilter"
         }
       ],
+      "stableId": "batch-operation-state-filter-property",
       "tsType": "string | AdvancedBatchOperationStateFilter",
       "zod": {
         "schemaName": "zBatchOperationStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationStateFilterProperty"
-      },
-      "stableId": "batch-operation-state-filter-property"
+      }
     },
     {
       "name": "BatchOperationTypeFilterProperty",
@@ -1643,7 +1631,7 @@
       "description": "BatchOperationTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "BatchOperationTypeEnum"
           ]
@@ -1653,14 +1641,14 @@
           "ref": "AdvancedBatchOperationTypeFilter"
         }
       ],
+      "stableId": "batch-operation-type-filter-property",
       "tsType": "string | AdvancedBatchOperationTypeFilter",
       "zod": {
         "schemaName": "zBatchOperationTypeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationTypeFilterProperty"
-      },
-      "stableId": "batch-operation-type-filter-property"
+      }
     },
     {
       "name": "CategoryFilterProperty",
@@ -1668,7 +1656,7 @@
       "description": "AuditLogCategoryEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogCategoryEnum"
           ]
@@ -1678,14 +1666,14 @@
           "ref": "AdvancedCategoryFilter"
         }
       ],
+      "stableId": "category-filter-property",
       "tsType": "string | AdvancedCategoryFilter",
       "zod": {
         "schemaName": "zCategoryFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/CategoryFilterProperty"
-      },
-      "stableId": "category-filter-property"
+      }
     },
     {
       "name": "ClusterVariableScopeFilterProperty",
@@ -1693,7 +1681,7 @@
       "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ClusterVariableScopeEnum"
           ]
@@ -1703,14 +1691,14 @@
           "ref": "AdvancedClusterVariableScopeFilter"
         }
       ],
+      "stableId": "cluster-variable-scope-filter-property",
       "tsType": "string | AdvancedClusterVariableScopeFilter",
       "zod": {
         "schemaName": "zClusterVariableScopeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ClusterVariableScopeFilterProperty"
-      },
-      "stableId": "cluster-variable-scope-filter-property"
+      }
     },
     {
       "name": "DateTimeFilterProperty",
@@ -1725,14 +1713,14 @@
           "ref": "AdvancedDateTimeFilter"
         }
       ],
+      "stableId": "date-time-filter-property",
       "tsType": "string | AdvancedDateTimeFilter",
       "zod": {
         "schemaName": "zDateTimeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DateTimeFilterProperty"
-      },
-      "stableId": "date-time-filter-property"
+      }
     },
     {
       "name": "DecisionDefinitionKeyFilterProperty",
@@ -1740,7 +1728,7 @@
       "description": "DecisionDefinitionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "DecisionDefinitionKey"
           ]
@@ -1750,14 +1738,14 @@
           "ref": "AdvancedDecisionDefinitionKeyFilter"
         }
       ],
+      "stableId": "decision-definition-key-filter-property",
       "tsType": "string | AdvancedDecisionDefinitionKeyFilter",
       "zod": {
         "schemaName": "zDecisionDefinitionKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionDefinitionKeyFilterProperty"
-      },
-      "stableId": "decision-definition-key-filter-property"
+      }
     },
     {
       "name": "DecisionEvaluationInstanceKeyFilterProperty",
@@ -1765,7 +1753,7 @@
       "description": "DecisionEvaluationInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "DecisionEvaluationInstanceKey"
           ]
@@ -1775,14 +1763,14 @@
           "ref": "AdvancedDecisionEvaluationInstanceKeyFilter"
         }
       ],
+      "stableId": "decision-evaluation-instance-key-filter-property",
       "tsType": "string | AdvancedDecisionEvaluationInstanceKeyFilter",
       "zod": {
         "schemaName": "zDecisionEvaluationInstanceKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationInstanceKeyFilterProperty"
-      },
-      "stableId": "decision-evaluation-instance-key-filter-property"
+      }
     },
     {
       "name": "DecisionEvaluationInstruction",
@@ -1797,14 +1785,14 @@
           "ref": "DecisionEvaluationByKey"
         }
       ],
+      "stableId": "decision-evaluation-instruction",
       "tsType": "DecisionEvaluationById | DecisionEvaluationByKey",
       "zod": {
         "schemaName": "zDecisionEvaluationInstruction"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationInstruction"
-      },
-      "stableId": "decision-evaluation-instruction"
+      }
     },
     {
       "name": "DecisionEvaluationKeyFilterProperty",
@@ -1812,7 +1800,7 @@
       "description": "DecisionEvaluationKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "DecisionEvaluationKey"
           ]
@@ -1822,14 +1810,14 @@
           "ref": "AdvancedDecisionEvaluationKeyFilter"
         }
       ],
+      "stableId": "decision-evaluation-key-filter-property",
       "tsType": "string | AdvancedDecisionEvaluationKeyFilter",
       "zod": {
         "schemaName": "zDecisionEvaluationKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionEvaluationKeyFilterProperty"
-      },
-      "stableId": "decision-evaluation-key-filter-property"
+      }
     },
     {
       "name": "DecisionInstanceStateFilterProperty",
@@ -1837,7 +1825,7 @@
       "description": "DecisionInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "DecisionInstanceStateEnum"
           ]
@@ -1847,14 +1835,14 @@
           "ref": "AdvancedDecisionInstanceStateFilter"
         }
       ],
+      "stableId": "decision-instance-state-filter-property",
       "tsType": "string | AdvancedDecisionInstanceStateFilter",
       "zod": {
         "schemaName": "zDecisionInstanceStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionInstanceStateFilterProperty"
-      },
-      "stableId": "decision-instance-state-filter-property"
+      }
     },
     {
       "name": "DecisionRequirementsKeyFilterProperty",
@@ -1862,7 +1850,7 @@
       "description": "DecisionRequirementsKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "DecisionRequirementsKey"
           ]
@@ -1872,14 +1860,14 @@
           "ref": "AdvancedDecisionRequirementsKeyFilter"
         }
       ],
+      "stableId": "decision-requirements-key-filter-property",
       "tsType": "string | AdvancedDecisionRequirementsKeyFilter",
       "zod": {
         "schemaName": "zDecisionRequirementsKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DecisionRequirementsKeyFilterProperty"
-      },
-      "stableId": "decision-requirements-key-filter-property"
+      }
     },
     {
       "name": "DeploymentKeyFilterProperty",
@@ -1887,7 +1875,7 @@
       "description": "DeploymentKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "DeploymentKey"
           ]
@@ -1897,14 +1885,14 @@
           "ref": "AdvancedDeploymentKeyFilter"
         }
       ],
+      "stableId": "deployment-key-filter-property",
       "tsType": "string | AdvancedDeploymentKeyFilter",
       "zod": {
         "schemaName": "zDeploymentKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/DeploymentKeyFilterProperty"
-      },
-      "stableId": "deployment-key-filter-property"
+      }
     },
     {
       "name": "ElementInstanceKeyFilterProperty",
@@ -1912,7 +1900,7 @@
       "description": "ElementInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ElementInstanceKey"
           ]
@@ -1922,14 +1910,14 @@
           "ref": "AdvancedElementInstanceKeyFilter"
         }
       ],
+      "stableId": "element-instance-key-filter-property",
       "tsType": "string | AdvancedElementInstanceKeyFilter",
       "zod": {
         "schemaName": "zElementInstanceKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementInstanceKeyFilterProperty"
-      },
-      "stableId": "element-instance-key-filter-property"
+      }
     },
     {
       "name": "ElementInstanceStateFilterProperty",
@@ -1937,7 +1925,7 @@
       "description": "ElementInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ElementInstanceStateEnum"
           ]
@@ -1947,14 +1935,14 @@
           "ref": "AdvancedElementInstanceStateFilter"
         }
       ],
+      "stableId": "element-instance-state-filter-property",
       "tsType": "string | AdvancedElementInstanceStateFilter",
       "zod": {
         "schemaName": "zElementInstanceStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ElementInstanceStateFilterProperty"
-      },
-      "stableId": "element-instance-state-filter-property"
+      }
     },
     {
       "name": "EntityTypeFilterProperty",
@@ -1962,7 +1950,7 @@
       "description": "AuditLogEntityTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogEntityTypeEnum"
           ]
@@ -1972,14 +1960,14 @@
           "ref": "AdvancedEntityTypeFilter"
         }
       ],
+      "stableId": "entity-type-filter-property",
       "tsType": "string | AdvancedEntityTypeFilter",
       "zod": {
         "schemaName": "zEntityTypeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/EntityTypeFilterProperty"
-      },
-      "stableId": "entity-type-filter-property"
+      }
     },
     {
       "name": "FormKeyFilterProperty",
@@ -1987,7 +1975,7 @@
       "description": "FormKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "FormKey"
           ]
@@ -1997,14 +1985,14 @@
           "ref": "AdvancedFormKeyFilter"
         }
       ],
+      "stableId": "form-key-filter-property",
       "tsType": "string | AdvancedFormKeyFilter",
       "zod": {
         "schemaName": "zFormKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/FormKeyFilterProperty"
-      },
-      "stableId": "form-key-filter-property"
+      }
     },
     {
       "name": "IncidentErrorTypeFilterProperty",
@@ -2012,7 +2000,7 @@
       "description": "IncidentErrorTypeEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "IncidentErrorTypeEnum"
           ]
@@ -2022,14 +2010,14 @@
           "ref": "AdvancedIncidentErrorTypeFilter"
         }
       ],
+      "stableId": "incident-error-type-filter-property",
       "tsType": "string | AdvancedIncidentErrorTypeFilter",
       "zod": {
         "schemaName": "zIncidentErrorTypeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/IncidentErrorTypeFilterProperty"
-      },
-      "stableId": "incident-error-type-filter-property"
+      }
     },
     {
       "name": "IncidentStateFilterProperty",
@@ -2037,7 +2025,7 @@
       "description": "IncidentStateEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "IncidentStateEnum"
           ]
@@ -2047,14 +2035,14 @@
           "ref": "AdvancedIncidentStateFilter"
         }
       ],
+      "stableId": "incident-state-filter-property",
       "tsType": "string | AdvancedIncidentStateFilter",
       "zod": {
         "schemaName": "zIncidentStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/IncidentStateFilterProperty"
-      },
-      "stableId": "incident-state-filter-property"
+      }
     },
     {
       "name": "IntegerFilterProperty",
@@ -2069,14 +2057,14 @@
           "ref": "AdvancedIntegerFilter"
         }
       ],
+      "stableId": "integer-filter-property",
       "tsType": "string | AdvancedIntegerFilter",
       "zod": {
         "schemaName": "zIntegerFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/IntegerFilterProperty"
-      },
-      "stableId": "integer-filter-property"
+      }
     },
     {
       "name": "JobKeyFilterProperty",
@@ -2084,7 +2072,7 @@
       "description": "JobKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "JobKey"
           ]
@@ -2094,14 +2082,14 @@
           "ref": "AdvancedJobKeyFilter"
         }
       ],
+      "stableId": "job-key-filter-property",
       "tsType": "string | AdvancedJobKeyFilter",
       "zod": {
         "schemaName": "zJobKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKeyFilterProperty"
-      },
-      "stableId": "job-key-filter-property"
+      }
     },
     {
       "name": "JobKindFilterProperty",
@@ -2109,7 +2097,7 @@
       "description": "JobKindEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "JobKindEnum"
           ]
@@ -2119,14 +2107,14 @@
           "ref": "AdvancedJobKindFilter"
         }
       ],
+      "stableId": "job-kind-filter-property",
       "tsType": "string | AdvancedJobKindFilter",
       "zod": {
         "schemaName": "zJobKindFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKindFilterProperty"
-      },
-      "stableId": "job-kind-filter-property"
+      }
     },
     {
       "name": "JobListenerEventTypeFilterProperty",
@@ -2134,7 +2122,7 @@
       "description": "JobListenerEventTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "JobListenerEventTypeEnum"
           ]
@@ -2144,14 +2132,14 @@
           "ref": "AdvancedJobListenerEventTypeFilter"
         }
       ],
+      "stableId": "job-listener-event-type-filter-property",
       "tsType": "string | AdvancedJobListenerEventTypeFilter",
       "zod": {
         "schemaName": "zJobListenerEventTypeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobListenerEventTypeFilterProperty"
-      },
-      "stableId": "job-listener-event-type-filter-property"
+      }
     },
     {
       "name": "JobResult",
@@ -2167,14 +2155,14 @@
           "ref": "JobResultAdHocSubProcess"
         }
       ],
+      "stableId": "job-result",
       "tsType": "JobResultUserTask | JobResultAdHocSubProcess",
       "zod": {
         "schemaName": "zJobResult"
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobResult"
-      },
-      "stableId": "job-result"
+      }
     },
     {
       "name": "JobStateFilterProperty",
@@ -2182,7 +2170,7 @@
       "description": "JobStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "JobStateEnum"
           ]
@@ -2192,14 +2180,14 @@
           "ref": "AdvancedJobStateFilter"
         }
       ],
+      "stableId": "job-state-filter-property",
       "tsType": "string | AdvancedJobStateFilter",
       "zod": {
         "schemaName": "zJobStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobStateFilterProperty"
-      },
-      "stableId": "job-state-filter-property"
+      }
     },
     {
       "name": "MessageSubscriptionKeyFilterProperty",
@@ -2207,7 +2195,7 @@
       "description": "MessageSubscriptionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "MessageSubscriptionKey"
           ]
@@ -2217,14 +2205,14 @@
           "ref": "AdvancedMessageSubscriptionKeyFilter"
         }
       ],
+      "stableId": "message-subscription-key-filter-property",
       "tsType": "string | AdvancedMessageSubscriptionKeyFilter",
       "zod": {
         "schemaName": "zMessageSubscriptionKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionKeyFilterProperty"
-      },
-      "stableId": "message-subscription-key-filter-property"
+      }
     },
     {
       "name": "MessageSubscriptionStateFilterProperty",
@@ -2232,7 +2220,7 @@
       "description": "MessageSubscriptionStateEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "MessageSubscriptionStateEnum"
           ]
@@ -2242,14 +2230,14 @@
           "ref": "AdvancedMessageSubscriptionStateFilter"
         }
       ],
+      "stableId": "message-subscription-state-filter-property",
       "tsType": "string | AdvancedMessageSubscriptionStateFilter",
       "zod": {
         "schemaName": "zMessageSubscriptionStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/MessageSubscriptionStateFilterProperty"
-      },
-      "stableId": "message-subscription-state-filter-property"
+      }
     },
     {
       "name": "OperationTypeFilterProperty",
@@ -2257,7 +2245,7 @@
       "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "AuditLogOperationTypeEnum"
           ]
@@ -2267,14 +2255,14 @@
           "ref": "AdvancedOperationTypeFilter"
         }
       ],
+      "stableId": "operation-type-filter-property",
       "tsType": "string | AdvancedOperationTypeFilter",
       "zod": {
         "schemaName": "zOperationTypeFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/OperationTypeFilterProperty"
-      },
-      "stableId": "operation-type-filter-property"
+      }
     },
     {
       "name": "ProcessDefinitionKeyFilterProperty",
@@ -2282,7 +2270,7 @@
       "description": "ProcessDefinitionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ProcessDefinitionKey"
           ]
@@ -2292,14 +2280,14 @@
           "ref": "AdvancedProcessDefinitionKeyFilter"
         }
       ],
+      "stableId": "process-definition-key-filter-property",
       "tsType": "string | AdvancedProcessDefinitionKeyFilter",
       "zod": {
         "schemaName": "zProcessDefinitionKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessDefinitionKeyFilterProperty"
-      },
-      "stableId": "process-definition-key-filter-property"
+      }
     },
     {
       "name": "ProcessInstanceCreationInstruction",
@@ -2315,14 +2303,14 @@
           "ref": "ProcessInstanceCreationInstructionByKey"
         }
       ],
+      "stableId": "process-instance-creation-instruction",
       "tsType": "ProcessInstanceCreationInstructionById | ProcessInstanceCreationInstructionByKey",
       "zod": {
         "schemaName": "zProcessInstanceCreationInstruction"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceCreationInstruction"
-      },
-      "stableId": "process-instance-creation-instruction"
+      }
     },
     {
       "name": "ProcessInstanceCreationRuntimeInstruction",
@@ -2333,14 +2321,14 @@
           "ref": "ProcessInstanceCreationTerminateInstruction"
         }
       ],
+      "stableId": "process-instance-creation-runtime-instruction",
       "tsType": "ProcessInstanceCreationTerminateInstruction",
       "zod": {
         "schemaName": "zProcessInstanceCreationRuntimeInstruction"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceCreationRuntimeInstruction"
-      },
-      "stableId": "process-instance-creation-runtime-instruction"
+      }
     },
     {
       "name": "ProcessInstanceKeyFilterProperty",
@@ -2348,7 +2336,7 @@
       "description": "ProcessInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ProcessInstanceKey"
           ]
@@ -2358,14 +2346,14 @@
           "ref": "AdvancedProcessInstanceKeyFilter"
         }
       ],
+      "stableId": "process-instance-key-filter-property",
       "tsType": "string | AdvancedProcessInstanceKeyFilter",
       "zod": {
         "schemaName": "zProcessInstanceKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceKeyFilterProperty"
-      },
-      "stableId": "process-instance-key-filter-property"
+      }
     },
     {
       "name": "ProcessInstanceModificationTerminateInstruction",
@@ -2381,14 +2369,14 @@
           "ref": "ProcessInstanceModificationTerminateByKeyInstruction"
         }
       ],
+      "stableId": "process-instance-modification-terminate-instruction",
       "tsType": "ProcessInstanceModificationTerminateByIdInstruction | ProcessInstanceModificationTerminateByKeyInstruction",
       "zod": {
         "schemaName": "zProcessInstanceModificationTerminateInstruction"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceModificationTerminateInstruction"
-      },
-      "stableId": "process-instance-modification-terminate-instruction"
+      }
     },
     {
       "name": "ProcessInstanceStateFilterProperty",
@@ -2396,7 +2384,7 @@
       "description": "ProcessInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ProcessInstanceStateEnum"
           ]
@@ -2406,14 +2394,14 @@
           "ref": "AdvancedProcessInstanceStateFilter"
         }
       ],
+      "stableId": "process-instance-state-filter-property",
       "tsType": "string | AdvancedProcessInstanceStateFilter",
       "zod": {
         "schemaName": "zProcessInstanceStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ProcessInstanceStateFilterProperty"
-      },
-      "stableId": "process-instance-state-filter-property"
+      }
     },
     {
       "name": "ResourceKey",
@@ -2437,14 +2425,14 @@
           "ref": "DecisionDefinitionKey"
         }
       ],
+      "stableId": "resource-key",
       "tsType": "ProcessDefinitionKey | DecisionRequirementsKey | FormKey | DecisionDefinitionKey",
       "zod": {
         "schemaName": "zResourceKey"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ResourceKey"
-      },
-      "stableId": "resource-key"
+      }
     },
     {
       "name": "ResourceKeyFilterProperty",
@@ -2452,7 +2440,7 @@
       "description": "ResourceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ResourceKey"
           ]
@@ -2462,14 +2450,14 @@
           "ref": "AdvancedResourceKeyFilter"
         }
       ],
+      "stableId": "resource-key-filter-property",
       "tsType": "string | AdvancedResourceKeyFilter",
       "zod": {
         "schemaName": "zResourceKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ResourceKeyFilterProperty"
-      },
-      "stableId": "resource-key-filter-property"
+      }
     },
     {
       "name": "ScopeKeyFilterProperty",
@@ -2477,7 +2465,7 @@
       "description": "ScopeKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "ScopeKey"
           ]
@@ -2487,14 +2475,14 @@
           "ref": "AdvancedScopeKeyFilter"
         }
       ],
+      "stableId": "scope-key-filter-property",
       "tsType": "string | AdvancedScopeKeyFilter",
       "zod": {
         "schemaName": "zScopeKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/ScopeKeyFilterProperty"
-      },
-      "stableId": "scope-key-filter-property"
+      }
     },
     {
       "name": "SearchQueryPageRequest",
@@ -2518,14 +2506,14 @@
           "ref": "CursorBackwardPagination"
         }
       ],
+      "stableId": "search-query-page-request",
       "tsType": "LimitPagination | OffsetPagination | CursorForwardPagination | CursorBackwardPagination",
       "zod": {
         "schemaName": "zSearchQueryPageRequest"
       },
       "source": {
         "schemaPointer": "#/components/schemas/SearchQueryPageRequest"
-      },
-      "stableId": "search-query-page-request"
+      }
     },
     {
       "name": "SourceElementInstruction",
@@ -2541,14 +2529,14 @@
           "ref": "SourceElementInstanceKeyInstruction"
         }
       ],
+      "stableId": "source-element-instruction",
       "tsType": "SourceElementIdInstruction | SourceElementInstanceKeyInstruction",
       "zod": {
         "schemaName": "zSourceElementInstruction"
       },
       "source": {
         "schemaPointer": "#/components/schemas/SourceElementInstruction"
-      },
-      "stableId": "source-element-instruction"
+      }
     },
     {
       "name": "StringFilterProperty",
@@ -2563,14 +2551,14 @@
           "ref": "AdvancedStringFilter"
         }
       ],
+      "stableId": "string-filter-property",
       "tsType": "string | AdvancedStringFilter",
       "zod": {
         "schemaName": "zStringFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/StringFilterProperty"
-      },
-      "stableId": "string-filter-property"
+      }
     },
     {
       "name": "UserTaskStateFilterProperty",
@@ -2578,7 +2566,7 @@
       "description": "UserTaskStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "UserTaskStateEnum"
           ]
@@ -2588,14 +2576,14 @@
           "ref": "AdvancedUserTaskStateFilter"
         }
       ],
+      "stableId": "user-task-state-filter-property",
       "tsType": "string | AdvancedUserTaskStateFilter",
       "zod": {
         "schemaName": "zUserTaskStateFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/UserTaskStateFilterProperty"
-      },
-      "stableId": "user-task-state-filter-property"
+      }
     },
     {
       "name": "VariableKeyFilterProperty",
@@ -2603,7 +2591,7 @@
       "description": "VariableKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "other",
+          "branchType": "composed",
           "refs": [
             "VariableKey"
           ]
@@ -2613,14 +2601,14 @@
           "ref": "AdvancedVariableKeyFilter"
         }
       ],
+      "stableId": "variable-key-filter-property",
       "tsType": "string | AdvancedVariableKeyFilter",
       "zod": {
         "schemaName": "zVariableKeyFilterProperty"
       },
       "source": {
         "schemaPointer": "#/components/schemas/VariableKeyFilterProperty"
-      },
-      "stableId": "variable-key-filter-property"
+      }
     }
   ],
   "arrays": [

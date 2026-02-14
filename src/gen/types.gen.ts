@@ -17515,7 +17515,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:18eb685e8457262fc2c47d96ca9751678c99c0a63f61ff0a44e45b63b3d39df1
+// specHash=sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -17550,11 +17550,15 @@ export namespace AuditLogKey {
 // System-generated key for an authorization.
 export namespace AuthorizationKey {
   export function assumeExists(value: string): AuthorizationKey {
+    assertConstraint(value, 'AuthorizationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
   }
   export function getValue(key: AuthorizationKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'AuthorizationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
   }
 }
 // System-generated key for an batch operation.
@@ -17570,11 +17574,15 @@ export namespace BatchOperationKey {
 // System-generated key for a conditional evaluation.
 export namespace ConditionalEvaluationKey {
   export function assumeExists(value: string): ConditionalEvaluationKey {
+    assertConstraint(value, 'ConditionalEvaluationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
   }
   export function getValue(key: ConditionalEvaluationKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'ConditionalEvaluationKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
   }
 }
 // Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
@@ -17664,11 +17672,15 @@ export namespace DecisionRequirementsKey {
 // Key for a deployment.
 export namespace DeploymentKey {
   export function assumeExists(value: string): DeploymentKey {
+    assertConstraint(value, 'DeploymentKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
   }
   export function getValue(key: DeploymentKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'DeploymentKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
   }
 }
 // Document Id that uniquely identifies a document.
@@ -17774,21 +17786,29 @@ export namespace JobKey {
 // System-generated key for an message.
 export namespace MessageKey {
   export function assumeExists(value: string): MessageKey {
+    assertConstraint(value, 'MessageKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
   }
   export function getValue(key: MessageKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'MessageKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
   }
 }
 // System-generated key for a message subscription.
 export namespace MessageSubscriptionKey {
   export function assumeExists(value: string): MessageSubscriptionKey {
+    assertConstraint(value, 'MessageSubscriptionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
   }
   export function getValue(key: MessageSubscriptionKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'MessageSubscriptionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
   }
 }
 // Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
@@ -17864,11 +17884,15 @@ export namespace ScopeKey {
 // System-generated key for an signal.
 export namespace SignalKey {
   export function assumeExists(value: string): SignalKey {
+    assertConstraint(value, 'SignalKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
     return value as any;
   }
   export function getValue(key: SignalKey): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'SignalKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
   }
 }
 // The start cursor in a search query result set.

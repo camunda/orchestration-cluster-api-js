@@ -1,47 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { loadOpenApiDereferenced } from './openapi-load';
-import { LOCAL_SPEC_ENTRY_PATH } from './spec-location';
-
-interface OA3Parameter {
-  in?: string;
-  name?: string;
-  required?: boolean;
-}
-interface OA3Schema {
-  oneOf?: any[];
-  anyOf?: any[];
-  $ref?: string;
-  type?: string;
-  properties?: Record<string, OA3Schema>;
-  required?: string[];
-}
-interface OA3MediaType {
-  schema?: OA3Schema;
-}
-interface OA3RequestBody {
-  content?: Record<string, OA3MediaType>;
-}
-interface OA3Operation {
-  operationId?: string;
-  parameters?: OA3Parameter[];
-  requestBody?: OA3RequestBody;
-  summary?: string;
-  description?: string;
-  tags?: string[];
-  ['x-eventually-consistent']?: boolean;
-}
-interface OA3PathItem {
-  [method: string]: OA3Operation | any;
-}
-interface OA3Spec {
-  paths?: Record<string, OA3PathItem>;
-  components?: { schemas?: Record<string, OA3Schema> };
-}
-
 const ROOT = process.cwd();
-const SPEC_PATH = LOCAL_SPEC_ENTRY_PATH;
+const METADATA_PATH = path.join(ROOT, 'external-spec/bundled/spec-metadata.json');
 const TEMPLATE_FILE = path.join(ROOT, 'src/template/CamundaClient.template.ts');
 const CLASS_FILE = path.join(ROOT, 'src/gen/CamundaClient.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
@@ -57,13 +18,13 @@ function isExempt(opId: string): boolean {
 }
 
 async function main() {
-  if (!fs.existsSync(SPEC_PATH)) {
-    throw new Error('[class-gen] Spec missing, skipping');
+  if (!fs.existsSync(METADATA_PATH)) {
+    throw new Error('[class-gen] spec-metadata.json missing');
   }
   if (!fs.existsSync(TEMPLATE_FILE)) {
     throw new Error('[class-gen] Template missing, skipping');
   }
-  const spec: OA3Spec = (await loadOpenApiDereferenced(SPEC_PATH)) as any;
+  const metadata = JSON.parse(fs.readFileSync(METADATA_PATH, 'utf8'));
   const tpl = fs.readFileSync(TEMPLATE_FILE, 'utf8');
   const tS = tpl.indexOf(MARK_TYPES_START),
     tE = tpl.indexOf(MARK_TYPES_END),
@@ -113,65 +74,24 @@ async function main() {
     optionalTenantIdInBody: boolean;
   }
   const ops: OpMeta[] = [];
-  for (const item of Object.values(spec.paths || {})) {
-    for (const [verb, raw] of Object.entries(item)) {
-      const op = raw as OA3Operation;
-      if (!op?.operationId) continue;
-      const originalId = op.operationId;
-      const opId = sanitize(op.operationId);
-      const params = (op.parameters || []) as OA3Parameter[];
-      const pathParams = params
-        .filter((p) => p.in === 'path' && !!p.name)
-        .map((p) => p.name!) as string[];
-      const queryParams = params
-        .filter((p) => p.in === 'query' && !!p.name)
-        .map((p) => ({ name: p.name!, required: !!p.required }));
-      const hasPQ = params.some((p) => p.in === 'path' || p.in === 'query');
-      const hasBody = !!op.requestBody && hasJsonLike(op.requestBody);
-      const bodyOnly = !!(hasBody && !hasPQ);
-      const eventual = !!op['x-eventually-consistent'];
-      // Detect union body variants (top-level oneOf/anyOf) when bodyOnly
-      const unionBodies: string[] = [];
-      let optionalTenantIdInBody = false;
-      if (bodyOnly && op.requestBody?.content) {
-        for (const mt of Object.values(op.requestBody.content)) {
-          const schema = mt?.schema as OA3Schema | undefined;
-          const variants = schema?.oneOf || schema?.anyOf;
-          if (Array.isArray(variants) && variants.length > 1) {
-            for (const v of variants) {
-              if (v && typeof v === 'object' && '$ref' in v && typeof v.$ref === 'string') {
-                const ref = v.$ref as string;
-                const name = ref.split('/').pop();
-                if (name) unionBodies.push(name.replace(/XML/g, 'Xml'));
-              }
-            }
-            // Conservative union handling: only mark optionalTenantIdInBody if ALL variants allow optional tenantId
-            const resolved = variants.map((v) => resolveSchema(v, spec));
-            if (resolved.length > 0 && resolved.every((rs) => rs && hasOptionalTenantId(rs))) {
-              optionalTenantIdInBody = true;
-            }
-          } else {
-            const resolved = resolveSchema(schema, spec);
-            if (resolved && hasOptionalTenantId(resolved)) optionalTenantIdInBody = true;
-          }
-        }
-      }
-      ops.push({
-        opId,
-        hasBody,
-        bodyOnly,
-        summary: op.summary,
-        description: op.description,
-        tags: op.tags,
-        originalOpId: originalId,
-        unionBodies: Array.from(new Set(unionBodies)),
-        eventual,
-        verb: verb.toLowerCase(),
-        pathParams,
-        queryParams,
-        optionalTenantIdInBody,
-      });
-    }
+  for (const op of metadata.operations) {
+    const originalId = op.operationId;
+    const opId = sanitize(originalId);
+    ops.push({
+      opId,
+      hasBody: op.hasRequestBody,
+      bodyOnly: op.bodyOnly,
+      summary: op.summary,
+      description: op.description,
+      tags: op.tags,
+      originalOpId: originalId,
+      unionBodies: (op.requestBodyUnionRefs || []).map((r: string) => sanitize(r)),
+      eventual: op.eventuallyConsistent,
+      verb: op.method.toLowerCase(),
+      pathParams: op.pathParams || [],
+      queryParams: op.queryParams || [],
+      optionalTenantIdInBody: op.optionalTenantIdInBody || false,
+    });
   }
   ops.sort((a, b) => a.opId.localeCompare(b.opId));
 
@@ -544,29 +464,6 @@ type ${o.opId}Consistency = {
   console.log(`[class-gen] Wrote Camunda.ts with ${ops.length} methods`);
 }
 
-// Resolve a schema (follows single $ref into components/schemas)
-function resolveSchema(s: any, spec: OA3Spec): OA3Schema | undefined {
-  if (!s) return undefined;
-  if (s.$ref && typeof s.$ref === 'string') {
-    const parts = s.$ref.split('/');
-    const name = parts[parts.length - 1];
-    return spec.components?.schemas?.[name];
-  }
-  return s as OA3Schema;
-}
-
-function hasOptionalTenantId(schema: OA3Schema): boolean {
-  if (!schema || schema.type !== 'object') return false;
-  if (!schema.properties || !schema.properties['tenantId']) return false;
-  const required = schema.required || [];
-  return !required.includes('tenantId');
-}
-
-function hasJsonLike(rb: OA3RequestBody): boolean {
-  return (
-    !!rb?.content && Object.keys(rb.content).some((k) => /json|octet|multipart|text\//i.test(k))
-  );
-}
 function sanitize(id: string): string {
   return id.replace(/XML/g, 'Xml');
 }

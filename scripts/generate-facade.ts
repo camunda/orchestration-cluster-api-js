@@ -16,34 +16,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { loadOpenApiDereferenced } from './openapi-load';
-import { LOCAL_SPEC_ENTRY_PATH } from './spec-location';
-
-interface OA3Parameter {
-  in?: string;
-  name?: string;
-}
-interface OA3RequestBody {
-  content?: Record<string, any>;
-}
-interface OA3Operation {
-  operationId?: string;
-  parameters?: OA3Parameter[];
-  requestBody?: OA3RequestBody;
-  summary?: string;
-  description?: string;
-  tags?: string[];
-  ['x-eventually-consistent']?: boolean;
-}
-interface OA3PathItem {
-  [method: string]: OA3Operation | any;
-}
-interface OA3Spec {
-  paths?: Record<string, OA3PathItem>;
-}
-
 const ROOT = process.cwd();
-const SPEC_PATH = LOCAL_SPEC_ENTRY_PATH;
+const METADATA_PATH = path.join(ROOT, 'external-spec/bundled/spec-metadata.json');
 const OUT_DIR = path.join(ROOT, 'src/facade');
 const OUT_FILE = path.join(OUT_DIR, 'operations.gen.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
@@ -53,11 +27,11 @@ function capitalizeFirst(id: string): string {
 }
 
 async function main() {
-  if (!fs.existsSync(SPEC_PATH)) {
-    console.warn('[facade-gen] Spec missing, skipping');
+  if (!fs.existsSync(METADATA_PATH)) {
+    console.warn('[facade-gen] spec-metadata.json missing, skipping');
     return;
   }
-  const spec: OA3Spec = (await loadOpenApiDereferenced(SPEC_PATH)) as any;
+  const metadata = JSON.parse(fs.readFileSync(METADATA_PATH, 'utf8'));
   interface OpMeta {
     opId: string;
     summary?: string;
@@ -101,30 +75,22 @@ async function main() {
     }
   }
 
-  for (const [, item] of Object.entries(spec.paths || {})) {
-    for (const [verb, rawOp] of Object.entries(item)) {
-      const op = rawOp as OA3Operation;
-      if (!op?.operationId) continue;
-      const originalId = op.operationId;
-      const sanitizedId = sanitizeOpId(originalId);
-      const params = (op.parameters || []) as OA3Parameter[];
-      const hasPathOrQuery = params.some((pr) => pr.in === 'path' || pr.in === 'query');
-      const hasBody = !!op.requestBody && hasJsonLike(op.requestBody);
-      const eventual = !!op['x-eventually-consistent'];
-      const meta: OpMeta = {
-        opId: sanitizedId,
-        summary: op.summary,
-        description: op.description,
-        hasBody,
-        bodyOnly: !!(hasBody && !hasPathOrQuery),
-        tags: op.tags,
-        eventual,
-        verb: verb.toLowerCase(),
-      };
-      (meta as any).originalOpId = originalId; // preserve for deprecated alias emission
-      allOps.push(meta);
-      if (meta.bodyOnly) bodyOnlyOps.push(meta);
-    }
+  for (const op of metadata.operations) {
+    const originalId = op.operationId;
+    const sanitizedId = sanitizeOpId(originalId);
+    const meta: OpMeta = {
+      opId: sanitizedId,
+      summary: op.summary,
+      description: op.description,
+      hasBody: op.hasRequestBody,
+      bodyOnly: op.bodyOnly,
+      tags: op.tags,
+      eventual: op.eventuallyConsistent,
+      verb: op.method.toLowerCase(),
+    };
+    (meta as any).originalOpId = originalId; // preserve for deprecated alias emission
+    allOps.push(meta);
+    if (meta.bodyOnly) bodyOnlyOps.push(meta);
   }
 
   allOps.sort((a, b) => a.opId.localeCompare(b.opId));
@@ -334,11 +300,6 @@ async function main() {
   } catch (e) {
     console.warn('[facade-gen] Barrel generation failed', e);
   }
-}
-
-function hasJsonLike(rb: OA3RequestBody): boolean {
-  if (!rb?.content) return false;
-  return Object.keys(rb.content).some((k) => /json|octet|multipart|text\//i.test(k));
 }
 
 function buildJsDoc(

@@ -11,11 +11,10 @@ This repo generates a TypeScript SDK from a multi-file OpenAPI spec sourced from
 
 Generation pipeline (high level):
 
-1. `scripts/fetch-spec.ts` → materialize upstream YAML under `external-spec/upstream/...`
-2. `scripts/bundle-openapi.ts` → produce `external-spec/bundled/rest-api.bundle.json`
-3. `@hey-api/openapi-ts` → generate `src/gen/*` (types, zod, sdk)
-4. Postprocessors + gating + tests
-5. `tsup --dts` → dist bundles + declaration output
+1. `camunda-schema-bundler` → fetch upstream YAML (sparse clone) + bundle → `external-spec/bundled/rest-api.bundle.json`
+2. `@hey-api/openapi-ts` → generate `src/gen/*` (types, zod, sdk)
+3. Postprocessors + gating + tests
+4. `tsup --dts` → dist bundles + declaration output
 
 If you are debugging generation issues, prefer reproducing with `npm run build:local` to avoid fetch noise.
 
@@ -23,7 +22,7 @@ If you are debugging generation issues, prefer reproducing with `npm run build:l
 
 - Bundled spec input to the generator: `external-spec/bundled/rest-api.bundle.json`
 - Generator output (checked/used by build): `src/gen/`
-- Bundler + normalization logic: `scripts/bundle-openapi.ts`
+- Spec bundling: `camunda-schema-bundler` npm package (handles fetch, bundle, normalization)
 - Spec location constants: `scripts/spec-location.ts`
 - Generator config: `openapi-ts.config.ts`
 
@@ -55,11 +54,11 @@ Bad shape (causes generator pain):
 
 ### Fix location
 
-The mitigation lives in `scripts/bundle-openapi.ts` inside `safeNormalize()`.
+The mitigation lives in the `camunda-schema-bundler` package (signature-based normalization + manual overrides).
 
-There is also a fail-fast sanity check in the bundler that errors if any path-local `$like` refs survive. You can bypass it (temporarily) with `CAMUNDA_SDK_ALLOW_PATH_LOCAL_LIKE_REFS=1`.
+There is also a fail-fast sanity check in the bundler that errors if any path-local `$like` refs survive.
 
-Important detail: `manualOverrides` matches specific `#/paths/...` ref strings and expects the _encoded_ form for some paths (e.g. `%7B`), so avoid globally decoding all refs too early. The `$like` rewrite should compare against a decoded/normalized view of the ref, but keep the original ref string unless rewriting.
+Important detail: `manualOverrides` in the bundler matches specific `#/paths/...` ref strings and expects the _encoded_ form for some paths (e.g. `%7B`), so avoid globally decoding all refs too early. The `$like` rewrite should compare against a decoded/normalized view of the ref, but keep the original ref string unless rewriting.
 
 ### Quick debug checklist
 
