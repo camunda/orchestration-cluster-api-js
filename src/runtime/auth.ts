@@ -380,6 +380,7 @@ export function createAuthFacade(
     info: () => {},
     debug: () => {},
     trace: () => {},
+    silly: () => {},
     code: () => {},
     scope: () => noop,
   };

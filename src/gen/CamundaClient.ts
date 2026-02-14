@@ -1633,6 +1633,8 @@ export class CamundaClient {
    * Iterate through all known partitions and activate jobs up to the requested maximum.
    *
     *
+   * @example Activate and process jobs
+   * {@includeCode ../../examples/job.ts#ActivateJobs}
    * @operationId activateJobs
    * @tags Job
    */
@@ -2280,6 +2282,8 @@ export class CamundaClient {
    *
    * Assigns a user task with the given key to the given assignee.
     *
+   * @example Assign a user task
+   * {@includeCode ../../examples/user-task.ts#AssignUserTask}
    * @operationId assignUserTask
    * @tags User task
    */
@@ -2458,6 +2462,8 @@ export class CamundaClient {
    *
    * Broadcasts a signal.
     *
+   * @example Broadcast a signal
+   * {@includeCode ../../examples/message-signal.ts#BroadcastSignal}
    * @operationId broadcastSignal
    * @tags Signal
    */
@@ -2587,6 +2593,8 @@ export class CamundaClient {
    *
    * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted.
     *
+   * @example Cancel a process instance
+   * {@includeCode ../../examples/process-instance.ts#CancelProcessInstance}
    * @operationId cancelProcessInstance
    * @tags Process instance
    */
@@ -2715,6 +2723,8 @@ export class CamundaClient {
    * Complete a job with the given payload, which allows completing the associated service task.
    *
     *
+   * @example Complete a job
+   * {@includeCode ../../examples/job.ts#CompleteJob}
    * @operationId completeJob
    * @tags Job
    */
@@ -2775,6 +2785,8 @@ export class CamundaClient {
    *
    * Completes a user task with the given key.
     *
+   * @example Complete a user task
+   * {@includeCode ../../examples/user-task.ts#CompleteUserTask}
    * @operationId completeUserTask
    * @tags User task
    */
@@ -2839,6 +2851,8 @@ export class CamundaClient {
    * Use the publish message endpoint to send messages that can be buffered.
    *
     *
+   * @example Correlate a message
+   * {@includeCode ../../examples/message-signal.ts#CorrelateMessage}
    * @operationId correlateMessage
    * @tags Message
    */
@@ -3017,6 +3031,8 @@ export class CamundaClient {
    * This is an atomic call, i.e. either all resources are deployed or none of them are.
    *
     *
+   * @example Deploy resources
+   * {@includeCode ../../examples/deployment.ts#CreateDeployment}
    * @operationId createDeployment
    * @tags Resource
    * @returns Enriched deployment result with typed arrays (processes, decisions, decisionRequirements, forms, resources).
@@ -3539,6 +3555,10 @@ export class CamundaClient {
    * when awaitCompletion is enabled.
    *
     *
+   * @example Create by process definition ID
+   * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceById}
+   * @example Create by process definition key
+   * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceByKey}
    * @operationId createProcessInstance
    * @tags Process instance
    */
@@ -4405,6 +4425,8 @@ export class CamundaClient {
    * supported for process resources; for other resource types this flag is ignored and no history
    * will be deleted.
     *
+   * @example Delete a resource
+   * {@includeCode ../../examples/deployment.ts#DeleteResource}
    * @operationId deleteResource
    * @tags Resource
    */
@@ -4769,6 +4791,10 @@ export class CamundaClient {
    * version of the decision is used.
    *
     *
+   * @example Evaluate by decision definition ID
+   * {@includeCode ../../examples/decision.ts#EvaluateDecisionById}
+   * @example Evaluate by decision definition key
+   * {@includeCode ../../examples/decision.ts#EvaluateDecisionByKey}
    * @operationId evaluateDecision
    * @tags Decision definition
    */
@@ -4894,6 +4920,8 @@ export class CamundaClient {
    * Mark the job as failed.
    *
     *
+   * @example Fail a job with retry
+   * {@includeCode ../../examples/job.ts#FailJob}
    * @operationId failJob
    * @tags Job
    */
@@ -5192,6 +5220,8 @@ export class CamundaClient {
    *
    * Returns a decision definition by key.
     *
+   * @example Get a decision definition
+   * {@includeCode ../../examples/decision.ts#GetDecisionDefinition}
    * @operationId getDecisionDefinition
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5822,6 +5852,8 @@ export class CamundaClient {
    * Returns incident as JSON.
    *
     *
+   * @example Get an incident
+   * {@includeCode ../../examples/incident.ts#GetIncident}
    * @operationId getIncident
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6382,6 +6414,8 @@ export class CamundaClient {
    *
    * Get the process instance by the process instance key.
     *
+   * @example Get a process instance
+   * {@includeCode ../../examples/process-instance.ts#GetProcessInstance}
    * @operationId getProcessInstance
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7190,6 +7224,8 @@ export class CamundaClient {
    *
    * Obtains the current topology of the cluster the gateway is part of.
     *
+   * @example Get cluster topology
+   * {@includeCode ../../examples/client.ts#GetTopology}
    * @operationId getTopology
    * @tags Cluster
    */
@@ -7894,6 +7930,8 @@ export class CamundaClient {
    * Use the message correlation endpoint for such use cases.
    *
     *
+   * @example Publish a message
+   * {@includeCode ../../examples/message-signal.ts#PublishMessage}
    * @operationId publishMessage
    * @tags Message
    */
@@ -8013,6 +8051,8 @@ export class CamundaClient {
    * to reset the job's retries, followed by this call.
    *
     *
+   * @example Resolve an incident
+   * {@includeCode ../../examples/incident.ts#ResolveIncident}
    * @operationId resolveIncident
    * @tags Incident
    */
@@ -8843,6 +8883,8 @@ export class CamundaClient {
    *
    * Search for decision definitions based on given criteria.
     *
+   * @example Search decision definitions
+   * {@includeCode ../../examples/decision.ts#SearchDecisionDefinitions}
    * @operationId searchDecisionDefinitions
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9361,6 +9403,8 @@ export class CamundaClient {
    * Search for incidents based on given criteria.
    *
     *
+   * @example Search incidents
+   * {@includeCode ../../examples/incident.ts#SearchIncidents}
    * @operationId searchIncidents
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9943,6 +9987,8 @@ export class CamundaClient {
    *
    * Search for process instances based on given criteria.
     *
+   * @example Search process instances
+   * {@includeCode ../../examples/process-instance.ts#SearchProcessInstances}
    * @operationId searchProcessInstances
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10585,6 +10631,8 @@ export class CamundaClient {
    *
    * Search for user tasks based on given criteria.
     *
+   * @example Search user tasks
+   * {@includeCode ../../examples/user-task.ts#SearchUserTasks}
    * @operationId searchUserTasks
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11617,6 +11665,8 @@ export class CamundaClient {
    *
    * Removes the assignee of a task with the given key.
     *
+   * @example Unassign a user task
+   * {@includeCode ../../examples/user-task.ts#UnassignUserTask}
    * @operationId unassignUserTask
    * @tags User task
    */
@@ -12285,6 +12335,10 @@ export class CamundaClient {
   /**
    * Create a job worker that activates and processes jobs of the given type.
    * @param cfg Worker configuration
+   * @example Create a job worker
+   * {@includeCode ../../examples/job.ts#CreateJobWorker}
+   * @example Job worker with error handling
+   * {@includeCode ../../examples/job.ts#JobWorkerWithErrorHandling}
    */
   createJobWorker<
     In extends import('zod').ZodTypeAny = any,

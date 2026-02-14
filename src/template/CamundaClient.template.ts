@@ -506,6 +506,10 @@ export class CamundaClient {
   /**
    * Create a job worker that activates and processes jobs of the given type.
    * @param cfg Worker configuration
+   * @example Create a job worker
+   * {@includeCode ../../examples/job.ts#CreateJobWorker}
+   * @example Job worker with error handling
+   * {@includeCode ../../examples/job.ts#JobWorkerWithErrorHandling}
    */
   createJobWorker<
     In extends import('zod').ZodTypeAny = any,

@@ -1,6 +1,9 @@
 {
   "entryPoints": ["src/index.ts", "src/logger.ts", "src/fp/index.ts"],
   "out": "docs",
+  "jsDocCompatibility": {
+    "exampleTag": false
+  },
   "exclude": [
     "**/node_modules/**",
     "**/tests/**",

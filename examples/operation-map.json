@@ -1,0 +1,103 @@
+{
+  "getTopology": [
+    { "file": "client.ts", "region": "GetTopology", "label": "Get cluster topology" }
+  ],
+  "createProcessInstance": [
+    {
+      "file": "process-instance.ts",
+      "region": "CreateProcessInstanceById",
+      "label": "Create by process definition ID"
+    },
+    {
+      "file": "process-instance.ts",
+      "region": "CreateProcessInstanceByKey",
+      "label": "Create by process definition key"
+    }
+  ],
+  "cancelProcessInstance": [
+    {
+      "file": "process-instance.ts",
+      "region": "CancelProcessInstance",
+      "label": "Cancel a process instance"
+    }
+  ],
+  "getProcessInstance": [
+    {
+      "file": "process-instance.ts",
+      "region": "GetProcessInstance",
+      "label": "Get a process instance"
+    }
+  ],
+  "searchProcessInstances": [
+    {
+      "file": "process-instance.ts",
+      "region": "SearchProcessInstances",
+      "label": "Search process instances"
+    }
+  ],
+  "createDeployment": [
+    { "file": "deployment.ts", "region": "CreateDeployment", "label": "Deploy resources" }
+  ],
+  "deleteResource": [
+    { "file": "deployment.ts", "region": "DeleteResource", "label": "Delete a resource" }
+  ],
+  "evaluateDecision": [
+    {
+      "file": "decision.ts",
+      "region": "EvaluateDecisionById",
+      "label": "Evaluate by decision definition ID"
+    },
+    {
+      "file": "decision.ts",
+      "region": "EvaluateDecisionByKey",
+      "label": "Evaluate by decision definition key"
+    }
+  ],
+  "getDecisionDefinition": [
+    {
+      "file": "decision.ts",
+      "region": "GetDecisionDefinition",
+      "label": "Get a decision definition"
+    }
+  ],
+  "searchDecisionDefinitions": [
+    {
+      "file": "decision.ts",
+      "region": "SearchDecisionDefinitions",
+      "label": "Search decision definitions"
+    }
+  ],
+  "assignUserTask": [
+    { "file": "user-task.ts", "region": "AssignUserTask", "label": "Assign a user task" }
+  ],
+  "completeUserTask": [
+    { "file": "user-task.ts", "region": "CompleteUserTask", "label": "Complete a user task" }
+  ],
+  "unassignUserTask": [
+    { "file": "user-task.ts", "region": "UnassignUserTask", "label": "Unassign a user task" }
+  ],
+  "searchUserTasks": [
+    { "file": "user-task.ts", "region": "SearchUserTasks", "label": "Search user tasks" }
+  ],
+  "activateJobs": [
+    { "file": "job.ts", "region": "ActivateJobs", "label": "Activate and process jobs" }
+  ],
+  "completeJob": [{ "file": "job.ts", "region": "CompleteJob", "label": "Complete a job" }],
+  "failJob": [{ "file": "job.ts", "region": "FailJob", "label": "Fail a job with retry" }],
+  "correlateMessage": [
+    { "file": "message-signal.ts", "region": "CorrelateMessage", "label": "Correlate a message" }
+  ],
+  "publishMessage": [
+    { "file": "message-signal.ts", "region": "PublishMessage", "label": "Publish a message" }
+  ],
+  "broadcastSignal": [
+    { "file": "message-signal.ts", "region": "BroadcastSignal", "label": "Broadcast a signal" }
+  ],
+  "getIncident": [{ "file": "incident.ts", "region": "GetIncident", "label": "Get an incident" }],
+  "resolveIncident": [
+    { "file": "incident.ts", "region": "ResolveIncident", "label": "Resolve an incident" }
+  ],
+  "searchIncidents": [
+    { "file": "incident.ts", "region": "SearchIncidents", "label": "Search incidents" }
+  ]
+}

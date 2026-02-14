@@ -29,6 +29,8 @@ type _activateJobs_Body = ActivateJobsData extends { body?: infer B } ? B : neve
  * Iterate through all known partitions and activate jobs up to the requested maximum.
  *
   *
+ * @example Activate and process jobs
+ * {@includeCode ../../examples/job.ts#ActivateJobs}
  * @operationId activateJobs
  * @tags Job
  */
@@ -42,6 +44,8 @@ type _broadcastSignal_Body = BroadcastSignalData extends { body?: infer B } ? B 
  *
  * Broadcasts a signal.
   *
+ * @example Broadcast a signal
+ * {@includeCode ../../examples/message-signal.ts#BroadcastSignal}
  * @operationId broadcastSignal
  * @tags Signal
  */
@@ -80,6 +84,8 @@ type _correlateMessage_Body = CorrelateMessageData extends { body?: infer B } ? 
  * Use the publish message endpoint to send messages that can be buffered.
  *
   *
+ * @example Correlate a message
+ * {@includeCode ../../examples/message-signal.ts#CorrelateMessage}
  * @operationId correlateMessage
  * @tags Message
  */
@@ -125,6 +131,8 @@ type _createDeployment_Body = CreateDeploymentData extends { body?: infer B } ? 
  * This is an atomic call, i.e. either all resources are deployed or none of them are.
  *
   *
+ * @example Deploy resources
+ * {@includeCode ../../examples/deployment.ts#CreateDeployment}
  * @operationId createDeployment
  * @tags Resource
  */
@@ -182,6 +190,10 @@ type _createProcessInstance_Body = CreateProcessInstanceData extends { body?: in
  * when awaitCompletion is enabled.
  *
   *
+ * @example Create by process definition ID
+ * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceById}
+ * @example Create by process definition key
+ * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceByKey}
  * @operationId createProcessInstance
  * @tags Process instance
  */
@@ -297,6 +309,10 @@ type _evaluateDecision_Body = EvaluateDecisionData extends { body?: infer B } ? 
  * version of the decision is used.
  *
   *
+ * @example Evaluate by decision definition ID
+ * {@includeCode ../../examples/decision.ts#EvaluateDecisionById}
+ * @example Evaluate by decision definition key
+ * {@includeCode ../../examples/decision.ts#EvaluateDecisionByKey}
  * @operationId evaluateDecision
  * @tags Decision definition
  */
@@ -485,6 +501,8 @@ type _publishMessage_Body = PublishMessageData extends { body?: infer B } ? B : 
  * Use the message correlation endpoint for such use cases.
  *
   *
+ * @example Publish a message
+ * {@includeCode ../../examples/message-signal.ts#PublishMessage}
  * @operationId publishMessage
  * @tags Message
  */
@@ -604,6 +622,8 @@ type _searchDecisionDefinitions_Body = SearchDecisionDefinitionsData extends { b
  *
  * Search for decision definitions based on given criteria.
   *
+ * @example Search decision definitions
+ * {@includeCode ../../examples/decision.ts#SearchDecisionDefinitions}
  * @operationId searchDecisionDefinitions
  * @tags Decision definition
   *
@@ -690,6 +710,8 @@ type _searchIncidents_Body = SearchIncidentsData extends { body?: infer B } ? B 
  * Search for incidents based on given criteria.
  *
   *
+ * @example Search incidents
+ * {@includeCode ../../examples/incident.ts#SearchIncidents}
  * @operationId searchIncidents
  * @tags Incident
   *
@@ -776,6 +798,8 @@ type _searchProcessInstances_Body = SearchProcessInstancesData extends { body?: 
  *
  * Search for process instances based on given criteria.
   *
+ * @example Search process instances
+ * {@includeCode ../../examples/process-instance.ts#SearchProcessInstances}
  * @operationId searchProcessInstances
  * @tags Process instance
   *
@@ -844,6 +868,8 @@ type _searchUserTasks_Body = SearchUserTasksData extends { body?: infer B } ? B 
  *
  * Search for user tasks based on given criteria.
   *
+ * @example Search user tasks
+ * {@includeCode ../../examples/user-task.ts#SearchUserTasks}
  * @operationId searchUserTasks
  * @tags User task
   *
@@ -1003,6 +1029,8 @@ export function assignRoleToUser(options?: Parameters<typeof _assignRoleToUser>[
  *
  * Assigns a user task with the given key to the given assignee.
   *
+ * @example Assign a user task
+ * {@includeCode ../../examples/user-task.ts#AssignUserTask}
  * @operationId assignUserTask
  * @tags User task
  */
@@ -1059,6 +1087,8 @@ export function cancelBatchOperation(options: Parameters<typeof _cancelBatchOper
  *
  * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted.
   *
+ * @example Cancel a process instance
+ * {@includeCode ../../examples/process-instance.ts#CancelProcessInstance}
  * @operationId cancelProcessInstance
  * @tags Process instance
  */
@@ -1072,6 +1102,8 @@ export function cancelProcessInstance(options?: Parameters<typeof _cancelProcess
  * Complete a job with the given payload, which allows completing the associated service task.
  *
   *
+ * @example Complete a job
+ * {@includeCode ../../examples/job.ts#CompleteJob}
  * @operationId completeJob
  * @tags Job
  */
@@ -1084,6 +1116,8 @@ export function completeJob(options?: Parameters<typeof _completeJob>[0]): Cance
  *
  * Completes a user task with the given key.
   *
+ * @example Complete a user task
+ * {@includeCode ../../examples/user-task.ts#CompleteUserTask}
  * @operationId completeUserTask
  * @tags User task
  */
@@ -1283,6 +1317,8 @@ export function deleteProcessInstance(options: Parameters<typeof _deleteProcessI
  * supported for process resources; for other resource types this flag is ignored and no history
  * will be deleted.
   *
+ * @example Delete a resource
+ * {@includeCode ../../examples/deployment.ts#DeleteResource}
  * @operationId deleteResource
  * @tags Resource
  */
@@ -1346,6 +1382,8 @@ export function deleteUser(options: Parameters<typeof _deleteUser>[0] | undefine
  * Mark the job as failed.
  *
   *
+ * @example Fail a job with retry
+ * {@includeCode ../../examples/job.ts#FailJob}
  * @operationId failJob
  * @tags Job
  */
@@ -1418,6 +1456,8 @@ export function getBatchOperation(options: Parameters<typeof _getBatchOperation>
  *
  * Returns a decision definition by key.
   *
+ * @example Get a decision definition
+ * {@includeCode ../../examples/decision.ts#GetDecisionDefinition}
  * @operationId getDecisionDefinition
  * @tags Decision definition
   *
@@ -1581,6 +1621,8 @@ export function getGroup(options: Parameters<typeof _getGroup>[0] | undefined, e
  * Returns incident as JSON.
  *
   *
+ * @example Get an incident
+ * {@includeCode ../../examples/incident.ts#GetIncident}
  * @operationId getIncident
  * @tags Incident
   *
@@ -1676,6 +1718,8 @@ export const getProcessDefinitionXML = getProcessDefinitionXml;
  *
  * Get the process instance by the process instance key.
   *
+ * @example Get a process instance
+ * {@includeCode ../../examples/process-instance.ts#GetProcessInstance}
  * @operationId getProcessInstance
  * @tags Process instance
   *
@@ -1848,6 +1892,8 @@ export function getTenantClusterVariable(options: Parameters<typeof _getTenantCl
  *
  * Obtains the current topology of the cluster the gateway is part of.
   *
+ * @example Get cluster topology
+ * {@includeCode ../../examples/client.ts#GetTopology}
  * @operationId getTopology
  * @tags Cluster
  */
@@ -1999,6 +2045,8 @@ export function resetClock(options?: Parameters<typeof _resetClock>[0]): Cancela
  * to reset the job's retries, followed by this call.
  *
   *
+ * @example Resolve an incident
+ * {@includeCode ../../examples/incident.ts#ResolveIncident}
  * @operationId resolveIncident
  * @tags Incident
  */
@@ -2548,6 +2596,8 @@ export function unassignUserFromTenant(options?: Parameters<typeof _unassignUser
  *
  * Removes the assignee of a task with the given key.
   *
+ * @example Unassign a user task
+ * {@includeCode ../../examples/user-task.ts#UnassignUserTask}
  * @operationId unassignUserTask
  * @tags User task
  */
