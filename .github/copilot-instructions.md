@@ -7,22 +7,31 @@ This repo generates a TypeScript SDK from a multi-file OpenAPI spec sourced from
 - Build (fetches upstream spec): `npm run build`
 - Build using already-fetched spec (fast local iteration): `npm run build:local`
 - Only regenerate the bundled OpenAPI spec: `npm run bundle:spec`
-- Only regenerate SDK sources: `npm run generate:sdk`
 
 Generation pipeline (high level):
 
-1. `camunda-schema-bundler` → fetch upstream YAML (sparse clone) + bundle → `external-spec/bundled/rest-api.bundle.json`
-2. `@hey-api/openapi-ts` → generate `src/gen/*` (types, zod, sdk)
-3. Postprocessors + gating + tests
-4. `tsup --dts` → dist bundles + declaration output
+1. `camunda-schema-bundler` → fetch upstream YAML (sparse clone) + bundle → `external-spec/bundled/rest-api.bundle.json` + `spec-metadata.json`
+2. `scripts/run-pipeline.ts` orchestrates numbered hooks:
+   - `hooks/pre/*` → preprocessing (branding metadata from spec-metadata.json)
+   - `@hey-api/openapi-ts` → generate `src/gen/*` (types, zod, sdk)
+   - `hooks/post/*` → postprocessing (index fix, deployment schema, class methods, facade, validation gate, zod augment, activate-jobs enrichment, test scaffolds)
+   - Tests
+3. `tsup --dts` → dist bundles + declaration output
+
+Hooks are numbered (100, 200, …) and run in lexicographic order. To add a new step, create a file in `hooks/pre/` or `hooks/post/` with an appropriate number.
 
 If you are debugging generation issues, prefer reproducing with `npm run build:local` to avoid fetch noise.
 
 ## Where things live
 
 - Bundled spec input to the generator: `external-spec/bundled/rest-api.bundle.json`
+- Spec metadata (operations, keys, unions): `external-spec/bundled/spec-metadata.json`
 - Generator output (checked/used by build): `src/gen/`
 - Spec bundling: `camunda-schema-bundler` npm package (handles fetch, bundle, normalization)
+- Pipeline orchestrator: `scripts/run-pipeline.ts`
+- Pre-generation hooks: `hooks/pre/`
+- Post-generation hooks: `hooks/post/`
+- Branding plugin (runs during openapi-ts): `plugins/branding-plugin/`
 - Spec location constants: `scripts/spec-location.ts`
 - Generator config: `openapi-ts.config.ts`
 
