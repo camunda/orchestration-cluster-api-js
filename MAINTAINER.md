@@ -1,86 +1,142 @@
 <h1 align="center">Maintainer Guide – Orchestration Cluster TypeScript SDK</h1>
 
-Green‑field documentation of the current (post‑refactor) architecture. End‑user consumption docs live in `README.md`.
+Architecture and pipeline documentation for the `@camunda8/orchestration-cluster-api` SDK generator. End‑user consumption docs live in `README.md`; contributor setup is in `CONTRIBUTING.md`.
 
 ---
 
 ## 1. High‑Level Flow
 
-`npm run build` orchestrates a linear, deterministic pipeline:
+`npm run build` runs a deterministic pipeline:
 
-1. `clean` – purge `dist/`, `src/gen/`, `src/facade/`.
-2. `fetch:spec` – sparse clone upstream repo (directory: `zeebe/gateway-protocol/src/main/proto/v2`) → materialize as:
-   - `external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/*` (kept for traceability)
-   - Entry file: `external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml` (consumed by downstream steps)
-3. `preprocess` – analyze semantic key schemas (`x-semantic-type` | `x-semantic-key`) → emit branding metadata.
-4. `generate:sdk` – invoke `@hey-api/openapi-ts` (with branding plugin) → produce raw generated trio:
-   - `src/gen/types.gen.ts`
-   - `src/gen/zod.gen.ts`
-   - `src/gen/sdk.gen.ts`
-5. `postprocess-deployment-schema` – targeted structural adjustments (deployment specific).
-6. `generate:class` – synthesize `CamundaClient.ts` from template markers + operation metadata.
-7. `generate:facade` – build higher level facade helpers.
-8. `gate` – invariant & drift checks (fail fast if generation anomalies detected).
-9. Unit tests – `vitest` (excluding integration) to assert surface + branding contract.
-10. `docs:config` (during build) – generate configuration docs.
-11. `tsup` – bundle ESM + CJS + type declarations into `dist/`.
+1. **Clean** – purge `dist/`, `src/gen/`, `src/facade/`.
+2. **Bundle spec** – `camunda-schema-bundler` fetches the upstream multi-file OpenAPI spec (sparse clone of `camunda/camunda`, directory `zeebe/gateway-protocol/src/main/proto/v2`) and bundles it into:
+   - `external-spec/bundled/rest-api.bundle.json` (single-file spec consumed by the generator)
+   - `external-spec/bundled/spec-metadata.json` (operation metadata: keys, unions, consistency info)
+3. **Pipeline** (`tsx scripts/run-pipeline.ts`) – runs numbered hooks in lexicographic order:
+   - Pre-generation hooks (`hooks/pre/*`)
+   - `@hey-api/openapi-ts` code generation → `src/gen/` (types, zod, sdk)
+   - Post-generation hooks (`hooks/post/*`)
+   - Unit tests (vitest, excluding integration)
+4. **Documentation** – generate config reference docs.
+5. **Bundle** – `tsup` produces ESM + CJS + declarations in `dist/`.
 
 Each step is idempotent given identical upstream spec + environment.
 
+### Build Variants
+
+| Command | Description |
+| --- | --- |
+| `npm run build` | Full build: fetch upstream spec, generate, test, bundle |
+| `npm run build:local` | Fast local iteration: use already-fetched spec, skip format step |
+| `npm run bundle:spec` | Only fetch & bundle the upstream spec |
+| `npm run bundle:spec:local` | Only bundle from local spec files (no network fetch) |
+| `npm run generate` | Clean + bundle spec (remote) + run pipeline |
+| `npm run generate:local` | Clean + bundle spec (local) + run pipeline |
+
+Pin a spec branch/tag: `SPEC_REF=my-branch npm run build`.
+
 ---
 
-## 2. Spec Acquisition & Reproducibility
+## 2. Pipeline Orchestrator
 
-- Upstream repository: `camunda/camunda` (branch: `main`).
-- Sparse checkout uses non‑cone mode + single file path.
-- Result is ephemeral (ignored by git). We intentionally keep an immutable copy (the checked-out spec directory) per run for diffing.
+`scripts/run-pipeline.ts` discovers `.ts` files in `hooks/pre/` and `hooks/post/`, sorts them lexicographically, and runs each via `tsx`. Between the two hook phases it invokes `@hey-api/openapi-ts` (configured in `openapi-ts.config.ts`). After all hooks, it runs the unit test suite (skippable with `--no-test`).
 
-Enhancements (optional, not yet implemented):
+### Hook Numbering Convention
 
-- Pin a specific commit/tag via `ORCH_SPEC_REF` env var.
-- Store SHA256 next to the fetched upstream spec directory for provenance.
-- Offline fallback: reuse last downloaded spec if network unavailable.
+Hooks are numbered in increments of 100 (100, 200, …). To insert a new step between existing hooks, use an intermediate number (e.g., 450 between 400 and 500). The lexicographic sort on filenames determines execution order.
 
 ---
 
-## 3. Semantic Key Branding
+## 3. Spec Acquisition
+
+Spec fetching and bundling is handled by the `camunda-schema-bundler` npm package (separate repo). It performs:
+
+- Sparse clone of `camunda/camunda` (configurable branch via `SPEC_REF`)
+- `SwaggerParser.bundle()` to merge multi-file YAML into a single JSON
+- Schema augmentation from all upstream YAML files
+- Path-local `$ref` normalization (signature matching + manual overrides)
+- Emission of `spec-metadata.json` (operation IDs, key types, union types, consistency annotations)
+
+The raw upstream spec is also materialized at `external-spec/upstream/` for traceability and local bundling.
+
+Spec location constants are centralized in `scripts/spec-location.ts` to prevent drift.
+
+---
+
+## 4. Hook Reference
+
+### Pre-generation hooks (`hooks/pre/`)
+
+| Hook | Purpose |
+| --- | --- |
+| `100-preprocess-brands.ts` | Reads `spec-metadata.json` and enriches it with SDK-specific fields (TypeScript branded types, Zod schema names, source pointers) → produces `branding/branding-metadata.json` |
+
+### Post-generation hooks (`hooks/post/`)
+
+| Hook | Purpose |
+| --- | --- |
+| `100-fix-gen-index.ts` | Replaces `export type *` with `export *` in `src/gen/index.ts` so runtime key-helper namespaces (not just types) are re-exported |
+| `200-fix-deployment-schema.ts` | Patches `zod.gen.ts` so the `createDeployment` resources schema accepts `Blob\|File` and enforces non-empty arrays |
+| `300-generate-class-methods.ts` | Reads spec metadata + template → generates typed methods on `CamundaClient` (inserted between auto-generation markers), including per-operation `Input` and `Consistency` helper types |
+| `400-generate-facade.ts` | Builds ergonomic `CancelablePromise` wrappers in `src/facade/` that flatten body-only operations and unwrap the `{ data }` envelope |
+| `450-inject-examples.ts` | Reads `examples/operation-map.json` and injects `@example` JSDoc tags with `{@includeCode}` references into generated source files |
+| `500-gate-validation.ts` | Strips inline `requestValidator`/`responseValidator` from `sdk.gen.ts` (validation is handled by `CamundaClient` via `ValidationManager`) |
+| `600-fix-zod-augment.ts` | Rewrites the bare `import '../zod-augment'` in `zod.gen.ts` into a named import to survive tree-shaking |
+| `700-enrich-activate-jobs.ts` | Patches `CamundaClient` to import and apply `enrichActivatedJob`, adding action methods (complete, fail, etc.) to activated job objects |
+| `800-generate-test-scaffolds.ts` | Scans `sdk.gen.ts` for exported operations and auto-generates missing integration test scaffold files in `tests-integration/methods/`, updating `manifest.json` |
+| `900-validate-test-scaffolds.ts` | Validates every exported SDK operation has a corresponding test scaffold; exits non-zero if any are missing (excluding ignored list) |
+| `950-typecheck-examples.ts` | Runs `tsc --noEmit` against `examples/tsconfig.json` to catch type-contract regressions from upstream spec changes |
+
+---
+
+## 5. Semantic Key Branding
 
 Signal: presence of `x-semantic-type` (equivalent to implicit `x-semantic-key: true`). Explicit `x-semantic-key` also accepted.
 
 Flow:
 
-1. `preprocess-brands.ts` parses spec, collecting schemas with the marker.
-2. Produces `branding-metadata.json` (keys, unions, arrays, constraints, stable IDs).
-3. Branding plugin (in the openapi-ts config) injects:
-   - Generic `CamundaKey<T>` alias (if absent)
+1. `camunda-schema-bundler` detects `x-semantic-type` markers during bundling and records them in `spec-metadata.json`.
+2. Pre-hook `100-preprocess-brands.ts` enriches this into `branding/branding-metadata.json` (keys, unions, arrays, constraints, stable IDs).
+3. The branding plugin (`plugins/branding-plugin/`) runs during `@hey-api/openapi-ts` generation and injects:
+   - Generic `CamundaKey<T>` alias
    - Branded key type aliases (`export type ProcessInstanceKey = CamundaKey<'ProcessInstanceKey'>`)
-   - Namespace helpers / lifters if configured.
+   - Zod refinements for key fields
+   - Namespace helpers / lifters if configured
 
-No structural inheritance (legacy `CamundaKey` base) remains; detection is purely semantic.
-
----
-
-## 4. Generated Artifacts
-
-| File               | Purpose                                                                          |
-| ------------------ | -------------------------------------------------------------------------------- |
-| `types.gen.ts`     | Base TypeScript types from OpenAPI schemas/operations (post branding injection). |
-| `zod.gen.ts`       | Programmatic validators & schema objects (shared with class generator).          |
-| `sdk.gen.ts`       | Raw operation functions (thin HTTP call layer).                                  |
-| `CamundaClient.ts` | Aggregated class with ergonomic method surfaces + typed inputs.                  |
-| `facade/*`         | Higher-level convenience wrappers (strategy / composition).                      |
-
-Generated files are entirely disposable; never edit them manually—change inputs or scripts instead.
+Detection is purely semantic—no structural inheritance.
 
 ---
 
-## 5. Class Generation (`generate-class-methods.ts`)
+## 6. Generated Artifacts
+
+| File | Location | Purpose |
+| --- | --- | --- |
+| `types.gen.ts` | `src/gen/` | TypeScript types from OpenAPI schemas (with branded key injection) |
+| `zod.gen.ts` | `src/gen/` | Zod validators & schema objects |
+| `sdk.gen.ts` | `src/gen/` | Raw operation functions (thin HTTP call layer) |
+| `CamundaClient.ts` | `src/gen/` | Aggregated class with ergonomic methods, typed inputs, consistency helpers |
+| `facade/*` | `src/facade/` | Higher-level convenience wrappers (`CancelablePromise` surface) |
+
+Generated files are entirely disposable; never edit them manually—change inputs, templates, or hooks instead.
+
+### Template
+
+The CamundaClient is generated from `src/template/CamundaClient.template.ts`. This template contains:
+
+- Hand-written infrastructure: HttpClient setup, auth, retry, backpressure, job workers
+- Auto-generation markers where hook 300 inserts methods and support types
+
+To add hand-written methods (like `createJobWorker`), edit the template. To modify auto-generated methods, edit hook 300.
+
+---
+
+## 7. Class Generation (Hook 300)
 
 Reads:
 
-- `external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml`
-- `sdk.gen.ts` (harvest JSDoc & argument shapes)
-- `zod.gen.ts` (presence test for response schemas & void markers)
+- `external-spec/bundled/spec-metadata.json` (operations, consistency annotations)
+- `src/gen/sdk.gen.ts` (harvest JSDoc & argument shapes)
+- `src/gen/zod.gen.ts` (presence test for response schemas & void markers)
 
 Markers in template:
 
@@ -93,190 +149,257 @@ Markers in template:
 
 Between these, the generator inserts:
 
-- Operation input helper types (body/path/query extraction).
-- Consistency management helpers for eventually consistent operations.
-- Method implementations binding to `Sdk.<operationId>`.
+- `export type <Op>Input` helper types (body/path/query extraction)
+- `export type <Op>Consistency` helpers for eventually consistent operations
+- Method implementations binding to `Sdk.<operationId>`
 
-Special cases (example): `createDeployment` enforces `File[]` for `resources`.
-
----
-
-## 6. Facade Generation
-
-`generate-facade.ts` builds aggregation helpers or compositional APIs on top of `CamundaClient`. Keep logic stateless and derivable. Add new surfaces here rather than mutating generated client code.
+Special cases: `createDeployment` enforces `File[]` for `resources`.
 
 ---
 
-## 7. Gate Validation
+## 8. Compilable Examples & Documentation
 
-`postprocess-gate-validation.ts` executes structural sanity checks (e.g., required branding present, no empty operation sets). Placement near the end ensures failures surface before bundling.
+### Examples Directory
+
+`examples/` contains compilable TypeScript examples organized by API domain:
+
+| File | Domains |
+| --- | --- |
+| `client.ts` | Client construction, configuration |
+| `decision.ts` | Decision evaluation, search |
+| `deployment.ts` | Deploy resources |
+| `incident.ts` | Incident resolution, search |
+| `job.ts` | Job activation, completion, failure, workers |
+| `message-signal.ts` | Message correlation, signal broadcast |
+| `process-instance.ts` | Process start, cancel, search |
+| `user-task.ts` | User task assignment, completion, search |
+
+Examples use `//#region Name` / `//#endregion Name` markers to define named regions that can be referenced individually.
+
+### Type-Checking (Hook 950)
+
+Examples are type-checked at build time via `tsc --noEmit -p examples/tsconfig.json`. This catches type-contract regressions when the upstream spec changes. The separate tsconfig maps `@camunda8/orchestration-cluster-api` to `../src/index.ts` for direct type resolution.
+
+### Operation Map
+
+`examples/operation-map.json` maps operation IDs to example file+region references:
+
+```json
+{
+  "activateJobs": ["examples/job.ts#ActivateJobs"],
+  "createProcessInstance": ["examples/process-instance.ts#CreateProcessInstance"]
+}
+```
+
+Hook 450 reads this map and injects `@example` JSDoc tags with `{@includeCode}` inline tags into the generated source.
+
+### Adding a New Example
+
+1. Add a `//#region MyExample` ... `//#endregion MyExample` block to the appropriate example file.
+2. Add a mapping entry to `examples/operation-map.json`.
+3. Run `npm run build:local` to verify type-checking passes and the example appears in generated docs.
+
+For hand-written methods (not in the operation map, like `createJobWorker`), add `@example` tags with `{@includeCode}` directly in the template.
+
+### TypeDoc Configuration
+
+`typedoc.json` is configured with:
+
+- `jsDocCompatibility.exampleTag: false` — required for `{@includeCode}` inline tags to resolve inside `@example` blocks (TSDoc mode)
+- Custom `blockTags`: `@operationId`, `@tags`, `@consistency`, `@description` (in addition to TSDoc defaults)
+- `intentionallyNotExported`: internal utility types (`IsBrandedKey`, `InferOrUnknown`)
+- Entry points: `src/index.ts`, `src/logger.ts`, `src/fp/index.ts`
+
+Generate API docs: `npm run docs:api`. Output goes to `docs/`.
 
 ---
 
-## 8. Validation Modes
+## 9. Facade Generation (Hook 400)
 
-Environment variable (still supported): `CAMUNDA_SDK_VALIDATION`.
+Builds `CancelablePromise` wrappers in `src/facade/` that:
+
+- Flatten body-only operations (no path/query params)
+- Unwrap the `{ data }` transport envelope so callers receive the domain payload directly
+
+Keep facade logic stateless and derivable. Add new surfaces here rather than mutating the generated client.
+
+---
+
+## 10. Validation Modes
+
+Environment variable: `CAMUNDA_SDK_VALIDATION`.
+
 Grammar:
 
 - Global: `none | warn | strict`
 - Pair form: `req:<mode>[,res:<mode>]` (order agnostic). Missing side defaults to `none`.
 
-Usage Example:
-
-```
+```bash
 CAMUNDA_SDK_VALIDATION=req:warn,res:strict node your-script.mjs
 ```
 
-Implementation lives in lightweight runtime config (see `src/` – exact path may evolve; search for `VALIDATION` token).
+Implementation: `src/runtime/validationManager.ts` + `src/runtime/validationCore.ts`.
+
+Hook 500 strips inline validators from `sdk.gen.ts` because validation is centralized in the client.
 
 ---
 
-## 9. Customizing Generation
+## 11. Runtime Components
 
-Add or modify steps by inserting scripts in `package.json` before dependent stages. Guidelines:
+The `src/runtime/` directory contains hand-written infrastructure:
 
-- New spec transforms: place after `fetch:spec` but before `preprocess` if they change semantic key eligibility; otherwise before `generate:sdk`.
-- Augment generated raw artifacts: insert between `generate:sdk` and `generate:class`.
-- Add documentation surfaces: after `generate:facade` but before `gate`.
-
-Never mutate generated files in-place inside version control; alter the generator script or spec.
-
----
-
-## 10. Testing Strategy
-
-During `generate` we run a fast Vitest suite (unit-level). Integration tests are kept separate (excluded by pattern). Extend tests when introducing:
-
-- New branding behaviors.
-- Additional method synthesis rules.
-- Consistency management semantics.
-
-Add failing test first for generator changes (classic red/green).
+| Module | Purpose |
+| --- | --- |
+| `unifiedConfiguration.ts` | Environment variable hydration, configuration schema |
+| `auth.ts` / `installAuthInterceptor.ts` | OAuth / Basic auth with token management |
+| `retry.ts` | Exponential backoff with jitter |
+| `backpressure.ts` | Adaptive concurrency management |
+| `eventual.ts` | Eventual consistency polling |
+| `jobWorker.ts` / `jobActions.ts` | Job worker with enriched action methods |
+| `validationManager.ts` / `validationCore.ts` | Request/response validation using Zod schemas |
+| `telemetry.ts` | Telemetry hooks |
+| `logger.ts` / `supportLogger.ts` | Logging infrastructure |
+| `errors.ts` | Custom error types |
 
 ---
 
-## 11. Releasing (Future)
+## 12. Package Entry Points
 
-Current version is pre-release (`0.0.0-dev`). Before publishing:
+The SDK exports three subpath entry points (configured in `package.json` `exports`):
 
-1. Pin upstream spec commit (add `ORCH_SPEC_REF`).
-2. Update `CHANGELOG.md`.
-3. Bump `package.json` version.
-4. Tag & publish.
-5. Archive spec hash used for the release.
-
----
-
-## 12. Troubleshooting
-
-| Issue                                | Likely Cause                          | Action                                                                |
-| ------------------------------------ | ------------------------------------- | --------------------------------------------------------------------- |
-| Missing branded key alias            | Absent `x-semantic-type`              | Add vendor extension to schema & rerun.                               |
-| Operation absent in `CamundaClient`  | Sanitization or missing `operationId` | Ensure unique `operationId` in spec.                                  |
-| Wrong input type (path/query mixing) | Generator inference gap               | Patch `generate-class-methods.ts` logic (add case).                   |
-| Spec fetch fails                     | Network / repo moved                  | Retry; if persistent, add offline fallback (future enhancement).      |
-| Branding metadata empty              | Spec path mismatch or no markers      | Confirm `external-spec/upstream/.../rest-api.yaml` & markers present. |
-| Validation modes ignored             | Env var mis-specified                 | Use lowercase or explicit `req:`, `res:` pairs.                       |
+| Subpath | Source | Purpose |
+| --- | --- | --- |
+| `.` | `src/index.ts` | Main entry: `CamundaClient`, all types, result client, loose client |
+| `./logger` | `src/logger.ts` | Standalone logger utilities |
+| `./fp` | `src/fp/index.ts` | Functional programming client (`fp-ts` Either-based) |
 
 ---
 
-## 13. Future Enhancements (Tracked Ideas)
+## 13. Testing Strategy
 
-- Commit pinning & hash provenance file.
-- Offline spec cache & diff report (show upstream delta summary each build).
-- Automated semantic key coverage & drift trend metrics.
-- Response-type narrowing via discriminated unions for major polymorphic resources.
-- Retry & auth pluggable hooks.
-- Pagination auto-iterators.
+### Unit Tests
+
+Run during the pipeline (after post hooks): `npm test` or `vitest run`. Fast, deterministic, no containers required.
+
+### Integration Tests
+
+Separate suite requiring a running Camunda cluster:
+
+```bash
+npm run docker:start          # spin up containers
+npm run test:integration      # run integration tests
+npm run docker:stop           # tear down
+```
+
+### Test Scaffold Automation
+
+Every exported SDK operation in `sdk.gen.ts` must have a matching integration test scaffold at `tests-integration/methods/<opName>.test.ts`.
+
+Hooks 800/900 automate this:
+- Hook 800 scans `sdk.gen.ts` and generates missing scaffold files (idempotent, never overwrites)
+- Hook 900 validates all operations are covered; fails the build if any are missing
+
+`tests-integration/methods/manifest.json` tracks operations, files, missing, and ignored lists.
+
+To ignore an operation, add it to the `ignored` array in `manifest.json`.
 
 ---
 
-## 14. Maintenance Quick Commands
+## 14. Releasing
 
-| Task                      | Command              |
-| ------------------------- | -------------------- | ---------------------------------------- |
-| Full build                | `npm run build`      |
-| Regenerate only           | `npm run generate`   |
-| Fetch spec only           | `npm run fetch:spec` |
-| Inspect branding metadata | `jq '.keys           | length' branding/branding-metadata.json` |
-| Quick clean               | `npm run clean`      |
+Uses [semantic-release](https://github.com/semantic-release/semantic-release) (config: `release.config.cjs`).
+
+- `main` branch → alpha prereleases
+- `stable/*` branches → stable releases
+- Conventional Commits determine version bumps (`fix:` → patch, `feat:` → patch, `server:` → minor, `server-major:` → major)
+- `chore:`, `docs:`, `ci:` commits produce no release
+
+Commit messages are linted by commitlint (`commitlint.config.cjs`).
 
 ---
 
-## 15. Test Scaffold Automation
+## 15. Customizing Generation
 
-Every exported SDK operation (`export const <opName> =` in `src/gen/sdk.gen.ts`) must have a matching integration test scaffold file at:
+To add a new pipeline step:
 
-```
-tests-integration/methods/<opName>.test.ts
-```
+1. Create a `.ts` file in `hooks/pre/` or `hooks/post/` with an appropriate number.
+2. The pipeline orchestrator will discover and run it automatically in sort order.
 
-### Pipeline Integration
+Guidelines:
 
-`npm run generate` now performs:
+- **New spec transforms**: place in `hooks/pre/` (before openapi-ts runs).
+- **Augment raw generated artifacts**: place in `hooks/post/` with a number below 300 (before class generation).
+- **Modify the generated client**: place after 300.
+- **Add documentation surfaces**: place after 400 but before 500 (gate validation).
+- **Add quality gates**: place after 500.
 
-1. Code generation & postprocessing (existing steps)
-2. `npm run scaffold:methods` – create any missing scaffold test files (idempotent; never overwrites existing)
-3. `npm run validate:scaffolds` – fails (non-zero) if any operation lacks a scaffold (after accounting for ignores)
+Never edit generated files in `src/gen/` manually—they are overwritten every build.
 
-### Manifest
+---
 
-`tests-integration/methods/manifest.json` is rewritten by the scaffold generator with:
+## 16. Where Things Live
 
-- `operations`: count of discovered SDK exports
-- `tests`: count of present `*.test.ts` files
-- `missing`: array of still-missing scaffolds (should be empty after a clean run)
-- `ignored`: operations intentionally excluded
-- `files`: sorted list of scaffold filenames
+| What | Path |
+| --- | --- |
+| Pipeline orchestrator | `scripts/run-pipeline.ts` |
+| Spec location constants | `scripts/spec-location.ts` |
+| Generator config | `openapi-ts.config.ts` |
+| Branding plugin | `plugins/branding-plugin/` |
+| Branding metadata (generated) | `branding/branding-metadata.json` |
+| CamundaClient template | `src/template/CamundaClient.template.ts` |
+| Pre-generation hooks | `hooks/pre/` |
+| Post-generation hooks | `hooks/post/` |
+| Bundled spec input | `external-spec/bundled/rest-api.bundle.json` |
+| Spec metadata | `external-spec/bundled/spec-metadata.json` |
+| Raw upstream spec | `external-spec/upstream/` |
+| Generated code | `src/gen/` |
+| Generated facade | `src/facade/` |
+| Runtime infrastructure | `src/runtime/` |
+| Compilable examples | `examples/` |
+| Example operation map | `examples/operation-map.json` |
+| TypeDoc config | `typedoc.json` |
+| Generated API docs | `docs/` |
+| Integration test scaffolds | `tests-integration/methods/` |
+| Scaffold manifest | `tests-integration/methods/manifest.json` |
 
-### Ignoring an Operation
+---
 
-Add the operation name (without `.test.ts`) to the `ignored` array in `manifest.json`. Example:
+## 17. Troubleshooting
 
-```jsonc
-{
-  "ignored": ["experimentalOperation"],
-}
-```
+| Issue | Likely Cause | Action |
+| --- | --- | --- |
+| `TS2304 Cannot find name '_heyapi_…_'` | Path-local `$like` refs survived bundling | See `.github/copilot-instructions.md` for detailed debug checklist |
+| Missing branded key alias | Absent `x-semantic-type` in upstream spec | Add vendor extension to schema upstream & regenerate |
+| Operation absent in `CamundaClient` | Missing `operationId` in spec | Ensure unique `operationId` in spec |
+| Wrong input type (path/query mixing) | Generator inference gap in hook 300 | Patch `hooks/post/300-generate-class-methods.ts` logic |
+| Spec fetch fails | Network / repo moved | Use `npm run build:local` with existing spec; check `SPEC_REF` |
+| Branding metadata empty | Spec path mismatch or no markers | Confirm `external-spec/bundled/spec-metadata.json` has content |
+| Validation modes ignored | Env var mis-specified | Use lowercase or explicit `req:`, `res:` pairs |
+| TypeDoc warnings for unknown tags | Custom block tag not registered | Add to `blockTags` array in `typedoc.json` |
+| TypeDoc "not included in documentation" | Type not exported from entry point | Export from `src/index.ts` or `src/fp/index.ts`, or add to `intentionallyNotExported` |
+| Example type-check fails | Upstream spec changed type contracts | Fix example code in `examples/` to match new types |
 
-On the next run:
+---
 
-- No scaffold will be generated for ignored entries.
-- Validator will not require a test for them.
+## 18. Maintenance Quick Commands
 
-Use ignores sparingly; prefer scaffolding even if the test body remains a TODO, for visibility.
-
-### Creating Real Tests
-
-Scaffolds contain a minimal `describe('<opName>')` with a placeholder. Expand them with:
-
-- Test data fixtures (shared via `test-support/` if needed)
-- Assertions on response shape, error handling, validation modes
-
-### Adding a New Operation (End-to-End)
-
-1. Update the OpenAPI spec adding a new operationId.
-2. Run `npm run generate`.
-3. Verify new scaffold exists & manifest lists zero `missing`.
-4. Implement test logic.
-5. Commit changes including updated `manifest.json`.
-
-### CI Failure Scenario
-
-If CI fails with:
-
-```
-[validate-test-scaffolds] Missing test scaffolds for operations:
-   - someNewOp
-```
-
-Run locally:
-
-```
-npm run scaffold:methods
-```
-
-Commit the newly created test file (and updated manifest). If intentionally skipped, add to `ignored` and commit.
+| Task | Command |
+| --- | --- |
+| Full build (fetch + generate + test + bundle) | `npm run build` |
+| Fast local build (no fetch, no format) | `npm run build:local` |
+| Generate only (fetch + pipeline) | `npm run generate` |
+| Generate only (local spec) | `npm run generate:local` |
+| Bundle spec only | `npm run bundle:spec` |
+| Run unit tests | `npm test` |
+| Run integration tests | `npm run test:integration` |
+| Generate API docs | `npm run docs:api` |
+| Generate config docs | `npm run docs:config` |
+| Format | `npm run format` |
+| Lint | `npm run lint` |
+| Clean | `npm run clean` |
+| Inspect branding metadata | `jq '.keys \| length' branding/branding-metadata.json` |
+| Start Docker containers | `npm run docker:start` |
+| Stop Docker containers | `npm run docker:stop` |
 
 ---
 
