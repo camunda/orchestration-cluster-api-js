@@ -1432,14 +1432,12 @@
     },
     {
       "name": "AuditLogActorTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogActorTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogActorTypeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "AuditLogActorTypeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1447,7 +1445,7 @@
         }
       ],
       "stableId": "audit-log-actor-type-filter-property",
-      "tsType": "string | AdvancedActorTypeFilter",
+      "tsType": "AuditLogActorTypeExactMatch | AdvancedActorTypeFilter",
       "zod": {
         "schemaName": "zAuditLogActorTypeFilterProperty"
       },
@@ -1457,14 +1455,12 @@
     },
     {
       "name": "AuditLogEntityKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "EntityKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogEntityKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "AuditLogEntityKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1472,7 +1468,7 @@
         }
       ],
       "stableId": "audit-log-entity-key-filter-property",
-      "tsType": "string | AdvancedAuditLogEntityKeyFilter",
+      "tsType": "AuditLogEntityKeyExactMatch | AdvancedAuditLogEntityKeyFilter",
       "zod": {
         "schemaName": "zAuditLogEntityKeyFilterProperty"
       },
@@ -1482,14 +1478,12 @@
     },
     {
       "name": "AuditLogKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "AuditLogKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1497,7 +1491,7 @@
         }
       ],
       "stableId": "audit-log-key-filter-property",
-      "tsType": "string | AdvancedAuditLogKeyFilter",
+      "tsType": "AuditLogKeyExactMatch | AdvancedAuditLogKeyFilter",
       "zod": {
         "schemaName": "zAuditLogKeyFilterProperty"
       },
@@ -1507,14 +1501,12 @@
     },
     {
       "name": "AuditLogResultFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogResultEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogResultEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "AuditLogResultExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1522,7 +1514,7 @@
         }
       ],
       "stableId": "audit-log-result-filter-property",
-      "tsType": "string | AdvancedResultFilter",
+      "tsType": "AuditLogResultExactMatch | AdvancedResultFilter",
       "zod": {
         "schemaName": "zAuditLogResultFilterProperty"
       },
@@ -1577,14 +1569,12 @@
     },
     {
       "name": "BatchOperationItemStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "BatchOperationItemStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "BatchOperationItemStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "BatchOperationItemStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1592,7 +1582,7 @@
         }
       ],
       "stableId": "batch-operation-item-state-filter-property",
-      "tsType": "string | AdvancedBatchOperationItemStateFilter",
+      "tsType": "BatchOperationItemStateExactMatch | AdvancedBatchOperationItemStateFilter",
       "zod": {
         "schemaName": "zBatchOperationItemStateFilterProperty"
       },
@@ -1602,14 +1592,12 @@
     },
     {
       "name": "BatchOperationStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "BatchOperationStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "BatchOperationStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "BatchOperationStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1617,7 +1605,7 @@
         }
       ],
       "stableId": "batch-operation-state-filter-property",
-      "tsType": "string | AdvancedBatchOperationStateFilter",
+      "tsType": "BatchOperationStateExactMatch | AdvancedBatchOperationStateFilter",
       "zod": {
         "schemaName": "zBatchOperationStateFilterProperty"
       },
@@ -1627,14 +1615,12 @@
     },
     {
       "name": "BatchOperationTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "BatchOperationTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "BatchOperationTypeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "BatchOperationTypeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1642,7 +1628,7 @@
         }
       ],
       "stableId": "batch-operation-type-filter-property",
-      "tsType": "string | AdvancedBatchOperationTypeFilter",
+      "tsType": "BatchOperationTypeExactMatch | AdvancedBatchOperationTypeFilter",
       "zod": {
         "schemaName": "zBatchOperationTypeFilterProperty"
       },
@@ -1652,14 +1638,12 @@
     },
     {
       "name": "CategoryFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogCategoryEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogCategoryEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "CategoryExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1667,7 +1651,7 @@
         }
       ],
       "stableId": "category-filter-property",
-      "tsType": "string | AdvancedCategoryFilter",
+      "tsType": "CategoryExactMatch | AdvancedCategoryFilter",
       "zod": {
         "schemaName": "zCategoryFilterProperty"
       },
@@ -1677,14 +1661,12 @@
     },
     {
       "name": "ClusterVariableScopeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ClusterVariableScopeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ClusterVariableScopeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1692,7 +1674,7 @@
         }
       ],
       "stableId": "cluster-variable-scope-filter-property",
-      "tsType": "string | AdvancedClusterVariableScopeFilter",
+      "tsType": "ClusterVariableScopeExactMatch | AdvancedClusterVariableScopeFilter",
       "zod": {
         "schemaName": "zClusterVariableScopeFilterProperty"
       },
@@ -1724,14 +1706,12 @@
     },
     {
       "name": "DecisionDefinitionKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionDefinitionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionDefinitionKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "DecisionDefinitionKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1739,7 +1719,7 @@
         }
       ],
       "stableId": "decision-definition-key-filter-property",
-      "tsType": "string | AdvancedDecisionDefinitionKeyFilter",
+      "tsType": "DecisionDefinitionKeyExactMatch | AdvancedDecisionDefinitionKeyFilter",
       "zod": {
         "schemaName": "zDecisionDefinitionKeyFilterProperty"
       },
@@ -1749,14 +1729,12 @@
     },
     {
       "name": "DecisionEvaluationInstanceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionEvaluationInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionEvaluationInstanceKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "DecisionEvaluationInstanceKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1764,7 +1742,7 @@
         }
       ],
       "stableId": "decision-evaluation-instance-key-filter-property",
-      "tsType": "string | AdvancedDecisionEvaluationInstanceKeyFilter",
+      "tsType": "DecisionEvaluationInstanceKeyExactMatch | AdvancedDecisionEvaluationInstanceKeyFilter",
       "zod": {
         "schemaName": "zDecisionEvaluationInstanceKeyFilterProperty"
       },
@@ -1796,14 +1774,12 @@
     },
     {
       "name": "DecisionEvaluationKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionEvaluationKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionEvaluationKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "DecisionEvaluationKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1811,7 +1787,7 @@
         }
       ],
       "stableId": "decision-evaluation-key-filter-property",
-      "tsType": "string | AdvancedDecisionEvaluationKeyFilter",
+      "tsType": "DecisionEvaluationKeyExactMatch | AdvancedDecisionEvaluationKeyFilter",
       "zod": {
         "schemaName": "zDecisionEvaluationKeyFilterProperty"
       },
@@ -1821,14 +1797,12 @@
     },
     {
       "name": "DecisionInstanceStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionInstanceStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "DecisionInstanceStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1836,7 +1810,7 @@
         }
       ],
       "stableId": "decision-instance-state-filter-property",
-      "tsType": "string | AdvancedDecisionInstanceStateFilter",
+      "tsType": "DecisionInstanceStateExactMatch | AdvancedDecisionInstanceStateFilter",
       "zod": {
         "schemaName": "zDecisionInstanceStateFilterProperty"
       },
@@ -1846,14 +1820,12 @@
     },
     {
       "name": "DecisionRequirementsKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionRequirementsKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionRequirementsKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "DecisionRequirementsKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1861,7 +1833,7 @@
         }
       ],
       "stableId": "decision-requirements-key-filter-property",
-      "tsType": "string | AdvancedDecisionRequirementsKeyFilter",
+      "tsType": "DecisionRequirementsKeyExactMatch | AdvancedDecisionRequirementsKeyFilter",
       "zod": {
         "schemaName": "zDecisionRequirementsKeyFilterProperty"
       },
@@ -1871,14 +1843,12 @@
     },
     {
       "name": "DeploymentKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DeploymentKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DeploymentKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "DeploymentKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1886,7 +1856,7 @@
         }
       ],
       "stableId": "deployment-key-filter-property",
-      "tsType": "string | AdvancedDeploymentKeyFilter",
+      "tsType": "DeploymentKeyExactMatch | AdvancedDeploymentKeyFilter",
       "zod": {
         "schemaName": "zDeploymentKeyFilterProperty"
       },
@@ -1896,14 +1866,12 @@
     },
     {
       "name": "ElementInstanceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ElementInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ElementInstanceKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ElementInstanceKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1911,7 +1879,7 @@
         }
       ],
       "stableId": "element-instance-key-filter-property",
-      "tsType": "string | AdvancedElementInstanceKeyFilter",
+      "tsType": "ElementInstanceKeyExactMatch | AdvancedElementInstanceKeyFilter",
       "zod": {
         "schemaName": "zElementInstanceKeyFilterProperty"
       },
@@ -1921,14 +1889,12 @@
     },
     {
       "name": "ElementInstanceStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ElementInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ElementInstanceStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ElementInstanceStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1936,7 +1902,7 @@
         }
       ],
       "stableId": "element-instance-state-filter-property",
-      "tsType": "string | AdvancedElementInstanceStateFilter",
+      "tsType": "ElementInstanceStateExactMatch | AdvancedElementInstanceStateFilter",
       "zod": {
         "schemaName": "zElementInstanceStateFilterProperty"
       },
@@ -1946,14 +1912,12 @@
     },
     {
       "name": "EntityTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogEntityTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogEntityTypeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "EntityTypeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1961,7 +1925,7 @@
         }
       ],
       "stableId": "entity-type-filter-property",
-      "tsType": "string | AdvancedEntityTypeFilter",
+      "tsType": "EntityTypeExactMatch | AdvancedEntityTypeFilter",
       "zod": {
         "schemaName": "zEntityTypeFilterProperty"
       },
@@ -1971,14 +1935,12 @@
     },
     {
       "name": "FormKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "FormKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "FormKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "FormKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -1986,7 +1948,7 @@
         }
       ],
       "stableId": "form-key-filter-property",
-      "tsType": "string | AdvancedFormKeyFilter",
+      "tsType": "FormKeyExactMatch | AdvancedFormKeyFilter",
       "zod": {
         "schemaName": "zFormKeyFilterProperty"
       },
@@ -1996,14 +1958,12 @@
     },
     {
       "name": "IncidentErrorTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "IncidentErrorTypeEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "IncidentErrorTypeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "IncidentErrorTypeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2011,7 +1971,7 @@
         }
       ],
       "stableId": "incident-error-type-filter-property",
-      "tsType": "string | AdvancedIncidentErrorTypeFilter",
+      "tsType": "IncidentErrorTypeExactMatch | AdvancedIncidentErrorTypeFilter",
       "zod": {
         "schemaName": "zIncidentErrorTypeFilterProperty"
       },
@@ -2021,14 +1981,12 @@
     },
     {
       "name": "IncidentStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "IncidentStateEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "IncidentStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "IncidentStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2036,7 +1994,7 @@
         }
       ],
       "stableId": "incident-state-filter-property",
-      "tsType": "string | AdvancedIncidentStateFilter",
+      "tsType": "IncidentStateExactMatch | AdvancedIncidentStateFilter",
       "zod": {
         "schemaName": "zIncidentStateFilterProperty"
       },
@@ -2068,14 +2026,12 @@
     },
     {
       "name": "JobKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "JobKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2083,7 +2039,7 @@
         }
       ],
       "stableId": "job-key-filter-property",
-      "tsType": "string | AdvancedJobKeyFilter",
+      "tsType": "JobKeyExactMatch | AdvancedJobKeyFilter",
       "zod": {
         "schemaName": "zJobKeyFilterProperty"
       },
@@ -2093,14 +2049,12 @@
     },
     {
       "name": "JobKindFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobKindEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobKindEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "JobKindExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2108,7 +2062,7 @@
         }
       ],
       "stableId": "job-kind-filter-property",
-      "tsType": "string | AdvancedJobKindFilter",
+      "tsType": "JobKindExactMatch | AdvancedJobKindFilter",
       "zod": {
         "schemaName": "zJobKindFilterProperty"
       },
@@ -2118,14 +2072,12 @@
     },
     {
       "name": "JobListenerEventTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobListenerEventTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobListenerEventTypeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "JobListenerEventTypeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2133,7 +2085,7 @@
         }
       ],
       "stableId": "job-listener-event-type-filter-property",
-      "tsType": "string | AdvancedJobListenerEventTypeFilter",
+      "tsType": "JobListenerEventTypeExactMatch | AdvancedJobListenerEventTypeFilter",
       "zod": {
         "schemaName": "zJobListenerEventTypeFilterProperty"
       },
@@ -2166,14 +2118,12 @@
     },
     {
       "name": "JobStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "JobStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2181,7 +2131,7 @@
         }
       ],
       "stableId": "job-state-filter-property",
-      "tsType": "string | AdvancedJobStateFilter",
+      "tsType": "JobStateExactMatch | AdvancedJobStateFilter",
       "zod": {
         "schemaName": "zJobStateFilterProperty"
       },
@@ -2191,14 +2141,12 @@
     },
     {
       "name": "MessageSubscriptionKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "MessageSubscriptionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "MessageSubscriptionKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "MessageSubscriptionKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2206,7 +2154,7 @@
         }
       ],
       "stableId": "message-subscription-key-filter-property",
-      "tsType": "string | AdvancedMessageSubscriptionKeyFilter",
+      "tsType": "MessageSubscriptionKeyExactMatch | AdvancedMessageSubscriptionKeyFilter",
       "zod": {
         "schemaName": "zMessageSubscriptionKeyFilterProperty"
       },
@@ -2216,14 +2164,12 @@
     },
     {
       "name": "MessageSubscriptionStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "MessageSubscriptionStateEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "MessageSubscriptionStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "MessageSubscriptionStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2231,7 +2177,7 @@
         }
       ],
       "stableId": "message-subscription-state-filter-property",
-      "tsType": "string | AdvancedMessageSubscriptionStateFilter",
+      "tsType": "MessageSubscriptionStateExactMatch | AdvancedMessageSubscriptionStateFilter",
       "zod": {
         "schemaName": "zMessageSubscriptionStateFilterProperty"
       },
@@ -2241,14 +2187,12 @@
     },
     {
       "name": "OperationTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogOperationTypeEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "OperationTypeExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2256,7 +2200,7 @@
         }
       ],
       "stableId": "operation-type-filter-property",
-      "tsType": "string | AdvancedOperationTypeFilter",
+      "tsType": "OperationTypeExactMatch | AdvancedOperationTypeFilter",
       "zod": {
         "schemaName": "zOperationTypeFilterProperty"
       },
@@ -2266,14 +2210,12 @@
     },
     {
       "name": "ProcessDefinitionKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ProcessDefinitionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ProcessDefinitionKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2281,7 +2223,7 @@
         }
       ],
       "stableId": "process-definition-key-filter-property",
-      "tsType": "string | AdvancedProcessDefinitionKeyFilter",
+      "tsType": "ProcessDefinitionKeyExactMatch | AdvancedProcessDefinitionKeyFilter",
       "zod": {
         "schemaName": "zProcessDefinitionKeyFilterProperty"
       },
@@ -2332,14 +2274,12 @@
     },
     {
       "name": "ProcessInstanceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ProcessInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ProcessInstanceKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ProcessInstanceKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2347,7 +2287,7 @@
         }
       ],
       "stableId": "process-instance-key-filter-property",
-      "tsType": "string | AdvancedProcessInstanceKeyFilter",
+      "tsType": "ProcessInstanceKeyExactMatch | AdvancedProcessInstanceKeyFilter",
       "zod": {
         "schemaName": "zProcessInstanceKeyFilterProperty"
       },
@@ -2380,14 +2320,12 @@
     },
     {
       "name": "ProcessInstanceStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ProcessInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ProcessInstanceStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ProcessInstanceStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2395,7 +2333,7 @@
         }
       ],
       "stableId": "process-instance-state-filter-property",
-      "tsType": "string | AdvancedProcessInstanceStateFilter",
+      "tsType": "ProcessInstanceStateExactMatch | AdvancedProcessInstanceStateFilter",
       "zod": {
         "schemaName": "zProcessInstanceStateFilterProperty"
       },
@@ -2436,14 +2374,12 @@
     },
     {
       "name": "ResourceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ResourceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ResourceKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ResourceKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2451,7 +2387,7 @@
         }
       ],
       "stableId": "resource-key-filter-property",
-      "tsType": "string | AdvancedResourceKeyFilter",
+      "tsType": "ResourceKeyExactMatch | AdvancedResourceKeyFilter",
       "zod": {
         "schemaName": "zResourceKeyFilterProperty"
       },
@@ -2461,14 +2397,12 @@
     },
     {
       "name": "ScopeKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ScopeKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ScopeKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "ScopeKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2476,7 +2410,7 @@
         }
       ],
       "stableId": "scope-key-filter-property",
-      "tsType": "string | AdvancedScopeKeyFilter",
+      "tsType": "ScopeKeyExactMatch | AdvancedScopeKeyFilter",
       "zod": {
         "schemaName": "zScopeKeyFilterProperty"
       },
@@ -2562,14 +2496,12 @@
     },
     {
       "name": "UserTaskStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "UserTaskStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "UserTaskStateEnum"
-          ]
+          "branchType": "branded-ref",
+          "ref": "UserTaskStateExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2577,7 +2509,7 @@
         }
       ],
       "stableId": "user-task-state-filter-property",
-      "tsType": "string | AdvancedUserTaskStateFilter",
+      "tsType": "UserTaskStateExactMatch | AdvancedUserTaskStateFilter",
       "zod": {
         "schemaName": "zUserTaskStateFilterProperty"
       },
@@ -2587,14 +2519,12 @@
     },
     {
       "name": "VariableKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "VariableKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "VariableKey"
-          ]
+          "branchType": "branded-ref",
+          "ref": "VariableKeyExactMatch"
         },
         {
           "branchType": "branded-ref",
@@ -2602,7 +2532,7 @@
         }
       ],
       "stableId": "variable-key-filter-property",
-      "tsType": "string | AdvancedVariableKeyFilter",
+      "tsType": "VariableKeyExactMatch | AdvancedVariableKeyFilter",
       "zod": {
         "schemaName": "zVariableKeyFilterProperty"
       },

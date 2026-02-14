@@ -305,7 +305,7 @@ export type AuditLogCategoryEnum = 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS'
 /**
  * EntityKey property with full advanced search capabilities.
  */
-export type AuditLogEntityKeyFilterProperty = AuditLogEntityKey | AdvancedAuditLogEntityKeyFilter;
+export type AuditLogEntityKeyFilterProperty = AuditLogEntityKeyExactMatch | AdvancedAuditLogEntityKeyFilter;
 
 /**
  * Advanced filter
@@ -338,7 +338,7 @@ export type AdvancedAuditLogEntityKeyFilter = {
 /**
  * AuditLogEntityTypeEnum property with full advanced search capabilities.
  */
-export type EntityTypeFilterProperty = AuditLogEntityTypeEnum | AdvancedEntityTypeFilter;
+export type EntityTypeFilterProperty = EntityTypeExactMatch | AdvancedEntityTypeFilter;
 
 /**
  * Advanced filter
@@ -368,7 +368,7 @@ export type AdvancedEntityTypeFilter = {
 /**
  * AuditLogOperationTypeEnum property with full advanced search capabilities.
  */
-export type OperationTypeFilterProperty = AuditLogOperationTypeEnum | AdvancedOperationTypeFilter;
+export type OperationTypeFilterProperty = OperationTypeExactMatch | AdvancedOperationTypeFilter;
 
 /**
  * Advanced filter
@@ -398,7 +398,7 @@ export type AdvancedOperationTypeFilter = {
 /**
  * AuditLogCategoryEnum property with full advanced search capabilities.
  */
-export type CategoryFilterProperty = AuditLogCategoryEnum | AdvancedCategoryFilter;
+export type CategoryFilterProperty = CategoryExactMatch | AdvancedCategoryFilter;
 
 /**
  * Advanced filter
@@ -428,7 +428,7 @@ export type AdvancedCategoryFilter = {
 /**
  * AuditLogResultEnum property with full advanced search capabilities.
  */
-export type AuditLogResultFilterProperty = AuditLogResultEnum | AdvancedResultFilter;
+export type AuditLogResultFilterProperty = AuditLogResultExactMatch | AdvancedResultFilter;
 
 /**
  * Advanced filter
@@ -458,7 +458,7 @@ export type AdvancedResultFilter = {
 /**
  * AuditLogActorTypeEnum property with full advanced search capabilities.
  */
-export type AuditLogActorTypeFilterProperty = AuditLogActorTypeEnum | AdvancedActorTypeFilter;
+export type AuditLogActorTypeFilterProperty = AuditLogActorTypeExactMatch | AdvancedActorTypeFilter;
 
 /**
  * Advanced filter
@@ -1011,7 +1011,7 @@ export type BatchOperationTypeEnum = 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' 
 /**
  * BatchOperationTypeEnum property with full advanced search capabilities.
  */
-export type BatchOperationTypeFilterProperty = BatchOperationTypeEnum | AdvancedBatchOperationTypeFilter;
+export type BatchOperationTypeFilterProperty = BatchOperationTypeExactMatch | AdvancedBatchOperationTypeFilter;
 
 /**
  * Advanced filter
@@ -1041,7 +1041,7 @@ export type AdvancedBatchOperationTypeFilter = {
 /**
  * BatchOperationStateEnum property with full advanced search capabilities.
  */
-export type BatchOperationStateFilterProperty = BatchOperationStateEnum | AdvancedBatchOperationStateFilter;
+export type BatchOperationStateFilterProperty = BatchOperationStateExactMatch | AdvancedBatchOperationStateFilter;
 
 /**
  * Advanced filter
@@ -1071,7 +1071,7 @@ export type AdvancedBatchOperationStateFilter = {
 /**
  * BatchOperationItemStateEnum property with full advanced search capabilities.
  */
-export type BatchOperationItemStateFilterProperty = BatchOperationItemStateEnum | AdvancedBatchOperationItemStateFilter;
+export type BatchOperationItemStateFilterProperty = BatchOperationItemStateExactMatch | AdvancedBatchOperationItemStateFilter;
 
 /**
  * Advanced filter
@@ -1220,7 +1220,7 @@ export type ClusterVariableSearchQueryFilterRequest = {
 /**
  * ClusterVariableScopeEnum property with full advanced search capabilities.
  */
-export type ClusterVariableScopeFilterProperty = ClusterVariableScopeEnum | AdvancedClusterVariableScopeFilter;
+export type ClusterVariableScopeFilterProperty = ClusterVariableScopeExactMatch | AdvancedClusterVariableScopeFilter;
 
 /**
  * Advanced filter
@@ -1908,7 +1908,7 @@ export type AdvancedDecisionInstanceStateFilter = {
 /**
  * DecisionInstanceStateEnum property with full advanced search capabilities.
  */
-export type DecisionInstanceStateFilterProperty = DecisionInstanceStateEnum | AdvancedDecisionInstanceStateFilter;
+export type DecisionInstanceStateFilterProperty = DecisionInstanceStateExactMatch | AdvancedDecisionInstanceStateFilter;
 
 export type DecisionRequirementsSearchQuerySortRequest = {
     /**
@@ -2203,7 +2203,7 @@ export type ResourceKey = ProcessDefinitionKey | DecisionRequirementsKey | FormK
 /**
  * DeploymentKey property with full advanced search capabilities.
  */
-export type DeploymentKeyFilterProperty = DeploymentKey | AdvancedDeploymentKeyFilter;
+export type DeploymentKeyFilterProperty = DeploymentKeyExactMatch | AdvancedDeploymentKeyFilter;
 
 /**
  * Advanced filter
@@ -2236,7 +2236,7 @@ export type AdvancedDeploymentKeyFilter = {
 /**
  * ResourceKey property with full advanced search capabilities.
  */
-export type ResourceKeyFilterProperty = ResourceKey | AdvancedResourceKeyFilter;
+export type ResourceKeyFilterProperty = ResourceKeyExactMatch | AdvancedResourceKeyFilter;
 
 /**
  * Advanced filter
@@ -2461,7 +2461,7 @@ export type ElementInstanceFilter = {
 /**
  * ElementInstanceStateEnum property with full advanced search capabilities.
  */
-export type ElementInstanceStateFilterProperty = ElementInstanceStateEnum | AdvancedElementInstanceStateFilter;
+export type ElementInstanceStateFilterProperty = ElementInstanceStateExactMatch | AdvancedElementInstanceStateFilter;
 
 /**
  * Advanced filter
@@ -3066,7 +3066,7 @@ export type IncidentFilter = {
 /**
  * IncidentErrorTypeEnum with full advanced search capabilities.
  */
-export type IncidentErrorTypeFilterProperty = IncidentErrorTypeEnum | AdvancedIncidentErrorTypeFilter;
+export type IncidentErrorTypeFilterProperty = IncidentErrorTypeExactMatch | AdvancedIncidentErrorTypeFilter;
 
 /**
  * Advanced filter
@@ -3105,7 +3105,7 @@ export type IncidentErrorTypeEnum = 'AD_HOC_SUB_PROCESS_NO_RETRIES' | 'CALLED_DE
 /**
  * IncidentStateEnum with full advanced search capabilities.
  */
-export type IncidentStateFilterProperty = IncidentStateEnum | AdvancedIncidentStateFilter;
+export type IncidentStateFilterProperty = IncidentStateExactMatch | AdvancedIncidentStateFilter;
 
 /**
  * Advanced filter
@@ -3915,7 +3915,7 @@ export type JobListenerEventTypeEnum = 'ASSIGNING' | 'CANCELING' | 'COMPLETING' 
 /**
  * JobKindEnum property with full advanced search capabilities.
  */
-export type JobKindFilterProperty = JobKindEnum | AdvancedJobKindFilter;
+export type JobKindFilterProperty = JobKindExactMatch | AdvancedJobKindFilter;
 
 /**
  * Advanced filter
@@ -3945,7 +3945,7 @@ export type AdvancedJobKindFilter = {
 /**
  * JobListenerEventTypeEnum property with full advanced search capabilities.
  */
-export type JobListenerEventTypeFilterProperty = JobListenerEventTypeEnum | AdvancedJobListenerEventTypeFilter;
+export type JobListenerEventTypeFilterProperty = JobListenerEventTypeExactMatch | AdvancedJobListenerEventTypeFilter;
 
 /**
  * Advanced filter
@@ -3975,7 +3975,7 @@ export type AdvancedJobListenerEventTypeFilter = {
 /**
  * JobStateEnum property with full advanced search capabilities.
  */
-export type JobStateFilterProperty = JobStateEnum | AdvancedJobStateFilter;
+export type JobStateFilterProperty = JobStateExactMatch | AdvancedJobStateFilter;
 
 /**
  * Advanced filter
@@ -4105,7 +4105,7 @@ export type AuditLogKey = CamundaKey<'AuditLogKey'>;
 /**
  * ProcessDefinitionKey property with full advanced search capabilities.
  */
-export type ProcessDefinitionKeyFilterProperty = ProcessDefinitionKey | AdvancedProcessDefinitionKeyFilter;
+export type ProcessDefinitionKeyFilterProperty = ProcessDefinitionKeyExactMatch | AdvancedProcessDefinitionKeyFilter;
 
 /**
  * Advanced filter
@@ -4138,7 +4138,7 @@ export type AdvancedProcessDefinitionKeyFilter = {
 /**
  * ProcessInstanceKey property with full advanced search capabilities.
  */
-export type ProcessInstanceKeyFilterProperty = ProcessInstanceKey | AdvancedProcessInstanceKeyFilter;
+export type ProcessInstanceKeyFilterProperty = ProcessInstanceKeyExactMatch | AdvancedProcessInstanceKeyFilter;
 
 /**
  * Advanced filter
@@ -4171,7 +4171,7 @@ export type AdvancedProcessInstanceKeyFilter = {
 /**
  * ElementInstanceKey property with full advanced search capabilities.
  */
-export type ElementInstanceKeyFilterProperty = ElementInstanceKey | AdvancedElementInstanceKeyFilter;
+export type ElementInstanceKeyFilterProperty = ElementInstanceKeyExactMatch | AdvancedElementInstanceKeyFilter;
 
 /**
  * Advanced filter
@@ -4204,7 +4204,7 @@ export type AdvancedElementInstanceKeyFilter = {
 /**
  * JobKey property with full advanced search capabilities.
  */
-export type JobKeyFilterProperty = JobKey | AdvancedJobKeyFilter;
+export type JobKeyFilterProperty = JobKeyExactMatch | AdvancedJobKeyFilter;
 
 /**
  * Advanced filter
@@ -4237,7 +4237,7 @@ export type AdvancedJobKeyFilter = {
 /**
  * DecisionDefinitionKey property with full advanced search capabilities.
  */
-export type DecisionDefinitionKeyFilterProperty = DecisionDefinitionKey | AdvancedDecisionDefinitionKeyFilter;
+export type DecisionDefinitionKeyFilterProperty = DecisionDefinitionKeyExactMatch | AdvancedDecisionDefinitionKeyFilter;
 
 /**
  * Advanced filter
@@ -4270,7 +4270,7 @@ export type AdvancedDecisionDefinitionKeyFilter = {
 /**
  * ScopeKey property with full advanced search capabilities.
  */
-export type ScopeKeyFilterProperty = ScopeKey | AdvancedScopeKeyFilter;
+export type ScopeKeyFilterProperty = ScopeKeyExactMatch | AdvancedScopeKeyFilter;
 
 /**
  * Advanced filter
@@ -4303,7 +4303,7 @@ export type AdvancedScopeKeyFilter = {
 /**
  * VariableKey property with full advanced search capabilities.
  */
-export type VariableKeyFilterProperty = VariableKey | AdvancedVariableKeyFilter;
+export type VariableKeyFilterProperty = VariableKeyExactMatch | AdvancedVariableKeyFilter;
 
 /**
  * Advanced filter
@@ -4336,7 +4336,7 @@ export type AdvancedVariableKeyFilter = {
 /**
  * DecisionEvaluationInstanceKey property with full advanced search capabilities.
  */
-export type DecisionEvaluationInstanceKeyFilterProperty = DecisionEvaluationInstanceKey | AdvancedDecisionEvaluationInstanceKeyFilter;
+export type DecisionEvaluationInstanceKeyFilterProperty = DecisionEvaluationInstanceKeyExactMatch | AdvancedDecisionEvaluationInstanceKeyFilter;
 
 /**
  * Advanced filter
@@ -4369,7 +4369,7 @@ export type AdvancedDecisionEvaluationInstanceKeyFilter = {
 /**
  * AuditLogKey property with full advanced search capabilities.
  */
-export type AuditLogKeyFilterProperty = AuditLogKey | AdvancedAuditLogKeyFilter;
+export type AuditLogKeyFilterProperty = AuditLogKeyExactMatch | AdvancedAuditLogKeyFilter;
 
 /**
  * Advanced filter
@@ -4402,7 +4402,7 @@ export type AdvancedAuditLogKeyFilter = {
 /**
  * FormKey property with full advanced search capabilities.
  */
-export type FormKeyFilterProperty = FormKey | AdvancedFormKeyFilter;
+export type FormKeyFilterProperty = FormKeyExactMatch | AdvancedFormKeyFilter;
 
 /**
  * Advanced filter
@@ -4435,7 +4435,7 @@ export type AdvancedFormKeyFilter = {
 /**
  * DecisionEvaluationKey property with full advanced search capabilities.
  */
-export type DecisionEvaluationKeyFilterProperty = DecisionEvaluationKey | AdvancedDecisionEvaluationKeyFilter;
+export type DecisionEvaluationKeyFilterProperty = DecisionEvaluationKeyExactMatch | AdvancedDecisionEvaluationKeyFilter;
 
 /**
  * Advanced filter
@@ -4468,7 +4468,7 @@ export type AdvancedDecisionEvaluationKeyFilter = {
 /**
  * DecisionRequirementsKey property with full advanced search capabilities.
  */
-export type DecisionRequirementsKeyFilterProperty = DecisionRequirementsKey | AdvancedDecisionRequirementsKeyFilter;
+export type DecisionRequirementsKeyFilterProperty = DecisionRequirementsKeyExactMatch | AdvancedDecisionRequirementsKeyFilter;
 
 /**
  * Advanced filter
@@ -4979,7 +4979,7 @@ export type CorrelatedMessageSubscriptionFilter = {
 /**
  * MessageSubscriptionStateEnum with full advanced search capabilities.
  */
-export type MessageSubscriptionStateFilterProperty = MessageSubscriptionStateEnum | AdvancedMessageSubscriptionStateFilter;
+export type MessageSubscriptionStateFilterProperty = MessageSubscriptionStateExactMatch | AdvancedMessageSubscriptionStateFilter;
 
 /**
  * Advanced filter
@@ -5037,7 +5037,7 @@ export type AdvancedMessageSubscriptionKeyFilter = {
 /**
  * MessageSubscriptionKey property with full advanced search capabilities.
  */
-export type MessageSubscriptionKeyFilterProperty = MessageSubscriptionKey | AdvancedMessageSubscriptionKeyFilter;
+export type MessageSubscriptionKeyFilterProperty = MessageSubscriptionKeyExactMatch | AdvancedMessageSubscriptionKeyFilter;
 
 /**
  * System-generated key for a message subscription.
@@ -6187,7 +6187,7 @@ export type AdvancedProcessInstanceStateFilter = {
 /**
  * ProcessInstanceStateEnum property with full advanced search capabilities.
  */
-export type ProcessInstanceStateFilterProperty = ProcessInstanceStateEnum | AdvancedProcessInstanceStateFilter;
+export type ProcessInstanceStateFilterProperty = ProcessInstanceStateExactMatch | AdvancedProcessInstanceStateFilter;
 
 export type RoleCreateRequest = {
     /**
@@ -7076,7 +7076,7 @@ export type UserTaskVariableFilter = {
 /**
  * UserTaskStateEnum property with full advanced search capabilities.
  */
-export type UserTaskStateFilterProperty = UserTaskStateEnum | AdvancedUserTaskStateFilter;
+export type UserTaskStateFilterProperty = UserTaskStateExactMatch | AdvancedUserTaskStateFilter;
 
 /**
  * Advanced filter
@@ -7395,6 +7395,251 @@ export type SetVariableRequest = {
     local?: boolean;
     operationReference?: OperationReference;
 };
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogEntityKeyExactMatch = AuditLogEntityKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type EntityTypeExactMatch = AuditLogEntityTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type OperationTypeExactMatch = AuditLogOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type CategoryExactMatch = AuditLogCategoryEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogResultExactMatch = AuditLogResultEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogActorTypeExactMatch = AuditLogActorTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type BatchOperationTypeExactMatch = BatchOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type BatchOperationStateExactMatch = BatchOperationStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type BatchOperationItemStateExactMatch = BatchOperationItemStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ClusterVariableScopeExactMatch = ClusterVariableScopeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionInstanceStateExactMatch = DecisionInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DeploymentKeyExactMatch = DeploymentKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ResourceKeyExactMatch = ResourceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ElementInstanceStateExactMatch = ElementInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type IncidentErrorTypeExactMatch = IncidentErrorTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type IncidentStateExactMatch = IncidentStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobKindExactMatch = JobKindEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobListenerEventTypeExactMatch = JobListenerEventTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobStateExactMatch = JobStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessDefinitionKeyExactMatch = ProcessDefinitionKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessInstanceKeyExactMatch = ProcessInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ElementInstanceKeyExactMatch = ElementInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobKeyExactMatch = JobKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionDefinitionKeyExactMatch = DecisionDefinitionKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ScopeKeyExactMatch = ScopeKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableKeyExactMatch = VariableKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogKeyExactMatch = AuditLogKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type FormKeyExactMatch = FormKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionEvaluationKeyExactMatch = DecisionEvaluationKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionRequirementsKeyExactMatch = DecisionRequirementsKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type MessageSubscriptionStateExactMatch = MessageSubscriptionStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type MessageSubscriptionKeyExactMatch = MessageSubscriptionKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type UserTaskStateExactMatch = UserTaskStateEnum;
 
 export type SearchAuditLogsData = {
     body?: AuditLogSearchQueryRequest;
@@ -10660,12 +10905,7 @@ export type SearchClientsForGroupResponses = {
     /**
      * The clients assigned to the group.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching client IDs.
-         */
-        items?: Array<TenantClientResult>;
-    };
+    200: TenantClientSearchResult;
 };
 
 export type SearchClientsForGroupResponse = SearchClientsForGroupResponses[keyof SearchClientsForGroupResponses];
@@ -11020,12 +11260,7 @@ export type SearchUsersForGroupResponses = {
     /**
      * The users assigned to the group.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching members.
-         */
-        items?: Array<TenantUserResult>;
-    };
+    200: TenantUserSearchResult;
 };
 
 export type SearchUsersForGroupResponse = SearchUsersForGroupResponses[keyof SearchUsersForGroupResponses];

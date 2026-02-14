@@ -1009,14 +1009,12 @@
     },
     {
       "name": "AuditLogActorTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogActorTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogActorTypeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "AuditLogActorTypeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1027,14 +1025,12 @@
     },
     {
       "name": "AuditLogEntityKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "EntityKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogEntityKey"
-          ]
+          "branchType": "ref",
+          "ref": "AuditLogEntityKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1045,14 +1041,12 @@
     },
     {
       "name": "AuditLogKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogKey"
-          ]
+          "branchType": "ref",
+          "ref": "AuditLogKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1063,14 +1057,12 @@
     },
     {
       "name": "AuditLogResultFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogResultEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogResultEnum"
-          ]
+          "branchType": "ref",
+          "ref": "AuditLogResultExactMatch"
         },
         {
           "branchType": "ref",
@@ -1112,14 +1104,12 @@
     },
     {
       "name": "BatchOperationItemStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "BatchOperationItemStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "BatchOperationItemStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "BatchOperationItemStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1130,14 +1120,12 @@
     },
     {
       "name": "BatchOperationStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "BatchOperationStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "BatchOperationStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "BatchOperationStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1148,14 +1136,12 @@
     },
     {
       "name": "BatchOperationTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "BatchOperationTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "BatchOperationTypeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "BatchOperationTypeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1166,14 +1152,12 @@
     },
     {
       "name": "CategoryFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogCategoryEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogCategoryEnum"
-          ]
+          "branchType": "ref",
+          "ref": "CategoryExactMatch"
         },
         {
           "branchType": "ref",
@@ -1184,14 +1168,12 @@
     },
     {
       "name": "ClusterVariableScopeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ClusterVariableScopeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "ClusterVariableScopeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1217,14 +1199,12 @@
     },
     {
       "name": "DecisionDefinitionKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionDefinitionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionDefinitionKey"
-          ]
+          "branchType": "ref",
+          "ref": "DecisionDefinitionKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1235,14 +1215,12 @@
     },
     {
       "name": "DecisionEvaluationInstanceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionEvaluationInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionEvaluationInstanceKey"
-          ]
+          "branchType": "ref",
+          "ref": "DecisionEvaluationInstanceKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1268,14 +1246,12 @@
     },
     {
       "name": "DecisionEvaluationKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionEvaluationKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionEvaluationKey"
-          ]
+          "branchType": "ref",
+          "ref": "DecisionEvaluationKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1286,14 +1262,12 @@
     },
     {
       "name": "DecisionInstanceStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionInstanceStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "DecisionInstanceStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1304,14 +1278,12 @@
     },
     {
       "name": "DecisionRequirementsKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DecisionRequirementsKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DecisionRequirementsKey"
-          ]
+          "branchType": "ref",
+          "ref": "DecisionRequirementsKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1322,14 +1294,12 @@
     },
     {
       "name": "DeploymentKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "DeploymentKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "DeploymentKey"
-          ]
+          "branchType": "ref",
+          "ref": "DeploymentKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1340,14 +1310,12 @@
     },
     {
       "name": "ElementInstanceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ElementInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ElementInstanceKey"
-          ]
+          "branchType": "ref",
+          "ref": "ElementInstanceKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1358,14 +1326,12 @@
     },
     {
       "name": "ElementInstanceStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ElementInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ElementInstanceStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "ElementInstanceStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1376,14 +1342,12 @@
     },
     {
       "name": "EntityTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogEntityTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogEntityTypeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "EntityTypeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1394,14 +1358,12 @@
     },
     {
       "name": "FormKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "FormKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "FormKey"
-          ]
+          "branchType": "ref",
+          "ref": "FormKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1412,14 +1374,12 @@
     },
     {
       "name": "IncidentErrorTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "IncidentErrorTypeEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "IncidentErrorTypeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "IncidentErrorTypeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1430,14 +1390,12 @@
     },
     {
       "name": "IncidentStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "IncidentStateEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "IncidentStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "IncidentStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1463,14 +1421,12 @@
     },
     {
       "name": "JobKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobKey"
-          ]
+          "branchType": "ref",
+          "ref": "JobKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1481,14 +1437,12 @@
     },
     {
       "name": "JobKindFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobKindEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobKindEnum"
-          ]
+          "branchType": "ref",
+          "ref": "JobKindExactMatch"
         },
         {
           "branchType": "ref",
@@ -1499,14 +1453,12 @@
     },
     {
       "name": "JobListenerEventTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobListenerEventTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobListenerEventTypeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "JobListenerEventTypeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1533,14 +1485,12 @@
     },
     {
       "name": "JobStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "JobStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "JobStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "JobStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1551,14 +1501,12 @@
     },
     {
       "name": "MessageSubscriptionKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "MessageSubscriptionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "MessageSubscriptionKey"
-          ]
+          "branchType": "ref",
+          "ref": "MessageSubscriptionKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1569,14 +1517,12 @@
     },
     {
       "name": "MessageSubscriptionStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "MessageSubscriptionStateEnum with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "MessageSubscriptionStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "MessageSubscriptionStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1587,14 +1533,12 @@
     },
     {
       "name": "OperationTypeFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "AuditLogOperationTypeEnum"
-          ]
+          "branchType": "ref",
+          "ref": "OperationTypeExactMatch"
         },
         {
           "branchType": "ref",
@@ -1605,14 +1549,12 @@
     },
     {
       "name": "ProcessDefinitionKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ProcessDefinitionKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ProcessDefinitionKey"
-          ]
+          "branchType": "ref",
+          "ref": "ProcessDefinitionKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1650,14 +1592,12 @@
     },
     {
       "name": "ProcessInstanceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ProcessInstanceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ProcessInstanceKey"
-          ]
+          "branchType": "ref",
+          "ref": "ProcessInstanceKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1684,14 +1624,12 @@
     },
     {
       "name": "ProcessInstanceStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ProcessInstanceStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ProcessInstanceStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "ProcessInstanceStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1726,14 +1664,12 @@
     },
     {
       "name": "ResourceKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ResourceKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ResourceKey"
-          ]
+          "branchType": "ref",
+          "ref": "ResourceKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1744,14 +1680,12 @@
     },
     {
       "name": "ScopeKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "ScopeKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "ScopeKey"
-          ]
+          "branchType": "ref",
+          "ref": "ScopeKeyExactMatch"
         },
         {
           "branchType": "ref",
@@ -1817,14 +1751,12 @@
     },
     {
       "name": "UserTaskStateFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "UserTaskStateEnum property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "UserTaskStateEnum"
-          ]
+          "branchType": "ref",
+          "ref": "UserTaskStateExactMatch"
         },
         {
           "branchType": "ref",
@@ -1835,14 +1767,12 @@
     },
     {
       "name": "VariableKeyFilterProperty",
-      "kind": "hybrid-union",
+      "kind": "union-wrapper",
       "description": "VariableKey property with full advanced search capabilities.",
       "branches": [
         {
-          "branchType": "composed",
-          "refs": [
-            "VariableKey"
-          ]
+          "branchType": "ref",
+          "ref": "VariableKeyExactMatch"
         },
         {
           "branchType": "ref",

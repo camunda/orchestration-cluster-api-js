@@ -18,11 +18,7 @@ export { CamundaValidationError, EventualConsistencyTimeoutError } from './runti
 // Re-export all public types from CamundaClient (Input, Consistency, CancelablePromise, etc.)
 export * from './gen/CamundaClient';
 // eventualPoll unified with result mode; no separate export
-export {
-  createCamundaClientLoose,
-  type CamundaClientLoose,
-  type Loose,
-};
+export { createCamundaClientLoose, type CamundaClientLoose, type Loose };
 export type { EnrichedActivatedJob } from './runtime/jobActions';
 // Runtime types used in public signatures
 export type { CamundaConfig, AuthStrategy, ValidationMode } from './runtime/unifiedConfiguration';

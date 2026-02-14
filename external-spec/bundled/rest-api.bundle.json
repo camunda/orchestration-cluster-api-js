@@ -4371,21 +4371,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching client IDs.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/TenantClientResult"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/TenantClientSearchResult"
                 }
               }
             }
@@ -4845,21 +4831,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching members.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/TenantUserResult"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/TenantUserSearchResult"
                 }
               }
             }
@@ -14039,14 +14011,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogEntityKey"
-              }
-            ]
+            "$ref": "#/components/schemas/AuditLogEntityKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedAuditLogEntityKeyFilter"
@@ -14099,14 +14064,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/EntityTypeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedEntityTypeFilter"
@@ -14155,14 +14113,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogOperationTypeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/OperationTypeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedOperationTypeFilter"
@@ -14211,14 +14162,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogCategoryEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/CategoryExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedCategoryFilter"
@@ -14267,14 +14211,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogResultEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/AuditLogResultExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedResultFilter"
@@ -14323,14 +14260,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/AuditLogActorTypeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedActorTypeFilter"
@@ -15429,14 +15359,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BatchOperationTypeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/BatchOperationTypeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedBatchOperationTypeFilter"
@@ -15485,14 +15408,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BatchOperationStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/BatchOperationStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedBatchOperationStateFilter"
@@ -15541,14 +15457,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/BatchOperationItemStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/BatchOperationItemStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedBatchOperationItemStateFilter"
@@ -15793,14 +15702,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ClusterVariableScopeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/ClusterVariableScopeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedClusterVariableScopeFilter"
@@ -17010,14 +16912,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionInstanceStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/DecisionInstanceStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedDecisionInstanceStateFilter"
@@ -17536,14 +17431,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DeploymentKey"
-              }
-            ]
+            "$ref": "#/components/schemas/DeploymentKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedDeploymentKeyFilter"
@@ -17596,14 +17484,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ResourceKey"
-              }
-            ]
+            "$ref": "#/components/schemas/ResourceKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedResourceKeyFilter"
@@ -17998,14 +17879,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ElementInstanceStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/ElementInstanceStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedElementInstanceStateFilter"
@@ -19054,14 +18928,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IncidentErrorTypeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/IncidentErrorTypeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedIncidentErrorTypeFilter"
@@ -19138,14 +19005,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IncidentStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/IncidentStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedIncidentStateFilter"
@@ -20577,14 +20437,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/JobKindEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/JobKindExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedJobKindFilter"
@@ -20633,14 +20486,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/JobListenerEventTypeExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedJobListenerEventTypeFilter"
@@ -20689,15 +20535,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "format": "JobStateEnum",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/JobStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/JobStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedJobStateFilter"
@@ -20957,14 +20795,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ProcessDefinitionKey"
-              }
-            ]
+            "$ref": "#/components/schemas/ProcessDefinitionKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedProcessDefinitionKeyFilter"
@@ -21017,14 +20848,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ProcessInstanceKey"
-              }
-            ]
+            "$ref": "#/components/schemas/ProcessInstanceKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedProcessInstanceKeyFilter"
@@ -21077,14 +20901,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ElementInstanceKey"
-              }
-            ]
+            "$ref": "#/components/schemas/ElementInstanceKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedElementInstanceKeyFilter"
@@ -21137,14 +20954,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/JobKey"
-              }
-            ]
+            "$ref": "#/components/schemas/JobKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedJobKeyFilter"
@@ -21197,14 +21007,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionDefinitionKey"
-              }
-            ]
+            "$ref": "#/components/schemas/DecisionDefinitionKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedDecisionDefinitionKeyFilter"
@@ -21257,14 +21060,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ScopeKey"
-              }
-            ]
+            "$ref": "#/components/schemas/ScopeKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedScopeKeyFilter"
@@ -21317,14 +21113,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/VariableKey"
-              }
-            ]
+            "$ref": "#/components/schemas/VariableKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedVariableKeyFilter"
@@ -21377,14 +21166,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionEvaluationInstanceKey"
-              }
-            ]
+            "$ref": "#/components/schemas/DecisionEvaluationInstanceKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedDecisionEvaluationInstanceKeyFilter"
@@ -21437,14 +21219,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/AuditLogKey"
-              }
-            ]
+            "$ref": "#/components/schemas/AuditLogKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedAuditLogKeyFilter"
@@ -21497,14 +21272,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/FormKey"
-              }
-            ]
+            "$ref": "#/components/schemas/FormKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedFormKeyFilter"
@@ -21557,14 +21325,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionEvaluationKey"
-              }
-            ]
+            "$ref": "#/components/schemas/DecisionEvaluationKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedDecisionEvaluationKeyFilter"
@@ -21617,14 +21378,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionRequirementsKey"
-              }
-            ]
+            "$ref": "#/components/schemas/DecisionRequirementsKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedDecisionRequirementsKeyFilter"
@@ -22547,14 +22301,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/MessageSubscriptionStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedMessageSubscriptionStateFilter"
@@ -22644,14 +22391,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/MessageSubscriptionKey"
-              }
-            ]
+            "$ref": "#/components/schemas/MessageSubscriptionKeyExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedMessageSubscriptionKeyFilter"
@@ -24470,14 +24210,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ProcessInstanceStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/ProcessInstanceStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedProcessInstanceStateFilter"
@@ -26057,14 +25790,7 @@
         "type": "object",
         "oneOf": [
           {
-            "type": "string",
-            "title": "Exact match",
-            "description": "Matches the value exactly.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/UserTaskStateEnum"
-              }
-            ]
+            "$ref": "#/components/schemas/UserTaskStateExactMatch"
           },
           {
             "$ref": "#/components/schemas/AdvancedUserTaskStateFilter"
@@ -26590,6 +26316,357 @@
         },
         "required": [
           "variables"
+        ]
+      },
+      "AuditLogEntityKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogEntityKey"
+          }
+        ]
+      },
+      "EntityTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
+          }
+        ]
+      },
+      "OperationTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogOperationTypeEnum"
+          }
+        ]
+      },
+      "CategoryExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogCategoryEnum"
+          }
+        ]
+      },
+      "AuditLogResultExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogResultEnum"
+          }
+        ]
+      },
+      "AuditLogActorTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+          }
+        ]
+      },
+      "BatchOperationTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BatchOperationTypeEnum"
+          }
+        ]
+      },
+      "BatchOperationStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BatchOperationStateEnum"
+          }
+        ]
+      },
+      "BatchOperationItemStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BatchOperationItemStateEnum"
+          }
+        ]
+      },
+      "ClusterVariableScopeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ClusterVariableScopeEnum"
+          }
+        ]
+      },
+      "DecisionInstanceStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DecisionInstanceStateEnum"
+          }
+        ]
+      },
+      "DeploymentKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DeploymentKey"
+          }
+        ]
+      },
+      "ResourceKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResourceKey"
+          }
+        ]
+      },
+      "ElementInstanceStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ElementInstanceStateEnum"
+          }
+        ]
+      },
+      "IncidentErrorTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IncidentErrorTypeEnum"
+          }
+        ]
+      },
+      "IncidentStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IncidentStateEnum"
+          }
+        ]
+      },
+      "JobKindExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JobKindEnum"
+          }
+        ]
+      },
+      "JobListenerEventTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JobListenerEventTypeEnum"
+          }
+        ]
+      },
+      "JobStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "format": "JobStateEnum",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JobStateEnum"
+          }
+        ]
+      },
+      "ProcessDefinitionKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProcessDefinitionKey"
+          }
+        ]
+      },
+      "ProcessInstanceKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProcessInstanceKey"
+          }
+        ]
+      },
+      "ElementInstanceKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ElementInstanceKey"
+          }
+        ]
+      },
+      "JobKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/JobKey"
+          }
+        ]
+      },
+      "DecisionDefinitionKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DecisionDefinitionKey"
+          }
+        ]
+      },
+      "ScopeKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ScopeKey"
+          }
+        ]
+      },
+      "VariableKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/VariableKey"
+          }
+        ]
+      },
+      "DecisionEvaluationInstanceKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DecisionEvaluationInstanceKey"
+          }
+        ]
+      },
+      "AuditLogKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuditLogKey"
+          }
+        ]
+      },
+      "FormKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FormKey"
+          }
+        ]
+      },
+      "DecisionEvaluationKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DecisionEvaluationKey"
+          }
+        ]
+      },
+      "DecisionRequirementsKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/DecisionRequirementsKey"
+          }
+        ]
+      },
+      "MessageSubscriptionStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
+          }
+        ]
+      },
+      "MessageSubscriptionKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MessageSubscriptionKey"
+          }
+        ]
+      },
+      "ProcessInstanceStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProcessInstanceStateEnum"
+          }
+        ]
+      },
+      "UserTaskStateExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserTaskStateEnum"
+          }
         ]
       }
     }
