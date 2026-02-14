@@ -28,6 +28,23 @@ Runtime support:
 
 For older Node versions supply a fetch ponyfill AND a `File` shim (or upgrade). For legacy browsers, add a fetch polyfill (e.g. `whatwg-fetch`).
 
+## Versioning
+
+This SDK does **not** follow traditional semver. The **major.minor** version tracks the Camunda server version, so you can easily match the SDK to your deployment target (e.g. SDK `8.9.x` targets Camunda `8.9`).
+
+**Patch releases** contain fixes, features, and occasionally **breaking type changes**. A breaking type change typically means an upstream API definition fix that corrects the shape of a request or response model — your code may stop type-checking even though it worked before.
+
+When this happens, we signal it in the [CHANGELOG](https://github.com/camunda/orchestration-cluster-api-js/releases).
+
+**Recommended approach:**
+
+- **Ride the latest** — accept that types may shift and update your code when it happens. This keeps you on the most accurate API surface.
+- **Pin and review** — pin to a specific patch version in `package.json` and review the [CHANGELOG](https://github.com/camunda/orchestration-cluster-api-js/releases) before upgrading:
+
+  ```json
+  "@camunda8/orchestration-cluster-api": "8.9.3"
+  ```
+
 ## Quick Start (Zero‑Config – Recommended)
 
 Keep configuration out of application code. Let the factory read `CAMUNDA_*` variables from the environment (12‑factor style). This makes rotation, secret management, and environment promotion safer & simpler.
