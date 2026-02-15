@@ -143,6 +143,8 @@ export function createDeployment(body: _createDeployment_Body): CancelablePromis
 type _createGlobalClusterVariable_Body = CreateGlobalClusterVariableData extends { body?: infer B } ? B : never;
 /**
  * Create a global-scoped cluster variable
+ *
+ * Create a global-scoped cluster variable.
   *
  * @operationId createGlobalClusterVariable
  * @tags Cluster Variable
@@ -1198,6 +1200,8 @@ export function createElementInstanceVariables(options?: Parameters<typeof _crea
 
 /**
  * Create a tenant-scoped cluster variable
+ *
+ * Create a new cluster variable for the given tenant.
   *
  * @operationId createTenantClusterVariable
  * @tags Cluster Variable
@@ -1251,6 +1255,8 @@ export function deleteDocument(options?: Parameters<typeof _deleteDocument>[0]):
 
 /**
  * Delete a global-scoped cluster variable
+ *
+ * Delete a global-scoped cluster variable.
   *
  * @operationId deleteGlobalClusterVariable
  * @tags Cluster Variable
@@ -1352,6 +1358,8 @@ export function deleteTenant(options?: Parameters<typeof _deleteTenant>[0]): Can
 
 /**
  * Delete a tenant-scoped cluster variable
+ *
+ * Delete a tenant-scoped cluster variable.
   *
  * @operationId deleteTenantClusterVariable
  * @tags Cluster Variable
@@ -1570,6 +1578,8 @@ export function getElementInstance(options: Parameters<typeof _getElementInstanc
 
 /**
  * Get a global-scoped cluster variable
+ *
+ * Get a global-scoped cluster variable.
   *
  * @operationId getGlobalClusterVariable
  * @tags Cluster Variable
@@ -1875,6 +1885,8 @@ export function getTenant(options: Parameters<typeof _getTenant>[0] | undefined,
 
 /**
  * Get a tenant-scoped cluster variable
+ *
+ * Get a tenant-scoped cluster variable.
   *
  * @operationId getTenantClusterVariable
  * @tags Cluster Variable
@@ -2734,4 +2746,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=04137afacef35e03 totalWrappers=172 elements=1119 physicalLines=2686
+// SENTINEL_FACADE_PREWRITE hash=9b884078f35f0344 totalWrappers=172 elements=1119 physicalLines=2698

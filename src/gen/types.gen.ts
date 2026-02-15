@@ -2599,9 +2599,7 @@ export type ExpressionEvaluationResult = {
     /**
      * The result value. Its type can vary.
      */
-    result: {
-        [key: string]: unknown;
-    };
+    result: unknown;
     /**
      * List of warnings generated during expression evaluation
      */
@@ -9210,7 +9208,7 @@ export type EvaluateDecisionErrors = {
     /**
      * The decision is not found.
      */
-    404: unknown;
+    404: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -14585,7 +14583,7 @@ export type SearchRolesErrors = {
     /**
      * An internal error occurred while processing the request.
      */
-    500: unknown;
+    500: ProblemDetail;
 };
 
 export type SearchRolesError = SearchRolesErrors[keyof SearchRolesErrors];
@@ -15405,8 +15403,10 @@ export type CreateAdminUserResponses = {
     /**
      * The admin user was created successfully.
      */
-    201: unknown;
+    201: UserCreateResult;
 };
+
+export type CreateAdminUserResponse = CreateAdminUserResponses[keyof CreateAdminUserResponses];
 
 export type BroadcastSignalData = {
     body: SignalBroadcastRequest;
@@ -15610,7 +15610,7 @@ export type SearchTenantsErrors = {
     /**
      * Not found
      */
-    404: unknown;
+    404: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -17750,7 +17750,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59
+// specHash=sha256:33f12646b3d07f76a230bb1236335860e7cc9bff71705373c940cebad624c6cf
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

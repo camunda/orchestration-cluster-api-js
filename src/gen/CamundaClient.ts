@@ -2954,6 +2954,13 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zCreateAdminUserResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createAdminUser', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
         return data;
         } catch(e) {
           // Defer normalization to outer executeWithHttpRetry boundary
@@ -3373,6 +3380,8 @@ export class CamundaClient {
 
   /**
    * Create a global-scoped cluster variable
+   *
+   * Create a global-scoped cluster variable.
     *
    * @operationId createGlobalClusterVariable
    * @tags Cluster Variable
@@ -3734,6 +3743,8 @@ export class CamundaClient {
 
   /**
    * Create a tenant-scoped cluster variable
+   *
+   * Create a new cluster variable for the given tenant.
     *
    * @operationId createTenantClusterVariable
    * @tags Cluster Variable
@@ -4106,6 +4117,8 @@ export class CamundaClient {
 
   /**
    * Delete a global-scoped cluster variable
+   *
+   * Delete a global-scoped cluster variable.
     *
    * @operationId deleteGlobalClusterVariable
    * @tags Cluster Variable
@@ -4600,6 +4613,8 @@ export class CamundaClient {
 
   /**
    * Delete a tenant-scoped cluster variable
+   *
+   * Delete a tenant-scoped cluster variable.
     *
    * @operationId deleteTenantClusterVariable
    * @tags Cluster Variable
@@ -5660,6 +5675,8 @@ export class CamundaClient {
 
   /**
    * Get a global-scoped cluster variable
+   *
+   * Get a global-scoped cluster variable.
     *
    * @operationId getGlobalClusterVariable
    * @tags Cluster Variable
@@ -7160,6 +7177,8 @@ export class CamundaClient {
 
   /**
    * Get a tenant-scoped cluster variable
+   *
+   * Get a tenant-scoped cluster variable.
     *
    * @operationId getTenantClusterVariable
    * @tags Cluster Variable

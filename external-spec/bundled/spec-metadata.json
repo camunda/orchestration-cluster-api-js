@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59",
+  "specHash": "sha256:33f12646b3d07f76a230bb1236335860e7cc9bff71705373c940cebad624c6cf",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -2831,6 +2831,7 @@
         "Cluster Variable"
       ],
       "summary": "Create a global-scoped cluster variable",
+      "description": "Create a global-scoped cluster variable.",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -2848,6 +2849,7 @@
         "Cluster Variable"
       ],
       "summary": "Get a global-scoped cluster variable",
+      "description": "Get a global-scoped cluster variable.",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -2887,6 +2889,7 @@
         "Cluster Variable"
       ],
       "summary": "Delete a global-scoped cluster variable",
+      "description": "Delete a global-scoped cluster variable.",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -2928,6 +2931,7 @@
         "Cluster Variable"
       ],
       "summary": "Create a tenant-scoped cluster variable",
+      "description": "Create a new cluster variable for the given tenant.",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -2947,6 +2951,7 @@
         "Cluster Variable"
       ],
       "summary": "Get a tenant-scoped cluster variable",
+      "description": "Get a tenant-scoped cluster variable.",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -2988,6 +2993,7 @@
         "Cluster Variable"
       ],
       "summary": "Delete a tenant-scoped cluster variable",
+      "description": "Delete a tenant-scoped cluster variable.",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,

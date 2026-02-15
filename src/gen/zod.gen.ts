@@ -597,7 +597,7 @@ export const zExpressionEvaluationResult = z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The evaluated expression'
     }),
-    result: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    result: z.unknown().register(z.globalRegistry, {
         description: 'The result value. Its type can vary.'
     }),
     warnings: z.array(z.string()).register(z.globalRegistry, {
@@ -3088,7 +3088,7 @@ export const zProblemDetail = z.object({
     detail: z.optional(z.string().register(z.globalRegistry, {
         description: 'An explanation of the problem in more detail.'
     })),
-    instance: z.optional(z.url().register(z.globalRegistry, {
+    instance: z.optional(z.string().register(z.globalRegistry, {
         description: 'A URI path identifying the origin of the problem.'
     }))
 }).register(z.globalRegistry, {
@@ -9435,6 +9435,11 @@ export const zCreateAdminUserData = z.object({
     path: z.optional(z.never()),
     query: z.optional(z.never())
 });
+
+/**
+ * The admin user was created successfully.
+ */
+export const zCreateAdminUserResponse = zUserCreateResult;
 
 export const zBroadcastSignalData = z.object({
     body: zSignalBroadcastRequest,
