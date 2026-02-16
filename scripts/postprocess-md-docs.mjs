@@ -10,7 +10,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, basename, relative, dirname } from 'node:path';
+import { join, basename, dirname } from 'node:path';
 
 const docsDir = process.argv[2] || 'docs-md';
 
@@ -39,14 +39,27 @@ const CATEGORY_LABELS = {
   'type-aliases': 'Type Aliases',
   functions: 'Functions',
   namespaces: 'Namespaces',
-  index: 'API Reference',
-  fp: 'Functional Programming',
+  index: 'Core',
+  fp: 'Functional Programming (Technical Preview)',
   logger: 'Logger',
+};
+
+/** Sidebar positions for top-level module directories. */
+const CATEGORY_POSITIONS = {
+  index: 1,
+  logger: 2,
+  fp: 3,
 };
 
 /** Module-level entry page overrides. */
 const MODULE_TITLES = {
   index: 'TypeScript SDK API Reference',
+};
+
+/** Sidebar positions for top-level docs (files at the root of api-reference/). */
+const DOC_POSITIONS = {
+  index: 0,
+  modules: 99,
 };
 
 /**
@@ -61,10 +74,6 @@ function addFrontmatter(filePath) {
 
   const stem = basename(filePath, '.md');
   const dir = basename(dirname(filePath));
-  const relPath = relative(docsDir, filePath);
-
-  // Derive id from relative path (without .md)
-  const id = relPath.replace(/\.md$/, '').replace(/\//g, '-').toLowerCase();
 
   // Derive title from first H1, or filename
   const h1Match = content.match(/^#\s+(.+)$/m);
@@ -75,12 +84,22 @@ function addFrontmatter(filePath) {
     title = MODULE_TITLES.index || title;
   }
 
-  const sidebarLabel = stem === 'index' ? 'Overview' : title.split(':').pop().trim();
+  // Strip MDX backslash escapes (e.g. \< \>) — they are invalid inside
+  // double-quoted YAML strings and unnecessary in frontmatter values.
+  const yamlTitle = title.replace(/\\([<>])/g, '$1');
+  const sidebarLabel = stem === 'index' ? 'Overview' : yamlTitle.split(':').pop().trim();
+
+  // Add sidebar_position for top-level docs
+  const isTopLevel = dir === basename(docsDir);
+  const positionLine = isTopLevel && stem in DOC_POSITIONS
+    ? `sidebar_position: ${DOC_POSITIONS[stem]}\n`
+    : '';
 
   const frontmatter = `---
-id: ${id}
-title: "${title}"
+title: "${yamlTitle}"
 sidebar_label: "${sidebarLabel}"
+${positionLine}mdx:
+  format: md
 ---
 
 `;
@@ -89,26 +108,80 @@ sidebar_label: "${sidebarLabel}"
 }
 
 /**
- * Escape JSX-like syntax outside code blocks for MDX compatibility.
+ * Clean up HTML blocks in generated markdown for readability.
+ *
+ * With `mdx: { format: md }` in frontmatter, Docusaurus parses these files
+ * as CommonMark, so angle brackets and curly braces are safe. We still
+ * convert styled HTML (from OpenAPI descriptions) to markdown for cleaner output.
  */
-function escapeMdx(filePath) {
+function cleanHtml(filePath) {
   let content = readFileSync(filePath, 'utf-8');
-  const parts = content.split(/(```[\s\S]*?```)/);
+
+  // Separate frontmatter from body
+  let frontmatter = '';
+  let body = content;
+  const fmMatch = content.match(/^(---\n[\s\S]*?\n---\n)/);
+  if (fmMatch) {
+    frontmatter = fmMatch[1];
+    body = content.slice(frontmatter.length);
+  }
+
+  // Split on fenced code blocks — only transform prose regions
+  const codeBlockParts = body.split(/(```[\s\S]*?```)/);
   let changed = false;
 
-  for (let i = 0; i < parts.length; i++) {
-    if (!parts[i].startsWith('```')) {
-      const before = parts[i];
-      // Escape <TypeName> patterns (but not HTML tags like <br>, <code>, etc.)
-      parts[i] = parts[i].replace(/<([A-Z]\w+)>/g, '`<$1>`');
-      // Escape bare {expression} patterns
-      parts[i] = parts[i].replace(/\{([A-Za-z_]\w*)\}/g, '`{$1}`');
-      if (parts[i] !== before) changed = true;
+  for (let i = 0; i < codeBlockParts.length; i++) {
+    if (codeBlockParts[i].startsWith('```')) continue;
+
+    const before = codeBlockParts[i];
+
+    // Convert styled HTML to markdown (these come from OpenAPI descriptions).
+    codeBlockParts[i] = codeBlockParts[i]
+      .replace(/<em>([^<]*)<\/em>/g, '*$1*')
+      .replace(/<strong>([^<]*)<\/strong>/g, '**$1**')
+      .replace(/<code>([^<]*)<\/code>/g, '`$1`')
+      .replace(/<br\s*\/?>/g, '\n')
+      .replace(/<p>([^<]*)<\/p>/g, '\n$1\n')
+      .replace(/<p>/g, '\n')
+      .replace(/<\/p>/g, '\n');
+
+    // Strip list structure: remove <ul>/<ol> wrappers, convert <li> to "- "
+    // Run multiple passes to handle nested lists
+    for (let pass = 0; pass < 3; pass++) {
+      codeBlockParts[i] = codeBlockParts[i]
+        .replace(/<ul[^>]*>\n?/g, '\n')
+        .replace(/<\/ul>\n?/g, '\n')
+        .replace(/<ol[^>]*>\n?/g, '\n')
+        .replace(/<\/ol>\n?/g, '\n')
+        .replace(/<li[^>]*>([\s\S]*?)<\/li>/g, '- $1');
     }
+
+    // Final cleanup: strip any residual HTML tags
+    codeBlockParts[i] = codeBlockParts[i]
+      .replace(/<\/?(?:ul|ol|li|div|span|a|p|br|em|strong|code|pre|blockquote|table|thead|tbody|tr|td|th|hr|h[1-6]|img|figure|figcaption|section|article|nav|header|footer|main|aside|details|summary|dl|dt|dd)[^>]*>/g, '');
+
+    if (codeBlockParts[i] !== before) changed = true;
   }
 
   if (changed) {
-    writeFileSync(filePath, parts.join(''), 'utf-8');
+    writeFileSync(filePath, frontmatter + codeBlockParts.join(''), 'utf-8');
+  }
+}
+
+/**
+ * Rewrite _media/ links to GitHub repo URLs.
+ * TypeDoc copies referenced files into _media/ but those aren't valid in Docusaurus.
+ */
+function rewriteMediaLinks(filePath) {
+  const GITHUB_BASE = 'https://github.com/camunda/orchestration-cluster-api-js/blob/main/';
+  let content = readFileSync(filePath, 'utf-8');
+  const before = content;
+  content = content.replace(
+    /\[([^\]]+)\]\(_media\/([^)]+)\)/g,
+    (_, text, path) => `[${text}](${GITHUB_BASE}${path})`
+  );
+  if (content !== before) {
+    writeFileSync(filePath, content, 'utf-8');
   }
 }
 
@@ -129,15 +202,37 @@ function createCategoryFiles(dir) {
     if (!existsSync(categoryFile)) {
       const category = {
         label,
-        link: existsSync(join(fullPath, 'index.md'))
-          ? { type: 'doc', id: relative(docsDir, join(fullPath, 'index.md')).replace(/\.md$/, '').replace(/\//g, '-').toLowerCase() }
-          : undefined,
       };
+      if (CATEGORY_POSITIONS[entry] !== undefined) {
+        category.position = CATEGORY_POSITIONS[entry];
+      }
       writeFileSync(categoryFile, JSON.stringify(category, null, 2) + '\n', 'utf-8');
     }
 
     // Recurse into subdirectories
     createCategoryFiles(fullPath);
+  }
+}
+
+/**
+ * Add a Technical Preview admonition banner after the first heading in FP module pages.
+ */
+function addTechnicalPreviewBanner(filePath) {
+  const rel = filePath.replace(/\\/g, '/'); // normalise for Windows
+  // Match files under the fp/ directory
+  if (!rel.includes('/fp/') && !rel.endsWith('/fp/index.md')) return;
+
+  let content = readFileSync(filePath, 'utf-8');
+  const banner = '\n:::caution Technical Preview\nThe Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.\n:::\n';
+
+  // Insert after first H1
+  const h1End = content.match(/^#\s+.+$/m);
+  if (h1End) {
+    const pos = h1End.index + h1End[0].length;
+    const updated = content.slice(0, pos) + '\n' + banner + content.slice(pos);
+    if (updated !== content) {
+      writeFileSync(filePath, updated, 'utf-8');
+    }
   }
 }
 
@@ -154,7 +249,9 @@ function processDirectory(dir) {
       count += processDirectory(fullPath);
     } else if (entry.endsWith('.md')) {
       addFrontmatter(fullPath);
-      escapeMdx(fullPath);
+      cleanHtml(fullPath);
+      rewriteMediaLinks(fullPath);
+      addTechnicalPreviewBanner(fullPath);
       count++;
     }
   }
