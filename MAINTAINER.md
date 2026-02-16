@@ -365,7 +365,50 @@ Never edit generated files in `src/gen/` manually—they are overwritten every b
 
 ---
 
-## 17. Troubleshooting
+## 17. Docusaurus Integration (camunda-docs)
+
+The SDK's API reference documentation is published on the [Camunda docs site](https://docs.camunda.io) via an inversion-of-control pattern: a GitHub Actions workflow **in the camunda-docs repo** checks out this SDK, generates documentation, and opens a PR to copy the output into the docs site.
+
+### How it works
+
+1. The sync workflow (`sync-ts-sdk-docs.yaml` in `camunda/camunda-docs`) runs on a weekly schedule (Thursdays at 4 PM UTC) or on manual dispatch.
+2. It checks out this repo (default: `main` branch) and runs:
+   ```bash
+   npm ci
+   npm run docs:md
+   ```
+3. The generated Markdown files from `docs-md/` are copied into the docs repo at:
+   - **Next version:** `docs/apis-tools/typescript/api-reference/`
+   - **Released version:** `versioned_docs/version-<X.Y>/apis-tools/typescript/api-reference/`
+4. A PR is opened automatically via `peter-evans/create-pull-request`.
+
+### Doc generation command
+
+`npm run docs:md` generates Docusaurus-compatible Markdown using TypeDoc with `typedoc-plugin-markdown`. Output lands in `docs-md/`.
+
+### Updating a released version
+
+To backport docs to a released version (e.g. 8.8):
+
+1. Go to the **Actions** tab in `camunda/camunda-docs`.
+2. Select the **Sync TypeScript SDK API Reference** workflow.
+3. Click **Run workflow** and enter `8.8` in the `docs_version` field.
+4. The workflow checks out `stable/8.8` from this repo and copies docs into `versioned_docs/version-8.8/`.
+
+The PR branch is version-scoped (e.g. `update-ts-sdk-docs/8.8`), so backport and next-version syncs can coexist.
+
+### What lives where
+
+| What | Location |
+| --- | --- |
+| Doc generation config | `typedoc-md.json` |
+| Generated Markdown output | `docs-md/` |
+| Sync workflow (in camunda-docs) | `.github/workflows/sync-ts-sdk-docs.yaml` |
+| Docs site target (next) | `docs/apis-tools/typescript/api-reference/` |
+
+---
+
+## 18. Troubleshooting
 
 | Issue                                   | Likely Cause                              | Action                                                                                |
 | --------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -382,7 +425,7 @@ Never edit generated files in `src/gen/` manually—they are overwritten every b
 
 ---
 
-## 18. Maintenance Quick Commands
+## 19. Maintenance Quick Commands
 
 | Task                                          | Command                                                |
 | --------------------------------------------- | ------------------------------------------------------ |
