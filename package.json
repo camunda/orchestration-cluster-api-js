@@ -55,6 +55,7 @@
     "test": "CAMUNDA_SDK_INTEGRATION=0 vitest run --passWithNoTests --exclude 'tests-integration/' --exclude 'camundacon/**'",
     "test:integration": "CAMUNDA_SDK_INTEGRATION=1 vitest run tests-integration",
     "docs:config": "tsx scripts/generate-config-doc.ts",
+    "docs:md": "rm -rf docs-md && typedoc --options typedoc-md.json && node scripts/postprocess-md-docs.mjs docs-md",
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",

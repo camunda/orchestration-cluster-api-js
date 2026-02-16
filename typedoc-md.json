@@ -1,0 +1,12 @@
+{
+  "$schema": "https://typedoc-plugin-markdown.org/schema.json",
+  "extends": ["./typedoc.json"],
+  "plugin": ["typedoc-plugin-markdown"],
+  "out": "docs-md",
+  "entryFileName": "index",
+  "outputFileStrategy": "members",
+  "flattenOutputFiles": false,
+  "hidePageHeader": true,
+  "hideBreadcrumbs": true,
+  "useCodeBlocks": true
+}
