@@ -1,3 +1,10 @@
+# [8.9.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.5...v8.9.0-alpha.6) (2026-02-17)
+
+
+### Features
+
+* regenerate from latest schema ([c2d9dff](https://github.com/camunda/orchestration-cluster-api-js/commit/c2d9dffe96f645d2043f62335ef97bdc381b37b1))
+
 ## [1.2.4-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v1.2.3...v1.2.4-alpha.1) (2026-01-22)
 
 ### Bug Fixes
