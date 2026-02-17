@@ -4513,7 +4513,10 @@
       "bodyOnly": true,
       "pathParams": [],
       "queryParams": [],
-      "requestBodyUnionRefs": [],
+      "requestBodyUnionRefs": [
+        "ProcessInstanceCreationInstructionById",
+        "ProcessInstanceCreationInstructionByKey"
+      ],
       "optionalTenantIdInBody": true
     },
     {

@@ -169,22 +169,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Audit log search response.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching audit logs.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1audit-logs~1{auditLogKey}/get/responses/200/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/AuditLogSearchQueryResult"
                 }
               }
             }
@@ -230,208 +215,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Audit log item.",
-                  "type": "object",
-                  "properties": {
-                    "auditLogKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/AuditLogKey"
-                        }
-                      ],
-                      "description": "The unique key of the audit log entry."
-                    },
-                    "entityKey": {
-                      "$ref": "#/components/schemas/AuditLogEntityKey"
-                    },
-                    "entityType": {
-                      "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
-                    },
-                    "operationType": {
-                      "$ref": "#/components/schemas/AuditLogOperationTypeEnum"
-                    },
-                    "batchOperationKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/BatchOperationKey"
-                        }
-                      ],
-                      "description": "Key of the batch operation."
-                    },
-                    "batchOperationType": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/BatchOperationTypeEnum"
-                        }
-                      ],
-                      "description": "The type of batch operation performed, if this is part of a batch."
-                    },
-                    "timestamp": {
-                      "type": "string",
-                      "description": "The timestamp when the operation occurred.",
-                      "format": "date-time"
-                    },
-                    "actorId": {
-                      "type": "string",
-                      "description": "The ID of the actor who performed the operation."
-                    },
-                    "actorType": {
-                      "$ref": "#/components/schemas/AuditLogActorTypeEnum"
-                    },
-                    "agentElementId": {
-                      "type": "string",
-                      "description": "The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID)."
-                    },
-                    "tenantId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/TenantId"
-                        }
-                      ],
-                      "description": "The tenant ID of the audit log."
-                    },
-                    "result": {
-                      "$ref": "#/components/schemas/AuditLogResultEnum"
-                    },
-                    "annotation": {
-                      "type": "string",
-                      "description": "Additional notes about the operation."
-                    },
-                    "category": {
-                      "$ref": "#/components/schemas/AuditLogCategoryEnum"
-                    },
-                    "processDefinitionId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionId"
-                        }
-                      ],
-                      "description": "The process definition ID."
-                    },
-                    "processDefinitionKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionKey"
-                        }
-                      ],
-                      "description": "The key of the process definition."
-                    },
-                    "processInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      ],
-                      "description": "The key of the process instance."
-                    },
-                    "rootProcessInstanceKey": {
-                      "$ref": "#/components/schemas/ProcessInstanceKey"
-                    },
-                    "elementInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementInstanceKey"
-                        }
-                      ],
-                      "description": "The key of the element instance."
-                    },
-                    "jobKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/JobKey"
-                        }
-                      ],
-                      "description": "The key of the job."
-                    },
-                    "userTaskKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/UserTaskKey"
-                        }
-                      ],
-                      "description": "The key of the user task."
-                    },
-                    "decisionRequirementsId": {
-                      "type": "string",
-                      "description": "The decision requirements ID."
-                    },
-                    "decisionRequirementsKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/DecisionRequirementsKey"
-                        }
-                      ],
-                      "description": "The assigned key of the decision requirements."
-                    },
-                    "decisionDefinitionId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/DecisionDefinitionId"
-                        }
-                      ],
-                      "description": "The decision definition ID."
-                    },
-                    "decisionDefinitionKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/DecisionDefinitionKey"
-                        }
-                      ],
-                      "description": "The key of the decision definition."
-                    },
-                    "decisionEvaluationKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/DecisionEvaluationKey"
-                        }
-                      ],
-                      "description": "The key of the decision evaluation."
-                    },
-                    "deploymentKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/DeploymentKey"
-                        }
-                      ],
-                      "description": "The key of the deployment."
-                    },
-                    "formKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
-                        }
-                      ],
-                      "description": "The key of the form."
-                    },
-                    "resourceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ResourceKey"
-                        }
-                      ],
-                      "description": "The system-assigned key for this resource."
-                    },
-                    "relatedEntityKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/AuditLogEntityKey"
-                        }
-                      ],
-                      "description": "The key of the related entity. The content depends on the operation type and entity type.\nFor example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.\n"
-                    },
-                    "relatedEntityType": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/AuditLogEntityTypeEnum"
-                        }
-                      ],
-                      "description": "The type of the related entity. The content depends on the operation type and entity type.\nFor example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.\n"
-                    },
-                    "entityDescription": {
-                      "type": "string",
-                      "description": "Additional description of the entity affected by the operation.\nFor example, for variable operations, this will contain the variable name.\n"
-                    }
-                  }
+                  "$ref": "#/components/schemas/AuditLogResult"
                 }
               }
             }
@@ -762,75 +546,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Batch operation item search request.",
-                "additionalProperties": false,
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/BatchOperationItemSearchQuerySortRequest"
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "Batch operation item filter request.",
-                        "type": "object",
-                        "properties": {
-                          "batchOperationKey": {
-                            "description": "The key (or operate legacy ID) of the batch operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BasicStringFilterProperty"
-                              }
-                            ]
-                          },
-                          "itemKey": {
-                            "description": "The key of the item, e.g. a process instance key.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BasicStringFilterProperty"
-                              }
-                            ]
-                          },
-                          "processInstanceKey": {
-                            "description": "The process instance key of the processed item.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "state": {
-                            "type": "string",
-                            "description": "The state of the batch operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BatchOperationItemStateFilterProperty"
-                              }
-                            ]
-                          },
-                          "operationType": {
-                            "description": "The type of the batch operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/batchOperationType/allOf/0"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    ],
-                    "description": "The batch operation item search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/BatchOperationItemSearchQuery"
               }
             }
           }
@@ -841,69 +557,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching batch operation items.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "operationType": {
-                            "$ref": "#/components/schemas/BatchOperationTypeEnum"
-                          },
-                          "batchOperationKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BatchOperationKey"
-                              }
-                            ],
-                            "description": "The key (or operate legacy ID) of the batch operation."
-                          },
-                          "itemKey": {
-                            "description": "Key of the item, e.g. a process instance key.",
-                            "type": "string"
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "the process instance key of the processed item."
-                          },
-                          "rootProcessInstanceKey": {
-                            "$ref": "#/components/schemas/ProcessInstanceKey"
-                          },
-                          "state": {
-                            "description": "State of the item.",
-                            "type": "string",
-                            "enum": [
-                              "ACTIVE",
-                              "COMPLETED",
-                              "SKIPPED",
-                              "CANCELED",
-                              "FAILED"
-                            ]
-                          },
-                          "processedDate": {
-                            "description": "the date this item was processed.",
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "errorMessage": {
-                            "description": "the error message from the engine in case of a failed operation.",
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/BatchOperationItemSearchQueryResult"
                 }
               }
             }
@@ -938,74 +592,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "description": "Batch operation search request.",
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/BatchOperationSearchQuerySortRequest"
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "Batch operation filter request.",
-                        "type": "object",
-                        "properties": {
-                          "batchOperationKey": {
-                            "description": "The key (or operate legacy ID) of the batch operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BasicStringFilterProperty"
-                              }
-                            ]
-                          },
-                          "operationType": {
-                            "description": "The type of the batch operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/batchOperationType/allOf/0"
-                              }
-                            ]
-                          },
-                          "state": {
-                            "description": "The state of the batch operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BatchOperationStateFilterProperty"
-                              }
-                            ]
-                          },
-                          "actorType": {
-                            "description": "The type of the actor who performed the operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/AuditLogActorTypeEnum"
-                              }
-                            ]
-                          },
-                          "actorId": {
-                            "description": "The ID of the actor who performed the operation.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    ],
-                    "description": "The batch operation search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/BatchOperationSearchQuery"
               }
             }
           }
@@ -1573,120 +1160,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Cluster variable search query request.",
-                "additionalProperties": false,
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ClusterVariableSearchQuerySortRequest"
-                    }
-                  },
-                  "filter": {
-                    "description": "The cluster variable search filters.",
-                    "allOf": [
-                      {
-                        "description": "Cluster variable filter request.",
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "description": "Name of the cluster variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "value": {
-                            "description": "The value of the cluster variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "scope": {
-                            "description": "The scope filter for cluster variables.",
-                            "allOf": [
-                              {
-                                "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
-                                "type": "object",
-                                "oneOf": [
-                                  {
-                                    "type": "string",
-                                    "title": "Exact match",
-                                    "description": "Matches the value exactly.",
-                                    "allOf": [
-                                      {
-                                        "$ref": "#/paths/~1cluster-variables~1global/post/responses/200/content/application~1json/schema/allOf/0/properties/scope"
-                                      }
-                                    ]
-                                  },
-                                  {
-                                    "title": "Advanced filter",
-                                    "description": "Advanced ClusterVariableScopeEnum filter.",
-                                    "type": "object",
-                                    "properties": {
-                                      "$eq": {
-                                        "description": "Checks for equality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/paths/~1cluster-variables~1global/post/responses/200/content/application~1json/schema/allOf/0/properties/scope"
-                                          }
-                                        ]
-                                      },
-                                      "$neq": {
-                                        "description": "Checks for inequality with the provided value.",
-                                        "allOf": [
-                                          {
-                                            "$ref": "#/paths/~1cluster-variables~1global/post/responses/200/content/application~1json/schema/allOf/0/properties/scope"
-                                          }
-                                        ]
-                                      },
-                                      "$exists": {
-                                        "description": "Checks if the current property exists.",
-                                        "type": "boolean"
-                                      },
-                                      "$in": {
-                                        "description": "Checks if the property matches any of the provided values.",
-                                        "type": "array",
-                                        "items": {
-                                          "$ref": "#/paths/~1cluster-variables~1global/post/responses/200/content/application~1json/schema/allOf/0/properties/scope"
-                                        }
-                                      },
-                                      "$like": {
-                                        "$ref": "#/components/schemas/LikeFilter"
-                                      }
-                                    }
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          "tenantId": {
-                            "description": "Tenant ID of this variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ]
-                          },
-                          "isTruncated": {
-                            "description": "Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.\n",
-                            "type": "boolean"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/components/schemas/ClusterVariableSearchQueryRequest"
               }
             }
           }
@@ -1697,38 +1171,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Cluster variable search query response.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching cluster variables.",
-                      "type": "array",
-                      "items": {
-                        "description": "Cluster variable search response item.",
-                        "type": "object",
-                        "allOf": [
-                          {
-                            "$ref": "#/paths/~1cluster-variables~1global/post/responses/200/content/application~1json/schema/allOf/0"
-                          }
-                        ],
-                        "properties": {
-                          "value": {
-                            "description": "Value of this cluster variable. Can be truncated.",
-                            "type": "string"
-                          },
-                          "isTruncated": {
-                            "description": "Whether the value is truncated or not.",
-                            "type": "boolean"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ClusterVariableSearchQueryResult"
                 }
               }
             }
@@ -2114,116 +1557,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching correlated message subscriptions.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "correlationKey": {
-                            "description": "The correlation key of the message.",
-                            "type": "string"
-                          },
-                          "correlationTime": {
-                            "description": "The time when the message was correlated.",
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "elementId": {
-                            "description": "The element ID that received the message.",
-                            "type": "string"
-                          },
-                          "elementInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKey"
-                              }
-                            ],
-                            "description": "The element instance key that received the message."
-                          },
-                          "messageKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/MessageKey"
-                              }
-                            ],
-                            "description": "The message key."
-                          },
-                          "messageName": {
-                            "description": "The name of the message.",
-                            "type": "string"
-                          },
-                          "partitionId": {
-                            "description": "The partition ID that correlated the message.",
-                            "type": "integer",
-                            "format": "int32"
-                          },
-                          "processDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionId"
-                              }
-                            ],
-                            "description": "The process definition ID associated with this correlated message subscription."
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The process definition key associated with this correlated message subscription."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The process instance key associated with this correlated message subscription."
-                          },
-                          "rootProcessInstanceKey": {
-                            "$ref": "#/components/schemas/ProcessInstanceKey"
-                          },
-                          "subscriptionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/MessageSubscriptionKey"
-                              }
-                            ],
-                            "description": "The subscription key that received the message."
-                          },
-                          "tenantId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/TenantId"
-                              }
-                            ],
-                            "description": "The tenant ID associated with this correlated message subscription."
-                          }
-                        },
-                        "required": [
-                          "correlationKey",
-                          "correlationTime",
-                          "elementId",
-                          "messageKey",
-                          "messageName",
-                          "partitionId",
-                          "processDefinitionId",
-                          "processInstanceKey",
-                          "subscriptionKey",
-                          "tenantId"
-                        ]
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/CorrelatedMessageSubscriptionSearchQueryResult"
                 }
               }
             }
@@ -2482,145 +1816,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/SearchQueryRequest"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/DecisionInstanceSearchQuerySortRequest"
-                    }
-                  },
-                  "filter": {
-                    "description": "The decision instance search filters.",
-                    "allOf": [
-                      {
-                        "description": "Decision instance search filter.",
-                        "type": "object",
-                        "properties": {
-                          "decisionEvaluationInstanceKey": {
-                            "description": "The key of the decision evaluation instance.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DecisionEvaluationInstanceKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "state": {
-                            "description": "The state of the decision instance.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DecisionInstanceStateFilterProperty"
-                              }
-                            ]
-                          },
-                          "evaluationFailure": {
-                            "type": "string",
-                            "description": "The evaluation failure of the decision instance."
-                          },
-                          "evaluationDate": {
-                            "description": "The evaluation date of the decision instance.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ]
-                          },
-                          "decisionDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DecisionDefinitionId"
-                              }
-                            ],
-                            "description": "The ID of the DMN decision."
-                          },
-                          "decisionDefinitionName": {
-                            "type": "string",
-                            "description": "The name of the DMN decision."
-                          },
-                          "decisionDefinitionVersion": {
-                            "type": "integer",
-                            "format": "int32",
-                            "description": "The version of the decision."
-                          },
-                          "decisionDefinitionType": {
-                            "$ref": "#/components/schemas/DecisionDefinitionTypeEnum"
-                          },
-                          "tenantId": {
-                            "description": "The tenant ID of the decision instance.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/TenantId"
-                              }
-                            ]
-                          },
-                          "decisionEvaluationKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DecisionEvaluationKey"
-                              }
-                            ],
-                            "description": "The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.\n"
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The key of the process definition."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The key of the process instance."
-                          },
-                          "decisionDefinitionKey": {
-                            "description": "The key of the decision.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionDefinitionKey/allOf/0"
-                              }
-                            ]
-                          },
-                          "elementInstanceKey": {
-                            "description": "The key of the element instance this decision instance is linked to.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "rootDecisionDefinitionKey": {
-                            "description": "The key of the root decision definition.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionDefinitionKey/allOf/0"
-                              }
-                            ]
-                          },
-                          "decisionRequirementsKey": {
-                            "description": "The key of the decision requirements definition.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/decisionRequirementsKey/allOf/0"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/components/schemas/DecisionInstanceSearchQuery"
               }
             }
           }
@@ -2631,21 +1827,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching decision instances.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1decision-instances~1{decisionEvaluationInstanceKey}/get/responses/200/content/application~1json/schema/allOf/0"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/DecisionInstanceSearchQueryResult"
                 }
               }
             }
@@ -2691,130 +1873,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "decisionEvaluationInstanceKey": {
-                          "$ref": "#/components/schemas/DecisionEvaluationInstanceKey"
-                        },
-                        "state": {
-                          "$ref": "#/components/schemas/DecisionInstanceStateEnum"
-                        },
-                        "evaluationDate": {
-                          "type": "string",
-                          "format": "date-time",
-                          "description": "The evaluation date of the decision instance."
-                        },
-                        "evaluationFailure": {
-                          "type": "string",
-                          "description": "The evaluation failure of the decision instance."
-                        },
-                        "decisionDefinitionId": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/DecisionDefinitionId"
-                            }
-                          ],
-                          "description": "The ID of the DMN decision."
-                        },
-                        "decisionDefinitionName": {
-                          "type": "string",
-                          "description": "The name of the DMN decision."
-                        },
-                        "decisionDefinitionVersion": {
-                          "type": "integer",
-                          "format": "int32",
-                          "description": "The version of the decision."
-                        },
-                        "decisionDefinitionType": {
-                          "$ref": "#/components/schemas/DecisionDefinitionTypeEnum"
-                        },
-                        "result": {
-                          "type": "string",
-                          "description": "The result of the decision instance."
-                        },
-                        "tenantId": {
-                          "description": "The tenant ID of the decision instance.",
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/TenantId"
-                            }
-                          ]
-                        },
-                        "decisionEvaluationKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/DecisionEvaluationKey"
-                            }
-                          ],
-                          "description": "The key of the decision evaluation where this instance was created."
-                        },
-                        "processDefinitionKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/ProcessDefinitionKey"
-                            }
-                          ],
-                          "description": "The key of the process definition."
-                        },
-                        "processInstanceKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/ProcessInstanceKey"
-                            }
-                          ],
-                          "description": "The key of the process instance."
-                        },
-                        "rootProcessInstanceKey": {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        },
-                        "decisionDefinitionKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/DecisionDefinitionKey"
-                            }
-                          ],
-                          "description": "The key of the decision."
-                        },
-                        "elementInstanceKey": {
-                          "description": "The key of the element instance this decision instance is linked to.",
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/ElementInstanceKey"
-                            }
-                          ]
-                        },
-                        "rootDecisionDefinitionKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/DecisionDefinitionKey"
-                            }
-                          ],
-                          "description": "The key of the root decision definition."
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "evaluatedInputs": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/EvaluatedDecisionInputItem"
-                          },
-                          "description": "The evaluated inputs of the decision instance.\n"
-                        },
-                        "matchedRules": {
-                          "type": "array",
-                          "items": {
-                            "$ref": "#/components/schemas/MatchedDecisionRuleItem"
-                          },
-                          "description": "The matched rules of the decision instance.\n"
-                        }
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/DecisionInstanceGetQueryResult"
                 }
               }
             }
@@ -2917,25 +1976,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "The decision instance filter that defines which decision instances should be deleted.",
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/paths/~1decision-instances~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0"
-                      }
-                    ],
-                    "description": "The decision instance filter."
-                  },
-                  "operationReference": {
-                    "$ref": "#/components/schemas/OperationReference"
-                  }
-                },
-                "required": [
-                  "filter"
-                ]
+                "$ref": "#/components/schemas/DecisionInstanceDeletionBatchOperationRequest"
               }
             }
           }
@@ -3172,86 +2213,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "deploymentKey",
-                    "tenantId",
-                    "deployments"
-                  ],
-                  "properties": {
-                    "deploymentKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/DeploymentKey"
-                        }
-                      ],
-                      "description": "The unique key identifying the deployment."
-                    },
-                    "tenantId": {
-                      "description": "The tenant ID associated with the deployment.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/TenantId"
-                        }
-                      ]
-                    },
-                    "deployments": {
-                      "description": "Items deployed by the request.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "processDefinition": {
-                            "$ref": "#/components/schemas/DeploymentProcessResult"
-                          },
-                          "decisionDefinition": {
-                            "$ref": "#/components/schemas/DeploymentDecisionResult"
-                          },
-                          "decisionRequirements": {
-                            "$ref": "#/components/schemas/DeploymentDecisionRequirementsResult"
-                          },
-                          "form": {
-                            "description": "A deployed form.",
-                            "type": "object",
-                            "x-semantic-provider": [
-                              "formKey"
-                            ],
-                            "properties": {
-                              "formId": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/FormId"
-                                  }
-                                ],
-                                "description": "The form ID, as parsed during deployment, together with the version forms a\nunique identifier for a specific form.\n"
-                              },
-                              "version": {
-                                "type": "integer",
-                                "format": "int32"
-                              },
-                              "resourceName": {
-                                "type": "string"
-                              },
-                              "tenantId": {
-                                "$ref": "#/components/schemas/TenantId"
-                              },
-                              "formKey": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
-                                  }
-                                ],
-                                "description": "The assigned key, which acts as a unique identifier for this form."
-                              }
-                            }
-                          },
-                          "resource": {
-                            "$ref": "#/components/schemas/DeploymentResourceResult"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/DeploymentResult"
                 }
               }
             }
@@ -3708,21 +2670,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching element instances.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1element-instances~1{elementInstanceKey}/get/responses/200/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ElementInstanceSearchQueryResult"
                 }
               }
             }
@@ -3768,140 +2716,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "processDefinitionId",
-                    "startDate",
-                    "elementId",
-                    "elementName",
-                    "type",
-                    "state",
-                    "hasIncident",
-                    "tenantId",
-                    "elementInstanceKey",
-                    "processInstanceKey",
-                    "processDefinitionKey"
-                  ],
-                  "properties": {
-                    "processDefinitionId": {
-                      "description": "The process definition ID associated to this element instance.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionId"
-                        }
-                      ]
-                    },
-                    "startDate": {
-                      "description": "Date when element instance started.",
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "endDate": {
-                      "description": "Date when element instance finished.",
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "elementId": {
-                      "description": "The element ID for this element instance.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementId"
-                        }
-                      ]
-                    },
-                    "elementName": {
-                      "description": "The element name for this element instance.",
-                      "type": "string"
-                    },
-                    "type": {
-                      "description": "Type of element as defined set of values.",
-                      "type": "string",
-                      "enum": [
-                        "UNSPECIFIED",
-                        "PROCESS",
-                        "SUB_PROCESS",
-                        "EVENT_SUB_PROCESS",
-                        "AD_HOC_SUB_PROCESS",
-                        "AD_HOC_SUB_PROCESS_INNER_INSTANCE",
-                        "START_EVENT",
-                        "INTERMEDIATE_CATCH_EVENT",
-                        "INTERMEDIATE_THROW_EVENT",
-                        "BOUNDARY_EVENT",
-                        "END_EVENT",
-                        "SERVICE_TASK",
-                        "RECEIVE_TASK",
-                        "USER_TASK",
-                        "MANUAL_TASK",
-                        "TASK",
-                        "EXCLUSIVE_GATEWAY",
-                        "INCLUSIVE_GATEWAY",
-                        "PARALLEL_GATEWAY",
-                        "EVENT_BASED_GATEWAY",
-                        "SEQUENCE_FLOW",
-                        "MULTI_INSTANCE_BODY",
-                        "CALL_ACTIVITY",
-                        "BUSINESS_RULE_TASK",
-                        "SCRIPT_TASK",
-                        "SEND_TASK",
-                        "UNKNOWN"
-                      ]
-                    },
-                    "state": {
-                      "description": "State of element instance as defined set of values.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementInstanceStateEnum"
-                        }
-                      ]
-                    },
-                    "hasIncident": {
-                      "description": "Shows whether this element instance has an incident. If true also an incidentKey is provided.",
-                      "type": "boolean"
-                    },
-                    "tenantId": {
-                      "description": "The tenant ID of the incident.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/TenantId"
-                        }
-                      ]
-                    },
-                    "elementInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementInstanceKey"
-                        }
-                      ],
-                      "description": "The assigned key, which acts as a unique identifier for this element instance."
-                    },
-                    "processInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      ],
-                      "description": "The process instance key associated to this element instance."
-                    },
-                    "rootProcessInstanceKey": {
-                      "$ref": "#/components/schemas/ProcessInstanceKey"
-                    },
-                    "processDefinitionKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionKey"
-                        }
-                      ],
-                      "description": "The process definition key associated to this element instance."
-                    },
-                    "incidentKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/IncidentKey"
-                        }
-                      ],
-                      "description": "Incident key associated with this element instance."
-                    }
-                  }
+                  "$ref": "#/components/schemas/ElementInstanceResult"
                 }
               }
             }
@@ -3967,7 +2782,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1incidents~1search/post/responses/200/content/application~1json/schema"
+                  "$ref": "#/components/schemas/IncidentSearchQueryResult"
                 }
               }
             }
@@ -4113,20 +2928,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/paths/~1global-listeners~1user-task/post/requestBody/content/application~1json/schema/allOf/0"
-                    }
-                  ],
-                  "properties": {
-                    "id": {
-                      "$ref": "#/components/schemas/GlobalListenerId"
-                    },
-                    "source": {
-                      "$ref": "#/components/schemas/GlobalListenerSourceEnum"
-                    }
-                  }
+                  "$ref": "#/components/schemas/GlobalTaskListenerResult"
                 }
               }
             }
@@ -4183,16 +2985,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": [
-                  "type",
-                  "eventTypes"
-                ],
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1global-listeners~1user-task/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ]
+                "$ref": "#/components/schemas/UpdateGlobalTaskListenerRequest"
               }
             }
           },
@@ -4204,7 +2997,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1global-listeners~1user-task/post/responses/201/content/application~1json/schema"
+                  "$ref": "#/components/schemas/GlobalTaskListenerResult"
                 }
               }
             }
@@ -5229,21 +4022,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching incidents.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1incidents~1{incidentKey}/get/responses/200/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/IncidentSearchQueryResult"
                 }
               }
             }
@@ -5289,98 +4068,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "processDefinitionId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionId"
-                        }
-                      ],
-                      "description": "The process definition ID associated to this incident."
-                    },
-                    "errorType": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/IncidentErrorTypeEnum"
-                        }
-                      ]
-                    },
-                    "errorMessage": {
-                      "type": "string",
-                      "description": "Error message which describes the error in more detail."
-                    },
-                    "elementId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementId"
-                        }
-                      ],
-                      "description": "The element ID associated to this incident."
-                    },
-                    "creationTime": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "state": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/IncidentStateEnum"
-                        }
-                      ]
-                    },
-                    "tenantId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/TenantId"
-                        }
-                      ],
-                      "description": "The tenant ID of the incident."
-                    },
-                    "incidentKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/IncidentKey"
-                        }
-                      ],
-                      "description": "The assigned key, which acts as a unique identifier for this incident."
-                    },
-                    "processDefinitionKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionKey"
-                        }
-                      ],
-                      "description": "The process definition key associated to this incident."
-                    },
-                    "processInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      ],
-                      "description": "The process instance key associated to this incident."
-                    },
-                    "rootProcessInstanceKey": {
-                      "$ref": "#/components/schemas/ProcessInstanceKey"
-                    },
-                    "elementInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementInstanceKey"
-                        }
-                      ],
-                      "description": "The element instance key associated to this incident."
-                    },
-                    "jobKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/JobKey"
-                        }
-                      ],
-                      "description": "The job key, if exists, associated with this incident."
-                    }
-                  }
+                  "$ref": "#/components/schemas/IncidentResult"
                 }
               }
             }
@@ -5581,219 +4269,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "The list of activated jobs",
-                  "type": "object",
-                  "required": [
-                    "jobs"
-                  ],
-                  "properties": {
-                    "jobs": {
-                      "description": "The activated jobs.",
-                      "type": "array",
-                      "items": {
-                        "x-semantic-provider": [
-                          "elementId",
-                          "jobKey",
-                          "elementInstanceKey"
-                        ],
-                        "type": "object",
-                        "required": [
-                          "type",
-                          "processDefinitionId",
-                          "processDefinitionVersion",
-                          "elementId",
-                          "customHeaders",
-                          "worker",
-                          "retries",
-                          "deadline",
-                          "variables",
-                          "tenantId",
-                          "jobKey",
-                          "processInstanceKey",
-                          "processDefinitionKey",
-                          "elementInstanceKey",
-                          "kind",
-                          "listenerEventType"
-                        ],
-                        "properties": {
-                          "type": {
-                            "description": "The type of the job (should match what was requested).",
-                            "type": "string",
-                            "example": "create-new-user-record"
-                          },
-                          "processDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionId"
-                              }
-                            ],
-                            "description": "The bpmn process ID of the job's process definition."
-                          },
-                          "processDefinitionVersion": {
-                            "description": "The version of the job's process definition.",
-                            "type": "integer",
-                            "format": "int32",
-                            "example": 1
-                          },
-                          "elementId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementId"
-                              }
-                            ],
-                            "description": "The associated task element ID."
-                          },
-                          "customHeaders": {
-                            "description": "A set of custom headers defined during modelling; returned as a serialized JSON document.",
-                            "type": "object",
-                            "additionalProperties": true,
-                            "example": {}
-                          },
-                          "worker": {
-                            "description": "The name of the worker which activated this job.",
-                            "type": "string",
-                            "example": "worker-324"
-                          },
-                          "retries": {
-                            "description": "The amount of retries left to this job (should always be positive).",
-                            "type": "integer",
-                            "format": "int32",
-                            "example": 3
-                          },
-                          "deadline": {
-                            "description": "When the job can be activated again, sent as a UNIX epoch timestamp.",
-                            "type": "integer",
-                            "format": "int64",
-                            "example": 1757280974277
-                          },
-                          "variables": {
-                            "description": "All variables visible to the task scope, computed at activation time.",
-                            "type": "object",
-                            "additionalProperties": true
-                          },
-                          "tenantId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/TenantId"
-                              }
-                            ],
-                            "description": "The ID of the tenant that owns the job."
-                          },
-                          "jobKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/JobKey"
-                              }
-                            ],
-                            "description": "The key, a unique identifier for the job."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The job's process instance key."
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The key of the job's process definition."
-                          },
-                          "elementInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKey"
-                              }
-                            ]
-                          },
-                          "kind": {
-                            "$ref": "#/components/schemas/JobKindEnum"
-                          },
-                          "listenerEventType": {
-                            "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-                          },
-                          "userTask": {
-                            "type": "object",
-                            "description": "Contains properties of a user task.",
-                            "properties": {
-                              "action": {
-                                "description": "The action performed on the user task.",
-                                "type": "string"
-                              },
-                              "assignee": {
-                                "description": "The user assigned to the task.",
-                                "type": "string",
-                                "nullable": true
-                              },
-                              "candidateGroups": {
-                                "description": "The groups eligible to claim the task.",
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "candidateUsers": {
-                                "description": "The users eligible to claim the task.",
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "changedAttributes": {
-                                "description": "The attributes that were changed in the task.",
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "dueDate": {
-                                "description": "The due date of the user task in ISO 8601 format.",
-                                "type": "string",
-                                "nullable": true
-                              },
-                              "followUpDate": {
-                                "description": "The follow-up date of the user task in ISO 8601 format.",
-                                "type": "string",
-                                "nullable": true
-                              },
-                              "formKey": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
-                                  }
-                                ],
-                                "description": "The key of the form associated with the user task."
-                              },
-                              "priority": {
-                                "description": "The priority of the user task.",
-                                "type": "integer",
-                                "format": "int32",
-                                "minimum": 0,
-                                "maximum": 100,
-                                "nullable": true
-                              },
-                              "userTaskKey": {
-                                "description": "The unique key identifying the user task.",
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/UserTaskKey"
-                                  }
-                                ],
-                                "nullable": true
-                              }
-                            }
-                          },
-                          "tags": {
-                            "$ref": "#/components/schemas/TagSet"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/JobActivationResult"
                 }
               }
             }
@@ -5838,169 +4314,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Job search response.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching jobs.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "required": [
-                          "customHeaders",
-                          "elementId",
-                          "elementInstanceKey",
-                          "hasFailedWithRetriesLeft",
-                          "jobKey",
-                          "kind",
-                          "listenerEventType",
-                          "processDefinitionId",
-                          "processDefinitionKey",
-                          "processInstanceKey",
-                          "retries",
-                          "state",
-                          "tenantId",
-                          "type",
-                          "worker"
-                        ],
-                        "properties": {
-                          "customHeaders": {
-                            "description": "A set of custom headers defined during modelling.",
-                            "type": "object",
-                            "additionalProperties": {
-                              "type": "string"
-                            }
-                          },
-                          "deadline": {
-                            "description": "If the job has been activated, when it will next be available to be activated.",
-                            "type": "string",
-                            "format": "date-time",
-                            "nullable": true
-                          },
-                          "deniedReason": {
-                            "description": "The reason provided by the user task listener for denying the work.",
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "elementId": {
-                            "description": "The element ID associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementId"
-                              }
-                            ]
-                          },
-                          "elementInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKey"
-                              }
-                            ],
-                            "description": "The element instance key associated with the job."
-                          },
-                          "endTime": {
-                            "description": "When the job ended.",
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "errorCode": {
-                            "description": "The error code provided for a failed job.",
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "errorMessage": {
-                            "description": "The error message that provides additional context for a failed job.",
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "hasFailedWithRetriesLeft": {
-                            "description": "Indicates whether the job has failed with retries left.",
-                            "type": "boolean"
-                          },
-                          "isDenied": {
-                            "description": "Indicates whether the user task listener denies the work.",
-                            "type": "boolean",
-                            "nullable": true
-                          },
-                          "jobKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/JobKey"
-                              }
-                            ],
-                            "description": "The key, a unique identifier for the job."
-                          },
-                          "kind": {
-                            "$ref": "#/components/schemas/JobKindEnum"
-                          },
-                          "listenerEventType": {
-                            "$ref": "#/components/schemas/JobListenerEventTypeEnum"
-                          },
-                          "processDefinitionId": {
-                            "description": "The process definition ID associated with the job.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionId"
-                              }
-                            ]
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The process definition key associated with the job."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The process instance key associated with the job."
-                          },
-                          "rootProcessInstanceKey": {
-                            "$ref": "#/components/schemas/ProcessInstanceKey"
-                          },
-                          "retries": {
-                            "description": "The amount of retries left to this job.",
-                            "type": "integer",
-                            "format": "int32"
-                          },
-                          "state": {
-                            "$ref": "#/components/schemas/JobStateEnum"
-                          },
-                          "tenantId": {
-                            "$ref": "#/components/schemas/TenantId"
-                          },
-                          "type": {
-                            "description": "The type of the job.",
-                            "type": "string"
-                          },
-                          "worker": {
-                            "description": "The name of the worker of this job.",
-                            "type": "string"
-                          },
-                          "creationTime": {
-                            "description": "When the job was created. Field is present for jobs created after 8.9.",
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "lastUpdateTime": {
-                            "description": "When the job was last updated. Field is present for jobs created after 8.9.",
-                            "type": "string",
-                            "format": "date-time"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/JobSearchQueryResult"
                 }
               }
             }
@@ -6505,12 +4819,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1mapping-rules/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ]
+                "$ref": "#/components/schemas/MappingRuleUpdateRequest"
               }
             }
           }
@@ -6521,12 +4830,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/paths/~1mapping-rules/post/responses/201/content/application~1json/schema/allOf/0"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/MappingRuleUpdateResult"
                 }
               }
             }
@@ -6669,145 +4973,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "messageSubscriptionKey",
-                            "processDefinitionId",
-                            "processInstanceKey",
-                            "elementId",
-                            "elementInstanceKey",
-                            "messageSubscriptionState",
-                            "lastUpdatedDate",
-                            "messageName",
-                            "correlationKey",
-                            "tenantId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "Message subscription search filter.",
-                        "type": "object",
-                        "properties": {
-                          "messageSubscriptionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/MessageSubscriptionKeyFilterProperty"
-                              }
-                            ],
-                            "description": "The message subscription key associated with this message subscription."
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processDefinitionKey/allOf/0"
-                              }
-                            ],
-                            "description": "The process definition key associated with this correlated message subscription. This only works for data created with 8.9 and later."
-                          },
-                          "processDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The process definition ID associated with this message subscription."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
-                              }
-                            ],
-                            "description": "The process instance key associated with this message subscription."
-                          },
-                          "elementId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The element ID associated with this message subscription."
-                          },
-                          "elementInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/elementInstanceKey/allOf/0"
-                              }
-                            ],
-                            "description": "The element instance key associated with this message subscription."
-                          },
-                          "messageSubscriptionState": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/MessageSubscriptionStateFilterProperty"
-                              }
-                            ],
-                            "description": "The message subscription state."
-                          },
-                          "lastUpdatedDate": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ],
-                            "description": "The last updated date of the message subscription."
-                          },
-                          "messageName": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The name of the message associated with the message subscription."
-                          },
-                          "correlationKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The correlation key of the message subscription."
-                          },
-                          "tenantId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The unique external tenant ID."
-                          }
-                        }
-                      }
-                    ],
-                    "description": "The incident search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/MessageSubscriptionSearchQuery"
               }
             }
           }
@@ -6818,93 +4984,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching message subscriptions.",
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "messageSubscriptionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/MessageSubscriptionKey"
-                              }
-                            ],
-                            "description": "The message subscription key associated with this message subscription."
-                          },
-                          "processDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionId"
-                              }
-                            ],
-                            "description": "The process definition ID associated with this message subscription."
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The process definition key associated with this message subscription."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The process instance key associated with this message subscription."
-                          },
-                          "rootProcessInstanceKey": {
-                            "$ref": "#/components/schemas/ProcessInstanceKey"
-                          },
-                          "elementId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementId"
-                              }
-                            ],
-                            "description": "The element ID associated with this message subscription."
-                          },
-                          "elementInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKey"
-                              }
-                            ],
-                            "description": "The element instance key associated with this message subscription."
-                          },
-                          "messageSubscriptionState": {
-                            "$ref": "#/components/schemas/MessageSubscriptionStateEnum"
-                          },
-                          "lastUpdatedDate": {
-                            "description": "The last updated date of the message subscription.",
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "messageName": {
-                            "description": "The name of the message associated with the message subscription.",
-                            "type": "string"
-                          },
-                          "correlationKey": {
-                            "type": "string",
-                            "description": "The correlation key of the message subscription."
-                          },
-                          "tenantId": {
-                            "$ref": "#/components/schemas/TenantId"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/MessageSubscriptionSearchQueryResult"
                 }
               }
             }
@@ -7004,26 +5084,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "The message key of the published message.",
-                  "type": "object",
-                  "properties": {
-                    "tenantId": {
-                      "description": "The tenant ID of the message.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/TenantId"
-                        }
-                      ]
-                    },
-                    "messageKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/paths/~1messages~1correlation/post/responses/200/content/application~1json/schema/properties/messageKey/allOf/0"
-                        }
-                      ],
-                      "description": "The key of the published message."
-                    }
-                  }
+                  "$ref": "#/components/schemas/MessagePublicationResult"
                 }
               }
             }
@@ -7054,51 +5115,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "processDefinitionKey",
-                            "name",
-                            "resourceName",
-                            "version",
-                            "versionTag",
-                            "processDefinitionId",
-                            "tenantId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessDefinitionFilter"
-                      }
-                    ],
-                    "description": "The process definition search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/ProcessDefinitionSearchQuery"
               }
             }
           }
@@ -7143,24 +5160,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "page": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/CursorForwardPagination"
-                      }
-                    ]
-                  },
-                  "filter": {
-                    "description": "The message subscription filters.",
-                    "allOf": [
-                      {
-                        "$ref": "#/paths/~1message-subscriptions~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0"
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/components/schemas/ProcessDefinitionMessageSubscriptionStatisticsQuery"
               }
             }
           }
@@ -7205,40 +5205,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "page": {
-                    "allOf": [
-                      {
-                        "$ref": "#/paths/~1incidents~1statistics~1process-instances-by-error/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
-                      }
-                    ]
-                  },
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "processDefinitionId",
-                            "activeInstancesWithIncidentCount",
-                            "activeInstancesWithoutIncidentCount"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/ProcessDefinitionInstanceStatisticsQuery"
               }
             }
           }
@@ -7351,7 +5318,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1form/get/responses/200/content/application~1json/schema"
+                  "$ref": "#/components/schemas/FormResult"
                 }
               }
             }
@@ -7409,157 +5376,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Process definition element statistics request.",
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "Process definition statistics search filter.",
-                        "allOf": [
-                          {
-                            "description": "Base process instance search filter.",
-                            "type": "object",
-                            "properties": {
-                              "startDate": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/DateTimeFilterProperty"
-                                  }
-                                ],
-                                "description": "The start date."
-                              },
-                              "endDate": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/DateTimeFilterProperty"
-                                  }
-                                ],
-                                "description": "The end date."
-                              },
-                              "state": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/ProcessInstanceStateFilterProperty"
-                                  }
-                                ],
-                                "description": "The process instance state."
-                              },
-                              "hasIncident": {
-                                "type": "boolean",
-                                "description": "Whether this process instance has a related incident or not."
-                              },
-                              "tenantId": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The tenant id."
-                              },
-                              "variables": {
-                                "description": "The process instance variables.",
-                                "type": "array",
-                                "items": {
-                                  "$ref": "#/components/schemas/VariableValueFilterProperty"
-                                }
-                              },
-                              "processInstanceKey": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
-                                  }
-                                ],
-                                "description": "The key of this process instance."
-                              },
-                              "parentProcessInstanceKey": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
-                                  }
-                                ],
-                                "description": "The parent process instance key."
-                              },
-                              "parentElementInstanceKey": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/elementInstanceKey/allOf/0"
-                                  }
-                                ],
-                                "description": "The parent element instance key."
-                              },
-                              "batchOperationId": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The batch operation id."
-                              },
-                              "errorMessage": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The error message related to the process."
-                              },
-                              "hasRetriesLeft": {
-                                "description": "Whether the process has failed jobs with retries left.",
-                                "type": "boolean"
-                              },
-                              "elementInstanceState": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1element-instances~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/state/allOf/0"
-                                  }
-                                ],
-                                "description": "The state of the element instances associated with the process instance."
-                              },
-                              "elementId": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The element id associated with the process instance."
-                              },
-                              "hasElementInstanceIncident": {
-                                "description": "Whether the element instance has an incident or not.",
-                                "type": "boolean"
-                              },
-                              "incidentErrorHashCode": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/retries/allOf/0"
-                                  }
-                                ],
-                                "description": "The incident error hash code, associated with this process."
-                              },
-                              "tags": {
-                                "$ref": "#/components/schemas/TagSet"
-                              }
-                            }
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "$or": {
-                                "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"state\": \"ACTIVE\",\n  \"tenantId\": 123,\n  \"$or\": [\n    { \"processDefinitionId\": \"process_v1\" },\n    { \"processDefinitionId\": \"process_v2\", \"hasIncident\": true }\n  ]\n}\n```\nThis matches process instances that:\n\n<ul style=\"padding-left: 20px; margin-left: 20px;\">\n  <li style=\"list-style-type: disc;\">are in <em>ACTIVE</em> state</li>\n  <li style=\"list-style-type: disc;\">have tenant id equal to <em>123</em></li>\n  <li style=\"list-style-type: disc;\">and match either:\n    <ul style=\"padding-left: 20px; margin-left: 20px;\">\n      <li style=\"list-style-type: circle;\"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>\n      <li style=\"list-style-type: circle;\"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
-                                "type": "array",
-                                "items": {
-                                  "$ref": "#/components/schemas/BaseProcessInstanceFilterFields"
-                                }
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    ],
-                    "description": "The process definition statistics search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/ProcessDefinitionElementStatisticsQuery"
               }
             }
           }
@@ -7670,55 +5487,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "page": {
-                    "description": "Pagination criteria.",
-                    "allOf": [
-                      {
-                        "$ref": "#/paths/~1incidents~1statistics~1process-instances-by-error/post/requestBody/content/application~1json/schema/properties/page/allOf/0"
-                      }
-                    ]
-                  },
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "processDefinitionId",
-                            "processDefinitionKey",
-                            "processDefinitionName",
-                            "processDefinitionVersion",
-                            "activeInstancesWithIncidentCount",
-                            "activeInstancesWithoutIncidentCount"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "description": "The process definition instance version statistics search filters.",
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessDefinitionInstanceVersionStatisticsFilter"
-                      }
-                    ]
-                  }
-                },
-                "required": [
-                  "filter"
-                ]
+                "$ref": "#/components/schemas/ProcessDefinitionInstanceVersionStatisticsQuery"
               }
             }
           }
@@ -7763,162 +5532,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "x-polymorphic-schema": true,
-                "description": "Instructions for creating a process instance. The process definition can be specified\neither by id or by key.\n",
-                "oneOf": [
-                  {
-                    "type": "object",
-                    "title": "Process creation by id",
-                    "required": [
-                      "processDefinitionId"
-                    ],
-                    "additionalProperties": false,
-                    "properties": {
-                      "processDefinitionId": {
-                        "description": "The BPMN process id of the process definition to start an instance of.\n",
-                        "allOf": [
-                          {
-                            "$ref": "#/components/schemas/ProcessDefinitionId"
-                          }
-                        ]
-                      },
-                      "processDefinitionVersion": {
-                        "description": "The version of the process. By default, the latest version of the process is used.\n",
-                        "type": "integer",
-                        "format": "int32",
-                        "default": -1
-                      },
-                      "variables": {
-                        "description": "JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n",
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      "tenantId": {
-                        "description": "The tenant id of the process definition.",
-                        "allOf": [
-                          {
-                            "$ref": "#/components/schemas/TenantId"
-                          }
-                        ]
-                      },
-                      "operationReference": {
-                        "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                      },
-                      "startInstructions": {
-                        "description": "List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n",
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/ProcessInstanceCreationStartInstruction"
-                        }
-                      },
-                      "runtimeInstructions": {
-                        "description": "Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n",
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/ProcessInstanceCreationRuntimeInstruction"
-                        }
-                      },
-                      "awaitCompletion": {
-                        "description": "Wait for the process instance to complete. If the process instance completion does\nnot occur within the requestTimeout, the request will be closed. This can lead to a 504\nresponse status. Disabled by default.\n",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "fetchVariables": {
-                        "description": "List of variables by name to be included in the response when awaitCompletion is set to true.\nIf empty, all visible variables in the root scope will be returned.\n",
-                        "type": "array",
-                        "example": [],
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "requestTimeout": {
-                        "description": "Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n",
-                        "type": "integer",
-                        "format": "int64",
-                        "default": 0
-                      },
-                      "tags": {
-                        "$ref": "#/components/schemas/TagSet"
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "title": "Process creation by key",
-                    "required": [
-                      "processDefinitionKey"
-                    ],
-                    "additionalProperties": false,
-                    "properties": {
-                      "processDefinitionKey": {
-                        "allOf": [
-                          {
-                            "$ref": "#/components/schemas/ProcessDefinitionKey"
-                          }
-                        ],
-                        "description": "The unique key identifying the process definition, for example, returned for a process in the\ndeploy resources endpoint.\n"
-                      },
-                      "processDefinitionVersion": {
-                        "description": "As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.\nIt's here for backwards-compatibility only as previous releases accepted it in request bodies.\n",
-                        "type": "integer",
-                        "format": "int32",
-                        "default": -1
-                      },
-                      "variables": {
-                        "description": "JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n",
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      "startInstructions": {
-                        "description": "List of start instructions. By default, the process instance will start at\nthe start event. If provided, the process instance will apply start instructions\nafter it has been created.\n",
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/ProcessInstanceCreationStartInstruction"
-                        }
-                      },
-                      "runtimeInstructions": {
-                        "description": "Runtime instructions (alpha). List of instructions that affect the runtime behavior of\nthe process instance. Refer to specific instruction types for more details.\n\nThis parameter is an alpha feature and may be subject to change\nin future releases.\n",
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/components/schemas/ProcessInstanceCreationRuntimeInstruction"
-                        }
-                      },
-                      "tenantId": {
-                        "description": "The tenant id of the process definition.",
-                        "allOf": [
-                          {
-                            "$ref": "#/components/schemas/TenantId"
-                          }
-                        ]
-                      },
-                      "operationReference": {
-                        "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                      },
-                      "awaitCompletion": {
-                        "description": "Wait for the process instance to complete. If the process instance completion does\nnot occur within the requestTimeout, the request will be closed. This can lead to a 504\nresponse status. Disabled by default.\n",
-                        "type": "boolean",
-                        "default": false
-                      },
-                      "requestTimeout": {
-                        "description": "Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n",
-                        "type": "integer",
-                        "format": "int64",
-                        "default": 0
-                      },
-                      "fetchVariables": {
-                        "description": "List of variables by name to be included in the response when awaitCompletion is set to true.\nIf empty, all visible variables in the root scope will be returned.\n",
-                        "type": "array",
-                        "example": [],
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "tags": {
-                        "$ref": "#/components/schemas/TagSet"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceCreationInstruction"
               },
               "examples": {
                 "By process definition key": {
@@ -7987,25 +5601,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "The process instance filter that defines which process instances should be canceled.",
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessInstanceFilter"
-                      }
-                    ],
-                    "description": "The process instance filter."
-                  },
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                },
-                "required": [
-                  "filter"
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceCancellationBatchOperationRequest"
               }
             }
           }
@@ -8057,25 +5653,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "The process instance filter that defines which process instances should be deleted.",
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessInstanceFilter"
-                      }
-                    ],
-                    "description": "The process instance filter."
-                  },
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                },
-                "required": [
-                  "filter"
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceDeletionBatchOperationRequest"
               }
             }
           }
@@ -8127,25 +5705,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "The process instance filter that defines which process instances should have their incidents resolved.",
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessInstanceFilter"
-                      }
-                    ],
-                    "description": "The process instance filter."
-                  },
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                },
-                "required": [
-                  "filter"
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceIncidentResolutionBatchOperationRequest"
               }
             }
           }
@@ -8197,33 +5757,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessInstanceFilter"
-                      }
-                    ],
-                    "description": "The process instance filter."
-                  },
-                  "migrationPlan": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessInstanceMigrationBatchOperationPlan"
-                      }
-                    ],
-                    "description": "The migration plan."
-                  },
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                },
-                "required": [
-                  "filter",
-                  "migrationPlan"
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceMigrationBatchOperationRequest"
               }
             }
           }
@@ -8275,33 +5809,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "type": "object",
-                "description": "The process instance filter to define on which process instances tokens should be moved,\nand new element instances should be activated or terminated.\n",
-                "properties": {
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessInstanceFilter"
-                      }
-                    ],
-                    "description": "The process instance filter."
-                  },
-                  "moveInstructions": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ProcessInstanceModificationMoveBatchOperationInstruction"
-                    },
-                    "description": "Instructions for moving tokens between elements."
-                  },
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                },
-                "required": [
-                  "filter",
-                  "moveInstructions"
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceModificationBatchOperationRequest"
               }
             }
           }
@@ -8353,123 +5861,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Process instance search request.",
-                "type": "object",
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "processInstanceKey",
-                            "processDefinitionId",
-                            "processDefinitionName",
-                            "processDefinitionVersion",
-                            "processDefinitionVersionTag",
-                            "processDefinitionKey",
-                            "parentProcessInstanceKey",
-                            "parentElementInstanceKey",
-                            "startDate",
-                            "endDate",
-                            "state",
-                            "hasIncident",
-                            "tenantId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "Process instance search filter.",
-                        "allOf": [
-                          {
-                            "description": "Process instance search filter.",
-                            "type": "object",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/BaseProcessInstanceFilterFields"
-                              }
-                            ],
-                            "properties": {
-                              "processDefinitionId": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The process definition id."
-                              },
-                              "processDefinitionName": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The process definition name."
-                              },
-                              "processDefinitionVersion": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/retries/allOf/0"
-                                  }
-                                ],
-                                "description": "The process definition version."
-                              },
-                              "processDefinitionVersionTag": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/components/schemas/StringFilterProperty"
-                                  }
-                                ],
-                                "description": "The process definition version tag."
-                              },
-                              "processDefinitionKey": {
-                                "allOf": [
-                                  {
-                                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processDefinitionKey/allOf/0"
-                                  }
-                                ],
-                                "description": "The process definition key."
-                              }
-                            }
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "$or": {
-                                "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"state\": \"ACTIVE\",\n  \"tenantId\": 123,\n  \"$or\": [\n    { \"processDefinitionId\": \"process_v1\" },\n    { \"processDefinitionId\": \"process_v2\", \"hasIncident\": true }\n  ]\n}\n```\nThis matches process instances that:\n\n<ul style=\"padding-left: 20px; margin-left: 20px;\">\n  <li style=\"list-style-type: disc;\">are in <em>ACTIVE</em> state</li>\n  <li style=\"list-style-type: disc;\">have tenant id equal to <em>123</em></li>\n  <li style=\"list-style-type: disc;\">and match either:\n    <ul style=\"padding-left: 20px; margin-left: 20px;\">\n      <li style=\"list-style-type: circle;\"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>\n      <li style=\"list-style-type: circle;\"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
-                                "type": "array",
-                                "items": {
-                                  "$ref": "#/paths/~1process-instances~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/allOf/0"
-                                }
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    ],
-                    "description": "The process instance search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/ProcessInstanceSearchQuery"
               }
             }
           }
@@ -8480,25 +5872,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Process instance search response.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "required": [
-                    "items"
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching process instances.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1process-instances~1{processInstanceKey}/get/responses/200/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProcessInstanceSearchQueryResult"
                 }
               }
             }
@@ -8544,92 +5918,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Process instance search response item.",
-                  "type": "object",
-                  "required": [
-                    "processDefinitionId",
-                    "processDefinitionName",
-                    "processDefinitionVersion",
-                    "startDate",
-                    "state",
-                    "hasIncident",
-                    "tenantId",
-                    "processInstanceKey",
-                    "processDefinitionKey"
-                  ],
-                  "properties": {
-                    "processDefinitionId": {
-                      "$ref": "#/components/schemas/ProcessDefinitionId"
-                    },
-                    "processDefinitionName": {
-                      "type": "string",
-                      "description": "The process definition name."
-                    },
-                    "processDefinitionVersion": {
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "processDefinitionVersionTag": {
-                      "type": "string",
-                      "description": "The process definition version tag."
-                    },
-                    "startDate": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "endDate": {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    "state": {
-                      "$ref": "#/components/schemas/ProcessInstanceStateEnum"
-                    },
-                    "hasIncident": {
-                      "type": "boolean",
-                      "description": "Whether this process instance has a related incident or not."
-                    },
-                    "tenantId": {
-                      "$ref": "#/components/schemas/TenantId"
-                    },
-                    "processInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      ],
-                      "description": "The key of this process instance."
-                    },
-                    "processDefinitionKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionKey"
-                        }
-                      ],
-                      "description": "The process definition key."
-                    },
-                    "parentProcessInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      ],
-                      "description": "The parent process instance key."
-                    },
-                    "parentElementInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementInstanceKey"
-                        }
-                      ],
-                      "description": "The parent element instance key."
-                    },
-                    "rootProcessInstanceKey": {
-                      "$ref": "#/components/schemas/ProcessInstanceKey"
-                    },
-                    "tags": {
-                      "$ref": "#/paths/~1process-instances/post/responses/200/content/application~1json/schema/properties/tags"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProcessInstanceResult"
                 }
               }
             }
@@ -8743,14 +6032,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "nullable": true,
-                "additionalProperties": false,
-                "properties": {
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                }
+                "$ref": "#/components/schemas/DeleteProcessInstanceRequest"
               }
             }
           }
@@ -8806,14 +6088,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "nullable": true,
-                "additionalProperties": false,
-                "properties": {
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                }
+                "$ref": "#/components/schemas/DeleteProcessInstanceRequest"
               }
             }
           }
@@ -8949,7 +6224,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1incidents~1search/post/responses/200/content/application~1json/schema"
+                  "$ref": "#/components/schemas/IncidentSearchQueryResult"
                 }
               }
             }
@@ -9004,33 +6279,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "description": "The migration instructions describe how to migrate a process instance from one process definition to another.\n",
-                "properties": {
-                  "targetProcessDefinitionKey": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/ProcessDefinitionKey"
-                      }
-                    ],
-                    "description": "The key of process definition to migrate the process instance to."
-                  },
-                  "mappingInstructions": {
-                    "description": "Element mappings from the source process instance to the target process instance.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/MigrateProcessInstanceMappingInstruction"
-                    }
-                  },
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  }
-                },
-                "required": [
-                  "targetProcessDefinitionKey",
-                  "mappingInstructions"
-                ]
+                "$ref": "#/components/schemas/ProcessInstanceMigrationInstruction"
               }
             }
           }
@@ -9096,34 +6345,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  },
-                  "activateInstructions": {
-                    "description": "Instructions describing which elements to activate in which scopes and which variables to create or update.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ProcessInstanceModificationActivateInstruction"
-                    }
-                  },
-                  "moveInstructions": {
-                    "description": "Instructions describing which elements to move from one scope to another.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ProcessInstanceModificationMoveInstruction"
-                    }
-                  },
-                  "terminateInstructions": {
-                    "description": "Instructions describing which elements to terminate.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/ProcessInstanceModificationTerminateInstruction"
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/ProcessInstanceModificationInstruction"
               }
             }
           }
@@ -9180,62 +6402,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Process instance sequence flows query response.",
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "description": "The sequence flows.",
-                      "type": "array",
-                      "items": {
-                        "description": "Process instance sequence flow result.",
-                        "type": "object",
-                        "properties": {
-                          "sequenceFlowId": {
-                            "type": "string",
-                            "description": "The sequence flow id."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The key of this process instance."
-                          },
-                          "rootProcessInstanceKey": {
-                            "$ref": "#/components/schemas/ProcessInstanceKey"
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The process definition key."
-                          },
-                          "processDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionId"
-                              }
-                            ],
-                            "description": "The process definition id."
-                          },
-                          "elementId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementId"
-                              }
-                            ],
-                            "description": "The element id for this sequence flow, as provided in the BPMN process."
-                          },
-                          "tenantId": {
-                            "$ref": "#/components/schemas/TenantId"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/ProcessInstanceSequenceFlowsQueryResult"
                 }
               }
             }
@@ -9421,19 +6588,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "nullable": true,
-                "additionalProperties": false,
-                "properties": {
-                  "operationReference": {
-                    "$ref": "#/paths/~1jobs~1{jobKey}/patch/requestBody/content/application~1json/schema/properties/operationReference"
-                  },
-                  "deleteHistory": {
-                    "description": "Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n",
-                    "type": "boolean",
-                    "default": false
-                  }
-                }
+                "$ref": "#/components/schemas/DeleteResourceRequest"
               }
             }
           }
@@ -9772,7 +6927,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
+                    "$ref": "#/components/schemas/SearchQueryRequest"
                   }
                 ],
                 "type": "object",
@@ -9781,22 +6936,7 @@
                     "description": "Sort field criteria.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "clientId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
+                      "$ref": "#/components/schemas/TenantClientSearchQuerySortRequest"
                     }
                   }
                 }
@@ -9989,36 +7129,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "type": "object",
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "groupId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/RoleGroupSearchQueryRequest"
               }
             }
           }
@@ -10400,7 +7511,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
+                    "$ref": "#/components/schemas/SearchQueryRequest"
                   }
                 ],
                 "type": "object",
@@ -10409,22 +7520,7 @@
                     "description": "Sort field criteria.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "username"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
+                      "$ref": "#/components/schemas/TenantUserSearchQuerySortRequest"
                     }
                   }
                 }
@@ -10889,48 +7985,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Tenant search request",
-                "additionalProperties": false,
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "key",
-                            "name",
-                            "tenantId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/TenantFilter"
-                      }
-                    ],
-                    "description": "The tenant search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/TenantSearchQueryRequest"
               }
             }
           }
@@ -11163,37 +8218,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "type": "object",
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "clientId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/TenantClientSearchQueryRequest"
               }
             }
           }
@@ -11351,38 +8376,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "groupId"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/TenantGroupSearchQueryRequest"
               }
             }
           }
@@ -11856,37 +8850,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "additionalProperties": false,
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "type": "object",
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "username"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  }
-                }
+                "$ref": "#/components/schemas/TenantUserSearchQueryRequest"
               }
             }
           }
@@ -12119,47 +9083,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "type": "object",
-                "additionalProperties": false,
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "username",
-                            "name",
-                            "email"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/UserFilter"
-                      }
-                    ],
-                    "description": "The user search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/UserSearchQueryRequest"
               }
             }
           }
@@ -12365,205 +9289,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "User task search query request.",
-                "additionalProperties": false,
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "creationDate",
-                            "completionDate",
-                            "followUpDate",
-                            "dueDate",
-                            "priority",
-                            "name"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "description": "User task filter request.",
-                        "type": "object",
-                        "properties": {
-                          "state": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/UserTaskStateFilterProperty"
-                              }
-                            ],
-                            "description": "The user task state."
-                          },
-                          "assignee": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The assignee of the user task."
-                          },
-                          "priority": {
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/retries/allOf/0"
-                              }
-                            ],
-                            "description": "The priority of the user task."
-                          },
-                          "elementId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementId"
-                              }
-                            ],
-                            "description": "The element ID of the user task."
-                          },
-                          "name": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.\n"
-                          },
-                          "candidateGroup": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The candidate group for this user task."
-                          },
-                          "candidateUser": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "The candidate user for this user task."
-                          },
-                          "tenantId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/StringFilterProperty"
-                              }
-                            ],
-                            "description": "Tenant ID of this user task."
-                          },
-                          "processDefinitionId": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionId"
-                              }
-                            ],
-                            "description": "The ID of the process definition."
-                          },
-                          "creationDate": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ],
-                            "description": "The user task creation date."
-                          },
-                          "completionDate": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ],
-                            "description": "The user task completion date."
-                          },
-                          "followUpDate": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ],
-                            "description": "The user task follow-up date."
-                          },
-                          "dueDate": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/DateTimeFilterProperty"
-                              }
-                            ],
-                            "description": "The user task due date."
-                          },
-                          "processInstanceVariables": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/VariableValueFilterProperty"
-                            }
-                          },
-                          "localVariables": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/components/schemas/VariableValueFilterProperty"
-                            }
-                          },
-                          "userTaskKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/UserTaskKey"
-                              }
-                            ],
-                            "description": "The key for this user task."
-                          },
-                          "processDefinitionKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessDefinitionKey"
-                              }
-                            ],
-                            "description": "The key of the process definition."
-                          },
-                          "processInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ProcessInstanceKey"
-                              }
-                            ],
-                            "description": "The key of the process instance."
-                          },
-                          "elementInstanceKey": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ElementInstanceKey"
-                              }
-                            ],
-                            "description": "The key of the element instance."
-                          },
-                          "tags": {
-                            "$ref": "#/paths/~1process-instances/post/responses/200/content/application~1json/schema/properties/tags"
-                          }
-                        }
-                      }
-                    ],
-                    "description": "The user task search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/UserTaskSearchQuery"
               }
             }
           }
@@ -12574,22 +9300,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "User task search query response.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching user tasks.",
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/paths/~1user-tasks~1{userTaskKey}/get/responses/200/content/application~1json/schema"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/UserTaskSearchQueryResult"
                 }
               }
             }
@@ -12635,146 +9346,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "The name for this user task."
-                    },
-                    "state": {
-                      "$ref": "#/components/schemas/UserTaskStateEnum"
-                    },
-                    "assignee": {
-                      "description": "The assignee of the user task.",
-                      "type": "string"
-                    },
-                    "elementId": {
-                      "description": "The element ID of the user task.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementId"
-                        }
-                      ]
-                    },
-                    "candidateGroups": {
-                      "type": "array",
-                      "description": "The candidate groups for this user task.",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "candidateUsers": {
-                      "type": "array",
-                      "description": "The candidate users for this user task.",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "processDefinitionId": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionId"
-                        }
-                      ],
-                      "description": "The ID of the process definition."
-                    },
-                    "creationDate": {
-                      "type": "string",
-                      "description": "The creation date of a user task.",
-                      "format": "date-time"
-                    },
-                    "completionDate": {
-                      "type": "string",
-                      "description": "The completion date of a user task.",
-                      "format": "date-time"
-                    },
-                    "followUpDate": {
-                      "type": "string",
-                      "description": "The follow date of a user task.",
-                      "format": "date-time"
-                    },
-                    "dueDate": {
-                      "type": "string",
-                      "description": "The due date of a user task.",
-                      "format": "date-time"
-                    },
-                    "tenantId": {
-                      "$ref": "#/components/schemas/TenantId"
-                    },
-                    "externalFormReference": {
-                      "type": "string",
-                      "description": "The external form reference."
-                    },
-                    "processDefinitionVersion": {
-                      "type": "integer",
-                      "description": "The version of the process definition.",
-                      "format": "int32"
-                    },
-                    "customHeaders": {
-                      "type": "object",
-                      "description": "Custom headers for the user task.",
-                      "additionalProperties": {
-                        "type": "string"
-                      }
-                    },
-                    "priority": {
-                      "type": "integer",
-                      "description": "The priority of a user task. The higher the value the higher the priority.",
-                      "minimum": 0,
-                      "maximum": 100,
-                      "default": 50
-                    },
-                    "userTaskKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/UserTaskKey"
-                        }
-                      ],
-                      "description": "The key of the user task."
-                    },
-                    "elementInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ElementInstanceKey"
-                        }
-                      ],
-                      "description": "The key of the element instance."
-                    },
-                    "processName": {
-                      "type": "string",
-                      "description": "The name of the process definition."
-                    },
-                    "processDefinitionKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessDefinitionKey"
-                        }
-                      ],
-                      "description": "The key of the process definition."
-                    },
-                    "processInstanceKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      ],
-                      "description": "The key of the process instance."
-                    },
-                    "rootProcessInstanceKey": {
-                      "$ref": "#/components/schemas/ProcessInstanceKey"
-                    },
-                    "formKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
-                        }
-                      ],
-                      "description": "The key of the form."
-                    },
-                    "tags": {
-                      "$ref": "#/paths/~1process-instances/post/responses/200/content/application~1json/schema/properties/tags"
-                    }
-                  }
+                  "$ref": "#/components/schemas/UserTaskResult"
                 }
               }
             }
@@ -13015,26 +9587,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "description": "User task search query request.",
-                "additionalProperties": false,
-                "type": "object",
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/paths/~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/sort/items"
-                    }
-                  },
-                  "filter": {
-                    "$ref": "#/components/schemas/UserTaskAuditLogFilter"
-                  }
-                }
+                "$ref": "#/components/schemas/UserTaskAuditLogSearchQueryRequest"
               }
             }
           }
@@ -13045,7 +9598,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1audit-logs~1search/post/responses/200/content/application~1json/schema"
+                  "$ref": "#/components/schemas/AuditLogSearchQueryResult"
                 }
               }
             }
@@ -13151,46 +9704,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "x-semantic-provider": [
-                    "formId",
-                    "formKey"
-                  ],
-                  "properties": {
-                    "tenantId": {
-                      "description": "The tenant ID of the form.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/TenantId"
-                        }
-                      ]
-                    },
-                    "formId": {
-                      "description": "The user-provided identifier of the form.",
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/FormId"
-                        }
-                      ]
-                    },
-                    "schema": {
-                      "description": "The form content.",
-                      "type": "object"
-                    },
-                    "version": {
-                      "description": "The version of the the deployed form.",
-                      "type": "integer",
-                      "format": "int64"
-                    },
-                    "formKey": {
-                      "allOf": [
-                        {
-                          "$ref": "#/paths/~1resources~1{resourceKey}/get/parameters/0/schema/oneOf/2"
-                        }
-                      ],
-                      "description": "The assigned key, which acts as a unique identifier for this form."
-                    }
-                  }
+                  "$ref": "#/components/schemas/FormResult"
                 }
               }
             }
@@ -13259,7 +9773,7 @@
               "schema": {
                 "allOf": [
                   {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
+                    "$ref": "#/components/schemas/SearchQueryRequest"
                   }
                 ],
                 "description": "User task search query request.",
@@ -13270,44 +9784,13 @@
                     "description": "Sort field criteria.",
                     "type": "array",
                     "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "value",
-                            "name",
-                            "tenantId",
-                            "variableKey",
-                            "scopeKey",
-                            "processInstanceKey"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
+                      "$ref": "#/components/schemas/VariableSearchQuerySortRequest"
                     }
                   },
                   "filter": {
                     "allOf": [
                       {
-                        "description": "The user task variable search filters.",
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/properties/actorId/allOf/0"
-                              }
-                            ],
-                            "description": "Name of the variable."
-                          }
-                        }
+                        "$ref": "#/components/schemas/UserTaskVariableFilter"
                       }
                     ],
                     "description": "The user task variable search filters."
@@ -13323,7 +9806,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/paths/~1variables~1search/post/responses/200/content/application~1json/schema"
+                  "$ref": "#/components/schemas/VariableSearchQueryResult"
                 }
               }
             }
@@ -13362,106 +9845,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "Variable search query request.",
-                "additionalProperties": false,
-                "type": "object",
-                "allOf": [
-                  {
-                    "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/allOf/0"
-                  }
-                ],
-                "properties": {
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "field": {
-                          "description": "The field to sort by.",
-                          "type": "string",
-                          "enum": [
-                            "value",
-                            "name",
-                            "tenantId",
-                            "variableKey",
-                            "scopeKey",
-                            "processInstanceKey"
-                          ]
-                        },
-                        "order": {
-                          "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/sort/items/properties/order"
-                        }
-                      },
-                      "required": [
-                        "field"
-                      ]
-                    }
-                  },
-                  "filter": {
-                    "description": "The variable search filters.",
-                    "allOf": [
-                      {
-                        "description": "Variable filter request.",
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "description": "Name of the variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/properties/actorId/allOf/0"
-                              }
-                            ]
-                          },
-                          "value": {
-                            "description": "The value of the variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1audit-logs~1search/post/requestBody/content/application~1json/schema/properties/filter/properties/actorId/allOf/0"
-                              }
-                            ]
-                          },
-                          "tenantId": {
-                            "description": "Tenant ID of this variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/TenantId"
-                              }
-                            ]
-                          },
-                          "isTruncated": {
-                            "description": "Whether the value is truncated or not.",
-                            "type": "boolean"
-                          },
-                          "variableKey": {
-                            "description": "The key for this variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/VariableKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "scopeKey": {
-                            "description": "The key of the scope of this variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/ScopeKeyFilterProperty"
-                              }
-                            ]
-                          },
-                          "processInstanceKey": {
-                            "description": "The key of the process instance of this variable.",
-                            "allOf": [
-                              {
-                                "$ref": "#/paths/~1jobs~1search/post/requestBody/content/application~1json/schema/properties/filter/allOf/0/properties/processInstanceKey/allOf/0"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
+                "$ref": "#/components/schemas/VariableSearchQuery"
               }
             }
           }
@@ -13472,38 +9856,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Variable search query response.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/SearchQueryResponse"
-                    }
-                  ],
-                  "properties": {
-                    "items": {
-                      "description": "The matching variables.",
-                      "type": "array",
-                      "items": {
-                        "description": "Variable search response item.",
-                        "type": "object",
-                        "allOf": [
-                          {
-                            "$ref": "#/paths/~1variables~1{variableKey}/get/responses/200/content/application~1json/schema/allOf/0"
-                          }
-                        ],
-                        "properties": {
-                          "value": {
-                            "description": "Value of this variable. Can be truncated.",
-                            "type": "string"
-                          },
-                          "isTruncated": {
-                            "description": "Whether the value is truncated or not.",
-                            "type": "boolean"
-                          }
-                        }
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/VariableSearchQueryResult"
                 }
               }
             }
@@ -13549,61 +9902,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "description": "Variable search response item.",
-                  "type": "object",
-                  "allOf": [
-                    {
-                      "description": "Variable response item.",
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "description": "Name of this variable.",
-                          "type": "string"
-                        },
-                        "tenantId": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/TenantId"
-                            }
-                          ],
-                          "description": "Tenant ID of this variable."
-                        },
-                        "variableKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/VariableKey"
-                            }
-                          ],
-                          "description": "The key for this variable."
-                        },
-                        "scopeKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/ScopeKey"
-                            }
-                          ],
-                          "description": "The key of the scope of this variable."
-                        },
-                        "processInstanceKey": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/ProcessInstanceKey"
-                            }
-                          ],
-                          "description": "The key of the process instance of this variable."
-                        },
-                        "rootProcessInstanceKey": {
-                          "$ref": "#/components/schemas/ProcessInstanceKey"
-                        }
-                      }
-                    }
-                  ],
-                  "properties": {
-                    "value": {
-                      "description": "Full value of this variable.",
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/VariableResult"
                 }
               }
             }

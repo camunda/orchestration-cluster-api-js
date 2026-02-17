@@ -7732,128 +7732,9 @@ export type SearchAuditLogsError = SearchAuditLogsErrors[keyof SearchAuditLogsEr
 
 export type SearchAuditLogsResponses = {
     /**
-     * Audit log search response.
+     * The audit logs search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching audit logs.
-         */
-        items?: Array<{
-            /**
-             * The unique key of the audit log entry.
-             */
-            auditLogKey?: AuditLogKey;
-            entityKey?: AuditLogEntityKey;
-            entityType?: AuditLogEntityTypeEnum;
-            operationType?: AuditLogOperationTypeEnum;
-            /**
-             * Key of the batch operation.
-             */
-            batchOperationKey?: BatchOperationKey;
-            /**
-             * The type of batch operation performed, if this is part of a batch.
-             */
-            batchOperationType?: BatchOperationTypeEnum;
-            /**
-             * The timestamp when the operation occurred.
-             */
-            timestamp?: string;
-            /**
-             * The ID of the actor who performed the operation.
-             */
-            actorId?: string;
-            actorType?: AuditLogActorTypeEnum;
-            /**
-             * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
-             */
-            agentElementId?: string;
-            /**
-             * The tenant ID of the audit log.
-             */
-            tenantId?: TenantId;
-            result?: AuditLogResultEnum;
-            /**
-             * Additional notes about the operation.
-             */
-            annotation?: string;
-            category?: AuditLogCategoryEnum;
-            /**
-             * The process definition ID.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the element instance.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The key of the job.
-             */
-            jobKey?: JobKey;
-            /**
-             * The key of the user task.
-             */
-            userTaskKey?: UserTaskKey;
-            /**
-             * The decision requirements ID.
-             */
-            decisionRequirementsId?: string;
-            /**
-             * The assigned key of the decision requirements.
-             */
-            decisionRequirementsKey?: DecisionRequirementsKey;
-            /**
-             * The decision definition ID.
-             */
-            decisionDefinitionId?: DecisionDefinitionId;
-            /**
-             * The key of the decision definition.
-             */
-            decisionDefinitionKey?: DecisionDefinitionKey;
-            /**
-             * The key of the decision evaluation.
-             */
-            decisionEvaluationKey?: DecisionEvaluationKey;
-            /**
-             * The key of the deployment.
-             */
-            deploymentKey?: DeploymentKey;
-            /**
-             * The key of the form.
-             */
-            formKey?: FormKey;
-            /**
-             * The system-assigned key for this resource.
-             */
-            resourceKey?: ResourceKey;
-            /**
-             * The key of the related entity. The content depends on the operation type and entity type.
-             * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
-             *
-             */
-            relatedEntityKey?: AuditLogEntityKey;
-            /**
-             * The type of the related entity. The content depends on the operation type and entity type.
-             * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
-             *
-             */
-            relatedEntityType?: AuditLogEntityTypeEnum;
-            /**
-             * Additional description of the entity affected by the operation.
-             * For example, for variable operations, this will contain the variable name.
-             *
-             */
-            entityDescription?: string;
-        }>;
-    };
+    200: AuditLogSearchQueryResult;
 };
 
 export type SearchAuditLogsResponse = SearchAuditLogsResponses[keyof SearchAuditLogsResponses];
@@ -7893,123 +7774,9 @@ export type GetAuditLogError = GetAuditLogErrors[keyof GetAuditLogErrors];
 
 export type GetAuditLogResponses = {
     /**
-     * Audit log item.
+     * The audit log entry is successfully returned.
      */
-    200: {
-        /**
-         * The unique key of the audit log entry.
-         */
-        auditLogKey?: AuditLogKey;
-        entityKey?: AuditLogEntityKey;
-        entityType?: AuditLogEntityTypeEnum;
-        operationType?: AuditLogOperationTypeEnum;
-        /**
-         * Key of the batch operation.
-         */
-        batchOperationKey?: BatchOperationKey;
-        /**
-         * The type of batch operation performed, if this is part of a batch.
-         */
-        batchOperationType?: BatchOperationTypeEnum;
-        /**
-         * The timestamp when the operation occurred.
-         */
-        timestamp?: string;
-        /**
-         * The ID of the actor who performed the operation.
-         */
-        actorId?: string;
-        actorType?: AuditLogActorTypeEnum;
-        /**
-         * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
-         */
-        agentElementId?: string;
-        /**
-         * The tenant ID of the audit log.
-         */
-        tenantId?: TenantId;
-        result?: AuditLogResultEnum;
-        /**
-         * Additional notes about the operation.
-         */
-        annotation?: string;
-        category?: AuditLogCategoryEnum;
-        /**
-         * The process definition ID.
-         */
-        processDefinitionId?: ProcessDefinitionId;
-        /**
-         * The key of the process definition.
-         */
-        processDefinitionKey?: ProcessDefinitionKey;
-        /**
-         * The key of the process instance.
-         */
-        processInstanceKey?: ProcessInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-        /**
-         * The key of the element instance.
-         */
-        elementInstanceKey?: ElementInstanceKey;
-        /**
-         * The key of the job.
-         */
-        jobKey?: JobKey;
-        /**
-         * The key of the user task.
-         */
-        userTaskKey?: UserTaskKey;
-        /**
-         * The decision requirements ID.
-         */
-        decisionRequirementsId?: string;
-        /**
-         * The assigned key of the decision requirements.
-         */
-        decisionRequirementsKey?: DecisionRequirementsKey;
-        /**
-         * The decision definition ID.
-         */
-        decisionDefinitionId?: DecisionDefinitionId;
-        /**
-         * The key of the decision definition.
-         */
-        decisionDefinitionKey?: DecisionDefinitionKey;
-        /**
-         * The key of the decision evaluation.
-         */
-        decisionEvaluationKey?: DecisionEvaluationKey;
-        /**
-         * The key of the deployment.
-         */
-        deploymentKey?: DeploymentKey;
-        /**
-         * The key of the form.
-         */
-        formKey?: FormKey;
-        /**
-         * The system-assigned key for this resource.
-         */
-        resourceKey?: ResourceKey;
-        /**
-         * The key of the related entity. The content depends on the operation type and entity type.
-         * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
-         *
-         */
-        relatedEntityKey?: AuditLogEntityKey;
-        /**
-         * The type of the related entity. The content depends on the operation type and entity type.
-         * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
-         *
-         */
-        relatedEntityType?: AuditLogEntityTypeEnum;
-        /**
-         * Additional description of the entity affected by the operation.
-         * For example, for variable operations, this will contain the variable name.
-         *
-         */
-        entityDescription?: string;
-    };
+    200: AuditLogResult;
 };
 
 export type GetAuditLogResponse = GetAuditLogResponses[keyof GetAuditLogResponses];
@@ -8259,40 +8026,7 @@ export type UpdateAuthorizationResponses = {
 export type UpdateAuthorizationResponse = UpdateAuthorizationResponses[keyof UpdateAuthorizationResponses];
 
 export type SearchBatchOperationItemsData = {
-    /**
-     * Batch operation item search request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<BatchOperationItemSearchQuerySortRequest>;
-        /**
-         * Batch operation item filter request.
-         */
-        filter?: {
-            /**
-             * The key (or operate legacy ID) of the batch operation.
-             */
-            batchOperationKey?: BasicStringFilterProperty;
-            /**
-             * The key of the item, e.g. a process instance key.
-             */
-            itemKey?: BasicStringFilterProperty;
-            /**
-             * The process instance key of the processed item.
-             */
-            processInstanceKey?: ProcessInstanceKeyFilterProperty;
-            /**
-             * The state of the batch operation.
-             */
-            state?: BatchOperationItemStateFilterProperty;
-            /**
-             * The type of the batch operation.
-             */
-            operationType?: BatchOperationTypeFilterProperty;
-        };
-    };
+    body?: BatchOperationItemSearchQuery;
     path?: never;
     query?: never;
     url: '/batch-operation-items/search';
@@ -8315,78 +8049,13 @@ export type SearchBatchOperationItemsResponses = {
     /**
      * The batch operation search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching batch operation items.
-         */
-        items?: Array<{
-            operationType?: BatchOperationTypeEnum;
-            /**
-             * The key (or operate legacy ID) of the batch operation.
-             */
-            batchOperationKey?: BatchOperationKey;
-            /**
-             * Key of the item, e.g. a process instance key.
-             */
-            itemKey?: string;
-            /**
-             * the process instance key of the processed item.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * State of the item.
-             */
-            state?: 'ACTIVE' | 'COMPLETED' | 'SKIPPED' | 'CANCELED' | 'FAILED';
-            /**
-             * the date this item was processed.
-             */
-            processedDate?: string;
-            /**
-             * the error message from the engine in case of a failed operation.
-             */
-            errorMessage?: string;
-        }>;
-    };
+    200: BatchOperationItemSearchQueryResult;
 };
 
 export type SearchBatchOperationItemsResponse = SearchBatchOperationItemsResponses[keyof SearchBatchOperationItemsResponses];
 
 export type SearchBatchOperationsData = {
-    /**
-     * Batch operation search request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<BatchOperationSearchQuerySortRequest>;
-        /**
-         * Batch operation filter request.
-         */
-        filter?: {
-            /**
-             * The key (or operate legacy ID) of the batch operation.
-             */
-            batchOperationKey?: BasicStringFilterProperty;
-            /**
-             * The type of the batch operation.
-             */
-            operationType?: BatchOperationTypeFilterProperty;
-            /**
-             * The state of the batch operation.
-             */
-            state?: BatchOperationStateFilterProperty;
-            /**
-             * The type of the actor who performed the operation.
-             */
-            actorType?: AuditLogActorTypeEnum;
-            /**
-             * The ID of the actor who performed the operation.
-             */
-            actorId?: StringFilterProperty;
-        };
-    };
+    body?: BatchOperationSearchQuery;
     path?: never;
     query?: never;
     url: '/batch-operations/search';
@@ -8828,59 +8497,7 @@ export type UpdateGlobalClusterVariableResponses = {
 export type UpdateGlobalClusterVariableResponse = UpdateGlobalClusterVariableResponses[keyof UpdateGlobalClusterVariableResponses];
 
 export type SearchClusterVariablesData = {
-    /**
-     * Cluster variable search query request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<ClusterVariableSearchQuerySortRequest>;
-        /**
-         * Cluster variable filter request.
-         */
-        filter?: {
-            /**
-             * Name of the cluster variable.
-             */
-            name?: StringFilterProperty;
-            /**
-             * The value of the cluster variable.
-             */
-            value?: StringFilterProperty;
-            /**
-             * ClusterVariableScopeEnum property with full advanced search capabilities.
-             */
-            scope?: ClusterVariableScopeEnum | {
-                /**
-                 * Checks for equality with the provided value.
-                 */
-                $eq?: ClusterVariableScopeEnum;
-                /**
-                 * Checks for inequality with the provided value.
-                 */
-                $neq?: ClusterVariableScopeEnum;
-                /**
-                 * Checks if the current property exists.
-                 */
-                $exists?: boolean;
-                /**
-                 * Checks if the property matches any of the provided values.
-                 */
-                $in?: Array<ClusterVariableScopeEnum>;
-                $like?: LikeFilter;
-            };
-            /**
-             * Tenant ID of this variable.
-             */
-            tenantId?: StringFilterProperty;
-            /**
-             * Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.
-             *
-             */
-            isTruncated?: boolean;
-        };
-    };
+    body?: ClusterVariableSearchQueryRequest;
     path?: never;
     query?: {
         /**
@@ -8914,23 +8531,9 @@ export type SearchClusterVariablesError = SearchClusterVariablesErrors[keyof Sea
 
 export type SearchClusterVariablesResponses = {
     /**
-     * Cluster variable search query response.
+     * The cluster variable search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching cluster variables.
-         */
-        items?: Array<ClusterVariableResultBase & {
-            /**
-             * Value of this cluster variable. Can be truncated.
-             */
-            value?: string;
-            /**
-             * Whether the value is truncated or not.
-             */
-            isTruncated?: boolean;
-        }>;
-    };
+    200: ClusterVariableSearchQueryResult;
 };
 
 export type SearchClusterVariablesResponse = SearchClusterVariablesResponses[keyof SearchClusterVariablesResponses];
@@ -9204,62 +8807,7 @@ export type SearchCorrelatedMessageSubscriptionsResponses = {
     /**
      * The correlated message subscriptions search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching correlated message subscriptions.
-         */
-        items?: Array<{
-            /**
-             * The correlation key of the message.
-             */
-            correlationKey: string;
-            /**
-             * The time when the message was correlated.
-             */
-            correlationTime: string;
-            /**
-             * The element ID that received the message.
-             */
-            elementId: string;
-            /**
-             * The element instance key that received the message.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The message key.
-             */
-            messageKey: MessageKey;
-            /**
-             * The name of the message.
-             */
-            messageName: string;
-            /**
-             * The partition ID that correlated the message.
-             */
-            partitionId: number;
-            /**
-             * The process definition ID associated with this correlated message subscription.
-             */
-            processDefinitionId: ProcessDefinitionId;
-            /**
-             * The process definition key associated with this correlated message subscription.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The process instance key associated with this correlated message subscription.
-             */
-            processInstanceKey: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The subscription key that received the message.
-             */
-            subscriptionKey: MessageSubscriptionKey;
-            /**
-             * The tenant ID associated with this correlated message subscription.
-             */
-            tenantId: TenantId;
-        }>;
-    };
+    200: CorrelatedMessageSubscriptionSearchQueryResult;
 };
 
 export type SearchCorrelatedMessageSubscriptionsResponse = SearchCorrelatedMessageSubscriptionsResponses[keyof SearchCorrelatedMessageSubscriptionsResponses];
@@ -9434,79 +8982,7 @@ export type GetDecisionDefinitionXmlResponses = {
 export type GetDecisionDefinitionXmlResponse = GetDecisionDefinitionXmlResponses[keyof GetDecisionDefinitionXmlResponses];
 
 export type SearchDecisionInstancesData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<DecisionInstanceSearchQuerySortRequest>;
-        /**
-         * Decision instance search filter.
-         */
-        filter?: {
-            /**
-             * The key of the decision evaluation instance.
-             */
-            decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKeyFilterProperty;
-            /**
-             * The state of the decision instance.
-             */
-            state?: DecisionInstanceStateFilterProperty;
-            /**
-             * The evaluation failure of the decision instance.
-             */
-            evaluationFailure?: string;
-            /**
-             * The evaluation date of the decision instance.
-             */
-            evaluationDate?: DateTimeFilterProperty;
-            /**
-             * The ID of the DMN decision.
-             */
-            decisionDefinitionId?: DecisionDefinitionId;
-            /**
-             * The name of the DMN decision.
-             */
-            decisionDefinitionName?: string;
-            /**
-             * The version of the decision.
-             */
-            decisionDefinitionVersion?: number;
-            decisionDefinitionType?: DecisionDefinitionTypeEnum;
-            /**
-             * The tenant ID of the decision instance.
-             */
-            tenantId?: TenantId;
-            /**
-             * The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.
-             *
-             */
-            decisionEvaluationKey?: DecisionEvaluationKey;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the decision.
-             */
-            decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
-            /**
-             * The key of the element instance this decision instance is linked to.
-             */
-            elementInstanceKey?: ElementInstanceKeyFilterProperty;
-            /**
-             * The key of the root decision definition.
-             */
-            rootDecisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
-            /**
-             * The key of the decision requirements definition.
-             */
-            decisionRequirementsKey?: DecisionRequirementsKeyFilterProperty;
-        };
-    };
+    body?: DecisionInstanceSearchQuery;
     path?: never;
     query?: never;
     url: '/decision-instances/search';
@@ -9537,69 +9013,7 @@ export type SearchDecisionInstancesResponses = {
     /**
      * The decision instance search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching decision instances.
-         */
-        items?: Array<{
-            decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKey;
-            state?: DecisionInstanceStateEnum;
-            /**
-             * The evaluation date of the decision instance.
-             */
-            evaluationDate?: string;
-            /**
-             * The evaluation failure of the decision instance.
-             */
-            evaluationFailure?: string;
-            /**
-             * The ID of the DMN decision.
-             */
-            decisionDefinitionId?: DecisionDefinitionId;
-            /**
-             * The name of the DMN decision.
-             */
-            decisionDefinitionName?: string;
-            /**
-             * The version of the decision.
-             */
-            decisionDefinitionVersion?: number;
-            decisionDefinitionType?: DecisionDefinitionTypeEnum;
-            /**
-             * The result of the decision instance.
-             */
-            result?: string;
-            /**
-             * The tenant ID of the decision instance.
-             */
-            tenantId?: TenantId;
-            /**
-             * The key of the decision evaluation where this instance was created.
-             */
-            decisionEvaluationKey?: DecisionEvaluationKey;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the decision.
-             */
-            decisionDefinitionKey?: DecisionDefinitionKey;
-            /**
-             * The key of the element instance this decision instance is linked to.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The key of the root decision definition.
-             */
-            rootDecisionDefinitionKey?: DecisionDefinitionKey;
-        }>;
-    };
+    200: DecisionInstanceSearchQueryResult;
 };
 
 export type SearchDecisionInstancesResponse = SearchDecisionInstancesResponses[keyof SearchDecisionInstancesResponses];
@@ -9646,75 +9060,7 @@ export type GetDecisionInstanceResponses = {
     /**
      * The decision instance is successfully returned.
      */
-    200: {
-        decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKey;
-        state?: DecisionInstanceStateEnum;
-        /**
-         * The evaluation date of the decision instance.
-         */
-        evaluationDate?: string;
-        /**
-         * The evaluation failure of the decision instance.
-         */
-        evaluationFailure?: string;
-        /**
-         * The ID of the DMN decision.
-         */
-        decisionDefinitionId?: DecisionDefinitionId;
-        /**
-         * The name of the DMN decision.
-         */
-        decisionDefinitionName?: string;
-        /**
-         * The version of the decision.
-         */
-        decisionDefinitionVersion?: number;
-        decisionDefinitionType?: DecisionDefinitionTypeEnum;
-        /**
-         * The result of the decision instance.
-         */
-        result?: string;
-        /**
-         * The tenant ID of the decision instance.
-         */
-        tenantId?: TenantId;
-        /**
-         * The key of the decision evaluation where this instance was created.
-         */
-        decisionEvaluationKey?: DecisionEvaluationKey;
-        /**
-         * The key of the process definition.
-         */
-        processDefinitionKey?: ProcessDefinitionKey;
-        /**
-         * The key of the process instance.
-         */
-        processInstanceKey?: ProcessInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-        /**
-         * The key of the decision.
-         */
-        decisionDefinitionKey?: DecisionDefinitionKey;
-        /**
-         * The key of the element instance this decision instance is linked to.
-         */
-        elementInstanceKey?: ElementInstanceKey;
-        /**
-         * The key of the root decision definition.
-         */
-        rootDecisionDefinitionKey?: DecisionDefinitionKey;
-    } & {
-        /**
-         * The evaluated inputs of the decision instance.
-         *
-         */
-        evaluatedInputs?: Array<EvaluatedDecisionInputItem>;
-        /**
-         * The matched rules of the decision instance.
-         *
-         */
-        matchedRules?: Array<MatchedDecisionRuleItem>;
-    };
+    200: DecisionInstanceGetQueryResult;
 };
 
 export type GetDecisionInstanceResponse = GetDecisionInstanceResponses[keyof GetDecisionInstanceResponses];
@@ -9767,79 +9113,7 @@ export type DeleteDecisionInstanceResponses = {
 export type DeleteDecisionInstanceResponse = DeleteDecisionInstanceResponses[keyof DeleteDecisionInstanceResponses];
 
 export type DeleteDecisionInstancesBatchOperationData = {
-    /**
-     * The decision instance filter that defines which decision instances should be deleted.
-     */
-    body: {
-        /**
-         * Decision instance search filter.
-         */
-        filter: {
-            /**
-             * The key of the decision evaluation instance.
-             */
-            decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKeyFilterProperty;
-            /**
-             * The state of the decision instance.
-             */
-            state?: DecisionInstanceStateFilterProperty;
-            /**
-             * The evaluation failure of the decision instance.
-             */
-            evaluationFailure?: string;
-            /**
-             * The evaluation date of the decision instance.
-             */
-            evaluationDate?: DateTimeFilterProperty;
-            /**
-             * The ID of the DMN decision.
-             */
-            decisionDefinitionId?: DecisionDefinitionId;
-            /**
-             * The name of the DMN decision.
-             */
-            decisionDefinitionName?: string;
-            /**
-             * The version of the decision.
-             */
-            decisionDefinitionVersion?: number;
-            decisionDefinitionType?: DecisionDefinitionTypeEnum;
-            /**
-             * The tenant ID of the decision instance.
-             */
-            tenantId?: TenantId;
-            /**
-             * The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.
-             *
-             */
-            decisionEvaluationKey?: DecisionEvaluationKey;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the decision.
-             */
-            decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
-            /**
-             * The key of the element instance this decision instance is linked to.
-             */
-            elementInstanceKey?: ElementInstanceKeyFilterProperty;
-            /**
-             * The key of the root decision definition.
-             */
-            rootDecisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
-            /**
-             * The key of the decision requirements definition.
-             */
-            decisionRequirementsKey?: DecisionRequirementsKeyFilterProperty;
-        };
-        operationReference?: OperationReference;
-    };
+    body: DecisionInstanceDeletionBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/decision-instances/deletion';
@@ -10039,43 +9313,7 @@ export type CreateDeploymentResponses = {
     /**
      * The resources are deployed.
      */
-    200: {
-        /**
-         * The unique key identifying the deployment.
-         */
-        deploymentKey: DeploymentKey;
-        /**
-         * The tenant ID associated with the deployment.
-         */
-        tenantId: TenantId;
-        /**
-         * Items deployed by the request.
-         */
-        deployments: Array<{
-            processDefinition?: DeploymentProcessResult;
-            decisionDefinition?: DeploymentDecisionResult;
-            decisionRequirements?: DeploymentDecisionRequirementsResult;
-            /**
-             * A deployed form.
-             */
-            form?: {
-                /**
-                 * The form ID, as parsed during deployment, together with the version forms a
-                 * unique identifier for a specific form.
-                 *
-                 */
-                formId?: FormId;
-                version?: number;
-                resourceName?: string;
-                tenantId?: TenantId;
-                /**
-                 * The assigned key, which acts as a unique identifier for this form.
-                 */
-                formKey?: FormKey;
-            };
-            resource?: DeploymentResourceResult;
-        }>;
-    };
+    200: DeploymentResult;
 };
 
 export type CreateDeploymentResponse = CreateDeploymentResponses[keyof CreateDeploymentResponses];
@@ -10380,66 +9618,7 @@ export type SearchElementInstancesResponses = {
     /**
      * The element instance search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching element instances.
-         */
-        items?: Array<{
-            /**
-             * The process definition ID associated to this element instance.
-             */
-            processDefinitionId: ProcessDefinitionId;
-            /**
-             * Date when element instance started.
-             */
-            startDate: string;
-            /**
-             * Date when element instance finished.
-             */
-            endDate?: string;
-            /**
-             * The element ID for this element instance.
-             */
-            elementId: ElementId;
-            /**
-             * The element name for this element instance.
-             */
-            elementName: string;
-            /**
-             * Type of element as defined set of values.
-             */
-            type: 'UNSPECIFIED' | 'PROCESS' | 'SUB_PROCESS' | 'EVENT_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS_INNER_INSTANCE' | 'START_EVENT' | 'INTERMEDIATE_CATCH_EVENT' | 'INTERMEDIATE_THROW_EVENT' | 'BOUNDARY_EVENT' | 'END_EVENT' | 'SERVICE_TASK' | 'RECEIVE_TASK' | 'USER_TASK' | 'MANUAL_TASK' | 'TASK' | 'EXCLUSIVE_GATEWAY' | 'INCLUSIVE_GATEWAY' | 'PARALLEL_GATEWAY' | 'EVENT_BASED_GATEWAY' | 'SEQUENCE_FLOW' | 'MULTI_INSTANCE_BODY' | 'CALL_ACTIVITY' | 'BUSINESS_RULE_TASK' | 'SCRIPT_TASK' | 'SEND_TASK' | 'UNKNOWN';
-            /**
-             * State of element instance as defined set of values.
-             */
-            state: ElementInstanceStateEnum;
-            /**
-             * Shows whether this element instance has an incident. If true also an incidentKey is provided.
-             */
-            hasIncident: boolean;
-            /**
-             * The tenant ID of the incident.
-             */
-            tenantId: TenantId;
-            /**
-             * The assigned key, which acts as a unique identifier for this element instance.
-             */
-            elementInstanceKey: ElementInstanceKey;
-            /**
-             * The process instance key associated to this element instance.
-             */
-            processInstanceKey: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The process definition key associated to this element instance.
-             */
-            processDefinitionKey: ProcessDefinitionKey;
-            /**
-             * Incident key associated with this element instance.
-             */
-            incidentKey?: IncidentKey;
-        }>;
-    };
+    200: ElementInstanceSearchQueryResult;
 };
 
 export type SearchElementInstancesResponse = SearchElementInstancesResponses[keyof SearchElementInstancesResponses];
@@ -10487,61 +9666,7 @@ export type GetElementInstanceResponses = {
     /**
      * The element instance is successfully returned.
      */
-    200: {
-        /**
-         * The process definition ID associated to this element instance.
-         */
-        processDefinitionId: ProcessDefinitionId;
-        /**
-         * Date when element instance started.
-         */
-        startDate: string;
-        /**
-         * Date when element instance finished.
-         */
-        endDate?: string;
-        /**
-         * The element ID for this element instance.
-         */
-        elementId: ElementId;
-        /**
-         * The element name for this element instance.
-         */
-        elementName: string;
-        /**
-         * Type of element as defined set of values.
-         */
-        type: 'UNSPECIFIED' | 'PROCESS' | 'SUB_PROCESS' | 'EVENT_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS' | 'AD_HOC_SUB_PROCESS_INNER_INSTANCE' | 'START_EVENT' | 'INTERMEDIATE_CATCH_EVENT' | 'INTERMEDIATE_THROW_EVENT' | 'BOUNDARY_EVENT' | 'END_EVENT' | 'SERVICE_TASK' | 'RECEIVE_TASK' | 'USER_TASK' | 'MANUAL_TASK' | 'TASK' | 'EXCLUSIVE_GATEWAY' | 'INCLUSIVE_GATEWAY' | 'PARALLEL_GATEWAY' | 'EVENT_BASED_GATEWAY' | 'SEQUENCE_FLOW' | 'MULTI_INSTANCE_BODY' | 'CALL_ACTIVITY' | 'BUSINESS_RULE_TASK' | 'SCRIPT_TASK' | 'SEND_TASK' | 'UNKNOWN';
-        /**
-         * State of element instance as defined set of values.
-         */
-        state: ElementInstanceStateEnum;
-        /**
-         * Shows whether this element instance has an incident. If true also an incidentKey is provided.
-         */
-        hasIncident: boolean;
-        /**
-         * The tenant ID of the incident.
-         */
-        tenantId: TenantId;
-        /**
-         * The assigned key, which acts as a unique identifier for this element instance.
-         */
-        elementInstanceKey: ElementInstanceKey;
-        /**
-         * The process instance key associated to this element instance.
-         */
-        processInstanceKey: ProcessInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-        /**
-         * The process definition key associated to this element instance.
-         */
-        processDefinitionKey: ProcessDefinitionKey;
-        /**
-         * Incident key associated with this element instance.
-         */
-        incidentKey?: IncidentKey;
-    };
+    200: ElementInstanceResult;
 };
 
 export type GetElementInstanceResponse = GetElementInstanceResponses[keyof GetElementInstanceResponses];
@@ -10587,53 +9712,7 @@ export type SearchElementInstanceIncidentsResponses = {
     /**
      * The element instance incident search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching incidents.
-         */
-        items?: Array<{
-            /**
-             * The process definition ID associated to this incident.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            errorType?: IncidentErrorTypeEnum;
-            /**
-             * Error message which describes the error in more detail.
-             */
-            errorMessage?: string;
-            /**
-             * The element ID associated to this incident.
-             */
-            elementId?: ElementId;
-            creationTime?: string;
-            state?: IncidentStateEnum;
-            /**
-             * The tenant ID of the incident.
-             */
-            tenantId?: TenantId;
-            /**
-             * The assigned key, which acts as a unique identifier for this incident.
-             */
-            incidentKey?: IncidentKey;
-            /**
-             * The process definition key associated to this incident.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The process instance key associated to this incident.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The element instance key associated to this incident.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The job key, if exists, associated with this incident.
-             */
-            jobKey?: JobKey;
-        }>;
-    };
+    200: IncidentSearchQueryResult;
 };
 
 export type SearchElementInstanceIncidentsResponse = SearchElementInstanceIncidentsResponses[keyof SearchElementInstanceIncidentsResponses];
@@ -10758,10 +9837,7 @@ export type CreateGlobalTaskListenerResponses = {
     /**
      * The global user task listener was created successfully.
      */
-    201: GlobalTaskListenerBase & {
-        id?: GlobalListenerId;
-        source?: GlobalListenerSourceEnum;
-    };
+    201: GlobalTaskListenerResult;
 };
 
 export type CreateGlobalTaskListenerResponse = CreateGlobalTaskListenerResponses[keyof CreateGlobalTaskListenerResponses];
@@ -10818,7 +9894,7 @@ export type DeleteGlobalTaskListenerResponses = {
 export type DeleteGlobalTaskListenerResponse = DeleteGlobalTaskListenerResponses[keyof DeleteGlobalTaskListenerResponses];
 
 export type UpdateGlobalTaskListenerData = {
-    body: GlobalTaskListenerBase;
+    body: UpdateGlobalTaskListenerRequest;
     path: {
         /**
          * The id of the global user task listener to update.
@@ -10863,10 +9939,7 @@ export type UpdateGlobalTaskListenerResponses = {
     /**
      * The global listener was updated successfully.
      */
-    200: GlobalTaskListenerBase & {
-        id?: GlobalListenerId;
-        source?: GlobalListenerSourceEnum;
-    };
+    200: GlobalTaskListenerResult;
 };
 
 export type UpdateGlobalTaskListenerResponse = UpdateGlobalTaskListenerResponses[keyof UpdateGlobalTaskListenerResponses];
@@ -11626,53 +10699,7 @@ export type SearchIncidentsResponses = {
     /**
      * The incident search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching incidents.
-         */
-        items?: Array<{
-            /**
-             * The process definition ID associated to this incident.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            errorType?: IncidentErrorTypeEnum;
-            /**
-             * Error message which describes the error in more detail.
-             */
-            errorMessage?: string;
-            /**
-             * The element ID associated to this incident.
-             */
-            elementId?: ElementId;
-            creationTime?: string;
-            state?: IncidentStateEnum;
-            /**
-             * The tenant ID of the incident.
-             */
-            tenantId?: TenantId;
-            /**
-             * The assigned key, which acts as a unique identifier for this incident.
-             */
-            incidentKey?: IncidentKey;
-            /**
-             * The process definition key associated to this incident.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The process instance key associated to this incident.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The element instance key associated to this incident.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The job key, if exists, associated with this incident.
-             */
-            jobKey?: JobKey;
-        }>;
-    };
+    200: IncidentSearchQueryResult;
 };
 
 export type SearchIncidentsResponse = SearchIncidentsResponses[keyof SearchIncidentsResponses];
@@ -11718,48 +10745,7 @@ export type GetIncidentResponses = {
     /**
      * The incident is successfully returned.
      */
-    200: {
-        /**
-         * The process definition ID associated to this incident.
-         */
-        processDefinitionId?: ProcessDefinitionId;
-        errorType?: IncidentErrorTypeEnum;
-        /**
-         * Error message which describes the error in more detail.
-         */
-        errorMessage?: string;
-        /**
-         * The element ID associated to this incident.
-         */
-        elementId?: ElementId;
-        creationTime?: string;
-        state?: IncidentStateEnum;
-        /**
-         * The tenant ID of the incident.
-         */
-        tenantId?: TenantId;
-        /**
-         * The assigned key, which acts as a unique identifier for this incident.
-         */
-        incidentKey?: IncidentKey;
-        /**
-         * The process definition key associated to this incident.
-         */
-        processDefinitionKey?: ProcessDefinitionKey;
-        /**
-         * The process instance key associated to this incident.
-         */
-        processInstanceKey?: ProcessInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-        /**
-         * The element instance key associated to this incident.
-         */
-        elementInstanceKey?: ElementInstanceKey;
-        /**
-         * The job key, if exists, associated with this incident.
-         */
-        jobKey?: JobKey;
-    };
+    200: IncidentResult;
 };
 
 export type GetIncidentResponse = GetIncidentResponses[keyof GetIncidentResponses];
@@ -11916,120 +10902,9 @@ export type ActivateJobsError = ActivateJobsErrors[keyof ActivateJobsErrors];
 
 export type ActivateJobsResponses = {
     /**
-     * The list of activated jobs
+     * The list of activated jobs.
      */
-    200: {
-        /**
-         * The activated jobs.
-         */
-        jobs: Array<{
-            /**
-             * The type of the job (should match what was requested).
-             */
-            type: string;
-            /**
-             * The bpmn process ID of the job's process definition.
-             */
-            processDefinitionId: ProcessDefinitionId;
-            /**
-             * The version of the job's process definition.
-             */
-            processDefinitionVersion: number;
-            /**
-             * The associated task element ID.
-             */
-            elementId: ElementId;
-            /**
-             * A set of custom headers defined during modelling; returned as a serialized JSON document.
-             */
-            customHeaders: {
-                [key: string]: unknown;
-            };
-            /**
-             * The name of the worker which activated this job.
-             */
-            worker: string;
-            /**
-             * The amount of retries left to this job (should always be positive).
-             */
-            retries: number;
-            /**
-             * When the job can be activated again, sent as a UNIX epoch timestamp.
-             */
-            deadline: number;
-            /**
-             * All variables visible to the task scope, computed at activation time.
-             */
-            variables: {
-                [key: string]: unknown;
-            };
-            /**
-             * The ID of the tenant that owns the job.
-             */
-            tenantId: TenantId;
-            /**
-             * The key, a unique identifier for the job.
-             */
-            jobKey: JobKey;
-            /**
-             * The job's process instance key.
-             */
-            processInstanceKey: ProcessInstanceKey;
-            /**
-             * The key of the job's process definition.
-             */
-            processDefinitionKey: ProcessDefinitionKey;
-            elementInstanceKey: ElementInstanceKey;
-            kind: JobKindEnum;
-            listenerEventType: JobListenerEventTypeEnum;
-            /**
-             * Contains properties of a user task.
-             */
-            userTask?: {
-                /**
-                 * The action performed on the user task.
-                 */
-                action?: string;
-                /**
-                 * The user assigned to the task.
-                 */
-                assignee?: string | null;
-                /**
-                 * The groups eligible to claim the task.
-                 */
-                candidateGroups?: Array<string>;
-                /**
-                 * The users eligible to claim the task.
-                 */
-                candidateUsers?: Array<string>;
-                /**
-                 * The attributes that were changed in the task.
-                 */
-                changedAttributes?: Array<string>;
-                /**
-                 * The due date of the user task in ISO 8601 format.
-                 */
-                dueDate?: string | null;
-                /**
-                 * The follow-up date of the user task in ISO 8601 format.
-                 */
-                followUpDate?: string | null;
-                /**
-                 * The key of the form associated with the user task.
-                 */
-                formKey?: FormKey;
-                /**
-                 * The priority of the user task.
-                 */
-                priority?: number | null;
-                /**
-                 * The unique key identifying the user task.
-                 */
-                userTaskKey?: UserTaskKey | null;
-            };
-            tags?: TagSet;
-        }>;
-    };
+    200: JobActivationResult;
 };
 
 export type ActivateJobsResponse = ActivateJobsResponses[keyof ActivateJobsResponses];
@@ -12064,98 +10939,9 @@ export type SearchJobsError = SearchJobsErrors[keyof SearchJobsErrors];
 
 export type SearchJobsResponses = {
     /**
-     * Job search response.
+     * The job search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching jobs.
-         */
-        items?: Array<{
-            /**
-             * A set of custom headers defined during modelling.
-             */
-            customHeaders: {
-                [key: string]: string;
-            };
-            /**
-             * If the job has been activated, when it will next be available to be activated.
-             */
-            deadline?: string | null;
-            /**
-             * The reason provided by the user task listener for denying the work.
-             */
-            deniedReason?: string | null;
-            /**
-             * The element ID associated with the job.
-             */
-            elementId: ElementId;
-            /**
-             * The element instance key associated with the job.
-             */
-            elementInstanceKey: ElementInstanceKey;
-            /**
-             * When the job ended.
-             */
-            endTime?: string;
-            /**
-             * The error code provided for a failed job.
-             */
-            errorCode?: string | null;
-            /**
-             * The error message that provides additional context for a failed job.
-             */
-            errorMessage?: string | null;
-            /**
-             * Indicates whether the job has failed with retries left.
-             */
-            hasFailedWithRetriesLeft: boolean;
-            /**
-             * Indicates whether the user task listener denies the work.
-             */
-            isDenied?: boolean | null;
-            /**
-             * The key, a unique identifier for the job.
-             */
-            jobKey: JobKey;
-            kind: JobKindEnum;
-            listenerEventType: JobListenerEventTypeEnum;
-            /**
-             * The process definition ID associated with the job.
-             */
-            processDefinitionId: ProcessDefinitionId;
-            /**
-             * The process definition key associated with the job.
-             */
-            processDefinitionKey: ProcessDefinitionKey;
-            /**
-             * The process instance key associated with the job.
-             */
-            processInstanceKey: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The amount of retries left to this job.
-             */
-            retries: number;
-            state: JobStateEnum;
-            tenantId: TenantId;
-            /**
-             * The type of the job.
-             */
-            type: string;
-            /**
-             * The name of the worker of this job.
-             */
-            worker: string;
-            /**
-             * When the job was created. Field is present for jobs created after 8.9.
-             */
-            creationTime?: string;
-            /**
-             * When the job was last updated. Field is present for jobs created after 8.9.
-             */
-            lastUpdateTime?: string;
-        }>;
-    };
+    200: JobSearchQueryResult;
 };
 
 export type SearchJobsResponse = SearchJobsResponses[keyof SearchJobsResponses];
@@ -12589,7 +11375,7 @@ export type GetMappingRuleResponses = {
 export type GetMappingRuleResponse = GetMappingRuleResponses[keyof GetMappingRuleResponses];
 
 export type UpdateMappingRuleData = {
-    body?: MappingRuleCreateUpdateRequest;
+    body?: MappingRuleUpdateRequest;
     path: {
         /**
          * The ID of the mapping rule to update.
@@ -12632,73 +11418,13 @@ export type UpdateMappingRuleResponses = {
     /**
      * The mapping rule was updated successfully.
      */
-    200: MappingRuleCreateUpdateResult;
+    200: MappingRuleUpdateResult;
 };
 
 export type UpdateMappingRuleResponse = UpdateMappingRuleResponses[keyof UpdateMappingRuleResponses];
 
 export type SearchMessageSubscriptionsData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * Message subscription search filter.
-         */
-        filter?: {
-            /**
-             * The message subscription key associated with this message subscription.
-             */
-            messageSubscriptionKey?: MessageSubscriptionKeyFilterProperty;
-            /**
-             * The process definition key associated with this correlated message subscription. This only works for data created with 8.9 and later.
-             */
-            processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
-            /**
-             * The process definition ID associated with this message subscription.
-             */
-            processDefinitionId?: StringFilterProperty;
-            /**
-             * The process instance key associated with this message subscription.
-             */
-            processInstanceKey?: ProcessInstanceKeyFilterProperty;
-            /**
-             * The element ID associated with this message subscription.
-             */
-            elementId?: StringFilterProperty;
-            /**
-             * The element instance key associated with this message subscription.
-             */
-            elementInstanceKey?: ElementInstanceKeyFilterProperty;
-            /**
-             * The message subscription state.
-             */
-            messageSubscriptionState?: MessageSubscriptionStateFilterProperty;
-            /**
-             * The last updated date of the message subscription.
-             */
-            lastUpdatedDate?: DateTimeFilterProperty;
-            /**
-             * The name of the message associated with the message subscription.
-             */
-            messageName?: StringFilterProperty;
-            /**
-             * The correlation key of the message subscription.
-             */
-            correlationKey?: StringFilterProperty;
-            /**
-             * The unique external tenant ID.
-             */
-            tenantId?: StringFilterProperty;
-        };
-    };
+    body?: MessageSubscriptionSearchQuery;
     path?: never;
     query?: never;
     url: '/message-subscriptions/search';
@@ -12729,52 +11455,7 @@ export type SearchMessageSubscriptionsResponses = {
     /**
      * The message subscription search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching message subscriptions.
-         */
-        items?: Array<{
-            /**
-             * The message subscription key associated with this message subscription.
-             */
-            messageSubscriptionKey?: MessageSubscriptionKey;
-            /**
-             * The process definition ID associated with this message subscription.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            /**
-             * The process definition key associated with this message subscription.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The process instance key associated with this message subscription.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The element ID associated with this message subscription.
-             */
-            elementId?: ElementId;
-            /**
-             * The element instance key associated with this message subscription.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            messageSubscriptionState?: MessageSubscriptionStateEnum;
-            /**
-             * The last updated date of the message subscription.
-             */
-            lastUpdatedDate?: string;
-            /**
-             * The name of the message associated with the message subscription.
-             */
-            messageName?: string;
-            /**
-             * The correlation key of the message subscription.
-             */
-            correlationKey?: string;
-            tenantId?: TenantId;
-        }>;
-    };
+    200: MessageSubscriptionSearchQueryResult;
 };
 
 export type SearchMessageSubscriptionsResponse = SearchMessageSubscriptionsResponses[keyof SearchMessageSubscriptionsResponses];
@@ -12848,39 +11529,15 @@ export type PublishMessageError = PublishMessageErrors[keyof PublishMessageError
 
 export type PublishMessageResponses = {
     /**
-     * The message key of the published message.
+     * The message was published.
      */
-    200: {
-        /**
-         * The tenant ID of the message.
-         */
-        tenantId?: TenantId;
-        /**
-         * The key of the published message.
-         */
-        messageKey?: MessageKey;
-    };
+    200: MessagePublicationResult;
 };
 
 export type PublishMessageResponse = PublishMessageResponses[keyof PublishMessageResponses];
 
 export type SearchProcessDefinitionsData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'processDefinitionKey' | 'name' | 'resourceName' | 'version' | 'versionTag' | 'processDefinitionId' | 'tenantId';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * The process definition search filters.
-         */
-        filter?: ProcessDefinitionFilter;
-    };
+    body?: ProcessDefinitionSearchQuery;
     path?: never;
     query?: never;
     url: '/process-definitions/search';
@@ -12917,58 +11574,7 @@ export type SearchProcessDefinitionsResponses = {
 export type SearchProcessDefinitionsResponse = SearchProcessDefinitionsResponses[keyof SearchProcessDefinitionsResponses];
 
 export type GetProcessDefinitionMessageSubscriptionStatisticsData = {
-    body?: {
-        page?: CursorForwardPagination;
-        /**
-         * Message subscription search filter.
-         */
-        filter?: {
-            /**
-             * The message subscription key associated with this message subscription.
-             */
-            messageSubscriptionKey?: MessageSubscriptionKeyFilterProperty;
-            /**
-             * The process definition key associated with this correlated message subscription. This only works for data created with 8.9 and later.
-             */
-            processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
-            /**
-             * The process definition ID associated with this message subscription.
-             */
-            processDefinitionId?: StringFilterProperty;
-            /**
-             * The process instance key associated with this message subscription.
-             */
-            processInstanceKey?: ProcessInstanceKeyFilterProperty;
-            /**
-             * The element ID associated with this message subscription.
-             */
-            elementId?: StringFilterProperty;
-            /**
-             * The element instance key associated with this message subscription.
-             */
-            elementInstanceKey?: ElementInstanceKeyFilterProperty;
-            /**
-             * The message subscription state.
-             */
-            messageSubscriptionState?: MessageSubscriptionStateFilterProperty;
-            /**
-             * The last updated date of the message subscription.
-             */
-            lastUpdatedDate?: DateTimeFilterProperty;
-            /**
-             * The name of the message associated with the message subscription.
-             */
-            messageName?: StringFilterProperty;
-            /**
-             * The correlation key of the message subscription.
-             */
-            correlationKey?: StringFilterProperty;
-            /**
-             * The unique external tenant ID.
-             */
-            tenantId?: StringFilterProperty;
-        };
-    };
+    body?: ProcessDefinitionMessageSubscriptionStatisticsQuery;
     path?: never;
     query?: never;
     url: '/process-definitions/statistics/message-subscriptions';
@@ -13005,19 +11611,7 @@ export type GetProcessDefinitionMessageSubscriptionStatisticsResponses = {
 export type GetProcessDefinitionMessageSubscriptionStatisticsResponse = GetProcessDefinitionMessageSubscriptionStatisticsResponses[keyof GetProcessDefinitionMessageSubscriptionStatisticsResponses];
 
 export type GetProcessDefinitionInstanceStatisticsData = {
-    body?: {
-        page?: OffsetPagination;
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'processDefinitionId' | 'activeInstancesWithIncidentCount' | 'activeInstancesWithoutIncidentCount';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: ProcessDefinitionInstanceStatisticsQuery;
     path?: never;
     query?: never;
     url: '/process-definitions/statistics/process-instances';
@@ -13142,30 +11736,7 @@ export type GetStartProcessFormResponses = {
     /**
      * The form is successfully returned.
      */
-    200: {
-        /**
-         * The tenant ID of the form.
-         */
-        tenantId?: TenantId;
-        /**
-         * The user-provided identifier of the form.
-         */
-        formId?: FormId;
-        /**
-         * The form content.
-         */
-        schema?: {
-            [key: string]: unknown;
-        };
-        /**
-         * The version of the the deployed form.
-         */
-        version?: number;
-        /**
-         * The assigned key, which acts as a unique identifier for this form.
-         */
-        formKey?: FormKey;
-    };
+    200: FormResult;
     /**
      * The process was found, but no form is associated with it.
      */
@@ -13175,116 +11746,7 @@ export type GetStartProcessFormResponses = {
 export type GetStartProcessFormResponse = GetStartProcessFormResponses[keyof GetStartProcessFormResponses];
 
 export type GetProcessDefinitionStatisticsData = {
-    /**
-     * Process definition element statistics request.
-     */
-    body?: {
-        /**
-         * Process definition statistics search filter.
-         */
-        filter?: {
-            /**
-             * The start date.
-             */
-            startDate?: DateTimeFilterProperty;
-            /**
-             * The end date.
-             */
-            endDate?: DateTimeFilterProperty;
-            /**
-             * The process instance state.
-             */
-            state?: ProcessInstanceStateFilterProperty;
-            /**
-             * Whether this process instance has a related incident or not.
-             */
-            hasIncident?: boolean;
-            /**
-             * The tenant id.
-             */
-            tenantId?: StringFilterProperty;
-            /**
-             * The process instance variables.
-             */
-            variables?: Array<VariableValueFilterProperty>;
-            /**
-             * The key of this process instance.
-             */
-            processInstanceKey?: ProcessInstanceKeyFilterProperty;
-            /**
-             * The parent process instance key.
-             */
-            parentProcessInstanceKey?: ProcessInstanceKeyFilterProperty;
-            /**
-             * The parent element instance key.
-             */
-            parentElementInstanceKey?: ElementInstanceKeyFilterProperty;
-            /**
-             * The batch operation id.
-             */
-            batchOperationId?: StringFilterProperty;
-            /**
-             * The error message related to the process.
-             */
-            errorMessage?: StringFilterProperty;
-            /**
-             * Whether the process has failed jobs with retries left.
-             */
-            hasRetriesLeft?: boolean;
-            /**
-             * The state of the element instances associated with the process instance.
-             */
-            elementInstanceState?: ElementInstanceStateFilterProperty;
-            /**
-             * The element id associated with the process instance.
-             */
-            elementId?: StringFilterProperty;
-            /**
-             * Whether the element instance has an incident or not.
-             */
-            hasElementInstanceIncident?: boolean;
-            /**
-             * The incident error hash code, associated with this process.
-             */
-            incidentErrorHashCode?: IntegerFilterProperty;
-            tags?: TagSet;
-        } & {
-            /**
-             * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
-             *
-             * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
-             * <br>
-             * <em>Example:</em>
-             *
-             * ```json
-             * {
-             * "state": "ACTIVE",
-             * "tenantId": 123,
-             * "$or": [
-             * { "processDefinitionId": "process_v1" },
-             * { "processDefinitionId": "process_v2", "hasIncident": true }
-             * ]
-             * }
-             * ```
-             * This matches process instances that:
-             *
-             * <ul style="padding-left: 20px; margin-left: 20px;">
-             * <li style="list-style-type: disc;">are in <em>ACTIVE</em> state</li>
-             * <li style="list-style-type: disc;">have tenant id equal to <em>123</em></li>
-             * <li style="list-style-type: disc;">and match either:
-             * <ul style="padding-left: 20px; margin-left: 20px;">
-             * <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>
-             * <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>
-             * </ul>
-             * </li>
-             * </ul>
-             * <br>
-             * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
-             *
-             */
-            $or?: Array<BaseProcessInstanceFilterFields>;
-        };
-    };
+    body?: ProcessDefinitionElementStatisticsQuery;
     path: {
         /**
          * The assigned key of the process definition, which acts as a unique identifier for this process definition.
@@ -13379,26 +11841,7 @@ export type GetProcessDefinitionXmlResponses = {
 export type GetProcessDefinitionXmlResponse = GetProcessDefinitionXmlResponses[keyof GetProcessDefinitionXmlResponses];
 
 export type GetProcessDefinitionInstanceVersionStatisticsData = {
-    body: {
-        /**
-         * Pagination criteria.
-         */
-        page?: OffsetPagination;
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'processDefinitionId' | 'processDefinitionKey' | 'processDefinitionName' | 'processDefinitionVersion' | 'activeInstancesWithIncidentCount' | 'activeInstancesWithoutIncidentCount';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * The process definition instance version statistics search filters.
-         */
-        filter: ProcessDefinitionInstanceVersionStatisticsFilter;
-    };
+    body: ProcessDefinitionInstanceVersionStatisticsQuery;
     path?: never;
     query?: never;
     url: '/process-definitions/statistics/process-instances-by-version';
@@ -13435,134 +11878,7 @@ export type GetProcessDefinitionInstanceVersionStatisticsResponses = {
 export type GetProcessDefinitionInstanceVersionStatisticsResponse = GetProcessDefinitionInstanceVersionStatisticsResponses[keyof GetProcessDefinitionInstanceVersionStatisticsResponses];
 
 export type CreateProcessInstanceData = {
-    /**
-     * Instructions for creating a process instance. The process definition can be specified
-     * either by id or by key.
-     *
-     */
-    body: {
-        /**
-         * The BPMN process id of the process definition to start an instance of.
-         *
-         */
-        processDefinitionId: ProcessDefinitionId;
-        /**
-         * The version of the process. By default, the latest version of the process is used.
-         *
-         */
-        processDefinitionVersion?: number;
-        /**
-         * JSON object that will instantiate the variables for the root variable scope
-         * of the process instance.
-         *
-         */
-        variables?: {
-            [key: string]: unknown;
-        };
-        /**
-         * The tenant id of the process definition.
-         */
-        tenantId?: TenantId;
-        operationReference?: OperationReference;
-        /**
-         * List of start instructions. By default, the process instance will start at
-         * the start event. If provided, the process instance will apply start instructions
-         * after it has been created.
-         *
-         */
-        startInstructions?: Array<ProcessInstanceCreationStartInstruction>;
-        /**
-         * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
-         * the process instance. Refer to specific instruction types for more details.
-         *
-         * This parameter is an alpha feature and may be subject to change
-         * in future releases.
-         *
-         */
-        runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
-        /**
-         * Wait for the process instance to complete. If the process instance completion does
-         * not occur within the requestTimeout, the request will be closed. This can lead to a 504
-         * response status. Disabled by default.
-         *
-         */
-        awaitCompletion?: boolean;
-        /**
-         * List of variables by name to be included in the response when awaitCompletion is set to true.
-         * If empty, all visible variables in the root scope will be returned.
-         *
-         */
-        fetchVariables?: Array<string>;
-        /**
-         * Timeout (in ms) the request waits for the process to complete. By default or
-         * when set to 0, the generic request timeout configured in the cluster is applied.
-         *
-         */
-        requestTimeout?: number;
-        tags?: TagSet;
-    } | {
-        /**
-         * The unique key identifying the process definition, for example, returned for a process in the
-         * deploy resources endpoint.
-         *
-         */
-        processDefinitionKey: ProcessDefinitionKey;
-        /**
-         * As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.
-         * It's here for backwards-compatibility only as previous releases accepted it in request bodies.
-         *
-         */
-        processDefinitionVersion?: number;
-        /**
-         * JSON object that will instantiate the variables for the root variable scope
-         * of the process instance.
-         *
-         */
-        variables?: {
-            [key: string]: unknown;
-        };
-        /**
-         * List of start instructions. By default, the process instance will start at
-         * the start event. If provided, the process instance will apply start instructions
-         * after it has been created.
-         *
-         */
-        startInstructions?: Array<ProcessInstanceCreationStartInstruction>;
-        /**
-         * Runtime instructions (alpha). List of instructions that affect the runtime behavior of
-         * the process instance. Refer to specific instruction types for more details.
-         *
-         * This parameter is an alpha feature and may be subject to change
-         * in future releases.
-         *
-         */
-        runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
-        /**
-         * The tenant id of the process definition.
-         */
-        tenantId?: TenantId;
-        operationReference?: OperationReference;
-        /**
-         * Wait for the process instance to complete. If the process instance completion does
-         * not occur within the requestTimeout, the request will be closed. This can lead to a 504
-         * response status. Disabled by default.
-         *
-         */
-        awaitCompletion?: boolean;
-        /**
-         * Timeout (in ms) the request waits for the process to complete. By default or
-         * when set to 0, the generic request timeout configured in the cluster is applied.
-         *
-         */
-        requestTimeout?: number;
-        /**
-         * List of variables by name to be included in the response when awaitCompletion is set to true.
-         * If empty, all visible variables in the root scope will be returned.
-         *
-         */
-        fetchVariables?: Array<string>;
-        tags?: TagSet;
-    };
+    body: ProcessInstanceCreationInstruction;
     path?: never;
     query?: never;
     url: '/process-instances';
@@ -13604,16 +11920,7 @@ export type CreateProcessInstanceResponses = {
 export type CreateProcessInstanceResponse = CreateProcessInstanceResponses[keyof CreateProcessInstanceResponses];
 
 export type CancelProcessInstancesBatchOperationData = {
-    /**
-     * The process instance filter that defines which process instances should be canceled.
-     */
-    body: {
-        /**
-         * The process instance filter.
-         */
-        filter: ProcessInstanceFilter;
-        operationReference?: OperationReference;
-    };
+    body: ProcessInstanceCancellationBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/process-instances/cancellation';
@@ -13651,16 +11958,7 @@ export type CancelProcessInstancesBatchOperationResponses = {
 export type CancelProcessInstancesBatchOperationResponse = CancelProcessInstancesBatchOperationResponses[keyof CancelProcessInstancesBatchOperationResponses];
 
 export type DeleteProcessInstancesBatchOperationData = {
-    /**
-     * The process instance filter that defines which process instances should be deleted.
-     */
-    body: {
-        /**
-         * The process instance filter.
-         */
-        filter: ProcessInstanceFilter;
-        operationReference?: OperationReference;
-    };
+    body: ProcessInstanceDeletionBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/process-instances/deletion';
@@ -13698,16 +11996,7 @@ export type DeleteProcessInstancesBatchOperationResponses = {
 export type DeleteProcessInstancesBatchOperationResponse = DeleteProcessInstancesBatchOperationResponses[keyof DeleteProcessInstancesBatchOperationResponses];
 
 export type ResolveIncidentsBatchOperationData = {
-    /**
-     * The process instance filter that defines which process instances should have their incidents resolved.
-     */
-    body?: {
-        /**
-         * The process instance filter.
-         */
-        filter: ProcessInstanceFilter;
-        operationReference?: OperationReference;
-    };
+    body?: ProcessInstanceIncidentResolutionBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/process-instances/incident-resolution';
@@ -13745,17 +12034,7 @@ export type ResolveIncidentsBatchOperationResponses = {
 export type ResolveIncidentsBatchOperationResponse = ResolveIncidentsBatchOperationResponses[keyof ResolveIncidentsBatchOperationResponses];
 
 export type MigrateProcessInstancesBatchOperationData = {
-    body: {
-        /**
-         * The process instance filter.
-         */
-        filter: ProcessInstanceFilter;
-        /**
-         * The migration plan.
-         */
-        migrationPlan: ProcessInstanceMigrationBatchOperationPlan;
-        operationReference?: OperationReference;
-    };
+    body: ProcessInstanceMigrationBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/process-instances/migration';
@@ -13793,22 +12072,7 @@ export type MigrateProcessInstancesBatchOperationResponses = {
 export type MigrateProcessInstancesBatchOperationResponse = MigrateProcessInstancesBatchOperationResponses[keyof MigrateProcessInstancesBatchOperationResponses];
 
 export type ModifyProcessInstancesBatchOperationData = {
-    /**
-     * The process instance filter to define on which process instances tokens should be moved,
-     * and new element instances should be activated or terminated.
-     *
-     */
-    body: {
-        /**
-         * The process instance filter.
-         */
-        filter: ProcessInstanceFilter;
-        /**
-         * Instructions for moving tokens between elements.
-         */
-        moveInstructions: Array<ProcessInstanceModificationMoveBatchOperationInstruction>;
-        operationReference?: OperationReference;
-    };
+    body: ProcessInstanceModificationBatchOperationRequest;
     path?: never;
     query?: never;
     url: '/process-instances/modification';
@@ -13846,102 +12110,7 @@ export type ModifyProcessInstancesBatchOperationResponses = {
 export type ModifyProcessInstancesBatchOperationResponse = ModifyProcessInstancesBatchOperationResponses[keyof ModifyProcessInstancesBatchOperationResponses];
 
 export type SearchProcessInstancesData = {
-    /**
-     * Process instance search request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'processInstanceKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processDefinitionVersionTag' | 'processDefinitionKey' | 'parentProcessInstanceKey' | 'parentElementInstanceKey' | 'startDate' | 'endDate' | 'state' | 'hasIncident' | 'tenantId';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * Process instance search filter.
-         */
-        filter?: BaseProcessInstanceFilterFields & {
-            /**
-             * The process definition id.
-             */
-            processDefinitionId?: StringFilterProperty;
-            /**
-             * The process definition name.
-             */
-            processDefinitionName?: StringFilterProperty;
-            /**
-             * The process definition version.
-             */
-            processDefinitionVersion?: IntegerFilterProperty;
-            /**
-             * The process definition version tag.
-             */
-            processDefinitionVersionTag?: StringFilterProperty;
-            /**
-             * The process definition key.
-             */
-            processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
-        } & {
-            /**
-             * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
-             *
-             * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
-             * <br>
-             * <em>Example:</em>
-             *
-             * ```json
-             * {
-             * "state": "ACTIVE",
-             * "tenantId": 123,
-             * "$or": [
-             * { "processDefinitionId": "process_v1" },
-             * { "processDefinitionId": "process_v2", "hasIncident": true }
-             * ]
-             * }
-             * ```
-             * This matches process instances that:
-             *
-             * <ul style="padding-left: 20px; margin-left: 20px;">
-             * <li style="list-style-type: disc;">are in <em>ACTIVE</em> state</li>
-             * <li style="list-style-type: disc;">have tenant id equal to <em>123</em></li>
-             * <li style="list-style-type: disc;">and match either:
-             * <ul style="padding-left: 20px; margin-left: 20px;">
-             * <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v1</em>, or</li>
-             * <li style="list-style-type: circle;"><code>processDefinitionId</code> is <em>process_v2</em> and <code>hasIncident</code> is <em>true</em></li>
-             * </ul>
-             * </li>
-             * </ul>
-             * <br>
-             * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
-             *
-             */
-            $or?: Array<BaseProcessInstanceFilterFields & {
-                /**
-                 * The process definition id.
-                 */
-                processDefinitionId?: StringFilterProperty;
-                /**
-                 * The process definition name.
-                 */
-                processDefinitionName?: StringFilterProperty;
-                /**
-                 * The process definition version.
-                 */
-                processDefinitionVersion?: IntegerFilterProperty;
-                /**
-                 * The process definition version tag.
-                 */
-                processDefinitionVersionTag?: StringFilterProperty;
-                /**
-                 * The process definition key.
-                 */
-                processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
-            }>;
-        };
-    };
+    body?: ProcessInstanceSearchQuery;
     path?: never;
     query?: never;
     url: '/process-instances/search';
@@ -13970,51 +12139,9 @@ export type SearchProcessInstancesError = SearchProcessInstancesErrors[keyof Sea
 
 export type SearchProcessInstancesResponses = {
     /**
-     * Process instance search response.
+     * The process instance search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching process instances.
-         */
-        items: Array<{
-            processDefinitionId: ProcessDefinitionId;
-            /**
-             * The process definition name.
-             */
-            processDefinitionName: string;
-            processDefinitionVersion: number;
-            /**
-             * The process definition version tag.
-             */
-            processDefinitionVersionTag?: string;
-            startDate: string;
-            endDate?: string;
-            state: ProcessInstanceStateEnum;
-            /**
-             * Whether this process instance has a related incident or not.
-             */
-            hasIncident: boolean;
-            tenantId: TenantId;
-            /**
-             * The key of this process instance.
-             */
-            processInstanceKey: ProcessInstanceKey;
-            /**
-             * The process definition key.
-             */
-            processDefinitionKey: ProcessDefinitionKey;
-            /**
-             * The parent process instance key.
-             */
-            parentProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The parent element instance key.
-             */
-            parentElementInstanceKey?: ElementInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            tags?: TagSet;
-        }>;
-    };
+    200: ProcessInstanceSearchQueryResult;
 };
 
 export type SearchProcessInstancesResponse = SearchProcessInstancesResponses[keyof SearchProcessInstancesResponses];
@@ -14058,46 +12185,9 @@ export type GetProcessInstanceError = GetProcessInstanceErrors[keyof GetProcessI
 
 export type GetProcessInstanceResponses = {
     /**
-     * Process instance search response item.
+     * The process instance is successfully returned.
      */
-    200: {
-        processDefinitionId: ProcessDefinitionId;
-        /**
-         * The process definition name.
-         */
-        processDefinitionName: string;
-        processDefinitionVersion: number;
-        /**
-         * The process definition version tag.
-         */
-        processDefinitionVersionTag?: string;
-        startDate: string;
-        endDate?: string;
-        state: ProcessInstanceStateEnum;
-        /**
-         * Whether this process instance has a related incident or not.
-         */
-        hasIncident: boolean;
-        tenantId: TenantId;
-        /**
-         * The key of this process instance.
-         */
-        processInstanceKey: ProcessInstanceKey;
-        /**
-         * The process definition key.
-         */
-        processDefinitionKey: ProcessDefinitionKey;
-        /**
-         * The parent process instance key.
-         */
-        parentProcessInstanceKey?: ProcessInstanceKey;
-        /**
-         * The parent element instance key.
-         */
-        parentElementInstanceKey?: ElementInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-        tags?: TagSet;
-    };
+    200: ProcessInstanceResult;
 };
 
 export type GetProcessInstanceResponse = GetProcessInstanceResponses[keyof GetProcessInstanceResponses];
@@ -14149,9 +12239,7 @@ export type GetProcessInstanceCallHierarchyResponses = {
 export type GetProcessInstanceCallHierarchyResponse = GetProcessInstanceCallHierarchyResponses[keyof GetProcessInstanceCallHierarchyResponses];
 
 export type CancelProcessInstanceData = {
-    body?: {
-        operationReference?: OperationReference;
-    } | null;
+    body?: DeleteProcessInstanceRequest;
     path: {
         /**
          * The key of the process instance to cancel.
@@ -14194,9 +12282,7 @@ export type CancelProcessInstanceResponses = {
 export type CancelProcessInstanceResponse = CancelProcessInstanceResponses[keyof CancelProcessInstanceResponses];
 
 export type DeleteProcessInstanceData = {
-    body?: {
-        operationReference?: OperationReference;
-    } | null;
+    body?: DeleteProcessInstanceRequest;
     path: {
         /**
          * The key of the process instance to delete.
@@ -14334,73 +12420,13 @@ export type SearchProcessInstanceIncidentsResponses = {
     /**
      * The process instance search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching incidents.
-         */
-        items?: Array<{
-            /**
-             * The process definition ID associated to this incident.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            errorType?: IncidentErrorTypeEnum;
-            /**
-             * Error message which describes the error in more detail.
-             */
-            errorMessage?: string;
-            /**
-             * The element ID associated to this incident.
-             */
-            elementId?: ElementId;
-            creationTime?: string;
-            state?: IncidentStateEnum;
-            /**
-             * The tenant ID of the incident.
-             */
-            tenantId?: TenantId;
-            /**
-             * The assigned key, which acts as a unique identifier for this incident.
-             */
-            incidentKey?: IncidentKey;
-            /**
-             * The process definition key associated to this incident.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The process instance key associated to this incident.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The element instance key associated to this incident.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The job key, if exists, associated with this incident.
-             */
-            jobKey?: JobKey;
-        }>;
-    };
+    200: IncidentSearchQueryResult;
 };
 
 export type SearchProcessInstanceIncidentsResponse = SearchProcessInstanceIncidentsResponses[keyof SearchProcessInstanceIncidentsResponses];
 
 export type MigrateProcessInstanceData = {
-    /**
-     * The migration instructions describe how to migrate a process instance from one process definition to another.
-     *
-     */
-    body: {
-        /**
-         * The key of process definition to migrate the process instance to.
-         */
-        targetProcessDefinitionKey: ProcessDefinitionKey;
-        /**
-         * Element mappings from the source process instance to the target process instance.
-         */
-        mappingInstructions: Array<MigrateProcessInstanceMappingInstruction>;
-        operationReference?: OperationReference;
-    };
+    body: ProcessInstanceMigrationInstruction;
     path: {
         /**
          * The key of the process instance that should be migrated.
@@ -14448,21 +12474,7 @@ export type MigrateProcessInstanceResponses = {
 export type MigrateProcessInstanceResponse = MigrateProcessInstanceResponses[keyof MigrateProcessInstanceResponses];
 
 export type ModifyProcessInstanceData = {
-    body: {
-        operationReference?: OperationReference;
-        /**
-         * Instructions describing which elements to activate in which scopes and which variables to create or update.
-         */
-        activateInstructions?: Array<ProcessInstanceModificationActivateInstruction>;
-        /**
-         * Instructions describing which elements to move from one scope to another.
-         */
-        moveInstructions?: Array<ProcessInstanceModificationMoveInstruction>;
-        /**
-         * Instructions describing which elements to terminate.
-         */
-        terminateInstructions?: Array<ProcessInstanceModificationTerminateInstruction>;
-    };
+    body: ProcessInstanceModificationInstruction;
     path: {
         /**
          * The key of the process instance that should be modified.
@@ -14539,37 +12551,9 @@ export type GetProcessInstanceSequenceFlowsError = GetProcessInstanceSequenceFlo
 
 export type GetProcessInstanceSequenceFlowsResponses = {
     /**
-     * Process instance sequence flows query response.
+     * The process instance sequence flows result.
      */
-    200: {
-        /**
-         * The sequence flows.
-         */
-        items?: Array<{
-            /**
-             * The sequence flow id.
-             */
-            sequenceFlowId?: string;
-            /**
-             * The key of this process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The process definition key.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The process definition id.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            /**
-             * The element id for this sequence flow, as provided in the BPMN process.
-             */
-            elementId?: ElementId;
-            tenantId?: TenantId;
-        }>;
-    };
+    200: ProcessInstanceSequenceFlowsQueryResult;
 };
 
 export type GetProcessInstanceSequenceFlowsResponse = GetProcessInstanceSequenceFlowsResponses[keyof GetProcessInstanceSequenceFlowsResponses];
@@ -14685,20 +12669,7 @@ export type GetResourceContentResponses = {
 export type GetResourceContentResponse = GetResourceContentResponses[keyof GetResourceContentResponses];
 
 export type DeleteResourceData = {
-    body?: {
-        operationReference?: OperationReference;
-        /**
-         * Indicates if the historic data of a process resource should be deleted via a
-         * batch operation asynchronously.
-         *
-         * This flag is only effective for process resources. For other resource types
-         * (decisions, forms, generic resources), this flag is ignored and no history
-         * will be deleted. In those cases, the `batchOperation` field in the response
-         * will not be populated.
-         *
-         */
-        deleteHistory?: boolean;
-    } | null;
+    body?: DeleteResourceRequest;
     path: {
         /**
          * The key of the resource to delete.
@@ -14959,13 +12930,7 @@ export type SearchClientsForRoleData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'clientId';
-            order?: SortOrderEnum;
-        }>;
+        sort?: Array<TenantClientSearchQuerySortRequest>;
     };
     path: {
         /**
@@ -15118,18 +13083,7 @@ export type AssignRoleToClientResponses = {
 export type AssignRoleToClientResponse = AssignRoleToClientResponses[keyof AssignRoleToClientResponses];
 
 export type SearchGroupsForRoleData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'groupId';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: RoleGroupSearchQueryRequest;
     path: {
         /**
          * The role ID.
@@ -15437,13 +13391,7 @@ export type SearchUsersForRoleData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'username';
-            order?: SortOrderEnum;
-        }>;
+        sort?: Array<TenantUserSearchQuerySortRequest>;
     };
     path: {
         /**
@@ -15795,25 +13743,7 @@ export type CreateTenantResponses = {
 export type CreateTenantResponse = CreateTenantResponses[keyof CreateTenantResponses];
 
 export type SearchTenantsData = {
-    /**
-     * Tenant search request
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'key' | 'name' | 'tenantId';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * The tenant search filters.
-         */
-        filter?: TenantFilter;
-    };
+    body?: TenantSearchQueryRequest;
     path?: never;
     query?: never;
     url: '/tenants/search';
@@ -15994,18 +13924,7 @@ export type UpdateTenantResponses = {
 export type UpdateTenantResponse = UpdateTenantResponses[keyof UpdateTenantResponses];
 
 export type SearchClientsForTenantData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'clientId';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: TenantClientSearchQueryRequest;
     path: {
         /**
          * The unique identifier of the tenant.
@@ -16128,18 +14047,7 @@ export type AssignClientToTenantResponses = {
 export type AssignClientToTenantResponse = AssignClientToTenantResponses[keyof AssignClientToTenantResponses];
 
 export type SearchGroupIdsForTenantData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'groupId';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: TenantGroupSearchQueryRequest;
     path: {
         /**
          * The unique identifier of the tenant.
@@ -16508,18 +14416,7 @@ export type AssignRoleToTenantResponses = {
 export type AssignRoleToTenantResponse = AssignRoleToTenantResponses[keyof AssignRoleToTenantResponses];
 
 export type SearchUsersForTenantData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'username';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: TenantUserSearchQueryRequest;
     path: {
         /**
          * The unique identifier of the tenant.
@@ -16717,22 +14614,7 @@ export type CreateUserResponses = {
 export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses];
 
 export type SearchUsersData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'username' | 'name' | 'email';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * The user search filters.
-         */
-        filter?: UserFilter;
-    };
+    body?: UserSearchQueryRequest;
     path?: never;
     query?: never;
     url: '/users/search';
@@ -16901,98 +14783,7 @@ export type UpdateUserResponses = {
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
 
 export type SearchUserTasksData = {
-    /**
-     * User task search query request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'creationDate' | 'completionDate' | 'followUpDate' | 'dueDate' | 'priority' | 'name';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * User task filter request.
-         */
-        filter?: {
-            /**
-             * The user task state.
-             */
-            state?: UserTaskStateFilterProperty;
-            /**
-             * The assignee of the user task.
-             */
-            assignee?: StringFilterProperty;
-            /**
-             * The priority of the user task.
-             */
-            priority?: IntegerFilterProperty;
-            /**
-             * The element ID of the user task.
-             */
-            elementId?: ElementId;
-            /**
-             * The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
-             *
-             */
-            name?: StringFilterProperty;
-            /**
-             * The candidate group for this user task.
-             */
-            candidateGroup?: StringFilterProperty;
-            /**
-             * The candidate user for this user task.
-             */
-            candidateUser?: StringFilterProperty;
-            /**
-             * Tenant ID of this user task.
-             */
-            tenantId?: StringFilterProperty;
-            /**
-             * The ID of the process definition.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            /**
-             * The user task creation date.
-             */
-            creationDate?: DateTimeFilterProperty;
-            /**
-             * The user task completion date.
-             */
-            completionDate?: DateTimeFilterProperty;
-            /**
-             * The user task follow-up date.
-             */
-            followUpDate?: DateTimeFilterProperty;
-            /**
-             * The user task due date.
-             */
-            dueDate?: DateTimeFilterProperty;
-            processInstanceVariables?: Array<VariableValueFilterProperty>;
-            localVariables?: Array<VariableValueFilterProperty>;
-            /**
-             * The key for this user task.
-             */
-            userTaskKey?: UserTaskKey;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the element instance.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            tags?: TagSet;
-        };
-    };
+    body?: UserTaskSearchQuery;
     path?: never;
     query?: never;
     url: '/user-tasks/search';
@@ -17021,101 +14812,9 @@ export type SearchUserTasksError = SearchUserTasksErrors[keyof SearchUserTasksEr
 
 export type SearchUserTasksResponses = {
     /**
-     * User task search query response.
+     * The user task search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching user tasks.
-         */
-        items?: Array<{
-            /**
-             * The name for this user task.
-             */
-            name?: string;
-            state?: UserTaskStateEnum;
-            /**
-             * The assignee of the user task.
-             */
-            assignee?: string;
-            /**
-             * The element ID of the user task.
-             */
-            elementId?: ElementId;
-            /**
-             * The candidate groups for this user task.
-             */
-            candidateGroups?: Array<string>;
-            /**
-             * The candidate users for this user task.
-             */
-            candidateUsers?: Array<string>;
-            /**
-             * The ID of the process definition.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            /**
-             * The creation date of a user task.
-             */
-            creationDate?: string;
-            /**
-             * The completion date of a user task.
-             */
-            completionDate?: string;
-            /**
-             * The follow date of a user task.
-             */
-            followUpDate?: string;
-            /**
-             * The due date of a user task.
-             */
-            dueDate?: string;
-            tenantId?: TenantId;
-            /**
-             * The external form reference.
-             */
-            externalFormReference?: string;
-            /**
-             * The version of the process definition.
-             */
-            processDefinitionVersion?: number;
-            /**
-             * Custom headers for the user task.
-             */
-            customHeaders?: {
-                [key: string]: string;
-            };
-            /**
-             * The priority of a user task. The higher the value the higher the priority.
-             */
-            priority?: number;
-            /**
-             * The key of the user task.
-             */
-            userTaskKey?: UserTaskKey;
-            /**
-             * The key of the element instance.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The name of the process definition.
-             */
-            processName?: string;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the form.
-             */
-            formKey?: FormKey;
-            tags?: TagSet;
-        }>;
-    };
+    200: UserTaskSearchQueryResult;
 };
 
 export type SearchUserTasksResponse = SearchUserTasksResponses[keyof SearchUserTasksResponses];
@@ -17161,94 +14860,7 @@ export type GetUserTaskResponses = {
     /**
      * The user task is successfully returned.
      */
-    200: {
-        /**
-         * The name for this user task.
-         */
-        name?: string;
-        state?: UserTaskStateEnum;
-        /**
-         * The assignee of the user task.
-         */
-        assignee?: string;
-        /**
-         * The element ID of the user task.
-         */
-        elementId?: ElementId;
-        /**
-         * The candidate groups for this user task.
-         */
-        candidateGroups?: Array<string>;
-        /**
-         * The candidate users for this user task.
-         */
-        candidateUsers?: Array<string>;
-        /**
-         * The ID of the process definition.
-         */
-        processDefinitionId?: ProcessDefinitionId;
-        /**
-         * The creation date of a user task.
-         */
-        creationDate?: string;
-        /**
-         * The completion date of a user task.
-         */
-        completionDate?: string;
-        /**
-         * The follow date of a user task.
-         */
-        followUpDate?: string;
-        /**
-         * The due date of a user task.
-         */
-        dueDate?: string;
-        tenantId?: TenantId;
-        /**
-         * The external form reference.
-         */
-        externalFormReference?: string;
-        /**
-         * The version of the process definition.
-         */
-        processDefinitionVersion?: number;
-        /**
-         * Custom headers for the user task.
-         */
-        customHeaders?: {
-            [key: string]: string;
-        };
-        /**
-         * The priority of a user task. The higher the value the higher the priority.
-         */
-        priority?: number;
-        /**
-         * The key of the user task.
-         */
-        userTaskKey?: UserTaskKey;
-        /**
-         * The key of the element instance.
-         */
-        elementInstanceKey?: ElementInstanceKey;
-        /**
-         * The name of the process definition.
-         */
-        processName?: string;
-        /**
-         * The key of the process definition.
-         */
-        processDefinitionKey?: ProcessDefinitionKey;
-        /**
-         * The key of the process instance.
-         */
-        processInstanceKey?: ProcessInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-        /**
-         * The key of the form.
-         */
-        formKey?: FormKey;
-        tags?: TagSet;
-    };
+    200: UserTaskResult;
 };
 
 export type GetUserTaskResponse = GetUserTaskResponses[keyof GetUserTaskResponses];
@@ -17398,16 +15010,7 @@ export type AssignUserTaskResponses = {
 export type AssignUserTaskResponse = AssignUserTaskResponses[keyof AssignUserTaskResponses];
 
 export type SearchUserTaskAuditLogsData = {
-    /**
-     * User task search query request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<AuditLogSearchQuerySortRequest>;
-        filter?: UserTaskAuditLogFilter;
-    };
+    body?: UserTaskAuditLogSearchQueryRequest;
     path: {
         /**
          * The key of the user task.
@@ -17433,128 +15036,9 @@ export type SearchUserTaskAuditLogsError = SearchUserTaskAuditLogsErrors[keyof S
 
 export type SearchUserTaskAuditLogsResponses = {
     /**
-     * Audit log search response.
+     * The user task audit log search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching audit logs.
-         */
-        items?: Array<{
-            /**
-             * The unique key of the audit log entry.
-             */
-            auditLogKey?: AuditLogKey;
-            entityKey?: AuditLogEntityKey;
-            entityType?: AuditLogEntityTypeEnum;
-            operationType?: AuditLogOperationTypeEnum;
-            /**
-             * Key of the batch operation.
-             */
-            batchOperationKey?: BatchOperationKey;
-            /**
-             * The type of batch operation performed, if this is part of a batch.
-             */
-            batchOperationType?: BatchOperationTypeEnum;
-            /**
-             * The timestamp when the operation occurred.
-             */
-            timestamp?: string;
-            /**
-             * The ID of the actor who performed the operation.
-             */
-            actorId?: string;
-            actorType?: AuditLogActorTypeEnum;
-            /**
-             * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
-             */
-            agentElementId?: string;
-            /**
-             * The tenant ID of the audit log.
-             */
-            tenantId?: TenantId;
-            result?: AuditLogResultEnum;
-            /**
-             * Additional notes about the operation.
-             */
-            annotation?: string;
-            category?: AuditLogCategoryEnum;
-            /**
-             * The process definition ID.
-             */
-            processDefinitionId?: ProcessDefinitionId;
-            /**
-             * The key of the process definition.
-             */
-            processDefinitionKey?: ProcessDefinitionKey;
-            /**
-             * The key of the process instance.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-            /**
-             * The key of the element instance.
-             */
-            elementInstanceKey?: ElementInstanceKey;
-            /**
-             * The key of the job.
-             */
-            jobKey?: JobKey;
-            /**
-             * The key of the user task.
-             */
-            userTaskKey?: UserTaskKey;
-            /**
-             * The decision requirements ID.
-             */
-            decisionRequirementsId?: string;
-            /**
-             * The assigned key of the decision requirements.
-             */
-            decisionRequirementsKey?: DecisionRequirementsKey;
-            /**
-             * The decision definition ID.
-             */
-            decisionDefinitionId?: DecisionDefinitionId;
-            /**
-             * The key of the decision definition.
-             */
-            decisionDefinitionKey?: DecisionDefinitionKey;
-            /**
-             * The key of the decision evaluation.
-             */
-            decisionEvaluationKey?: DecisionEvaluationKey;
-            /**
-             * The key of the deployment.
-             */
-            deploymentKey?: DeploymentKey;
-            /**
-             * The key of the form.
-             */
-            formKey?: FormKey;
-            /**
-             * The system-assigned key for this resource.
-             */
-            resourceKey?: ResourceKey;
-            /**
-             * The key of the related entity. The content depends on the operation type and entity type.
-             * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
-             *
-             */
-            relatedEntityKey?: AuditLogEntityKey;
-            /**
-             * The type of the related entity. The content depends on the operation type and entity type.
-             * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
-             *
-             */
-            relatedEntityType?: AuditLogEntityTypeEnum;
-            /**
-             * Additional description of the entity affected by the operation.
-             * For example, for variable operations, this will contain the variable name.
-             *
-             */
-            entityDescription?: string;
-        }>;
-    };
+    200: AuditLogSearchQueryResult;
 };
 
 export type SearchUserTaskAuditLogsResponse = SearchUserTaskAuditLogsResponses[keyof SearchUserTaskAuditLogsResponses];
@@ -17648,30 +15132,7 @@ export type GetUserTaskFormResponses = {
     /**
      * The form is successfully returned.
      */
-    200: {
-        /**
-         * The tenant ID of the form.
-         */
-        tenantId?: TenantId;
-        /**
-         * The user-provided identifier of the form.
-         */
-        formId?: FormId;
-        /**
-         * The form content.
-         */
-        schema?: {
-            [key: string]: unknown;
-        };
-        /**
-         * The version of the the deployed form.
-         */
-        version?: number;
-        /**
-         * The assigned key, which acts as a unique identifier for this form.
-         */
-        formKey?: FormKey;
-    };
+    200: FormResult;
     /**
      * The user task was found, but no form is associated with it.
      */
@@ -17688,22 +15149,11 @@ export type SearchUserTaskVariablesData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
-            order?: SortOrderEnum;
-        }>;
+        sort?: Array<VariableSearchQuerySortRequest>;
         /**
          * The user task variable search filters.
          */
-        filter?: {
-            /**
-             * Name of the variable.
-             */
-            name?: StringFilterProperty;
-        };
+        filter?: UserTaskVariableFilter;
     };
     path: {
         /**
@@ -17735,98 +15185,15 @@ export type SearchUserTaskVariablesError = SearchUserTaskVariablesErrors[keyof S
 
 export type SearchUserTaskVariablesResponses = {
     /**
-     * Variable search query response.
+     * The user task variable search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching variables.
-         */
-        items?: Array<{
-            /**
-             * Name of this variable.
-             */
-            name?: string;
-            /**
-             * Tenant ID of this variable.
-             */
-            tenantId?: TenantId;
-            /**
-             * The key for this variable.
-             */
-            variableKey?: VariableKey;
-            /**
-             * The key of the scope of this variable.
-             */
-            scopeKey?: ScopeKey;
-            /**
-             * The key of the process instance of this variable.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-        } & {
-            /**
-             * Value of this variable. Can be truncated.
-             */
-            value?: string;
-            /**
-             * Whether the value is truncated or not.
-             */
-            isTruncated?: boolean;
-        }>;
-    };
+    200: VariableSearchQueryResult;
 };
 
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
 
 export type SearchVariablesData = {
-    /**
-     * Variable search query request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * Variable filter request.
-         */
-        filter?: {
-            /**
-             * Name of the variable.
-             */
-            name?: StringFilterProperty;
-            /**
-             * The value of the variable.
-             */
-            value?: StringFilterProperty;
-            /**
-             * Tenant ID of this variable.
-             */
-            tenantId?: TenantId;
-            /**
-             * Whether the value is truncated or not.
-             */
-            isTruncated?: boolean;
-            /**
-             * The key for this variable.
-             */
-            variableKey?: VariableKeyFilterProperty;
-            /**
-             * The key of the scope of this variable.
-             */
-            scopeKey?: ScopeKeyFilterProperty;
-            /**
-             * The key of the process instance of this variable.
-             */
-            processInstanceKey?: ProcessInstanceKeyFilterProperty;
-        };
-    };
+    body?: VariableSearchQuery;
     path?: never;
     query?: {
         /**
@@ -17860,45 +15227,9 @@ export type SearchVariablesError = SearchVariablesErrors[keyof SearchVariablesEr
 
 export type SearchVariablesResponses = {
     /**
-     * Variable search query response.
+     * The variable search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching variables.
-         */
-        items?: Array<{
-            /**
-             * Name of this variable.
-             */
-            name?: string;
-            /**
-             * Tenant ID of this variable.
-             */
-            tenantId?: TenantId;
-            /**
-             * The key for this variable.
-             */
-            variableKey?: VariableKey;
-            /**
-             * The key of the scope of this variable.
-             */
-            scopeKey?: ScopeKey;
-            /**
-             * The key of the process instance of this variable.
-             */
-            processInstanceKey?: ProcessInstanceKey;
-            rootProcessInstanceKey?: ProcessInstanceKey;
-        } & {
-            /**
-             * Value of this variable. Can be truncated.
-             */
-            value?: string;
-            /**
-             * Whether the value is truncated or not.
-             */
-            isTruncated?: boolean;
-        }>;
-    };
+    200: VariableSearchQueryResult;
 };
 
 export type SearchVariablesResponse = SearchVariablesResponses[keyof SearchVariablesResponses];
@@ -17942,36 +15273,9 @@ export type GetVariableError = GetVariableErrors[keyof GetVariableErrors];
 
 export type GetVariableResponses = {
     /**
-     * Variable search response item.
+     * The variable is successfully returned.
      */
-    200: {
-        /**
-         * Name of this variable.
-         */
-        name?: string;
-        /**
-         * Tenant ID of this variable.
-         */
-        tenantId?: TenantId;
-        /**
-         * The key for this variable.
-         */
-        variableKey?: VariableKey;
-        /**
-         * The key of the scope of this variable.
-         */
-        scopeKey?: ScopeKey;
-        /**
-         * The key of the process instance of this variable.
-         */
-        processInstanceKey?: ProcessInstanceKey;
-        rootProcessInstanceKey?: ProcessInstanceKey;
-    } & {
-        /**
-         * Full value of this variable.
-         */
-        value?: string;
-    };
+    200: VariableResult;
 };
 
 export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponses];
