@@ -597,7 +597,7 @@ export const zExpressionEvaluationResult = z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The evaluated expression'
     }),
-    result: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    result: z.unknown().register(z.globalRegistry, {
         description: 'The result value. Its type can vary.'
     }),
     warnings: z.array(z.string()).register(z.globalRegistry, {
@@ -974,6 +974,58 @@ export const zDateTimeFilterProperty = z.union([
     zAdvancedDateTimeFilter
 ]);
 
+/**
+ * How the global listener was defined.
+ */
+export const zGlobalListenerSourceEnum = z.enum([
+    'CONFIGURATION',
+    'API'
+]).register(z.globalRegistry, {
+    description: 'How the global listener was defined.'
+});
+
+/**
+ * The event type that triggers the user task listener.
+ */
+export const zGlobalTaskListenerEventTypeEnum = z.enum([
+    'all',
+    'creating',
+    'assigning',
+    'updating',
+    'completing',
+    'canceling'
+]).register(z.globalRegistry, {
+    description: 'The event type that triggers the user task listener.'
+});
+
+export const zGlobalListenerBase = z.object({
+    type: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The name of the job type, used as a reference to specify which job workers request the respective listener job.'
+    })),
+    retries: z.optional(z.int().register(z.globalRegistry, {
+        description: 'Number of retries for the listener job.'
+    })),
+    afterNonGlobal: z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Whether the listener should run after model-level listeners.'
+    })),
+    priority: z.optional(z.int().register(z.globalRegistry, {
+        description: 'The priority of the listener. Higher priority listeners are executed before lower priority ones.'
+    }))
+});
+
+/**
+ * List of user task event types that trigger the listener.
+ */
+export const zGlobalTaskListenerEventTypes = z.array(zGlobalTaskListenerEventTypeEnum).register(z.globalRegistry, {
+    description: 'List of user task event types that trigger the listener.'
+});
+
+export const zGlobalTaskListenerBase = zGlobalListenerBase.and(z.object({
+    eventTypes: z.optional(zGlobalTaskListenerEventTypes)
+}));
+
+export const zUpdateGlobalTaskListenerRequest = zGlobalTaskListenerBase;
+
 export const zGroupCreateRequest = z.object({
     groupId: z.string().register(z.globalRegistry, {
         description: 'The ID of the new group.'
@@ -1111,6 +1163,23 @@ export const zFormId = z.string().register(z.globalRegistry, {
 export const zDecisionDefinitionId = z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
     description: 'Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.'
 });
+
+/**
+ * The user-defined id for the global listener
+ */
+export const zGlobalListenerId = z.string().register(z.globalRegistry, {
+    description: 'The user-defined id for the global listener'
+});
+
+export const zCreateGlobalTaskListenerRequest = zGlobalTaskListenerBase.and(z.object({
+    id: zGlobalListenerId,
+    eventTypes: zGlobalTaskListenerEventTypes
+}));
+
+export const zGlobalTaskListenerResult = zGlobalTaskListenerBase.and(z.object({
+    id: z.optional(zGlobalListenerId),
+    source: z.optional(zGlobalListenerSourceEnum)
+}));
 
 /**
  * The unique identifier of the tenant.
@@ -2528,6 +2597,9 @@ export const zAuditLogResult = z.object({
         description: 'The ID of the actor who performed the operation.'
     })),
     actorType: z.optional(zAuditLogActorTypeEnum),
+    agentElementId: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).'
+    })),
     tenantId: z.optional(zTenantId),
     result: z.optional(zAuditLogResultEnum),
     annotation: z.optional(z.string().register(z.globalRegistry, {
@@ -3088,7 +3160,7 @@ export const zProblemDetail = z.object({
     detail: z.optional(z.string().register(z.globalRegistry, {
         description: 'An explanation of the problem in more detail.'
     })),
-    instance: z.optional(z.url().register(z.globalRegistry, {
+    instance: z.optional(z.string().register(z.globalRegistry, {
         description: 'A URI path identifying the origin of the problem.'
     }))
 }).register(z.globalRegistry, {
@@ -6013,6 +6085,7 @@ export const zAuditLogFilter = z.object({
     timestamp: z.optional(zDateTimeFilterProperty),
     actorId: z.optional(zStringFilterProperty),
     actorType: z.optional(zAuditLogActorTypeFilterProperty),
+    agentElementId: z.optional(zStringFilterProperty),
     entityKey: z.optional(zAuditLogEntityKeyFilterProperty),
     entityType: z.optional(zEntityTypeFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
@@ -6413,6 +6486,9 @@ export const zSearchAuditLogsResponse = zSearchQueryResponse.and(z.object({
             description: 'The ID of the actor who performed the operation.'
         })),
         actorType: z.optional(zAuditLogActorTypeEnum),
+        agentElementId: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).'
+        })),
         tenantId: z.optional(zTenantId),
         result: z.optional(zAuditLogResultEnum),
         annotation: z.optional(z.string().register(z.globalRegistry, {
@@ -6475,6 +6551,9 @@ export const zGetAuditLogResponse = z.object({
         description: 'The ID of the actor who performed the operation.'
     })),
     actorType: z.optional(zAuditLogActorTypeEnum),
+    agentElementId: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).'
+    })),
     tenantId: z.optional(zTenantId),
     result: z.optional(zAuditLogResultEnum),
     annotation: z.optional(z.string().register(z.globalRegistry, {
@@ -7605,6 +7684,53 @@ export const zEvaluateExpressionData = z.object({
  * Expression evaluated successfully
  */
 export const zEvaluateExpressionResponse = zExpressionEvaluationResult;
+
+export const zCreateGlobalTaskListenerData = z.object({
+    body: zCreateGlobalTaskListenerRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The global user task listener was created successfully.
+ */
+export const zCreateGlobalTaskListenerResponse = zGlobalTaskListenerBase.and(z.object({
+    id: z.optional(zGlobalListenerId),
+    source: z.optional(zGlobalListenerSourceEnum)
+}).register(z.globalRegistry, {
+    description: 'The global user task listener was created successfully.'
+}));
+
+export const zDeleteGlobalTaskListenerData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        id: zGlobalListenerId
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The global listener was deleted successfully.
+ */
+export const zDeleteGlobalTaskListenerResponse = z.void().register(z.globalRegistry, {
+    description: 'The global listener was deleted successfully.'
+});
+
+export const zUpdateGlobalTaskListenerData = z.object({
+    body: zGlobalTaskListenerBase,
+    path: z.object({
+        id: zGlobalListenerId
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The global listener was updated successfully.
+ */
+export const zUpdateGlobalTaskListenerResponse = zGlobalTaskListenerBase.and(z.object({
+    id: z.optional(zGlobalListenerId),
+    source: z.optional(zGlobalListenerSourceEnum)
+}));
 
 export const zCreateGroupData = z.object({
     body: z.optional(zGroupCreateRequest),
@@ -9436,6 +9562,11 @@ export const zCreateAdminUserData = z.object({
     query: z.optional(z.never())
 });
 
+/**
+ * The admin user was created successfully.
+ */
+export const zCreateAdminUserResponse = zUserCreateResult;
+
 export const zBroadcastSignalData = z.object({
     body: zSignalBroadcastRequest,
     path: z.optional(z.never()),
@@ -10177,6 +10308,9 @@ export const zSearchUserTaskAuditLogsResponse = zSearchQueryResponse.and(z.objec
             description: 'The ID of the actor who performed the operation.'
         })),
         actorType: z.optional(zAuditLogActorTypeEnum),
+        agentElementId: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).'
+        })),
         tenantId: z.optional(zTenantId),
         result: z.optional(zAuditLogResultEnum),
         annotation: z.optional(z.string().register(z.globalRegistry, {

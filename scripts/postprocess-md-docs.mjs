@@ -91,9 +91,8 @@ function addFrontmatter(filePath) {
 
   // Add sidebar_position for top-level docs
   const isTopLevel = dir === basename(docsDir);
-  const positionLine = isTopLevel && stem in DOC_POSITIONS
-    ? `sidebar_position: ${DOC_POSITIONS[stem]}\n`
-    : '';
+  const positionLine =
+    isTopLevel && stem in DOC_POSITIONS ? `sidebar_position: ${DOC_POSITIONS[stem]}\n` : '';
 
   const frontmatter = `---
 title: "${yamlTitle}"
@@ -157,8 +156,10 @@ function cleanHtml(filePath) {
     }
 
     // Final cleanup: strip any residual HTML tags
-    codeBlockParts[i] = codeBlockParts[i]
-      .replace(/<\/?(?:ul|ol|li|div|span|a|p|br|em|strong|code|pre|blockquote|table|thead|tbody|tr|td|th|hr|h[1-6]|img|figure|figcaption|section|article|nav|header|footer|main|aside|details|summary|dl|dt|dd)[^>]*>/g, '');
+    codeBlockParts[i] = codeBlockParts[i].replace(
+      /<\/?(?:ul|ol|li|div|span|a|p|br|em|strong|code|pre|blockquote|table|thead|tbody|tr|td|th|hr|h[1-6]|img|figure|figcaption|section|article|nav|header|footer|main|aside|details|summary|dl|dt|dd)[^>]*>/g,
+      ''
+    );
 
     if (codeBlockParts[i] !== before) changed = true;
   }
@@ -223,7 +224,8 @@ function addTechnicalPreviewBanner(filePath) {
   if (!rel.includes('/fp/') && !rel.endsWith('/fp/index.md')) return;
 
   let content = readFileSync(filePath, 'utf-8');
-  const banner = '\n:::caution Technical Preview\nThe Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.\n:::\n';
+  const banner =
+    '\n:::caution Technical Preview\nThe Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.\n:::\n';
 
   // Insert after first H1
   const h1End = content.match(/^#\s+.+$/m);

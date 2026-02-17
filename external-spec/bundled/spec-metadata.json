@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59",
+  "specHash": "sha256:e5c28cd917d38e51aa2290bacffab37f63d08724be28bfd6901e20b5a932569d",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -513,6 +513,32 @@
         "deprecated": false
       },
       "stableId": "form-key"
+    },
+    {
+      "name": "GlobalListenerId",
+      "semanticType": "GlobalListenerId",
+      "category": "model-id",
+      "description": "The user-defined id for the global listener",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "format": "GlobalListenerId"
+      },
+      "examples": [
+        "GlobalListener_1"
+      ],
+      "extensions": {
+        "x-semantic-type": "GlobalListenerId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "global-listener-id"
     },
     {
       "name": "IncidentKey",
@@ -1784,6 +1810,11 @@
   ],
   "arrays": [
     {
+      "name": "GlobalTaskListenerEventTypes",
+      "itemRef": "GlobalTaskListenerEventTypeEnum",
+      "uniqueItems": false
+    },
+    {
       "name": "TagSet",
       "itemRef": "Tag",
       "maxItems": 10,
@@ -2005,6 +2036,30 @@
       "method": "post",
       "tags": [
         "Element instance"
+      ]
+    },
+    {
+      "operationId": "createGlobalTaskListener",
+      "path": "/global-listeners/user-task",
+      "method": "post",
+      "tags": [
+        "Global listener"
+      ]
+    },
+    {
+      "operationId": "updateGlobalTaskListener",
+      "path": "/global-listeners/user-task/{id}",
+      "method": "put",
+      "tags": [
+        "Global listener"
+      ]
+    },
+    {
+      "operationId": "deleteGlobalTaskListener",
+      "path": "/global-listeners/user-task/{id}",
+      "method": "delete",
+      "tags": [
+        "Global listener"
       ]
     },
     {
@@ -2831,6 +2886,7 @@
         "Cluster Variable"
       ],
       "summary": "Create a global-scoped cluster variable",
+      "description": "Create a global-scoped cluster variable.",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -2848,6 +2904,7 @@
         "Cluster Variable"
       ],
       "summary": "Get a global-scoped cluster variable",
+      "description": "Get a global-scoped cluster variable.",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -2887,6 +2944,7 @@
         "Cluster Variable"
       ],
       "summary": "Delete a global-scoped cluster variable",
+      "description": "Delete a global-scoped cluster variable.",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -2928,6 +2986,7 @@
         "Cluster Variable"
       ],
       "summary": "Create a tenant-scoped cluster variable",
+      "description": "Create a new cluster variable for the given tenant.",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -2947,6 +3006,7 @@
         "Cluster Variable"
       ],
       "summary": "Get a tenant-scoped cluster variable",
+      "description": "Get a tenant-scoped cluster variable.",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -2988,6 +3048,7 @@
         "Cluster Variable"
       ],
       "summary": "Delete a tenant-scoped cluster variable",
+      "description": "Delete a tenant-scoped cluster variable.",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -3515,6 +3576,64 @@
       "queryParams": [],
       "requestBodyUnionRefs": [],
       "optionalTenantIdInBody": true
+    },
+    {
+      "operationId": "createGlobalTaskListener",
+      "path": "/global-listeners/user-task",
+      "method": "post",
+      "tags": [
+        "Global listener"
+      ],
+      "summary": "Create global user task listener",
+      "description": "Create a new global user task listener.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "updateGlobalTaskListener",
+      "path": "/global-listeners/user-task/{id}",
+      "method": "put",
+      "tags": [
+        "Global listener"
+      ],
+      "summary": "Update global user task listener",
+      "description": "Updates a global user task listener.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "id"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "deleteGlobalTaskListener",
+      "path": "/global-listeners/user-task/{id}",
+      "method": "delete",
+      "tags": [
+        "Global listener"
+      ],
+      "summary": "Delete global user task listener",
+      "description": "Deletes a global user task listener.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "id"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
     },
     {
       "operationId": "createGroup",
@@ -5946,9 +6065,9 @@
     }
   ],
   "integrity": {
-    "totalSemanticKeys": 34,
+    "totalSemanticKeys": 35,
     "totalUnions": 49,
-    "totalOperations": 172,
-    "totalEventuallyConsistent": 90
+    "totalOperations": 175,
+    "totalEventuallyConsistent": 93
   }
 }

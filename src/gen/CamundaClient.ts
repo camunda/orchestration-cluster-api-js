@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 172
+// Operations: 175
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -176,6 +176,14 @@ export type createElementInstanceVariablesInput = createElementInstanceVariables
 type createGlobalClusterVariableOptions = Parameters<typeof Sdk.createGlobalClusterVariable>[0];
 type createGlobalClusterVariableBody = (NonNullable<createGlobalClusterVariableOptions> extends { body?: infer B } ? B : never);
 export type createGlobalClusterVariableInput = createGlobalClusterVariableBody;
+type createGlobalTaskListenerOptions = Parameters<typeof Sdk.createGlobalTaskListener>[0];
+type createGlobalTaskListenerBody = (NonNullable<createGlobalTaskListenerOptions> extends { body?: infer B } ? B : never);
+export type createGlobalTaskListenerInput = createGlobalTaskListenerBody;
+/** Management of eventual consistency **/
+export type createGlobalTaskListenerConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.createGlobalTaskListener>> 
+};
 type createGroupOptions = Parameters<typeof Sdk.createGroup>[0];
 type createGroupBody = (NonNullable<createGroupOptions> extends { body?: infer B } ? B : never);
 export type createGroupInput = createGroupBody;
@@ -230,6 +238,14 @@ export type deleteDocumentInput = { documentId: deleteDocumentPathParam_document
 type deleteGlobalClusterVariableOptions = Parameters<typeof Sdk.deleteGlobalClusterVariable>[0];
 type deleteGlobalClusterVariablePathParam_name = (NonNullable<deleteGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
 export type deleteGlobalClusterVariableInput = { name: deleteGlobalClusterVariablePathParam_name };
+type deleteGlobalTaskListenerOptions = Parameters<typeof Sdk.deleteGlobalTaskListener>[0];
+type deleteGlobalTaskListenerPathParam_id = (NonNullable<deleteGlobalTaskListenerOptions> extends { path: { id: infer P } } ? P : any);
+export type deleteGlobalTaskListenerInput = { id: deleteGlobalTaskListenerPathParam_id };
+/** Management of eventual consistency **/
+export type deleteGlobalTaskListenerConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteGlobalTaskListener>> 
+};
 type deleteGroupOptions = Parameters<typeof Sdk.deleteGroup>[0];
 type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 export type deleteGroupInput = { groupId: deleteGroupPathParam_groupId };
@@ -1059,6 +1075,15 @@ type updateGlobalClusterVariableOptions = Parameters<typeof Sdk.updateGlobalClus
 type updateGlobalClusterVariableBody = (NonNullable<updateGlobalClusterVariableOptions> extends { body?: infer B } ? B : never);
 type updateGlobalClusterVariablePathParam_name = (NonNullable<updateGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
 export type updateGlobalClusterVariableInput = updateGlobalClusterVariableBody & { name: updateGlobalClusterVariablePathParam_name };
+type updateGlobalTaskListenerOptions = Parameters<typeof Sdk.updateGlobalTaskListener>[0];
+type updateGlobalTaskListenerBody = (NonNullable<updateGlobalTaskListenerOptions> extends { body?: infer B } ? B : never);
+type updateGlobalTaskListenerPathParam_id = (NonNullable<updateGlobalTaskListenerOptions> extends { path: { id: infer P } } ? P : any);
+export type updateGlobalTaskListenerInput = updateGlobalTaskListenerBody & { id: updateGlobalTaskListenerPathParam_id };
+/** Management of eventual consistency **/
+export type updateGlobalTaskListenerConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.updateGlobalTaskListener>> 
+};
 type updateGroupOptions = Parameters<typeof Sdk.updateGroup>[0];
 type updateGroupBody = (NonNullable<updateGroupOptions> extends { body?: infer B } ? B : never);
 type updateGroupPathParam_groupId = (NonNullable<updateGroupOptions> extends { path: { groupId: infer P } } ? P : any);
@@ -2954,6 +2979,13 @@ export class CamundaClient {
         if (this._isVoidResponse(_respSchemaName)) {
           data = undefined;
         }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zCreateAdminUserResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createAdminUser', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
         return data;
         } catch(e) {
           // Defer normalization to outer executeWithHttpRetry boundary
@@ -3373,6 +3405,8 @@ export class CamundaClient {
 
   /**
    * Create a global-scoped cluster variable
+   *
+   * Create a global-scoped cluster variable.
     *
    * @operationId createGlobalClusterVariable
    * @tags Cluster Variable
@@ -3424,6 +3458,69 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false });
+    });
+  }
+
+  /**
+   * Create global user task listener
+   *
+   * Create a new global user task listener.
+    *
+   * @operationId createGlobalTaskListener
+   * @tags Global listener
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  createGlobalTaskListener(input: createGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: createGlobalTaskListenerConsistency): CancelablePromise<_DataOf<typeof Sdk.createGlobalTaskListener>>;
+  createGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: createGlobalTaskListenerConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('createGlobalTaskListener', Schemas.zCreateGlobalTaskListenerData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.createGlobalTaskListener(opts);
+        let data = this._evaluateResponse(_raw, 'createGlobalTaskListener', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zCreateGlobalTaskListenerResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zCreateGlobalTaskListenerResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createGlobalTaskListener', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('createGlobalTaskListener', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -3734,6 +3831,8 @@ export class CamundaClient {
 
   /**
    * Create a tenant-scoped cluster variable
+   *
+   * Create a new cluster variable for the given tenant.
     *
    * @operationId createTenantClusterVariable
    * @tags Cluster Variable
@@ -4106,6 +4205,8 @@ export class CamundaClient {
 
   /**
    * Delete a global-scoped cluster variable
+   *
+   * Delete a global-scoped cluster variable.
     *
    * @operationId deleteGlobalClusterVariable
    * @tags Cluster Variable
@@ -4157,6 +4258,69 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false });
+    });
+  }
+
+  /**
+   * Delete global user task listener
+   *
+   * Deletes a global user task listener.
+    *
+   * @operationId deleteGlobalTaskListener
+   * @tags Global listener
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  deleteGlobalTaskListener(input: deleteGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: deleteGlobalTaskListenerConsistency): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalTaskListener>>;
+  deleteGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: deleteGlobalTaskListenerConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { id } = arg || {};
+      let envelope: any = {};
+      envelope.path = { id };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('deleteGlobalTaskListener', Schemas.zDeleteGlobalTaskListenerData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteGlobalTaskListener(opts);
+        let data = this._evaluateResponse(_raw, 'deleteGlobalTaskListener', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteGlobalTaskListenerResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zDeleteGlobalTaskListenerResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteGlobalTaskListener', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('deleteGlobalTaskListener', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -4600,6 +4764,8 @@ export class CamundaClient {
 
   /**
    * Delete a tenant-scoped cluster variable
+   *
+   * Delete a tenant-scoped cluster variable.
     *
    * @operationId deleteTenantClusterVariable
    * @tags Cluster Variable
@@ -5660,6 +5826,8 @@ export class CamundaClient {
 
   /**
    * Get a global-scoped cluster variable
+   *
+   * Get a global-scoped cluster variable.
     *
    * @operationId getGlobalClusterVariable
    * @tags Cluster Variable
@@ -7160,6 +7328,8 @@ export class CamundaClient {
 
   /**
    * Get a tenant-scoped cluster variable
+   *
+   * Get a tenant-scoped cluster variable.
     *
    * @operationId getTenantClusterVariable
    * @tags Cluster Variable
@@ -11839,6 +12009,71 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false });
+    });
+  }
+
+  /**
+   * Update global user task listener
+   *
+   * Updates a global user task listener.
+    *
+   * @operationId updateGlobalTaskListener
+   * @tags Global listener
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  updateGlobalTaskListener(input: updateGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: updateGlobalTaskListenerConsistency): CancelablePromise<_DataOf<typeof Sdk.updateGlobalTaskListener>>;
+  updateGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: updateGlobalTaskListenerConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { id, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { id };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('updateGlobalTaskListener', Schemas.zUpdateGlobalTaskListenerData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.updateGlobalTaskListener(opts);
+        let data = this._evaluateResponse(_raw, 'updateGlobalTaskListener', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zUpdateGlobalTaskListenerResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zUpdateGlobalTaskListenerResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('updateGlobalTaskListener', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('updateGlobalTaskListener', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 

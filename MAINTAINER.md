@@ -399,12 +399,12 @@ The PR branch is version-scoped (e.g. `update-ts-sdk-docs/8.8`), so backport and
 
 ### What lives where
 
-| What | Location |
-| --- | --- |
-| Doc generation config | `typedoc-md.json` |
-| Generated Markdown output | `docs-md/` |
-| Sync workflow (in camunda-docs) | `.github/workflows/sync-ts-sdk-docs.yaml` |
-| Docs site target (next) | `docs/apis-tools/typescript/api-reference/` |
+| What                            | Location                                    |
+| ------------------------------- | ------------------------------------------- |
+| Doc generation config           | `typedoc-md.json`                           |
+| Generated Markdown output       | `docs-md/`                                  |
+| Sync workflow (in camunda-docs) | `.github/workflows/sync-ts-sdk-docs.yaml`   |
+| Docs site target (next)         | `docs/apis-tools/typescript/api-reference/` |
 
 ---
 

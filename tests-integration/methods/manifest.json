@@ -1,6 +1,6 @@
 {
-  "operations": 172,
-  "tests": 174,
+  "operations": 175,
+  "tests": 177,
   "missing": [],
   "ignored": [],
   "files": [
@@ -34,6 +34,7 @@
     "createDocuments.test.ts",
     "createElementInstanceVariables.test.ts",
     "createGlobalClusterVariable.test.ts",
+    "createGlobalTaskListener.test.ts",
     "createGroup.test.ts",
     "createMappingRule.test.ts",
     "createProcessInstance.test.ts",
@@ -46,6 +47,7 @@
     "deleteDecisionInstancesBatchOperation.test.ts",
     "deleteDocument.test.ts",
     "deleteGlobalClusterVariable.test.ts",
+    "deleteGlobalTaskListener.test.ts",
     "deleteGroup.test.ts",
     "deleteMappingRule.test.ts",
     "deleteProcessInstance.test.ts",
@@ -170,6 +172,7 @@
     "unassignUserTask.test.ts",
     "updateAuthorization.test.ts",
     "updateGlobalClusterVariable.test.ts",
+    "updateGlobalTaskListener.test.ts",
     "updateGroup.test.ts",
     "updateJob.test.ts",
     "updateMappingRule.test.ts",

@@ -83,6 +83,9 @@
       "name": "Expression"
     },
     {
+      "name": "Global listener"
+    },
+    {
       "name": "Group"
     },
     {
@@ -274,6 +277,10 @@
                     },
                     "actorType": {
                       "$ref": "#/components/schemas/AuditLogActorTypeEnum"
+                    },
+                    "agentElementId": {
+                      "type": "string",
+                      "description": "The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID)."
                     },
                     "tenantId": {
                       "allOf": [
@@ -1338,6 +1345,7 @@
           "Cluster Variable"
         ],
         "summary": "Create a global-scoped cluster variable",
+        "description": "Create a global-scoped cluster variable.",
         "requestBody": {
           "required": true,
           "content": {
@@ -1382,6 +1390,7 @@
           "Cluster Variable"
         ],
         "summary": "Get a global-scoped cluster variable",
+        "description": "Get a global-scoped cluster variable.",
         "parameters": [
           {
             "name": "name",
@@ -1499,6 +1508,7 @@
           "Cluster Variable"
         ],
         "summary": "Delete a global-scoped cluster variable",
+        "description": "Delete a global-scoped cluster variable.",
         "parameters": [
           {
             "name": "name",
@@ -1746,6 +1756,7 @@
           "Cluster Variable"
         ],
         "summary": "Create a tenant-scoped cluster variable",
+        "description": "Create a new cluster variable for the given tenant.",
         "parameters": [
           {
             "name": "tenantId",
@@ -1801,6 +1812,7 @@
           "Cluster Variable"
         ],
         "summary": "Get a tenant-scoped cluster variable",
+        "description": "Get a tenant-scoped cluster variable.",
         "parameters": [
           {
             "name": "tenantId",
@@ -1936,6 +1948,7 @@
           "Cluster Variable"
         ],
         "summary": "Delete a tenant-scoped cluster variable",
+        "description": "Delete a tenant-scoped cluster variable.",
         "parameters": [
           {
             "name": "tenantId",
@@ -2280,7 +2293,14 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "404": {
-            "description": "The decision is not found."
+            "description": "The decision is not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
@@ -4064,6 +4084,205 @@
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/global-listeners/user-task": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Global listener"
+        ],
+        "operationId": "createGlobalTaskListener",
+        "summary": "Create global user task listener",
+        "description": "Create a new global user task listener.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGlobalTaskListenerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "The global user task listener was created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/paths/~1global-listeners~1user-task/post/requestBody/content/application~1json/schema/allOf/0"
+                    }
+                  ],
+                  "properties": {
+                    "id": {
+                      "$ref": "#/components/schemas/GlobalListenerId"
+                    },
+                    "source": {
+                      "$ref": "#/components/schemas/GlobalListenerSourceEnum"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "409": {
+            "description": "A global listener with this id already exists.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        }
+      }
+    },
+    "/global-listeners/user-task/{id}": {
+      "put": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Global listener"
+        ],
+        "operationId": "updateGlobalTaskListener",
+        "summary": "Update global user task listener",
+        "description": "Updates a global user task listener.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the global user task listener to update.",
+            "schema": {
+              "$ref": "#/components/schemas/GlobalListenerId"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "eventTypes"
+                ],
+                "allOf": [
+                  {
+                    "$ref": "#/paths/~1global-listeners~1user-task/post/requestBody/content/application~1json/schema/allOf/0"
+                  }
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The global listener was updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/paths/~1global-listeners~1user-task/post/responses/201/content/application~1json/schema"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The global user task listener was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        }
+      },
+      "delete": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Global listener"
+        ],
+        "operationId": "deleteGlobalTaskListener",
+        "summary": "Delete global user task listener",
+        "description": "Deletes a global user task listener.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the global user task listener to delete.",
+            "schema": {
+              "$ref": "#/components/schemas/GlobalListenerId"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The global listener was deleted successfully."
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The global user task listener was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
           }
         }
       }
@@ -9212,7 +9431,6 @@
                   "deleteHistory": {
                     "description": "Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n",
                     "type": "boolean",
-                    "required": false,
                     "default": false
                   }
                 }
@@ -9361,7 +9579,7 @@
             "$ref": "#/paths/~1roles/post/responses/403"
           },
           "500": {
-            "description": "An internal error occurred while processing the request."
+            "$ref": "#/paths/~1clock/put/responses/500"
           }
         }
       }
@@ -10395,7 +10613,14 @@
         },
         "responses": {
           "201": {
-            "description": "The admin user was created successfully."
+            "description": "The admin user was created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserCreateResult"
+                }
+              }
+            }
           },
           "400": {
             "$ref": "#/paths/~1clock/put/responses/400"
@@ -10731,7 +10956,14 @@
             "$ref": "#/paths/~1roles/post/responses/403"
           },
           "404": {
-            "description": "Not found"
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
@@ -13464,6 +13696,10 @@
           "actorType": {
             "$ref": "#/components/schemas/AuditLogActorTypeEnum"
           },
+          "agentElementId": {
+            "type": "string",
+            "description": "The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID)."
+          },
           "tenantId": {
             "allOf": [
               {
@@ -13757,6 +13993,14 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/AuditLogActorTypeFilterProperty"
+              }
+            ]
+          },
+          "agentElementId": {
+            "description": "The agent element ID search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
               }
             ]
           },
@@ -17329,7 +17573,6 @@
           "deleteHistory": {
             "description": "Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n",
             "type": "boolean",
-            "required": false,
             "default": false
           }
         }
@@ -18159,7 +18402,6 @@
           },
           "result": {
             "description": "The result value. Its type can vary.",
-            "type": "object",
             "example": 30
           },
           "warnings": {
@@ -18421,6 +18663,114 @@
               }
             ],
             "description": "The assigned key, which acts as a unique identifier for this form."
+          }
+        }
+      },
+      "GlobalListenerSourceEnum": {
+        "type": "string",
+        "enum": [
+          "CONFIGURATION",
+          "API"
+        ],
+        "description": "How the global listener was defined."
+      },
+      "GlobalTaskListenerEventTypeEnum": {
+        "type": "string",
+        "enum": [
+          "all",
+          "creating",
+          "assigning",
+          "updating",
+          "completing",
+          "canceling"
+        ],
+        "description": "The event type that triggers the user task listener."
+      },
+      "GlobalListenerBase": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "The name of the job type, used as a reference to specify which job workers request the respective listener job.",
+            "type": "string",
+            "example": "order-items"
+          },
+          "retries": {
+            "description": "Number of retries for the listener job.",
+            "type": "integer"
+          },
+          "afterNonGlobal": {
+            "description": "Whether the listener should run after model-level listeners.",
+            "type": "boolean"
+          },
+          "priority": {
+            "description": "The priority of the listener. Higher priority listeners are executed before lower priority ones.",
+            "type": "integer"
+          }
+        }
+      },
+      "GlobalTaskListenerBase": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GlobalListenerBase"
+          }
+        ],
+        "properties": {
+          "eventTypes": {
+            "$ref": "#/components/schemas/GlobalTaskListenerEventTypes"
+          }
+        }
+      },
+      "GlobalTaskListenerEventTypes": {
+        "description": "List of user task event types that trigger the listener.",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GlobalTaskListenerEventTypeEnum"
+        }
+      },
+      "CreateGlobalTaskListenerRequest": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "eventTypes"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GlobalTaskListenerBase"
+          }
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/GlobalListenerId"
+          }
+        }
+      },
+      "UpdateGlobalTaskListenerRequest": {
+        "type": "object",
+        "required": [
+          "type",
+          "eventTypes"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GlobalTaskListenerBase"
+          }
+        ]
+      },
+      "GlobalTaskListenerResult": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GlobalTaskListenerBase"
+          }
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/GlobalListenerId"
+          },
+          "source": {
+            "$ref": "#/components/schemas/GlobalListenerSourceEnum"
           }
         }
       },
@@ -18750,6 +19100,13 @@
         "maxLength": 256,
         "pattern": "^[A-Za-z0-9_@.+-]+$",
         "example": "new-hire-onboarding-workflow"
+      },
+      "GlobalListenerId": {
+        "description": "The user-defined id for the global listener",
+        "type": "string",
+        "format": "GlobalListenerId",
+        "x-semantic-type": "GlobalListenerId",
+        "example": "GlobalListener_1"
       },
       "TenantId": {
         "example": "customer-service",
@@ -22431,7 +22788,7 @@
             "format": "uri",
             "description": "A URI identifying the problem type.",
             "default": "about:blank",
-            "example": "about:blank"
+            "example": "https://docs.camunda.io/api/v2.0/problem-types/bad-request"
           },
           "title": {
             "type": "string",
@@ -22453,7 +22810,7 @@
           },
           "instance": {
             "type": "string",
-            "format": "uri",
+            "format": "uri-reference",
             "description": "A URI path identifying the origin of the problem.",
             "example": "/v2/jobs/activation"
           }

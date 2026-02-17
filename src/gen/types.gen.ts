@@ -36,6 +36,10 @@ export type AuditLogResult = {
     actorId?: string;
     actorType?: AuditLogActorTypeEnum;
     /**
+     * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
+     */
+    agentElementId?: string;
+    /**
      * The tenant ID of the audit log.
      */
     tenantId?: TenantId;
@@ -184,6 +188,10 @@ export type AuditLogFilter = {
      * The actor type search filter.
      */
     actorType?: AuditLogActorTypeFilterProperty;
+    /**
+     * The agent element ID search filter.
+     */
+    agentElementId?: StringFilterProperty;
     /**
      * The entity key search filter.
      */
@@ -2599,9 +2607,7 @@ export type ExpressionEvaluationResult = {
     /**
      * The result value. Its type can vary.
      */
-    result: {
-        [key: string]: unknown;
-    };
+    result: unknown;
     /**
      * List of warnings generated during expression evaluation
      */
@@ -2781,6 +2787,56 @@ export type FormResult = {
      * The assigned key, which acts as a unique identifier for this form.
      */
     formKey?: FormKey;
+};
+
+/**
+ * How the global listener was defined.
+ */
+export type GlobalListenerSourceEnum = 'CONFIGURATION' | 'API';
+
+/**
+ * The event type that triggers the user task listener.
+ */
+export type GlobalTaskListenerEventTypeEnum = 'all' | 'creating' | 'assigning' | 'updating' | 'completing' | 'canceling';
+
+export type GlobalListenerBase = {
+    /**
+     * The name of the job type, used as a reference to specify which job workers request the respective listener job.
+     */
+    type?: string;
+    /**
+     * Number of retries for the listener job.
+     */
+    retries?: number;
+    /**
+     * Whether the listener should run after model-level listeners.
+     */
+    afterNonGlobal?: boolean;
+    /**
+     * The priority of the listener. Higher priority listeners are executed before lower priority ones.
+     */
+    priority?: number;
+};
+
+export type GlobalTaskListenerBase = GlobalListenerBase & {
+    eventTypes?: GlobalTaskListenerEventTypes;
+};
+
+/**
+ * List of user task event types that trigger the listener.
+ */
+export type GlobalTaskListenerEventTypes = Array<GlobalTaskListenerEventTypeEnum>;
+
+export type CreateGlobalTaskListenerRequest = GlobalTaskListenerBase & {
+    id: GlobalListenerId;
+    eventTypes: GlobalTaskListenerEventTypes;
+};
+
+export type UpdateGlobalTaskListenerRequest = GlobalTaskListenerBase;
+
+export type GlobalTaskListenerResult = GlobalTaskListenerBase & {
+    id?: GlobalListenerId;
+    source?: GlobalListenerSourceEnum;
 };
 
 export type GroupCreateRequest = {
@@ -2977,6 +3033,11 @@ export type FormId = CamundaKey<'FormId'>;
  * Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
  */
 export type DecisionDefinitionId = CamundaKey<'DecisionDefinitionId'>;
+
+/**
+ * The user-defined id for the global listener
+ */
+export type GlobalListenerId = CamundaKey<'GlobalListenerId'>;
 
 /**
  * The unique identifier of the tenant.
@@ -7703,6 +7764,10 @@ export type SearchAuditLogsResponses = {
             actorId?: string;
             actorType?: AuditLogActorTypeEnum;
             /**
+             * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
+             */
+            agentElementId?: string;
+            /**
              * The tenant ID of the audit log.
              */
             tenantId?: TenantId;
@@ -7855,6 +7920,10 @@ export type GetAuditLogResponses = {
          */
         actorId?: string;
         actorType?: AuditLogActorTypeEnum;
+        /**
+         * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
+         */
+        agentElementId?: string;
         /**
          * The tenant ID of the audit log.
          */
@@ -9210,7 +9279,7 @@ export type EvaluateDecisionErrors = {
     /**
      * The decision is not found.
      */
-    404: unknown;
+    404: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -10647,6 +10716,160 @@ export type EvaluateExpressionResponses = {
 };
 
 export type EvaluateExpressionResponse = EvaluateExpressionResponses[keyof EvaluateExpressionResponses];
+
+export type CreateGlobalTaskListenerData = {
+    body: CreateGlobalTaskListenerRequest;
+    path?: never;
+    query?: never;
+    url: '/global-listeners/user-task';
+};
+
+export type CreateGlobalTaskListenerErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * A global listener with this id already exists.
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type CreateGlobalTaskListenerError = CreateGlobalTaskListenerErrors[keyof CreateGlobalTaskListenerErrors];
+
+export type CreateGlobalTaskListenerResponses = {
+    /**
+     * The global user task listener was created successfully.
+     */
+    201: GlobalTaskListenerBase & {
+        id?: GlobalListenerId;
+        source?: GlobalListenerSourceEnum;
+    };
+};
+
+export type CreateGlobalTaskListenerResponse = CreateGlobalTaskListenerResponses[keyof CreateGlobalTaskListenerResponses];
+
+export type DeleteGlobalTaskListenerData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the global user task listener to delete.
+         */
+        id: GlobalListenerId;
+    };
+    query?: never;
+    url: '/global-listeners/user-task/{id}';
+};
+
+export type DeleteGlobalTaskListenerErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The global user task listener was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteGlobalTaskListenerError = DeleteGlobalTaskListenerErrors[keyof DeleteGlobalTaskListenerErrors];
+
+export type DeleteGlobalTaskListenerResponses = {
+    /**
+     * The global listener was deleted successfully.
+     */
+    204: void;
+};
+
+export type DeleteGlobalTaskListenerResponse = DeleteGlobalTaskListenerResponses[keyof DeleteGlobalTaskListenerResponses];
+
+export type UpdateGlobalTaskListenerData = {
+    body: GlobalTaskListenerBase;
+    path: {
+        /**
+         * The id of the global user task listener to update.
+         */
+        id: GlobalListenerId;
+    };
+    query?: never;
+    url: '/global-listeners/user-task/{id}';
+};
+
+export type UpdateGlobalTaskListenerErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The global user task listener was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type UpdateGlobalTaskListenerError = UpdateGlobalTaskListenerErrors[keyof UpdateGlobalTaskListenerErrors];
+
+export type UpdateGlobalTaskListenerResponses = {
+    /**
+     * The global listener was updated successfully.
+     */
+    200: GlobalTaskListenerBase & {
+        id?: GlobalListenerId;
+        source?: GlobalListenerSourceEnum;
+    };
+};
+
+export type UpdateGlobalTaskListenerResponse = UpdateGlobalTaskListenerResponses[keyof UpdateGlobalTaskListenerResponses];
 
 export type CreateGroupData = {
     body?: GroupCreateRequest;
@@ -14585,7 +14808,7 @@ export type SearchRolesErrors = {
     /**
      * An internal error occurred while processing the request.
      */
-    500: unknown;
+    500: ProblemDetail;
 };
 
 export type SearchRolesError = SearchRolesErrors[keyof SearchRolesErrors];
@@ -15405,8 +15628,10 @@ export type CreateAdminUserResponses = {
     /**
      * The admin user was created successfully.
      */
-    201: unknown;
+    201: UserCreateResult;
 };
+
+export type CreateAdminUserResponse = CreateAdminUserResponses[keyof CreateAdminUserResponses];
 
 export type BroadcastSignalData = {
     body: SignalBroadcastRequest;
@@ -15610,7 +15835,7 @@ export type SearchTenantsErrors = {
     /**
      * Not found
      */
-    404: unknown;
+    404: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -17240,6 +17465,10 @@ export type SearchUserTaskAuditLogsResponses = {
             actorId?: string;
             actorType?: AuditLogActorTypeEnum;
             /**
+             * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
+             */
+            agentElementId?: string;
+            /**
              * The tenant ID of the audit log.
              */
             tenantId?: TenantId;
@@ -17750,7 +17979,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59
+// specHash=sha256:e5c28cd917d38e51aa2290bacffab37f63d08724be28bfd6901e20b5a932569d
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -17988,6 +18217,16 @@ export namespace FormKey {
       assertConstraint(value, 'FormKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
+  }
+}
+// The user-defined id for the global listener
+export namespace GlobalListenerId {
+  export function assumeExists(value: string): GlobalListenerId {
+    return value as any;
+  }
+  export function getValue(key: GlobalListenerId): string { return key; }
+  export function isValid(value: string): boolean {
+    return true;
   }
 }
 // System-generated key for a incident.

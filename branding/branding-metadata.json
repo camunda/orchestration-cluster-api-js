@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:a5dfd4cb7ac8d9ae255407fdd9ad763a5eb0d81e6615d97636ca48452b631a59",
+  "specHash": "sha256:e5c28cd917d38e51aa2290bacffab37f63d08724be28bfd6901e20b5a932569d",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -736,6 +736,44 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/FormKey"
+      }
+    },
+    {
+      "name": "GlobalListenerId",
+      "semanticType": "GlobalListenerId",
+      "category": "model-id",
+      "description": "The user-defined id for the global listener",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "format": "GlobalListenerId"
+      },
+      "examples": [
+        "GlobalListener_1"
+      ],
+      "extensions": {
+        "x-semantic-type": "GlobalListenerId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "global-listener-id",
+      "brand": {
+        "tsType": "CamundaKey<'GlobalListenerId'>"
+      },
+      "zod": {
+        "schemaName": "zGlobalListenerId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/GlobalListenerId"
       }
     },
     {
@@ -2543,6 +2581,14 @@
   ],
   "arrays": [
     {
+      "name": "GlobalTaskListenerEventTypes",
+      "itemRef": "GlobalTaskListenerEventTypeEnum",
+      "uniqueItems": false,
+      "source": {
+        "schemaPointer": "#/components/schemas/GlobalTaskListenerEventTypes"
+      }
+    },
+    {
       "name": "TagSet",
       "itemRef": "Tag",
       "maxItems": 10,
@@ -2553,7 +2599,7 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 34,
+    "totalPrimaryKeys": 35,
     "totalUnionWrappers": 49,
     "implicitCamundaKeys": []
   }
