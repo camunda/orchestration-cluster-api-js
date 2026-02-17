@@ -9066,7 +9066,9 @@ export type GetDecisionInstanceResponses = {
 export type GetDecisionInstanceResponse = GetDecisionInstanceResponses[keyof GetDecisionInstanceResponses];
 
 export type DeleteDecisionInstanceData = {
-    body?: DeleteProcessInstanceRequest;
+    body?: {
+        operationReference?: OperationReference;
+    } | null;
     path: {
         /**
          * The key of the decision instance to delete.
@@ -10160,7 +10162,13 @@ export type SearchClientsForGroupData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<TenantClientSearchQuerySortRequest>;
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'clientId';
+            order?: SortOrderEnum;
+        }>;
     };
     path: {
         /**
@@ -10201,7 +10209,17 @@ export type SearchClientsForGroupResponses = {
     /**
      * The clients assigned to the group.
      */
-    200: TenantClientSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching client IDs.
+         */
+        items?: Array<{
+            /**
+             * The ID of the client.
+             */
+            clientId?: string;
+        }>;
+    };
 };
 
 export type SearchClientsForGroupResponse = SearchClientsForGroupResponses[keyof SearchClientsForGroupResponses];
@@ -10515,7 +10533,13 @@ export type SearchUsersForGroupData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<TenantUserSearchQuerySortRequest>;
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'username';
+            order?: SortOrderEnum;
+        }>;
     };
     path: {
         /**
@@ -10556,7 +10580,14 @@ export type SearchUsersForGroupResponses = {
     /**
      * The users assigned to the group.
      */
-    200: TenantUserSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching members.
+         */
+        items?: Array<{
+            username?: Username;
+        }>;
+    };
 };
 
 export type SearchUsersForGroupResponse = SearchUsersForGroupResponses[keyof SearchUsersForGroupResponses];
@@ -11251,7 +11282,7 @@ export type CreateMappingRuleResponses = {
     /**
      * The mapping rule was created successfully.
      */
-    201: MappingRuleUpdateResult;
+    201: MappingRuleCreateUpdateResult;
 };
 
 export type CreateMappingRuleResponse = CreateMappingRuleResponses[keyof CreateMappingRuleResponses];
@@ -11418,7 +11449,7 @@ export type UpdateMappingRuleResponses = {
     /**
      * The mapping rule was updated successfully.
      */
-    200: MappingRuleUpdateResult;
+    200: MappingRuleCreateUpdateResult;
 };
 
 export type UpdateMappingRuleResponse = UpdateMappingRuleResponses[keyof UpdateMappingRuleResponses];
@@ -12239,7 +12270,9 @@ export type GetProcessInstanceCallHierarchyResponses = {
 export type GetProcessInstanceCallHierarchyResponse = GetProcessInstanceCallHierarchyResponses[keyof GetProcessInstanceCallHierarchyResponses];
 
 export type CancelProcessInstanceData = {
-    body?: DeleteProcessInstanceRequest;
+    body?: {
+        operationReference?: OperationReference;
+    } | null;
     path: {
         /**
          * The key of the process instance to cancel.
@@ -12282,7 +12315,9 @@ export type CancelProcessInstanceResponses = {
 export type CancelProcessInstanceResponse = CancelProcessInstanceResponses[keyof CancelProcessInstanceResponses];
 
 export type DeleteProcessInstanceData = {
-    body?: DeleteProcessInstanceRequest;
+    body?: {
+        operationReference?: OperationReference;
+    } | null;
     path: {
         /**
          * The key of the process instance to delete.
@@ -12930,7 +12965,13 @@ export type SearchClientsForRoleData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<TenantClientSearchQuerySortRequest>;
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'clientId';
+            order?: SortOrderEnum;
+        }>;
     };
     path: {
         /**
@@ -12971,7 +13012,17 @@ export type SearchClientsForRoleResponses = {
     /**
      * The clients with the assigned role.
      */
-    200: TenantClientSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching clients.
+         */
+        items?: Array<{
+            /**
+             * The ID of the client.
+             */
+            clientId?: string;
+        }>;
+    };
 };
 
 export type SearchClientsForRoleResponse = SearchClientsForRoleResponses[keyof SearchClientsForRoleResponses];
@@ -13391,7 +13442,13 @@ export type SearchUsersForRoleData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<TenantUserSearchQuerySortRequest>;
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'username';
+            order?: SortOrderEnum;
+        }>;
     };
     path: {
         /**
@@ -13432,7 +13489,14 @@ export type SearchUsersForRoleResponses = {
     /**
      * The users with the assigned role.
      */
-    200: TenantUserSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching users.
+         */
+        items?: Array<{
+            username?: Username;
+        }>;
+    };
 };
 
 export type SearchUsersForRoleResponse = SearchUsersForRoleResponses[keyof SearchUsersForRoleResponses];
@@ -13924,7 +13988,18 @@ export type UpdateTenantResponses = {
 export type UpdateTenantResponse = UpdateTenantResponses[keyof UpdateTenantResponses];
 
 export type SearchClientsForTenantData = {
-    body?: TenantClientSearchQueryRequest;
+    body?: SearchQueryRequest & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'clientId';
+            order?: SortOrderEnum;
+        }>;
+    };
     path: {
         /**
          * The unique identifier of the tenant.
@@ -13939,7 +14014,17 @@ export type SearchClientsForTenantResponses = {
     /**
      * The search result of users for the tenant.
      */
-    200: TenantClientSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching clients.
+         */
+        items?: Array<{
+            /**
+             * The ID of the client.
+             */
+            clientId?: string;
+        }>;
+    };
 };
 
 export type SearchClientsForTenantResponse = SearchClientsForTenantResponses[keyof SearchClientsForTenantResponses];
@@ -14416,7 +14501,18 @@ export type AssignRoleToTenantResponses = {
 export type AssignRoleToTenantResponse = AssignRoleToTenantResponses[keyof AssignRoleToTenantResponses];
 
 export type SearchUsersForTenantData = {
-    body?: TenantUserSearchQueryRequest;
+    body?: SearchQueryRequest & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'username';
+            order?: SortOrderEnum;
+        }>;
+    };
     path: {
         /**
          * The unique identifier of the tenant.
@@ -14431,7 +14527,14 @@ export type SearchUsersForTenantResponses = {
     /**
      * The search result of users for the tenant.
      */
-    200: TenantUserSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching users.
+         */
+        items?: Array<{
+            username?: Username;
+        }>;
+    };
 };
 
 export type SearchUsersForTenantResponse = SearchUsersForTenantResponses[keyof SearchUsersForTenantResponses];
@@ -14645,7 +14748,22 @@ export type SearchUsersResponses = {
     /**
      * The user search result.
      */
-    200: UserSearchResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching users.
+         */
+        items: Array<{
+            username?: Username;
+            /**
+             * The name of the user.
+             */
+            name?: string;
+            /**
+             * The email of the user.
+             */
+            email?: string;
+        }>;
+    };
 };
 
 export type SearchUsersResponse = SearchUsersResponses[keyof SearchUsersResponses];
@@ -14730,7 +14848,17 @@ export type GetUserResponses = {
     /**
      * The user is successfully returned.
      */
-    200: UserResult;
+    200: {
+        username?: Username;
+        /**
+         * The name of the user.
+         */
+        name?: string;
+        /**
+         * The email of the user.
+         */
+        email?: string;
+    };
 };
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
@@ -14777,7 +14905,17 @@ export type UpdateUserResponses = {
     /**
      * The user was updated successfully.
      */
-    200: UserResult;
+    200: {
+        username?: Username;
+        /**
+         * The name of the user.
+         */
+        name?: string;
+        /**
+         * The email of the user.
+         */
+        email?: string;
+    };
 };
 
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
@@ -15149,7 +15287,13 @@ export type SearchUserTaskVariablesData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<VariableSearchQuerySortRequest>;
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
+            order?: SortOrderEnum;
+        }>;
         /**
          * The user task variable search filters.
          */
@@ -15193,7 +15337,25 @@ export type SearchUserTaskVariablesResponses = {
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
 
 export type SearchVariablesData = {
-    body?: VariableSearchQuery;
+    /**
+     * Variable search query request.
+     */
+    body?: SearchQueryRequest & {
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
+            order?: SortOrderEnum;
+        }>;
+        /**
+         * The variable search filters.
+         */
+        filter?: VariableFilter;
+    };
     path?: never;
     query?: {
         /**

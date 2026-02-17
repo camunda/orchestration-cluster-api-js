@@ -6901,7 +6901,12 @@ export const zGetDecisionInstanceData = z.object({
 export const zGetDecisionInstanceResponse = zDecisionInstanceGetQueryResult;
 
 export const zDeleteDecisionInstanceData = z.object({
-    body: z.optional(zDeleteProcessInstanceRequest),
+    body: z.optional(z.union([
+        z.object({
+            operationReference: z.optional(zOperationReference)
+        }),
+        z.null()
+    ])),
     path: z.object({
         decisionInstanceKey: zDecisionInstanceKey
     }),
@@ -7274,7 +7279,14 @@ export const zUpdateGroupResponse = zGroupUpdateResult;
 
 export const zSearchClientsForGroupData = z.object({
     body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(zTenantClientSearchQuerySortRequest).register(z.globalRegistry, {
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'clientId'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         }))
     }))),
@@ -7289,7 +7301,17 @@ export const zSearchClientsForGroupData = z.object({
 /**
  * The clients assigned to the group.
  */
-export const zSearchClientsForGroupResponse = zTenantClientSearchResult;
+export const zSearchClientsForGroupResponse = zSearchQueryResponse.and(z.object({
+    items: z.optional(z.array(z.object({
+        clientId: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The ID of the client.'
+        }))
+    })).register(z.globalRegistry, {
+        description: 'The matching client IDs.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The clients assigned to the group.'
+}));
 
 export const zUnassignClientFromGroupData = z.object({
     body: z.optional(z.never()),
@@ -7403,7 +7425,14 @@ export const zSearchRolesForGroupResponse = zSearchQueryResponse;
 
 export const zSearchUsersForGroupData = z.object({
     body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(zTenantUserSearchQuerySortRequest).register(z.globalRegistry, {
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'username'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         }))
     }))),
@@ -7418,7 +7447,15 @@ export const zSearchUsersForGroupData = z.object({
 /**
  * The users assigned to the group.
  */
-export const zSearchUsersForGroupResponse = zTenantUserSearchResult;
+export const zSearchUsersForGroupResponse = zSearchQueryResponse.and(z.object({
+    items: z.optional(z.array(z.object({
+        username: z.optional(zUsername)
+    })).register(z.globalRegistry, {
+        description: 'The matching members.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The users assigned to the group.'
+}));
 
 export const zUnassignUserFromGroupData = z.object({
     body: z.optional(z.never()),
@@ -7644,7 +7681,7 @@ export const zCreateMappingRuleData = z.object({
 /**
  * The mapping rule was created successfully.
  */
-export const zCreateMappingRuleResponse = zMappingRuleUpdateResult;
+export const zCreateMappingRuleResponse = zMappingRuleCreateUpdateResult;
 
 export const zSearchMappingRuleData = z.object({
     body: z.optional(zMappingRuleSearchQueryRequest),
@@ -7702,7 +7739,7 @@ export const zUpdateMappingRuleData = z.object({
 /**
  * The mapping rule was updated successfully.
  */
-export const zUpdateMappingRuleResponse = zMappingRuleUpdateResult;
+export const zUpdateMappingRuleResponse = zMappingRuleCreateUpdateResult;
 
 export const zSearchMessageSubscriptionsData = z.object({
     body: z.optional(zMessageSubscriptionSearchQuery),
@@ -7943,7 +7980,12 @@ export const zGetProcessInstanceCallHierarchyResponse = z.array(zProcessInstance
 });
 
 export const zCancelProcessInstanceData = z.object({
-    body: z.optional(zDeleteProcessInstanceRequest),
+    body: z.optional(z.union([
+        z.object({
+            operationReference: z.optional(zOperationReference)
+        }),
+        z.null()
+    ])),
     path: z.object({
         processInstanceKey: zProcessInstanceKey
     }),
@@ -7958,7 +8000,12 @@ export const zCancelProcessInstanceResponse = z.void().register(z.globalRegistry
 });
 
 export const zDeleteProcessInstanceData = z.object({
-    body: z.optional(zDeleteProcessInstanceRequest),
+    body: z.optional(z.union([
+        z.object({
+            operationReference: z.optional(zOperationReference)
+        }),
+        z.null()
+    ])),
     path: z.object({
         processInstanceKey: zProcessInstanceKey
     }),
@@ -8166,7 +8213,14 @@ export const zUpdateRoleResponse = zRoleUpdateResult;
 
 export const zSearchClientsForRoleData = z.object({
     body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(zTenantClientSearchQuerySortRequest).register(z.globalRegistry, {
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'clientId'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         }))
     }))),
@@ -8181,7 +8235,17 @@ export const zSearchClientsForRoleData = z.object({
 /**
  * The clients with the assigned role.
  */
-export const zSearchClientsForRoleResponse = zTenantClientSearchResult;
+export const zSearchClientsForRoleResponse = zSearchQueryResponse.and(z.object({
+    items: z.optional(z.array(z.object({
+        clientId: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The ID of the client.'
+        }))
+    })).register(z.globalRegistry, {
+        description: 'The matching clients.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The clients with the assigned role.'
+}));
 
 export const zUnassignRoleFromClientData = z.object({
     body: z.optional(z.never()),
@@ -8335,7 +8399,14 @@ export const zAssignRoleToMappingRuleResponse = z.void().register(z.globalRegist
 
 export const zSearchUsersForRoleData = z.object({
     body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(zTenantUserSearchQuerySortRequest).register(z.globalRegistry, {
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'username'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         }))
     }))),
@@ -8350,7 +8421,15 @@ export const zSearchUsersForRoleData = z.object({
 /**
  * The users with the assigned role.
  */
-export const zSearchUsersForRoleResponse = zTenantUserSearchResult;
+export const zSearchUsersForRoleResponse = zSearchQueryResponse.and(z.object({
+    items: z.optional(z.array(z.object({
+        username: z.optional(zUsername)
+    })).register(z.globalRegistry, {
+        description: 'The matching users.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The users with the assigned role.'
+}));
 
 export const zUnassignRoleFromUserData = z.object({
     body: z.optional(z.never()),
@@ -8509,7 +8588,18 @@ export const zUpdateTenantData = z.object({
 export const zUpdateTenantResponse = zTenantUpdateResult;
 
 export const zSearchClientsForTenantData = z.object({
-    body: z.optional(zTenantClientSearchQueryRequest),
+    body: z.optional(zSearchQueryRequest.and(z.object({
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'clientId'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        }))
+    }))),
     path: z.object({
         tenantId: zTenantId
     }),
@@ -8519,7 +8609,17 @@ export const zSearchClientsForTenantData = z.object({
 /**
  * The search result of users for the tenant.
  */
-export const zSearchClientsForTenantResponse = zTenantClientSearchResult;
+export const zSearchClientsForTenantResponse = zSearchQueryResponse.and(z.object({
+    items: z.optional(z.array(z.object({
+        clientId: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The ID of the client.'
+        }))
+    })).register(z.globalRegistry, {
+        description: 'The matching clients.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The search result of users for the tenant.'
+}));
 
 export const zUnassignClientFromTenantData = z.object({
     body: z.optional(z.never()),
@@ -8705,7 +8805,18 @@ export const zAssignRoleToTenantResponse = z.void().register(z.globalRegistry, {
 });
 
 export const zSearchUsersForTenantData = z.object({
-    body: z.optional(zTenantUserSearchQueryRequest),
+    body: z.optional(zSearchQueryRequest.and(z.object({
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'username'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        }))
+    }))),
     path: z.object({
         tenantId: zTenantId
     }),
@@ -8715,7 +8826,15 @@ export const zSearchUsersForTenantData = z.object({
 /**
  * The search result of users for the tenant.
  */
-export const zSearchUsersForTenantResponse = zTenantUserSearchResult;
+export const zSearchUsersForTenantResponse = zSearchQueryResponse.and(z.object({
+    items: z.optional(z.array(z.object({
+        username: z.optional(zUsername)
+    })).register(z.globalRegistry, {
+        description: 'The matching users.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The search result of users for the tenant.'
+}));
 
 export const zUnassignUserFromTenantData = z.object({
     body: z.optional(z.never()),
@@ -8780,7 +8899,21 @@ export const zSearchUsersData = z.object({
 /**
  * The user search result.
  */
-export const zSearchUsersResponse = zUserSearchResult;
+export const zSearchUsersResponse = zSearchQueryResponse.and(z.object({
+    items: z.array(z.object({
+        username: z.optional(zUsername),
+        name: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The name of the user.'
+        })),
+        email: z.optional(z.string().register(z.globalRegistry, {
+            description: 'The email of the user.'
+        }))
+    })).register(z.globalRegistry, {
+        description: 'The matching users.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The user search result.'
+}));
 
 export const zDeleteUserData = z.object({
     body: z.optional(z.never()),
@@ -8808,7 +8941,17 @@ export const zGetUserData = z.object({
 /**
  * The user is successfully returned.
  */
-export const zGetUserResponse = zUserResult;
+export const zGetUserResponse = z.object({
+    username: z.optional(zUsername),
+    name: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The name of the user.'
+    })),
+    email: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The email of the user.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The user is successfully returned.'
+});
 
 export const zUpdateUserData = z.object({
     body: zUserUpdateRequest,
@@ -8821,7 +8964,17 @@ export const zUpdateUserData = z.object({
 /**
  * The user was updated successfully.
  */
-export const zUpdateUserResponse = zUserResult;
+export const zUpdateUserResponse = z.object({
+    username: z.optional(zUsername),
+    name: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The name of the user.'
+    })),
+    email: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The email of the user.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'The user was updated successfully.'
+});
 
 export const zSearchUserTasksData = z.object({
     body: z.optional(zUserTaskSearchQuery),
@@ -8937,7 +9090,19 @@ export const zGetUserTaskFormResponse = z.union([
 
 export const zSearchUserTaskVariablesData = z.object({
     body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(zVariableSearchQuerySortRequest).register(z.globalRegistry, {
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'value',
+                'name',
+                'tenantId',
+                'variableKey',
+                'scopeKey',
+                'processInstanceKey'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         })),
         filter: z.optional(zUserTaskVariableFilter)
@@ -8960,7 +9125,26 @@ export const zSearchUserTaskVariablesData = z.object({
 export const zSearchUserTaskVariablesResponse = zVariableSearchQueryResult;
 
 export const zSearchVariablesData = z.object({
-    body: z.optional(zVariableSearchQuery),
+    body: z.optional(zSearchQueryRequest.and(z.object({
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'value',
+                'name',
+                'tenantId',
+                'variableKey',
+                'scopeKey',
+                'processInstanceKey'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        })),
+        filter: z.optional(zVariableFilter)
+    }).register(z.globalRegistry, {
+        description: 'Variable search query request.'
+    }))),
     path: z.optional(z.never()),
     query: z.optional(z.object({
         truncateValues: z.optional(z.boolean().register(z.globalRegistry, {
