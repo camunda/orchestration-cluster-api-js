@@ -3,7 +3,7 @@
 paths:
   /global-listeners/user-task:
     post:
-      x-eventually-consistent: true
+      x-eventually-consistent: false
       tags:
         - Global listener
       operationId: createGlobalTaskListener
@@ -41,7 +41,7 @@ paths:
 
   /global-listeners/user-task/{id}:
     put:
-      x-eventually-consistent: true
+      x-eventually-consistent: false
       tags:
         - Global listener
       operationId: updateGlobalTaskListener
@@ -85,7 +85,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
 
     delete:
-      x-eventually-consistent: true
+      x-eventually-consistent: false
       tags:
         - Global listener
       operationId: deleteGlobalTaskListener

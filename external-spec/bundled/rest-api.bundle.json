@@ -683,7 +683,7 @@
     },
     "/batch-operations/{batchOperationKey}/cancellation": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Batch operation"
         ],
@@ -736,7 +736,7 @@
     },
     "/batch-operations/{batchOperationKey}/resumption": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Batch operation"
         ],
@@ -792,7 +792,7 @@
     },
     "/batch-operations/{batchOperationKey}/suspension": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Batch operation"
         ],
@@ -1905,7 +1905,7 @@
     },
     "/decision-instances/{decisionInstanceKey}/deletion": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Decision instance"
         ],
@@ -1971,7 +1971,7 @@
     },
     "/decision-instances/deletion": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Decision instance"
         ],
@@ -2912,7 +2912,7 @@
     },
     "/global-listeners/user-task": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Global listener"
         ],
@@ -2970,7 +2970,7 @@
     },
     "/global-listeners/user-task/{id}": {
       "put": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Global listener"
         ],
@@ -3037,7 +3037,7 @@
         }
       },
       "delete": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Global listener"
         ],
@@ -5675,7 +5675,7 @@
     },
     "/process-instances/cancellation": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -5727,7 +5727,7 @@
     },
     "/process-instances/deletion": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -5779,7 +5779,7 @@
     },
     "/process-instances/incident-resolution": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -5831,7 +5831,7 @@
     },
     "/process-instances/migration": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -5883,7 +5883,7 @@
     },
     "/process-instances/modification": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -6158,7 +6158,7 @@
     },
     "/process-instances/{processInstanceKey}/deletion": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -6234,7 +6234,7 @@
     },
     "/process-instances/{processInstanceKey}/incident-resolution": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Process instance"
         ],
@@ -7859,7 +7859,7 @@
     },
     "/setup/user": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "Setup"
         ],
@@ -9282,7 +9282,7 @@
     },
     "/users": {
       "post": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "User"
         ],
@@ -9465,7 +9465,7 @@
         }
       },
       "put": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "User"
         ],
@@ -9542,7 +9542,7 @@
         }
       },
       "delete": {
-        "x-eventually-consistent": true,
+        "x-eventually-consistent": false,
         "tags": [
           "User"
         ],
