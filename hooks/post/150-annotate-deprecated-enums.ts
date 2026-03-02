@@ -54,9 +54,7 @@ function main(): void {
     }
 
     // Match: export type SchemaName = 'A' | 'B' | 'C';
-    const typePattern = new RegExp(
-      `(export type ${entry.schemaName}\\s*=\\s*)([^;]+)(;)`,
-    );
+    const typePattern = new RegExp(`(export type ${entry.schemaName}\\s*=\\s*)([^;]+)(;)`);
     const match = source.match(typePattern);
     if (!match) continue;
 
@@ -83,9 +81,7 @@ function main(): void {
     fs.writeFileSync(TYPES_GEN_PATH, source, 'utf8');
   }
 
-  console.log(
-    `[deprecated-enums] Annotated ${patchCount} enum type(s) in types.gen.ts`,
-  );
+  console.log(`[deprecated-enums] Annotated ${patchCount} enum type(s) in types.gen.ts`);
 }
 
 try {

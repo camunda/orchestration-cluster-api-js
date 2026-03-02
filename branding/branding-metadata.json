@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:4ab741f3f5a60c3f80787bbd6958cb9ae66410c07926aa72ebbd7f56e81ecc84",
+  "specHash": "sha256:13089929f644c23022c327c49c96fd6e0092384cd04ad15155636ce0230a8205",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },

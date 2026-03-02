@@ -1467,6 +1467,37 @@ export const zJobTypeStatisticsItem = z.object({
     description: 'Statistics for a single job type.'
 });
 
+/**
+ * Job worker statistics search filter.
+ */
+export const zJobWorkerStatisticsFilter = z.object({
+    from: z.iso.datetime().register(z.globalRegistry, {
+        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    to: z.iso.datetime().register(z.globalRegistry, {
+        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    jobType: z.string().register(z.globalRegistry, {
+        description: 'Job type to return worker metrics for.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Job worker statistics search filter.'
+});
+
+/**
+ * Statistics for a single worker within a job type.
+ */
+export const zJobWorkerStatisticsItem = z.object({
+    worker: z.string().register(z.globalRegistry, {
+        description: 'The worker identifier.'
+    }),
+    created: zStatusMetric,
+    completed: zStatusMetric,
+    failed: zStatusMetric
+}).register(z.globalRegistry, {
+    description: 'Statistics for a single worker within a job type.'
+});
+
 export const zJobFailRequest = z.object({
     retries: z.optional(z.int().register(z.globalRegistry, {
         description: 'The amount of retries the job should have left'
@@ -2538,26 +2569,26 @@ export const zDeploymentResourceResult = z.object({
 });
 
 export const zDeploymentMetadataResult = z.object({
-    processDefinition: z.optional(z.union([
+    processDefinition: z.union([
         zDeploymentProcessResult,
         z.null()
-    ])),
-    decisionDefinition: z.optional(z.union([
+    ]),
+    decisionDefinition: z.union([
         zDeploymentDecisionResult,
         z.null()
-    ])),
-    decisionRequirements: z.optional(z.union([
+    ]),
+    decisionRequirements: z.union([
         zDeploymentDecisionRequirementsResult,
         z.null()
-    ])),
-    form: z.optional(z.union([
+    ]),
+    form: z.union([
         zDeploymentFormResult,
         z.null()
-    ])),
-    resource: z.optional(z.union([
+    ]),
+    resource: z.union([
         zDeploymentResourceResult,
         z.null()
-    ]))
+    ])
 });
 
 export const zDeploymentResult = z.object({
@@ -2771,53 +2802,115 @@ export const zAuditLogKey = zLongKey;
  * Audit log item.
  */
 export const zAuditLogResult = z.object({
-    auditLogKey: z.optional(zAuditLogKey),
-    entityKey: z.optional(zAuditLogEntityKey),
-    entityType: z.optional(zAuditLogEntityTypeEnum),
-    operationType: z.optional(zAuditLogOperationTypeEnum),
-    batchOperationKey: z.optional(zBatchOperationKey),
-    batchOperationType: z.optional(zBatchOperationTypeEnum),
-    timestamp: z.optional(z.iso.datetime().register(z.globalRegistry, {
+    auditLogKey: zAuditLogKey,
+    entityKey: zAuditLogEntityKey,
+    entityType: zAuditLogEntityTypeEnum,
+    operationType: zAuditLogOperationTypeEnum,
+    batchOperationKey: z.union([
+        zBatchOperationKey,
+        z.null()
+    ]),
+    batchOperationType: z.union([
+        zBatchOperationTypeEnum,
+        z.null()
+    ]),
+    timestamp: z.iso.datetime().register(z.globalRegistry, {
         description: 'The timestamp when the operation occurred.'
-    })),
-    actorId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The ID of the actor who performed the operation.'
-    })),
-    actorType: z.optional(zAuditLogActorTypeEnum),
-    agentElementId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).'
-    })),
-    tenantId: z.optional(zTenantId),
-    result: z.optional(zAuditLogResultEnum),
-    annotation: z.optional(z.string().register(z.globalRegistry, {
-        description: 'Additional notes about the operation.'
-    })),
-    category: z.optional(zAuditLogCategoryEnum),
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    }),
+    actorId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    actorType: z.union([
+        zAuditLogActorTypeEnum,
+        z.null()
+    ]),
+    agentElementId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    tenantId: z.union([
+        zTenantId,
+        z.null()
+    ]),
+    result: zAuditLogResultEnum,
+    annotation: z.union([
+        z.string(),
+        z.null()
+    ]),
+    category: zAuditLogCategoryEnum,
+    processDefinitionId: z.union([
+        zProcessDefinitionId,
+        z.null()
+    ]),
+    processDefinitionKey: z.union([
+        zProcessDefinitionKey,
+        z.null()
+    ]),
+    processInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
     ]),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    jobKey: z.optional(zJobKey),
-    userTaskKey: z.optional(zUserTaskKey),
-    decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The decision requirements ID.'
-    })),
-    decisionRequirementsKey: z.optional(zDecisionRequirementsKey),
-    decisionDefinitionId: z.optional(zDecisionDefinitionId),
-    decisionDefinitionKey: z.optional(zDecisionDefinitionKey),
-    decisionEvaluationKey: z.optional(zDecisionEvaluationKey),
-    deploymentKey: z.optional(zDeploymentKey),
-    formKey: z.optional(zFormKey),
-    resourceKey: z.optional(zResourceKey),
-    relatedEntityKey: z.optional(zAuditLogEntityKey),
-    relatedEntityType: z.optional(zAuditLogEntityTypeEnum),
-    entityDescription: z.optional(z.string().register(z.globalRegistry, {
-        description: 'Additional description of the entity affected by the operation.\nFor example, for variable operations, this will contain the variable name.\n'
-    }))
+    elementInstanceKey: z.union([
+        zElementInstanceKey,
+        z.null()
+    ]),
+    jobKey: z.union([
+        zJobKey,
+        z.null()
+    ]),
+    userTaskKey: z.union([
+        zUserTaskKey,
+        z.null()
+    ]),
+    decisionRequirementsId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    decisionRequirementsKey: z.union([
+        zDecisionRequirementsKey,
+        z.null()
+    ]),
+    decisionDefinitionId: z.union([
+        zDecisionDefinitionId,
+        z.null()
+    ]),
+    decisionDefinitionKey: z.union([
+        zDecisionDefinitionKey,
+        z.null()
+    ]),
+    decisionEvaluationKey: z.union([
+        zDecisionEvaluationKey,
+        z.null()
+    ]),
+    deploymentKey: z.union([
+        zDeploymentKey,
+        z.null()
+    ]),
+    formKey: z.union([
+        zFormKey,
+        z.null()
+    ]),
+    resourceKey: z.union([
+        zResourceKey,
+        z.null()
+    ]),
+    relatedEntityKey: z.union([
+        zAuditLogEntityKey,
+        z.null()
+    ]),
+    relatedEntityType: z.union([
+        zAuditLogEntityTypeEnum,
+        z.null()
+    ]),
+    entityDescription: z.union([
+        z.string(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'Audit log item.'
 });
@@ -3344,21 +3437,21 @@ export const zCorrelatedMessageSubscriptionResult = z.object({
  *
  */
 export const zProblemDetail = z.object({
-    type: z.optional(z.url().register(z.globalRegistry, {
+    type: z.url().register(z.globalRegistry, {
         description: 'A URI identifying the problem type.'
-    })).default('about:blank'),
-    title: z.optional(z.string().register(z.globalRegistry, {
+    }).default('about:blank'),
+    title: z.string().register(z.globalRegistry, {
         description: 'A summary of the problem type.'
-    })),
-    status: z.optional(z.int().gte(400).lte(600).register(z.globalRegistry, {
+    }),
+    status: z.int().gte(400).lte(600).register(z.globalRegistry, {
         description: 'The HTTP status code for this problem.'
-    })),
-    detail: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    detail: z.string().register(z.globalRegistry, {
         description: 'An explanation of the problem in more detail.'
-    })),
-    instance: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    instance: z.string().register(z.globalRegistry, {
         description: 'A URI path identifying the origin of the problem.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.\n'
 });
@@ -4125,6 +4218,16 @@ export const zJobTypeStatisticsQuery = z.object({
 });
 
 /**
+ * Job worker statistics query.
+ */
+export const zJobWorkerStatisticsQuery = z.object({
+    filter: zJobWorkerStatisticsFilter,
+    page: z.optional(zCursorForwardPagination)
+}).register(z.globalRegistry, {
+    description: 'Job worker statistics query.'
+});
+
+/**
  * Cursor-based backward pagination
  */
 export const zCursorBackwardPagination = z.object({
@@ -4700,17 +4803,17 @@ export const zSearchQueryPageResponse = z.object({
     totalItems: z.coerce.bigint().register(z.globalRegistry, {
         description: 'Total items matching the criteria.'
     }),
-    hasMoreTotalItems: z.optional(z.boolean().register(z.globalRegistry, {
+    hasMoreTotalItems: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether there are more items matching the criteria beyond the returned items.\nThis is useful for determining if additional requests are needed to retrieve all results.\n'
-    })),
-    startCursor: z.optional(z.union([
+    }),
+    startCursor: z.union([
         zStartCursor,
         z.null()
-    ])),
-    endCursor: z.optional(z.union([
+    ]),
+    endCursor: z.union([
         zEndCursor,
         z.null()
-    ]))
+    ])
 }).register(z.globalRegistry, {
     description: 'Pagination information about the search results.'
 });
@@ -4862,6 +4965,18 @@ export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     page: zSearchQueryPageResponse
 }).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
+}));
+
+/**
+ * Job worker statistics query result.
+ */
+export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
+        description: 'The list of per-worker statistics items.'
+    }),
+    page: zSearchQueryPageResponse
+}).register(z.globalRegistry, {
+    description: 'Job worker statistics query result.'
 }));
 
 /**
@@ -8099,6 +8214,17 @@ export const zGetJobTypeStatisticsData = z.object({
  * The job type statistics result.
  */
 export const zGetJobTypeStatisticsResponse = zJobTypeStatisticsQueryResult;
+
+export const zGetJobWorkerStatisticsData = z.object({
+    body: zJobWorkerStatisticsQuery,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The job worker statistics result.
+ */
+export const zGetJobWorkerStatisticsResponse = zJobWorkerStatisticsQueryResult;
 
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),

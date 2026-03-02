@@ -14,53 +14,56 @@ export type AuditLogResult = {
     /**
      * The unique key of the audit log entry.
      */
-    auditLogKey?: AuditLogKey;
-    entityKey?: AuditLogEntityKey;
-    entityType?: AuditLogEntityTypeEnum;
-    operationType?: AuditLogOperationTypeEnum;
+    auditLogKey: AuditLogKey;
+    entityKey: AuditLogEntityKey;
+    entityType: AuditLogEntityTypeEnum;
+    operationType: AuditLogOperationTypeEnum;
     /**
      * Key of the batch operation.
      */
-    batchOperationKey?: BatchOperationKey;
+    batchOperationKey: BatchOperationKey | null;
     /**
      * The type of batch operation performed, if this is part of a batch.
      */
-    batchOperationType?: BatchOperationTypeEnum;
+    batchOperationType: BatchOperationTypeEnum | null;
     /**
      * The timestamp when the operation occurred.
      */
-    timestamp?: string;
+    timestamp: string;
     /**
      * The ID of the actor who performed the operation.
      */
-    actorId?: string;
-    actorType?: AuditLogActorTypeEnum;
+    actorId: string | null;
+    /**
+     * The type of the actor who performed the operation.
+     */
+    actorType: AuditLogActorTypeEnum | null;
     /**
      * The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
      */
-    agentElementId?: string;
+    agentElementId: string | null;
     /**
      * The tenant ID of the audit log.
      */
-    tenantId?: TenantId;
-    result?: AuditLogResultEnum;
+    tenantId: TenantId | null;
+    result: AuditLogResultEnum;
     /**
      * Additional notes about the operation.
      */
-    annotation?: string;
-    category?: AuditLogCategoryEnum;
+    annotation: string | null;
+    category: AuditLogCategoryEnum;
     /**
      * The process definition ID.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId | null;
     /**
      * The key of the process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The key of the process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -71,65 +74,65 @@ export type AuditLogResult = {
     /**
      * The key of the element instance.
      */
-    elementInstanceKey?: ElementInstanceKey;
+    elementInstanceKey: ElementInstanceKey | null;
     /**
      * The key of the job.
      */
-    jobKey?: JobKey;
+    jobKey: JobKey | null;
     /**
      * The key of the user task.
      */
-    userTaskKey?: UserTaskKey;
+    userTaskKey: UserTaskKey | null;
     /**
      * The decision requirements ID.
      */
-    decisionRequirementsId?: string;
+    decisionRequirementsId: string | null;
     /**
      * The assigned key of the decision requirements.
      */
-    decisionRequirementsKey?: DecisionRequirementsKey;
+    decisionRequirementsKey: DecisionRequirementsKey | null;
     /**
      * The decision definition ID.
      */
-    decisionDefinitionId?: DecisionDefinitionId;
+    decisionDefinitionId: DecisionDefinitionId | null;
     /**
      * The key of the decision definition.
      */
-    decisionDefinitionKey?: DecisionDefinitionKey;
+    decisionDefinitionKey: DecisionDefinitionKey | null;
     /**
      * The key of the decision evaluation.
      */
-    decisionEvaluationKey?: DecisionEvaluationKey;
+    decisionEvaluationKey: DecisionEvaluationKey | null;
     /**
      * The key of the deployment.
      */
-    deploymentKey?: DeploymentKey;
+    deploymentKey: DeploymentKey | null;
     /**
      * The key of the form.
      */
-    formKey?: FormKey;
+    formKey: FormKey | null;
     /**
      * The system-assigned key for this resource.
      */
-    resourceKey?: ResourceKey;
+    resourceKey: ResourceKey | null;
     /**
      * The key of the related entity. The content depends on the operation type and entity type.
      * For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
      *
      */
-    relatedEntityKey?: AuditLogEntityKey;
+    relatedEntityKey: AuditLogEntityKey | null;
     /**
      * The type of the related entity. The content depends on the operation type and entity type.
      * For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
      *
      */
-    relatedEntityType?: AuditLogEntityTypeEnum;
+    relatedEntityType: AuditLogEntityTypeEnum | null;
     /**
      * Additional description of the entity affected by the operation.
      * For example, for variable operations, this will contain the variable name.
      *
      */
-    entityDescription?: string;
+    entityDescription: string | null;
 };
 
 export type AuditLogSearchQuerySortRequest = {
@@ -2063,23 +2066,23 @@ export type DeploymentMetadataResult = {
     /**
      * Deployed process.
      */
-    processDefinition?: DeploymentProcessResult | null;
+    processDefinition: DeploymentProcessResult | null;
     /**
      * Deployed decision.
      */
-    decisionDefinition?: DeploymentDecisionResult | null;
+    decisionDefinition: DeploymentDecisionResult | null;
     /**
      * Deployed decision requirement definition.
      */
-    decisionRequirements?: DeploymentDecisionRequirementsResult | null;
+    decisionRequirements: DeploymentDecisionRequirementsResult | null;
     /**
      * Deployed form.
      */
-    form?: DeploymentFormResult | null;
+    form: DeploymentFormResult | null;
     /**
      * Deployed resource.
      */
-    resource?: DeploymentResourceResult | null;
+    resource: DeploymentResourceResult | null;
 };
 
 /**
@@ -3723,6 +3726,61 @@ export type JobTypeStatisticsItem = {
      * Number of distinct workers observed for this job type.
      */
     workers: number;
+};
+
+/**
+ * Job worker statistics query.
+ */
+export type JobWorkerStatisticsQuery = {
+    filter: JobWorkerStatisticsFilter;
+    /**
+     * Search cursor pagination.
+     */
+    page?: CursorForwardPagination;
+};
+
+/**
+ * Job worker statistics search filter.
+ */
+export type JobWorkerStatisticsFilter = {
+    /**
+     * Start of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    from: string;
+    /**
+     * End of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    to: string;
+    /**
+     * Job type to return worker metrics for.
+     */
+    jobType: string;
+};
+
+/**
+ * Job worker statistics query result.
+ */
+export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
+    /**
+     * The list of per-worker statistics items.
+     */
+    items: Array<JobWorkerStatisticsItem>;
+    page: SearchQueryPageResponse;
+};
+
+/**
+ * Statistics for a single worker within a job type.
+ */
+export type JobWorkerStatisticsItem = {
+    /**
+     * The worker identifier.
+     */
+    worker: string;
+    created: StatusMetric;
+    completed: StatusMetric;
+    failed: StatusMetric;
 };
 
 export type JobActivationRequest = {
@@ -5476,23 +5534,23 @@ export type ProblemDetail = {
     /**
      * A URI identifying the problem type.
      */
-    type?: string;
+    type: string;
     /**
      * A summary of the problem type.
      */
-    title?: string;
+    title: string;
     /**
      * The HTTP status code for this problem.
      */
-    status?: number;
+    status: number;
     /**
      * An explanation of the problem in more detail.
      */
-    detail?: string;
+    detail: string;
     /**
      * A URI path identifying the origin of the problem.
      */
-    instance?: string;
+    instance: string;
 };
 
 export type ProcessDefinitionSearchQuerySortRequest = {
@@ -6950,15 +7008,15 @@ export type SearchQueryPageResponse = {
      * This is useful for determining if additional requests are needed to retrieve all results.
      *
      */
-    hasMoreTotalItems?: boolean;
+    hasMoreTotalItems: boolean;
     /**
      * The cursor value for getting the previous page of results. Use this in the `before` field of an ensuing request.
      */
-    startCursor?: StartCursor | null;
+    startCursor: StartCursor | null;
     /**
      * The cursor value for getting the next page of results. Use this in the `after` field of an ensuing request.
      */
-    endCursor?: EndCursor | null;
+    endCursor: EndCursor | null;
 };
 
 export type SignalBroadcastRequest = {
@@ -11828,6 +11886,43 @@ export type GetJobTypeStatisticsResponses = {
 
 export type GetJobTypeStatisticsResponse = GetJobTypeStatisticsResponses[keyof GetJobTypeStatisticsResponses];
 
+export type GetJobWorkerStatisticsData = {
+    body: JobWorkerStatisticsQuery;
+    path?: never;
+    query?: never;
+    url: '/jobs/statistics/by-workers';
+};
+
+export type GetJobWorkerStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetJobWorkerStatisticsError = GetJobWorkerStatisticsErrors[keyof GetJobWorkerStatisticsErrors];
+
+export type GetJobWorkerStatisticsResponses = {
+    /**
+     * The job worker statistics result.
+     */
+    200: JobWorkerStatisticsQueryResult;
+};
+
+export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
+
 export type GetLicenseData = {
     body?: never;
     path?: never;
@@ -16070,7 +16165,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:4ab741f3f5a60c3f80787bbd6958cb9ae66410c07926aa72ebbd7f56e81ecc84
+// specHash=sha256:13089929f644c23022c327c49c96fd6e0092384cd04ad15155636ce0230a8205
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
