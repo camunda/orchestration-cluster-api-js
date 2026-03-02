@@ -1,9 +1,8 @@
 # [8.9.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.6...v8.9.0-alpha.7) (2026-03-02)
 
-
 ### Bug Fixes
 
-* rebuild from upstream spec ([efd13cb](https://github.com/camunda/orchestration-cluster-api-js/commit/efd13cbaec2e3fa2c0a8c0578f5d5b0fa0101715))
+- rebuild from upstream spec ([efd13cb](https://github.com/camunda/orchestration-cluster-api-js/commit/efd13cbaec2e3fa2c0a8c0578f5d5b0fa0101715))
 
 # [8.9.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.5...v8.9.0-alpha.6) (2026-02-17)
 

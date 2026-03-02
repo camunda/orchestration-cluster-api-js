@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 179
+// Operations: 178
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -377,14 +377,6 @@ export type getJobTypeStatisticsInput = getJobTypeStatisticsBody;
 export type getJobTypeStatisticsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobTypeStatistics>> 
-};
-type getJobWorkerStatisticsOptions = Parameters<typeof Sdk.getJobWorkerStatistics>[0];
-type getJobWorkerStatisticsBody = (NonNullable<getJobWorkerStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getJobWorkerStatisticsInput = getJobWorkerStatisticsBody;
-/** Management of eventual consistency **/
-export type getJobWorkerStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobWorkerStatistics>> 
 };
 type getLicenseOptions = Parameters<typeof Sdk.getLicense>[0];
 export type getLicenseInput = void;
@@ -6085,70 +6077,6 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getJobTypeStatistics', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
-    });
-  }
-
-  /**
-   * Get job statistics by worker
-   *
-   * Returns aggregated metrics per worker for the given jobType.
-   *
-    *
-   * @operationId getJobWorkerStatistics
-   * @tags Job
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
-   */
-  getJobWorkerStatistics(input: getJobWorkerStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getJobWorkerStatistics>>;
-  getJobWorkerStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const maybe = await this._validation.gateRequest('getJobWorkerStatistics', Schemas.zGetJobWorkerStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getJobWorkerStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getJobWorkerStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetJobWorkerStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schema = Schemas.zGetJobWorkerStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getJobWorkerStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getJobWorkerStatistics', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }

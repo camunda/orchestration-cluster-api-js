@@ -1923,12 +1923,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -3723,61 +3723,6 @@ export type JobTypeStatisticsItem = {
      * Number of distinct workers observed for this job type.
      */
     workers: number;
-};
-
-/**
- * Job worker statistics query.
- */
-export type JobWorkerStatisticsQuery = {
-    filter: JobWorkerStatisticsFilter;
-    /**
-     * Search cursor pagination.
-     */
-    page?: CursorForwardPagination;
-};
-
-/**
- * Job worker statistics search filter.
- */
-export type JobWorkerStatisticsFilter = {
-    /**
-     * Start of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    from: string;
-    /**
-     * End of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    to: string;
-    /**
-     * Job type to return worker metrics for.
-     */
-    jobType: string;
-};
-
-/**
- * Job worker statistics query result.
- */
-export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
-    /**
-     * The list of per-worker statistics items.
-     */
-    items: Array<JobWorkerStatisticsItem>;
-    page: SearchQueryPageResponse;
-};
-
-/**
- * Statistics for a single worker within a job type.
- */
-export type JobWorkerStatisticsItem = {
-    /**
-     * The worker identifier.
-     */
-    worker: string;
-    created: StatusMetric;
-    completed: StatusMetric;
-    failed: StatusMetric;
 };
 
 export type JobActivationRequest = {
@@ -11883,43 +11828,6 @@ export type GetJobTypeStatisticsResponses = {
 
 export type GetJobTypeStatisticsResponse = GetJobTypeStatisticsResponses[keyof GetJobTypeStatisticsResponses];
 
-export type GetJobWorkerStatisticsData = {
-    body: JobWorkerStatisticsQuery;
-    path?: never;
-    query?: never;
-    url: '/jobs/statistics/by-workers';
-};
-
-export type GetJobWorkerStatisticsErrors = {
-    /**
-     * The provided data is not valid.
-     */
-    400: ProblemDetail;
-    /**
-     * The request lacks valid authentication credentials.
-     */
-    401: ProblemDetail;
-    /**
-     * Forbidden. The request is not allowed.
-     */
-    403: ProblemDetail;
-    /**
-     * An internal error occurred while processing the request.
-     */
-    500: ProblemDetail;
-};
-
-export type GetJobWorkerStatisticsError = GetJobWorkerStatisticsErrors[keyof GetJobWorkerStatisticsErrors];
-
-export type GetJobWorkerStatisticsResponses = {
-    /**
-     * The job worker statistics result.
-     */
-    200: JobWorkerStatisticsQueryResult;
-};
-
-export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
-
 export type GetLicenseData = {
     body?: never;
     path?: never;
@@ -16162,7 +16070,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:cbd9584472e517448379658b56e2011c3f9b8ebc67ea8e8e750d33b3ad24f638
+// specHash=sha256:4ab741f3f5a60c3f80787bbd6958cb9ae66410c07926aa72ebbd7f56e81ecc84
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
