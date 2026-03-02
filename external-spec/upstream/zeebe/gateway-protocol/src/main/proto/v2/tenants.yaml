@@ -541,7 +541,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
+                $ref: '#/components/schemas/TenantRoleSearchResult'
 
   /tenants/{tenantId}/roles/{roleId}:
     put:
@@ -729,7 +729,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
+                $ref: '#/components/schemas/TenantMappingRuleSearchResult'
 
 ## Schema definitions
 
@@ -855,6 +855,8 @@ components:
 
     TenantSearchQueryResult:
       description: Tenant search response.
+      required:
+        - items
       type: object
       allOf:
         - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
@@ -873,6 +875,8 @@ components:
           $ref: 'identifiers.yaml#/components/schemas/Username'
 
     TenantUserSearchResult:
+      required:
+        - items
       type: object
       allOf:
         - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
@@ -916,6 +920,8 @@ components:
           type: string
 
     TenantClientSearchResult:
+      required:
+        - items
       type: object
       allOf:
         - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
@@ -960,6 +966,8 @@ components:
 
     TenantGroupSearchResult:
       type: object
+      required:
+        - items
       allOf:
         - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
       properties:
@@ -980,6 +988,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TenantGroupSearchQuerySortRequest'
+
+    TenantRoleSearchResult:
+      required:
+        - items
+      type: object
+      allOf:
+        - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
+      properties:
+        items:
+          description: The matching roles.
+          type: array
+          items:
+            $ref: 'roles.yaml#/components/schemas/RoleResult'
+
+    TenantMappingRuleSearchResult:
+      required:
+        - items
+      type: object
+      allOf:
+        - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
+      properties:
+        items:
+          description: The matching mapping rules.
+          type: array
+          items:
+            $ref: 'mapping-rules.yaml#/components/schemas/MappingRuleResult'
 
     TenantGroupSearchQuerySortRequest:
       type: object

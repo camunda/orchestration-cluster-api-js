@@ -72,6 +72,8 @@ components:
     AuditLogResult:
       description: Audit log item.
       type: object
+      required:
+        - rootProcessInstanceKey
       properties:
         auditLogKey:
           allOf:
@@ -127,7 +129,13 @@ components:
             - $ref: 'keys.yaml#/components/schemas/ProcessInstanceKey'
           description: The key of the process instance.
         rootProcessInstanceKey:
-          $ref: 'keys.yaml#/components/schemas/RootProcessInstanceKey'
+          description: |
+            The key of the root process instance. The root process instance is the top-level
+            ancestor in the process instance hierarchy. This field is only present for data
+            belonging to process instance hierarchies created in version 8.9 or later.
+          nullable: true
+          allOf:
+            - $ref: 'keys.yaml#/components/schemas/ProcessInstanceKey'
         elementInstanceKey:
           allOf:
             - $ref: 'keys.yaml#/components/schemas/ElementInstanceKey'
@@ -366,6 +374,8 @@ components:
     AuditLogSearchQueryResult:
       description: Audit log search response.
       type: object
+      required:
+        - items
       allOf:
         - $ref: 'search-models.yaml#/components/schemas/SearchQueryResponse'
       properties:
@@ -393,6 +403,7 @@ components:
         - DECISION
         - GROUP
         - INCIDENT
+        - JOB
         - MAPPING_RULE
         - PROCESS_INSTANCE
         - RESOURCE

@@ -61,7 +61,13 @@ export type AuditLogResult = {
      * The key of the process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the element instance.
      */
@@ -277,7 +283,7 @@ export type AuditLogSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching audit logs.
      */
-    items?: Array<AuditLogResult>;
+    items: Array<AuditLogResult>;
 };
 
 /**
@@ -288,7 +294,7 @@ export type AuditLogEntityKey = CamundaKey<'AuditLogEntityKey'>;
 /**
  * The type of entity affected by the operation.
  */
-export type AuditLogEntityTypeEnum = 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE' | 'CLIENT';
+export type AuditLogEntityTypeEnum = 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'JOB' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE' | 'CLIENT';
 
 /**
  * The type of operation performed.
@@ -509,7 +515,7 @@ export type CamundaUserResult = {
     /**
      * The web components the user is authorized to use.
      */
-    authorizedComponents?: Array<string>;
+    authorizedComponents: Array<string>;
     /**
      * The tenants the user is a member of.
      */
@@ -525,7 +531,7 @@ export type CamundaUserResult = {
     /**
      * The plan of the user.
      */
-    salesPlanType: string;
+    salesPlanType: string | null;
     /**
      * The links to the components in the C8 stack.
      */
@@ -640,15 +646,15 @@ export type AuthorizationResult = {
     /**
      * ID of the resource the permission relates to (mutually exclusive with `resourcePropertyName`).
      */
-    resourceId?: string;
+    resourceId?: string | null;
     /**
      * The name of the resource property the permission relates to (mutually exclusive with `resourceId`).
      */
-    resourcePropertyName?: string;
+    resourcePropertyName: string | null;
     /**
      * Specifies the types of the permissions.
      */
-    permissionTypes?: Array<PermissionTypeEnum>;
+    permissionTypes: Array<PermissionTypeEnum>;
     /**
      * The key of the authorization.
      */
@@ -659,7 +665,7 @@ export type AuthorizationSearchResult = SearchQueryResponse & {
     /**
      * The matching authorizations.
      */
-    items?: Array<AuthorizationResult>;
+    items: Array<AuthorizationResult>;
 };
 
 export type AuthorizationCreateResult = {
@@ -672,7 +678,7 @@ export type AuthorizationCreateResult = {
 /**
  * Specifies the type of permissions.
  */
-export type PermissionTypeEnum = 'ACCESS' | 'CANCEL_PROCESS_INSTANCE' | 'CLAIM' | 'COMPLETE' | 'CREATE' | 'CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT' | 'CREATE_DECISION_INSTANCE' | 'CREATE_PROCESS_INSTANCE' | 'CREATE_TASK_LISTENER' | 'DELETE' | 'DELETE_DECISION_INSTANCE' | 'DELETE_DRD' | 'DELETE_FORM' | 'DELETE_PROCESS' | 'DELETE_PROCESS_INSTANCE' | 'DELETE_RESOURCE' | 'DELETE_TASK_LISTENER' | 'EVALUATE' | 'MODIFY_PROCESS_INSTANCE' | 'READ' | 'READ_DECISION_DEFINITION' | 'READ_DECISION_INSTANCE' | 'READ_JOB_METRIC' | 'READ_PROCESS_DEFINITION' | 'READ_PROCESS_INSTANCE' | 'READ_USAGE_METRIC' | 'READ_USER_TASK' | 'READ_TASK_LISTENER' | 'UPDATE' | 'UPDATE_PROCESS_INSTANCE' | 'UPDATE_USER_TASK' | 'UPDATE_TASK_LISTENER';
+export type PermissionTypeEnum = 'ACCESS' | 'CANCEL_PROCESS_INSTANCE' | 'CLAIM' | 'CLAIM_USER_TASK' | 'COMPLETE' | 'COMPLETE_USER_TASK' | 'CREATE' | 'CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT' | 'CREATE_DECISION_INSTANCE' | 'CREATE_PROCESS_INSTANCE' | 'CREATE_TASK_LISTENER' | 'DELETE' | 'DELETE_DECISION_INSTANCE' | 'DELETE_DRD' | 'DELETE_FORM' | 'DELETE_PROCESS' | 'DELETE_PROCESS_INSTANCE' | 'DELETE_RESOURCE' | 'DELETE_TASK_LISTENER' | 'EVALUATE' | 'MODIFY_PROCESS_INSTANCE' | 'READ' | 'READ_DECISION_DEFINITION' | 'READ_DECISION_INSTANCE' | 'READ_JOB_METRIC' | 'READ_PROCESS_DEFINITION' | 'READ_PROCESS_INSTANCE' | 'READ_USAGE_METRIC' | 'READ_USER_TASK' | 'READ_TASK_LISTENER' | 'UPDATE' | 'UPDATE_PROCESS_INSTANCE' | 'UPDATE_USER_TASK' | 'UPDATE_TASK_LISTENER';
 
 /**
  * The type of resource to add/remove permissions to/from.
@@ -755,7 +761,7 @@ export type BatchOperationSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching batch operations.
      */
-    items?: Array<BatchOperationResponse>;
+    items: Array<BatchOperationResponse>;
 };
 
 export type BatchOperationResponse = {
@@ -767,12 +773,16 @@ export type BatchOperationResponse = {
     batchOperationType?: BatchOperationTypeEnum;
     /**
      * The start date of the batch operation.
+     * This is `null` if the batch operation has not yet started.
+     *
      */
-    startDate?: string;
+    startDate?: string | null;
     /**
      * The end date of the batch operation.
+     * This is `null` if the batch operation is still running.
+     *
      */
-    endDate?: string;
+    endDate?: string | null;
     actorType?: AuditLogActorTypeEnum;
     /**
      * The ID of the actor who performed the operation. Available for batch operations created since 8.9.
@@ -793,7 +803,7 @@ export type BatchOperationResponse = {
     /**
      * The errors that occurred per partition during the batch operation.
      */
-    errors?: Array<BatchOperationError>;
+    errors: Array<BatchOperationError>;
 };
 
 export type BatchOperationError = {
@@ -863,7 +873,7 @@ export type BatchOperationItemSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching batch operation items.
      */
-    items?: Array<BatchOperationItemResponse>;
+    items: Array<BatchOperationItemResponse>;
 };
 
 export type BatchOperationItemResponse = {
@@ -880,7 +890,13 @@ export type BatchOperationItemResponse = {
      * the process instance key of the processed item.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * State of the item.
      */
@@ -892,7 +908,7 @@ export type BatchOperationItemResponse = {
     /**
      * the error message from the engine in case of a failed operation.
      */
-    errorMessage?: string;
+    errorMessage?: string | null;
 };
 
 /**
@@ -1171,9 +1187,9 @@ export type ClusterVariableResultBase = {
     name: string;
     scope: ClusterVariableScopeEnum;
     /**
-     * Only provided if the cluster variable scope is TENANT.
+     * Only provided if the cluster variable scope is TENANT. Null for global scope variables.
      */
-    tenantId?: string;
+    tenantId?: string | null;
 };
 
 /**
@@ -1262,7 +1278,7 @@ export type ClusterVariableSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching cluster variables.
      */
-    items?: Array<ClusterVariableSearchResult>;
+    items: Array<ClusterVariableSearchResult>;
 };
 
 /**
@@ -1477,7 +1493,7 @@ export type DecisionDefinitionSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching decision definitions.
      */
-    items?: Array<DecisionDefinitionResult>;
+    items: Array<DecisionDefinitionResult>;
 };
 
 export type DecisionDefinitionResult = {
@@ -1586,11 +1602,11 @@ export type EvaluateDecisionResult = {
     /**
      * The ID of the decision which failed during evaluation.
      */
-    failedDecisionDefinitionId: DecisionDefinitionId;
+    failedDecisionDefinitionId: DecisionDefinitionId | null;
     /**
      * Message describing why the decision which was evaluated failed.
      */
-    failureMessage: string;
+    failureMessage: string | null;
     /**
      * The tenant ID of the evaluated decision.
      */
@@ -1638,7 +1654,7 @@ export type EvaluatedDecisionResult = {
     /**
      * The type of the decision which was evaluated.
      */
-    decisionDefinitionType?: string;
+    decisionDefinitionType: string;
     /**
      * JSON document that will instantiate the result of the decision which was evaluated.
      *
@@ -1651,11 +1667,11 @@ export type EvaluatedDecisionResult = {
     /**
      * The decision rules that matched within this decision evaluation.
      */
-    matchedRules?: Array<MatchedDecisionRuleItem>;
+    matchedRules: Array<MatchedDecisionRuleItem>;
     /**
      * The decision inputs that were evaluated within this decision evaluation.
      */
-    evaluatedInputs?: Array<EvaluatedDecisionInputItem>;
+    evaluatedInputs: Array<EvaluatedDecisionInputItem>;
     /**
      * The unique key identifying the decision which was evaluate.
      */
@@ -1761,7 +1777,7 @@ export type DecisionInstanceSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching decision instances.
      */
-    items?: Array<DecisionInstanceResult>;
+    items: Array<DecisionInstanceResult>;
 };
 
 export type DecisionInstanceResult = {
@@ -1774,7 +1790,7 @@ export type DecisionInstanceResult = {
     /**
      * The evaluation failure of the decision instance.
      */
-    evaluationFailure?: string;
+    evaluationFailure: string | null;
     /**
      * The ID of the DMN decision.
      */
@@ -1795,7 +1811,7 @@ export type DecisionInstanceResult = {
     /**
      * The tenant ID of the decision instance.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The key of the decision evaluation where this instance was created.
      */
@@ -1808,7 +1824,13 @@ export type DecisionInstanceResult = {
      * The key of the process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the decision.
      */
@@ -1828,20 +1850,29 @@ export type DecisionInstanceGetQueryResult = DecisionInstanceResult & {
      * The evaluated inputs of the decision instance.
      *
      */
-    evaluatedInputs?: Array<EvaluatedDecisionInputItem>;
+    evaluatedInputs: Array<EvaluatedDecisionInputItem>;
     /**
      * The matched rules of the decision instance.
      *
      */
-    matchedRules?: Array<MatchedDecisionRuleItem>;
+    matchedRules: Array<MatchedDecisionRuleItem>;
 };
 
 /**
  * A decision input that was evaluated within this decision evaluation.
  */
 export type EvaluatedDecisionInputItem = {
+    /**
+     * The identifier of the decision input.
+     */
     inputId?: string;
+    /**
+     * The name of the decision input.
+     */
     inputName?: string;
+    /**
+     * The description of the decision input.
+     */
     inputValue?: string;
 };
 
@@ -1849,11 +1880,26 @@ export type EvaluatedDecisionInputItem = {
  * The evaluated decision outputs.
  */
 export type EvaluatedDecisionOutputItem = {
+    /**
+     * The ID of the evaluated decison output item.
+     */
     outputId?: string;
+    /**
+     * The name of the of the evaluated decison output item.
+     */
     outputName?: string;
+    /**
+     * The value of the evaluated decison output item.
+     */
     outputValue?: string;
-    ruleId?: string;
-    ruleIndex?: number;
+    /**
+     * The ID of the matched rule.
+     */
+    ruleId: string | null;
+    /**
+     * The index of the matched rule.
+     */
+    ruleIndex: number | null;
 };
 
 /**
@@ -1871,18 +1917,18 @@ export type MatchedDecisionRuleItem = {
     /**
      * The evaluated decision outputs.
      */
-    evaluatedOutputs?: Array<EvaluatedDecisionOutputItem>;
+    evaluatedOutputs: Array<EvaluatedDecisionOutputItem>;
 };
 
 /**
- * The type of the decision.
+ * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
- * The state of the decision instance.
+ * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -1968,7 +2014,7 @@ export type DecisionRequirementsSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching decision requirements.
      */
-    items?: Array<DecisionRequirementsResult>;
+    items: Array<DecisionRequirementsResult>;
 };
 
 export type DecisionRequirementsResult = {
@@ -2014,11 +2060,26 @@ export type DeploymentResult = {
 };
 
 export type DeploymentMetadataResult = {
-    processDefinition?: DeploymentProcessResult;
-    decisionDefinition?: DeploymentDecisionResult;
-    decisionRequirements?: DeploymentDecisionRequirementsResult;
-    form?: DeploymentFormResult;
-    resource?: DeploymentResourceResult;
+    /**
+     * Deployed process.
+     */
+    processDefinition?: DeploymentProcessResult | null;
+    /**
+     * Deployed decision.
+     */
+    decisionDefinition?: DeploymentDecisionResult | null;
+    /**
+     * Deployed decision requirement definition.
+     */
+    decisionRequirements?: DeploymentDecisionRequirementsResult | null;
+    /**
+     * Deployed form.
+     */
+    form?: DeploymentFormResult | null;
+    /**
+     * Deployed resource.
+     */
+    resource?: DeploymentResourceResult | null;
 };
 
 /**
@@ -2092,9 +2153,21 @@ export type DeploymentDecisionResult = {
  * Deployed decision requirements.
  */
 export type DeploymentDecisionRequirementsResult = {
+    /**
+     * The id of the deployed decision requirements.
+     */
     decisionRequirementsId?: string;
+    /**
+     * The name of the deployed decision requirements.
+     */
     decisionRequirementsName?: string;
+    /**
+     * The version of the deployed decision requirements.
+     */
     version?: number;
+    /**
+     * The name of the resource.
+     */
     resourceName?: string;
     /**
      * The tenant ID of the deployed decision requirements.
@@ -2117,7 +2190,13 @@ export type DeploymentFormResult = {
      *
      */
     formId?: FormId;
+    /**
+     * The version of the deployed form.
+     */
     version?: number;
+    /**
+     * The name of the resource.
+     */
     resourceName?: string;
     tenantId?: TenantId;
     /**
@@ -2130,8 +2209,17 @@ export type DeploymentFormResult = {
  * A deployed Resource.
  */
 export type DeploymentResourceResult = {
+    /**
+     * The resource id of the deployed resource.
+     */
     resourceId?: string;
+    /**
+     * The name of the deployed resource.
+     */
     resourceName?: string;
+    /**
+     * The description of the deployed resource.
+     */
     version?: number;
     tenantId?: TenantId;
     /**
@@ -2165,10 +2253,10 @@ export type DeleteResourceResponse = {
      *
      * This field is only populated when the request `deleteHistory` is set to `true` and the resource
      * is a process definition. For other resource types (decisions, forms, generic resources),
-     * this field will not be present in the response.
+     * this field will be `null`.
      *
      */
-    batchOperation?: BatchOperationCreatedResult;
+    batchOperation?: BatchOperationCreatedResult | null;
 };
 
 export type ResourceResult = {
@@ -2317,11 +2405,11 @@ export type DocumentCreationBatchResponse = {
     /**
      * Documents that were successfully created.
      */
-    failedDocuments?: Array<DocumentCreationFailureDetail>;
+    failedDocuments: Array<DocumentCreationFailureDetail>;
     /**
      * Documents that failed creation.
      */
-    createdDocuments?: Array<DocumentReference>;
+    createdDocuments: Array<DocumentReference>;
 };
 
 /**
@@ -2355,7 +2443,7 @@ export type DocumentMetadata = {
     /**
      * Custom properties of the document.
      */
-    customProperties?: {
+    customProperties: {
         [key: string]: unknown;
     };
 };
@@ -2500,7 +2588,7 @@ export type ElementInstanceSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching element instances.
      */
-    items?: Array<ElementInstanceResult>;
+    items: Array<ElementInstanceResult>;
 };
 
 export type ElementInstanceResult = {
@@ -2515,7 +2603,7 @@ export type ElementInstanceResult = {
     /**
      * Date when element instance finished.
      */
-    endDate?: string;
+    endDate?: string | null;
     /**
      * The element ID for this element instance.
      */
@@ -2548,7 +2636,13 @@ export type ElementInstanceResult = {
      * The process instance key associated to this element instance.
      */
     processInstanceKey: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The process definition key associated to this element instance.
      */
@@ -2556,7 +2650,7 @@ export type ElementInstanceResult = {
     /**
      * Incident key associated with this element instance.
      */
-    incidentKey?: IncidentKey;
+    incidentKey?: IncidentKey | null;
 };
 
 /**
@@ -2597,6 +2691,12 @@ export type ExpressionEvaluationRequest = {
      * Required when the expression references tenant-scoped cluster variables
      */
     tenantId?: string;
+    /**
+     * Optional context variables for expression evaluation. These variables are only used for the current evaluation and do not persist beyond it.
+     */
+    context?: {
+        [key: string]: unknown;
+    } | null;
 };
 
 export type ExpressionEvaluationResult = {
@@ -2837,6 +2937,133 @@ export type UpdateGlobalTaskListenerRequest = GlobalTaskListenerBase;
 export type GlobalTaskListenerResult = GlobalTaskListenerBase & {
     id?: GlobalListenerId;
     source?: GlobalListenerSourceEnum;
+    eventTypes: GlobalTaskListenerEventTypes;
+};
+
+/**
+ * Global listener search query request.
+ */
+export type GlobalTaskListenerSearchQueryRequest = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<GlobalTaskListenerSearchQuerySortRequest>;
+    /**
+     * The global listener search filters.
+     */
+    filter?: GlobalTaskListenerSearchQueryFilterRequest;
+};
+
+export type GlobalTaskListenerSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'id' | 'type' | 'afterNonGlobal' | 'priority' | 'source';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Global listener filter request.
+ */
+export type GlobalTaskListenerSearchQueryFilterRequest = {
+    /**
+     * Id of the global listener.
+     */
+    id?: StringFilterProperty;
+    /**
+     * Job type of the global listener.
+     */
+    type?: StringFilterProperty;
+    /**
+     * Number of retries of the global listener.
+     */
+    retries?: IntegerFilterProperty;
+    /**
+     * Event types of the global listener.
+     */
+    eventTypes?: Array<GlobalTaskListenerEventTypeFilterProperty>;
+    /**
+     * Whether the listener runs after model-level listeners.
+     */
+    afterNonGlobal?: boolean;
+    /**
+     * Priority of the global listener.
+     */
+    priority?: IntegerFilterProperty;
+    /**
+     * How the global listener was defined.
+     */
+    source?: GlobalListenerSourceFilterProperty;
+};
+
+/**
+ * Global listener source property with full advanced search capabilities.
+ */
+export type GlobalListenerSourceFilterProperty = GlobalListenerSourceExactMatch | AdvancedGlobalListenerSourceFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced global listener source filter.
+ */
+export type AdvancedGlobalListenerSourceFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: GlobalListenerSourceEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: GlobalListenerSourceEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<GlobalListenerSourceEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * Global listener event type property with full advanced search capabilities.
+ */
+export type GlobalTaskListenerEventTypeFilterProperty = GlobalTaskListenerEventTypeExactMatch | AdvancedGlobalTaskListenerEventTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced global listener event type filter.
+ */
+export type AdvancedGlobalTaskListenerEventTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: GlobalTaskListenerEventTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: GlobalTaskListenerEventTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<GlobalTaskListenerEventTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * Global listener search query response.
+ */
+export type GlobalTaskListenerSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching global listeners.
+     */
+    items: Array<GlobalTaskListenerResult>;
 };
 
 export type GroupCreateRequest = {
@@ -2956,7 +3183,7 @@ export type GroupSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching groups.
      */
-    items?: Array<GroupResult>;
+    items: Array<GroupResult>;
 };
 
 export type GroupUserResult = {
@@ -2967,7 +3194,7 @@ export type GroupUserSearchResult = SearchQueryResponse & {
     /**
      * The matching members.
      */
-    items?: Array<GroupUserResult>;
+    items: Array<GroupUserResult>;
 };
 
 export type GroupUserSearchQueryRequest = SearchQueryRequest & {
@@ -2996,7 +3223,7 @@ export type GroupClientSearchResult = SearchQueryResponse & {
     /**
      * The matching client IDs.
      */
-    items?: Array<GroupClientResult>;
+    items: Array<GroupClientResult>;
 };
 
 export type GroupClientSearchQueryRequest = SearchQueryRequest & {
@@ -3004,6 +3231,20 @@ export type GroupClientSearchQueryRequest = SearchQueryRequest & {
      * Sort field criteria.
      */
     sort?: Array<GroupClientSearchQuerySortRequest>;
+};
+
+export type GroupMappingRuleSearchResult = SearchQueryResponse & {
+    /**
+     * The matching mapping rules.
+     */
+    items: Array<MappingRuleResult>;
+};
+
+export type GroupRoleSearchResult = SearchQueryResponse & {
+    /**
+     * The matching roles.
+     */
+    items: Array<RoleResult>;
 };
 
 export type GroupClientSearchQuerySortRequest = {
@@ -3058,6 +3299,16 @@ export type Tag = CamundaKey<'Tag'>;
  * List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
  */
 export type TagSet = Array<Tag> & { readonly length: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 }; // minItems=0 maxItems=10; uniqueItems=true;
+
+/**
+ * An optional, user-defined string identifier that identifies the process instance
+ * within the scope of a process definition (scoped by tenant). If provided and uniqueness
+ * enforcement is enabled, the engine will reject creation if another root process instance
+ * with the same business id is already active for the same process definition.
+ * Note that any active child process instances with the same business id are not taken into account.
+ *
+ */
+export type BusinessId = CamundaKey<'BusinessId'>;
 
 export type IncidentSearchQuery = SearchQueryRequest & {
     /**
@@ -3214,7 +3465,7 @@ export type IncidentSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching incidents.
      */
-    items?: Array<IncidentResult>;
+    items: Array<IncidentResult>;
 };
 
 export type IncidentResult = {
@@ -3222,6 +3473,9 @@ export type IncidentResult = {
      * The process definition ID associated to this incident.
      */
     processDefinitionId?: ProcessDefinitionId;
+    /**
+     * The type of the incident error.
+     */
     errorType?: IncidentErrorTypeEnum;
     /**
      * Error message which describes the error in more detail.
@@ -3231,12 +3485,18 @@ export type IncidentResult = {
      * The element ID associated to this incident.
      */
     elementId?: ElementId;
+    /**
+     * The creation time of the incident.
+     */
     creationTime?: string;
+    /**
+     * The incident state.
+     */
     state?: IncidentStateEnum;
     /**
      * The tenant ID of the incident.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this incident.
      */
@@ -3249,7 +3509,13 @@ export type IncidentResult = {
      * The process instance key associated to this incident.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The element instance key associated to this incident.
      */
@@ -3257,7 +3523,7 @@ export type IncidentResult = {
     /**
      * The job key, if exists, associated with this incident.
      */
-    jobKey?: JobKey;
+    jobKey: JobKey | null;
 };
 
 export type IncidentResolutionRequest = {
@@ -3281,7 +3547,7 @@ export type IncidentProcessInstanceStatisticsByErrorQueryResult = SearchQueryRes
      * Statistics of active process instances grouped by incident error.
      *
      */
-    items?: Array<IncidentProcessInstanceStatisticsByErrorResult>;
+    items: Array<IncidentProcessInstanceStatisticsByErrorResult>;
 };
 
 export type IncidentProcessInstanceStatisticsByErrorResult = {
@@ -3329,7 +3595,7 @@ export type IncidentProcessInstanceStatisticsByDefinitionQueryResult = SearchQue
      * definition for the specified error hash code.
      *
      */
-    items?: Array<IncidentProcessInstanceStatisticsByDefinitionResult>;
+    items: Array<IncidentProcessInstanceStatisticsByDefinitionResult>;
 };
 
 export type IncidentProcessInstanceStatisticsByDefinitionResult = {
@@ -3395,7 +3661,123 @@ export type StatusMetric = {
     /**
      * ISO 8601 timestamp of the last update for this status.
      */
-    lastUpdatedAt: string;
+    lastUpdatedAt: string | null;
+};
+
+/**
+ * Job type statistics query.
+ */
+export type JobTypeStatisticsQuery = {
+    filter?: JobTypeStatisticsFilter;
+    /**
+     * Search cursor pagination.
+     */
+    page?: CursorForwardPagination;
+};
+
+/**
+ * Job type statistics search filter.
+ */
+export type JobTypeStatisticsFilter = {
+    /**
+     * Start of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    from: string;
+    /**
+     * End of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    to: string;
+    /**
+     * Optional job type filter with advanced search capabilities.
+     * Supports exact match, pattern matching, and other operators.
+     *
+     */
+    jobType?: StringFilterProperty;
+};
+
+/**
+ * Job type statistics query result.
+ */
+export type JobTypeStatisticsQueryResult = SearchQueryResponse & {
+    /**
+     * The list of job type statistics items.
+     */
+    items: Array<JobTypeStatisticsItem>;
+    page: SearchQueryPageResponse;
+};
+
+/**
+ * Statistics for a single job type.
+ */
+export type JobTypeStatisticsItem = {
+    /**
+     * The job type identifier.
+     */
+    jobType: string;
+    created: StatusMetric;
+    completed: StatusMetric;
+    failed: StatusMetric;
+    /**
+     * Number of distinct workers observed for this job type.
+     */
+    workers: number;
+};
+
+/**
+ * Job worker statistics query.
+ */
+export type JobWorkerStatisticsQuery = {
+    filter: JobWorkerStatisticsFilter;
+    /**
+     * Search cursor pagination.
+     */
+    page?: CursorForwardPagination;
+};
+
+/**
+ * Job worker statistics search filter.
+ */
+export type JobWorkerStatisticsFilter = {
+    /**
+     * Start of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    from: string;
+    /**
+     * End of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    to: string;
+    /**
+     * Job type to return worker metrics for.
+     */
+    jobType: string;
+};
+
+/**
+ * Job worker statistics query result.
+ */
+export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
+    /**
+     * The list of per-worker statistics items.
+     */
+    items: Array<JobWorkerStatisticsItem>;
+    page: SearchQueryPageResponse;
+};
+
+/**
+ * Statistics for a single worker within a job type.
+ */
+export type JobWorkerStatisticsItem = {
+    /**
+     * The worker identifier.
+     */
+    worker: string;
+    created: StatusMetric;
+    completed: StatusMetric;
+    failed: StatusMetric;
 };
 
 export type JobActivationRequest = {
@@ -3503,11 +3885,26 @@ export type ActivatedJobResult = {
      * The key of the job's process definition.
      */
     processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The element instance key of the task.
+     */
     elementInstanceKey: ElementInstanceKey;
     kind: JobKindEnum;
     listenerEventType: JobListenerEventTypeEnum;
-    userTask?: UserTaskProperties;
-    tags?: TagSet;
+    /**
+     * User task properties, if the job is a user task.
+     * This is `null` if the job is not a user task.
+     *
+     */
+    userTask?: UserTaskProperties | null;
+    tags: TagSet;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
 };
 
 /**
@@ -3525,15 +3922,15 @@ export type UserTaskProperties = {
     /**
      * The groups eligible to claim the task.
      */
-    candidateGroups?: Array<string>;
+    candidateGroups: Array<string>;
     /**
      * The users eligible to claim the task.
      */
-    candidateUsers?: Array<string>;
+    candidateUsers: Array<string>;
     /**
      * The attributes that were changed in the task.
      */
-    changedAttributes?: Array<string>;
+    changedAttributes: Array<string>;
     /**
      * The due date of the user task in ISO 8601 format.
      */
@@ -3679,7 +4076,7 @@ export type JobSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching jobs.
      */
-    items?: Array<JobSearchResult>;
+    items: Array<JobSearchResult>;
 };
 
 export type JobSearchResult = {
@@ -3698,17 +4095,19 @@ export type JobSearchResult = {
      */
     deniedReason?: string | null;
     /**
-     * The element ID associated with the job.
+     * The element ID associated with the job. May be missing on job failure.
      */
-    elementId: ElementId;
+    elementId: ElementId | null;
     /**
      * The element instance key associated with the job.
      */
     elementInstanceKey: ElementInstanceKey;
     /**
-     * When the job ended.
+     * End date of the job.
+     * This is `null` if the job is not in an end state yet.
+     *
      */
-    endTime?: string;
+    endTime?: string | null;
     /**
      * The error code provided for a failed job.
      */
@@ -3743,7 +4142,13 @@ export type JobSearchResult = {
      * The process instance key associated with the job.
      */
     processInstanceKey: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The amount of retries left to this job.
      */
@@ -4074,14 +4479,6 @@ export type LongKey = string;
 export type ProcessInstanceKey = CamundaKey<'ProcessInstanceKey'>;
 
 /**
- * The key of the root process instance. The root process instance is the top-level
- * ancestor in the process instance hierarchy. This field is only present for data
- * belonging to process instance hierarchies created in version 8.9 or later.
- *
- */
-export type RootProcessInstanceKey = CamundaKey<'RootProcessInstanceKey'>;
-
-/**
  * System-generated key for a deployed process definition.
  */
 export type ProcessDefinitionKey = CamundaKey<'ProcessDefinitionKey'>;
@@ -4107,7 +4504,9 @@ export type FormKey = CamundaKey<'FormKey'>;
 export type VariableKey = CamundaKey<'VariableKey'>;
 
 /**
- * System-generated key for a scope.
+ * System-generated key for a scope. A scope can hold variables and represents either an
+ * element instance in a BPMN process or the process instance itself.
+ *
  */
 export type ScopeKey = CamundaKey<'ScopeKey'>;
 
@@ -4329,7 +4728,9 @@ export type AdvancedDecisionDefinitionKeyFilter = {
 };
 
 /**
- * ScopeKey property with full advanced search capabilities.
+ * ScopeKey property with full advanced search capabilities. Filter by the key of the
+ * element instance or process instance that defines the scope of a variable.
+ *
  */
 export type ScopeKeyFilterProperty = ScopeKeyExactMatch | AdvancedScopeKeyFilter;
 
@@ -4578,7 +4979,7 @@ export type LicenseResponse = {
     /**
      * The date when the Camunda license expires
      */
-    expiresAt?: string | null;
+    expiresAt: string | null;
 };
 
 export type MappingRuleCreateUpdateRequest = {
@@ -4632,7 +5033,7 @@ export type MappingRuleSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching mapping rules.
      */
-    items?: Array<MappingRuleResult>;
+    items: Array<MappingRuleResult>;
 };
 
 export type MappingRuleResult = {
@@ -4786,7 +5187,7 @@ export type MessageSubscriptionSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching message subscriptions.
      */
-    items?: Array<MessageSubscriptionResult>;
+    items: Array<MessageSubscriptionResult>;
 };
 
 export type MessageSubscriptionResult = {
@@ -4806,7 +5207,13 @@ export type MessageSubscriptionResult = {
      * The process instance key associated with this message subscription.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The element ID associated with this message subscription.
      */
@@ -4904,7 +5311,7 @@ export type CorrelatedMessageSubscriptionSearchQueryResult = SearchQueryResponse
     /**
      * The matching correlated message subscriptions.
      */
-    items?: Array<CorrelatedMessageSubscriptionResult>;
+    items: Array<CorrelatedMessageSubscriptionResult>;
 };
 
 export type CorrelatedMessageSubscriptionResult = {
@@ -4948,7 +5355,13 @@ export type CorrelatedMessageSubscriptionResult = {
      * The process instance key associated with this correlated message subscription.
      */
     processInstanceKey: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The subscription key that received the message.
      */
@@ -5205,14 +5618,14 @@ export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching process definitions.
      */
-    items?: Array<ProcessDefinitionResult>;
+    items: Array<ProcessDefinitionResult>;
 };
 
 export type ProcessDefinitionResult = {
     /**
      * Name of this process definition.
      */
-    name?: string;
+    name?: string | null;
     /**
      * Resource name for this process definition.
      */
@@ -5224,7 +5637,7 @@ export type ProcessDefinitionResult = {
     /**
      * Version tag of this process definition.
      */
-    versionTag?: string;
+    versionTag?: string | null;
     /**
      * Process definition ID of this process definition.
      */
@@ -5260,7 +5673,7 @@ export type ProcessDefinitionElementStatisticsQueryResult = {
     /**
      * The element statistics.
      */
-    items?: Array<ProcessElementStatisticsResult>;
+    items: Array<ProcessElementStatisticsResult>;
 };
 
 /**
@@ -5290,6 +5703,9 @@ export type ProcessElementStatisticsResult = {
 };
 
 export type ProcessDefinitionMessageSubscriptionStatisticsQuery = {
+    /**
+     * Search cursor pagination.
+     */
     page?: CursorForwardPagination;
     /**
      * The message subscription filters.
@@ -5301,7 +5717,7 @@ export type ProcessDefinitionMessageSubscriptionStatisticsQueryResult = SearchQu
     /**
      * The matching process definition message subscription statistics.
      */
-    items?: Array<ProcessDefinitionMessageSubscriptionStatisticsResult>;
+    items: Array<ProcessDefinitionMessageSubscriptionStatisticsResult>;
 };
 
 export type ProcessDefinitionMessageSubscriptionStatisticsResult = {
@@ -5328,6 +5744,9 @@ export type ProcessDefinitionMessageSubscriptionStatisticsResult = {
 };
 
 export type ProcessDefinitionInstanceStatisticsQuery = {
+    /**
+     * Search cursor pagination.
+     */
     page?: OffsetPagination;
     /**
      * Sort field criteria.
@@ -5339,7 +5758,7 @@ export type ProcessDefinitionInstanceStatisticsQueryResult = SearchQueryResponse
     /**
      * The process definition instance statistics result.
      */
-    items?: Array<ProcessDefinitionInstanceStatisticsResult>;
+    items: Array<ProcessDefinitionInstanceStatisticsResult>;
 };
 
 /**
@@ -5351,7 +5770,7 @@ export type ProcessDefinitionInstanceStatisticsResult = {
     /**
      * Name of the latest deployed process definition instance version.
      */
-    latestProcessDefinitionName?: string;
+    latestProcessDefinitionName?: string | null;
     /**
      * Indicates whether multiple versions of this process definition instance are deployed.
      */
@@ -5407,7 +5826,7 @@ export type ProcessDefinitionInstanceVersionStatisticsQueryResult = SearchQueryR
     /**
      * The process definition instance version statistics result.
      */
-    items?: Array<ProcessDefinitionInstanceVersionStatisticsResult>;
+    items: Array<ProcessDefinitionInstanceVersionStatisticsResult>;
 };
 
 /**
@@ -5425,7 +5844,7 @@ export type ProcessDefinitionInstanceVersionStatisticsResult = {
     /**
      * The name of the process definition.
      */
-    processDefinitionName: string;
+    processDefinitionName: string | null;
     /**
      * The tenant ID associated with the process definition.
      */
@@ -5457,7 +5876,7 @@ export type ProcessDefinitionInstanceVersionStatisticsQuerySortRequest = {
  * either by id or by key.
  *
  */
-export type ProcessInstanceCreationInstruction = ProcessInstanceCreationInstructionById | ProcessInstanceCreationInstructionByKey;
+export type ProcessInstanceCreationInstruction = ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById;
 
 /**
  * Process creation by id
@@ -5483,6 +5902,9 @@ export type ProcessInstanceCreationInstructionById = {
     };
     /**
      * The tenant id of the process definition.
+     * If multi-tenancy is enabled, provide the tenant id of the process definition to start a
+     * process instance of. If multi-tenancy is disabled, don't provide this parameter.
+     *
      */
     tenantId?: TenantId;
     operationReference?: OperationReference;
@@ -5503,9 +5925,10 @@ export type ProcessInstanceCreationInstructionById = {
      */
     runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
     /**
-     * Wait for the process instance to complete. If the process instance completion does
-     * not occur within the requestTimeout, the request will be closed. This can lead to a 504
-     * response status. Disabled by default.
+     * Wait for the process instance to complete. If the process instance does not complete
+     * within the request timeout limit, a 504 response status will be returned. The process
+     * instance will continue to run in the background regardless of the timeout. Disabled by
+     * default.
      *
      */
     awaitCompletion?: boolean;
@@ -5522,6 +5945,7 @@ export type ProcessInstanceCreationInstructionById = {
      */
     requestTimeout?: number;
     tags?: TagSet;
+    businessId?: BusinessId;
 };
 
 /**
@@ -5541,8 +5965,8 @@ export type ProcessInstanceCreationInstructionByKey = {
      */
     processDefinitionVersion?: number;
     /**
-     * JSON object that will instantiate the variables for the root variable scope
-     * of the process instance.
+     * Set of variables as JSON object to instantiate in the root variable scope of the process
+     * instance. Can include nested complex objects.
      *
      */
     variables?: {
@@ -5566,13 +5990,17 @@ export type ProcessInstanceCreationInstructionByKey = {
     runtimeInstructions?: Array<ProcessInstanceCreationRuntimeInstruction>;
     /**
      * The tenant id of the process definition.
+     * If multi-tenancy is enabled, provide the tenant id of the process definition to start a
+     * process instance of. If multi-tenancy is disabled, don't provide this parameter.
+     *
      */
     tenantId?: TenantId;
     operationReference?: OperationReference;
     /**
-     * Wait for the process instance to complete. If the process instance completion does
-     * not occur within the requestTimeout, the request will be closed. This can lead to a 504
-     * response status. Disabled by default.
+     * Wait for the process instance to complete. If the process instance does not complete
+     * within the request timeout limit, a 504 response status will be returned. The process
+     * instance will continue to run in the background regardless of the timeout. Disabled by
+     * default.
      *
      */
     awaitCompletion?: boolean;
@@ -5589,6 +6017,7 @@ export type ProcessInstanceCreationInstructionByKey = {
      */
     fetchVariables?: Array<string>;
     tags?: TagSet;
+    businessId?: BusinessId;
 };
 
 export type ProcessInstanceCreationStartInstruction = {
@@ -5656,7 +6085,11 @@ export type CreateProcessInstanceResult = {
      *
      */
     processInstanceKey: ProcessInstanceKey;
-    tags?: TagSet;
+    tags: TagSet;
+    /**
+     * Business id as provided on creation.
+     */
+    businessId?: BusinessId | null;
 };
 
 export type ProcessInstanceSearchQuerySortRequest = {
@@ -5876,14 +6309,23 @@ export type ProcessInstanceResult = {
     /**
      * The process definition name.
      */
-    processDefinitionName: string;
+    processDefinitionName: string | null;
+    /**
+     * The process definition version.
+     */
     processDefinitionVersion: number;
     /**
      * The process definition version tag.
      */
-    processDefinitionVersionTag?: string;
+    processDefinitionVersionTag: string | null;
+    /**
+     * The start time of the process instance.
+     */
     startDate: string;
-    endDate?: string;
+    /**
+     * The completion or termination time of the process instance.
+     */
+    endDate: string | null;
     state: ProcessInstanceStateEnum;
     /**
      * Whether this process instance has a related incident or not.
@@ -5901,13 +6343,23 @@ export type ProcessInstanceResult = {
     /**
      * The parent process instance key.
      */
-    parentProcessInstanceKey?: ProcessInstanceKey;
+    parentProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The parent element instance key.
      */
-    parentElementInstanceKey?: ElementInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
-    tags?: TagSet;
+    parentElementInstanceKey: ElementInstanceKey | null;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    tags: TagSet;
+    /**
+     * The business id associated with this process instance.
+     */
+    businessId: BusinessId | null;
 };
 
 export type CancelProcessInstanceRequest = {
@@ -5940,7 +6392,7 @@ export type ProcessInstanceSequenceFlowsQueryResult = {
     /**
      * The sequence flows.
      */
-    items?: Array<ProcessInstanceSequenceFlowResult>;
+    items: Array<ProcessInstanceSequenceFlowResult>;
 };
 
 /**
@@ -5955,7 +6407,13 @@ export type ProcessInstanceSequenceFlowResult = {
      * The key of this process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The process definition key.
      */
@@ -5978,7 +6436,7 @@ export type ProcessInstanceElementStatisticsQueryResult = {
     /**
      * The element statistics.
      */
-    items?: Array<ProcessElementStatisticsResult>;
+    items: Array<ProcessElementStatisticsResult>;
 };
 
 /**
@@ -6047,7 +6505,7 @@ export type ProcessInstanceModificationActivateInstruction = {
      * specifically with this property by providing its key.
      *
      */
-    ancestorElementInstanceKey?: string | ElementInstanceKey;
+    ancestorElementInstanceKey?: ElementInstanceKey;
 };
 
 /**
@@ -6163,7 +6621,7 @@ export type DirectAncestorKeyInstruction = {
      * specifically with this property by providing its key.
      *
      */
-    ancestorElementInstanceKey: string | ElementInstanceKey;
+    ancestorElementInstanceKey: ElementInstanceKey;
 };
 
 /**
@@ -6367,7 +6825,7 @@ export type RoleSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching roles.
      */
-    items?: Array<RoleResult>;
+    items: Array<RoleResult>;
 };
 
 export type RoleUserResult = {
@@ -6378,7 +6836,7 @@ export type RoleUserSearchResult = SearchQueryResponse & {
     /**
      * The matching users.
      */
-    items?: Array<RoleUserResult>;
+    items: Array<RoleUserResult>;
 };
 
 export type RoleUserSearchQueryRequest = SearchQueryRequest & {
@@ -6407,7 +6865,7 @@ export type RoleClientSearchResult = SearchQueryResponse & {
     /**
      * The matching clients.
      */
-    items?: Array<RoleClientResult>;
+    items: Array<RoleClientResult>;
 };
 
 export type RoleClientSearchQueryRequest = SearchQueryRequest & {
@@ -6436,7 +6894,7 @@ export type RoleGroupSearchResult = SearchQueryResponse & {
     /**
      * The matching groups.
      */
-    items?: Array<RoleGroupResult>;
+    items: Array<RoleGroupResult>;
 };
 
 export type RoleGroupSearchQueryRequest = SearchQueryRequest & {
@@ -6444,6 +6902,13 @@ export type RoleGroupSearchQueryRequest = SearchQueryRequest & {
      * Sort field criteria.
      */
     sort?: Array<RoleGroupSearchQuerySortRequest>;
+};
+
+export type RoleMappingRuleSearchResult = SearchQueryResponse & {
+    /**
+     * The matching mapping rules.
+     */
+    items: Array<MappingRuleResult>;
 };
 
 export type RoleGroupSearchQuerySortRequest = {
@@ -6544,11 +7009,11 @@ export type SearchQueryPageResponse = {
     /**
      * The cursor value for getting the previous page of results. Use this in the `before` field of an ensuing request.
      */
-    startCursor?: StartCursor;
+    startCursor?: StartCursor | null;
     /**
      * The cursor value for getting the next page of results. Use this in the `after` field of an ensuing request.
      */
-    endCursor?: EndCursor;
+    endCursor?: EndCursor | null;
 };
 
 export type SignalBroadcastRequest = {
@@ -6592,7 +7057,7 @@ export type UsageMetricsResponse = UsageMetricsResponseItem & {
     /**
      * The usage metrics by tenants. Only available if request `withTenants` query parameter was `true`.
      */
-    tenants?: {
+    tenants: {
         [key: string]: UsageMetricsResponseItem;
     };
 };
@@ -6717,7 +7182,7 @@ export type TenantSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching tenants.
      */
-    items?: Array<TenantResult>;
+    items: Array<TenantResult>;
 };
 
 export type TenantUserResult = {
@@ -6728,7 +7193,7 @@ export type TenantUserSearchResult = SearchQueryResponse & {
     /**
      * The matching users.
      */
-    items?: Array<TenantUserResult>;
+    items: Array<TenantUserResult>;
 };
 
 export type TenantUserSearchQueryRequest = SearchQueryRequest & {
@@ -6757,7 +7222,7 @@ export type TenantClientSearchResult = SearchQueryResponse & {
     /**
      * The matching clients.
      */
-    items?: Array<TenantClientResult>;
+    items: Array<TenantClientResult>;
 };
 
 export type TenantClientSearchQueryRequest = SearchQueryRequest & {
@@ -6786,7 +7251,7 @@ export type TenantGroupSearchResult = SearchQueryResponse & {
     /**
      * The matching groups.
      */
-    items?: Array<TenantGroupResult>;
+    items: Array<TenantGroupResult>;
 };
 
 export type TenantGroupSearchQueryRequest = SearchQueryRequest & {
@@ -6794,6 +7259,20 @@ export type TenantGroupSearchQueryRequest = SearchQueryRequest & {
      * Sort field criteria.
      */
     sort?: Array<TenantGroupSearchQuerySortRequest>;
+};
+
+export type TenantRoleSearchResult = SearchQueryResponse & {
+    /**
+     * The matching roles.
+     */
+    items: Array<RoleResult>;
+};
+
+export type TenantMappingRuleSearchResult = SearchQueryResponse & {
+    /**
+     * The matching mapping rules.
+     */
+    items: Array<MappingRuleResult>;
 };
 
 export type TenantGroupSearchQuerySortRequest = {
@@ -6883,7 +7362,13 @@ export type UserTaskFilter = {
      * The user task due date.
      */
     dueDate?: DateTimeFilterProperty;
+    /**
+     * The variables of the process instance.
+     */
     processInstanceVariables?: Array<VariableValueFilterProperty>;
+    /**
+     * The local variables of the user task.
+     */
     localVariables?: Array<VariableValueFilterProperty>;
     /**
      * The key for this user task.
@@ -6911,7 +7396,7 @@ export type UserTaskSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching user tasks.
      */
-    items?: Array<UserTaskResult>;
+    items: Array<UserTaskResult>;
 };
 
 export type UserTaskResult = {
@@ -6923,7 +7408,7 @@ export type UserTaskResult = {
     /**
      * The assignee of the user task.
      */
-    assignee?: string;
+    assignee: string | null;
     /**
      * The element ID of the user task.
      */
@@ -6931,11 +7416,11 @@ export type UserTaskResult = {
     /**
      * The candidate groups for this user task.
      */
-    candidateGroups?: Array<string>;
+    candidateGroups: Array<string>;
     /**
      * The candidate users for this user task.
      */
-    candidateUsers?: Array<string>;
+    candidateUsers: Array<string>;
     /**
      * The ID of the process definition.
      */
@@ -6947,20 +7432,20 @@ export type UserTaskResult = {
     /**
      * The completion date of a user task.
      */
-    completionDate?: string;
+    completionDate: string | null;
     /**
      * The follow date of a user task.
      */
-    followUpDate?: string;
+    followUpDate: string | null;
     /**
      * The due date of a user task.
      */
-    dueDate?: string;
+    dueDate: string | null;
     tenantId?: TenantId;
     /**
      * The external form reference.
      */
-    externalFormReference?: string;
+    externalFormReference: string | null;
     /**
      * The version of the process definition.
      */
@@ -6968,7 +7453,7 @@ export type UserTaskResult = {
     /**
      * Custom headers for the user task.
      */
-    customHeaders?: {
+    customHeaders: {
         [key: string]: string;
     };
     /**
@@ -6985,8 +7470,10 @@ export type UserTaskResult = {
     elementInstanceKey?: ElementInstanceKey;
     /**
      * The name of the process definition.
+     * This is `null` if the process has no name defined.
+     *
      */
-    processName?: string;
+    processName?: string | null;
     /**
      * The key of the process definition.
      */
@@ -6995,12 +7482,18 @@ export type UserTaskResult = {
      * The key of the process instance.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the form.
      */
-    formKey?: FormKey;
-    tags?: TagSet;
+    formKey: FormKey | null;
+    tags: TagSet;
 };
 
 export type UserTaskCompletionRequest = {
@@ -7121,6 +7614,8 @@ export type UserTaskAuditLogSearchQueryRequest = SearchQueryRequest & {
 
 /**
  * The state of the user task.
+ * Note: FAILED state is only for legacy job-worker-based tasks.
+ *
  */
 export type UserTaskStateEnum = 'CREATING' | 'CREATED' | 'ASSIGNING' | 'UPDATING' | 'COMPLETING' | 'COMPLETED' | 'CANCELING' | 'CANCELED' | 'FAILED';
 
@@ -7336,6 +7831,10 @@ export type VariableFilter = {
     name?: StringFilterProperty;
     /**
      * The value of the variable.
+     * Variable values in filters need to be in serialized JSON format. For example, a variable
+     * with string value `myValue` can be found with the filter value `"myValue"`. Consider
+     * appropriate escaping for special characters in JSON strings when constructing filter values.
+     *
      */
     value?: StringFilterProperty;
     /**
@@ -7351,7 +7850,12 @@ export type VariableFilter = {
      */
     variableKey?: VariableKeyFilterProperty;
     /**
-     * The key of the scope of this variable.
+     * The key of the scope that defines where this variable is directly defined. This can be a
+     * process instance key (for process-level variables) or an element instance key (for local
+     * variables scoped to tasks, subprocesses, gateways, events, etc.). Use this filter to
+     * find variables directly defined in specific scopes. Note that this does not include
+     * variables from parent scopes that would be visible through the scope hierarchy.
+     *
      */
     scopeKey?: ScopeKeyFilterProperty;
     /**
@@ -7367,7 +7871,7 @@ export type VariableSearchQueryResult = SearchQueryResponse & {
     /**
      * The matching variables.
      */
-    items?: Array<VariableSearchResult>;
+    items: Array<VariableSearchResult>;
 };
 
 /**
@@ -7411,14 +7915,24 @@ export type VariableResultBase = {
      */
     variableKey?: VariableKey;
     /**
-     * The key of the scope of this variable.
+     * The key of the scope where this variable is directly defined. For process-level
+     * variables, this is the process instance key. For local variables, this is the key of the
+     * specific element instance (task, subprocess, gateway, event, etc.) where the variable is
+     * directly defined.
+     *
      */
     scopeKey?: ScopeKey;
     /**
      * The key of the process instance of this variable.
      */
     processInstanceKey?: ProcessInstanceKey;
-    rootProcessInstanceKey?: RootProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy. This field is only present for data
+     * belonging to process instance hierarchies created in version 8.9 or later.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
 };
 
 export type VariableValueFilterProperty = {
@@ -7428,6 +7942,10 @@ export type VariableValueFilterProperty = {
     name: string;
     /**
      * The value of the variable.
+     * Variable values in filters need to be in serialized JSON format. For example, a variable
+     * with string value `myValue` can be found with the filter value `"myValue"`. Consider
+     * appropriate escaping for special characters in JSON strings when constructing filter values.
+     *
      */
     value: StringFilterProperty;
 };
@@ -7440,18 +7958,20 @@ export type SetVariableRequest = {
         [key: string]: unknown;
     };
     /**
-     * If set to true, the variables are merged strictly into the local scope (as specified by the `elementInstanceKey`).
-     * Otherwise, the variables are propagated to upper scopes and set at the outermost one.
-     * Let’s consider the following example:
-     * There are two scopes '1' and '2'.
-     * Scope '1' is the parent scope of '2'. The effective variables of the scopes are:
+     * If set to `true`, the variables are merged strictly into the local scope (as specified
+     * by the `elementInstanceKey`). Otherwise, the variables are propagated to upper scopes
+     * and set at the outermost one.
+     *
+     * Let's consider the following example:
+     * There are two scopes '1' and '2'. Scope '1' is the parent scope of '2'. The effective
+     * variables of the scopes are:
      * 1 => { "foo" : 2 }
      * 2 => { "bar" : 1 }
-     * An update request with elementInstanceKey as '2', variables { "foo" : 5 }, and local set
-     * to true leaves scope '1' unchanged and adjusts scope '2' to { "bar" : 1, "foo" 5 }.
-     * By default, with local set to false, scope '1' will be { "foo": 5 }
-     * and scope '2' will be { "bar" : 1 }.
      *
+     * An update request with elementInstanceKey as '2', variables { "foo": 5 }, and local set
+     * to `true` leaves scope '1' unchanged and adjusts scope '2' to { "bar": 1, "foo": 5 }. By
+     * default, with local set to `false`, scope '1' will be { "foo": 5 } and scope '2' will be
+     * { "bar": 1 }.
      */
     local?: boolean;
     operationReference?: OperationReference;
@@ -7554,6 +8074,20 @@ export type ResourceKeyExactMatch = ResourceKey;
  * Matches the value exactly.
  */
 export type ElementInstanceStateExactMatch = ElementInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type GlobalListenerSourceExactMatch = GlobalListenerSourceEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type GlobalTaskListenerEventTypeExactMatch = GlobalTaskListenerEventTypeEnum;
 
 /**
  * Exact match
@@ -9802,7 +10336,7 @@ export type CreateGlobalTaskListenerData = {
     body: CreateGlobalTaskListenerRequest;
     path?: never;
     query?: never;
-    url: '/global-listeners/user-task';
+    url: '/global-task-listeners';
 };
 
 export type CreateGlobalTaskListenerErrors = {
@@ -9853,7 +10387,7 @@ export type DeleteGlobalTaskListenerData = {
         id: GlobalListenerId;
     };
     query?: never;
-    url: '/global-listeners/user-task/{id}';
+    url: '/global-task-listeners/{id}';
 };
 
 export type DeleteGlobalTaskListenerErrors = {
@@ -9895,6 +10429,48 @@ export type DeleteGlobalTaskListenerResponses = {
 
 export type DeleteGlobalTaskListenerResponse = DeleteGlobalTaskListenerResponses[keyof DeleteGlobalTaskListenerResponses];
 
+export type GetGlobalTaskListenerData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the global user task listener.
+         */
+        id: GlobalListenerId;
+    };
+    query?: never;
+    url: '/global-task-listeners/{id}';
+};
+
+export type GetGlobalTaskListenerErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The global user task listener with the given id was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetGlobalTaskListenerError = GetGlobalTaskListenerErrors[keyof GetGlobalTaskListenerErrors];
+
+export type GetGlobalTaskListenerResponses = {
+    /**
+     * The global user task listener is successfully returned.
+     */
+    200: GlobalTaskListenerResult;
+};
+
+export type GetGlobalTaskListenerResponse = GetGlobalTaskListenerResponses[keyof GetGlobalTaskListenerResponses];
+
 export type UpdateGlobalTaskListenerData = {
     body: UpdateGlobalTaskListenerRequest;
     path: {
@@ -9904,7 +10480,7 @@ export type UpdateGlobalTaskListenerData = {
         id: GlobalListenerId;
     };
     query?: never;
-    url: '/global-listeners/user-task/{id}';
+    url: '/global-task-listeners/{id}';
 };
 
 export type UpdateGlobalTaskListenerErrors = {
@@ -9945,6 +10521,43 @@ export type UpdateGlobalTaskListenerResponses = {
 };
 
 export type UpdateGlobalTaskListenerResponse = UpdateGlobalTaskListenerResponses[keyof UpdateGlobalTaskListenerResponses];
+
+export type SearchGlobalTaskListenersData = {
+    body?: GlobalTaskListenerSearchQueryRequest;
+    path?: never;
+    query?: never;
+    url: '/global-task-listeners/search';
+};
+
+export type SearchGlobalTaskListenersErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchGlobalTaskListenersError = SearchGlobalTaskListenersErrors[keyof SearchGlobalTaskListenersErrors];
+
+export type SearchGlobalTaskListenersResponses = {
+    /**
+     * The global user task listener search result.
+     */
+    200: GlobalTaskListenerSearchQueryResult;
+};
+
+export type SearchGlobalTaskListenersResponse = SearchGlobalTaskListenersResponses[keyof SearchGlobalTaskListenersResponses];
 
 export type CreateGroupData = {
     body?: GroupCreateRequest;
@@ -10213,7 +10826,7 @@ export type SearchClientsForGroupResponses = {
         /**
          * The matching client IDs.
          */
-        items?: Array<{
+        items: Array<{
             /**
              * The ID of the client.
              */
@@ -10371,7 +10984,12 @@ export type SearchMappingRulesForGroupResponses = {
     /**
      * The mapping rules assigned to the group.
      */
-    200: SearchQueryResponse;
+    200: SearchQueryResponse & {
+        /**
+         * The matching mapping rules.
+         */
+        items: Array<MappingRuleResult>;
+    };
 };
 
 export type SearchMappingRulesForGroupResponse = SearchMappingRulesForGroupResponses[keyof SearchMappingRulesForGroupResponses];
@@ -10523,7 +11141,12 @@ export type SearchRolesForGroupResponses = {
     /**
      * The roles assigned to the group.
      */
-    200: SearchQueryResponse;
+    200: SearchQueryResponse & {
+        /**
+         * The matching roles.
+         */
+        items: Array<RoleResult>;
+    };
 };
 
 export type SearchRolesForGroupResponse = SearchRolesForGroupResponses[keyof SearchRolesForGroupResponses];
@@ -10584,7 +11207,7 @@ export type SearchUsersForGroupResponses = {
         /**
          * The matching members.
          */
-        items?: Array<{
+        items: Array<{
             username?: Username;
         }>;
     };
@@ -11223,6 +11846,80 @@ export type GetGlobalJobStatisticsResponses = {
 
 export type GetGlobalJobStatisticsResponse = GetGlobalJobStatisticsResponses[keyof GetGlobalJobStatisticsResponses];
 
+export type GetJobTypeStatisticsData = {
+    body: JobTypeStatisticsQuery;
+    path?: never;
+    query?: never;
+    url: '/jobs/statistics/by-types';
+};
+
+export type GetJobTypeStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetJobTypeStatisticsError = GetJobTypeStatisticsErrors[keyof GetJobTypeStatisticsErrors];
+
+export type GetJobTypeStatisticsResponses = {
+    /**
+     * The job type statistics result.
+     */
+    200: JobTypeStatisticsQueryResult;
+};
+
+export type GetJobTypeStatisticsResponse = GetJobTypeStatisticsResponses[keyof GetJobTypeStatisticsResponses];
+
+export type GetJobWorkerStatisticsData = {
+    body: JobWorkerStatisticsQuery;
+    path?: never;
+    query?: never;
+    url: '/jobs/statistics/by-workers';
+};
+
+export type GetJobWorkerStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetJobWorkerStatisticsError = GetJobWorkerStatisticsErrors[keyof GetJobWorkerStatisticsErrors];
+
+export type GetJobWorkerStatisticsResponses = {
+    /**
+     * The job worker statistics result.
+     */
+    200: JobWorkerStatisticsQueryResult;
+};
+
+export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
+
 export type GetLicenseData = {
     body?: never;
     path?: never;
@@ -11319,7 +12016,12 @@ export type SearchMappingRuleResponses = {
     /**
      * The mapping rule search result.
      */
-    200: MappingRuleSearchQueryResult;
+    200: SearchQueryResponse & {
+        /**
+         * The matching mapping rules.
+         */
+        items: Array<MappingRuleResult>;
+    };
 };
 
 export type SearchMappingRuleResponse = SearchMappingRuleResponses[keyof SearchMappingRuleResponses];
@@ -13016,7 +13718,7 @@ export type SearchClientsForRoleResponses = {
         /**
          * The matching clients.
          */
-        items?: Array<{
+        items: Array<{
             /**
              * The ID of the client.
              */
@@ -13326,7 +14028,12 @@ export type SearchMappingRulesForRoleResponses = {
     /**
      * The mapping rules with assigned role.
      */
-    200: SearchQueryResponse;
+    200: SearchQueryResponse & {
+        /**
+         * The matching mapping rules.
+         */
+        items: Array<MappingRuleResult>;
+    };
 };
 
 export type SearchMappingRulesForRoleResponse = SearchMappingRulesForRoleResponses[keyof SearchMappingRulesForRoleResponses];
@@ -13493,7 +14200,7 @@ export type SearchUsersForRoleResponses = {
         /**
          * The matching users.
          */
-        items?: Array<{
+        items: Array<{
             username?: Username;
         }>;
     };
@@ -14018,7 +14725,7 @@ export type SearchClientsForTenantResponses = {
         /**
          * The matching clients.
          */
-        items?: Array<{
+        items: Array<{
             /**
              * The ID of the client.
              */
@@ -14270,7 +14977,12 @@ export type SearchMappingRulesForTenantResponses = {
     /**
      * The search result of MappingRules for the tenant.
      */
-    200: SearchQueryResponse;
+    200: SearchQueryResponse & {
+        /**
+         * The matching mapping rules.
+         */
+        items: Array<MappingRuleResult>;
+    };
 };
 
 export type SearchMappingRulesForTenantResponse = SearchMappingRulesForTenantResponses[keyof SearchMappingRulesForTenantResponses];
@@ -14393,7 +15105,12 @@ export type SearchRolesForTenantResponses = {
     /**
      * The search result of roles for the tenant.
      */
-    200: SearchQueryResponse;
+    200: SearchQueryResponse & {
+        /**
+         * The matching roles.
+         */
+        items: Array<RoleResult>;
+    };
 };
 
 export type SearchRolesForTenantResponse = SearchRolesForTenantResponses[keyof SearchRolesForTenantResponses];
@@ -14531,7 +15248,7 @@ export type SearchUsersForTenantResponses = {
         /**
          * The matching users.
          */
-        items?: Array<{
+        items: Array<{
             username?: Username;
         }>;
     };
@@ -15445,7 +16162,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:493d019664300c05919ec8ff78d2b49ea46877bdde915d89666ccb9180e875a8
+// specHash=sha256:cbd9584472e517448379658b56e2011c3f9b8ebc67ea8e8e750d33b3ad24f638
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -15499,6 +16216,20 @@ export namespace BatchOperationKey {
   export function getValue(key: BatchOperationKey): string { return key; }
   export function isValid(value: string): boolean {
     return true;
+  }
+}
+// An optional, user-defined string identifier that identifies the process instance within the scope of a process definition (scoped by tenant). If provided and uniqueness enforcement is enabled, the engine will reject creation if another root process instance with the same business id is already active for the same process definition. Note that any active child process instances with the same business id are not taken into account. 
+export namespace BusinessId {
+  export function assumeExists(value: string): BusinessId {
+    assertConstraint(value, 'BusinessId', { minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: BusinessId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'BusinessId', { minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
   }
 }
 // System-generated key for a conditional evaluation.
@@ -15650,13 +16381,13 @@ export namespace ElementInstanceKey {
 // The end cursor in a search query result set.
 export namespace EndCursor {
   export function assumeExists(value: string): EndCursor {
-    assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$", minLength: 2, maxLength: 300 });
+    assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
     return value as any;
   }
   export function getValue(key: EndCursor): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$", minLength: 2, maxLength: 300 });
+      assertConstraint(value, 'EndCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
       return true;
     } catch { return false; }
   }
@@ -15793,21 +16524,7 @@ export namespace ProcessInstanceKey {
     } catch { return false; }
   }
 }
-// The key of the root process instance. The root process instance is the top-level ancestor in the process instance hierarchy. This field is only present for data belonging to process instance hierarchies created in version 8.9 or later. 
-export namespace RootProcessInstanceKey {
-  export function assumeExists(value: string): RootProcessInstanceKey {
-    assertConstraint(value, 'RootProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
-    return value as any;
-  }
-  export function getValue(key: RootProcessInstanceKey): string { return key; }
-  export function isValid(value: string): boolean {
-    try {
-      assertConstraint(value, 'RootProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
-      return true;
-    } catch { return false; }
-  }
-}
-// System-generated key for a scope.
+// System-generated key for a scope. A scope can hold variables and represents either an element instance in a BPMN process or the process instance itself. 
 export namespace ScopeKey {
   export function assumeExists(value: string): ScopeKey {
     assertConstraint(value, 'ScopeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
@@ -15838,13 +16555,13 @@ export namespace SignalKey {
 // The start cursor in a search query result set.
 export namespace StartCursor {
   export function assumeExists(value: string): StartCursor {
-    assertConstraint(value, 'StartCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$", minLength: 2, maxLength: 300 });
+    assertConstraint(value, 'StartCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
     return value as any;
   }
   export function getValue(key: StartCursor): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'StartCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$", minLength: 2, maxLength: 300 });
+      assertConstraint(value, 'StartCursor', { pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$" });
       return true;
     } catch { return false; }
   }

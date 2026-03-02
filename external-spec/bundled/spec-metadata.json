@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:493d019664300c05919ec8ff78d2b49ea46877bdde915d89666ccb9180e875a8",
+  "specHash": "sha256:cbd9584472e517448379658b56e2011c3f9b8ebc67ea8e8e750d33b3ad24f638",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -113,6 +113,34 @@
         "deprecated": false
       },
       "stableId": "batch-operation-key"
+    },
+    {
+      "name": "BusinessId",
+      "semanticType": "BusinessId",
+      "category": "model-id",
+      "description": "An optional, user-defined string identifier that identifies the process instance\nwithin the scope of a process definition (scoped by tenant). If provided and uniqueness\nenforcement is enabled, the engine will reject creation if another root process instance\nwith the same business id is already active for the same process definition.\nNote that any active child process instances with the same business id are not taken into account.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "BusinessId"
+      },
+      "examples": [
+        "order-12345"
+      ],
+      "extensions": {
+        "x-semantic-type": "BusinessId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "business-id"
     },
     {
       "name": "ConditionalEvaluationKey",
@@ -441,8 +469,6 @@
       },
       "constraints": {
         "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$",
-        "minLength": 2,
-        "maxLength": 300,
         "format": "base64"
       },
       "examples": [
@@ -749,40 +775,10 @@
       "stableId": "process-instance-key"
     },
     {
-      "name": "RootProcessInstanceKey",
-      "semanticType": "ProcessInstanceKey",
-      "category": "system-key",
-      "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
-        "inlineFragments": 0
-      },
-      "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
-      },
-      "examples": [
-        "2251799813690746"
-      ],
-      "extensions": {
-        "x-semantic-type": "ProcessInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "root-process-instance-key"
-    },
-    {
       "name": "ScopeKey",
       "semanticType": "ScopeKey",
       "category": "system-key",
-      "description": "System-generated key for a scope.",
+      "description": "System-generated key for a scope. A scope can hold variables and represents either an\nelement instance in a BPMN process or the process instance itself.\n",
       "composition": {
         "schemaKind": "allOf",
         "refs": [
@@ -850,8 +846,6 @@
       },
       "constraints": {
         "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$",
-        "minLength": 2,
-        "maxLength": 300,
         "format": "base64"
       },
       "examples": [
@@ -1399,6 +1393,38 @@
       "stableId": "form-key-filter-property"
     },
     {
+      "name": "GlobalListenerSourceFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Global listener source property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "GlobalListenerSourceExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedGlobalListenerSourceFilter"
+        }
+      ],
+      "stableId": "global-listener-source-filter-property"
+    },
+    {
+      "name": "GlobalTaskListenerEventTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Global listener event type property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "GlobalTaskListenerEventTypeExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedGlobalTaskListenerEventTypeFilter"
+        }
+      ],
+      "stableId": "global-task-listener-event-type-filter-property"
+    },
+    {
       "name": "IncidentErrorTypeFilterProperty",
       "kind": "union-wrapper",
       "description": "IncidentErrorTypeEnum with full advanced search capabilities.",
@@ -1596,11 +1622,11 @@
       "branches": [
         {
           "branchType": "ref",
-          "ref": "ProcessInstanceCreationInstructionById"
+          "ref": "ProcessInstanceCreationInstructionByKey"
         },
         {
           "branchType": "ref",
-          "ref": "ProcessInstanceCreationInstructionByKey"
+          "ref": "ProcessInstanceCreationInstructionById"
         }
       ],
       "stableId": "process-instance-creation-instruction"
@@ -1707,7 +1733,7 @@
     {
       "name": "ScopeKeyFilterProperty",
       "kind": "union-wrapper",
-      "description": "ScopeKey property with full advanced search capabilities.",
+      "description": "ScopeKey property with full advanced search capabilities. Filter by the key of the\nelement instance or process instance that defines the scope of a variable.\n",
       "branches": [
         {
           "branchType": "ref",
@@ -1999,6 +2025,22 @@
       ]
     },
     {
+      "operationId": "getGlobalTaskListener",
+      "path": "/global-task-listeners/{id}",
+      "method": "get",
+      "tags": [
+        "Global listener"
+      ]
+    },
+    {
+      "operationId": "searchGlobalTaskListeners",
+      "path": "/global-task-listeners/search",
+      "method": "post",
+      "tags": [
+        "Global listener"
+      ]
+    },
+    {
       "operationId": "searchGroups",
       "path": "/groups/search",
       "method": "post",
@@ -2090,6 +2132,22 @@
       "operationId": "getGlobalJobStatistics",
       "path": "/jobs/statistics/global",
       "method": "get",
+      "tags": [
+        "Job"
+      ]
+    },
+    {
+      "operationId": "getJobTypeStatistics",
+      "path": "/jobs/statistics/by-types",
+      "method": "post",
+      "tags": [
+        "Job"
+      ]
+    },
+    {
+      "operationId": "getJobWorkerStatistics",
+      "path": "/jobs/statistics/by-workers",
+      "method": "post",
       "tags": [
         "Job"
       ]
@@ -3427,7 +3485,7 @@
     },
     {
       "operationId": "createGlobalTaskListener",
-      "path": "/global-listeners/user-task",
+      "path": "/global-task-listeners",
       "method": "post",
       "tags": [
         "Global listener"
@@ -3444,8 +3502,28 @@
       "optionalTenantIdInBody": false
     },
     {
+      "operationId": "getGlobalTaskListener",
+      "path": "/global-task-listeners/{id}",
+      "method": "get",
+      "tags": [
+        "Global listener"
+      ],
+      "summary": "Get global user task listener",
+      "description": "Get a global user task listener by its id.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "id"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
       "operationId": "updateGlobalTaskListener",
-      "path": "/global-listeners/user-task/{id}",
+      "path": "/global-task-listeners/{id}",
       "method": "put",
       "tags": [
         "Global listener"
@@ -3465,7 +3543,7 @@
     },
     {
       "operationId": "deleteGlobalTaskListener",
-      "path": "/global-listeners/user-task/{id}",
+      "path": "/global-task-listeners/{id}",
       "method": "delete",
       "tags": [
         "Global listener"
@@ -3479,6 +3557,24 @@
       "pathParams": [
         "id"
       ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "searchGlobalTaskListeners",
+      "path": "/global-task-listeners/search",
+      "method": "post",
+      "tags": [
+        "Global listener"
+      ],
+      "summary": "Search global user task listeners",
+      "description": "Search for global user task listeners based on given criteria.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
       "queryParams": [],
       "requestBodyUnionRefs": [],
       "optionalTenantIdInBody": false
@@ -4027,6 +4123,42 @@
       "optionalTenantIdInBody": false
     },
     {
+      "operationId": "getJobTypeStatistics",
+      "path": "/jobs/statistics/by-types",
+      "method": "post",
+      "tags": [
+        "Job"
+      ],
+      "summary": "Get job statistics by type",
+      "description": "Get statistics about jobs, grouped by job type.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "getJobWorkerStatistics",
+      "path": "/jobs/statistics/by-workers",
+      "method": "post",
+      "tags": [
+        "Job"
+      ],
+      "summary": "Get job statistics by worker",
+      "description": "Returns aggregated metrics per worker for the given jobType.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
       "operationId": "getLicense",
       "path": "/license",
       "method": "get",
@@ -4362,8 +4494,8 @@
       "pathParams": [],
       "queryParams": [],
       "requestBodyUnionRefs": [
-        "ProcessInstanceCreationInstructionById",
-        "ProcessInstanceCreationInstructionByKey"
+        "ProcessInstanceCreationInstructionByKey",
+        "ProcessInstanceCreationInstructionById"
       ],
       "optionalTenantIdInBody": true
     },
@@ -5854,7 +5986,7 @@
         "User task"
       ],
       "summary": "Search user task variables",
-      "description": "Search for user task variables based on given criteria. By default, long variable values in the response are truncated.",
+      "description": "Search for user task variables based on given criteria. This endpoint returns all variables\nvisible from the user task's scope, including variables from parent scopes in the scope\nhierarchy. By default, long variable values in the response are truncated.\n",
       "eventuallyConsistent": true,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -5879,7 +6011,7 @@
         "Variable"
       ],
       "summary": "Search variables",
-      "description": "Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.",
+      "description": "Search for variables based on given criteria.\n\nThis endpoint returns variables that exist directly at the specified scopes - it does not\ninclude variables from parent scopes that would be visible through the scope hierarchy.\n\nVariables can be process-level (scoped to the process instance) or local (scoped to specific\nBPMN elements like tasks, subprocesses, etc.).\n\nBy default, long variable values in the response are truncated.",
       "eventuallyConsistent": true,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -5902,7 +6034,7 @@
         "Variable"
       ],
       "summary": "Get variable",
-      "description": "Get the variable by the variable key.",
+      "description": "Get a variable by its key.\n\nThis endpoint returns both process-level and local (element-scoped) variables.\nThe variable's scopeKey indicates whether it's a process-level variable or scoped to a\nspecific element instance.",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -5917,8 +6049,8 @@
   ],
   "integrity": {
     "totalSemanticKeys": 35,
-    "totalUnions": 49,
-    "totalOperations": 175,
-    "totalEventuallyConsistent": 74
+    "totalUnions": 51,
+    "totalOperations": 179,
+    "totalEventuallyConsistent": 78
   }
 }

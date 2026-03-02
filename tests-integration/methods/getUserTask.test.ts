@@ -7,9 +7,12 @@ describe('getUserTask', () => {
   // Type testing only atm
   it.skip('scaffold', async () => {
     const camunda = createCamundaClient();
-    const userTask = await camunda.getUserTask({userTaskKey: UserTaskKey.assumeExists("12343214324")}, {
-      consistency: { waitUpToMs: 0 }
-    })
-    userTask.completionDate // optional
+    const userTask = await camunda.getUserTask(
+      { userTaskKey: UserTaskKey.assumeExists('12343214324') },
+      {
+        consistency: { waitUpToMs: 0 },
+      }
+    );
+    userTask.completionDate; // optional
   });
 });

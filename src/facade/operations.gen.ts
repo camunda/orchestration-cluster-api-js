@@ -1,7 +1,7 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGroup as _getGroup, getIncident as _getIncident, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resumeBatchOperation as _resumeBatchOperation, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
-import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData } from '../gen/types.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resumeBatchOperation as _resumeBatchOperation, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData } from '../gen/types.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
 // Lightweight CancelablePromise implementation (local to facade)
@@ -326,6 +326,42 @@ type _evaluateExpression_Body = EvaluateExpressionData extends { body?: infer B 
  */
 export function evaluateExpression(body: _evaluateExpression_Body): CancelablePromise<_DataOf<typeof _evaluateExpression>> {
   return toCancelable(signal => _evaluateExpression({ body, signal }).then((r:any)=> (r as any).data));
+}
+
+type _getJobTypeStatistics_Body = GetJobTypeStatisticsData extends { body?: infer B } ? B : never;
+/**
+ * Get job statistics by type
+ *
+ * Get statistics about jobs, grouped by job type.
+ *
+  *
+ * @operationId getJobTypeStatistics
+ * @tags Job
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getJobTypeStatistics(body: _getJobTypeStatistics_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getJobTypeStatistics>> }): CancelablePromise<_DataOf<typeof _getJobTypeStatistics>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getJobTypeStatistics({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('getJobTypeStatistics', false, invoke, ec.consistency);
+}
+
+type _getJobWorkerStatistics_Body = GetJobWorkerStatisticsData extends { body?: infer B } ? B : never;
+/**
+ * Get job statistics by worker
+ *
+ * Returns aggregated metrics per worker for the given jobType.
+ *
+  *
+ * @operationId getJobWorkerStatistics
+ * @tags Job
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getJobWorkerStatistics(body: _getJobWorkerStatistics_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getJobWorkerStatistics>> }): CancelablePromise<_DataOf<typeof _getJobWorkerStatistics>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getJobWorkerStatistics({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('getJobWorkerStatistics', false, invoke, ec.consistency);
 }
 
 type _getProcessDefinitionInstanceStatistics_Body = GetProcessDefinitionInstanceStatisticsData extends { body?: infer B } ? B : never;
@@ -667,6 +703,23 @@ export function searchElementInstances(body: _searchElementInstances_Body, ec: {
   if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
   const invoke = () => toCancelable(signal => _searchElementInstances({ body, signal }).then((r:any)=> (r as any).data));
   return eventualPoll('searchElementInstances', false, invoke, ec.consistency);
+}
+
+type _searchGlobalTaskListeners_Body = SearchGlobalTaskListenersData extends { body?: infer B } ? B : never;
+/**
+ * Search global user task listeners
+ *
+ * Search for global user task listeners based on given criteria.
+  *
+ * @operationId searchGlobalTaskListeners
+ * @tags Global listener
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchGlobalTaskListeners(body: _searchGlobalTaskListeners_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchGlobalTaskListeners>> }): CancelablePromise<_DataOf<typeof _searchGlobalTaskListeners>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchGlobalTaskListeners({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('searchGlobalTaskListeners', false, invoke, ec.consistency);
 }
 
 type _searchGroups_Body = SearchGroupsData extends { body?: infer B } ? B : never;
@@ -1587,6 +1640,22 @@ export function getGlobalJobStatistics(options: Parameters<typeof _getGlobalJobS
 }
 
 /**
+ * Get global user task listener
+ *
+ * Get a global user task listener by its id.
+  *
+ * @operationId getGlobalTaskListener
+ * @tags Global listener
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getGlobalTaskListener(options: Parameters<typeof _getGlobalTaskListener>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getGlobalTaskListener>> }): CancelablePromise<_DataOf<typeof _getGlobalTaskListener>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getGlobalTaskListener({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getGlobalTaskListener', true, invoke, ec.consistency);
+}
+
+/**
  * Get group
  *
  * Get a group by its ID.
@@ -1959,7 +2028,11 @@ export function getUserTaskForm(options: Parameters<typeof _getUserTaskForm>[0] 
 /**
  * Get variable
  *
- * Get the variable by the variable key.
+ * Get a variable by its key.
+ *
+ * This endpoint returns both process-level and local (element-scoped) variables.
+ * The variable's scopeKey indicates whether it's a process-level variable or scoped to a
+ * specific element instance.
   *
  * @operationId getVariable
  * @tags Variable
@@ -2355,7 +2428,10 @@ export function searchUserTaskAuditLogs(options: Parameters<typeof _searchUserTa
 /**
  * Search user task variables
  *
- * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
+ * Search for user task variables based on given criteria. This endpoint returns all variables
+ * visible from the user task's scope, including variables from parent scopes in the scope
+ * hierarchy. By default, long variable values in the response are truncated.
+ *
   *
  * @operationId searchUserTaskVariables
  * @tags User task
@@ -2371,7 +2447,15 @@ export function searchUserTaskVariables(options: Parameters<typeof _searchUserTa
 /**
  * Search variables
  *
- * Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.
+ * Search for variables based on given criteria.
+ *
+ * This endpoint returns variables that exist directly at the specified scopes - it does not
+ * include variables from parent scopes that would be visible through the scope hierarchy.
+ *
+ * Variables can be process-level (scoped to the process instance) or local (scoped to specific
+ * BPMN elements like tasks, subprocesses, etc.).
+ *
+ * By default, long variable values in the response are truncated.
   *
  * @operationId searchVariables
  * @tags Variable
@@ -2719,4 +2803,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=8c05584593134db7 totalWrappers=175 elements=1103 physicalLines=2671
+// SENTINEL_FACADE_PREWRITE hash=b39785e390ef4896 totalWrappers=179 elements=1134 physicalLines=2755

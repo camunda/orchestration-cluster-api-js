@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 175
+// Operations: 179
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -346,6 +346,14 @@ export type getGlobalJobStatisticsConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalJobStatistics>> 
 };
+type getGlobalTaskListenerOptions = Parameters<typeof Sdk.getGlobalTaskListener>[0];
+type getGlobalTaskListenerPathParam_id = (NonNullable<getGlobalTaskListenerOptions> extends { path: { id: infer P } } ? P : any);
+export type getGlobalTaskListenerInput = { id: getGlobalTaskListenerPathParam_id };
+/** Management of eventual consistency **/
+export type getGlobalTaskListenerConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGlobalTaskListener>> 
+};
 type getGroupOptions = Parameters<typeof Sdk.getGroup>[0];
 type getGroupPathParam_groupId = (NonNullable<getGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 export type getGroupInput = { groupId: getGroupPathParam_groupId };
@@ -361,6 +369,22 @@ export type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey }
 export type getIncidentConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
+};
+type getJobTypeStatisticsOptions = Parameters<typeof Sdk.getJobTypeStatistics>[0];
+type getJobTypeStatisticsBody = (NonNullable<getJobTypeStatisticsOptions> extends { body?: infer B } ? B : never);
+export type getJobTypeStatisticsInput = getJobTypeStatisticsBody;
+/** Management of eventual consistency **/
+export type getJobTypeStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobTypeStatistics>> 
+};
+type getJobWorkerStatisticsOptions = Parameters<typeof Sdk.getJobWorkerStatistics>[0];
+type getJobWorkerStatisticsBody = (NonNullable<getJobWorkerStatisticsOptions> extends { body?: infer B } ? B : never);
+export type getJobWorkerStatisticsInput = getJobWorkerStatisticsBody;
+/** Management of eventual consistency **/
+export type getJobWorkerStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobWorkerStatistics>> 
 };
 type getLicenseOptions = Parameters<typeof Sdk.getLicense>[0];
 export type getLicenseInput = void;
@@ -707,6 +731,14 @@ export type searchElementInstancesInput = searchElementInstancesBody;
 export type searchElementInstancesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchElementInstances>> 
+};
+type searchGlobalTaskListenersOptions = Parameters<typeof Sdk.searchGlobalTaskListeners>[0];
+type searchGlobalTaskListenersBody = (NonNullable<searchGlobalTaskListenersOptions> extends { body?: infer B } ? B : never);
+export type searchGlobalTaskListenersInput = searchGlobalTaskListenersBody;
+/** Management of eventual consistency **/
+export type searchGlobalTaskListenersConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchGlobalTaskListeners>> 
 };
 type searchGroupIdsForTenantOptions = Parameters<typeof Sdk.searchGroupIdsForTenant>[0];
 type searchGroupIdsForTenantBody = (NonNullable<searchGroupIdsForTenantOptions> extends { body?: infer B } ? B : never);
@@ -5802,6 +5834,69 @@ export class CamundaClient {
   }
 
   /**
+   * Get global user task listener
+   *
+   * Get a global user task listener by its id.
+    *
+   * @operationId getGlobalTaskListener
+   * @tags Global listener
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getGlobalTaskListener(input: getGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalTaskListener>>;
+  getGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { id } = arg || {};
+      let envelope: any = {};
+      envelope.path = { id };
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getGlobalTaskListener', Schemas.zGetGlobalTaskListenerData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getGlobalTaskListener(opts);
+        let data = this._evaluateResponse(_raw, 'getGlobalTaskListener', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetGlobalTaskListenerResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetGlobalTaskListenerResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getGlobalTaskListener', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getGlobalTaskListener', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Get group
    *
    * Get a group by its ID.
@@ -5926,6 +6021,134 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getIncident', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get job statistics by type
+   *
+   * Get statistics about jobs, grouped by job type.
+   *
+    *
+   * @operationId getJobTypeStatistics
+   * @tags Job
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getJobTypeStatistics(input: getJobTypeStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getJobTypeStatistics>>;
+  getJobTypeStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getJobTypeStatistics', Schemas.zGetJobTypeStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getJobTypeStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getJobTypeStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetJobTypeStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetJobTypeStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getJobTypeStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getJobTypeStatistics', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get job statistics by worker
+   *
+   * Returns aggregated metrics per worker for the given jobType.
+   *
+    *
+   * @operationId getJobWorkerStatistics
+   * @tags Job
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getJobWorkerStatistics(input: getJobWorkerStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getJobWorkerStatistics>>;
+  getJobWorkerStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getJobWorkerStatistics', Schemas.zGetJobWorkerStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getJobWorkerStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getJobWorkerStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetJobWorkerStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetJobWorkerStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getJobWorkerStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getJobWorkerStatistics', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }
@@ -7547,7 +7770,11 @@ export class CamundaClient {
   /**
    * Get variable
    *
-   * Get the variable by the variable key.
+   * Get a variable by its key.
+   *
+   * This endpoint returns both process-level and local (element-scoped) variables.
+   * The variable's scopeKey indicates whether it's a process-level variable or scoped to a
+   * specific element instance.
     *
    * @operationId getVariable
    * @tags Variable
@@ -9200,6 +9427,69 @@ export class CamundaClient {
   }
 
   /**
+   * Search global user task listeners
+   *
+   * Search for global user task listeners based on given criteria.
+    *
+   * @operationId searchGlobalTaskListeners
+   * @tags Global listener
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchGlobalTaskListeners(input: searchGlobalTaskListenersInput, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency): CancelablePromise<_DataOf<typeof Sdk.searchGlobalTaskListeners>>;
+  searchGlobalTaskListeners(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchGlobalTaskListeners', Schemas.zSearchGlobalTaskListenersData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchGlobalTaskListeners(opts);
+        let data = this._evaluateResponse(_raw, 'searchGlobalTaskListeners', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchGlobalTaskListenersResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchGlobalTaskListenersResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchGlobalTaskListeners', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchGlobalTaskListeners', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Search groups for tenant
    *
    * Retrieves a filtered and sorted list of groups for a specified tenant.
@@ -10689,7 +10979,10 @@ export class CamundaClient {
   /**
    * Search user task variables
    *
-   * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
+   * Search for user task variables based on given criteria. This endpoint returns all variables
+   * visible from the user task's scope, including variables from parent scopes in the scope
+   * hierarchy. By default, long variable values in the response are truncated.
+   *
     *
    * @operationId searchUserTaskVariables
    * @tags User task
@@ -10756,7 +11049,15 @@ export class CamundaClient {
   /**
    * Search variables
    *
-   * Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.
+   * Search for variables based on given criteria.
+   *
+   * This endpoint returns variables that exist directly at the specified scopes - it does not
+   * include variables from parent scopes that would be visible through the scope hierarchy.
+   *
+   * Variables can be process-level (scoped to the process instance) or local (scoped to specific
+   * BPMN elements like tasks, subprocesses, etc.).
+   *
+   * By default, long variable values in the response are truncated.
     *
    * @operationId searchVariables
    * @tags Variable

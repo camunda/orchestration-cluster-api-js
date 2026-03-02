@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:493d019664300c05919ec8ff78d2b49ea46877bdde915d89666ccb9180e875a8",
+  "specHash": "sha256:cbd9584472e517448379658b56e2011c3f9b8ebc67ea8e8e750d33b3ad24f638",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -168,6 +168,46 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BatchOperationKey"
+      }
+    },
+    {
+      "name": "BusinessId",
+      "semanticType": "BusinessId",
+      "category": "model-id",
+      "description": "An optional, user-defined string identifier that identifies the process instance\nwithin the scope of a process definition (scoped by tenant). If provided and uniqueness\nenforcement is enabled, the engine will reject creation if another root process instance\nwith the same business id is already active for the same process definition.\nNote that any active child process instances with the same business id are not taken into account.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "BusinessId"
+      },
+      "examples": [
+        "order-12345"
+      ],
+      "extensions": {
+        "x-semantic-type": "BusinessId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "business-id",
+      "brand": {
+        "tsType": "CamundaKey<'BusinessId'>"
+      },
+      "zod": {
+        "schemaName": "zBusinessId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/BusinessId"
       }
     },
     {
@@ -629,8 +669,6 @@
       },
       "constraints": {
         "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$",
-        "minLength": 2,
-        "maxLength": 300,
         "format": "base64"
       },
       "examples": [
@@ -1069,52 +1107,10 @@
       }
     },
     {
-      "name": "RootProcessInstanceKey",
-      "semanticType": "ProcessInstanceKey",
-      "category": "system-key",
-      "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
-        "inlineFragments": 0
-      },
-      "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
-      },
-      "examples": [
-        "2251799813690746"
-      ],
-      "extensions": {
-        "x-semantic-type": "ProcessInstanceKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "root-process-instance-key",
-      "brand": {
-        "tsType": "CamundaKey<'RootProcessInstanceKey'>"
-      },
-      "zod": {
-        "schemaName": "zRootProcessInstanceKey",
-        "transformPipeline": [
-          "brand-cast"
-        ]
-      },
-      "source": {
-        "schemaPointer": "#/components/schemas/RootProcessInstanceKey"
-      }
-    },
-    {
       "name": "ScopeKey",
       "semanticType": "ScopeKey",
       "category": "system-key",
-      "description": "System-generated key for a scope.",
+      "description": "System-generated key for a scope. A scope can hold variables and represents either an\nelement instance in a BPMN process or the process instance itself.\n",
       "composition": {
         "schemaKind": "allOf",
         "refs": [
@@ -1206,8 +1202,6 @@
       },
       "constraints": {
         "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$",
-        "minLength": 2,
-        "maxLength": 300,
         "format": "base64"
       },
       "examples": [
@@ -1995,6 +1989,52 @@
       }
     },
     {
+      "name": "GlobalListenerSourceFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Global listener source property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "GlobalListenerSourceExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedGlobalListenerSourceFilter"
+        }
+      ],
+      "stableId": "global-listener-source-filter-property",
+      "tsType": "GlobalListenerSourceExactMatch | AdvancedGlobalListenerSourceFilter",
+      "zod": {
+        "schemaName": "zGlobalListenerSourceFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/GlobalListenerSourceFilterProperty"
+      }
+    },
+    {
+      "name": "GlobalTaskListenerEventTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Global listener event type property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "GlobalTaskListenerEventTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedGlobalTaskListenerEventTypeFilter"
+        }
+      ],
+      "stableId": "global-task-listener-event-type-filter-property",
+      "tsType": "GlobalTaskListenerEventTypeExactMatch | AdvancedGlobalTaskListenerEventTypeFilter",
+      "zod": {
+        "schemaName": "zGlobalTaskListenerEventTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/GlobalTaskListenerEventTypeFilterProperty"
+      }
+    },
+    {
       "name": "IncidentErrorTypeFilterProperty",
       "kind": "union-wrapper",
       "description": "IncidentErrorTypeEnum with full advanced search capabilities.",
@@ -2276,15 +2316,15 @@
       "branches": [
         {
           "branchType": "branded-ref",
-          "ref": "ProcessInstanceCreationInstructionById"
+          "ref": "ProcessInstanceCreationInstructionByKey"
         },
         {
           "branchType": "branded-ref",
-          "ref": "ProcessInstanceCreationInstructionByKey"
+          "ref": "ProcessInstanceCreationInstructionById"
         }
       ],
       "stableId": "process-instance-creation-instruction",
-      "tsType": "ProcessInstanceCreationInstructionById | ProcessInstanceCreationInstructionByKey",
+      "tsType": "ProcessInstanceCreationInstructionByKey | ProcessInstanceCreationInstructionById",
       "zod": {
         "schemaName": "zProcessInstanceCreationInstruction"
       },
@@ -2436,7 +2476,7 @@
     {
       "name": "ScopeKeyFilterProperty",
       "kind": "union-wrapper",
-      "description": "ScopeKey property with full advanced search capabilities.",
+      "description": "ScopeKey property with full advanced search capabilities. Filter by the key of the\nelement instance or process instance that defines the scope of a variable.\n",
       "branches": [
         {
           "branchType": "branded-ref",
@@ -2600,7 +2640,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 35,
-    "totalUnionWrappers": 49,
+    "totalUnionWrappers": 51,
     "implicitCamundaKeys": []
   }
 }

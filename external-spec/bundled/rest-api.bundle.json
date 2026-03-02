@@ -2910,7 +2910,7 @@
         }
       }
     },
-    "/global-listeners/user-task": {
+    "/global-task-listeners": {
       "post": {
         "x-eventually-consistent": false,
         "tags": [
@@ -2968,7 +2968,58 @@
         }
       }
     },
-    "/global-listeners/user-task/{id}": {
+    "/global-task-listeners/{id}": {
+      "get": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Global listener"
+        ],
+        "operationId": "getGlobalTaskListener",
+        "summary": "Get global user task listener",
+        "description": "Get a global user task listener by its id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the global user task listener.",
+            "schema": {
+              "$ref": "#/components/schemas/GlobalListenerId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The global user task listener is successfully returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalTaskListenerResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The global user task listener with the given id was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      },
       "put": {
         "x-eventually-consistent": false,
         "tags": [
@@ -3083,6 +3134,50 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        }
+      }
+    },
+    "/global-task-listeners/search": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Global listener"
+        ],
+        "operationId": "searchGlobalTaskListeners",
+        "summary": "Search global user task listeners",
+        "description": "Search for global user task listeners based on given criteria.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GlobalTaskListenerSearchQueryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The global user task listener search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GlobalTaskListenerSearchQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
           }
         }
       }
@@ -3405,6 +3500,9 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "required": [
+                    "items"
+                  ],
                   "type": "object",
                   "allOf": [
                     {
@@ -3615,7 +3713,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchQueryResponse"
+                  "required": [
+                    "items"
+                  ],
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching mapping rules.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MappingRuleResult"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3805,7 +3920,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchQueryResponse"
+                  "required": [
+                    "items"
+                  ],
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching roles.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RoleResult"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -3900,6 +4032,9 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "required": [
+                    "items"
+                  ],
                   "type": "object",
                   "allOf": [
                     {
@@ -4743,6 +4878,96 @@
         }
       }
     },
+    "/jobs/statistics/by-types": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Job"
+        ],
+        "operationId": "getJobTypeStatistics",
+        "summary": "Get job statistics by type",
+        "description": "Get statistics about jobs, grouped by job type.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobTypeStatisticsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The job type statistics result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobTypeStatisticsQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/jobs/statistics/by-workers": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Job"
+        ],
+        "operationId": "getJobWorkerStatistics",
+        "summary": "Get job statistics by worker",
+        "description": "Returns aggregated metrics per worker for the given jobType.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobWorkerStatisticsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The job worker statistics result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobWorkerStatisticsQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
     "/license": {
       "get": {
         "x-eventually-consistent": false,
@@ -4856,7 +5081,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/MappingRuleSearchQueryResult"
+                  "required": [
+                    "items"
+                  ],
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching mapping rules.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MappingRuleResult"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -7066,6 +7308,9 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "items"
+                  ],
                   "allOf": [
                     {
                       "$ref": "#/components/schemas/SearchQueryResponse"
@@ -7465,7 +7710,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchQueryResponse"
+                  "required": [
+                    "items"
+                  ],
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching mapping rules.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MappingRuleResult"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -7685,6 +7947,9 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "items"
+                  ],
                   "allOf": [
                     {
                       "$ref": "#/components/schemas/SearchQueryResponse"
@@ -8428,6 +8693,9 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "required": [
+                    "items"
+                  ],
                   "type": "object",
                   "allOf": [
                     {
@@ -8764,7 +9032,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchQueryResponse"
+                  "required": [
+                    "items"
+                  ],
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching mapping rules.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MappingRuleResult"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -8922,7 +9207,24 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchQueryResponse"
+                  "required": [
+                    "items"
+                  ],
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/SearchQueryResponse"
+                    }
+                  ],
+                  "properties": {
+                    "items": {
+                      "description": "The matching roles.",
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RoleResult"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -9110,6 +9412,9 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "required": [
+                    "items"
+                  ],
                   "type": "object",
                   "allOf": [
                     {
@@ -10056,7 +10361,7 @@
         ],
         "operationId": "searchUserTaskVariables",
         "summary": "Search user task variables",
-        "description": "Search for user task variables based on given criteria. By default, long variable values in the response are truncated.",
+        "description": "Search for user task variables based on given criteria. This endpoint returns all variables\nvisible from the user task's scope, including variables from parent scopes in the scope\nhierarchy. By default, long variable values in the response are truncated.\n",
         "parameters": [
           {
             "name": "userTaskKey",
@@ -10159,7 +10464,7 @@
         ],
         "operationId": "searchVariables",
         "summary": "Search variables",
-        "description": "Search for process and local variables based on given criteria. By default, long variable values in the response are truncated.",
+        "description": "Search for variables based on given criteria.\n\nThis endpoint returns variables that exist directly at the specified scopes - it does not\ninclude variables from parent scopes that would be visible through the scope hierarchy.\n\nVariables can be process-level (scoped to the process instance) or local (scoped to specific\nBPMN elements like tasks, subprocesses, etc.).\n\nBy default, long variable values in the response are truncated.",
         "parameters": [
           {
             "name": "truncateValues",
@@ -10259,7 +10564,7 @@
         ],
         "operationId": "getVariable",
         "summary": "Get variable",
-        "description": "Get the variable by the variable key.",
+        "description": "Get a variable by its key.\n\nThis endpoint returns both process-level and local (element-scoped) variables.\nThe variable's scopeKey indicates whether it's a process-level variable or scoped to a\nspecific element instance.",
         "parameters": [
           {
             "name": "variableKey",
@@ -10324,6 +10629,9 @@
       "AuditLogResult": {
         "description": "Audit log item.",
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey"
+        ],
         "properties": {
           "auditLogKey": {
             "allOf": [
@@ -10417,7 +10725,13 @@
             "description": "The key of the process instance."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "elementInstanceKey": {
             "allOf": [
@@ -10835,6 +11149,9 @@
       "AuditLogSearchQueryResult": {
         "description": "Audit log search response.",
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -10866,6 +11183,7 @@
           "DECISION",
           "GROUP",
           "INCIDENT",
+          "JOB",
           "MAPPING_RULE",
           "PROCESS_INSTANCE",
           "RESOURCE",
@@ -11225,6 +11543,7 @@
       "CamundaUserResult": {
         "type": "object",
         "required": [
+          "authorizedComponents",
           "tenants",
           "groups",
           "roles",
@@ -11293,6 +11612,7 @@
           },
           "salesPlanType": {
             "description": "The plan of the user.",
+            "nullable": true,
             "type": "string",
             "example": ""
           },
@@ -11496,6 +11816,10 @@
         }
       },
       "AuthorizationResult": {
+        "required": [
+          "permissionTypes",
+          "resourcePropertyName"
+        ],
         "type": "object",
         "properties": {
           "ownerId": {
@@ -11516,10 +11840,12 @@
           },
           "resourceId": {
             "description": "ID of the resource the permission relates to (mutually exclusive with `resourcePropertyName`).",
+            "nullable": true,
             "type": "string"
           },
           "resourcePropertyName": {
             "description": "The name of the resource property the permission relates to (mutually exclusive with `resourceId`).",
+            "nullable": true,
             "type": "string"
           },
           "permissionTypes": {
@@ -11541,6 +11867,9 @@
       },
       "AuthorizationSearchResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -11576,7 +11905,9 @@
           "ACCESS",
           "CANCEL_PROCESS_INSTANCE",
           "CLAIM",
+          "CLAIM_USER_TASK",
           "COMPLETE",
+          "COMPLETE_USER_TASK",
           "CREATE",
           "CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE",
           "CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION",
@@ -11781,6 +12112,9 @@
       "BatchOperationSearchQueryResult": {
         "description": "The batch operation search query result.",
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -11797,6 +12131,9 @@
         }
       },
       "BatchOperationResponse": {
+        "required": [
+          "errors"
+        ],
         "type": "object",
         "properties": {
           "batchOperationKey": {
@@ -11815,13 +12152,15 @@
           },
           "startDate": {
             "type": "string",
-            "description": "The start date of the batch operation.",
-            "format": "date-time"
+            "description": "The start date of the batch operation.\nThis is `null` if the batch operation has not yet started.\n",
+            "format": "date-time",
+            "nullable": true
           },
           "endDate": {
             "type": "string",
-            "description": "The end date of the batch operation.",
-            "format": "date-time"
+            "description": "The end date of the batch operation.\nThis is `null` if the batch operation is still running.\n",
+            "format": "date-time",
+            "nullable": true
           },
           "actorType": {
             "$ref": "#/components/schemas/AuditLogActorTypeEnum"
@@ -11974,6 +12313,9 @@
       },
       "BatchOperationItemSearchQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -11991,6 +12333,9 @@
       },
       "BatchOperationItemResponse": {
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey"
+        ],
         "properties": {
           "operationType": {
             "$ref": "#/components/schemas/BatchOperationTypeEnum"
@@ -12016,7 +12361,13 @@
             "description": "the process instance key of the processed item."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "state": {
             "description": "State of the item.",
@@ -12036,6 +12387,7 @@
           },
           "errorMessage": {
             "description": "the error message from the engine in case of a failed operation.",
+            "nullable": true,
             "type": "string"
           }
         }
@@ -12508,7 +12860,6 @@
         "type": "object",
         "required": [
           "name",
-          "value",
           "scope"
         ],
         "properties": {
@@ -12521,7 +12872,8 @@
           },
           "tenantId": {
             "type": "string",
-            "description": "Only provided if the cluster variable scope is TENANT."
+            "nullable": true,
+            "description": "Only provided if the cluster variable scope is TENANT. Null for global scope variables."
           }
         }
       },
@@ -12667,6 +13019,9 @@
       "ClusterVariableSearchQueryResult": {
         "description": "Cluster variable search query response.",
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -12676,6 +13031,7 @@
           "items": {
             "description": "The matching cluster variables.",
             "type": "array",
+            "default": [],
             "items": {
               "$ref": "#/components/schemas/ClusterVariableSearchResult"
             }
@@ -12922,8 +13278,6 @@
         "type": "string",
         "x-semantic-type": "StartCursor",
         "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$",
-        "minLength": 2,
-        "maxLength": 300,
         "example": "WzIyNTE3OTk4MTM2ODcxMDJd"
       },
       "EndCursor": {
@@ -12932,8 +13286,6 @@
         "x-semantic-type": "EndCursor",
         "type": "string",
         "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}(?:==)?|[A-Za-z0-9+/]{3}=)?$",
-        "minLength": 2,
-        "maxLength": 300,
         "example": "WzIyNTE3OTk4MTM2ODcxMDJd"
       },
       "DecisionDefinitionSearchQuerySortRequest": {
@@ -13052,6 +13404,9 @@
       },
       "DecisionDefinitionSearchQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -13061,6 +13416,7 @@
           "items": {
             "description": "The matching decision definitions.",
             "type": "array",
+            "default": [],
             "items": {
               "$ref": "#/components/schemas/DecisionDefinitionResult"
             }
@@ -13240,6 +13596,7 @@
           },
           "failedDecisionDefinitionId": {
             "description": "The ID of the decision which failed during evaluation.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/DecisionDefinitionId"
@@ -13248,6 +13605,7 @@
           },
           "failureMessage": {
             "description": "Message describing why the decision which was evaluated failed.",
+            "nullable": true,
             "type": "string"
           },
           "tenantId": {
@@ -13301,6 +13659,11 @@
         }
       },
       "EvaluatedDecisionResult": {
+        "required": [
+          "decisionDefinitionType",
+          "evaluatedInputs",
+          "matchedRules"
+        ],
         "x-semantic-provider": [
           "decisionEvaluationInstanceKey"
         ],
@@ -13560,6 +13923,9 @@
       },
       "DecisionInstanceSearchQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -13577,6 +13943,11 @@
       },
       "DecisionInstanceResult": {
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey",
+          "evaluationFailure",
+          "tenantId"
+        ],
         "properties": {
           "decisionEvaluationInstanceKey": {
             "$ref": "#/components/schemas/DecisionEvaluationInstanceKey"
@@ -13591,6 +13962,7 @@
           },
           "evaluationFailure": {
             "type": "string",
+            "nullable": true,
             "description": "The evaluation failure of the decision instance."
           },
           "decisionDefinitionId": {
@@ -13650,7 +14022,13 @@
             "description": "The key of the process instance."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "decisionDefinitionKey": {
             "allOf": [
@@ -13685,6 +14063,10 @@
           },
           {
             "type": "object",
+            "required": [
+              "evaluatedInputs",
+              "matchedRules"
+            ],
             "properties": {
               "evaluatedInputs": {
                 "type": "array",
@@ -13709,39 +14091,56 @@
         "description": "A decision input that was evaluated within this decision evaluation.",
         "properties": {
           "inputId": {
-            "type": "string"
+            "type": "string",
+            "description": "The identifier of the decision input."
           },
           "inputName": {
-            "type": "string"
+            "type": "string",
+            "description": "The name of the decision input."
           },
           "inputValue": {
+            "description": "The description of the decision input.",
             "type": "string"
           }
         }
       },
       "EvaluatedDecisionOutputItem": {
+        "required": [
+          "ruleId",
+          "ruleIndex"
+        ],
         "type": "object",
         "description": "The evaluated decision outputs.",
         "properties": {
           "outputId": {
+            "description": "The ID of the evaluated decison output item.",
             "type": "string"
           },
           "outputName": {
+            "description": "The name of the of the evaluated decison output item.",
             "type": "string"
           },
           "outputValue": {
+            "description": "The value of the evaluated decison output item.",
             "type": "string"
           },
           "ruleId": {
+            "description": "The ID of the matched rule.",
+            "nullable": true,
             "type": "string"
           },
           "ruleIndex": {
+            "description": "The index of the matched rule.",
+            "nullable": true,
             "type": "integer",
             "format": "int32"
           }
         }
       },
       "MatchedDecisionRuleItem": {
+        "required": [
+          "evaluatedOutputs"
+        ],
         "type": "object",
         "description": "A decision rule that matched within this decision evaluation.",
         "properties": {
@@ -13764,21 +14163,39 @@
         }
       },
       "DecisionDefinitionTypeEnum": {
-        "description": "The type of the decision.",
+        "description": "The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10",
         "type": "string",
         "enum": [
           "DECISION_TABLE",
           "LITERAL_EXPRESSION",
+          "UNSPECIFIED",
           "UNKNOWN"
+        ],
+        "x-deprecated-enum-members": [
+          {
+            "name": "UNSPECIFIED",
+            "deprecatedInVersion": "8.9.0"
+          }
         ]
       },
       "DecisionInstanceStateEnum": {
-        "description": "The state of the decision instance.",
+        "description": "The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10",
         "type": "string",
         "enum": [
           "EVALUATED",
           "FAILED",
-          "UNSPECIFIED"
+          "UNSPECIFIED",
+          "UNKNOWN"
+        ],
+        "x-deprecated-enum-members": [
+          {
+            "name": "UNSPECIFIED",
+            "deprecatedInVersion": "8.9.0"
+          },
+          {
+            "name": "UNKNOWN",
+            "deprecatedInVersion": "8.9.0"
+          }
         ]
       },
       "AdvancedDecisionInstanceStateFilter": {
@@ -13920,6 +14337,9 @@
         }
       },
       "DecisionRequirementsSearchQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -14012,19 +14432,49 @@
         "type": "object",
         "properties": {
           "processDefinition": {
-            "$ref": "#/components/schemas/DeploymentProcessResult"
+            "nullable": true,
+            "description": "Deployed process.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeploymentProcessResult"
+              }
+            ]
           },
           "decisionDefinition": {
-            "$ref": "#/components/schemas/DeploymentDecisionResult"
+            "nullable": true,
+            "description": "Deployed decision.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeploymentDecisionResult"
+              }
+            ]
           },
           "decisionRequirements": {
-            "$ref": "#/components/schemas/DeploymentDecisionRequirementsResult"
+            "nullable": true,
+            "description": "Deployed decision requirement definition.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeploymentDecisionRequirementsResult"
+              }
+            ]
           },
           "form": {
-            "$ref": "#/components/schemas/DeploymentFormResult"
+            "nullable": true,
+            "description": "Deployed form.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeploymentFormResult"
+              }
+            ]
           },
           "resource": {
-            "$ref": "#/components/schemas/DeploymentResourceResult"
+            "nullable": true,
+            "description": "Deployed resource.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeploymentResourceResult"
+              }
+            ]
           }
         }
       },
@@ -14141,16 +14591,20 @@
         ],
         "properties": {
           "decisionRequirementsId": {
+            "description": "The id of the deployed decision requirements.",
             "type": "string"
           },
           "decisionRequirementsName": {
+            "description": "The name of the deployed decision requirements.",
             "type": "string"
           },
           "version": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "The version of the deployed decision requirements."
           },
           "resourceName": {
+            "description": "The name of the resource.",
             "type": "string"
           },
           "tenantId": {
@@ -14187,10 +14641,12 @@
             "description": "The form ID, as parsed during deployment, together with the version forms a\nunique identifier for a specific form.\n"
           },
           "version": {
+            "description": "The version of the deployed form.",
             "type": "integer",
             "format": "int32"
           },
           "resourceName": {
+            "description": "The name of the resource.",
             "type": "string"
           },
           "tenantId": {
@@ -14214,12 +14670,15 @@
         "type": "object",
         "properties": {
           "resourceId": {
+            "description": "The resource id of the deployed resource.",
             "type": "string"
           },
           "resourceName": {
+            "description": "The name of the deployed resource.",
             "type": "string"
           },
           "version": {
+            "description": "The description of the deployed resource.",
             "type": "integer",
             "format": "int32"
           },
@@ -14266,12 +14725,13 @@
             "description": "The system-assigned key for this resource, requested to be deleted."
           },
           "batchOperation": {
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/BatchOperationCreatedResult"
               }
             ],
-            "description": "The batch operation created for asynchronously deleting the historic data.\n\nThis field is only populated when the request `deleteHistory` is set to `true` and the resource\nis a process definition. For other resource types (decisions, forms, generic resources),\nthis field will not be present in the response.\n"
+            "description": "The batch operation created for asynchronously deleting the historic data.\n\nThis field is only populated when the request `deleteHistory` is set to `true` and the resource\nis a process definition. For other resource types (decisions, forms, generic resources),\nthis field will be `null`.\n"
           }
         }
       },
@@ -14506,6 +14966,10 @@
         "allOf": [
           {
             "type": "object",
+            "required": [
+              "failedDocuments",
+              "createdDocuments"
+            ],
             "properties": {
               "failedDocuments": {
                 "type": "array",
@@ -14526,6 +14990,9 @@
         ]
       },
       "DocumentMetadata": {
+        "required": [
+          "customProperties"
+        ],
         "description": "Information about the document.",
         "type": "object",
         "properties": {
@@ -14842,6 +15309,9 @@
       },
       "ElementInstanceSearchQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -14870,7 +15340,8 @@
           "tenantId",
           "elementInstanceKey",
           "processInstanceKey",
-          "processDefinitionKey"
+          "processDefinitionKey",
+          "rootProcessInstanceKey"
         ],
         "properties": {
           "processDefinitionId": {
@@ -14888,6 +15359,7 @@
           },
           "endDate": {
             "description": "Date when element instance finished.",
+            "nullable": true,
             "type": "string",
             "format": "date-time"
           },
@@ -14973,7 +15445,13 @@
             "description": "The process instance key associated to this element instance."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "processDefinitionKey": {
             "allOf": [
@@ -14989,7 +15467,8 @@
                 "$ref": "#/components/schemas/IncidentKey"
               }
             ],
-            "description": "Incident key associated with this element instance."
+            "description": "Incident key associated with this element instance.",
+            "nullable": true
           }
         }
       },
@@ -15058,6 +15537,16 @@
             "type": "string",
             "description": "Required when the expression references tenant-scoped cluster variables",
             "example": "tenant_123"
+          },
+          "context": {
+            "type": "object",
+            "description": "Optional context variables for expression evaluation. These variables are only used for the current evaluation and do not persist beyond it.",
+            "example": {
+              "x": 10,
+              "y": 20
+            },
+            "additionalProperties": true,
+            "nullable": true
           }
         }
       },
@@ -15434,6 +15923,9 @@
       },
       "GlobalTaskListenerResult": {
         "type": "object",
+        "required": [
+          "eventTypes"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/GlobalTaskListenerBase"
@@ -15445,6 +15937,235 @@
           },
           "source": {
             "$ref": "#/components/schemas/GlobalListenerSourceEnum"
+          }
+        }
+      },
+      "GlobalTaskListenerSearchQueryRequest": {
+        "description": "Global listener search query request.",
+        "additionalProperties": false,
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryRequest"
+          }
+        ],
+        "properties": {
+          "sort": {
+            "description": "Sort field criteria.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalTaskListenerSearchQuerySortRequest"
+            }
+          },
+          "filter": {
+            "description": "The global listener search filters.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlobalTaskListenerSearchQueryFilterRequest"
+              }
+            ]
+          }
+        }
+      },
+      "GlobalTaskListenerSearchQuerySortRequest": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "description": "The field to sort by.",
+            "type": "string",
+            "enum": [
+              "id",
+              "type",
+              "afterNonGlobal",
+              "priority",
+              "source"
+            ]
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrderEnum"
+          }
+        },
+        "required": [
+          "field"
+        ]
+      },
+      "GlobalTaskListenerSearchQueryFilterRequest": {
+        "description": "Global listener filter request.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Id of the global listener.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          },
+          "type": {
+            "description": "Job type of the global listener.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          },
+          "retries": {
+            "description": "Number of retries of the global listener.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IntegerFilterProperty"
+              }
+            ]
+          },
+          "eventTypes": {
+            "description": "Event types of the global listener.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/GlobalTaskListenerEventTypeFilterProperty"
+                }
+              ]
+            }
+          },
+          "afterNonGlobal": {
+            "description": "Whether the listener runs after model-level listeners.",
+            "type": "boolean"
+          },
+          "priority": {
+            "description": "Priority of the global listener.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IntegerFilterProperty"
+              }
+            ]
+          },
+          "source": {
+            "description": "How the global listener was defined.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlobalListenerSourceFilterProperty"
+              }
+            ]
+          }
+        }
+      },
+      "GlobalListenerSourceFilterProperty": {
+        "description": "Global listener source property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/GlobalListenerSourceExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedGlobalListenerSourceFilter"
+          }
+        ]
+      },
+      "AdvancedGlobalListenerSourceFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced global listener source filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlobalListenerSourceEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlobalListenerSourceEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalListenerSourceEnum"
+            }
+          },
+          "$like": {
+            "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "GlobalTaskListenerEventTypeFilterProperty": {
+        "description": "Global listener event type property with full advanced search capabilities.",
+        "type": "object",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/GlobalTaskListenerEventTypeExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedGlobalTaskListenerEventTypeFilter"
+          }
+        ]
+      },
+      "AdvancedGlobalTaskListenerEventTypeFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced global listener event type filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlobalTaskListenerEventTypeEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GlobalTaskListenerEventTypeEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalTaskListenerEventTypeEnum"
+            }
+          },
+          "$like": {
+            "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "GlobalTaskListenerSearchQueryResult": {
+        "description": "Global listener search query response.",
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching global listeners.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GlobalTaskListenerResult"
+            }
           }
         }
       },
@@ -15605,6 +16326,9 @@
       },
       "GroupSearchQueryResult": {
         "description": "Group search response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -15630,6 +16354,9 @@
         }
       },
       "GroupUserSearchResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -15691,6 +16418,9 @@
         }
       },
       "GroupClientSearchResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -15720,6 +16450,46 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/GroupClientSearchQuerySortRequest"
+            }
+          }
+        }
+      },
+      "GroupMappingRuleSearchResult": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching mapping rules.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MappingRuleResult"
+            }
+          }
+        }
+      },
+      "GroupRoleSearchResult": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching roles.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleResult"
             }
           }
         }
@@ -15825,6 +16595,15 @@
         },
         "uniqueItems": true,
         "maxItems": 10
+      },
+      "BusinessId": {
+        "description": "An optional, user-defined string identifier that identifies the process instance\nwithin the scope of a process definition (scoped by tenant). If provided and uniqueness\nenforcement is enabled, the engine will reject creation if another root process instance\nwith the same business id is already active for the same process definition.\nNote that any active child process instances with the same business id are not taken into account.\n",
+        "format": "BusinessId",
+        "x-semantic-type": "BusinessId",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "example": "order-12345"
       },
       "IncidentSearchQuery": {
         "additionalProperties": false,
@@ -16012,6 +16791,7 @@
       },
       "IncidentErrorTypeEnum": {
         "description": "Incident error type with a defined set of values.",
+        "type": "string",
         "enum": [
           "AD_HOC_SUB_PROCESS_NO_RETRIES",
           "CALLED_DECISION_ERROR",
@@ -16089,6 +16869,7 @@
       },
       "IncidentStateEnum": {
         "description": "Incident states with a defined set of values.",
+        "type": "string",
         "enum": [
           "ACTIVE",
           "MIGRATED",
@@ -16126,6 +16907,9 @@
         ]
       },
       "IncidentSearchQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -16144,6 +16928,11 @@
       },
       "IncidentResult": {
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey",
+          "jobKey",
+          "tenantId"
+        ],
         "properties": {
           "processDefinitionId": {
             "allOf": [
@@ -16154,6 +16943,7 @@
             "description": "The process definition ID associated to this incident."
           },
           "errorType": {
+            "description": "The type of the incident error.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/IncidentErrorTypeEnum"
@@ -16173,10 +16963,12 @@
             "description": "The element ID associated to this incident."
           },
           "creationTime": {
+            "description": "The creation time of the incident.",
             "type": "string",
             "format": "date-time"
           },
           "state": {
+            "description": "The incident state.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/IncidentStateEnum"
@@ -16216,7 +17008,13 @@
             "description": "The process instance key associated to this incident."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "elementInstanceKey": {
             "allOf": [
@@ -16227,12 +17025,13 @@
             "description": "The element instance key associated to this incident."
           },
           "jobKey": {
+            "description": "The job key, if exists, associated with this incident.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/JobKey"
               }
-            ],
-            "description": "The job key, if exists, associated with this incident."
+            ]
           }
         }
       },
@@ -16267,6 +17066,9 @@
         }
       },
       "IncidentProcessInstanceStatisticsByErrorQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -16353,6 +17155,9 @@
         ]
       },
       "IncidentProcessInstanceStatisticsByDefinitionQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -16472,9 +17277,208 @@
           },
           "lastUpdatedAt": {
             "description": "ISO 8601 timestamp of the last update for this status.",
+            "nullable": true,
             "type": "string",
             "format": "date-time",
             "example": "2024-07-29T15:51:28.071Z"
+          }
+        }
+      },
+      "JobTypeStatisticsQuery": {
+        "description": "Job type statistics query.",
+        "type": "object",
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/JobTypeStatisticsFilter"
+          },
+          "page": {
+            "description": "Search cursor pagination.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorForwardPagination"
+              }
+            ]
+          }
+        }
+      },
+      "JobTypeStatisticsFilter": {
+        "description": "Job type statistics search filter.",
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-28T15:51:28.071Z"
+          },
+          "to": {
+            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:28.071Z"
+          },
+          "jobType": {
+            "description": "Optional job type filter with advanced search capabilities.\nSupports exact match, pattern matching, and other operators.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          }
+        }
+      },
+      "JobTypeStatisticsQueryResult": {
+        "description": "Job type statistics query result.",
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The list of job type statistics items.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobTypeStatisticsItem"
+            }
+          }
+        }
+      },
+      "JobTypeStatisticsItem": {
+        "description": "Statistics for a single job type.",
+        "type": "object",
+        "required": [
+          "jobType",
+          "created",
+          "completed",
+          "failed",
+          "workers"
+        ],
+        "properties": {
+          "jobType": {
+            "description": "The job type identifier.",
+            "type": "string",
+            "example": "fetch-customer-data"
+          },
+          "created": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "completed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "failed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "workers": {
+            "description": "Number of distinct workers observed for this job type.",
+            "type": "integer",
+            "format": "int32",
+            "example": 5
+          }
+        }
+      },
+      "JobWorkerStatisticsQuery": {
+        "description": "Job worker statistics query.",
+        "type": "object",
+        "required": [
+          "filter"
+        ],
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/JobWorkerStatisticsFilter"
+          },
+          "page": {
+            "description": "Search cursor pagination.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorForwardPagination"
+              }
+            ]
+          }
+        }
+      },
+      "JobWorkerStatisticsFilter": {
+        "description": "Job worker statistics search filter.",
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "jobType"
+        ],
+        "properties": {
+          "from": {
+            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-28T15:51:28.071Z"
+          },
+          "to": {
+            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:28.071Z"
+          },
+          "jobType": {
+            "description": "Job type to return worker metrics for.",
+            "type": "string",
+            "example": "fetch-customer-data"
+          }
+        }
+      },
+      "JobWorkerStatisticsQueryResult": {
+        "description": "Job worker statistics query result.",
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The list of per-worker statistics items.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobWorkerStatisticsItem"
+            }
+          }
+        }
+      },
+      "JobWorkerStatisticsItem": {
+        "description": "Statistics for a single worker within a job type.",
+        "type": "object",
+        "required": [
+          "worker",
+          "created",
+          "completed",
+          "failed"
+        ],
+        "properties": {
+          "worker": {
+            "description": "The worker identifier.",
+            "type": "string",
+            "example": "worker-1"
+          },
+          "created": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "completed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "failed": {
+            "$ref": "#/components/schemas/StatusMetric"
           }
         }
       },
@@ -16584,7 +17588,9 @@
           "processDefinitionKey",
           "elementInstanceKey",
           "kind",
-          "listenerEventType"
+          "listenerEventType",
+          "rootProcessInstanceKey",
+          "tags"
         ],
         "properties": {
           "type": {
@@ -16675,6 +17681,7 @@
             "description": "The key of the job's process definition."
           },
           "elementInstanceKey": {
+            "description": "The element instance key of the task.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ElementInstanceKey"
@@ -16688,14 +17695,34 @@
             "$ref": "#/components/schemas/JobListenerEventTypeEnum"
           },
           "userTask": {
-            "$ref": "#/components/schemas/UserTaskProperties"
+            "description": "User task properties, if the job is a user task.\nThis is `null` if the job is not a user task.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserTaskProperties"
+              }
+            ]
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
+          },
+          "rootProcessInstanceKey": {
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           }
         }
       },
       "UserTaskProperties": {
+        "required": [
+          "candidateGroups",
+          "candidateUsers",
+          "changedAttributes"
+        ],
         "type": "object",
         "description": "Contains properties of a user task.",
         "properties": {
@@ -17008,6 +18035,9 @@
       },
       "JobSearchQueryResult": {
         "description": "Job search response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -17041,7 +18071,8 @@
           "state",
           "tenantId",
           "type",
-          "worker"
+          "worker",
+          "rootProcessInstanceKey"
         ],
         "properties": {
           "customHeaders": {
@@ -17063,7 +18094,8 @@
             "nullable": true
           },
           "elementId": {
-            "description": "The element ID associated with the job.",
+            "description": "The element ID associated with the job. May be missing on job failure.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/ElementId"
@@ -17079,9 +18111,10 @@
             "description": "The element instance key associated with the job."
           },
           "endTime": {
-            "description": "When the job ended.",
+            "description": "End date of the job.\nThis is `null` if the job is not in an end state yet.\n",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "nullable": true
           },
           "errorCode": {
             "description": "The error code provided for a failed job.",
@@ -17141,7 +18174,13 @@
             "description": "The process instance key associated with the job."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "retries": {
             "description": "The amount of retries left to this job.",
@@ -17629,18 +18668,6 @@
           }
         ]
       },
-      "RootProcessInstanceKey": {
-        "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
-        "format": "ProcessInstanceKey",
-        "x-semantic-type": "ProcessInstanceKey",
-        "example": "2251799813690746",
-        "type": "string",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/LongKey"
-          }
-        ]
-      },
       "ProcessDefinitionKey": {
         "description": "System-generated key for a deployed process definition.",
         "format": "ProcessDefinitionKey",
@@ -17701,7 +18728,7 @@
         ]
       },
       "ScopeKey": {
-        "description": "System-generated key for a scope.",
+        "description": "System-generated key for a scope. A scope can hold variables and represents either an\nelement instance in a BPMN process or the process instance itself.\n",
         "format": "ScopeKey",
         "x-semantic-type": "ScopeKey",
         "example": "2251799813683890",
@@ -18087,7 +19114,7 @@
         }
       },
       "ScopeKeyFilterProperty": {
-        "description": "ScopeKey property with full advanced search capabilities.",
+        "description": "ScopeKey property with full advanced search capabilities. Filter by the key of the\nelement instance or process instance that defines the scope of a variable.\n",
         "type": "object",
         "oneOf": [
           {
@@ -18463,7 +19490,8 @@
         "required": [
           "validLicense",
           "licenseType",
-          "isCommercial"
+          "isCommercial",
+          "expiresAt"
         ],
         "properties": {
           "validLicense": {
@@ -18481,10 +19509,10 @@
             "type": "boolean"
           },
           "expiresAt": {
+            "nullable": true,
             "description": "The date when the Camunda license expires",
             "type": "string",
-            "format": "date-time",
-            "nullable": true
+            "format": "date-time"
           }
         }
       },
@@ -18574,6 +19602,9 @@
         ]
       },
       "MappingRuleSearchQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -18808,6 +19839,9 @@
       },
       "MessageSubscriptionSearchQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -18825,6 +19859,9 @@
       },
       "MessageSubscriptionResult": {
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey"
+        ],
         "properties": {
           "messageSubscriptionKey": {
             "allOf": [
@@ -18859,7 +19896,13 @@
             "description": "The process instance key associated with this message subscription."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "elementId": {
             "allOf": [
@@ -19046,6 +20089,9 @@
         }
       },
       "CorrelatedMessageSubscriptionSearchQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -19128,7 +20174,13 @@
             "description": "The process instance key associated with this correlated message subscription."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "subscriptionKey": {
             "allOf": [
@@ -19157,7 +20209,8 @@
           "processDefinitionId",
           "processInstanceKey",
           "subscriptionKey",
-          "tenantId"
+          "tenantId",
+          "rootProcessInstanceKey"
         ]
       },
       "CorrelatedMessageSubscriptionSearchQuery": {
@@ -19601,6 +20654,9 @@
       },
       "ProcessDefinitionSearchQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -19621,6 +20677,7 @@
         "properties": {
           "name": {
             "description": "Name of this process definition.",
+            "nullable": true,
             "type": "string"
           },
           "resourceName": {
@@ -19634,6 +20691,7 @@
           },
           "versionTag": {
             "description": "Version tag of this process definition.",
+            "nullable": true,
             "type": "string"
           },
           "processDefinitionId": {
@@ -19682,6 +20740,9 @@
         }
       },
       "ProcessDefinitionElementStatisticsQueryResult": {
+        "required": [
+          "items"
+        ],
         "description": "Process definition element statistics query response.",
         "type": "object",
         "properties": {
@@ -19732,6 +20793,7 @@
         "type": "object",
         "properties": {
           "page": {
+            "description": "Search cursor pagination.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/CursorForwardPagination"
@@ -19750,6 +20812,9 @@
       },
       "ProcessDefinitionMessageSubscriptionStatisticsQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -19808,6 +20873,7 @@
         "type": "object",
         "properties": {
           "page": {
+            "description": "Search cursor pagination.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/OffsetPagination"
@@ -19825,6 +20891,9 @@
       },
       "ProcessDefinitionInstanceStatisticsQueryResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -19852,6 +20921,7 @@
           },
           "latestProcessDefinitionName": {
             "description": "Name of the latest deployed process definition instance version.",
+            "nullable": true,
             "type": "string"
           },
           "hasMultipleVersions": {
@@ -19947,6 +21017,9 @@
         ]
       },
       "ProcessDefinitionInstanceVersionStatisticsQueryResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -19985,6 +21058,7 @@
           },
           "processDefinitionName": {
             "description": "The name of the process definition.",
+            "nullable": true,
             "type": "string"
           },
           "tenantId": {
@@ -20049,10 +21123,10 @@
         "description": "Instructions for creating a process instance. The process definition can be specified\neither by id or by key.\n",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/ProcessInstanceCreationInstructionById"
+            "$ref": "#/components/schemas/ProcessInstanceCreationInstructionByKey"
           },
           {
-            "$ref": "#/components/schemas/ProcessInstanceCreationInstructionByKey"
+            "$ref": "#/components/schemas/ProcessInstanceCreationInstructionById"
           }
         ]
       },
@@ -20084,7 +21158,7 @@
             "additionalProperties": true
           },
           "tenantId": {
-            "description": "The tenant id of the process definition.",
+            "description": "The tenant id of the process definition.\nIf multi-tenancy is enabled, provide the tenant id of the process definition to start a\nprocess instance of. If multi-tenancy is disabled, don't provide this parameter.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/TenantId"
@@ -20109,7 +21183,7 @@
             }
           },
           "awaitCompletion": {
-            "description": "Wait for the process instance to complete. If the process instance completion does\nnot occur within the requestTimeout, the request will be closed. This can lead to a 504\nresponse status. Disabled by default.\n",
+            "description": "Wait for the process instance to complete. If the process instance does not complete\nwithin the request timeout limit, a 504 response status will be returned. The process\ninstance will continue to run in the background regardless of the timeout. Disabled by\ndefault.\n",
             "type": "boolean",
             "default": false
           },
@@ -20129,6 +21203,9 @@
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
+          },
+          "businessId": {
+            "$ref": "#/components/schemas/BusinessId"
           }
         }
       },
@@ -20155,7 +21232,7 @@
             "default": -1
           },
           "variables": {
-            "description": "JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n",
+            "description": "Set of variables as JSON object to instantiate in the root variable scope of the process\ninstance. Can include nested complex objects.\n",
             "type": "object",
             "additionalProperties": true
           },
@@ -20174,7 +21251,7 @@
             }
           },
           "tenantId": {
-            "description": "The tenant id of the process definition.",
+            "description": "The tenant id of the process definition.\nIf multi-tenancy is enabled, provide the tenant id of the process definition to start a\nprocess instance of. If multi-tenancy is disabled, don't provide this parameter.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/TenantId"
@@ -20185,7 +21262,7 @@
             "$ref": "#/components/schemas/OperationReference"
           },
           "awaitCompletion": {
-            "description": "Wait for the process instance to complete. If the process instance completion does\nnot occur within the requestTimeout, the request will be closed. This can lead to a 504\nresponse status. Disabled by default.\n",
+            "description": "Wait for the process instance to complete. If the process instance does not complete\nwithin the request timeout limit, a 504 response status will be returned. The process\ninstance will continue to run in the background regardless of the timeout. Disabled by\ndefault.\n",
             "type": "boolean",
             "default": false
           },
@@ -20205,6 +21282,9 @@
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
+          },
+          "businessId": {
+            "$ref": "#/components/schemas/BusinessId"
           }
         }
       },
@@ -20271,7 +21351,8 @@
           "processDefinitionVersion",
           "tenantId",
           "variables",
-          "processInstanceKey"
+          "processInstanceKey",
+          "tags"
         ],
         "type": "object",
         "properties": {
@@ -20322,6 +21403,15 @@
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
+          },
+          "businessId": {
+            "nullable": true,
+            "description": "Business id as provided on creation.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
           }
         }
       },
@@ -20625,12 +21715,19 @@
           "processDefinitionId",
           "processDefinitionName",
           "processDefinitionVersion",
+          "processDefinitionVersionTag",
           "startDate",
+          "endDate",
           "state",
           "hasIncident",
           "tenantId",
           "processInstanceKey",
-          "processDefinitionKey"
+          "processDefinitionKey",
+          "parentProcessInstanceKey",
+          "parentElementInstanceKey",
+          "rootProcessInstanceKey",
+          "tags",
+          "businessId"
         ],
         "properties": {
           "processDefinitionId": {
@@ -20638,21 +21735,27 @@
           },
           "processDefinitionName": {
             "type": "string",
+            "nullable": true,
             "description": "The process definition name."
           },
           "processDefinitionVersion": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "description": "The process definition version."
           },
           "processDefinitionVersionTag": {
-            "type": "string",
-            "description": "The process definition version tag."
+            "description": "The process definition version tag.",
+            "nullable": true,
+            "type": "string"
           },
           "startDate": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "The start time of the process instance."
           },
           "endDate": {
+            "description": "The completion or termination time of the process instance.",
+            "nullable": true,
             "type": "string",
             "format": "date-time"
           },
@@ -20683,26 +21786,43 @@
             "description": "The process definition key."
           },
           "parentProcessInstanceKey": {
+            "description": "The parent process instance key.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/ProcessInstanceKey"
               }
-            ],
-            "description": "The parent process instance key."
+            ]
           },
           "parentElementInstanceKey": {
+            "description": "The parent element instance key.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/ElementInstanceKey"
               }
-            ],
-            "description": "The parent element instance key."
+            ]
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
+          },
+          "businessId": {
+            "description": "The business id associated with this process instance.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
           }
         }
       },
@@ -20758,6 +21878,9 @@
       },
       "ProcessInstanceSequenceFlowsQueryResult": {
         "description": "Process instance sequence flows query response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "properties": {
           "items": {
@@ -20772,6 +21895,9 @@
       "ProcessInstanceSequenceFlowResult": {
         "description": "Process instance sequence flow result.",
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey"
+        ],
         "properties": {
           "sequenceFlowId": {
             "type": "string",
@@ -20786,7 +21912,13 @@
             "description": "The key of this process instance."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "processDefinitionKey": {
             "allOf": [
@@ -20819,6 +21951,9 @@
       },
       "ProcessInstanceElementStatisticsQueryResult": {
         "description": "Process instance element statistics query response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "properties": {
           "items": {
@@ -20936,11 +22071,7 @@
           },
           "ancestorElementInstanceKey": {
             "description": "The key of the ancestor scope the element instance should be created in.\nSet to -1 to create the new element instance within an existing element instance of the\nflow scope. If multiple instances of the target element's flow scope exist, choose one\nspecifically with this property by providing its key.\n",
-            "oneOf": [
-              {
-                "type": "string",
-                "default": "-1"
-              },
+            "allOf": [
               {
                 "$ref": "#/components/schemas/ElementInstanceKey"
               }
@@ -21101,10 +22232,6 @@
           "ancestorElementInstanceKey": {
             "description": "The key of the ancestor scope the element instance should be created in.\nSet to -1 to create the new element instance within an existing element instance of the\nflow scope. If multiple instances of the target element's flow scope exist, choose one\nspecifically with this property by providing its key.\n",
             "oneOf": [
-              {
-                "type": "string",
-                "default": "-1"
-              },
               {
                 "$ref": "#/components/schemas/ElementInstanceKey"
               }
@@ -21400,6 +22527,9 @@
       },
       "RoleSearchQueryResult": {
         "description": "Role search response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -21426,6 +22556,9 @@
       },
       "RoleUserSearchResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -21487,6 +22620,9 @@
       },
       "RoleClientSearchResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -21548,6 +22684,9 @@
       },
       "RoleGroupSearchResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -21576,6 +22715,26 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/RoleGroupSearchQuerySortRequest"
+            }
+          }
+        }
+      },
+      "RoleMappingRuleSearchResult": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching mapping rules.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MappingRuleResult"
             }
           }
         }
@@ -21754,6 +22913,7 @@
           },
           "startCursor": {
             "description": "The cursor value for getting the previous page of results. Use this in the `before` field of an ensuing request.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/StartCursor"
@@ -21762,16 +22922,13 @@
           },
           "endCursor": {
             "description": "The cursor value for getting the next page of results. Use this in the `after` field of an ensuing request.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/EndCursor"
               }
             ]
           }
-        },
-        "example": {
-          "totalItems": 1,
-          "hasMoreTotalItems": false
         }
       },
       "SignalBroadcastRequest": {
@@ -21841,6 +22998,9 @@
         "type": "string"
       },
       "UsageMetricsResponse": {
+        "required": [
+          "tenants"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -22049,6 +23209,9 @@
       },
       "TenantSearchQueryResult": {
         "description": "Tenant search response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -22074,6 +23237,9 @@
         }
       },
       "TenantUserSearchResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -22136,6 +23302,9 @@
         }
       },
       "TenantClientSearchResult": {
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -22199,6 +23368,9 @@
       },
       "TenantGroupSearchResult": {
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -22228,6 +23400,46 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TenantGroupSearchQuerySortRequest"
+            }
+          }
+        }
+      },
+      "TenantRoleSearchResult": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching roles.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleResult"
+            }
+          }
+        }
+      },
+      "TenantMappingRuleSearchResult": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching mapping rules.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MappingRuleResult"
             }
           }
         }
@@ -22411,12 +23623,14 @@
           },
           "processInstanceVariables": {
             "type": "array",
+            "description": "The variables of the process instance.",
             "items": {
               "$ref": "#/components/schemas/VariableValueFilterProperty"
             }
           },
           "localVariables": {
             "type": "array",
+            "description": "The local variables of the user task.",
             "items": {
               "$ref": "#/components/schemas/VariableValueFilterProperty"
             }
@@ -22460,6 +23674,9 @@
       },
       "UserTaskSearchQueryResult": {
         "description": "User task search query response.",
+        "required": [
+          "items"
+        ],
         "type": "object",
         "allOf": [
           {
@@ -22478,6 +23695,19 @@
       },
       "UserTaskResult": {
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey",
+          "candidateGroups",
+          "candidateUsers",
+          "customHeaders",
+          "tags",
+          "assignee",
+          "completionDate",
+          "dueDate",
+          "externalFormReference",
+          "followUpDate",
+          "formKey"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -22487,6 +23717,7 @@
             "$ref": "#/components/schemas/UserTaskStateEnum"
           },
           "assignee": {
+            "nullable": true,
             "description": "The assignee of the user task.",
             "type": "string"
           },
@@ -22526,26 +23757,30 @@
             "format": "date-time"
           },
           "completionDate": {
-            "type": "string",
             "description": "The completion date of a user task.",
+            "nullable": true,
+            "type": "string",
             "format": "date-time"
           },
           "followUpDate": {
-            "type": "string",
             "description": "The follow date of a user task.",
+            "nullable": true,
+            "type": "string",
             "format": "date-time"
           },
           "dueDate": {
-            "type": "string",
             "description": "The due date of a user task.",
+            "nullable": true,
+            "type": "string",
             "format": "date-time"
           },
           "tenantId": {
             "$ref": "#/components/schemas/TenantId"
           },
           "externalFormReference": {
-            "type": "string",
-            "description": "The external form reference."
+            "description": "The external form reference.",
+            "nullable": true,
+            "type": "string"
           },
           "processDefinitionVersion": {
             "type": "integer",
@@ -22584,7 +23819,8 @@
           },
           "processName": {
             "type": "string",
-            "description": "The name of the process definition."
+            "description": "The name of the process definition.\nThis is `null` if the process has no name defined.\n",
+            "nullable": true
           },
           "processDefinitionKey": {
             "allOf": [
@@ -22603,15 +23839,22 @@
             "description": "The key of the process instance."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           },
           "formKey": {
+            "description": "The key of the form.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/FormKey"
               }
-            ],
-            "description": "The key of the form."
+            ]
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
@@ -22788,7 +24031,7 @@
         }
       },
       "UserTaskStateEnum": {
-        "description": "The state of the user task.",
+        "description": "The state of the user task.\nNote: FAILED state is only for legacy job-worker-based tasks.\n",
         "type": "string",
         "enum": [
           "CREATING",
@@ -23164,7 +24407,7 @@
             ]
           },
           "value": {
-            "description": "The value of the variable.",
+            "description": "The value of the variable.\nVariable values in filters need to be in serialized JSON format. For example, a variable\nwith string value `myValue` can be found with the filter value `\"myValue\"`. Consider\nappropriate escaping for special characters in JSON strings when constructing filter values.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/StringFilterProperty"
@@ -23192,7 +24435,7 @@
             ]
           },
           "scopeKey": {
-            "description": "The key of the scope of this variable.",
+            "description": "The key of the scope that defines where this variable is directly defined. This can be a\nprocess instance key (for process-level variables) or an element instance key (for local\nvariables scoped to tasks, subprocesses, gateways, events, etc.). Use this filter to\nfind variables directly defined in specific scopes. Note that this does not include\nvariables from parent scopes that would be visible through the scope hierarchy.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ScopeKeyFilterProperty"
@@ -23212,6 +24455,9 @@
       "VariableSearchQueryResult": {
         "description": "Variable search query response.",
         "type": "object",
+        "required": [
+          "items"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/SearchQueryResponse"
@@ -23264,6 +24510,9 @@
       "VariableResultBase": {
         "description": "Variable response item.",
         "type": "object",
+        "required": [
+          "rootProcessInstanceKey"
+        ],
         "properties": {
           "name": {
             "description": "Name of this variable.",
@@ -23291,7 +24540,7 @@
                 "$ref": "#/components/schemas/ScopeKey"
               }
             ],
-            "description": "The key of the scope of this variable."
+            "description": "The key of the scope where this variable is directly defined. For process-level\nvariables, this is the process instance key. For local variables, this is the key of the\nspecific element instance (task, subprocess, gateway, event, etc.) where the variable is\ndirectly defined.\n"
           },
           "processInstanceKey": {
             "allOf": [
@@ -23302,7 +24551,13 @@
             "description": "The key of the process instance of this variable."
           },
           "rootProcessInstanceKey": {
-            "$ref": "#/components/schemas/RootProcessInstanceKey"
+            "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKey"
+              }
+            ]
           }
         }
       },
@@ -23319,7 +24574,7 @@
                 "$ref": "#/components/schemas/StringFilterProperty"
               }
             ],
-            "description": "The value of the variable."
+            "description": "The value of the variable.\nVariable values in filters need to be in serialized JSON format. For example, a variable\nwith string value `myValue` can be found with the filter value `\"myValue\"`. Consider\nappropriate escaping for special characters in JSON strings when constructing filter values.\n"
           }
         },
         "required": [
@@ -23337,7 +24592,7 @@
             "type": "object"
           },
           "local": {
-            "description": "If set to true, the variables are merged strictly into the local scope (as specified by the `elementInstanceKey`).\nOtherwise, the variables are propagated to upper scopes and set at the outermost one.\nLet’s consider the following example:\nThere are two scopes '1' and '2'.\nScope '1' is the parent scope of '2'. The effective variables of the scopes are:\n1 => { \"foo\" : 2 }\n2 => { \"bar\" : 1 }\nAn update request with elementInstanceKey as '2', variables { \"foo\" : 5 }, and local set\nto true leaves scope '1' unchanged and adjusts scope '2' to { \"bar\" : 1, \"foo\" 5 }.\nBy default, with local set to false, scope '1' will be { \"foo\": 5 }\nand scope '2' will be { \"bar\" : 1 }.\n",
+            "description": "If set to `true`, the variables are merged strictly into the local scope (as specified\nby the `elementInstanceKey`). Otherwise, the variables are propagated to upper scopes\nand set at the outermost one.\n\nLet's consider the following example:\nThere are two scopes '1' and '2'. Scope '1' is the parent scope of '2'. The effective\nvariables of the scopes are:\n1 => { \"foo\" : 2 }\n2 => { \"bar\" : 1 }\n\nAn update request with elementInstanceKey as '2', variables { \"foo\": 5 }, and local set\nto `true` leaves scope '1' unchanged and adjusts scope '2' to { \"bar\": 1, \"foo\": 5 }. By\ndefault, with local set to `false`, scope '1' will be { \"foo\": 5 } and scope '2' will be\n{ \"bar\": 1 }.",
             "type": "boolean",
             "default": false
           },
@@ -23486,6 +24741,26 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/ElementInstanceStateEnum"
+          }
+        ]
+      },
+      "GlobalListenerSourceExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GlobalListenerSourceEnum"
+          }
+        ]
+      },
+      "GlobalTaskListenerEventTypeExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/GlobalTaskListenerEventTypeEnum"
           }
         ]
       },
