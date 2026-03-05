@@ -1,3 +1,10 @@
+# [8.9.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.9...v8.9.0-alpha.10) (2026-03-05)
+
+
+### Features
+
+* tune backpressure ([b64c6f1](https://github.com/camunda/orchestration-cluster-api-js/commit/b64c6f14a5b4755881cb1c79c804a5cd8403145f))
+
 # [8.9.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.8...v8.9.0-alpha.9) (2026-03-05)
 
 ### Features
