@@ -1,3 +1,11 @@
+# [8.9.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.8...v8.9.0-alpha.9) (2026-03-05)
+
+
+### Features
+
+* add startup jitter for workers ([95b431d](https://github.com/camunda/orchestration-cluster-api-js/commit/95b431d97fc42aaddfde0b744a8ad94bf82ce401))
+* regenerate from stable/8.9 ([390a04e](https://github.com/camunda/orchestration-cluster-api-js/commit/390a04e6ea06b462ffd6d77d4ed10a3bf31dffda))
+
 # [8.9.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.7...v8.9.0-alpha.8) (2026-03-02)
 
 ### Features
