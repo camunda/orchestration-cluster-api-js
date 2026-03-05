@@ -705,8 +705,8 @@ export type BatchOperationCreatedResult = {
     /**
      * Key of the batch operation.
      */
-    batchOperationKey?: BatchOperationKey;
-    batchOperationType?: BatchOperationTypeEnum;
+    batchOperationKey: BatchOperationKey;
+    batchOperationType: BatchOperationTypeEnum;
 };
 
 export type BatchOperationSearchQuerySortRequest = {
@@ -771,9 +771,9 @@ export type BatchOperationResponse = {
     /**
      * Key or (Operate Legacy ID = UUID) of the batch operation.
      */
-    batchOperationKey?: BatchOperationKey;
-    state?: BatchOperationStateEnum;
-    batchOperationType?: BatchOperationTypeEnum;
+    batchOperationKey: BatchOperationKey;
+    state: BatchOperationStateEnum;
+    batchOperationType: BatchOperationTypeEnum;
     /**
      * The start date of the batch operation.
      * This is `null` if the batch operation has not yet started.
@@ -786,23 +786,29 @@ export type BatchOperationResponse = {
      *
      */
     endDate?: string | null;
-    actorType?: AuditLogActorTypeEnum;
+    /**
+     * The type of the actor who performed the operation.
+     * This is `null` if the batch operation was created before 8.9,
+     * or if the actor information is not available.
+     *
+     */
+    actorType: AuditLogActorTypeEnum | null;
     /**
      * The ID of the actor who performed the operation. Available for batch operations created since 8.9.
      */
-    actorId?: string;
+    actorId: string | null;
     /**
      * The total number of items contained in this batch operation.
      */
-    operationsTotalCount?: number;
+    operationsTotalCount: number;
     /**
      * The number of items which failed during execution of the batch operation. (e.g. because they are rejected by the Zeebe engine).
      */
-    operationsFailedCount?: number;
+    operationsFailedCount: number;
     /**
      * The number of successfully completed tasks.
      */
-    operationsCompletedCount?: number;
+    operationsCompletedCount: number;
     /**
      * The errors that occurred per partition during the batch operation.
      */
@@ -1503,39 +1509,39 @@ export type DecisionDefinitionResult = {
     /**
      * The DMN ID of the decision definition.
      */
-    decisionDefinitionId?: DecisionDefinitionId;
-    /**
-     * The DMN name of the decision definition.
-     */
-    name?: string;
-    /**
-     * The assigned version of the decision definition.
-     */
-    version?: number;
-    /**
-     * the DMN ID of the decision requirements graph that the decision definition is part of.
-     */
-    decisionRequirementsId?: string;
-    /**
-     * The tenant ID of the decision definition.
-     */
-    tenantId?: TenantId;
+    decisionDefinitionId: DecisionDefinitionId;
     /**
      * The assigned key, which acts as a unique identifier for this decision definition.
      */
-    decisionDefinitionKey?: DecisionDefinitionKey;
+    decisionDefinitionKey: DecisionDefinitionKey;
+    /**
+     * the DMN ID of the decision requirements graph that the decision definition is part of.
+     */
+    decisionRequirementsId: string;
     /**
      * The assigned key of the decision requirements graph that the decision definition is part of.
      */
-    decisionRequirementsKey?: DecisionRequirementsKey;
+    decisionRequirementsKey: DecisionRequirementsKey;
     /**
      * The DMN name of the decision requirements that the decision definition is part of.
      */
-    decisionRequirementsName?: string;
+    decisionRequirementsName: string;
     /**
      * The assigned version of the decision requirements that the decision definition is part of.
      */
-    decisionRequirementsVersion?: number;
+    decisionRequirementsVersion: number;
+    /**
+     * The DMN name of the decision definition.
+     */
+    name: string;
+    /**
+     * The tenant ID of the decision definition.
+     */
+    tenantId: TenantId;
+    /**
+     * The assigned version of the decision definition.
+     */
+    version: number;
 };
 
 export type DecisionEvaluationInstruction = DecisionEvaluationById | DecisionEvaluationByKey;
@@ -1586,6 +1592,10 @@ export type EvaluateDecisionResult = {
      */
     decisionDefinitionId: DecisionDefinitionId;
     /**
+     * The unique key identifying the decision which was evaluated.
+     */
+    decisionDefinitionKey: DecisionDefinitionKey;
+    /**
      * The name of the decision which was evaluated.
      */
     decisionDefinitionName: string;
@@ -1594,14 +1604,27 @@ export type EvaluateDecisionResult = {
      */
     decisionDefinitionVersion: number;
     /**
+     * The unique key identifying this decision evaluation.
+     */
+    decisionEvaluationKey: DecisionEvaluationKey;
+    /**
+     * Deprecated, please refer to `decisionEvaluationKey`.
+     *
+     * @deprecated
+     */
+    decisionInstanceKey: DecisionInstanceKey;
+    /**
      * The ID of the decision requirements graph that the decision which was evaluated is part of.
      */
     decisionRequirementsId: string;
     /**
-     * JSON document that will instantiate the result of the decision which was evaluated.
-     *
+     * The unique key identifying the decision requirements graph that the decision which was evaluated is part of.
      */
-    output: string;
+    decisionRequirementsKey: DecisionRequirementsKey;
+    /**
+     * Decisions that were evaluated within the requested decision evaluation.
+     */
+    evaluatedDecisions: Array<EvaluatedDecisionResult>;
     /**
      * The ID of the decision which failed during evaluation.
      */
@@ -1611,31 +1634,14 @@ export type EvaluateDecisionResult = {
      */
     failureMessage: string | null;
     /**
+     * JSON document that will instantiate the result of the decision which was evaluated.
+     *
+     */
+    output: string;
+    /**
      * The tenant ID of the evaluated decision.
      */
     tenantId: TenantId;
-    /**
-     * The unique key identifying the decision which was evaluated.
-     */
-    decisionDefinitionKey: DecisionDefinitionKey;
-    /**
-     * The unique key identifying the decision requirements graph that the decision which was evaluated is part of.
-     */
-    decisionRequirementsKey: DecisionRequirementsKey;
-    /**
-     * Deprecated, please refer to `decisionEvaluationKey`.
-     *
-     * @deprecated
-     */
-    decisionInstanceKey?: DecisionInstanceKey;
-    /**
-     * The unique key identifying this decision evaluation.
-     */
-    decisionEvaluationKey: DecisionEvaluationKey;
-    /**
-     * Decisions that were evaluated within the requested decision evaluation.
-     */
-    evaluatedDecisions: Array<EvaluatedDecisionResult>;
 };
 
 /**
@@ -1926,12 +1932,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -2369,20 +2375,20 @@ export type DocumentReference = {
     /**
      * Document discriminator. Always set to "camunda".
      */
-    'camunda.document.type'?: 'camunda';
+    'camunda.document.type': 'camunda';
     /**
      * The ID of the document store.
      */
-    storeId?: string;
+    storeId: string;
     /**
      * The ID of the document.
      */
-    documentId?: DocumentId;
+    documentId: DocumentId;
     /**
      * The hash of the document.
      */
-    contentHash?: string;
-    metadata?: DocumentMetadata;
+    contentHash: string | null;
+    metadata: DocumentMetadataResponse;
 };
 
 export type DocumentCreationFailureDetail = {
@@ -2446,6 +2452,42 @@ export type DocumentMetadata = {
     /**
      * Custom properties of the document.
      */
+    customProperties?: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * Information about the document that is returned in responses.
+ */
+export type DocumentMetadataResponse = {
+    /**
+     * The content type of the document.
+     */
+    contentType: string;
+    /**
+     * The name of the file.
+     */
+    fileName: string;
+    /**
+     * The date and time when the document expires.
+     */
+    expiresAt: string | null;
+    /**
+     * The size of the document in bytes.
+     */
+    size: number;
+    /**
+     * The ID of the process definition that created the document.
+     */
+    processDefinitionId: ProcessDefinitionId | null;
+    /**
+     * The key of the process instance that created the document.
+     */
+    processInstanceKey: ProcessInstanceKey | null;
+    /**
+     * Custom properties of the document.
+     */
     customProperties: {
         [key: string]: unknown;
     };
@@ -2462,11 +2504,11 @@ export type DocumentLink = {
     /**
      * The link to the document.
      */
-    url?: string;
+    url: string;
     /**
      * The date and time when the link expires.
      */
-    expiresAt?: string;
+    expiresAt: string;
 };
 
 /**
@@ -2695,9 +2737,9 @@ export type ExpressionEvaluationRequest = {
      */
     tenantId?: string;
     /**
-     * Optional context variables for expression evaluation. These variables are only used for the current evaluation and do not persist beyond it.
+     * Optional variables for expression evaluation. These variables are only used for the current evaluation and do not persist beyond it.
      */
-    context?: {
+    variables?: {
         [key: string]: unknown;
     } | null;
 };
@@ -2938,8 +2980,8 @@ export type CreateGlobalTaskListenerRequest = GlobalTaskListenerBase & {
 export type UpdateGlobalTaskListenerRequest = GlobalTaskListenerBase;
 
 export type GlobalTaskListenerResult = GlobalTaskListenerBase & {
-    id?: GlobalListenerId;
-    source?: GlobalListenerSourceEnum;
+    id: GlobalListenerId;
+    source: GlobalListenerSourceEnum;
     eventTypes: GlobalTaskListenerEventTypes;
 };
 
@@ -3454,7 +3496,7 @@ export type AdvancedIncidentStateFilter = {
 /**
  * Incident states with a defined set of values.
  */
-export type IncidentStateEnum = 'ACTIVE' | 'MIGRATED' | 'PENDING' | 'RESOLVED';
+export type IncidentStateEnum = 'ACTIVE' | 'MIGRATED' | 'PENDING' | 'RESOLVED' | 'UNKNOWN';
 
 export type IncidentSearchQuerySortRequest = {
     /**
@@ -3726,61 +3768,6 @@ export type JobTypeStatisticsItem = {
      * Number of distinct workers observed for this job type.
      */
     workers: number;
-};
-
-/**
- * Job worker statistics query.
- */
-export type JobWorkerStatisticsQuery = {
-    filter: JobWorkerStatisticsFilter;
-    /**
-     * Search cursor pagination.
-     */
-    page?: CursorForwardPagination;
-};
-
-/**
- * Job worker statistics search filter.
- */
-export type JobWorkerStatisticsFilter = {
-    /**
-     * Start of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    from: string;
-    /**
-     * End of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    to: string;
-    /**
-     * Job type to return worker metrics for.
-     */
-    jobType: string;
-};
-
-/**
- * Job worker statistics query result.
- */
-export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
-    /**
-     * The list of per-worker statistics items.
-     */
-    items: Array<JobWorkerStatisticsItem>;
-    page: SearchQueryPageResponse;
-};
-
-/**
- * Statistics for a single worker within a job type.
- */
-export type JobWorkerStatisticsItem = {
-    /**
-     * The worker identifier.
-     */
-    worker: string;
-    created: StatusMetric;
-    completed: StatusMetric;
-    failed: StatusMetric;
 };
 
 export type JobActivationRequest = {
@@ -5130,15 +5117,15 @@ export type MessageCorrelationResult = {
     /**
      * The tenant ID of the correlated message
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The key of the correlated message.
      */
-    messageKey?: MessageKey;
+    messageKey: MessageKey;
     /**
      * The key of the first process instance the message correlated with
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
 };
 
 export type MessagePublicationRequest = {
@@ -5179,11 +5166,11 @@ export type MessagePublicationResult = {
     /**
      * The tenant ID of the message.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The key of the published message.
      */
-    messageKey?: MessageKey;
+    messageKey: MessageKey;
 };
 
 export type MessageSubscriptionSearchQueryResult = SearchQueryResponse & {
@@ -11886,43 +11873,6 @@ export type GetJobTypeStatisticsResponses = {
 
 export type GetJobTypeStatisticsResponse = GetJobTypeStatisticsResponses[keyof GetJobTypeStatisticsResponses];
 
-export type GetJobWorkerStatisticsData = {
-    body: JobWorkerStatisticsQuery;
-    path?: never;
-    query?: never;
-    url: '/jobs/statistics/by-workers';
-};
-
-export type GetJobWorkerStatisticsErrors = {
-    /**
-     * The provided data is not valid.
-     */
-    400: ProblemDetail;
-    /**
-     * The request lacks valid authentication credentials.
-     */
-    401: ProblemDetail;
-    /**
-     * Forbidden. The request is not allowed.
-     */
-    403: ProblemDetail;
-    /**
-     * An internal error occurred while processing the request.
-     */
-    500: ProblemDetail;
-};
-
-export type GetJobWorkerStatisticsError = GetJobWorkerStatisticsErrors[keyof GetJobWorkerStatisticsErrors];
-
-export type GetJobWorkerStatisticsResponses = {
-    /**
-     * The job worker statistics result.
-     */
-    200: JobWorkerStatisticsQueryResult;
-};
-
-export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
-
 export type GetLicenseData = {
     body?: never;
     path?: never;
@@ -16165,7 +16115,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:13089929f644c23022c327c49c96fd6e0092384cd04ad15155636ce0230a8205
+// specHash=sha256:f0c52e59b3b2e356dbf84097758f8f6fe3c4d623d5393ac5b8f632deb64a53ec
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

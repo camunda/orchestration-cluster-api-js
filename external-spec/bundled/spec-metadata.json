@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:13089929f644c23022c327c49c96fd6e0092384cd04ad15155636ce0230a8205",
+  "specHash": "sha256:f0c52e59b3b2e356dbf84097758f8f6fe3c4d623d5393ac5b8f632deb64a53ec",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -2145,14 +2145,6 @@
       ]
     },
     {
-      "operationId": "getJobWorkerStatistics",
-      "path": "/jobs/statistics/by-workers",
-      "method": "post",
-      "tags": [
-        "Job"
-      ]
-    },
-    {
       "operationId": "searchMappingRule",
       "path": "/mapping-rules/search",
       "method": "post",
@@ -4141,24 +4133,6 @@
       "optionalTenantIdInBody": false
     },
     {
-      "operationId": "getJobWorkerStatistics",
-      "path": "/jobs/statistics/by-workers",
-      "method": "post",
-      "tags": [
-        "Job"
-      ],
-      "summary": "Get job statistics by worker",
-      "description": "Returns aggregated metrics per worker for the given jobType.\n",
-      "eventuallyConsistent": true,
-      "hasRequestBody": true,
-      "requestBodyUnion": false,
-      "bodyOnly": true,
-      "pathParams": [],
-      "queryParams": [],
-      "requestBodyUnionRefs": [],
-      "optionalTenantIdInBody": false
-    },
-    {
       "operationId": "getLicense",
       "path": "/license",
       "method": "get",
@@ -6047,49 +6021,10 @@
       "optionalTenantIdInBody": false
     }
   ],
-  "deprecatedEnumMembers": [
-    {
-      "schemaName": "DecisionDefinitionTypeEnum",
-      "enumValues": [
-        "DECISION_TABLE",
-        "LITERAL_EXPRESSION",
-        "UNSPECIFIED",
-        "UNKNOWN"
-      ],
-      "deprecatedMembers": [
-        {
-          "name": "UNSPECIFIED",
-          "deprecatedInVersion": "8.9.0"
-        }
-      ],
-      "stableId": "decision-definition-type-enum"
-    },
-    {
-      "schemaName": "DecisionInstanceStateEnum",
-      "enumValues": [
-        "EVALUATED",
-        "FAILED",
-        "UNSPECIFIED",
-        "UNKNOWN"
-      ],
-      "deprecatedMembers": [
-        {
-          "name": "UNSPECIFIED",
-          "deprecatedInVersion": "8.9.0"
-        },
-        {
-          "name": "UNKNOWN",
-          "deprecatedInVersion": "8.9.0"
-        }
-      ],
-      "stableId": "decision-instance-state-enum"
-    }
-  ],
   "integrity": {
     "totalSemanticKeys": 35,
     "totalUnions": 51,
-    "totalOperations": 179,
-    "totalEventuallyConsistent": 78,
-    "totalDeprecatedEnumSchemas": 2
+    "totalOperations": 178,
+    "totalEventuallyConsistent": 77
   }
 }

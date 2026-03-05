@@ -582,12 +582,12 @@ export const zDocumentLinkRequest = z.object({
 });
 
 export const zDocumentLink = z.object({
-    url: z.optional(z.string().register(z.globalRegistry, {
+    url: z.string().register(z.globalRegistry, {
         description: 'The link to the document.'
-    })),
-    expiresAt: z.optional(z.iso.datetime().register(z.globalRegistry, {
+    }),
+    expiresAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'The date and time when the link expires.'
-    }))
+    })
 });
 
 /**
@@ -615,7 +615,7 @@ export const zExpressionEvaluationRequest = z.object({
     tenantId: z.optional(z.string().register(z.globalRegistry, {
         description: 'Required when the expression references tenant-scoped cluster variables'
     })),
-    context: z.optional(z.union([
+    variables: z.optional(z.union([
         z.record(z.string(), z.unknown()),
         z.null()
     ]))
@@ -1243,8 +1243,8 @@ export const zCreateGlobalTaskListenerRequest = zGlobalTaskListenerBase.and(z.ob
 }));
 
 export const zGlobalTaskListenerResult = zGlobalTaskListenerBase.and(z.object({
-    id: z.optional(zGlobalListenerId),
-    source: z.optional(zGlobalListenerSourceEnum),
+    id: zGlobalListenerId,
+    source: zGlobalListenerSourceEnum,
     eventTypes: zGlobalTaskListenerEventTypes
 }));
 
@@ -1356,7 +1356,8 @@ export const zIncidentStateEnum = z.enum([
     'ACTIVE',
     'MIGRATED',
     'PENDING',
-    'RESOLVED'
+    'RESOLVED',
+    'UNKNOWN'
 ]).register(z.globalRegistry, {
     description: 'Incident states with a defined set of values.'
 });
@@ -1465,37 +1466,6 @@ export const zJobTypeStatisticsItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Statistics for a single job type.'
-});
-
-/**
- * Job worker statistics search filter.
- */
-export const zJobWorkerStatisticsFilter = z.object({
-    from: z.iso.datetime().register(z.globalRegistry, {
-        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    to: z.iso.datetime().register(z.globalRegistry, {
-        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    jobType: z.string().register(z.globalRegistry, {
-        description: 'Job type to return worker metrics for.'
-    })
-}).register(z.globalRegistry, {
-    description: 'Job worker statistics search filter.'
-});
-
-/**
- * Statistics for a single worker within a job type.
- */
-export const zJobWorkerStatisticsItem = z.object({
-    worker: z.string().register(z.globalRegistry, {
-        description: 'The worker identifier.'
-    }),
-    created: zStatusMetric,
-    completed: zStatusMetric,
-    failed: zStatusMetric
-}).register(z.globalRegistry, {
-    description: 'Statistics for a single worker within a job type.'
 });
 
 export const zJobFailRequest = z.object({
@@ -1893,27 +1863,60 @@ export const zDocumentMetadata = z.object({
     })),
     processDefinitionId: z.optional(zProcessDefinitionId),
     processInstanceKey: z.optional(zProcessInstanceKey),
-    customProperties: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    customProperties: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'Custom properties of the document.'
-    })
+    }))
 }).register(z.globalRegistry, {
     description: 'Information about the document.'
 });
 
+/**
+ * Information about the document that is returned in responses.
+ */
+export const zDocumentMetadataResponse = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type of the document.'
+    }),
+    fileName: z.string().register(z.globalRegistry, {
+        description: 'The name of the file.'
+    }),
+    expiresAt: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
+    size: z.coerce.bigint().register(z.globalRegistry, {
+        description: 'The size of the document in bytes.'
+    }),
+    processDefinitionId: z.union([
+        zProcessDefinitionId,
+        z.null()
+    ]),
+    processInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
+    customProperties: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'Custom properties of the document.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Information about the document that is returned in responses.'
+});
+
 export const zDocumentReference = z.object({
-    'camunda.document.type': z.optional(z.enum([
+    'camunda.document.type': z.enum([
         'camunda'
     ]).register(z.globalRegistry, {
         description: 'Document discriminator. Always set to "camunda".'
-    })),
-    storeId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    storeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the document store.'
-    })),
-    documentId: z.optional(zDocumentId),
-    contentHash: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The hash of the document.'
-    })),
-    metadata: z.optional(zDocumentMetadata)
+    }),
+    documentId: zDocumentId,
+    contentHash: z.union([
+        z.string(),
+        z.null()
+    ]),
+    metadata: zDocumentMetadataResponse
 });
 
 export const zDocumentCreationBatchResponse = z.object({
@@ -2436,25 +2439,25 @@ export const zDecisionDefinitionFilter = z.object({
 });
 
 export const zDecisionDefinitionResult = z.object({
-    decisionDefinitionId: z.optional(zDecisionDefinitionId),
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The DMN name of the decision definition.'
-    })),
-    version: z.optional(z.int().register(z.globalRegistry, {
-        description: 'The assigned version of the decision definition.'
-    })),
-    decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
+    decisionDefinitionId: zDecisionDefinitionId,
+    decisionDefinitionKey: zDecisionDefinitionKey,
+    decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'the DMN ID of the decision requirements graph that the decision definition is part of.'
-    })),
-    tenantId: z.optional(zTenantId),
-    decisionDefinitionKey: z.optional(zDecisionDefinitionKey),
-    decisionRequirementsKey: z.optional(zDecisionRequirementsKey),
-    decisionRequirementsName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    decisionRequirementsKey: zDecisionRequirementsKey,
+    decisionRequirementsName: z.string().register(z.globalRegistry, {
         description: 'The DMN name of the decision requirements that the decision definition is part of.'
-    })),
-    decisionRequirementsVersion: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    decisionRequirementsVersion: z.int().register(z.globalRegistry, {
         description: 'The assigned version of the decision requirements that the decision definition is part of.'
-    }))
+    }),
+    name: z.string().register(z.globalRegistry, {
+        description: 'The DMN name of the decision definition.'
+    }),
+    tenantId: zTenantId,
+    version: z.int().register(z.globalRegistry, {
+        description: 'The assigned version of the decision definition.'
+    })
 });
 
 /**
@@ -2644,17 +2647,21 @@ export const zDecisionInstanceKey = zLongKey;
 
 export const zEvaluateDecisionResult = z.object({
     decisionDefinitionId: zDecisionDefinitionId,
+    decisionDefinitionKey: zDecisionDefinitionKey,
     decisionDefinitionName: z.string().register(z.globalRegistry, {
         description: 'The name of the decision which was evaluated.'
     }),
     decisionDefinitionVersion: z.int().register(z.globalRegistry, {
         description: 'The version of the decision which was evaluated.'
     }),
+    decisionEvaluationKey: zDecisionEvaluationKey,
+    decisionInstanceKey: zDecisionInstanceKey,
     decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'The ID of the decision requirements graph that the decision which was evaluated is part of.'
     }),
-    output: z.string().register(z.globalRegistry, {
-        description: 'JSON document that will instantiate the result of the decision which was evaluated.\n'
+    decisionRequirementsKey: zDecisionRequirementsKey,
+    evaluatedDecisions: z.array(zEvaluatedDecisionResult).register(z.globalRegistry, {
+        description: 'Decisions that were evaluated within the requested decision evaluation.'
     }),
     failedDecisionDefinitionId: z.union([
         zDecisionDefinitionId,
@@ -2664,14 +2671,10 @@ export const zEvaluateDecisionResult = z.object({
         z.string(),
         z.null()
     ]),
-    tenantId: zTenantId,
-    decisionDefinitionKey: zDecisionDefinitionKey,
-    decisionRequirementsKey: zDecisionRequirementsKey,
-    decisionInstanceKey: z.optional(zDecisionInstanceKey),
-    decisionEvaluationKey: zDecisionEvaluationKey,
-    evaluatedDecisions: z.array(zEvaluatedDecisionResult).register(z.globalRegistry, {
-        description: 'Decisions that were evaluated within the requested decision evaluation.'
-    })
+    output: z.string().register(z.globalRegistry, {
+        description: 'JSON document that will instantiate the result of the decision which was evaluated.\n'
+    }),
+    tenantId: zTenantId
 });
 
 /**
@@ -2685,16 +2688,16 @@ export const zBatchOperationKey = z.string().register(z.globalRegistry, {
  * The created batch operation.
  */
 export const zBatchOperationCreatedResult = z.object({
-    batchOperationKey: z.optional(zBatchOperationKey),
-    batchOperationType: z.optional(zBatchOperationTypeEnum)
+    batchOperationKey: zBatchOperationKey,
+    batchOperationType: zBatchOperationTypeEnum
 }).register(z.globalRegistry, {
     description: 'The created batch operation.'
 });
 
 export const zBatchOperationResponse = z.object({
-    batchOperationKey: z.optional(zBatchOperationKey),
-    state: z.optional(zBatchOperationStateEnum),
-    batchOperationType: z.optional(zBatchOperationTypeEnum),
+    batchOperationKey: zBatchOperationKey,
+    state: zBatchOperationStateEnum,
+    batchOperationType: zBatchOperationTypeEnum,
     startDate: z.optional(z.union([
         z.iso.datetime(),
         z.null()
@@ -2703,19 +2706,23 @@ export const zBatchOperationResponse = z.object({
         z.iso.datetime(),
         z.null()
     ])),
-    actorType: z.optional(zAuditLogActorTypeEnum),
-    actorId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The ID of the actor who performed the operation. Available for batch operations created since 8.9.'
-    })),
-    operationsTotalCount: z.optional(z.int().register(z.globalRegistry, {
+    actorType: z.union([
+        zAuditLogActorTypeEnum,
+        z.null()
+    ]),
+    actorId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    operationsTotalCount: z.int().register(z.globalRegistry, {
         description: 'The total number of items contained in this batch operation.'
-    })),
-    operationsFailedCount: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    operationsFailedCount: z.int().register(z.globalRegistry, {
         description: 'The number of items which failed during execution of the batch operation. (e.g. because they are rejected by the Zeebe engine).'
-    })),
-    operationsCompletedCount: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    operationsCompletedCount: z.int().register(z.globalRegistry, {
         description: 'The number of successfully completed tasks.'
-    })),
+    }),
     errors: z.array(zBatchOperationError).register(z.globalRegistry, {
         description: 'The errors that occurred per partition during the batch operation.'
     })
@@ -3386,9 +3393,9 @@ export const zMessageKey = zLongKey;
  *
  */
 export const zMessageCorrelationResult = z.object({
-    tenantId: z.optional(zTenantId),
-    messageKey: z.optional(zMessageKey),
-    processInstanceKey: z.optional(zProcessInstanceKey)
+    tenantId: zTenantId,
+    messageKey: zMessageKey,
+    processInstanceKey: zProcessInstanceKey
 }).register(z.globalRegistry, {
     description: 'The message key of the correlated message, as well as the first process instance key it\ncorrelated with.\n'
 });
@@ -3397,8 +3404,8 @@ export const zMessageCorrelationResult = z.object({
  * The message key of the published message.
  */
 export const zMessagePublicationResult = z.object({
-    tenantId: z.optional(zTenantId),
-    messageKey: z.optional(zMessageKey)
+    tenantId: zTenantId,
+    messageKey: zMessageKey
 }).register(z.globalRegistry, {
     description: 'The message key of the published message.'
 });
@@ -4218,16 +4225,6 @@ export const zJobTypeStatisticsQuery = z.object({
 });
 
 /**
- * Job worker statistics query.
- */
-export const zJobWorkerStatisticsQuery = z.object({
-    filter: zJobWorkerStatisticsFilter,
-    page: z.optional(zCursorForwardPagination)
-}).register(z.globalRegistry, {
-    description: 'Job worker statistics query.'
-});
-
-/**
  * Cursor-based backward pagination
  */
 export const zCursorBackwardPagination = z.object({
@@ -4965,18 +4962,6 @@ export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     page: zSearchQueryPageResponse
 }).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
-}));
-
-/**
- * Job worker statistics query result.
- */
-export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
-        description: 'The list of per-worker statistics items.'
-    }),
-    page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
-    description: 'Job worker statistics query result.'
 }));
 
 /**
@@ -8214,17 +8199,6 @@ export const zGetJobTypeStatisticsData = z.object({
  * The job type statistics result.
  */
 export const zGetJobTypeStatisticsResponse = zJobTypeStatisticsQueryResult;
-
-export const zGetJobWorkerStatisticsData = z.object({
-    body: zJobWorkerStatisticsQuery,
-    path: z.optional(z.never()),
-    query: z.optional(z.never())
-});
-
-/**
- * The job worker statistics result.
- */
-export const zGetJobWorkerStatisticsResponse = zJobWorkerStatisticsQueryResult;
 
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),
