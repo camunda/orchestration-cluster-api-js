@@ -172,6 +172,21 @@ export const SCHEMA = {
     default: 3,
     doc: 'Consecutive backpressure events required to enter severe state.',
   },
+  CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS: {
+    type: 'int',
+    default: 1000,
+    doc: 'Maximum number of queued waiters before fail-fast rejection to prevent unbounded memory growth.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER: {
+    type: 'int',
+    default: 150,
+    doc: 'Percentage (integer) multiplicative growth factor for permits during healthy recovery (e.g. 150 => 1.5x). Applied each recovery interval once severity is healthy.',
+  },
+  CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS: {
+    type: 'int',
+    default: 30000,
+    doc: 'Sustained healthy period (ms) after which permits return to unlimited (no cap).',
+  },
   CAMUNDA_SDK_BACKPRESSURE_PROFILE: {
     type: 'enum',
     choices: ['BALANCED', 'CONSERVATIVE', 'AGGRESSIVE', 'LEGACY'] as const,

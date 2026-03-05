@@ -80,6 +80,9 @@ export interface CamundaConfig {
     decayQuietMs: number;
     floor: number;
     severeThreshold: number;
+    maxWaiters: number;
+    healthyRecoveryMultiplier: number;
+    unlimitedAfterHealthyMs: number;
   };
   oauth: {
     clientId?: string;
@@ -518,6 +521,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     quietMs: number;
     floor: number;
     severeThreshold: number;
+    maxWaiters: number;
+    healthyRecoveryMultiplier: number;
+    unlimitedAfterHealthyMs: number;
   }
   const PRESETS: Record<string, BpPreset> = {
     BALANCED: {
@@ -529,6 +535,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       quietMs: 2000,
       floor: 1,
       severeThreshold: 3,
+      maxWaiters: 1000,
+      healthyRecoveryMultiplier: 150,
+      unlimitedAfterHealthyMs: 30_000,
     },
     CONSERVATIVE: {
       initialMax: 12,
@@ -539,6 +548,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       quietMs: 2500,
       floor: 1,
       severeThreshold: 2,
+      maxWaiters: 500,
+      healthyRecoveryMultiplier: 130,
+      unlimitedAfterHealthyMs: 60_000,
     },
     AGGRESSIVE: {
       initialMax: 24,
@@ -549,6 +561,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       quietMs: 1500,
       floor: 2,
       severeThreshold: 4,
+      maxWaiters: 2000,
+      healthyRecoveryMultiplier: 200,
+      unlimitedAfterHealthyMs: 15_000,
     },
     LEGACY: {
       // observe-only: we still need plausible defaults if user overrides individual knobs
@@ -560,6 +575,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       quietMs: 2000,
       floor: 1,
       severeThreshold: 3,
+      maxWaiters: 1000,
+      healthyRecoveryMultiplier: 150,
+      unlimitedAfterHealthyMs: 30_000,
     },
   };
   const preset = PRESETS[profile] || PRESETS.BALANCED;
@@ -577,6 +595,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   ensure('CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS', preset.quietMs);
   ensure('CAMUNDA_SDK_BACKPRESSURE_FLOOR', preset.floor);
   ensure('CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD', preset.severeThreshold);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS', preset.maxWaiters);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER', preset.healthyRecoveryMultiplier);
+  ensure('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS', preset.unlimitedAfterHealthyMs);
   const config: CamundaConfig = {
     restAddress: _restAddress,
     tokenAudience: rawMap['CAMUNDA_TOKEN_AUDIENCE']!,
@@ -613,6 +634,16 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       decayQuietMs: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS'] || '2000', 10),
       floor: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_FLOOR'] || '1', 10),
       severeThreshold: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD'] || '3', 10),
+      maxWaiters: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS'] || '1000', 10),
+      healthyRecoveryMultiplier: Math.max(
+        1,
+        (parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER'] || '150', 10) ||
+          150) / 100
+      ),
+      unlimitedAfterHealthyMs: parseInt(
+        rawMap['CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS'] || '30000',
+        10
+      ),
     },
     oauth: {
       clientId: rawMap['CAMUNDA_CLIENT_ID']?.trim() || undefined,

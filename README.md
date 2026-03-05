@@ -394,6 +394,21 @@ Factors use integer percentages to avoid floating point drift in env parsing; th
 
 If you have concrete tuning needs, open an issue describing workload patterns (operation mix, baseline concurrency, observed broker limits) to help prioritize which knobs to surface.
 
+### What Should I Set?
+
+If you're unsure about your workload shape, **don't set anything**. The default BALANCED profile activates automatically and outperforms no-gating (LEGACY) in most scenarios — on raw throughput alone, not just error reduction.
+
+Benchmark results against a single-node local cluster with multiple independent clients (no shared state between them):
+
+| Scenario                      | BALANCED        | LEGACY (no gating) |
+| ----------------------------- | --------------- | ------------------ |
+| Single-client (1K processes)  | **80.1 ops/s**  | 67.8 ops/s         |
+| Single-client sustained (10K) | **119.6 ops/s** | 87.8 ops/s         |
+| Multi-client 3+2 spike        | **86.3 ops/s**  | 48.0 ops/s         |
+| Stress 8 clients ×1000        | 76.3 ops/s      | **106.4 ops/s**    |
+
+BALANCED wins 3 of 4 on pure throughput. The only scenario where LEGACY is faster is extreme overload (800 concurrent requests against a single broker) — and in that case LEGACY accumulates 44,505 errors vs BALANCED's 15,527. The default just works.
+
 ## Job Workers (Polling API)
 
 The SDK provides a lightweight polling job worker for service task job types using `createJobWorker`. It activates jobs in batches (respecting a concurrency limit), validates variables (optional), and offers action helpers on each job.

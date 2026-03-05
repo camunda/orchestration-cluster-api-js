@@ -1932,12 +1932,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -3770,122 +3770,6 @@ export type JobTypeStatisticsItem = {
     workers: number;
 };
 
-/**
- * Job worker statistics query.
- */
-export type JobWorkerStatisticsQuery = {
-    filter: JobWorkerStatisticsFilter;
-    /**
-     * Search cursor pagination.
-     */
-    page?: CursorForwardPagination;
-};
-
-/**
- * Job worker statistics search filter.
- */
-export type JobWorkerStatisticsFilter = {
-    /**
-     * Start of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    from: string;
-    /**
-     * End of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    to: string;
-    /**
-     * Job type to return worker metrics for.
-     */
-    jobType: string;
-};
-
-/**
- * Job worker statistics query result.
- */
-export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
-    /**
-     * The list of per-worker statistics items.
-     */
-    items: Array<JobWorkerStatisticsItem>;
-    page: SearchQueryPageResponse;
-};
-
-/**
- * Statistics for a single worker within a job type.
- */
-export type JobWorkerStatisticsItem = {
-    /**
-     * The worker identifier.
-     */
-    worker: string;
-    created: StatusMetric;
-    completed: StatusMetric;
-    failed: StatusMetric;
-};
-
-/**
- * Job time-series statistics query.
- */
-export type JobTimeSeriesStatisticsQuery = {
-    filter: JobTimeSeriesStatisticsFilter;
-    /**
-     * Search cursor pagination.
-     */
-    page?: CursorForwardPagination;
-};
-
-/**
- * Job time-series statistics search filter.
- */
-export type JobTimeSeriesStatisticsFilter = {
-    /**
-     * Start of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    from: string;
-    /**
-     * End of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    to: string;
-    /**
-     * Job type to return time-series metrics for.
-     */
-    jobType: string;
-    /**
-     * Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,
-     * `PT1H` for 1 hour). If omitted, the server chooses a sensible default.
-     *
-     */
-    resolution?: string;
-};
-
-/**
- * Job time-series statistics query result.
- */
-export type JobTimeSeriesStatisticsQueryResult = SearchQueryResponse & {
-    /**
-     * The list of time-bucketed statistics items, ordered ascending by time.
-     */
-    items: Array<JobTimeSeriesStatisticsItem>;
-    page: SearchQueryPageResponse;
-};
-
-/**
- * Aggregated job metrics for a single time bucket.
- */
-export type JobTimeSeriesStatisticsItem = {
-    /**
-     * ISO 8601 timestamp representing the start of this time bucket.
-     */
-    time: string;
-    created: StatusMetric;
-    completed: StatusMetric;
-    failed: StatusMetric;
-};
-
 export type JobActivationRequest = {
     /**
      * The job type, as defined in the BPMN process (e.g. <zeebe:taskDefinition type="payment-service" />)
@@ -4441,7 +4325,7 @@ export type JobResultActivateElement = {
      */
     variables?: {
         [key: string]: unknown;
-    } | null;
+    };
 };
 
 export type JobUpdateRequest = {
@@ -8011,15 +7895,15 @@ export type VariableResultBase = {
     /**
      * Name of this variable.
      */
-    name: string;
+    name?: string;
     /**
      * Tenant ID of this variable.
      */
-    tenantId: TenantId;
+    tenantId?: TenantId;
     /**
      * The key for this variable.
      */
-    variableKey: VariableKey;
+    variableKey?: VariableKey;
     /**
      * The key of the scope where this variable is directly defined. For process-level
      * variables, this is the process instance key. For local variables, this is the key of the
@@ -8027,11 +7911,11 @@ export type VariableResultBase = {
      * directly defined.
      *
      */
-    scopeKey: ScopeKey;
+    scopeKey?: ScopeKey;
     /**
      * The key of the process instance of this variable.
      */
-    processInstanceKey: ProcessInstanceKey;
+    processInstanceKey?: ProcessInstanceKey;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -9664,7 +9548,7 @@ export type GetDecisionInstanceData = {
         /**
          * The assigned key of the decision instance, which acts as a unique identifier for this decision instance.
          */
-        decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey;
+        decisionEvaluationInstanceKey: DecisionInstanceKey;
     };
     query?: never;
     url: '/decision-instances/{decisionEvaluationInstanceKey}';
@@ -10728,8 +10612,7 @@ export type SearchGroupsErrors = {
      */
     403: ProblemDetail;
     /**
-     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
-     *
+     * An internal error occurred while processing the request.
      */
     500: unknown;
 };
@@ -11989,80 +11872,6 @@ export type GetJobTypeStatisticsResponses = {
 };
 
 export type GetJobTypeStatisticsResponse = GetJobTypeStatisticsResponses[keyof GetJobTypeStatisticsResponses];
-
-export type GetJobWorkerStatisticsData = {
-    body: JobWorkerStatisticsQuery;
-    path?: never;
-    query?: never;
-    url: '/jobs/statistics/by-workers';
-};
-
-export type GetJobWorkerStatisticsErrors = {
-    /**
-     * The provided data is not valid.
-     */
-    400: ProblemDetail;
-    /**
-     * The request lacks valid authentication credentials.
-     */
-    401: ProblemDetail;
-    /**
-     * Forbidden. The request is not allowed.
-     */
-    403: ProblemDetail;
-    /**
-     * An internal error occurred while processing the request.
-     */
-    500: ProblemDetail;
-};
-
-export type GetJobWorkerStatisticsError = GetJobWorkerStatisticsErrors[keyof GetJobWorkerStatisticsErrors];
-
-export type GetJobWorkerStatisticsResponses = {
-    /**
-     * The job worker statistics result.
-     */
-    200: JobWorkerStatisticsQueryResult;
-};
-
-export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
-
-export type GetJobTimeSeriesStatisticsData = {
-    body: JobTimeSeriesStatisticsQuery;
-    path?: never;
-    query?: never;
-    url: '/jobs/statistics/time-series';
-};
-
-export type GetJobTimeSeriesStatisticsErrors = {
-    /**
-     * The provided data is not valid.
-     */
-    400: ProblemDetail;
-    /**
-     * The request lacks valid authentication credentials.
-     */
-    401: ProblemDetail;
-    /**
-     * Forbidden. The request is not allowed.
-     */
-    403: ProblemDetail;
-    /**
-     * An internal error occurred while processing the request.
-     */
-    500: ProblemDetail;
-};
-
-export type GetJobTimeSeriesStatisticsError = GetJobTimeSeriesStatisticsErrors[keyof GetJobTimeSeriesStatisticsErrors];
-
-export type GetJobTimeSeriesStatisticsResponses = {
-    /**
-     * The job time-series statistics result.
-     */
-    200: JobTimeSeriesStatisticsQueryResult;
-};
-
-export type GetJobTimeSeriesStatisticsResponse = GetJobTimeSeriesStatisticsResponses[keyof GetJobTimeSeriesStatisticsResponses];
 
 export type GetLicenseData = {
     body?: never;
@@ -13544,7 +13353,7 @@ export type GetResourceContentResponses = {
     /**
      * The resource content is successfully returned.
      */
-    200: string;
+    200: Blob | File;
 };
 
 export type GetResourceContentResponse = GetResourceContentResponses[keyof GetResourceContentResponses];
@@ -16306,7 +16115,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:5043dcd7fc5ee782ff403cbb25cf3175f36abd25e932cc75928c803772327589
+// specHash=sha256:f0c52e59b3b2e356dbf84097758f8f6fe3c4d623d5393ac5b8f632deb64a53ec
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

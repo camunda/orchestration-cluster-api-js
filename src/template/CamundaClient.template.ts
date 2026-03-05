@@ -251,6 +251,9 @@ export class CamundaClient {
         decayQuietMs: this._config.backpressure.decayQuietMs,
         floorConcurrency: this._config.backpressure.floor,
         severeThreshold: this._config.backpressure.severeThreshold,
+        maxWaiters: this._config.backpressure.maxWaiters,
+        healthyRecoveryMultiplier: this._config.backpressure.healthyRecoveryMultiplier,
+        unlimitedAfterHealthyMs: this._config.backpressure.unlimitedAfterHealthyMs,
       },
     });
     // Debug-level emission of redacted effective configuration (lazy)

@@ -15,6 +15,9 @@ export interface BackpressureConfig {
   recoveryStep?: number; // permits regained per interval
   severeThreshold?: number; // consecutive events to count as severe
   decayQuietMs?: number; // time with no events before reducing severity
+  maxWaiters?: number; // max queued waiters before fail-fast rejection (default 1000)
+  healthyRecoveryMultiplier?: number; // multiplicative increase factor when healthy (default 1.5)
+  unlimitedAfterHealthyMs?: number; // return to unlimited after this many ms of healthy (default 30000)
 }
 
 export type BackpressureSeverity = 'healthy' | 'soft' | 'severe';
@@ -43,6 +46,7 @@ export class BackpressureManager {
   private waiters: Waiter[] = [];
   private lastRecoverCheck = 0;
   private observeOnly = false;
+  private healthySince = 0; // timestamp when severity last became healthy
 
   constructor(opts: BackpressureManagerOptions = {}) {
     this.logger = opts.logger;
@@ -57,6 +61,9 @@ export class BackpressureManager {
       recoveryStep: 1,
       severeThreshold: 3,
       decayQuietMs: 2000,
+      maxWaiters: 1000,
+      healthyRecoveryMultiplier: 1.5,
+      unlimitedAfterHealthyMs: 30_000,
       ...opts.config,
     } as Required<BackpressureConfig>;
     this.observeOnly = !!this.cfg.observeOnly;
@@ -108,6 +115,14 @@ export class BackpressureManager {
       this.permitsCurrent++;
       return;
     }
+    // Fail-fast if waiter queue is at capacity
+    if (this.waiters.length >= this.cfg.maxWaiters) {
+      const err: any = new Error(
+        `Backpressure waiter queue full (${this.cfg.maxWaiters}). Rejecting to prevent unbounded memory growth.`
+      );
+      err.code = 'BACKPRESSURE_QUEUE_FULL';
+      throw err;
+    }
     // Queue
     return new Promise<void>((resolve, reject) => {
       const waiter: Waiter = { resolve: () => resolve(), reject, signal };
@@ -148,6 +163,7 @@ export class BackpressureManager {
     const now = this.now();
     this.lastEventAt = now;
     this.consecutive++;
+    this.healthySince = 0; // reset sustained-healthy timer on any backpressure event
     if (!this.observeOnly) {
       if (this.permitsMax === null) {
         this.permitsMax = 16;
@@ -193,19 +209,54 @@ export class BackpressureManager {
     if (now - this.lastEventAt > this.cfg.decayQuietMs) {
       const prev = this.severity;
       if (this.severity === 'severe') this.severity = 'soft';
-      else if (this.severity === 'soft') this.severity = 'healthy';
+      else if (this.severity === 'soft') {
+        this.severity = 'healthy';
+        this.healthySince = now;
+      }
       if (this.severity === 'healthy') this.consecutive = 0;
       if (prev !== this.severity) this.log('severity', { severity: this.severity }, prev);
     }
-    // Restore permits gradually if not at initial bootstrap cap (we don't exceed original bootstrap cap here)
+    // Recovery: grow permits back toward and beyond the bootstrap cap.
+    // Phase 1 (soft/recovering): additive increase (+recoveryStep) up to bootstrap cap.
+    // Phase 2 (healthy): multiplicative increase (×healthyRecoveryMultiplier) beyond bootstrap cap.
+    // Phase 3 (sustained healthy): return to unlimited after unlimitedAfterHealthyMs.
     if (this.permitsMax !== null) {
-      // Chosen policy: we consider bootstrap cap (16) as transient; we could expose a hard upper bound in config later.
       const bootstrapCap = this.cfg.initialMaxConcurrency ?? 16;
-      if (this.permitsMax < bootstrapCap) {
-        this.permitsMax = Math.min(bootstrapCap, this.permitsMax + this.cfg.recoveryStep);
-        this.log('permits.recover', { max: this.permitsMax }, this.severity);
-        // Attempt draining waiters after increasing cap
-        this.release();
+      if (this.severity !== 'healthy') {
+        // Phase 1: additive recovery while not yet healthy
+        if (this.permitsMax < bootstrapCap) {
+          this.permitsMax = Math.min(bootstrapCap, this.permitsMax + this.cfg.recoveryStep);
+          this.log('permits.recover', { max: this.permitsMax, phase: 'additive' }, this.severity);
+          this.release();
+        }
+      } else {
+        // Phase 3: sustained healthy → return to unlimited
+        if (this.healthySince > 0 && now - this.healthySince >= this.cfg.unlimitedAfterHealthyMs) {
+          this.permitsMax = null;
+          this.permitsCurrent = 0;
+          // Drain all waiters since we're now unlimited
+          while (this.waiters.length) {
+            const w = this.waiters.shift();
+            try {
+              w?.resolve();
+            } catch {
+              /* ignore */
+            }
+          }
+          this.log('permits.unlimited', { reason: 'sustained-healthy' }, this.severity);
+          return;
+        }
+        // Phase 2: multiplicative growth while healthy
+        const next = Math.ceil(this.permitsMax * this.cfg.healthyRecoveryMultiplier);
+        if (next > this.permitsMax) {
+          this.permitsMax = next;
+          this.log(
+            'permits.recover',
+            { max: this.permitsMax, phase: 'multiplicative' },
+            this.severity
+          );
+          this.release();
+        }
       }
     }
   }

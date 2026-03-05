@@ -1468,71 +1468,6 @@ export const zJobTypeStatisticsItem = z.object({
     description: 'Statistics for a single job type.'
 });
 
-/**
- * Job worker statistics search filter.
- */
-export const zJobWorkerStatisticsFilter = z.object({
-    from: z.iso.datetime().register(z.globalRegistry, {
-        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    to: z.iso.datetime().register(z.globalRegistry, {
-        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    jobType: z.string().register(z.globalRegistry, {
-        description: 'Job type to return worker metrics for.'
-    })
-}).register(z.globalRegistry, {
-    description: 'Job worker statistics search filter.'
-});
-
-/**
- * Statistics for a single worker within a job type.
- */
-export const zJobWorkerStatisticsItem = z.object({
-    worker: z.string().register(z.globalRegistry, {
-        description: 'The worker identifier.'
-    }),
-    created: zStatusMetric,
-    completed: zStatusMetric,
-    failed: zStatusMetric
-}).register(z.globalRegistry, {
-    description: 'Statistics for a single worker within a job type.'
-});
-
-/**
- * Job time-series statistics search filter.
- */
-export const zJobTimeSeriesStatisticsFilter = z.object({
-    from: z.iso.datetime().register(z.globalRegistry, {
-        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    to: z.iso.datetime().register(z.globalRegistry, {
-        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    jobType: z.string().register(z.globalRegistry, {
-        description: 'Job type to return time-series metrics for.'
-    }),
-    resolution: z.optional(z.string().register(z.globalRegistry, {
-        description: 'Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,\n`PT1H` for 1 hour). If omitted, the server chooses a sensible default.\n'
-    }))
-}).register(z.globalRegistry, {
-    description: 'Job time-series statistics search filter.'
-});
-
-/**
- * Aggregated job metrics for a single time bucket.
- */
-export const zJobTimeSeriesStatisticsItem = z.object({
-    time: z.iso.datetime().register(z.globalRegistry, {
-        description: 'ISO 8601 timestamp representing the start of this time bucket.'
-    }),
-    created: zStatusMetric,
-    completed: zStatusMetric,
-    failed: zStatusMetric
-}).register(z.globalRegistry, {
-    description: 'Aggregated job metrics for a single time bucket.'
-});
-
 export const zJobFailRequest = z.object({
     retries: z.optional(z.int().register(z.globalRegistry, {
         description: 'The amount of retries the job should have left'
@@ -1635,10 +1570,9 @@ export const zJobResultUserTask = z.union([
  */
 export const zJobResultActivateElement = z.object({
     elementId: z.optional(zElementId),
-    variables: z.optional(z.union([
-        z.record(z.string(), z.unknown()),
-        z.null()
-    ]))
+    variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'Variables for the element.'
+    }))
 }).register(z.globalRegistry, {
     description: 'Instruction to activate a single BPMN element within an ad‑hoc sub‑process, optionally providing variables scoped to that element.'
 });
@@ -4291,26 +4225,6 @@ export const zJobTypeStatisticsQuery = z.object({
 });
 
 /**
- * Job worker statistics query.
- */
-export const zJobWorkerStatisticsQuery = z.object({
-    filter: zJobWorkerStatisticsFilter,
-    page: z.optional(zCursorForwardPagination)
-}).register(z.globalRegistry, {
-    description: 'Job worker statistics query.'
-});
-
-/**
- * Job time-series statistics query.
- */
-export const zJobTimeSeriesStatisticsQuery = z.object({
-    filter: zJobTimeSeriesStatisticsFilter,
-    page: z.optional(zCursorForwardPagination)
-}).register(z.globalRegistry, {
-    description: 'Job time-series statistics query.'
-});
-
-/**
  * Cursor-based backward pagination
  */
 export const zCursorBackwardPagination = z.object({
@@ -5051,30 +4965,6 @@ export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
 }));
 
 /**
- * Job worker statistics query result.
- */
-export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.array(zJobWorkerStatisticsItem).register(z.globalRegistry, {
-        description: 'The list of per-worker statistics items.'
-    }),
-    page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
-    description: 'Job worker statistics query result.'
-}));
-
-/**
- * Job time-series statistics query result.
- */
-export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
-        description: 'The list of time-bucketed statistics items, ordered ascending by time.'
-    }),
-    page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
-    description: 'Job time-series statistics query result.'
-}));
-
-/**
  * Job search response.
  */
 export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
@@ -5795,13 +5685,13 @@ export const zVariableSearchQuerySortRequest = z.object({
  * Variable response item.
  */
 export const zVariableResultBase = z.object({
-    name: z.string().register(z.globalRegistry, {
+    name: z.optional(z.string().register(z.globalRegistry, {
         description: 'Name of this variable.'
-    }),
-    tenantId: zTenantId,
-    variableKey: zVariableKey,
-    scopeKey: zScopeKey,
-    processInstanceKey: zProcessInstanceKey,
+    })),
+    tenantId: z.optional(zTenantId),
+    variableKey: z.optional(zVariableKey),
+    scopeKey: z.optional(zScopeKey),
+    processInstanceKey: z.optional(zProcessInstanceKey),
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
@@ -7492,7 +7382,7 @@ export const zSearchDecisionInstancesResponse = zDecisionInstanceSearchQueryResu
 export const zGetDecisionInstanceData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKey
+        decisionEvaluationInstanceKey: zDecisionInstanceKey
     }),
     query: z.optional(z.never())
 });
@@ -8309,28 +8199,6 @@ export const zGetJobTypeStatisticsData = z.object({
  * The job type statistics result.
  */
 export const zGetJobTypeStatisticsResponse = zJobTypeStatisticsQueryResult;
-
-export const zGetJobWorkerStatisticsData = z.object({
-    body: zJobWorkerStatisticsQuery,
-    path: z.optional(z.never()),
-    query: z.optional(z.never())
-});
-
-/**
- * The job worker statistics result.
- */
-export const zGetJobWorkerStatisticsResponse = zJobWorkerStatisticsQueryResult;
-
-export const zGetJobTimeSeriesStatisticsData = z.object({
-    body: zJobTimeSeriesStatisticsQuery,
-    path: z.optional(z.never()),
-    query: z.optional(z.never())
-});
-
-/**
- * The job time-series statistics result.
- */
-export const zGetJobTimeSeriesStatisticsResponse = zJobTimeSeriesStatisticsQueryResult;
 
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),

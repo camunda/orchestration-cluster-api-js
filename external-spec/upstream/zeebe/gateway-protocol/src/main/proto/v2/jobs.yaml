@@ -947,7 +947,6 @@ components:
           type: object
           additionalProperties: true
           description: Variables for the element.
-          nullable: true
 
     JobUpdateRequest:
       type: object
