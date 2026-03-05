@@ -421,6 +421,7 @@ const worker = client.createJobWorker({
   outputSchema: Output, // validates variables passed to complete(...)
   validateSchemas: true, // set false for max throughput (skip Zod)
   autoStart: true, // default true; start polling immediately
+  startupJitterMaxSeconds: 5, // random delay up to 5s before first poll (default 0)
   jobHandler: (job) => {
     // Access typed variables
     const vars = job.variables; // inferred from Input schema
@@ -542,6 +543,22 @@ Activation cancellations during stop are logged at debug (`activation.cancelled`
 ### Multiple Workers
 
 You can register multiple workers on a single client instance—one per job type is typical. The client exposes `client.getWorkers()` for inspection and `client.stopAllWorkers()` for coordinated shutdown.
+
+### Startup Jitter
+
+When deploying multiple application instances simultaneously (e.g. a rolling restart or scale-up), all workers start polling at the same time and can saturate the server with activation requests. Set `startupJitterMaxSeconds` to spread out the initial poll across a random window:
+
+```ts
+client.createJobWorker({
+  jobType: 'process-order',
+  maxParallelJobs: 10,
+  jobTimeoutMs: 30_000,
+  startupJitterMaxSeconds: 5, // each instance delays 0–5s before first poll
+  jobHandler: async (job) => job.complete(),
+});
+```
+
+A value of `0` (the default) means no delay.
 
 ### Receipt Type (Unique Symbol)
 

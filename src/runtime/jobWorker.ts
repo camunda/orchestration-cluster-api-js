@@ -47,6 +47,13 @@ export interface JobWorkerConfig<
   /** Optional explicit name */
   workerName?: string;
   /**
+   * Maximum random delay (in seconds) before the worker starts polling.
+   * When multiple application instances restart simultaneously, this spreads out
+   * initial activation requests to avoid saturating the server.
+   * `0` (the default) means no delay.
+   */
+  startupJitterMaxSeconds?: number;
+  /**
    * Validate any provided input, output, customheader schema
    * default: false
    **/
@@ -107,7 +114,14 @@ export class JobWorker {
     if (this._stopped) return;
     if (this._pollTimer) return; // already running
     this._log.info('worker.start');
-    this._scheduleNext(0);
+    const jitterMax = this._cfg.startupJitterMaxSeconds ?? 0;
+    if (jitterMax > 0) {
+      const jitterMs = Math.floor(Math.random() * jitterMax * 1000);
+      this._log.info(() => ['worker.start.jitter', { delayMs: jitterMs }]);
+      this._scheduleNext(jitterMs);
+    } else {
+      this._scheduleNext(0);
+    }
   }
 
   stop() {

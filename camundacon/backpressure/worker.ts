@@ -122,7 +122,7 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
   const worker = client.createJobWorker({
     jobType: 'test-job',
     maxParallelJobs: ACTIVATE_BATCH,
-    timeoutMs: 5000,
+    jobTimeoutMs: 5000,
     pollIntervalMs: 1, // quick re-poll after long poll completes
     autoStart: true,
     validateSchemas: false,
