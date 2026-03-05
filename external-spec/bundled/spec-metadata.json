@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:f0c52e59b3b2e356dbf84097758f8f6fe3c4d623d5393ac5b8f632deb64a53ec",
+  "specHash": "sha256:5043dcd7fc5ee782ff403cbb25cf3175f36abd25e932cc75928c803772327589",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -2145,6 +2145,22 @@
       ]
     },
     {
+      "operationId": "getJobWorkerStatistics",
+      "path": "/jobs/statistics/by-workers",
+      "method": "post",
+      "tags": [
+        "Job"
+      ]
+    },
+    {
+      "operationId": "getJobTimeSeriesStatistics",
+      "path": "/jobs/statistics/time-series",
+      "method": "post",
+      "tags": [
+        "Job"
+      ]
+    },
+    {
       "operationId": "searchMappingRule",
       "path": "/mapping-rules/search",
       "method": "post",
@@ -4133,6 +4149,42 @@
       "optionalTenantIdInBody": false
     },
     {
+      "operationId": "getJobWorkerStatistics",
+      "path": "/jobs/statistics/by-workers",
+      "method": "post",
+      "tags": [
+        "Job"
+      ],
+      "summary": "Get job statistics by worker",
+      "description": "Returns aggregated metrics per worker for the given jobType.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "getJobTimeSeriesStatistics",
+      "path": "/jobs/statistics/time-series",
+      "method": "post",
+      "tags": [
+        "Job"
+      ],
+      "summary": "Get time-series metrics for a job type",
+      "description": "Returns a list of time-bucketed metrics ordered ascending by time.\nThe `from` and `to` fields select the time window of interest.\nEach item in the response corresponds to one time bucket of the requested resolution.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
       "operationId": "getLicense",
       "path": "/license",
       "method": "get",
@@ -6021,10 +6073,49 @@
       "optionalTenantIdInBody": false
     }
   ],
+  "deprecatedEnumMembers": [
+    {
+      "schemaName": "DecisionDefinitionTypeEnum",
+      "enumValues": [
+        "DECISION_TABLE",
+        "LITERAL_EXPRESSION",
+        "UNSPECIFIED",
+        "UNKNOWN"
+      ],
+      "deprecatedMembers": [
+        {
+          "name": "UNSPECIFIED",
+          "deprecatedInVersion": "8.9.0"
+        }
+      ],
+      "stableId": "decision-definition-type-enum"
+    },
+    {
+      "schemaName": "DecisionInstanceStateEnum",
+      "enumValues": [
+        "EVALUATED",
+        "FAILED",
+        "UNSPECIFIED",
+        "UNKNOWN"
+      ],
+      "deprecatedMembers": [
+        {
+          "name": "UNSPECIFIED",
+          "deprecatedInVersion": "8.9.0"
+        },
+        {
+          "name": "UNKNOWN",
+          "deprecatedInVersion": "8.9.0"
+        }
+      ],
+      "stableId": "decision-instance-state-enum"
+    }
+  ],
   "integrity": {
     "totalSemanticKeys": 35,
     "totalUnions": 51,
-    "totalOperations": 178,
-    "totalEventuallyConsistent": 77
+    "totalOperations": 180,
+    "totalEventuallyConsistent": 79,
+    "totalDeprecatedEnumSchemas": 2
   }
 }
