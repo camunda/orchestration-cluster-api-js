@@ -1,9 +1,8 @@
 # [8.9.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.7...v8.9.0-alpha.8) (2026-03-02)
 
-
 ### Features
 
-* support deprecated enums ([a1a2290](https://github.com/camunda/orchestration-cluster-api-js/commit/a1a22908fef6ca75ce353b851d4b6aabd7aa4522))
+- support deprecated enums ([a1a2290](https://github.com/camunda/orchestration-cluster-api-js/commit/a1a22908fef6ca75ce353b851d4b6aabd7aa4522))
 
 # [8.9.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.6...v8.9.0-alpha.7) (2026-03-02)
 

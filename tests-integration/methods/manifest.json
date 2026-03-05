@@ -1,6 +1,6 @@
 {
-  "operations": 178,
-  "tests": 181,
+  "operations": 180,
+  "tests": 182,
   "missing": [],
   "ignored": [],
   "files": [
@@ -78,6 +78,7 @@
     "getGroup.test.ts",
     "getIncident.test.ts",
     "getIncidentProcessInstanceStatistics.test.ts",
+    "getJobTimeSeriesStatistics.test.ts",
     "getJobTypeStatistics.test.ts",
     "getJobWorkerStatistics.test.ts",
     "getLicense.test.ts",
