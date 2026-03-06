@@ -14,6 +14,7 @@ Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST
 - Immutable, deep‑frozen configuration accessible through a factory‑created client instance
 - Automatic body-level tenantId defaulting: if a request body supports an optional tenantId and you omit it, the SDK fills it from CAMUNDA_DEFAULT_TENANT_ID (path params are never auto-filled)
 - Automatic transient HTTP retry (429, 503, network) with exponential backoff + full jitter (configurable via CAMUNDA_SDK_HTTP_RETRY\*). Non-retryable 500s fail fast. Pluggable strategy surface (default uses p-retry when available, internal fallback otherwise).
+- Per-method retry override: disable or customize retry policy on any individual API call without changing global settings
 
 ## Install
 
@@ -149,15 +150,61 @@ Behavior:
 - `strict` - fail on type mismatch or missing required fields
 - `fanatical` - fail on type mismatch, missing required fields, or unknown additional fields
 
+## Per-Method Retry Override
+
+Every API method accepts an optional trailing `options` parameter that lets you override or disable the global retry policy for that single call.
+
+### Disable Retry for a Single Call
+
+```ts
+// This call will not retry on transient errors
+await camunda.completeJob({ jobKey }, { retry: false });
+```
+
+### Override Specific Retry Settings
+
+Pass a partial `HttpRetryPolicy` to override individual fields. Unspecified fields inherit from the global configuration.
+
+```ts
+import type { OperationOptions } from '@camunda8/orchestration-cluster-api';
+
+// More aggressive retry for this operation only
+await camunda.createProcessInstance(
+  { processDefinitionId: 'payment-process' },
+  { retry: { maxAttempts: 8, maxDelayMs: 5000 } }
+);
+
+// Minimal retry: single retry with short backoff
+await camunda.getTopology({ retry: { maxAttempts: 2, baseDelayMs: 50 } });
+```
+
+### How It Works
+
+| `options.retry` value | Behavior                                                             |
+| --------------------- | -------------------------------------------------------------------- |
+| omitted / `undefined` | Uses global policy (`CAMUNDA_SDK_HTTP_RETRY_*` env vars)             |
+| `false`               | Disables retry entirely (single attempt, no backoff)                 |
+| `{ maxAttempts: 5 }`  | Merges with global policy — only the specified fields are overridden |
+
+The `HttpRetryPolicy` fields available for override:
+
+| Field         | Type     | Description                             |
+| ------------- | -------- | --------------------------------------- |
+| `maxAttempts` | `number` | Total attempts (initial + retries)      |
+| `baseDelayMs` | `number` | Base delay for exponential backoff (ms) |
+| `maxDelayMs`  | `number` | Maximum delay cap (ms)                  |
+
 ## Advanced HTTP Retry: Cockatiel Adapter (Optional)
 
-The SDK includes built‑in transient HTTP retry (429, 503, network errors) using a p‑retry based engine plus a fallback implementation. For advanced resilience patterns (circuit breakers, timeouts, custom classification, combining policies) you can integrate [cockatiel](https://github.com/connor4312/cockatiel).
+For advanced resilience patterns beyond per-method overrides — circuit breakers, timeouts, custom classification, combining policies — you can integrate [cockatiel](https://github.com/connor4312/cockatiel).
+
+> **Tip:** For most use cases, per-method retry override (above) is sufficient. Reach for Cockatiel when you need circuit breaking, hedging, or bulkhead controls.
 
 ### When To Use Cockatiel
 
-- You need different retry policies per operation (e.g. idempotent GET vs mutating POST)
 - You want circuit breaking, hedging, timeout, or bulkhead controls
 - You want to add custom classification (e.g. retry certain 5xx only on safe verbs)
+- You need to compose multiple resilience policies together
 
 ### Disable Built‑In HTTP Retries
 
@@ -292,7 +339,7 @@ const policy = retry(classify, {
 - Keep SDK retries disabled to prevent duplicate layers.
 - SDK synthesizes `Error` objects with a `status` for retry-significant HTTP responses (429, 503, 500), enabling classification.
 - You can tag errors (e.g. assign `err.__opVerb`) in a wrapper if verb-level logic is needed.
-- Future improvement: an official `retryStrategy` injection hook—current approach is non-invasive.
+- For per-operation retry customization without external dependencies, use the built-in [per-method retry override](#per-method-retry-override) instead.
 
 > Combine cockatiel retry with a circuit breaker, timeout, or bulkhead policy for more robust behavior in partial outages.
 

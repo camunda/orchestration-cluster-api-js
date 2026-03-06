@@ -205,18 +205,18 @@ export type ${o.opId}Consistency = {
     if (o.hasBody || o.pathParams.length || o.queryParams.length) {
       methods.push(
         o.eventual
-          ? `  ${o.opId}(input: ${o.opId}Input, /** Management of eventual consistency **/ consistencyManagement: ${o.opId}Consistency): CancelablePromise<${returnType}>;`
-          : `  ${o.opId}(input: ${o.opId}Input): CancelablePromise<${returnType}>;`
+          ? `  ${o.opId}(input: ${o.opId}Input, /** Management of eventual consistency **/ consistencyManagement: ${o.opId}Consistency, options?: OperationOptions): CancelablePromise<${returnType}>;`
+          : `  ${o.opId}(input: ${o.opId}Input, options?: OperationOptions): CancelablePromise<${returnType}>;`
       );
     } else {
       methods.push(
         o.eventual
-          ? `  ${o.opId}(consistencyManagement: ${o.opId}Consistency): CancelablePromise<${returnType}>;`
-          : `  ${o.opId}(): CancelablePromise<${returnType}>;`
+          ? `  ${o.opId}(consistencyManagement: ${o.opId}Consistency, options?: OperationOptions): CancelablePromise<${returnType}>;`
+          : `  ${o.opId}(options?: OperationOptions): CancelablePromise<${returnType}>;`
       );
     }
     methods.push(
-      `  ${o.opId}(${o.hasBody || o.pathParams.length || o.queryParams.length ? 'arg: any' : 'arg?: any'}${o.eventual ? ', /** Management of eventual consistency **/ consistencyManagement: ' + o.opId + 'Consistency' : ''}): CancelablePromise<any> {`
+      `  ${o.opId}(${o.hasBody || o.pathParams.length || o.queryParams.length ? 'arg: any' : 'arg?: any'}${o.eventual ? ', /** Management of eventual consistency **/ consistencyManagement: ' + o.opId + 'Consistency' : ''}, options?: OperationOptions): CancelablePromise<any> {`
     );
     if (o.eventual) {
       methods.push(
@@ -362,7 +362,7 @@ export type ${o.opId}Consistency = {
       } else {
         // Inject HTTP retry wrapper
         methods.push(
-          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} });`
+          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)}, retryOverride: options?.retry });`
         );
       }
     } else {
@@ -428,7 +428,7 @@ export type ${o.opId}Consistency = {
         methods.push('      return invoke();');
       } else {
         methods.push(
-          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)} });`
+          `      return this._invokeWithRetry(() => call(), { opId: '${o.originalOpId}', exempt: ${isExempt(o.opId)}, retryOverride: options?.retry });`
         );
       }
     }

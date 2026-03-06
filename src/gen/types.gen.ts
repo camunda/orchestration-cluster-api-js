@@ -1169,7 +1169,7 @@ export type ClusterVariableResult = ClusterVariableResultBase & {
     /**
      * Full value of this cluster variable.
      */
-    value?: string;
+    value: string;
 };
 
 /**
@@ -1179,11 +1179,11 @@ export type ClusterVariableSearchResult = ClusterVariableResultBase & {
     /**
      * Value of this cluster variable. Can be truncated.
      */
-    value?: string;
+    value: string;
     /**
      * Whether the value is truncated or not.
      */
-    isTruncated?: boolean;
+    isTruncated: boolean;
 };
 
 /**
@@ -1198,7 +1198,7 @@ export type ClusterVariableResultBase = {
     /**
      * Only provided if the cluster variable scope is TENANT. Null for global scope variables.
      */
-    tenantId?: string | null;
+    tenantId: string | null;
 };
 
 /**
@@ -1932,12 +1932,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -2272,27 +2272,27 @@ export type ResourceResult = {
     /**
      * The resource name from which this resource was parsed.
      */
-    resourceName?: string;
+    resourceName: string;
     /**
      * The assigned resource version.
      */
-    version?: number;
+    version: number;
     /**
      * The version tag of this resource.
      */
-    versionTag?: string;
+    versionTag: string | null;
     /**
      * The resource ID of this resource.
      */
-    resourceId?: string;
+    resourceId: string;
     /**
      * The tenant ID of this resource.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The unique key of this resource.
      */
-    resourceKey?: ResourceKey;
+    resourceKey: ResourceKey;
 };
 
 /**
@@ -2913,25 +2913,23 @@ export type FormResult = {
     /**
      * The tenant ID of the form.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The user-provided identifier of the form.
      */
-    formId?: FormId;
+    formId: FormId;
     /**
-     * The form content.
+     * The form schema as a JSON document serialized as a string.
      */
-    schema?: {
-        [key: string]: unknown;
-    };
+    schema: string;
     /**
      * The version of the the deployed form.
      */
-    version?: number;
+    version: number;
     /**
      * The assigned key, which acts as a unique identifier for this form.
      */
-    formKey?: FormKey;
+    formKey: FormKey;
 };
 
 /**
@@ -3517,27 +3515,27 @@ export type IncidentResult = {
     /**
      * The process definition ID associated to this incident.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId;
     /**
      * The type of the incident error.
      */
-    errorType?: IncidentErrorTypeEnum;
+    errorType: IncidentErrorTypeEnum;
     /**
      * Error message which describes the error in more detail.
      */
-    errorMessage?: string;
+    errorMessage: string;
     /**
      * The element ID associated to this incident.
      */
-    elementId?: ElementId;
+    elementId: ElementId;
     /**
      * The creation time of the incident.
      */
-    creationTime?: string;
+    creationTime: string;
     /**
      * The incident state.
      */
-    state?: IncidentStateEnum;
+    state: IncidentStateEnum;
     /**
      * The tenant ID of the incident.
      */
@@ -3545,15 +3543,15 @@ export type IncidentResult = {
     /**
      * The assigned key, which acts as a unique identifier for this incident.
      */
-    incidentKey?: IncidentKey;
+    incidentKey: IncidentKey;
     /**
      * The process definition key associated to this incident.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The process instance key associated to this incident.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -3564,7 +3562,7 @@ export type IncidentResult = {
     /**
      * The element instance key associated to this incident.
      */
-    elementInstanceKey?: ElementInstanceKey;
+    elementInstanceKey: ElementInstanceKey;
     /**
      * The job key, if exists, associated with this incident.
      */
@@ -3820,67 +3818,6 @@ export type JobWorkerStatisticsItem = {
      * The worker identifier.
      */
     worker: string;
-    created: StatusMetric;
-    completed: StatusMetric;
-    failed: StatusMetric;
-};
-
-/**
- * Job time-series statistics query.
- */
-export type JobTimeSeriesStatisticsQuery = {
-    filter: JobTimeSeriesStatisticsFilter;
-    /**
-     * Search cursor pagination.
-     */
-    page?: CursorForwardPagination;
-};
-
-/**
- * Job time-series statistics search filter.
- */
-export type JobTimeSeriesStatisticsFilter = {
-    /**
-     * Start of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    from: string;
-    /**
-     * End of the time window to filter metrics. ISO 8601 date-time format.
-     *
-     */
-    to: string;
-    /**
-     * Job type to return time-series metrics for.
-     */
-    jobType: string;
-    /**
-     * Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,
-     * `PT1H` for 1 hour). If omitted, the server chooses a sensible default.
-     *
-     */
-    resolution?: string;
-};
-
-/**
- * Job time-series statistics query result.
- */
-export type JobTimeSeriesStatisticsQueryResult = SearchQueryResponse & {
-    /**
-     * The list of time-bucketed statistics items, ordered ascending by time.
-     */
-    items: Array<JobTimeSeriesStatisticsItem>;
-    page: SearchQueryPageResponse;
-};
-
-/**
- * Aggregated job metrics for a single time bucket.
- */
-export type JobTimeSeriesStatisticsItem = {
-    /**
-     * ISO 8601 timestamp representing the start of this time bucket.
-     */
-    time: string;
     created: StatusMetric;
     completed: StatusMetric;
     failed: StatusMetric;
@@ -5731,35 +5668,35 @@ export type ProcessDefinitionResult = {
     /**
      * Name of this process definition.
      */
-    name?: string | null;
+    name: string | null;
     /**
      * Resource name for this process definition.
      */
-    resourceName?: string;
+    resourceName: string;
     /**
      * Version of this process definition.
      */
-    version?: number;
+    version: number;
     /**
      * Version tag of this process definition.
      */
-    versionTag?: string | null;
+    versionTag: string | null;
     /**
      * Process definition ID of this process definition.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId;
     /**
      * Tenant ID of this process definition.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The key for this process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * Indicates whether the start event of the process has an associated Form Key.
      */
-    hasStartForm?: boolean;
+    hasStartForm: boolean;
 };
 
 /**
@@ -7159,7 +7096,7 @@ export type UsageMetricsResponse = UsageMetricsResponseItem & {
     /**
      * The amount of active tenants.
      */
-    activeTenants?: number;
+    activeTenants: number;
     /**
      * The usage metrics by tenants. Only available if request `withTenants` query parameter was `true`.
      */
@@ -7172,15 +7109,15 @@ export type UsageMetricsResponseItem = {
     /**
      * The amount of created root process instances.
      */
-    processInstances?: number;
+    processInstances: number;
     /**
      * The amount of executed decision instances.
      */
-    decisionInstances?: number;
+    decisionInstances: number;
     /**
      * The amount of unique active task users.
      */
-    assignees?: number;
+    assignees: number;
 };
 
 export type TenantCreateRequest = {
@@ -7509,8 +7446,8 @@ export type UserTaskResult = {
     /**
      * The name for this user task.
      */
-    name?: string;
-    state?: UserTaskStateEnum;
+    name: string | null;
+    state: UserTaskStateEnum;
     /**
      * The assignee of the user task.
      */
@@ -7518,7 +7455,7 @@ export type UserTaskResult = {
     /**
      * The element ID of the user task.
      */
-    elementId?: ElementId;
+    elementId: ElementId;
     /**
      * The candidate groups for this user task.
      */
@@ -7530,11 +7467,11 @@ export type UserTaskResult = {
     /**
      * The ID of the process definition.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId;
     /**
      * The creation date of a user task.
      */
-    creationDate?: string;
+    creationDate: string;
     /**
      * The completion date of a user task.
      */
@@ -7547,7 +7484,7 @@ export type UserTaskResult = {
      * The due date of a user task.
      */
     dueDate: string | null;
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The external form reference.
      */
@@ -7555,7 +7492,7 @@ export type UserTaskResult = {
     /**
      * The version of the process definition.
      */
-    processDefinitionVersion?: number;
+    processDefinitionVersion: number;
     /**
      * Custom headers for the user task.
      */
@@ -7565,29 +7502,29 @@ export type UserTaskResult = {
     /**
      * The priority of a user task. The higher the value the higher the priority.
      */
-    priority?: number;
+    priority: number;
     /**
      * The key of the user task.
      */
-    userTaskKey?: UserTaskKey;
+    userTaskKey: UserTaskKey;
     /**
      * The key of the element instance.
      */
-    elementInstanceKey?: ElementInstanceKey;
+    elementInstanceKey: ElementInstanceKey;
     /**
      * The name of the process definition.
      * This is `null` if the process has no name defined.
      *
      */
-    processName?: string | null;
+    processName: string | null;
     /**
      * The key of the process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The key of the process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -8001,7 +7938,7 @@ export type VariableResult = VariableResultBase & {
     /**
      * Full value of this variable.
      */
-    value?: string;
+    value: string;
 };
 
 /**
@@ -12026,43 +11963,6 @@ export type GetJobWorkerStatisticsResponses = {
 };
 
 export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
-
-export type GetJobTimeSeriesStatisticsData = {
-    body: JobTimeSeriesStatisticsQuery;
-    path?: never;
-    query?: never;
-    url: '/jobs/statistics/time-series';
-};
-
-export type GetJobTimeSeriesStatisticsErrors = {
-    /**
-     * The provided data is not valid.
-     */
-    400: ProblemDetail;
-    /**
-     * The request lacks valid authentication credentials.
-     */
-    401: ProblemDetail;
-    /**
-     * Forbidden. The request is not allowed.
-     */
-    403: ProblemDetail;
-    /**
-     * An internal error occurred while processing the request.
-     */
-    500: ProblemDetail;
-};
-
-export type GetJobTimeSeriesStatisticsError = GetJobTimeSeriesStatisticsErrors[keyof GetJobTimeSeriesStatisticsErrors];
-
-export type GetJobTimeSeriesStatisticsResponses = {
-    /**
-     * The job time-series statistics result.
-     */
-    200: JobTimeSeriesStatisticsQueryResult;
-};
-
-export type GetJobTimeSeriesStatisticsResponse = GetJobTimeSeriesStatisticsResponses[keyof GetJobTimeSeriesStatisticsResponses];
 
 export type GetLicenseData = {
     body?: never;
@@ -16306,7 +16206,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:5043dcd7fc5ee782ff403cbb25cf3175f36abd25e932cc75928c803772327589
+// specHash=sha256:7e46d74303f76f10b663e103b8582c9f171be15efafbf93d077445bdfa393d45
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

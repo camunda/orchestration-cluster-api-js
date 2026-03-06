@@ -22,6 +22,15 @@ export interface HttpRetryPolicy {
   maxDelayMs: number; // cap
 }
 
+/** Per-call options for individual SDK method invocations. */
+export interface OperationOptions {
+  /** Override retry behaviour for this call.
+   *  - Pass `false` to disable retry entirely (single attempt).
+   *  - Pass a partial policy to override specific fields (merged with global config).
+   */
+  retry?: Partial<HttpRetryPolicy> | false;
+}
+
 export interface CreateRetryOptions {
   policy: HttpRetryPolicy;
   logger?: Logger;

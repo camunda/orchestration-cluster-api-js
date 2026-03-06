@@ -1,5 +1,5 @@
 // Entry point: export Camunda class, key types, and errors.
-import { createCamundaClient, CamundaClient } from './gen/CamundaClient';
+import { createCamundaClient } from './gen/CamundaClient';
 import { createCamundaClientLoose, type CamundaClientLoose, type Loose } from './loose';
 // Public re-exports for worker API
 export type { JobWorkerConfig, JobWorker, Job, JobActionReceipt } from './runtime/jobWorker';
@@ -24,6 +24,7 @@ export type { EnrichedActivatedJob } from './runtime/jobActions';
 export type { CamundaConfig, AuthStrategy, ValidationMode } from './runtime/unifiedConfiguration';
 export type { SupportLogger } from './runtime/supportLogger';
 export type { BackpressureSeverity } from './runtime/backpressure';
+export type { HttpRetryPolicy, OperationOptions } from './runtime/retry';
 export type { TelemetryHooks } from './runtime/telemetry';
 export type { CreateLoggerOptions } from './runtime/logger';
 export default createCamundaClient;

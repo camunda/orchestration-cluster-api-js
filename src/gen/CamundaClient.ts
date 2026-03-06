@@ -23,7 +23,7 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
+import { executeWithHttpRetry, defaultHttpClassifier, type HttpRetryPolicy, type OperationOptions } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 180
+// Operations: 179
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -369,14 +369,6 @@ export type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey }
 export type getIncidentConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
-};
-type getJobTimeSeriesStatisticsOptions = Parameters<typeof Sdk.getJobTimeSeriesStatistics>[0];
-type getJobTimeSeriesStatisticsBody = (NonNullable<getJobTimeSeriesStatisticsOptions> extends { body?: infer B } ? B : never);
-export type getJobTimeSeriesStatisticsInput = getJobTimeSeriesStatisticsBody;
-/** Management of eventual consistency **/
-export type getJobTimeSeriesStatisticsConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobTimeSeriesStatistics>> 
 };
 type getJobTypeStatisticsOptions = Parameters<typeof Sdk.getJobTypeStatistics>[0];
 type getJobTypeStatisticsBody = (NonNullable<getJobTypeStatisticsOptions> extends { body?: infer B } ? B : never);
@@ -1468,9 +1460,15 @@ export class CamundaClient {
       opId: string;
       exempt?: boolean;
       classify?: (e: any) => { retryable: boolean; reason: string };
+      retryOverride?: Partial<HttpRetryPolicy> | false;
     }
   ): Promise<T> {
-    const { opId, exempt, classify } = opts;
+    const { opId, exempt, classify, retryOverride } = opts;
+    const policy: HttpRetryPolicy = retryOverride === false
+      ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
+      : retryOverride
+        ? { ...this._config.httpRetry, ...retryOverride }
+        : this._config.httpRetry;
     const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
     if (!exempt) {
       await this._bp.acquire(signal);
@@ -1478,7 +1476,7 @@ export class CamundaClient {
     try {
       const result = await executeWithHttpRetry(
         async () => op(),
-        this._config.httpRetry,
+        policy,
         this._log.scope(opId),
         (err) => {
           const decision = (classify ? classify(err) : defaultHttpClassifier(err)) as any;
@@ -1548,8 +1546,8 @@ export class CamundaClient {
    * @operationId activateAdHocSubProcessActivities
    * @tags Ad-hoc sub-process
    */
-  activateAdHocSubProcessActivities(input: activateAdHocSubProcessActivitiesInput): CancelablePromise<_DataOf<typeof Sdk.activateAdHocSubProcessActivities>>;
-  activateAdHocSubProcessActivities(arg: any): CancelablePromise<any> {
+  activateAdHocSubProcessActivities(input: activateAdHocSubProcessActivitiesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.activateAdHocSubProcessActivities>>;
+  activateAdHocSubProcessActivities(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { adHocSubProcessInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -1596,7 +1594,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'activateAdHocSubProcessActivities', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1611,8 +1609,8 @@ export class CamundaClient {
    * @operationId activateJobs
    * @tags Job
    */
-  activateJobs(input: activateJobsInput): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
-  activateJobs(arg: any): CancelablePromise<any> {
+  activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
+  activateJobs(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -1658,7 +1656,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'activateJobs', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1672,8 +1670,8 @@ export class CamundaClient {
    * @operationId assignClientToGroup
    * @tags Group
    */
-  assignClientToGroup(input: assignClientToGroupInput): CancelablePromise<_DataOf<typeof Sdk.assignClientToGroup>>;
-  assignClientToGroup(arg: any): CancelablePromise<any> {
+  assignClientToGroup(input: assignClientToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignClientToGroup>>;
+  assignClientToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, clientId } = arg || {};
       let envelope: any = {};
@@ -1718,7 +1716,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignClientToGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1732,8 +1730,8 @@ export class CamundaClient {
    * @operationId assignClientToTenant
    * @tags Tenant
    */
-  assignClientToTenant(input: assignClientToTenantInput): CancelablePromise<_DataOf<typeof Sdk.assignClientToTenant>>;
-  assignClientToTenant(arg: any): CancelablePromise<any> {
+  assignClientToTenant(input: assignClientToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignClientToTenant>>;
+  assignClientToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, clientId } = arg || {};
       let envelope: any = {};
@@ -1778,7 +1776,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignClientToTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1792,8 +1790,8 @@ export class CamundaClient {
    * @operationId assignGroupToTenant
    * @tags Tenant
    */
-  assignGroupToTenant(input: assignGroupToTenantInput): CancelablePromise<_DataOf<typeof Sdk.assignGroupToTenant>>;
-  assignGroupToTenant(arg: any): CancelablePromise<any> {
+  assignGroupToTenant(input: assignGroupToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignGroupToTenant>>;
+  assignGroupToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, groupId } = arg || {};
       let envelope: any = {};
@@ -1838,7 +1836,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignGroupToTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1850,8 +1848,8 @@ export class CamundaClient {
    * @operationId assignMappingRuleToGroup
    * @tags Group
    */
-  assignMappingRuleToGroup(input: assignMappingRuleToGroupInput): CancelablePromise<_DataOf<typeof Sdk.assignMappingRuleToGroup>>;
-  assignMappingRuleToGroup(arg: any): CancelablePromise<any> {
+  assignMappingRuleToGroup(input: assignMappingRuleToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignMappingRuleToGroup>>;
+  assignMappingRuleToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -1896,7 +1894,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1908,8 +1906,8 @@ export class CamundaClient {
    * @operationId assignMappingRuleToTenant
    * @tags Tenant
    */
-  assignMappingRuleToTenant(input: assignMappingRuleToTenantInput): CancelablePromise<_DataOf<typeof Sdk.assignMappingRuleToTenant>>;
-  assignMappingRuleToTenant(arg: any): CancelablePromise<any> {
+  assignMappingRuleToTenant(input: assignMappingRuleToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignMappingRuleToTenant>>;
+  assignMappingRuleToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -1954,7 +1952,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignMappingRuleToTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -1966,8 +1964,8 @@ export class CamundaClient {
    * @operationId assignRoleToClient
    * @tags Role
    */
-  assignRoleToClient(input: assignRoleToClientInput): CancelablePromise<_DataOf<typeof Sdk.assignRoleToClient>>;
-  assignRoleToClient(arg: any): CancelablePromise<any> {
+  assignRoleToClient(input: assignRoleToClientInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToClient>>;
+  assignRoleToClient(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, clientId } = arg || {};
       let envelope: any = {};
@@ -2012,7 +2010,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToClient', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2024,8 +2022,8 @@ export class CamundaClient {
    * @operationId assignRoleToGroup
    * @tags Role
    */
-  assignRoleToGroup(input: assignRoleToGroupInput): CancelablePromise<_DataOf<typeof Sdk.assignRoleToGroup>>;
-  assignRoleToGroup(arg: any): CancelablePromise<any> {
+  assignRoleToGroup(input: assignRoleToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToGroup>>;
+  assignRoleToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, groupId } = arg || {};
       let envelope: any = {};
@@ -2070,7 +2068,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2082,8 +2080,8 @@ export class CamundaClient {
    * @operationId assignRoleToMappingRule
    * @tags Role
    */
-  assignRoleToMappingRule(input: assignRoleToMappingRuleInput): CancelablePromise<_DataOf<typeof Sdk.assignRoleToMappingRule>>;
-  assignRoleToMappingRule(arg: any): CancelablePromise<any> {
+  assignRoleToMappingRule(input: assignRoleToMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToMappingRule>>;
+  assignRoleToMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -2128,7 +2126,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToMappingRule', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2142,8 +2140,8 @@ export class CamundaClient {
    * @operationId assignRoleToTenant
    * @tags Tenant
    */
-  assignRoleToTenant(input: assignRoleToTenantInput): CancelablePromise<_DataOf<typeof Sdk.assignRoleToTenant>>;
-  assignRoleToTenant(arg: any): CancelablePromise<any> {
+  assignRoleToTenant(input: assignRoleToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToTenant>>;
+  assignRoleToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, roleId } = arg || {};
       let envelope: any = {};
@@ -2188,7 +2186,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2200,8 +2198,8 @@ export class CamundaClient {
    * @operationId assignRoleToUser
    * @tags Role
    */
-  assignRoleToUser(input: assignRoleToUserInput): CancelablePromise<_DataOf<typeof Sdk.assignRoleToUser>>;
-  assignRoleToUser(arg: any): CancelablePromise<any> {
+  assignRoleToUser(input: assignRoleToUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignRoleToUser>>;
+  assignRoleToUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, username } = arg || {};
       let envelope: any = {};
@@ -2246,7 +2244,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignRoleToUser', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2260,8 +2258,8 @@ export class CamundaClient {
    * @operationId assignUserTask
    * @tags User task
    */
-  assignUserTask(input: assignUserTaskInput): CancelablePromise<_DataOf<typeof Sdk.assignUserTask>>;
-  assignUserTask(arg: any): CancelablePromise<any> {
+  assignUserTask(input: assignUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignUserTask>>;
+  assignUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { userTaskKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -2308,7 +2306,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignUserTask', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2322,8 +2320,8 @@ export class CamundaClient {
    * @operationId assignUserToGroup
    * @tags Group
    */
-  assignUserToGroup(input: assignUserToGroupInput): CancelablePromise<_DataOf<typeof Sdk.assignUserToGroup>>;
-  assignUserToGroup(arg: any): CancelablePromise<any> {
+  assignUserToGroup(input: assignUserToGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignUserToGroup>>;
+  assignUserToGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, username } = arg || {};
       let envelope: any = {};
@@ -2368,7 +2366,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignUserToGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2380,8 +2378,8 @@ export class CamundaClient {
    * @operationId assignUserToTenant
    * @tags Tenant
    */
-  assignUserToTenant(input: assignUserToTenantInput): CancelablePromise<_DataOf<typeof Sdk.assignUserToTenant>>;
-  assignUserToTenant(arg: any): CancelablePromise<any> {
+  assignUserToTenant(input: assignUserToTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.assignUserToTenant>>;
+  assignUserToTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, username } = arg || {};
       let envelope: any = {};
@@ -2426,7 +2424,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'assignUserToTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2440,8 +2438,8 @@ export class CamundaClient {
    * @operationId broadcastSignal
    * @tags Signal
    */
-  broadcastSignal(input: broadcastSignalInput): CancelablePromise<_DataOf<typeof Sdk.broadcastSignal>>;
-  broadcastSignal(arg: any): CancelablePromise<any> {
+  broadcastSignal(input: broadcastSignalInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.broadcastSignal>>;
+  broadcastSignal(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2490,7 +2488,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'broadcastSignal', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2504,8 +2502,8 @@ export class CamundaClient {
    * @operationId cancelBatchOperation
    * @tags Batch operation
    */
-  cancelBatchOperation(input: cancelBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.cancelBatchOperation>>;
-  cancelBatchOperation(arg: any): CancelablePromise<any> {
+  cancelBatchOperation(input: cancelBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelBatchOperation>>;
+  cancelBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { batchOperationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -2552,7 +2550,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2566,8 +2564,8 @@ export class CamundaClient {
    * @operationId cancelProcessInstance
    * @tags Process instance
    */
-  cancelProcessInstance(input: cancelProcessInstanceInput): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstance>>;
-  cancelProcessInstance(arg: any): CancelablePromise<any> {
+  cancelProcessInstance(input: cancelProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstance>>;
+  cancelProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { processInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -2614,7 +2612,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2630,8 +2628,8 @@ export class CamundaClient {
    * @operationId cancelProcessInstancesBatchOperation
    * @tags Process instance
    */
-  cancelProcessInstancesBatchOperation(input: cancelProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>>;
-  cancelProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
+  cancelProcessInstancesBatchOperation(input: cancelProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>>;
+  cancelProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2676,7 +2674,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstancesBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2691,8 +2689,8 @@ export class CamundaClient {
    * @operationId completeJob
    * @tags Job
    */
-  completeJob(input: completeJobInput): CancelablePromise<_DataOf<typeof Sdk.completeJob>>;
-  completeJob(arg: any): CancelablePromise<any> {
+  completeJob(input: completeJobInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.completeJob>>;
+  completeJob(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { jobKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -2739,7 +2737,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true });
+      return this._invokeWithRetry(() => call(), { opId: 'completeJob', exempt: true, retryOverride: options?.retry });
     });
   }
 
@@ -2753,8 +2751,8 @@ export class CamundaClient {
    * @operationId completeUserTask
    * @tags User task
    */
-  completeUserTask(input: completeUserTaskInput): CancelablePromise<_DataOf<typeof Sdk.completeUserTask>>;
-  completeUserTask(arg: any): CancelablePromise<any> {
+  completeUserTask(input: completeUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.completeUserTask>>;
+  completeUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { userTaskKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -2801,7 +2799,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true });
+      return this._invokeWithRetry(() => call(), { opId: 'completeUserTask', exempt: true, retryOverride: options?.retry });
     });
   }
 
@@ -2819,8 +2817,8 @@ export class CamundaClient {
    * @operationId correlateMessage
    * @tags Message
    */
-  correlateMessage(input: correlateMessageInput): CancelablePromise<_DataOf<typeof Sdk.correlateMessage>>;
-  correlateMessage(arg: any): CancelablePromise<any> {
+  correlateMessage(input: correlateMessageInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.correlateMessage>>;
+  correlateMessage(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2869,7 +2867,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'correlateMessage', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2881,8 +2879,8 @@ export class CamundaClient {
    * @operationId createAdminUser
    * @tags Setup
    */
-  createAdminUser(input: createAdminUserInput): CancelablePromise<_DataOf<typeof Sdk.createAdminUser>>;
-  createAdminUser(arg: any): CancelablePromise<any> {
+  createAdminUser(input: createAdminUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAdminUser>>;
+  createAdminUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2927,7 +2925,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -2939,8 +2937,8 @@ export class CamundaClient {
    * @operationId createAuthorization
    * @tags Authorization
    */
-  createAuthorization(input: createAuthorizationInput): CancelablePromise<_DataOf<typeof Sdk.createAuthorization>>;
-  createAuthorization(arg: any): CancelablePromise<any> {
+  createAuthorization(input: createAuthorizationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAuthorization>>;
+  createAuthorization(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2985,7 +2983,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createAuthorization', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3002,8 +3000,8 @@ export class CamundaClient {
    * @tags Resource
    * @returns Enriched deployment result with typed arrays (processes, decisions, decisionRequirements, forms, resources).
    */
-  createDeployment(input: createDeploymentInput): CancelablePromise<ExtendedDeploymentResult>;
-  createDeployment(arg: any): CancelablePromise<any> {
+  createDeployment(input: createDeploymentInput, options?: OperationOptions): CancelablePromise<ExtendedDeploymentResult>;
+  createDeployment(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3067,7 +3065,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createDeployment', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3082,8 +3080,8 @@ export class CamundaClient {
    * @operationId createDocument
    * @tags Document
    */
-  createDocument(input: createDocumentInput): CancelablePromise<_DataOf<typeof Sdk.createDocument>>;
-  createDocument(arg: any): CancelablePromise<any> {
+  createDocument(input: createDocumentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createDocument>>;
+  createDocument(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { storeId, documentId, ..._body } = arg || {};
       let envelope: any = {};
@@ -3130,7 +3128,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createDocument', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3145,8 +3143,8 @@ export class CamundaClient {
    * @operationId createDocumentLink
    * @tags Document
    */
-  createDocumentLink(input: createDocumentLinkInput): CancelablePromise<_DataOf<typeof Sdk.createDocumentLink>>;
-  createDocumentLink(arg: any): CancelablePromise<any> {
+  createDocumentLink(input: createDocumentLinkInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createDocumentLink>>;
+  createDocumentLink(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { documentId, storeId, contentHash, ..._body } = arg || {};
       let envelope: any = {};
@@ -3195,7 +3193,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createDocumentLink', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3222,8 +3220,8 @@ export class CamundaClient {
    * @operationId createDocuments
    * @tags Document
    */
-  createDocuments(input: createDocumentsInput): CancelablePromise<_DataOf<typeof Sdk.createDocuments>>;
-  createDocuments(arg: any): CancelablePromise<any> {
+  createDocuments(input: createDocumentsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createDocuments>>;
+  createDocuments(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { storeId, ..._body } = arg || {};
       let envelope: any = {};
@@ -3270,7 +3268,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createDocuments', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3284,8 +3282,8 @@ export class CamundaClient {
    * @operationId createElementInstanceVariables
    * @tags Element instance
    */
-  createElementInstanceVariables(input: createElementInstanceVariablesInput): CancelablePromise<_DataOf<typeof Sdk.createElementInstanceVariables>>;
-  createElementInstanceVariables(arg: any): CancelablePromise<any> {
+  createElementInstanceVariables(input: createElementInstanceVariablesInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createElementInstanceVariables>>;
+  createElementInstanceVariables(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { elementInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -3332,7 +3330,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createElementInstanceVariables', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3344,8 +3342,8 @@ export class CamundaClient {
    * @operationId createGlobalClusterVariable
    * @tags Cluster Variable
    */
-  createGlobalClusterVariable(input: createGlobalClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.createGlobalClusterVariable>>;
-  createGlobalClusterVariable(arg: any): CancelablePromise<any> {
+  createGlobalClusterVariable(input: createGlobalClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createGlobalClusterVariable>>;
+  createGlobalClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3390,7 +3388,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3402,8 +3400,8 @@ export class CamundaClient {
    * @operationId createGlobalTaskListener
    * @tags Global listener
    */
-  createGlobalTaskListener(input: createGlobalTaskListenerInput): CancelablePromise<_DataOf<typeof Sdk.createGlobalTaskListener>>;
-  createGlobalTaskListener(arg: any): CancelablePromise<any> {
+  createGlobalTaskListener(input: createGlobalTaskListenerInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createGlobalTaskListener>>;
+  createGlobalTaskListener(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3448,7 +3446,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createGlobalTaskListener', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createGlobalTaskListener', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3460,8 +3458,8 @@ export class CamundaClient {
    * @operationId createGroup
    * @tags Group
    */
-  createGroup(input: createGroupInput): CancelablePromise<_DataOf<typeof Sdk.createGroup>>;
-  createGroup(arg: any): CancelablePromise<any> {
+  createGroup(input: createGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createGroup>>;
+  createGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3506,7 +3504,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3519,8 +3517,8 @@ export class CamundaClient {
    * @operationId createMappingRule
    * @tags Mapping rule
    */
-  createMappingRule(input: createMappingRuleInput): CancelablePromise<_DataOf<typeof Sdk.createMappingRule>>;
-  createMappingRule(arg: any): CancelablePromise<any> {
+  createMappingRule(input: createMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createMappingRule>>;
+  createMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3565,7 +3563,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createMappingRule', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3587,8 +3585,8 @@ export class CamundaClient {
    * @operationId createProcessInstance
    * @tags Process instance
    */
-  createProcessInstance(input: createProcessInstanceInput): CancelablePromise<_DataOf<typeof Sdk.createProcessInstance>>;
-  createProcessInstance(arg: any): CancelablePromise<any> {
+  createProcessInstance(input: createProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createProcessInstance>>;
+  createProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3637,7 +3635,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createProcessInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3649,8 +3647,8 @@ export class CamundaClient {
    * @operationId createRole
    * @tags Role
    */
-  createRole(input: createRoleInput): CancelablePromise<_DataOf<typeof Sdk.createRole>>;
-  createRole(arg: any): CancelablePromise<any> {
+  createRole(input: createRoleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createRole>>;
+  createRole(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3695,7 +3693,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createRole', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3707,8 +3705,8 @@ export class CamundaClient {
    * @operationId createTenant
    * @tags Tenant
    */
-  createTenant(input: createTenantInput): CancelablePromise<_DataOf<typeof Sdk.createTenant>>;
-  createTenant(arg: any): CancelablePromise<any> {
+  createTenant(input: createTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createTenant>>;
+  createTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3753,7 +3751,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3765,8 +3763,8 @@ export class CamundaClient {
    * @operationId createTenantClusterVariable
    * @tags Cluster Variable
    */
-  createTenantClusterVariable(input: createTenantClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.createTenantClusterVariable>>;
-  createTenantClusterVariable(arg: any): CancelablePromise<any> {
+  createTenantClusterVariable(input: createTenantClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createTenantClusterVariable>>;
+  createTenantClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, ..._body } = arg || {};
       let envelope: any = {};
@@ -3813,7 +3811,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createTenantClusterVariable', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createTenantClusterVariable', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3825,8 +3823,8 @@ export class CamundaClient {
    * @operationId createUser
    * @tags User
    */
-  createUser(input: createUserInput): CancelablePromise<_DataOf<typeof Sdk.createUser>>;
-  createUser(arg: any): CancelablePromise<any> {
+  createUser(input: createUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createUser>>;
+  createUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3871,7 +3869,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'createUser', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'createUser', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3883,8 +3881,8 @@ export class CamundaClient {
    * @operationId deleteAuthorization
    * @tags Authorization
    */
-  deleteAuthorization(input: deleteAuthorizationInput): CancelablePromise<_DataOf<typeof Sdk.deleteAuthorization>>;
-  deleteAuthorization(arg: any): CancelablePromise<any> {
+  deleteAuthorization(input: deleteAuthorizationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteAuthorization>>;
+  deleteAuthorization(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { authorizationKey } = arg || {};
       let envelope: any = {};
@@ -3929,7 +3927,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteAuthorization', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -3941,8 +3939,8 @@ export class CamundaClient {
    * @operationId deleteDecisionInstance
    * @tags Decision instance
    */
-  deleteDecisionInstance(input: deleteDecisionInstanceInput): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstance>>;
-  deleteDecisionInstance(arg: any): CancelablePromise<any> {
+  deleteDecisionInstance(input: deleteDecisionInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstance>>;
+  deleteDecisionInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { decisionInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -3989,7 +3987,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstance', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4003,8 +4001,8 @@ export class CamundaClient {
    * @operationId deleteDecisionInstancesBatchOperation
    * @tags Decision instance
    */
-  deleteDecisionInstancesBatchOperation(input: deleteDecisionInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstancesBatchOperation>>;
-  deleteDecisionInstancesBatchOperation(arg: any): CancelablePromise<any> {
+  deleteDecisionInstancesBatchOperation(input: deleteDecisionInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstancesBatchOperation>>;
+  deleteDecisionInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -4049,7 +4047,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstancesBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteDecisionInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4064,8 +4062,8 @@ export class CamundaClient {
    * @operationId deleteDocument
    * @tags Document
    */
-  deleteDocument(input: deleteDocumentInput): CancelablePromise<_DataOf<typeof Sdk.deleteDocument>>;
-  deleteDocument(arg: any): CancelablePromise<any> {
+  deleteDocument(input: deleteDocumentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDocument>>;
+  deleteDocument(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { documentId, storeId } = arg || {};
       let envelope: any = {};
@@ -4112,7 +4110,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteDocument', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4124,8 +4122,8 @@ export class CamundaClient {
    * @operationId deleteGlobalClusterVariable
    * @tags Cluster Variable
    */
-  deleteGlobalClusterVariable(input: deleteGlobalClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalClusterVariable>>;
-  deleteGlobalClusterVariable(arg: any): CancelablePromise<any> {
+  deleteGlobalClusterVariable(input: deleteGlobalClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalClusterVariable>>;
+  deleteGlobalClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { name } = arg || {};
       let envelope: any = {};
@@ -4170,7 +4168,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4182,8 +4180,8 @@ export class CamundaClient {
    * @operationId deleteGlobalTaskListener
    * @tags Global listener
    */
-  deleteGlobalTaskListener(input: deleteGlobalTaskListenerInput): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalTaskListener>>;
-  deleteGlobalTaskListener(arg: any): CancelablePromise<any> {
+  deleteGlobalTaskListener(input: deleteGlobalTaskListenerInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteGlobalTaskListener>>;
+  deleteGlobalTaskListener(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { id } = arg || {};
       let envelope: any = {};
@@ -4228,7 +4226,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalTaskListener', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteGlobalTaskListener', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4240,8 +4238,8 @@ export class CamundaClient {
    * @operationId deleteGroup
    * @tags Group
    */
-  deleteGroup(input: deleteGroupInput): CancelablePromise<_DataOf<typeof Sdk.deleteGroup>>;
-  deleteGroup(arg: any): CancelablePromise<any> {
+  deleteGroup(input: deleteGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteGroup>>;
+  deleteGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId } = arg || {};
       let envelope: any = {};
@@ -4286,7 +4284,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4299,8 +4297,8 @@ export class CamundaClient {
    * @operationId deleteMappingRule
    * @tags Mapping rule
    */
-  deleteMappingRule(input: deleteMappingRuleInput): CancelablePromise<_DataOf<typeof Sdk.deleteMappingRule>>;
-  deleteMappingRule(arg: any): CancelablePromise<any> {
+  deleteMappingRule(input: deleteMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteMappingRule>>;
+  deleteMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -4345,7 +4343,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteMappingRule', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4357,8 +4355,8 @@ export class CamundaClient {
    * @operationId deleteProcessInstance
    * @tags Process instance
    */
-  deleteProcessInstance(input: deleteProcessInstanceInput): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstance>>;
-  deleteProcessInstance(arg: any): CancelablePromise<any> {
+  deleteProcessInstance(input: deleteProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstance>>;
+  deleteProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { processInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -4405,7 +4403,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteProcessInstance', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteProcessInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4420,8 +4418,8 @@ export class CamundaClient {
    * @operationId deleteProcessInstancesBatchOperation
    * @tags Process instance
    */
-  deleteProcessInstancesBatchOperation(input: deleteProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstancesBatchOperation>>;
-  deleteProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
+  deleteProcessInstancesBatchOperation(input: deleteProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteProcessInstancesBatchOperation>>;
+  deleteProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -4466,7 +4464,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteProcessInstancesBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4492,8 +4490,8 @@ export class CamundaClient {
    * @operationId deleteResource
    * @tags Resource
    */
-  deleteResource(input: deleteResourceInput): CancelablePromise<_DataOf<typeof Sdk.deleteResource>>;
-  deleteResource(arg: any): CancelablePromise<any> {
+  deleteResource(input: deleteResourceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteResource>>;
+  deleteResource(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { resourceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -4540,7 +4538,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteResource', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4552,8 +4550,8 @@ export class CamundaClient {
    * @operationId deleteRole
    * @tags Role
    */
-  deleteRole(input: deleteRoleInput): CancelablePromise<_DataOf<typeof Sdk.deleteRole>>;
-  deleteRole(arg: any): CancelablePromise<any> {
+  deleteRole(input: deleteRoleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRole>>;
+  deleteRole(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId } = arg || {};
       let envelope: any = {};
@@ -4598,7 +4596,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteRole', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4610,8 +4608,8 @@ export class CamundaClient {
    * @operationId deleteTenant
    * @tags Tenant
    */
-  deleteTenant(input: deleteTenantInput): CancelablePromise<_DataOf<typeof Sdk.deleteTenant>>;
-  deleteTenant(arg: any): CancelablePromise<any> {
+  deleteTenant(input: deleteTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteTenant>>;
+  deleteTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId } = arg || {};
       let envelope: any = {};
@@ -4656,7 +4654,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4668,8 +4666,8 @@ export class CamundaClient {
    * @operationId deleteTenantClusterVariable
    * @tags Cluster Variable
    */
-  deleteTenantClusterVariable(input: deleteTenantClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.deleteTenantClusterVariable>>;
-  deleteTenantClusterVariable(arg: any): CancelablePromise<any> {
+  deleteTenantClusterVariable(input: deleteTenantClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteTenantClusterVariable>>;
+  deleteTenantClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, name } = arg || {};
       let envelope: any = {};
@@ -4714,7 +4712,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteTenantClusterVariable', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteTenantClusterVariable', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4726,8 +4724,8 @@ export class CamundaClient {
    * @operationId deleteUser
    * @tags User
    */
-  deleteUser(input: deleteUserInput): CancelablePromise<_DataOf<typeof Sdk.deleteUser>>;
-  deleteUser(arg: any): CancelablePromise<any> {
+  deleteUser(input: deleteUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteUser>>;
+  deleteUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { username } = arg || {};
       let envelope: any = {};
@@ -4772,7 +4770,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'deleteUser', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'deleteUser', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4787,8 +4785,8 @@ export class CamundaClient {
    * @operationId evaluateConditionals
    * @tags Conditional
    */
-  evaluateConditionals(input: evaluateConditionalsInput): CancelablePromise<_DataOf<typeof Sdk.evaluateConditionals>>;
-  evaluateConditionals(arg: any): CancelablePromise<any> {
+  evaluateConditionals(input: evaluateConditionalsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.evaluateConditionals>>;
+  evaluateConditionals(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -4837,7 +4835,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'evaluateConditionals', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'evaluateConditionals', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4857,8 +4855,8 @@ export class CamundaClient {
    * @operationId evaluateDecision
    * @tags Decision definition
    */
-  evaluateDecision(input: evaluateDecisionInput): CancelablePromise<_DataOf<typeof Sdk.evaluateDecision>>;
-  evaluateDecision(arg: any): CancelablePromise<any> {
+  evaluateDecision(input: evaluateDecisionInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.evaluateDecision>>;
+  evaluateDecision(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -4907,7 +4905,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'evaluateDecision', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4919,8 +4917,8 @@ export class CamundaClient {
    * @operationId evaluateExpression
    * @tags Expression
    */
-  evaluateExpression(input: evaluateExpressionInput): CancelablePromise<_DataOf<typeof Sdk.evaluateExpression>>;
-  evaluateExpression(arg: any): CancelablePromise<any> {
+  evaluateExpression(input: evaluateExpressionInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.evaluateExpression>>;
+  evaluateExpression(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -4969,7 +4967,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'evaluateExpression', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'evaluateExpression', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -4984,8 +4982,8 @@ export class CamundaClient {
    * @operationId failJob
    * @tags Job
    */
-  failJob(input: failJobInput): CancelablePromise<_DataOf<typeof Sdk.failJob>>;
-  failJob(arg: any): CancelablePromise<any> {
+  failJob(input: failJobInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.failJob>>;
+  failJob(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { jobKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -5032,7 +5030,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true });
+      return this._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true, retryOverride: options?.retry });
     });
   }
 
@@ -5045,8 +5043,8 @@ export class CamundaClient {
    * @tags Audit Log
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getAuditLog(input: getAuditLogInput, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency): CancelablePromise<_DataOf<typeof Sdk.getAuditLog>>;
-  getAuditLog(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency): CancelablePromise<any> {
+  getAuditLog(input: getAuditLogInput, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuditLog>>;
+  getAuditLog(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuditLogConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5107,8 +5105,8 @@ export class CamundaClient {
    * @operationId getAuthentication
    * @tags Authentication
    */
-  getAuthentication(): CancelablePromise<_DataOf<typeof Sdk.getAuthentication>>;
-  getAuthentication(arg?: any): CancelablePromise<any> {
+  getAuthentication(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuthentication>>;
+  getAuthentication(arg?: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
@@ -5144,7 +5142,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getAuthentication', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -5157,8 +5155,8 @@ export class CamundaClient {
    * @tags Authorization
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getAuthorization(input: getAuthorizationInput, /** Management of eventual consistency **/ consistencyManagement: getAuthorizationConsistency): CancelablePromise<_DataOf<typeof Sdk.getAuthorization>>;
-  getAuthorization(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuthorizationConsistency): CancelablePromise<any> {
+  getAuthorization(input: getAuthorizationInput, /** Management of eventual consistency **/ consistencyManagement: getAuthorizationConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAuthorization>>;
+  getAuthorization(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAuthorizationConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5220,8 +5218,8 @@ export class CamundaClient {
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getBatchOperation(input: getBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: getBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.getBatchOperation>>;
-  getBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: getBatchOperationConsistency): CancelablePromise<any> {
+  getBatchOperation(input: getBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: getBatchOperationConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getBatchOperation>>;
+  getBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: getBatchOperationConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5285,8 +5283,8 @@ export class CamundaClient {
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getDecisionDefinition(input: getDecisionDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionConsistency): CancelablePromise<_DataOf<typeof Sdk.getDecisionDefinition>>;
-  getDecisionDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionConsistency): CancelablePromise<any> {
+  getDecisionDefinition(input: getDecisionDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionDefinition>>;
+  getDecisionDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5348,8 +5346,8 @@ export class CamundaClient {
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getDecisionDefinitionXml(input: getDecisionDefinitionXmlInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionXmlConsistency): CancelablePromise<_DataOf<typeof Sdk.getDecisionDefinitionXml>>;
-  getDecisionDefinitionXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionXmlConsistency): CancelablePromise<any> {
+  getDecisionDefinitionXml(input: getDecisionDefinitionXmlInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionDefinitionXml>>;
+  getDecisionDefinitionXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5411,8 +5409,8 @@ export class CamundaClient {
    * @tags Decision instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getDecisionInstance(input: getDecisionInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionInstanceConsistency): CancelablePromise<_DataOf<typeof Sdk.getDecisionInstance>>;
-  getDecisionInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionInstanceConsistency): CancelablePromise<any> {
+  getDecisionInstance(input: getDecisionInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionInstance>>;
+  getDecisionInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5474,8 +5472,8 @@ export class CamundaClient {
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getDecisionRequirements(input: getDecisionRequirementsInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsConsistency): CancelablePromise<_DataOf<typeof Sdk.getDecisionRequirements>>;
-  getDecisionRequirements(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsConsistency): CancelablePromise<any> {
+  getDecisionRequirements(input: getDecisionRequirementsInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionRequirements>>;
+  getDecisionRequirements(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5537,8 +5535,8 @@ export class CamundaClient {
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getDecisionRequirementsXml(input: getDecisionRequirementsXmlInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsXmlConsistency): CancelablePromise<_DataOf<typeof Sdk.getDecisionRequirementsXml>>;
-  getDecisionRequirementsXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsXmlConsistency): CancelablePromise<any> {
+  getDecisionRequirementsXml(input: getDecisionRequirementsXmlInput, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsXmlConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDecisionRequirementsXml>>;
+  getDecisionRequirementsXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getDecisionRequirementsXmlConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5602,8 +5600,8 @@ export class CamundaClient {
    * @operationId getDocument
    * @tags Document
    */
-  getDocument(input: getDocumentInput): CancelablePromise<_DataOf<typeof Sdk.getDocument>>;
-  getDocument(arg: any): CancelablePromise<any> {
+  getDocument(input: getDocumentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getDocument>>;
+  getDocument(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { documentId, storeId, contentHash } = arg || {};
       let envelope: any = {};
@@ -5650,7 +5648,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getDocument', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -5663,8 +5661,8 @@ export class CamundaClient {
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getElementInstance(input: getElementInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getElementInstanceConsistency): CancelablePromise<_DataOf<typeof Sdk.getElementInstance>>;
-  getElementInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getElementInstanceConsistency): CancelablePromise<any> {
+  getElementInstance(input: getElementInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getElementInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getElementInstance>>;
+  getElementInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getElementInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5726,8 +5724,8 @@ export class CamundaClient {
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getGlobalClusterVariable(input: getGlobalClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalClusterVariable>>;
-  getGlobalClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency): CancelablePromise<any> {
+  getGlobalClusterVariable(input: getGlobalClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGlobalClusterVariable>>;
+  getGlobalClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalClusterVariableConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5790,8 +5788,8 @@ export class CamundaClient {
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getGlobalJobStatistics(input: getGlobalJobStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalJobStatistics>>;
-  getGlobalJobStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency): CancelablePromise<any> {
+  getGlobalJobStatistics(input: getGlobalJobStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGlobalJobStatistics>>;
+  getGlobalJobStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalJobStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5853,8 +5851,8 @@ export class CamundaClient {
    * @tags Global listener
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getGlobalTaskListener(input: getGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency): CancelablePromise<_DataOf<typeof Sdk.getGlobalTaskListener>>;
-  getGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency): CancelablePromise<any> {
+  getGlobalTaskListener(input: getGlobalTaskListenerInput, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGlobalTaskListener>>;
+  getGlobalTaskListener(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGlobalTaskListenerConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5916,8 +5914,8 @@ export class CamundaClient {
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getGroup(input: getGroupInput, /** Management of eventual consistency **/ consistencyManagement: getGroupConsistency): CancelablePromise<_DataOf<typeof Sdk.getGroup>>;
-  getGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGroupConsistency): CancelablePromise<any> {
+  getGroup(input: getGroupInput, /** Management of eventual consistency **/ consistencyManagement: getGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getGroup>>;
+  getGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: getGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -5982,8 +5980,8 @@ export class CamundaClient {
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getIncident(input: getIncidentInput, /** Management of eventual consistency **/ consistencyManagement: getIncidentConsistency): CancelablePromise<_DataOf<typeof Sdk.getIncident>>;
-  getIncident(arg: any, /** Management of eventual consistency **/ consistencyManagement: getIncidentConsistency): CancelablePromise<any> {
+  getIncident(input: getIncidentInput, /** Management of eventual consistency **/ consistencyManagement: getIncidentConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getIncident>>;
+  getIncident(arg: any, /** Management of eventual consistency **/ consistencyManagement: getIncidentConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6037,72 +6035,6 @@ export class CamundaClient {
   }
 
   /**
-   * Get time-series metrics for a job type
-   *
-   * Returns a list of time-bucketed metrics ordered ascending by time.
-   * The `from` and `to` fields select the time window of interest.
-   * Each item in the response corresponds to one time bucket of the requested resolution.
-   *
-    *
-   * @operationId getJobTimeSeriesStatistics
-   * @tags Job
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
-   */
-  getJobTimeSeriesStatistics(input: getJobTimeSeriesStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTimeSeriesStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getJobTimeSeriesStatistics>>;
-  getJobTimeSeriesStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTimeSeriesStatisticsConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
-    return toCancelable(async signal => {
-      const _body = arg;
-      let envelope: any = {};
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const maybe = await this._validation.gateRequest('getJobTimeSeriesStatistics', Schemas.zGetJobTimeSeriesStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.getJobTimeSeriesStatistics(opts);
-        let data = this._evaluateResponse(_raw, 'getJobTimeSeriesStatistics', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zGetJobTimeSeriesStatisticsResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schema = Schemas.zGetJobTimeSeriesStatisticsResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('getJobTimeSeriesStatistics', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('getJobTimeSeriesStatistics', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
-    });
-  }
-
-  /**
    * Get job statistics by type
    *
    * Get statistics about jobs, grouped by job type.
@@ -6112,8 +6044,8 @@ export class CamundaClient {
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getJobTypeStatistics(input: getJobTypeStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getJobTypeStatistics>>;
-  getJobTypeStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency): CancelablePromise<any> {
+  getJobTypeStatistics(input: getJobTypeStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobTypeStatistics>>;
+  getJobTypeStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTypeStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6176,8 +6108,8 @@ export class CamundaClient {
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getJobWorkerStatistics(input: getJobWorkerStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getJobWorkerStatistics>>;
-  getJobWorkerStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency): CancelablePromise<any> {
+  getJobWorkerStatistics(input: getJobWorkerStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobWorkerStatistics>>;
+  getJobWorkerStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobWorkerStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6238,8 +6170,8 @@ export class CamundaClient {
    * @operationId getLicense
    * @tags License
    */
-  getLicense(): CancelablePromise<_DataOf<typeof Sdk.getLicense>>;
-  getLicense(arg?: any): CancelablePromise<any> {
+  getLicense(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getLicense>>;
+  getLicense(arg?: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
@@ -6275,7 +6207,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getLicense', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -6289,8 +6221,8 @@ export class CamundaClient {
    * @tags Mapping rule
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getMappingRule(input: getMappingRuleInput, /** Management of eventual consistency **/ consistencyManagement: getMappingRuleConsistency): CancelablePromise<_DataOf<typeof Sdk.getMappingRule>>;
-  getMappingRule(arg: any, /** Management of eventual consistency **/ consistencyManagement: getMappingRuleConsistency): CancelablePromise<any> {
+  getMappingRule(input: getMappingRuleInput, /** Management of eventual consistency **/ consistencyManagement: getMappingRuleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getMappingRule>>;
+  getMappingRule(arg: any, /** Management of eventual consistency **/ consistencyManagement: getMappingRuleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6352,8 +6284,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessDefinition(input: getProcessDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinition>>;
-  getProcessDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionConsistency): CancelablePromise<any> {
+  getProcessDefinition(input: getProcessDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinition>>;
+  getProcessDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6416,8 +6348,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessDefinitionInstanceStatistics(input: getProcessDefinitionInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceStatistics>>;
-  getProcessDefinitionInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency): CancelablePromise<any> {
+  getProcessDefinitionInstanceStatistics(input: getProcessDefinitionInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceStatistics>>;
+  getProcessDefinitionInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6481,8 +6413,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessDefinitionInstanceVersionStatistics(input: getProcessDefinitionInstanceVersionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>>;
-  getProcessDefinitionInstanceVersionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency): CancelablePromise<any> {
+  getProcessDefinitionInstanceVersionStatistics(input: getProcessDefinitionInstanceVersionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionInstanceVersionStatistics>>;
+  getProcessDefinitionInstanceVersionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionInstanceVersionStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6545,8 +6477,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessDefinitionMessageSubscriptionStatistics(input: getProcessDefinitionMessageSubscriptionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>>;
-  getProcessDefinitionMessageSubscriptionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency): CancelablePromise<any> {
+  getProcessDefinitionMessageSubscriptionStatistics(input: getProcessDefinitionMessageSubscriptionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionMessageSubscriptionStatistics>>;
+  getProcessDefinitionMessageSubscriptionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionMessageSubscriptionStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6608,8 +6540,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessDefinitionStatistics(input: getProcessDefinitionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionStatistics>>;
-  getProcessDefinitionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionStatisticsConsistency): CancelablePromise<any> {
+  getProcessDefinitionStatistics(input: getProcessDefinitionStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionStatistics>>;
+  getProcessDefinitionStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6673,8 +6605,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessDefinitionXml(input: getProcessDefinitionXmlInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionXmlConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionXml>>;
-  getProcessDefinitionXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionXmlConsistency): CancelablePromise<any> {
+  getProcessDefinitionXml(input: getProcessDefinitionXmlInput, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessDefinitionXml>>;
+  getProcessDefinitionXml(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessDefinitionXmlConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6738,8 +6670,8 @@ export class CamundaClient {
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessInstance(input: getProcessInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstance>>;
-  getProcessInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceConsistency): CancelablePromise<any> {
+  getProcessInstance(input: getProcessInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstance>>;
+  getProcessInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6801,8 +6733,8 @@ export class CamundaClient {
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessInstanceCallHierarchy(input: getProcessInstanceCallHierarchyInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceCallHierarchyConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceCallHierarchy>>;
-  getProcessInstanceCallHierarchy(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceCallHierarchyConsistency): CancelablePromise<any> {
+  getProcessInstanceCallHierarchy(input: getProcessInstanceCallHierarchyInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceCallHierarchyConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceCallHierarchy>>;
+  getProcessInstanceCallHierarchy(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceCallHierarchyConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6864,8 +6796,8 @@ export class CamundaClient {
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessInstanceSequenceFlows(input: getProcessInstanceSequenceFlowsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceSequenceFlowsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceSequenceFlows>>;
-  getProcessInstanceSequenceFlows(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceSequenceFlowsConsistency): CancelablePromise<any> {
+  getProcessInstanceSequenceFlows(input: getProcessInstanceSequenceFlowsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceSequenceFlowsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceSequenceFlows>>;
+  getProcessInstanceSequenceFlows(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceSequenceFlowsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6927,8 +6859,8 @@ export class CamundaClient {
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessInstanceStatistics(input: getProcessInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatistics>>;
-  getProcessInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsConsistency): CancelablePromise<any> {
+  getProcessInstanceStatistics(input: getProcessInstanceStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatistics>>;
+  getProcessInstanceStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -6993,8 +6925,8 @@ export class CamundaClient {
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessInstanceStatisticsByDefinition(input: getProcessInstanceStatisticsByDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>>;
-  getProcessInstanceStatisticsByDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency): CancelablePromise<any> {
+  getProcessInstanceStatisticsByDefinition(input: getProcessInstanceStatisticsByDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByDefinition>>;
+  getProcessInstanceStatisticsByDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7058,8 +6990,8 @@ export class CamundaClient {
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getProcessInstanceStatisticsByError(input: getProcessInstanceStatisticsByErrorInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>>;
-  getProcessInstanceStatisticsByError(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency): CancelablePromise<any> {
+  getProcessInstanceStatisticsByError(input: getProcessInstanceStatisticsByErrorInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>>;
+  getProcessInstanceStatisticsByError(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceStatisticsByErrorConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7124,8 +7056,8 @@ export class CamundaClient {
    * @operationId getResource
    * @tags Resource
    */
-  getResource(input: getResourceInput): CancelablePromise<_DataOf<typeof Sdk.getResource>>;
-  getResource(arg: any): CancelablePromise<any> {
+  getResource(input: getResourceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResource>>;
+  getResource(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { resourceKey } = arg || {};
       let envelope: any = {};
@@ -7170,7 +7102,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getResource', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getResource', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -7186,8 +7118,8 @@ export class CamundaClient {
    * @operationId getResourceContent
    * @tags Resource
    */
-  getResourceContent(input: getResourceContentInput): CancelablePromise<_DataOf<typeof Sdk.getResourceContent>>;
-  getResourceContent(arg: any): CancelablePromise<any> {
+  getResourceContent(input: getResourceContentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResourceContent>>;
+  getResourceContent(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { resourceKey } = arg || {};
       let envelope: any = {};
@@ -7232,7 +7164,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getResourceContent', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getResourceContent', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -7245,8 +7177,8 @@ export class CamundaClient {
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getRole(input: getRoleInput, /** Management of eventual consistency **/ consistencyManagement: getRoleConsistency): CancelablePromise<_DataOf<typeof Sdk.getRole>>;
-  getRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: getRoleConsistency): CancelablePromise<any> {
+  getRole(input: getRoleInput, /** Management of eventual consistency **/ consistencyManagement: getRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRole>>;
+  getRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: getRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7310,8 +7242,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getStartProcessForm(input: getStartProcessFormInput, /** Management of eventual consistency **/ consistencyManagement: getStartProcessFormConsistency): CancelablePromise<_DataOf<typeof Sdk.getStartProcessForm>>;
-  getStartProcessForm(arg: any, /** Management of eventual consistency **/ consistencyManagement: getStartProcessFormConsistency): CancelablePromise<any> {
+  getStartProcessForm(input: getStartProcessFormInput, /** Management of eventual consistency **/ consistencyManagement: getStartProcessFormConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getStartProcessForm>>;
+  getStartProcessForm(arg: any, /** Management of eventual consistency **/ consistencyManagement: getStartProcessFormConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7372,8 +7304,8 @@ export class CamundaClient {
    * @operationId getStatus
    * @tags Cluster
    */
-  getStatus(): CancelablePromise<_DataOf<typeof Sdk.getStatus>>;
-  getStatus(arg?: any): CancelablePromise<any> {
+  getStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getStatus>>;
+  getStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
@@ -7409,7 +7341,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -7422,8 +7354,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getTenant(input: getTenantInput, /** Management of eventual consistency **/ consistencyManagement: getTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.getTenant>>;
-  getTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantConsistency): CancelablePromise<any> {
+  getTenant(input: getTenantInput, /** Management of eventual consistency **/ consistencyManagement: getTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTenant>>;
+  getTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7485,8 +7417,8 @@ export class CamundaClient {
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getTenantClusterVariable(input: getTenantClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency): CancelablePromise<_DataOf<typeof Sdk.getTenantClusterVariable>>;
-  getTenantClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency): CancelablePromise<any> {
+  getTenantClusterVariable(input: getTenantClusterVariableInput, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTenantClusterVariable>>;
+  getTenantClusterVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getTenantClusterVariableConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7549,8 +7481,8 @@ export class CamundaClient {
    * @operationId getTopology
    * @tags Cluster
    */
-  getTopology(): CancelablePromise<_DataOf<typeof Sdk.getTopology>>;
-  getTopology(arg?: any): CancelablePromise<any> {
+  getTopology(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getTopology>>;
+  getTopology(arg?: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
@@ -7586,7 +7518,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'getTopology', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -7599,8 +7531,8 @@ export class CamundaClient {
    * @tags System
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getUsageMetrics(input: getUsageMetricsInput, /** Management of eventual consistency **/ consistencyManagement: getUsageMetricsConsistency): CancelablePromise<_DataOf<typeof Sdk.getUsageMetrics>>;
-  getUsageMetrics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUsageMetricsConsistency): CancelablePromise<any> {
+  getUsageMetrics(input: getUsageMetricsInput, /** Management of eventual consistency **/ consistencyManagement: getUsageMetricsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUsageMetrics>>;
+  getUsageMetrics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUsageMetricsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7662,8 +7594,8 @@ export class CamundaClient {
    * @tags User
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getUser(input: getUserInput, /** Management of eventual consistency **/ consistencyManagement: getUserConsistency): CancelablePromise<_DataOf<typeof Sdk.getUser>>;
-  getUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserConsistency): CancelablePromise<any> {
+  getUser(input: getUserInput, /** Management of eventual consistency **/ consistencyManagement: getUserConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUser>>;
+  getUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7725,8 +7657,8 @@ export class CamundaClient {
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getUserTask(input: getUserTaskInput, /** Management of eventual consistency **/ consistencyManagement: getUserTaskConsistency): CancelablePromise<_DataOf<typeof Sdk.getUserTask>>;
-  getUserTask(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserTaskConsistency): CancelablePromise<any> {
+  getUserTask(input: getUserTaskInput, /** Management of eventual consistency **/ consistencyManagement: getUserTaskConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUserTask>>;
+  getUserTask(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserTaskConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7790,8 +7722,8 @@ export class CamundaClient {
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getUserTaskForm(input: getUserTaskFormInput, /** Management of eventual consistency **/ consistencyManagement: getUserTaskFormConsistency): CancelablePromise<_DataOf<typeof Sdk.getUserTaskForm>>;
-  getUserTaskForm(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserTaskFormConsistency): CancelablePromise<any> {
+  getUserTaskForm(input: getUserTaskFormInput, /** Management of eventual consistency **/ consistencyManagement: getUserTaskFormConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getUserTaskForm>>;
+  getUserTaskForm(arg: any, /** Management of eventual consistency **/ consistencyManagement: getUserTaskFormConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7857,8 +7789,8 @@ export class CamundaClient {
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getVariable(input: getVariableInput, /** Management of eventual consistency **/ consistencyManagement: getVariableConsistency): CancelablePromise<_DataOf<typeof Sdk.getVariable>>;
-  getVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getVariableConsistency): CancelablePromise<any> {
+  getVariable(input: getVariableInput, /** Management of eventual consistency **/ consistencyManagement: getVariableConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getVariable>>;
+  getVariable(arg: any, /** Management of eventual consistency **/ consistencyManagement: getVariableConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -7926,8 +7858,8 @@ export class CamundaClient {
    * @operationId migrateProcessInstance
    * @tags Process instance
    */
-  migrateProcessInstance(input: migrateProcessInstanceInput): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstance>>;
-  migrateProcessInstance(arg: any): CancelablePromise<any> {
+  migrateProcessInstance(input: migrateProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstance>>;
+  migrateProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { processInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -7974,7 +7906,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -7990,8 +7922,8 @@ export class CamundaClient {
    * @operationId migrateProcessInstancesBatchOperation
    * @tags Process instance
    */
-  migrateProcessInstancesBatchOperation(input: migrateProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>>;
-  migrateProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
+  migrateProcessInstancesBatchOperation(input: migrateProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>>;
+  migrateProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -8036,7 +7968,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstancesBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8054,8 +7986,8 @@ export class CamundaClient {
    * @operationId modifyProcessInstance
    * @tags Process instance
    */
-  modifyProcessInstance(input: modifyProcessInstanceInput): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstance>>;
-  modifyProcessInstance(arg: any): CancelablePromise<any> {
+  modifyProcessInstance(input: modifyProcessInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstance>>;
+  modifyProcessInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { processInstanceKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -8102,7 +8034,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8120,8 +8052,8 @@ export class CamundaClient {
    * @operationId modifyProcessInstancesBatchOperation
    * @tags Process instance
    */
-  modifyProcessInstancesBatchOperation(input: modifyProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>>;
-  modifyProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
+  modifyProcessInstancesBatchOperation(input: modifyProcessInstancesBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>>;
+  modifyProcessInstancesBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -8166,7 +8098,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8184,8 +8116,8 @@ export class CamundaClient {
    * @operationId pinClock
    * @tags Clock
    */
-  pinClock(input: pinClockInput): CancelablePromise<_DataOf<typeof Sdk.pinClock>>;
-  pinClock(arg: any): CancelablePromise<any> {
+  pinClock(input: pinClockInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.pinClock>>;
+  pinClock(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -8230,7 +8162,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'pinClock', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8249,8 +8181,8 @@ export class CamundaClient {
    * @operationId publishMessage
    * @tags Message
    */
-  publishMessage(input: publishMessageInput): CancelablePromise<_DataOf<typeof Sdk.publishMessage>>;
-  publishMessage(arg: any): CancelablePromise<any> {
+  publishMessage(input: publishMessageInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.publishMessage>>;
+  publishMessage(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -8299,7 +8231,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'publishMessage', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8317,8 +8249,8 @@ export class CamundaClient {
    * @operationId resetClock
    * @tags Clock
    */
-  resetClock(): CancelablePromise<_DataOf<typeof Sdk.resetClock>>;
-  resetClock(arg?: any): CancelablePromise<any> {
+  resetClock(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resetClock>>;
+  resetClock(arg?: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const opts: any = { client: this._client, signal, throwOnError: false };
       const call = async () => {
@@ -8354,7 +8286,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'resetClock', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8370,8 +8302,8 @@ export class CamundaClient {
    * @operationId resolveIncident
    * @tags Incident
    */
-  resolveIncident(input: resolveIncidentInput): CancelablePromise<_DataOf<typeof Sdk.resolveIncident>>;
-  resolveIncident(arg: any): CancelablePromise<any> {
+  resolveIncident(input: resolveIncidentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveIncident>>;
+  resolveIncident(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { incidentKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -8418,7 +8350,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'resolveIncident', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8434,8 +8366,8 @@ export class CamundaClient {
    * @operationId resolveIncidentsBatchOperation
    * @tags Process instance
    */
-  resolveIncidentsBatchOperation(input: resolveIncidentsBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>>;
-  resolveIncidentsBatchOperation(arg: any): CancelablePromise<any> {
+  resolveIncidentsBatchOperation(input: resolveIncidentsBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>>;
+  resolveIncidentsBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -8480,7 +8412,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveIncidentsBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'resolveIncidentsBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8492,8 +8424,8 @@ export class CamundaClient {
    * @operationId resolveProcessInstanceIncidents
    * @tags Process instance
    */
-  resolveProcessInstanceIncidents(input: resolveProcessInstanceIncidentsInput): CancelablePromise<_DataOf<typeof Sdk.resolveProcessInstanceIncidents>>;
-  resolveProcessInstanceIncidents(arg: any): CancelablePromise<any> {
+  resolveProcessInstanceIncidents(input: resolveProcessInstanceIncidentsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resolveProcessInstanceIncidents>>;
+  resolveProcessInstanceIncidents(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { processInstanceKey } = arg || {};
       let envelope: any = {};
@@ -8538,7 +8470,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'resolveProcessInstanceIncidents', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'resolveProcessInstanceIncidents', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8552,8 +8484,8 @@ export class CamundaClient {
    * @operationId resumeBatchOperation
    * @tags Batch operation
    */
-  resumeBatchOperation(input: resumeBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.resumeBatchOperation>>;
-  resumeBatchOperation(arg: any): CancelablePromise<any> {
+  resumeBatchOperation(input: resumeBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeBatchOperation>>;
+  resumeBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { batchOperationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -8600,7 +8532,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -8613,8 +8545,8 @@ export class CamundaClient {
    * @tags Audit Log
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchAuditLogs(input: searchAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchAuditLogs>>;
-  searchAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency): CancelablePromise<any> {
+  searchAuditLogs(input: searchAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAuditLogs>>;
+  searchAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuditLogsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -8676,8 +8608,8 @@ export class CamundaClient {
    * @tags Authorization
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchAuthorizations(input: searchAuthorizationsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuthorizationsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchAuthorizations>>;
-  searchAuthorizations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuthorizationsConsistency): CancelablePromise<any> {
+  searchAuthorizations(input: searchAuthorizationsInput, /** Management of eventual consistency **/ consistencyManagement: searchAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAuthorizations>>;
+  searchAuthorizations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -8739,8 +8671,8 @@ export class CamundaClient {
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchBatchOperationItems(input: searchBatchOperationItemsInput, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationItemsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchBatchOperationItems>>;
-  searchBatchOperationItems(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationItemsConsistency): CancelablePromise<any> {
+  searchBatchOperationItems(input: searchBatchOperationItemsInput, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationItemsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchBatchOperationItems>>;
+  searchBatchOperationItems(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationItemsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -8802,8 +8734,8 @@ export class CamundaClient {
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchBatchOperations(input: searchBatchOperationsInput, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchBatchOperations>>;
-  searchBatchOperations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationsConsistency): CancelablePromise<any> {
+  searchBatchOperations(input: searchBatchOperationsInput, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchBatchOperations>>;
+  searchBatchOperations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchBatchOperationsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -8865,8 +8797,8 @@ export class CamundaClient {
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchClientsForGroup(input: searchClientsForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForGroupConsistency): CancelablePromise<_DataOf<typeof Sdk.searchClientsForGroup>>;
-  searchClientsForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForGroupConsistency): CancelablePromise<any> {
+  searchClientsForGroup(input: searchClientsForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClientsForGroup>>;
+  searchClientsForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -8930,8 +8862,8 @@ export class CamundaClient {
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchClientsForRole(input: searchClientsForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForRoleConsistency): CancelablePromise<_DataOf<typeof Sdk.searchClientsForRole>>;
-  searchClientsForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForRoleConsistency): CancelablePromise<any> {
+  searchClientsForRole(input: searchClientsForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClientsForRole>>;
+  searchClientsForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -8995,8 +8927,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchClientsForTenant(input: searchClientsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchClientsForTenant>>;
-  searchClientsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForTenantConsistency): CancelablePromise<any> {
+  searchClientsForTenant(input: searchClientsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchClientsForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClientsForTenant>>;
+  searchClientsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClientsForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9058,8 +8990,8 @@ export class CamundaClient {
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchClusterVariables(input: searchClusterVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchClusterVariables>>;
-  searchClusterVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency): CancelablePromise<any> {
+  searchClusterVariables(input: searchClusterVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchClusterVariables>>;
+  searchClusterVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchClusterVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9123,8 +9055,8 @@ export class CamundaClient {
    * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchCorrelatedMessageSubscriptions(input: searchCorrelatedMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>>;
-  searchCorrelatedMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency): CancelablePromise<any> {
+  searchCorrelatedMessageSubscriptions(input: searchCorrelatedMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchCorrelatedMessageSubscriptions>>;
+  searchCorrelatedMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchCorrelatedMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9188,8 +9120,8 @@ export class CamundaClient {
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchDecisionDefinitions(input: searchDecisionDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionDefinitionsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchDecisionDefinitions>>;
-  searchDecisionDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionDefinitionsConsistency): CancelablePromise<any> {
+  searchDecisionDefinitions(input: searchDecisionDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionDefinitionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchDecisionDefinitions>>;
+  searchDecisionDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionDefinitionsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9251,8 +9183,8 @@ export class CamundaClient {
    * @tags Decision instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchDecisionInstances(input: searchDecisionInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionInstancesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchDecisionInstances>>;
-  searchDecisionInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionInstancesConsistency): CancelablePromise<any> {
+  searchDecisionInstances(input: searchDecisionInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchDecisionInstances>>;
+  searchDecisionInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9314,8 +9246,8 @@ export class CamundaClient {
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchDecisionRequirements(input: searchDecisionRequirementsInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionRequirementsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchDecisionRequirements>>;
-  searchDecisionRequirements(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionRequirementsConsistency): CancelablePromise<any> {
+  searchDecisionRequirements(input: searchDecisionRequirementsInput, /** Management of eventual consistency **/ consistencyManagement: searchDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchDecisionRequirements>>;
+  searchDecisionRequirements(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchDecisionRequirementsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9384,8 +9316,8 @@ export class CamundaClient {
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchElementInstanceIncidents(input: searchElementInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchElementInstanceIncidents>>;
-  searchElementInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency): CancelablePromise<any> {
+  searchElementInstanceIncidents(input: searchElementInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchElementInstanceIncidents>>;
+  searchElementInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9449,8 +9381,8 @@ export class CamundaClient {
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchElementInstances(input: searchElementInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstancesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchElementInstances>>;
-  searchElementInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstancesConsistency): CancelablePromise<any> {
+  searchElementInstances(input: searchElementInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchElementInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchElementInstances>>;
+  searchElementInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchElementInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9512,8 +9444,8 @@ export class CamundaClient {
    * @tags Global listener
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchGlobalTaskListeners(input: searchGlobalTaskListenersInput, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency): CancelablePromise<_DataOf<typeof Sdk.searchGlobalTaskListeners>>;
-  searchGlobalTaskListeners(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency): CancelablePromise<any> {
+  searchGlobalTaskListeners(input: searchGlobalTaskListenersInput, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGlobalTaskListeners>>;
+  searchGlobalTaskListeners(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGlobalTaskListenersConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9575,8 +9507,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchGroupIdsForTenant(input: searchGroupIdsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupIdsForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchGroupIdsForTenant>>;
-  searchGroupIdsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupIdsForTenantConsistency): CancelablePromise<any> {
+  searchGroupIdsForTenant(input: searchGroupIdsForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupIdsForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGroupIdsForTenant>>;
+  searchGroupIdsForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupIdsForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9640,8 +9572,8 @@ export class CamundaClient {
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchGroups(input: searchGroupsInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchGroups>>;
-  searchGroups(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupsConsistency): CancelablePromise<any> {
+  searchGroups(input: searchGroupsInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGroups>>;
+  searchGroups(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9703,8 +9635,8 @@ export class CamundaClient {
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchGroupsForRole(input: searchGroupsForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupsForRoleConsistency): CancelablePromise<_DataOf<typeof Sdk.searchGroupsForRole>>;
-  searchGroupsForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupsForRoleConsistency): CancelablePromise<any> {
+  searchGroupsForRole(input: searchGroupsForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchGroupsForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchGroupsForRole>>;
+  searchGroupsForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchGroupsForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9771,8 +9703,8 @@ export class CamundaClient {
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchIncidents(input: searchIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchIncidentsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchIncidents>>;
-  searchIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchIncidentsConsistency): CancelablePromise<any> {
+  searchIncidents(input: searchIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchIncidentsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchIncidents>>;
+  searchIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchIncidentsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9834,8 +9766,8 @@ export class CamundaClient {
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchJobs(input: searchJobsInput, /** Management of eventual consistency **/ consistencyManagement: searchJobsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchJobs>>;
-  searchJobs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchJobsConsistency): CancelablePromise<any> {
+  searchJobs(input: searchJobsInput, /** Management of eventual consistency **/ consistencyManagement: searchJobsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchJobs>>;
+  searchJobs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchJobsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9898,8 +9830,8 @@ export class CamundaClient {
    * @tags Mapping rule
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchMappingRule(input: searchMappingRuleInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRuleConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMappingRule>>;
-  searchMappingRule(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRuleConsistency): CancelablePromise<any> {
+  searchMappingRule(input: searchMappingRuleInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRuleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRule>>;
+  searchMappingRule(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRuleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -9961,8 +9893,8 @@ export class CamundaClient {
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchMappingRulesForGroup(input: searchMappingRulesForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForGroupConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForGroup>>;
-  searchMappingRulesForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForGroupConsistency): CancelablePromise<any> {
+  searchMappingRulesForGroup(input: searchMappingRulesForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForGroup>>;
+  searchMappingRulesForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10026,8 +9958,8 @@ export class CamundaClient {
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchMappingRulesForRole(input: searchMappingRulesForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForRoleConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForRole>>;
-  searchMappingRulesForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForRoleConsistency): CancelablePromise<any> {
+  searchMappingRulesForRole(input: searchMappingRulesForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForRole>>;
+  searchMappingRulesForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10091,8 +10023,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchMappingRulesForTenant(input: searchMappingRulesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForTenant>>;
-  searchMappingRulesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency): CancelablePromise<any> {
+  searchMappingRulesForTenant(input: searchMappingRulesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMappingRulesForTenant>>;
+  searchMappingRulesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMappingRulesForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10156,8 +10088,8 @@ export class CamundaClient {
    * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchMessageSubscriptions(input: searchMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchMessageSubscriptionsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchMessageSubscriptions>>;
-  searchMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMessageSubscriptionsConsistency): CancelablePromise<any> {
+  searchMessageSubscriptions(input: searchMessageSubscriptionsInput, /** Management of eventual consistency **/ consistencyManagement: searchMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchMessageSubscriptions>>;
+  searchMessageSubscriptions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchMessageSubscriptionsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10219,8 +10151,8 @@ export class CamundaClient {
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchProcessDefinitions(input: searchProcessDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchProcessDefinitions>>;
-  searchProcessDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionsConsistency): CancelablePromise<any> {
+  searchProcessDefinitions(input: searchProcessDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessDefinitions>>;
+  searchProcessDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessDefinitionsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10288,8 +10220,8 @@ export class CamundaClient {
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchProcessInstanceIncidents(input: searchProcessInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstanceIncidentsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchProcessInstanceIncidents>>;
-  searchProcessInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstanceIncidentsConsistency): CancelablePromise<any> {
+  searchProcessInstanceIncidents(input: searchProcessInstanceIncidentsInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessInstanceIncidents>>;
+  searchProcessInstanceIncidents(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstanceIncidentsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10355,8 +10287,8 @@ export class CamundaClient {
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchProcessInstances(input: searchProcessInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstancesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchProcessInstances>>;
-  searchProcessInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstancesConsistency): CancelablePromise<any> {
+  searchProcessInstances(input: searchProcessInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchProcessInstances>>;
+  searchProcessInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchProcessInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10418,8 +10350,8 @@ export class CamundaClient {
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchRoles(input: searchRolesInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchRoles>>;
-  searchRoles(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesConsistency): CancelablePromise<any> {
+  searchRoles(input: searchRolesInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchRoles>>;
+  searchRoles(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10481,8 +10413,8 @@ export class CamundaClient {
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchRolesForGroup(input: searchRolesForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesForGroupConsistency): CancelablePromise<_DataOf<typeof Sdk.searchRolesForGroup>>;
-  searchRolesForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesForGroupConsistency): CancelablePromise<any> {
+  searchRolesForGroup(input: searchRolesForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchRolesForGroup>>;
+  searchRolesForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10546,8 +10478,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchRolesForTenant(input: searchRolesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchRolesForTenant>>;
-  searchRolesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesForTenantConsistency): CancelablePromise<any> {
+  searchRolesForTenant(input: searchRolesForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchRolesForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchRolesForTenant>>;
+  searchRolesForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchRolesForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10611,8 +10543,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchTenants(input: searchTenantsInput, /** Management of eventual consistency **/ consistencyManagement: searchTenantsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchTenants>>;
-  searchTenants(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchTenantsConsistency): CancelablePromise<any> {
+  searchTenants(input: searchTenantsInput, /** Management of eventual consistency **/ consistencyManagement: searchTenantsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchTenants>>;
+  searchTenants(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchTenantsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10674,8 +10606,8 @@ export class CamundaClient {
    * @tags User
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUsers(input: searchUsersInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUsers>>;
-  searchUsers(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersConsistency): CancelablePromise<any> {
+  searchUsers(input: searchUsersInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsers>>;
+  searchUsers(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10737,8 +10669,8 @@ export class CamundaClient {
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUsersForGroup(input: searchUsersForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForGroupConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUsersForGroup>>;
-  searchUsersForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForGroupConsistency): CancelablePromise<any> {
+  searchUsersForGroup(input: searchUsersForGroupInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForGroupConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsersForGroup>>;
+  searchUsersForGroup(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForGroupConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10802,8 +10734,8 @@ export class CamundaClient {
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUsersForRole(input: searchUsersForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForRoleConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUsersForRole>>;
-  searchUsersForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForRoleConsistency): CancelablePromise<any> {
+  searchUsersForRole(input: searchUsersForRoleInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForRoleConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsersForRole>>;
+  searchUsersForRole(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForRoleConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10867,8 +10799,8 @@ export class CamundaClient {
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUsersForTenant(input: searchUsersForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForTenantConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUsersForTenant>>;
-  searchUsersForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForTenantConsistency): CancelablePromise<any> {
+  searchUsersForTenant(input: searchUsersForTenantInput, /** Management of eventual consistency **/ consistencyManagement: searchUsersForTenantConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUsersForTenant>>;
+  searchUsersForTenant(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUsersForTenantConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10932,8 +10864,8 @@ export class CamundaClient {
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUserTaskAuditLogs(input: searchUserTaskAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskAuditLogs>>;
-  searchUserTaskAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency): CancelablePromise<any> {
+  searchUserTaskAuditLogs(input: searchUserTaskAuditLogsInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskAuditLogs>>;
+  searchUserTaskAuditLogs(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskAuditLogsConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -10999,8 +10931,8 @@ export class CamundaClient {
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUserTasks(input: searchUserTasksInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTasksConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUserTasks>>;
-  searchUserTasks(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTasksConsistency): CancelablePromise<any> {
+  searchUserTasks(input: searchUserTasksInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTasksConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTasks>>;
+  searchUserTasks(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTasksConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -11065,8 +10997,8 @@ export class CamundaClient {
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchUserTaskVariables(input: searchUserTaskVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskVariablesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskVariables>>;
-  searchUserTaskVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskVariablesConsistency): CancelablePromise<any> {
+  searchUserTaskVariables(input: searchUserTaskVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskVariables>>;
+  searchUserTaskVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -11140,8 +11072,8 @@ export class CamundaClient {
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  searchVariables(input: searchVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchVariablesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchVariables>>;
-  searchVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchVariablesConsistency): CancelablePromise<any> {
+  searchVariables(input: searchVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchVariables>>;
+  searchVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
     if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
     const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
@@ -11206,8 +11138,8 @@ export class CamundaClient {
    * @operationId suspendBatchOperation
    * @tags Batch operation
    */
-  suspendBatchOperation(input: suspendBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.suspendBatchOperation>>;
-  suspendBatchOperation(arg: any): CancelablePromise<any> {
+  suspendBatchOperation(input: suspendBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.suspendBatchOperation>>;
+  suspendBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { batchOperationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -11254,7 +11186,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11267,8 +11199,8 @@ export class CamundaClient {
    * @operationId throwJobError
    * @tags Job
    */
-  throwJobError(input: throwJobErrorInput): CancelablePromise<_DataOf<typeof Sdk.throwJobError>>;
-  throwJobError(arg: any): CancelablePromise<any> {
+  throwJobError(input: throwJobErrorInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.throwJobError>>;
+  throwJobError(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { jobKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -11315,7 +11247,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true });
+      return this._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true, retryOverride: options?.retry });
     });
   }
 
@@ -11329,8 +11261,8 @@ export class CamundaClient {
    * @operationId unassignClientFromGroup
    * @tags Group
    */
-  unassignClientFromGroup(input: unassignClientFromGroupInput): CancelablePromise<_DataOf<typeof Sdk.unassignClientFromGroup>>;
-  unassignClientFromGroup(arg: any): CancelablePromise<any> {
+  unassignClientFromGroup(input: unassignClientFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignClientFromGroup>>;
+  unassignClientFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, clientId } = arg || {};
       let envelope: any = {};
@@ -11375,7 +11307,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignClientFromGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11389,8 +11321,8 @@ export class CamundaClient {
    * @operationId unassignClientFromTenant
    * @tags Tenant
    */
-  unassignClientFromTenant(input: unassignClientFromTenantInput): CancelablePromise<_DataOf<typeof Sdk.unassignClientFromTenant>>;
-  unassignClientFromTenant(arg: any): CancelablePromise<any> {
+  unassignClientFromTenant(input: unassignClientFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignClientFromTenant>>;
+  unassignClientFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, clientId } = arg || {};
       let envelope: any = {};
@@ -11435,7 +11367,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignClientFromTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11449,8 +11381,8 @@ export class CamundaClient {
    * @operationId unassignGroupFromTenant
    * @tags Tenant
    */
-  unassignGroupFromTenant(input: unassignGroupFromTenantInput): CancelablePromise<_DataOf<typeof Sdk.unassignGroupFromTenant>>;
-  unassignGroupFromTenant(arg: any): CancelablePromise<any> {
+  unassignGroupFromTenant(input: unassignGroupFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignGroupFromTenant>>;
+  unassignGroupFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, groupId } = arg || {};
       let envelope: any = {};
@@ -11495,7 +11427,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignGroupFromTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11507,8 +11439,8 @@ export class CamundaClient {
    * @operationId unassignMappingRuleFromGroup
    * @tags Group
    */
-  unassignMappingRuleFromGroup(input: unassignMappingRuleFromGroupInput): CancelablePromise<_DataOf<typeof Sdk.unassignMappingRuleFromGroup>>;
-  unassignMappingRuleFromGroup(arg: any): CancelablePromise<any> {
+  unassignMappingRuleFromGroup(input: unassignMappingRuleFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignMappingRuleFromGroup>>;
+  unassignMappingRuleFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -11553,7 +11485,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11565,8 +11497,8 @@ export class CamundaClient {
    * @operationId unassignMappingRuleFromTenant
    * @tags Tenant
    */
-  unassignMappingRuleFromTenant(input: unassignMappingRuleFromTenantInput): CancelablePromise<_DataOf<typeof Sdk.unassignMappingRuleFromTenant>>;
-  unassignMappingRuleFromTenant(arg: any): CancelablePromise<any> {
+  unassignMappingRuleFromTenant(input: unassignMappingRuleFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignMappingRuleFromTenant>>;
+  unassignMappingRuleFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -11611,7 +11543,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignMappingRuleFromTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11623,8 +11555,8 @@ export class CamundaClient {
    * @operationId unassignRoleFromClient
    * @tags Role
    */
-  unassignRoleFromClient(input: unassignRoleFromClientInput): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromClient>>;
-  unassignRoleFromClient(arg: any): CancelablePromise<any> {
+  unassignRoleFromClient(input: unassignRoleFromClientInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromClient>>;
+  unassignRoleFromClient(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, clientId } = arg || {};
       let envelope: any = {};
@@ -11669,7 +11601,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromClient', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11681,8 +11613,8 @@ export class CamundaClient {
    * @operationId unassignRoleFromGroup
    * @tags Role
    */
-  unassignRoleFromGroup(input: unassignRoleFromGroupInput): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromGroup>>;
-  unassignRoleFromGroup(arg: any): CancelablePromise<any> {
+  unassignRoleFromGroup(input: unassignRoleFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromGroup>>;
+  unassignRoleFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, groupId } = arg || {};
       let envelope: any = {};
@@ -11727,7 +11659,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11739,8 +11671,8 @@ export class CamundaClient {
    * @operationId unassignRoleFromMappingRule
    * @tags Role
    */
-  unassignRoleFromMappingRule(input: unassignRoleFromMappingRuleInput): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromMappingRule>>;
-  unassignRoleFromMappingRule(arg: any): CancelablePromise<any> {
+  unassignRoleFromMappingRule(input: unassignRoleFromMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromMappingRule>>;
+  unassignRoleFromMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, mappingRuleId } = arg || {};
       let envelope: any = {};
@@ -11785,7 +11717,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromMappingRule', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11800,8 +11732,8 @@ export class CamundaClient {
    * @operationId unassignRoleFromTenant
    * @tags Tenant
    */
-  unassignRoleFromTenant(input: unassignRoleFromTenantInput): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromTenant>>;
-  unassignRoleFromTenant(arg: any): CancelablePromise<any> {
+  unassignRoleFromTenant(input: unassignRoleFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromTenant>>;
+  unassignRoleFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, roleId } = arg || {};
       let envelope: any = {};
@@ -11846,7 +11778,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11858,8 +11790,8 @@ export class CamundaClient {
    * @operationId unassignRoleFromUser
    * @tags Role
    */
-  unassignRoleFromUser(input: unassignRoleFromUserInput): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromUser>>;
-  unassignRoleFromUser(arg: any): CancelablePromise<any> {
+  unassignRoleFromUser(input: unassignRoleFromUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignRoleFromUser>>;
+  unassignRoleFromUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, username } = arg || {};
       let envelope: any = {};
@@ -11904,7 +11836,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignRoleFromUser', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11918,8 +11850,8 @@ export class CamundaClient {
    * @operationId unassignUserFromGroup
    * @tags Group
    */
-  unassignUserFromGroup(input: unassignUserFromGroupInput): CancelablePromise<_DataOf<typeof Sdk.unassignUserFromGroup>>;
-  unassignUserFromGroup(arg: any): CancelablePromise<any> {
+  unassignUserFromGroup(input: unassignUserFromGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignUserFromGroup>>;
+  unassignUserFromGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, username } = arg || {};
       let envelope: any = {};
@@ -11964,7 +11896,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignUserFromGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11978,8 +11910,8 @@ export class CamundaClient {
    * @operationId unassignUserFromTenant
    * @tags Tenant
    */
-  unassignUserFromTenant(input: unassignUserFromTenantInput): CancelablePromise<_DataOf<typeof Sdk.unassignUserFromTenant>>;
-  unassignUserFromTenant(arg: any): CancelablePromise<any> {
+  unassignUserFromTenant(input: unassignUserFromTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignUserFromTenant>>;
+  unassignUserFromTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, username } = arg || {};
       let envelope: any = {};
@@ -12024,7 +11956,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignUserFromTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12038,8 +11970,8 @@ export class CamundaClient {
    * @operationId unassignUserTask
    * @tags User task
    */
-  unassignUserTask(input: unassignUserTaskInput): CancelablePromise<_DataOf<typeof Sdk.unassignUserTask>>;
-  unassignUserTask(arg: any): CancelablePromise<any> {
+  unassignUserTask(input: unassignUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.unassignUserTask>>;
+  unassignUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { userTaskKey } = arg || {};
       let envelope: any = {};
@@ -12084,7 +12016,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12096,8 +12028,8 @@ export class CamundaClient {
    * @operationId updateAuthorization
    * @tags Authorization
    */
-  updateAuthorization(input: updateAuthorizationInput): CancelablePromise<_DataOf<typeof Sdk.updateAuthorization>>;
-  updateAuthorization(arg: any): CancelablePromise<any> {
+  updateAuthorization(input: updateAuthorizationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateAuthorization>>;
+  updateAuthorization(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { authorizationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -12144,7 +12076,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateAuthorization', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12158,8 +12090,8 @@ export class CamundaClient {
    * @operationId updateGlobalClusterVariable
    * @tags Cluster Variable
    */
-  updateGlobalClusterVariable(input: updateGlobalClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.updateGlobalClusterVariable>>;
-  updateGlobalClusterVariable(arg: any): CancelablePromise<any> {
+  updateGlobalClusterVariable(input: updateGlobalClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateGlobalClusterVariable>>;
+  updateGlobalClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { name, ..._body } = arg || {};
       let envelope: any = {};
@@ -12206,7 +12138,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalClusterVariable', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12218,8 +12150,8 @@ export class CamundaClient {
    * @operationId updateGlobalTaskListener
    * @tags Global listener
    */
-  updateGlobalTaskListener(input: updateGlobalTaskListenerInput): CancelablePromise<_DataOf<typeof Sdk.updateGlobalTaskListener>>;
-  updateGlobalTaskListener(arg: any): CancelablePromise<any> {
+  updateGlobalTaskListener(input: updateGlobalTaskListenerInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateGlobalTaskListener>>;
+  updateGlobalTaskListener(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { id, ..._body } = arg || {};
       let envelope: any = {};
@@ -12266,7 +12198,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalTaskListener', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateGlobalTaskListener', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12278,8 +12210,8 @@ export class CamundaClient {
    * @operationId updateGroup
    * @tags Group
    */
-  updateGroup(input: updateGroupInput): CancelablePromise<_DataOf<typeof Sdk.updateGroup>>;
-  updateGroup(arg: any): CancelablePromise<any> {
+  updateGroup(input: updateGroupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateGroup>>;
+  updateGroup(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { groupId, ..._body } = arg || {};
       let envelope: any = {};
@@ -12326,7 +12258,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateGroup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12338,8 +12270,8 @@ export class CamundaClient {
    * @operationId updateJob
    * @tags Job
    */
-  updateJob(input: updateJobInput): CancelablePromise<_DataOf<typeof Sdk.updateJob>>;
-  updateJob(arg: any): CancelablePromise<any> {
+  updateJob(input: updateJobInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateJob>>;
+  updateJob(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { jobKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -12386,7 +12318,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12399,8 +12331,8 @@ export class CamundaClient {
    * @operationId updateMappingRule
    * @tags Mapping rule
    */
-  updateMappingRule(input: updateMappingRuleInput): CancelablePromise<_DataOf<typeof Sdk.updateMappingRule>>;
-  updateMappingRule(arg: any): CancelablePromise<any> {
+  updateMappingRule(input: updateMappingRuleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateMappingRule>>;
+  updateMappingRule(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { mappingRuleId, ..._body } = arg || {};
       let envelope: any = {};
@@ -12447,7 +12379,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateMappingRule', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12459,8 +12391,8 @@ export class CamundaClient {
    * @operationId updateRole
    * @tags Role
    */
-  updateRole(input: updateRoleInput): CancelablePromise<_DataOf<typeof Sdk.updateRole>>;
-  updateRole(arg: any): CancelablePromise<any> {
+  updateRole(input: updateRoleInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateRole>>;
+  updateRole(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { roleId, ..._body } = arg || {};
       let envelope: any = {};
@@ -12507,7 +12439,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateRole', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12519,8 +12451,8 @@ export class CamundaClient {
    * @operationId updateTenant
    * @tags Tenant
    */
-  updateTenant(input: updateTenantInput): CancelablePromise<_DataOf<typeof Sdk.updateTenant>>;
-  updateTenant(arg: any): CancelablePromise<any> {
+  updateTenant(input: updateTenantInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateTenant>>;
+  updateTenant(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, ..._body } = arg || {};
       let envelope: any = {};
@@ -12567,7 +12499,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateTenant', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12581,8 +12513,8 @@ export class CamundaClient {
    * @operationId updateTenantClusterVariable
    * @tags Cluster Variable
    */
-  updateTenantClusterVariable(input: updateTenantClusterVariableInput): CancelablePromise<_DataOf<typeof Sdk.updateTenantClusterVariable>>;
-  updateTenantClusterVariable(arg: any): CancelablePromise<any> {
+  updateTenantClusterVariable(input: updateTenantClusterVariableInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateTenantClusterVariable>>;
+  updateTenantClusterVariable(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { tenantId, name, ..._body } = arg || {};
       let envelope: any = {};
@@ -12629,7 +12561,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateTenantClusterVariable', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateTenantClusterVariable', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12641,8 +12573,8 @@ export class CamundaClient {
    * @operationId updateUser
    * @tags User
    */
-  updateUser(input: updateUserInput): CancelablePromise<_DataOf<typeof Sdk.updateUser>>;
-  updateUser(arg: any): CancelablePromise<any> {
+  updateUser(input: updateUserInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateUser>>;
+  updateUser(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { username, ..._body } = arg || {};
       let envelope: any = {};
@@ -12689,7 +12621,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateUser', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateUser', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12701,8 +12633,8 @@ export class CamundaClient {
    * @operationId updateUserTask
    * @tags User task
    */
-  updateUserTask(input: updateUserTaskInput): CancelablePromise<_DataOf<typeof Sdk.updateUserTask>>;
-  updateUserTask(arg: any): CancelablePromise<any> {
+  updateUserTask(input: updateUserTaskInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateUserTask>>;
+  updateUserTask(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { userTaskKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -12749,7 +12681,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false });
+      return this._invokeWithRetry(() => call(), { opId: 'updateUserTask', exempt: false, retryOverride: options?.retry });
     });
   }
 

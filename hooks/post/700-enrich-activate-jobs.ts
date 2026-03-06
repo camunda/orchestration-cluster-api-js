@@ -15,29 +15,34 @@ function patchCamundaClient(filePath: string) {
     );
   }
 
-  // Adjust declaration signature
+  // Adjust declaration signature (handle optional options param)
   if (
-    !/activateJobs\(input: activateJobsInput\): CancelablePromise<{ jobs: EnrichedActivatedJob\[] }>;/.test(
+    !/activateJobs\(input: activateJobsInput[^)]*\): CancelablePromise<{ jobs: EnrichedActivatedJob\[] }>;/.test(
       src
     )
   ) {
     const original = src;
     src = src.replace(
-      /activateJobs\(input: activateJobsInput\): CancelablePromise<[^;\n]+>;/,
-      'activateJobs(input: activateJobsInput): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;'
+      /activateJobs\(input: activateJobsInput[^)]*\): CancelablePromise<[^;\n]+>;/,
+      'activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;'
     );
     if (src === original) {
       // Fallback pattern targeting specific _DataOf usage
       src = src.replace(
-        /activateJobs\(input: activateJobsInput\): CancelablePromise<_DataOf<[^>]+>>;/,
-        'activateJobs(input: activateJobsInput): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;'
+        /activateJobs\(input: activateJobsInput[^)]*\): CancelablePromise<_DataOf<[^>]+>>;/,
+        'activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;'
       );
     }
   }
 
   // Inject enrichment logic inside implementation before returning data
   if (!alreadyInjected) {
-    const implStart = src.indexOf('activateJobs(arg: any): CancelablePromise<any>');
+    let implStart = src.indexOf(
+      'activateJobs(arg: any, options?: OperationOptions): CancelablePromise<any>'
+    );
+    if (implStart === -1) {
+      implStart = src.indexOf('activateJobs(arg: any): CancelablePromise<any>');
+    }
     if (implStart !== -1) {
       const slice = src.slice(implStart);
       const returnPos = slice.indexOf('return data;');

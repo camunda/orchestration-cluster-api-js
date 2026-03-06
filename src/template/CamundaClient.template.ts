@@ -24,7 +24,12 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-import { executeWithHttpRetry, defaultHttpClassifier } from '../runtime/retry';
+import {
+  executeWithHttpRetry,
+  defaultHttpClassifier,
+  type HttpRetryPolicy,
+  type OperationOptions,
+} from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
@@ -436,9 +441,16 @@ export class CamundaClient {
       opId: string;
       exempt?: boolean;
       classify?: (e: any) => { retryable: boolean; reason: string };
+      retryOverride?: Partial<HttpRetryPolicy> | false;
     }
   ): Promise<T> {
-    const { opId, exempt, classify } = opts;
+    const { opId, exempt, classify, retryOverride } = opts;
+    const policy: HttpRetryPolicy =
+      retryOverride === false
+        ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
+        : retryOverride
+          ? { ...this._config.httpRetry, ...retryOverride }
+          : this._config.httpRetry;
     const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
     if (!exempt) {
       await this._bp.acquire(signal);
@@ -446,7 +458,7 @@ export class CamundaClient {
     try {
       const result = await executeWithHttpRetry(
         async () => op(),
-        this._config.httpRetry,
+        policy,
         this._log.scope(opId),
         (err) => {
           const decision = (classify ? classify(err) : defaultHttpClassifier(err)) as any;

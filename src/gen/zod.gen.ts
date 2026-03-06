@@ -357,30 +357,30 @@ export const zClusterVariableResultBase = z.object({
         description: 'The name of the cluster variable. Unique within its scope (global or tenant-specific).'
     }),
     scope: zClusterVariableScopeEnum,
-    tenantId: z.optional(z.union([
+    tenantId: z.union([
         z.string(),
         z.null()
-    ]))
+    ])
 }).register(z.globalRegistry, {
     description: 'Cluster variable response item.'
 });
 
 export const zClusterVariableResult = zClusterVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Full value of this cluster variable.'
-    }))
+    })
 }));
 
 /**
  * Cluster variable search response item.
  */
 export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Value of this cluster variable. Can be truncated.'
-    })),
-    isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
+    }),
+    isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Cluster variable search response item.'
 }));
@@ -1499,40 +1499,6 @@ export const zJobWorkerStatisticsItem = z.object({
     description: 'Statistics for a single worker within a job type.'
 });
 
-/**
- * Job time-series statistics search filter.
- */
-export const zJobTimeSeriesStatisticsFilter = z.object({
-    from: z.iso.datetime().register(z.globalRegistry, {
-        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    to: z.iso.datetime().register(z.globalRegistry, {
-        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
-    }),
-    jobType: z.string().register(z.globalRegistry, {
-        description: 'Job type to return time-series metrics for.'
-    }),
-    resolution: z.optional(z.string().register(z.globalRegistry, {
-        description: 'Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,\n`PT1H` for 1 hour). If omitted, the server chooses a sensible default.\n'
-    }))
-}).register(z.globalRegistry, {
-    description: 'Job time-series statistics search filter.'
-});
-
-/**
- * Aggregated job metrics for a single time bucket.
- */
-export const zJobTimeSeriesStatisticsItem = z.object({
-    time: z.iso.datetime().register(z.globalRegistry, {
-        description: 'ISO 8601 timestamp representing the start of this time bucket.'
-    }),
-    created: zStatusMetric,
-    completed: zStatusMetric,
-    failed: zStatusMetric
-}).register(z.globalRegistry, {
-    description: 'Aggregated job metrics for a single time bucket.'
-});
-
 export const zJobFailRequest = z.object({
     retries: z.optional(z.int().register(z.globalRegistry, {
         description: 'The amount of retries the job should have left'
@@ -2085,15 +2051,15 @@ export const zDeploymentFormResult = z.object({
 });
 
 export const zFormResult = z.object({
-    tenantId: z.optional(zTenantId),
-    formId: z.optional(zFormId),
-    schema: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'The form content.'
-    })),
-    version: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    tenantId: zTenantId,
+    formId: zFormId,
+    schema: z.string().register(z.globalRegistry, {
+        description: 'The form schema as a JSON document serialized as a string.'
+    }),
+    version: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The version of the the deployed form.'
-    })),
-    formKey: z.optional(zFormKey)
+    }),
+    formKey: zFormKey
 });
 
 /**
@@ -2222,25 +2188,25 @@ export const zElementInstanceResult = z.object({
 export const zJobKey = zLongKey;
 
 export const zIncidentResult = z.object({
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    errorType: z.optional(zIncidentErrorTypeEnum),
-    errorMessage: z.optional(z.string().register(z.globalRegistry, {
+    processDefinitionId: zProcessDefinitionId,
+    errorType: zIncidentErrorTypeEnum,
+    errorMessage: z.string().register(z.globalRegistry, {
         description: 'Error message which describes the error in more detail.'
-    })),
-    elementId: z.optional(zElementId),
-    creationTime: z.optional(z.iso.datetime().register(z.globalRegistry, {
+    }),
+    elementId: zElementId,
+    creationTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The creation time of the incident.'
-    })),
-    state: z.optional(zIncidentStateEnum),
+    }),
+    state: zIncidentStateEnum,
     tenantId: zTenantId,
-    incidentKey: z.optional(zIncidentKey),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    incidentKey: zIncidentKey,
+    processDefinitionKey: zProcessDefinitionKey,
+    processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
     ]),
-    elementInstanceKey: z.optional(zElementInstanceKey),
+    elementInstanceKey: zElementInstanceKey,
     jobKey: z.union([
         zJobKey,
         z.null()
@@ -2669,20 +2635,21 @@ export const zDeploymentResult = z.object({
 });
 
 export const zResourceResult = z.object({
-    resourceName: z.optional(z.string().register(z.globalRegistry, {
+    resourceName: z.string().register(z.globalRegistry, {
         description: 'The resource name from which this resource was parsed.'
-    })),
-    version: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    version: z.int().register(z.globalRegistry, {
         description: 'The assigned resource version.'
-    })),
-    versionTag: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The version tag of this resource.'
-    })),
-    resourceId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    versionTag: z.union([
+        z.string(),
+        z.null()
+    ]),
+    resourceId: z.string().register(z.globalRegistry, {
         description: 'The resource ID of this resource.'
-    })),
-    tenantId: z.optional(zTenantId),
-    resourceKey: z.optional(zResourceKey)
+    }),
+    tenantId: zTenantId,
+    resourceKey: zResourceKey
 });
 
 /**
@@ -3557,26 +3524,26 @@ export const zProcessDefinitionFilter = z.object({
 });
 
 export const zProcessDefinitionResult = z.object({
-    name: z.optional(z.union([
+    name: z.union([
         z.string(),
         z.null()
-    ])),
-    resourceName: z.optional(z.string().register(z.globalRegistry, {
+    ]),
+    resourceName: z.string().register(z.globalRegistry, {
         description: 'Resource name for this process definition.'
-    })),
-    version: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    version: z.int().register(z.globalRegistry, {
         description: 'Version of this process definition.'
-    })),
-    versionTag: z.optional(z.union([
+    }),
+    versionTag: z.union([
         z.string(),
         z.null()
-    ])),
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    tenantId: z.optional(zTenantId),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
+    ]),
+    processDefinitionId: zProcessDefinitionId,
+    tenantId: zTenantId,
+    processDefinitionKey: zProcessDefinitionKey,
+    hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
-    }))
+    })
 });
 
 /**
@@ -4298,16 +4265,6 @@ export const zJobWorkerStatisticsQuery = z.object({
     page: z.optional(zCursorForwardPagination)
 }).register(z.globalRegistry, {
     description: 'Job worker statistics query.'
-});
-
-/**
- * Job time-series statistics query.
- */
-export const zJobTimeSeriesStatisticsQuery = z.object({
-    filter: zJobTimeSeriesStatisticsFilter,
-    page: z.optional(zCursorForwardPagination)
-}).register(z.globalRegistry, {
-    description: 'Job time-series statistics query.'
 });
 
 /**
@@ -5063,18 +5020,6 @@ export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object
 }));
 
 /**
- * Job time-series statistics query result.
- */
-export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.object({
-    items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
-        description: 'The list of time-bucketed statistics items, ordered ascending by time.'
-    }),
-    page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
-    description: 'Job time-series statistics query result.'
-}));
-
-/**
  * Job search response.
  */
 export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
@@ -5194,21 +5139,21 @@ export const zSignalBroadcastResult = z.object({
 });
 
 export const zUsageMetricsResponseItem = z.object({
-    processInstances: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    processInstances: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The amount of created root process instances.'
-    })),
-    decisionInstances: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    decisionInstances: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The amount of executed decision instances.'
-    })),
-    assignees: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    assignees: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The amount of unique active task users.'
-    }))
+    })
 });
 
 export const zUsageMetricsResponse = zUsageMetricsResponseItem.and(z.object({
-    activeTenants: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    activeTenants: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The amount of active tenants.'
-    })),
+    }),
     tenants: z.record(z.string(), zUsageMetricsResponseItem).register(z.globalRegistry, {
         description: 'The usage metrics by tenants. Only available if request `withTenants` query parameter was `true`.'
     })
@@ -5570,25 +5515,26 @@ export const zUserTaskStateEnum = z.enum([
 });
 
 export const zUserTaskResult = z.object({
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name for this user task.'
-    })),
-    state: z.optional(zUserTaskStateEnum),
+    name: z.union([
+        z.string(),
+        z.null()
+    ]),
+    state: zUserTaskStateEnum,
     assignee: z.union([
         z.string(),
         z.null()
     ]),
-    elementId: z.optional(zElementId),
+    elementId: zElementId,
     candidateGroups: z.array(z.string()).register(z.globalRegistry, {
         description: 'The candidate groups for this user task.'
     }),
     candidateUsers: z.array(z.string()).register(z.globalRegistry, {
         description: 'The candidate users for this user task.'
     }),
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    creationDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
+    processDefinitionId: zProcessDefinitionId,
+    creationDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'The creation date of a user task.'
-    })),
+    }),
     completionDate: z.union([
         z.iso.datetime(),
         z.null()
@@ -5601,28 +5547,28 @@ export const zUserTaskResult = z.object({
         z.iso.datetime(),
         z.null()
     ]),
-    tenantId: z.optional(zTenantId),
+    tenantId: zTenantId,
     externalFormReference: z.union([
         z.string(),
         z.null()
     ]),
-    processDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+    processDefinitionVersion: z.int().register(z.globalRegistry, {
         description: 'The version of the process definition.'
-    })),
+    }),
     customHeaders: z.record(z.string(), z.string()).register(z.globalRegistry, {
         description: 'Custom headers for the user task.'
     }),
-    priority: z.optional(z.int().gte(0).lte(100).register(z.globalRegistry, {
+    priority: z.int().gte(0).lte(100).register(z.globalRegistry, {
         description: 'The priority of a user task. The higher the value the higher the priority.'
-    })).default(50),
-    userTaskKey: z.optional(zUserTaskKey),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    processName: z.optional(z.union([
+    }).default(50),
+    userTaskKey: zUserTaskKey,
+    elementInstanceKey: zElementInstanceKey,
+    processName: z.union([
         z.string(),
         z.null()
-    ])),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    ]),
+    processDefinitionKey: zProcessDefinitionKey,
+    processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
@@ -5839,9 +5785,9 @@ export const zVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
  * Variable search response item.
  */
 export const zVariableResult = zVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Full value of this variable.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Variable search response item.'
 }));
@@ -8320,17 +8266,6 @@ export const zGetJobWorkerStatisticsData = z.object({
  * The job worker statistics result.
  */
 export const zGetJobWorkerStatisticsResponse = zJobWorkerStatisticsQueryResult;
-
-export const zGetJobTimeSeriesStatisticsData = z.object({
-    body: zJobTimeSeriesStatisticsQuery,
-    path: z.optional(z.never()),
-    query: z.optional(z.never())
-});
-
-/**
- * The job time-series statistics result.
- */
-export const zGetJobTimeSeriesStatisticsResponse = zJobTimeSeriesStatisticsQueryResult;
 
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),

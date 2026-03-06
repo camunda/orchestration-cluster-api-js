@@ -4968,51 +4968,6 @@
         }
       }
     },
-    "/jobs/statistics/time-series": {
-      "post": {
-        "x-eventually-consistent": true,
-        "tags": [
-          "Job"
-        ],
-        "operationId": "getJobTimeSeriesStatistics",
-        "summary": "Get time-series metrics for a job type",
-        "description": "Returns a list of time-bucketed metrics ordered ascending by time.\nThe `from` and `to` fields select the time window of interest.\nEach item in the response corresponds to one time bucket of the requested resolution.\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/JobTimeSeriesStatisticsQuery"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "The job time-series statistics result.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobTimeSeriesStatisticsQueryResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/paths/~1clock/put/responses/400"
-          },
-          "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
-          },
-          "403": {
-            "$ref": "#/paths/~1roles/post/responses/403"
-          },
-          "500": {
-            "$ref": "#/paths/~1clock/put/responses/500"
-          }
-        }
-      }
-    },
     "/license": {
       "get": {
         "x-eventually-consistent": false,
@@ -12947,6 +12902,9 @@
       },
       "ClusterVariableResult": {
         "type": "object",
+        "required": [
+          "value"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/ClusterVariableResultBase"
@@ -12962,6 +12920,10 @@
       "ClusterVariableSearchResult": {
         "description": "Cluster variable search response item.",
         "type": "object",
+        "required": [
+          "value",
+          "isTruncated"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/ClusterVariableResultBase"
@@ -12983,7 +12945,8 @@
         "type": "object",
         "required": [
           "name",
-          "scope"
+          "scope",
+          "tenantId"
         ],
         "properties": {
           "name": {
@@ -14879,6 +14842,14 @@
       },
       "ResourceResult": {
         "type": "object",
+        "required": [
+          "resourceName",
+          "version",
+          "versionTag",
+          "resourceId",
+          "tenantId",
+          "resourceKey"
+        ],
         "properties": {
           "resourceName": {
             "description": "The resource name from which this resource was parsed.",
@@ -14890,6 +14861,7 @@
             "format": "int32"
           },
           "versionTag": {
+            "nullable": true,
             "description": "The version tag of this resource.",
             "type": "string"
           },
@@ -16001,6 +15973,13 @@
           "formId",
           "formKey"
         ],
+        "required": [
+          "tenantId",
+          "formId",
+          "schema",
+          "version",
+          "formKey"
+        ],
         "properties": {
           "tenantId": {
             "description": "The tenant ID of the form.",
@@ -16019,8 +15998,8 @@
             ]
           },
           "schema": {
-            "description": "The form content.",
-            "type": "object"
+            "description": "The form schema as a JSON document serialized as a string.",
+            "type": "string"
           },
           "version": {
             "description": "The version of the the deployed form.",
@@ -17144,6 +17123,16 @@
       "IncidentResult": {
         "type": "object",
         "required": [
+          "incidentKey",
+          "processDefinitionKey",
+          "processInstanceKey",
+          "elementInstanceKey",
+          "creationTime",
+          "state",
+          "errorType",
+          "errorMessage",
+          "elementId",
+          "processDefinitionId",
           "rootProcessInstanceKey",
           "jobKey",
           "tenantId"
@@ -17685,108 +17674,6 @@
             "description": "The worker identifier.",
             "type": "string",
             "example": "worker-1"
-          },
-          "created": {
-            "$ref": "#/components/schemas/StatusMetric"
-          },
-          "completed": {
-            "$ref": "#/components/schemas/StatusMetric"
-          },
-          "failed": {
-            "$ref": "#/components/schemas/StatusMetric"
-          }
-        }
-      },
-      "JobTimeSeriesStatisticsQuery": {
-        "description": "Job time-series statistics query.",
-        "type": "object",
-        "required": [
-          "filter"
-        ],
-        "properties": {
-          "filter": {
-            "$ref": "#/components/schemas/JobTimeSeriesStatisticsFilter"
-          },
-          "page": {
-            "description": "Search cursor pagination.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CursorForwardPagination"
-              }
-            ]
-          }
-        }
-      },
-      "JobTimeSeriesStatisticsFilter": {
-        "description": "Job time-series statistics search filter.",
-        "type": "object",
-        "required": [
-          "from",
-          "to",
-          "jobType"
-        ],
-        "properties": {
-          "from": {
-            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-07-28T15:51:28.071Z"
-          },
-          "to": {
-            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-07-29T15:51:28.071Z"
-          },
-          "jobType": {
-            "description": "Job type to return time-series metrics for.",
-            "type": "string",
-            "example": "fetch-customer-data"
-          },
-          "resolution": {
-            "description": "Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,\n`PT1H` for 1 hour). If omitted, the server chooses a sensible default.\n",
-            "type": "string",
-            "example": "PT1M"
-          }
-        }
-      },
-      "JobTimeSeriesStatisticsQueryResult": {
-        "description": "Job time-series statistics query result.",
-        "type": "object",
-        "required": [
-          "items",
-          "page"
-        ],
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/SearchQueryResponse"
-          }
-        ],
-        "properties": {
-          "items": {
-            "description": "The list of time-bucketed statistics items, ordered ascending by time.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/JobTimeSeriesStatisticsItem"
-            }
-          }
-        }
-      },
-      "JobTimeSeriesStatisticsItem": {
-        "description": "Aggregated job metrics for a single time bucket.",
-        "type": "object",
-        "required": [
-          "time",
-          "created",
-          "completed",
-          "failed"
-        ],
-        "properties": {
-          "time": {
-            "description": "ISO 8601 timestamp representing the start of this time bucket.",
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-07-29T15:51:00.000Z"
           },
           "created": {
             "$ref": "#/components/schemas/StatusMetric"
@@ -21008,6 +20895,16 @@
       },
       "ProcessDefinitionResult": {
         "type": "object",
+        "required": [
+          "processDefinitionKey",
+          "name",
+          "resourceName",
+          "version",
+          "versionTag",
+          "processDefinitionId",
+          "tenantId",
+          "hasStartForm"
+        ],
         "properties": {
           "name": {
             "description": "Name of this process definition.",
@@ -23336,7 +23233,8 @@
       },
       "UsageMetricsResponse": {
         "required": [
-          "tenants"
+          "tenants",
+          "activeTenants"
         ],
         "type": "object",
         "allOf": [
@@ -23367,6 +23265,11 @@
         }
       },
       "UsageMetricsResponseItem": {
+        "required": [
+          "processInstances",
+          "decisionInstances",
+          "assignees"
+        ],
         "type": "object",
         "properties": {
           "processInstances": {
@@ -24033,20 +23936,34 @@
       "UserTaskResult": {
         "type": "object",
         "required": [
+          "tenantId",
+          "userTaskKey",
+          "name",
+          "processInstanceKey",
           "rootProcessInstanceKey",
+          "processDefinitionKey",
+          "elementInstanceKey",
+          "processDefinitionId",
+          "processName",
+          "state",
           "candidateGroups",
           "candidateUsers",
+          "elementId",
+          "creationDate",
           "customHeaders",
+          "priority",
           "tags",
           "assignee",
           "completionDate",
           "dueDate",
           "externalFormReference",
           "followUpDate",
+          "processDefinitionVersion",
           "formKey"
         ],
         "properties": {
           "name": {
+            "nullable": true,
             "type": "string",
             "description": "The name for this user task."
           },
@@ -24832,6 +24749,9 @@
       "VariableResult": {
         "description": "Variable search response item.",
         "type": "object",
+        "required": [
+          "value"
+        ],
         "allOf": [
           {
             "$ref": "#/components/schemas/VariableResultBase"
