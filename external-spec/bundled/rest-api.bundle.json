@@ -3520,7 +3520,10 @@
                             "description": "The ID of the client.",
                             "type": "string"
                           }
-                        }
+                        },
+                        "required": [
+                          "clientId"
+                        ]
                       }
                     }
                   }
@@ -4051,7 +4054,10 @@
                           "username": {
                             "$ref": "#/components/schemas/Username"
                           }
-                        }
+                        },
+                        "required": [
+                          "username"
+                        ]
                       }
                     }
                   }
@@ -4949,6 +4955,51 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/JobWorkerStatisticsQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/jobs/statistics/time-series": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Job"
+        ],
+        "operationId": "getJobTimeSeriesStatistics",
+        "summary": "Get time-series metrics for a job type",
+        "description": "Returns a list of time-bucketed metrics ordered ascending by time.\nThe `from` and `to` fields select the time window of interest.\nEach item in the response corresponds to one time bucket of the requested resolution.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobTimeSeriesStatisticsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The job time-series statistics result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobTimeSeriesStatisticsQueryResult"
                 }
               }
             }
@@ -7326,7 +7377,10 @@
                             "description": "The ID of the client.",
                             "type": "string"
                           }
-                        }
+                        },
+                        "required": [
+                          "clientId"
+                        ]
                       }
                     }
                   }
@@ -7964,7 +8018,10 @@
                           "username": {
                             "$ref": "#/components/schemas/Username"
                           }
-                        }
+                        },
+                        "required": [
+                          "username"
+                        ]
                       }
                     }
                   }
@@ -8712,7 +8769,10 @@
                             "description": "The ID of the client.",
                             "type": "string"
                           }
-                        }
+                        },
+                        "required": [
+                          "clientId"
+                        ]
                       }
                     }
                   }
@@ -9430,7 +9490,10 @@
                           "username": {
                             "$ref": "#/components/schemas/Username"
                           }
-                        }
+                        },
+                        "required": [
+                          "username"
+                        ]
                       }
                     }
                   }
@@ -9736,13 +9799,20 @@
                     },
                     "name": {
                       "description": "The name of the user.",
+                      "nullable": true,
                       "type": "string"
                     },
                     "email": {
                       "description": "The email of the user.",
+                      "nullable": true,
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "username",
+                    "name",
+                    "email"
+                  ]
                 }
               }
             }
@@ -9810,13 +9880,20 @@
                     },
                     "name": {
                       "description": "The name of the user.",
+                      "nullable": true,
                       "type": "string"
                     },
                     "email": {
                       "description": "The email of the user.",
+                      "nullable": true,
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "username",
+                    "name",
+                    "email"
+                  ]
                 }
               }
             }
@@ -11876,8 +11953,13 @@
       },
       "AuthorizationResult": {
         "required": [
+          "ownerId",
+          "ownerType",
+          "resourceType",
+          "resourceId",
+          "resourcePropertyName",
           "permissionTypes",
-          "resourcePropertyName"
+          "authorizationKey"
         ],
         "type": "object",
         "properties": {
@@ -11955,7 +12037,10 @@
             ],
             "description": "The key of the created authorization."
           }
-        }
+        },
+        "required": [
+          "authorizationKey"
+        ]
       },
       "PermissionTypeEnum": {
         "description": "Specifies the type of permissions.",
@@ -14042,16 +14127,71 @@
       "DecisionInstanceResult": {
         "type": "object",
         "required": [
-          "rootProcessInstanceKey",
+          "decisionDefinitionId",
+          "decisionDefinitionKey",
+          "decisionDefinitionName",
+          "decisionDefinitionType",
+          "decisionEvaluationInstanceKey",
+          "decisionEvaluationKey",
+          "elementInstanceKey",
+          "evaluationDate",
           "evaluationFailure",
+          "processDefinitionKey",
+          "processInstanceKey",
+          "result",
+          "rootDecisionDefinitionKey",
+          "rootProcessInstanceKey",
+          "state",
           "tenantId"
         ],
         "properties": {
+          "decisionDefinitionId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionDefinitionId"
+              }
+            ],
+            "description": "The ID of the DMN decision."
+          },
+          "decisionDefinitionKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionDefinitionKey"
+              }
+            ],
+            "description": "The key of the decision."
+          },
+          "decisionDefinitionName": {
+            "type": "string",
+            "description": "The name of the DMN decision."
+          },
+          "decisionDefinitionType": {
+            "$ref": "#/components/schemas/DecisionDefinitionTypeEnum"
+          },
+          "decisionDefinitionVersion": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The version of the decision."
+          },
           "decisionEvaluationInstanceKey": {
             "$ref": "#/components/schemas/DecisionEvaluationInstanceKey"
           },
-          "state": {
-            "$ref": "#/components/schemas/DecisionInstanceStateEnum"
+          "decisionEvaluationKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionEvaluationKey"
+              }
+            ],
+            "description": "The key of the decision evaluation where this instance was created."
+          },
+          "elementInstanceKey": {
+            "description": "The key of the element instance this decision instance is linked to.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementInstanceKey"
+              }
+            ]
           },
           "evaluationDate": {
             "type": "string",
@@ -14063,52 +14203,13 @@
             "nullable": true,
             "description": "The evaluation failure of the decision instance."
           },
-          "decisionDefinitionId": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionDefinitionId"
-              }
-            ],
-            "description": "The ID of the DMN decision."
-          },
-          "decisionDefinitionName": {
-            "type": "string",
-            "description": "The name of the DMN decision."
-          },
-          "decisionDefinitionVersion": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The version of the decision."
-          },
-          "decisionDefinitionType": {
-            "$ref": "#/components/schemas/DecisionDefinitionTypeEnum"
-          },
-          "result": {
-            "type": "string",
-            "description": "The result of the decision instance."
-          },
-          "tenantId": {
-            "description": "The tenant ID of the decision instance.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TenantId"
-              }
-            ]
-          },
-          "decisionEvaluationKey": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionEvaluationKey"
-              }
-            ],
-            "description": "The key of the decision evaluation where this instance was created."
-          },
           "processDefinitionKey": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/ProcessDefinitionKey"
               }
             ],
+            "nullable": true,
             "description": "The key of the process definition."
           },
           "processInstanceKey": {
@@ -14117,7 +14218,20 @@
                 "$ref": "#/components/schemas/ProcessInstanceKey"
               }
             ],
+            "nullable": true,
             "description": "The key of the process instance."
+          },
+          "result": {
+            "type": "string",
+            "description": "The result of the decision instance."
+          },
+          "rootDecisionDefinitionKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionDefinitionKey"
+              }
+            ],
+            "description": "The key of the root decision definition."
           },
           "rootProcessInstanceKey": {
             "description": "The key of the root process instance. The root process instance is the top-level\nancestor in the process instance hierarchy. This field is only present for data\nbelonging to process instance hierarchies created in version 8.9 or later.\n",
@@ -14128,29 +14242,16 @@
               }
             ]
           },
-          "decisionDefinitionKey": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionDefinitionKey"
-              }
-            ],
-            "description": "The key of the decision."
+          "state": {
+            "$ref": "#/components/schemas/DecisionInstanceStateEnum"
           },
-          "elementInstanceKey": {
-            "description": "The key of the element instance this decision instance is linked to.",
+          "tenantId": {
+            "description": "The tenant ID of the decision instance.",
             "allOf": [
               {
-                "$ref": "#/components/schemas/ElementInstanceKey"
+                "$ref": "#/components/schemas/TenantId"
               }
             ]
-          },
-          "rootDecisionDefinitionKey": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionDefinitionKey"
-              }
-            ],
-            "description": "The key of the root decision definition."
           }
         }
       },
@@ -14455,21 +14556,32 @@
         }
       },
       "DecisionRequirementsResult": {
+        "required": [
+          "decisionRequirementsId",
+          "decisionRequirementsKey",
+          "decisionRequirementsName",
+          "resourceName",
+          "tenantId",
+          "version"
+        ],
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "decisionRequirementsName": {
-            "type": "string",
-            "description": "The DMN name of the decision requirements."
-          },
-          "version": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The assigned version of the decision requirements."
-          },
           "decisionRequirementsId": {
             "type": "string",
             "description": "The DMN ID of the decision requirements."
+          },
+          "decisionRequirementsKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionRequirementsKey"
+              }
+            ],
+            "description": "The assigned key, which acts as a unique identifier for this decision requirements."
+          },
+          "decisionRequirementsName": {
+            "type": "string",
+            "description": "The DMN name of the decision requirements."
           },
           "resourceName": {
             "type": "string",
@@ -14483,13 +14595,10 @@
               }
             ]
           },
-          "decisionRequirementsKey": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/DecisionRequirementsKey"
-              }
-            ],
-            "description": "The assigned key, which acts as a unique identifier for this decision requirements."
+          "version": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The assigned version of the decision requirements."
           }
         }
       },
@@ -16397,9 +16506,15 @@
           },
           "description": {
             "description": "The description of the created group.",
+            "nullable": true,
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "groupId",
+          "name",
+          "description"
+        ]
       },
       "GroupUpdateRequest": {
         "type": "object",
@@ -16430,9 +16545,15 @@
           },
           "description": {
             "type": "string",
+            "nullable": true,
             "description": "The description of the group."
           }
-        }
+        },
+        "required": [
+          "groupId",
+          "name",
+          "description"
+        ]
       },
       "GroupResult": {
         "description": "Group search response item.",
@@ -16448,9 +16569,15 @@
           },
           "description": {
             "type": "string",
+            "nullable": true,
             "description": "The group description."
           }
-        }
+        },
+        "required": [
+          "name",
+          "groupId",
+          "description"
+        ]
       },
       "GroupSearchQuerySortRequest": {
         "type": "object",
@@ -16544,7 +16671,10 @@
           "username": {
             "$ref": "#/components/schemas/Username"
           }
-        }
+        },
+        "required": [
+          "username"
+        ]
       },
       "GroupUserSearchResult": {
         "required": [
@@ -16608,7 +16738,10 @@
             "description": "The ID of the client.",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "clientId"
+        ]
       },
       "GroupClientSearchResult": {
         "required": [
@@ -17674,6 +17807,108 @@
             "description": "The worker identifier.",
             "type": "string",
             "example": "worker-1"
+          },
+          "created": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "completed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          },
+          "failed": {
+            "$ref": "#/components/schemas/StatusMetric"
+          }
+        }
+      },
+      "JobTimeSeriesStatisticsQuery": {
+        "description": "Job time-series statistics query.",
+        "type": "object",
+        "required": [
+          "filter"
+        ],
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/JobTimeSeriesStatisticsFilter"
+          },
+          "page": {
+            "description": "Search cursor pagination.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorForwardPagination"
+              }
+            ]
+          }
+        }
+      },
+      "JobTimeSeriesStatisticsFilter": {
+        "description": "Job time-series statistics search filter.",
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "jobType"
+        ],
+        "properties": {
+          "from": {
+            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-28T15:51:28.071Z"
+          },
+          "to": {
+            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:28.071Z"
+          },
+          "jobType": {
+            "description": "Job type to return time-series metrics for.",
+            "type": "string",
+            "example": "fetch-customer-data"
+          },
+          "resolution": {
+            "description": "Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,\n`PT1H` for 1 hour). If omitted, the server chooses a sensible default.\n",
+            "type": "string",
+            "example": "PT1M"
+          }
+        }
+      },
+      "JobTimeSeriesStatisticsQueryResult": {
+        "description": "Job time-series statistics query result.",
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The list of time-bucketed statistics items, ordered ascending by time.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobTimeSeriesStatisticsItem"
+            }
+          }
+        }
+      },
+      "JobTimeSeriesStatisticsItem": {
+        "description": "Aggregated job metrics for a single time bucket.",
+        "type": "object",
+        "required": [
+          "time",
+          "created",
+          "completed",
+          "failed"
+        ],
+        "properties": {
+          "time": {
+            "description": "ISO 8601 timestamp representing the start of this time bucket.",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:00.000Z"
           },
           "created": {
             "$ref": "#/components/schemas/StatusMetric"
@@ -19788,7 +20023,13 @@
             "type": "string",
             "description": "The unique ID of the mapping rule."
           }
-        }
+        },
+        "required": [
+          "claimName",
+          "claimValue",
+          "name",
+          "mappingRuleId"
+        ]
       },
       "MappingRuleCreateResult": {
         "type": "object",
@@ -19845,7 +20086,13 @@
             "type": "string",
             "description": "The ID of the mapping rule."
           }
-        }
+        },
+        "required": [
+          "claimName",
+          "claimValue",
+          "name",
+          "mappingRuleId"
+        ]
       },
       "MappingRuleSearchQuerySortRequest": {
         "type": "object",
@@ -22641,9 +22888,15 @@
           },
           "description": {
             "description": "The description of the created role.",
+            "nullable": true,
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "roleId",
+          "name",
+          "description"
+        ]
       },
       "RoleUpdateRequest": {
         "type": "object",
@@ -22670,13 +22923,19 @@
           },
           "description": {
             "type": "string",
+            "nullable": true,
             "description": "The description of the updated role."
           },
           "roleId": {
             "type": "string",
             "description": "The ID of the updated role."
           }
-        }
+        },
+        "required": [
+          "roleId",
+          "name",
+          "description"
+        ]
       },
       "RoleResult": {
         "description": "Role search response item.",
@@ -22692,9 +22951,15 @@
           },
           "description": {
             "type": "string",
+            "nullable": true,
             "description": "The description of the role."
           }
-        }
+        },
+        "required": [
+          "roleId",
+          "name",
+          "description"
+        ]
       },
       "RoleSearchQuerySortRequest": {
         "type": "object",
@@ -22783,7 +23048,10 @@
           "username": {
             "$ref": "#/components/schemas/Username"
           }
-        }
+        },
+        "required": [
+          "username"
+        ]
       },
       "RoleUserSearchResult": {
         "type": "object",
@@ -22847,7 +23115,10 @@
             "description": "The ID of the client.",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "clientId"
+        ]
       },
       "RoleClientSearchResult": {
         "type": "object",
@@ -22911,7 +23182,10 @@
             "description": "The id of the group.",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "groupId"
+        ]
       },
       "RoleGroupSearchResult": {
         "type": "object",
@@ -23331,9 +23605,15 @@
           "description": {
             "type": "string",
             "description": "The description of the tenant.",
+            "nullable": true,
             "example": "Customer Service department business processes"
           }
-        }
+        },
+        "required": [
+          "tenantId",
+          "name",
+          "description"
+        ]
       },
       "TenantUpdateRequest": {
         "type": "object",
@@ -23364,9 +23644,15 @@
           },
           "description": {
             "type": "string",
+            "nullable": true,
             "description": "The description of the tenant."
           }
-        }
+        },
+        "required": [
+          "tenantId",
+          "name",
+          "description"
+        ]
       },
       "TenantResult": {
         "description": "Tenant search response item.",
@@ -23383,9 +23669,15 @@
           "description": {
             "type": "string",
             "description": "The tenant description.",
+            "nullable": true,
             "example": "Customer Service department business processes"
           }
-        }
+        },
+        "required": [
+          "tenantId",
+          "name",
+          "description"
+        ]
       },
       "TenantSearchQuerySortRequest": {
         "type": "object",
@@ -23474,7 +23766,10 @@
           "username": {
             "$ref": "#/components/schemas/Username"
           }
-        }
+        },
+        "required": [
+          "username"
+        ]
       },
       "TenantUserSearchResult": {
         "required": [
@@ -23539,7 +23834,10 @@
             "description": "The ID of the client.",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "clientId"
+        ]
       },
       "TenantClientSearchResult": {
         "required": [
@@ -23604,7 +23902,10 @@
             "description": "The groupId of the group.",
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "groupId"
+        ]
       },
       "TenantGroupSearchResult": {
         "type": "object",
@@ -24445,13 +24746,20 @@
           },
           "name": {
             "description": "The name of the user.",
+            "nullable": true,
             "type": "string"
           },
           "email": {
             "description": "The email of the user.",
+            "nullable": true,
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "username",
+          "name",
+          "email"
+        ]
       },
       "UserUpdateRequest": {
         "type": "object",
@@ -24478,13 +24786,20 @@
           },
           "name": {
             "description": "The name of the user.",
+            "nullable": true,
             "type": "string"
           },
           "email": {
             "description": "The email of the user.",
+            "nullable": true,
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "username",
+          "name",
+          "email"
+        ]
       },
       "UserResult": {
         "type": "object",
@@ -24494,13 +24809,20 @@
           },
           "name": {
             "description": "The name of the user.",
+            "nullable": true,
             "type": "string"
           },
           "email": {
             "description": "The email of the user.",
+            "nullable": true,
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "username",
+          "name",
+          "email"
+        ]
       },
       "UserSearchQuerySortRequest": {
         "type": "object",

@@ -640,16 +640,16 @@ export type AuthorizationResult = {
     /**
      * The ID of the owner of permissions.
      */
-    ownerId?: string;
-    ownerType?: OwnerTypeEnum;
+    ownerId: string;
+    ownerType: OwnerTypeEnum;
     /**
      * The type of resource that the permissions relate to.
      */
-    resourceType?: ResourceTypeEnum;
+    resourceType: ResourceTypeEnum;
     /**
      * ID of the resource the permission relates to (mutually exclusive with `resourcePropertyName`).
      */
-    resourceId?: string | null;
+    resourceId: string | null;
     /**
      * The name of the resource property the permission relates to (mutually exclusive with `resourceId`).
      */
@@ -661,7 +661,7 @@ export type AuthorizationResult = {
     /**
      * The key of the authorization.
      */
-    authorizationKey?: AuthorizationKey;
+    authorizationKey: AuthorizationKey;
 };
 
 export type AuthorizationSearchResult = SearchQueryResponse & {
@@ -675,7 +675,7 @@ export type AuthorizationCreateResult = {
     /**
      * The key of the created authorization.
      */
-    authorizationKey?: AuthorizationKey;
+    authorizationKey: AuthorizationKey;
 };
 
 /**
@@ -1790,49 +1790,56 @@ export type DecisionInstanceSearchQueryResult = SearchQueryResponse & {
 };
 
 export type DecisionInstanceResult = {
-    decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKey;
-    state?: DecisionInstanceStateEnum;
+    /**
+     * The ID of the DMN decision.
+     */
+    decisionDefinitionId: DecisionDefinitionId;
+    /**
+     * The key of the decision.
+     */
+    decisionDefinitionKey: DecisionDefinitionKey;
+    /**
+     * The name of the DMN decision.
+     */
+    decisionDefinitionName: string;
+    decisionDefinitionType: DecisionDefinitionTypeEnum;
+    /**
+     * The version of the decision.
+     */
+    decisionDefinitionVersion?: number;
+    decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey;
+    /**
+     * The key of the decision evaluation where this instance was created.
+     */
+    decisionEvaluationKey: DecisionEvaluationKey;
+    /**
+     * The key of the element instance this decision instance is linked to.
+     */
+    elementInstanceKey: ElementInstanceKey | null;
     /**
      * The evaluation date of the decision instance.
      */
-    evaluationDate?: string;
+    evaluationDate: string;
     /**
      * The evaluation failure of the decision instance.
      */
     evaluationFailure: string | null;
     /**
-     * The ID of the DMN decision.
-     */
-    decisionDefinitionId?: DecisionDefinitionId;
-    /**
-     * The name of the DMN decision.
-     */
-    decisionDefinitionName?: string;
-    /**
-     * The version of the decision.
-     */
-    decisionDefinitionVersion?: number;
-    decisionDefinitionType?: DecisionDefinitionTypeEnum;
-    /**
-     * The result of the decision instance.
-     */
-    result?: string;
-    /**
-     * The tenant ID of the decision instance.
-     */
-    tenantId: TenantId;
-    /**
-     * The key of the decision evaluation where this instance was created.
-     */
-    decisionEvaluationKey?: DecisionEvaluationKey;
-    /**
      * The key of the process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The key of the process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The result of the decision instance.
+     */
+    result: string;
+    /**
+     * The key of the root decision definition.
+     */
+    rootDecisionDefinitionKey: DecisionDefinitionKey;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -1840,18 +1847,11 @@ export type DecisionInstanceResult = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    state: DecisionInstanceStateEnum;
     /**
-     * The key of the decision.
+     * The tenant ID of the decision instance.
      */
-    decisionDefinitionKey?: DecisionDefinitionKey;
-    /**
-     * The key of the element instance this decision instance is linked to.
-     */
-    elementInstanceKey?: ElementInstanceKey;
-    /**
-     * The key of the root decision definition.
-     */
-    rootDecisionDefinitionKey?: DecisionDefinitionKey;
+    tenantId: TenantId;
 };
 
 export type DecisionInstanceGetQueryResult = DecisionInstanceResult & {
@@ -1932,12 +1932,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -2028,29 +2028,29 @@ export type DecisionRequirementsSearchQueryResult = SearchQueryResponse & {
 
 export type DecisionRequirementsResult = {
     /**
-     * The DMN name of the decision requirements.
-     */
-    decisionRequirementsName?: string;
-    /**
-     * The assigned version of the decision requirements.
-     */
-    version?: number;
-    /**
      * The DMN ID of the decision requirements.
      */
-    decisionRequirementsId?: string;
-    /**
-     * The name of the resource from which this decision requirements was parsed.
-     */
-    resourceName?: string;
-    /**
-     * The tenant ID of the decision requirements.
-     */
-    tenantId?: TenantId;
+    decisionRequirementsId: string;
     /**
      * The assigned key, which acts as a unique identifier for this decision requirements.
      */
-    decisionRequirementsKey?: DecisionRequirementsKey;
+    decisionRequirementsKey: DecisionRequirementsKey;
+    /**
+     * The DMN name of the decision requirements.
+     */
+    decisionRequirementsName: string;
+    /**
+     * The name of the resource from which this decision requirements was parsed.
+     */
+    resourceName: string;
+    /**
+     * The tenant ID of the decision requirements.
+     */
+    tenantId: TenantId;
+    /**
+     * The assigned version of the decision requirements.
+     */
+    version: number;
 };
 
 export type DeploymentResult = {
@@ -3128,15 +3128,15 @@ export type GroupCreateResult = {
     /**
      * The ID of the created group.
      */
-    groupId?: string;
+    groupId: string;
     /**
      * The display name of the created group.
      */
-    name?: string;
+    name: string;
     /**
      * The description of the created group.
      */
-    description?: string;
+    description: string | null;
 };
 
 export type GroupUpdateRequest = {
@@ -3154,15 +3154,15 @@ export type GroupUpdateResult = {
     /**
      * The unique external group ID.
      */
-    groupId?: string;
+    groupId: string;
     /**
      * The name of the group.
      */
-    name?: string;
+    name: string;
     /**
      * The description of the group.
      */
-    description?: string;
+    description: string | null;
 };
 
 /**
@@ -3172,15 +3172,15 @@ export type GroupResult = {
     /**
      * The group name.
      */
-    name?: string;
+    name: string;
     /**
      * The group ID.
      */
-    groupId?: string;
+    groupId: string;
     /**
      * The group description.
      */
-    description?: string;
+    description: string | null;
 };
 
 export type GroupSearchQuerySortRequest = {
@@ -3230,7 +3230,7 @@ export type GroupSearchQueryResult = SearchQueryResponse & {
 };
 
 export type GroupUserResult = {
-    username?: Username;
+    username: Username;
 };
 
 export type GroupUserSearchResult = SearchQueryResponse & {
@@ -3259,7 +3259,7 @@ export type GroupClientResult = {
     /**
      * The ID of the client.
      */
-    clientId?: string;
+    clientId: string;
 };
 
 export type GroupClientSearchResult = SearchQueryResponse & {
@@ -3818,6 +3818,67 @@ export type JobWorkerStatisticsItem = {
      * The worker identifier.
      */
     worker: string;
+    created: StatusMetric;
+    completed: StatusMetric;
+    failed: StatusMetric;
+};
+
+/**
+ * Job time-series statistics query.
+ */
+export type JobTimeSeriesStatisticsQuery = {
+    filter: JobTimeSeriesStatisticsFilter;
+    /**
+     * Search cursor pagination.
+     */
+    page?: CursorForwardPagination;
+};
+
+/**
+ * Job time-series statistics search filter.
+ */
+export type JobTimeSeriesStatisticsFilter = {
+    /**
+     * Start of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    from: string;
+    /**
+     * End of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    to: string;
+    /**
+     * Job type to return time-series metrics for.
+     */
+    jobType: string;
+    /**
+     * Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,
+     * `PT1H` for 1 hour). If omitted, the server chooses a sensible default.
+     *
+     */
+    resolution?: string;
+};
+
+/**
+ * Job time-series statistics query result.
+ */
+export type JobTimeSeriesStatisticsQueryResult = SearchQueryResponse & {
+    /**
+     * The list of time-bucketed statistics items, ordered ascending by time.
+     */
+    items: Array<JobTimeSeriesStatisticsItem>;
+    page: SearchQueryPageResponse;
+};
+
+/**
+ * Aggregated job metrics for a single time bucket.
+ */
+export type JobTimeSeriesStatisticsItem = {
+    /**
+     * ISO 8601 timestamp representing the start of this time bucket.
+     */
+    time: string;
     created: StatusMetric;
     completed: StatusMetric;
     failed: StatusMetric;
@@ -5053,19 +5114,19 @@ export type MappingRuleCreateUpdateResult = {
     /**
      * The name of the claim to map.
      */
-    claimName?: string;
+    claimName: string;
     /**
      * The value of the claim to map.
      */
-    claimValue?: string;
+    claimValue: string;
     /**
      * The name of the mapping rule.
      */
-    name?: string;
+    name: string;
     /**
      * The unique ID of the mapping rule.
      */
-    mappingRuleId?: string;
+    mappingRuleId: string;
 };
 
 export type MappingRuleCreateResult = MappingRuleCreateUpdateResult;
@@ -5083,19 +5144,19 @@ export type MappingRuleResult = {
     /**
      * The name of the claim to map.
      */
-    claimName?: string;
+    claimName: string;
     /**
      * The value of the claim to map.
      */
-    claimValue?: string;
+    claimValue: string;
     /**
      * The name of the mapping rule.
      */
-    name?: string;
+    name: string;
     /**
      * The ID of the mapping rule.
      */
-    mappingRuleId?: string;
+    mappingRuleId: string;
 };
 
 export type MappingRuleSearchQuerySortRequest = {
@@ -6770,15 +6831,15 @@ export type RoleCreateResult = {
     /**
      * The ID of the created role.
      */
-    roleId?: string;
+    roleId: string;
     /**
      * The display name of the created role.
      */
-    name?: string;
+    name: string;
     /**
      * The description of the created role.
      */
-    description?: string;
+    description: string | null;
 };
 
 export type RoleUpdateRequest = {
@@ -6796,15 +6857,15 @@ export type RoleUpdateResult = {
     /**
      * The display name of the updated role.
      */
-    name?: string;
+    name: string;
     /**
      * The description of the updated role.
      */
-    description?: string;
+    description: string | null;
     /**
      * The ID of the updated role.
      */
-    roleId?: string;
+    roleId: string;
 };
 
 /**
@@ -6814,15 +6875,15 @@ export type RoleResult = {
     /**
      * The role name.
      */
-    name?: string;
+    name: string;
     /**
      * The role id.
      */
-    roleId?: string;
+    roleId: string;
     /**
      * The description of the role.
      */
-    description?: string;
+    description: string | null;
 };
 
 export type RoleSearchQuerySortRequest = {
@@ -6872,7 +6933,7 @@ export type RoleSearchQueryResult = SearchQueryResponse & {
 };
 
 export type RoleUserResult = {
-    username?: Username;
+    username: Username;
 };
 
 export type RoleUserSearchResult = SearchQueryResponse & {
@@ -6901,7 +6962,7 @@ export type RoleClientResult = {
     /**
      * The ID of the client.
      */
-    clientId?: string;
+    clientId: string;
 };
 
 export type RoleClientSearchResult = SearchQueryResponse & {
@@ -6930,7 +6991,7 @@ export type RoleGroupResult = {
     /**
      * The id of the group.
      */
-    groupId?: string;
+    groupId: string;
 };
 
 export type RoleGroupSearchResult = SearchQueryResponse & {
@@ -7136,15 +7197,15 @@ export type TenantCreateRequest = {
 };
 
 export type TenantCreateResult = {
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The name of the tenant.
      */
-    name?: string;
+    name: string;
     /**
      * The description of the tenant.
      */
-    description?: string;
+    description: string | null;
 };
 
 export type TenantUpdateRequest = {
@@ -7159,15 +7220,15 @@ export type TenantUpdateRequest = {
 };
 
 export type TenantUpdateResult = {
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The name of the tenant.
      */
-    name?: string;
+    name: string;
     /**
      * The description of the tenant.
      */
-    description?: string;
+    description: string | null;
 };
 
 /**
@@ -7177,12 +7238,12 @@ export type TenantResult = {
     /**
      * The tenant name.
      */
-    name?: string;
-    tenantId?: TenantId;
+    name: string;
+    tenantId: TenantId;
     /**
      * The tenant description.
      */
-    description?: string;
+    description: string | null;
 };
 
 export type TenantSearchQuerySortRequest = {
@@ -7229,7 +7290,7 @@ export type TenantSearchQueryResult = SearchQueryResponse & {
 };
 
 export type TenantUserResult = {
-    username?: Username;
+    username: Username;
 };
 
 export type TenantUserSearchResult = SearchQueryResponse & {
@@ -7258,7 +7319,7 @@ export type TenantClientResult = {
     /**
      * The ID of the client.
      */
-    clientId?: string;
+    clientId: string;
 };
 
 export type TenantClientSearchResult = SearchQueryResponse & {
@@ -7287,7 +7348,7 @@ export type TenantGroupResult = {
     /**
      * The groupId of the group.
      */
-    groupId?: string;
+    groupId: string;
 };
 
 export type TenantGroupSearchResult = SearchQueryResponse & {
@@ -7748,15 +7809,15 @@ export type UserRequest = {
 };
 
 export type UserCreateResult = {
-    username?: Username;
+    username: Username;
     /**
      * The name of the user.
      */
-    name?: string;
+    name: string | null;
     /**
      * The email of the user.
      */
-    email?: string;
+    email: string | null;
 };
 
 export type UserUpdateRequest = {
@@ -7775,27 +7836,27 @@ export type UserUpdateRequest = {
 };
 
 export type UserUpdateResult = {
-    username?: Username;
+    username: Username;
     /**
      * The name of the user.
      */
-    name?: string;
+    name: string | null;
     /**
      * The email of the user.
      */
-    email?: string;
+    email: string | null;
 };
 
 export type UserResult = {
-    username?: Username;
+    username: Username;
     /**
      * The name of the user.
      */
-    name?: string;
+    name: string | null;
     /**
      * The email of the user.
      */
-    email?: string;
+    email: string | null;
 };
 
 export type UserSearchQuerySortRequest = {
@@ -10874,7 +10935,7 @@ export type SearchClientsForGroupResponses = {
             /**
              * The ID of the client.
              */
-            clientId?: string;
+            clientId: string;
         }>;
     };
 };
@@ -11252,7 +11313,7 @@ export type SearchUsersForGroupResponses = {
          * The matching members.
          */
         items: Array<{
-            username?: Username;
+            username: Username;
         }>;
     };
 };
@@ -11963,6 +12024,43 @@ export type GetJobWorkerStatisticsResponses = {
 };
 
 export type GetJobWorkerStatisticsResponse = GetJobWorkerStatisticsResponses[keyof GetJobWorkerStatisticsResponses];
+
+export type GetJobTimeSeriesStatisticsData = {
+    body: JobTimeSeriesStatisticsQuery;
+    path?: never;
+    query?: never;
+    url: '/jobs/statistics/time-series';
+};
+
+export type GetJobTimeSeriesStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetJobTimeSeriesStatisticsError = GetJobTimeSeriesStatisticsErrors[keyof GetJobTimeSeriesStatisticsErrors];
+
+export type GetJobTimeSeriesStatisticsResponses = {
+    /**
+     * The job time-series statistics result.
+     */
+    200: JobTimeSeriesStatisticsQueryResult;
+};
+
+export type GetJobTimeSeriesStatisticsResponse = GetJobTimeSeriesStatisticsResponses[keyof GetJobTimeSeriesStatisticsResponses];
 
 export type GetLicenseData = {
     body?: never;
@@ -13766,7 +13864,7 @@ export type SearchClientsForRoleResponses = {
             /**
              * The ID of the client.
              */
-            clientId?: string;
+            clientId: string;
         }>;
     };
 };
@@ -14245,7 +14343,7 @@ export type SearchUsersForRoleResponses = {
          * The matching users.
          */
         items: Array<{
-            username?: Username;
+            username: Username;
         }>;
     };
 };
@@ -14773,7 +14871,7 @@ export type SearchClientsForTenantResponses = {
             /**
              * The ID of the client.
              */
-            clientId?: string;
+            clientId: string;
         }>;
     };
 };
@@ -15293,7 +15391,7 @@ export type SearchUsersForTenantResponses = {
          * The matching users.
          */
         items: Array<{
-            username?: Username;
+            username: Username;
         }>;
     };
 };
@@ -15514,15 +15612,15 @@ export type SearchUsersResponses = {
          * The matching users.
          */
         items: Array<{
-            username?: Username;
+            username: Username;
             /**
              * The name of the user.
              */
-            name?: string;
+            name: string | null;
             /**
              * The email of the user.
              */
-            email?: string;
+            email: string | null;
         }>;
     };
 };
@@ -15610,15 +15708,15 @@ export type GetUserResponses = {
      * The user is successfully returned.
      */
     200: {
-        username?: Username;
+        username: Username;
         /**
          * The name of the user.
          */
-        name?: string;
+        name: string | null;
         /**
          * The email of the user.
          */
-        email?: string;
+        email: string | null;
     };
 };
 
@@ -15667,15 +15765,15 @@ export type UpdateUserResponses = {
      * The user was updated successfully.
      */
     200: {
-        username?: Username;
+        username: Username;
         /**
          * The name of the user.
          */
-        name?: string;
+        name: string | null;
         /**
          * The email of the user.
          */
-        email?: string;
+        email: string | null;
     };
 };
 
@@ -16206,7 +16304,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:7e46d74303f76f10b663e103b8582c9f171be15efafbf93d077445bdfa393d45
+// specHash=sha256:d98cbb5c3029b0473bf47fc32f81c6bbc2826a89834042bda2c097c75582a914
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

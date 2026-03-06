@@ -23,7 +23,12 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
-import { executeWithHttpRetry, defaultHttpClassifier, type HttpRetryPolicy, type OperationOptions } from '../runtime/retry';
+import {
+  executeWithHttpRetry,
+  defaultHttpClassifier,
+  type HttpRetryPolicy,
+  type OperationOptions,
+} from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
@@ -43,7 +48,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 179
+// Operations: 180
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -369,6 +374,14 @@ export type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey }
 export type getIncidentConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
+};
+type getJobTimeSeriesStatisticsOptions = Parameters<typeof Sdk.getJobTimeSeriesStatistics>[0];
+type getJobTimeSeriesStatisticsBody = (NonNullable<getJobTimeSeriesStatisticsOptions> extends { body?: infer B } ? B : never);
+export type getJobTimeSeriesStatisticsInput = getJobTimeSeriesStatisticsBody;
+/** Management of eventual consistency **/
+export type getJobTimeSeriesStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobTimeSeriesStatistics>> 
 };
 type getJobTypeStatisticsOptions = Parameters<typeof Sdk.getJobTypeStatistics>[0];
 type getJobTypeStatisticsBody = (NonNullable<getJobTypeStatisticsOptions> extends { body?: infer B } ? B : never);
@@ -1464,11 +1477,12 @@ export class CamundaClient {
     }
   ): Promise<T> {
     const { opId, exempt, classify, retryOverride } = opts;
-    const policy: HttpRetryPolicy = retryOverride === false
-      ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
-      : retryOverride
-        ? { ...this._config.httpRetry, ...retryOverride }
-        : this._config.httpRetry;
+    const policy: HttpRetryPolicy =
+      retryOverride === false
+        ? { maxAttempts: 1, baseDelayMs: 0, maxDelayMs: 0 }
+        : retryOverride
+          ? { ...this._config.httpRetry, ...retryOverride }
+          : this._config.httpRetry;
     const signal: AbortSignal | undefined = undefined; // placeholder if we later pass through
     if (!exempt) {
       await this._bp.acquire(signal);
@@ -6030,6 +6044,72 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getIncident', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get time-series metrics for a job type
+   *
+   * Returns a list of time-bucketed metrics ordered ascending by time.
+   * The `from` and `to` fields select the time window of interest.
+   * Each item in the response corresponds to one time bucket of the requested resolution.
+   *
+    *
+   * @operationId getJobTimeSeriesStatistics
+   * @tags Job
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getJobTimeSeriesStatistics(input: getJobTimeSeriesStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobTimeSeriesStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobTimeSeriesStatistics>>;
+  getJobTimeSeriesStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobTimeSeriesStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getJobTimeSeriesStatistics', Schemas.zGetJobTimeSeriesStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getJobTimeSeriesStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getJobTimeSeriesStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetJobTimeSeriesStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetJobTimeSeriesStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getJobTimeSeriesStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getJobTimeSeriesStatistics', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }

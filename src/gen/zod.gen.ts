@@ -1105,15 +1105,16 @@ export const zGroupCreateRequest = z.object({
 });
 
 export const zGroupCreateResult = z.object({
-    groupId: z.optional(z.string().register(z.globalRegistry, {
+    groupId: z.string().register(z.globalRegistry, {
         description: 'The ID of the created group.'
-    })),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    name: z.string().register(z.globalRegistry, {
         description: 'The display name of the created group.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the created group.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zGroupUpdateRequest = z.object({
@@ -1126,30 +1127,32 @@ export const zGroupUpdateRequest = z.object({
 });
 
 export const zGroupUpdateResult = z.object({
-    groupId: z.optional(z.string().register(z.globalRegistry, {
+    groupId: z.string().register(z.globalRegistry, {
         description: 'The unique external group ID.'
-    })),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    name: z.string().register(z.globalRegistry, {
         description: 'The name of the group.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the group.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 /**
  * Group search response item.
  */
 export const zGroupResult = z.object({
-    name: z.optional(z.string().register(z.globalRegistry, {
+    name: z.string().register(z.globalRegistry, {
         description: 'The group name.'
-    })),
-    groupId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    groupId: z.string().register(z.globalRegistry, {
         description: 'The group ID.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The group description.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'Group search response item.'
 });
@@ -1167,9 +1170,9 @@ export const zGroupFilter = z.object({
 });
 
 export const zGroupClientResult = z.object({
-    clientId: z.optional(z.string().register(z.globalRegistry, {
+    clientId: z.string().register(z.globalRegistry, {
         description: 'The ID of the client.'
-    }))
+    })
 });
 
 /**
@@ -1274,7 +1277,7 @@ export const zUsername = z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-
 });
 
 export const zGroupUserResult = z.object({
-    username: z.optional(zUsername)
+    username: zUsername
 });
 
 /**
@@ -1497,6 +1500,40 @@ export const zJobWorkerStatisticsItem = z.object({
     failed: zStatusMetric
 }).register(z.globalRegistry, {
     description: 'Statistics for a single worker within a job type.'
+});
+
+/**
+ * Job time-series statistics search filter.
+ */
+export const zJobTimeSeriesStatisticsFilter = z.object({
+    from: z.iso.datetime().register(z.globalRegistry, {
+        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    to: z.iso.datetime().register(z.globalRegistry, {
+        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    jobType: z.string().register(z.globalRegistry, {
+        description: 'Job type to return time-series metrics for.'
+    }),
+    resolution: z.optional(z.string().register(z.globalRegistry, {
+        description: 'Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,\n`PT1H` for 1 hour). If omitted, the server chooses a sensible default.\n'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Job time-series statistics search filter.'
+});
+
+/**
+ * Aggregated job metrics for a single time bucket.
+ */
+export const zJobTimeSeriesStatisticsItem = z.object({
+    time: z.iso.datetime().register(z.globalRegistry, {
+        description: 'ISO 8601 timestamp representing the start of this time bucket.'
+    }),
+    created: zStatusMetric,
+    completed: zStatusMetric,
+    failed: zStatusMetric
+}).register(z.globalRegistry, {
+    description: 'Aggregated job metrics for a single time bucket.'
 });
 
 export const zJobFailRequest = z.object({
@@ -1818,15 +1855,15 @@ export const zLongKey = z.string().min(1).max(25).regex(/^-?[0-9]+$/).register(z
 export const zAuthorizationKey = zLongKey;
 
 export const zAuthorizationResult = z.object({
-    ownerId: z.optional(z.string().register(z.globalRegistry, {
+    ownerId: z.string().register(z.globalRegistry, {
         description: 'The ID of the owner of permissions.'
-    })),
-    ownerType: z.optional(zOwnerTypeEnum),
-    resourceType: z.optional(zResourceTypeEnum),
-    resourceId: z.optional(z.union([
+    }),
+    ownerType: zOwnerTypeEnum,
+    resourceType: zResourceTypeEnum,
+    resourceId: z.union([
         z.string(),
         z.null()
-    ])),
+    ]),
     resourcePropertyName: z.union([
         z.string(),
         z.null()
@@ -1834,11 +1871,11 @@ export const zAuthorizationResult = z.object({
     permissionTypes: z.array(zPermissionTypeEnum).register(z.globalRegistry, {
         description: 'Specifies the types of the permissions.'
     }),
-    authorizationKey: z.optional(zAuthorizationKey)
+    authorizationKey: zAuthorizationKey
 });
 
 export const zAuthorizationCreateResult = z.object({
-    authorizationKey: z.optional(zAuthorizationKey)
+    authorizationKey: zAuthorizationKey
 });
 
 /**
@@ -2393,37 +2430,46 @@ export const zEvaluatedDecisionResult = z.object({
 export const zDecisionEvaluationKey = zLongKey;
 
 export const zDecisionInstanceResult = z.object({
-    decisionEvaluationInstanceKey: z.optional(zDecisionEvaluationInstanceKey),
-    state: z.optional(zDecisionInstanceStateEnum),
-    evaluationDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
-        description: 'The evaluation date of the decision instance.'
+    decisionDefinitionId: zDecisionDefinitionId,
+    decisionDefinitionKey: zDecisionDefinitionKey,
+    decisionDefinitionName: z.string().register(z.globalRegistry, {
+        description: 'The name of the DMN decision.'
+    }),
+    decisionDefinitionType: zDecisionDefinitionTypeEnum,
+    decisionDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+        description: 'The version of the decision.'
     })),
+    decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKey,
+    decisionEvaluationKey: zDecisionEvaluationKey,
+    elementInstanceKey: z.union([
+        zElementInstanceKey,
+        z.null()
+    ]),
+    evaluationDate: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The evaluation date of the decision instance.'
+    }),
     evaluationFailure: z.union([
         z.string(),
         z.null()
     ]),
-    decisionDefinitionId: z.optional(zDecisionDefinitionId),
-    decisionDefinitionName: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the DMN decision.'
-    })),
-    decisionDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
-        description: 'The version of the decision.'
-    })),
-    decisionDefinitionType: z.optional(zDecisionDefinitionTypeEnum),
-    result: z.optional(z.string().register(z.globalRegistry, {
+    processDefinitionKey: z.union([
+        zProcessDefinitionKey,
+        z.null()
+    ]),
+    processInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
+    result: z.string().register(z.globalRegistry, {
         description: 'The result of the decision instance.'
-    })),
-    tenantId: zTenantId,
-    decisionEvaluationKey: z.optional(zDecisionEvaluationKey),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    }),
+    rootDecisionDefinitionKey: zDecisionDefinitionKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
     ]),
-    decisionDefinitionKey: z.optional(zDecisionDefinitionKey),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    rootDecisionDefinitionKey: z.optional(zDecisionDefinitionKey)
+    state: zDecisionInstanceStateEnum,
+    tenantId: zTenantId
 });
 
 export const zDecisionInstanceGetQueryResult = zDecisionInstanceResult.and(z.object({
@@ -2515,20 +2561,20 @@ export const zDecisionRequirementsFilter = z.object({
 });
 
 export const zDecisionRequirementsResult = z.object({
-    decisionRequirementsName: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The DMN name of the decision requirements.'
-    })),
-    version: z.optional(z.int().register(z.globalRegistry, {
-        description: 'The assigned version of the decision requirements.'
-    })),
-    decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
+    decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'The DMN ID of the decision requirements.'
-    })),
-    resourceName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    decisionRequirementsKey: zDecisionRequirementsKey,
+    decisionRequirementsName: z.string().register(z.globalRegistry, {
+        description: 'The DMN name of the decision requirements.'
+    }),
+    resourceName: z.string().register(z.globalRegistry, {
         description: 'The name of the resource from which this decision requirements was parsed.'
-    })),
-    tenantId: z.optional(zTenantId),
-    decisionRequirementsKey: z.optional(zDecisionRequirementsKey)
+    }),
+    tenantId: zTenantId,
+    version: z.int().register(z.globalRegistry, {
+        description: 'The assigned version of the decision requirements.'
+    })
 });
 
 /**
@@ -3249,18 +3295,18 @@ export const zMappingRuleCreateRequest = zMappingRuleCreateUpdateRequest.and(z.o
 export const zMappingRuleUpdateRequest = zMappingRuleCreateUpdateRequest;
 
 export const zMappingRuleCreateUpdateResult = z.object({
-    claimName: z.optional(z.string().register(z.globalRegistry, {
+    claimName: z.string().register(z.globalRegistry, {
         description: 'The name of the claim to map.'
-    })),
-    claimValue: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    claimValue: z.string().register(z.globalRegistry, {
         description: 'The value of the claim to map.'
-    })),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    name: z.string().register(z.globalRegistry, {
         description: 'The name of the mapping rule.'
-    })),
-    mappingRuleId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    mappingRuleId: z.string().register(z.globalRegistry, {
         description: 'The unique ID of the mapping rule.'
-    }))
+    })
 });
 
 export const zMappingRuleCreateResult = zMappingRuleCreateUpdateResult;
@@ -3268,18 +3314,18 @@ export const zMappingRuleCreateResult = zMappingRuleCreateUpdateResult;
 export const zMappingRuleUpdateResult = zMappingRuleCreateUpdateResult;
 
 export const zMappingRuleResult = z.object({
-    claimName: z.optional(z.string().register(z.globalRegistry, {
+    claimName: z.string().register(z.globalRegistry, {
         description: 'The name of the claim to map.'
-    })),
-    claimValue: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    claimValue: z.string().register(z.globalRegistry, {
         description: 'The value of the claim to map.'
-    })),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    name: z.string().register(z.globalRegistry, {
         description: 'The name of the mapping rule.'
-    })),
-    mappingRuleId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    mappingRuleId: z.string().register(z.globalRegistry, {
         description: 'The ID of the mapping rule.'
-    }))
+    })
 });
 
 /**
@@ -4137,15 +4183,16 @@ export const zRoleCreateRequest = z.object({
 });
 
 export const zRoleCreateResult = z.object({
-    roleId: z.optional(z.string().register(z.globalRegistry, {
+    roleId: z.string().register(z.globalRegistry, {
         description: 'The ID of the created role.'
-    })),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    name: z.string().register(z.globalRegistry, {
         description: 'The display name of the created role.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the created role.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zRoleUpdateRequest = z.object({
@@ -4158,30 +4205,32 @@ export const zRoleUpdateRequest = z.object({
 });
 
 export const zRoleUpdateResult = z.object({
-    name: z.optional(z.string().register(z.globalRegistry, {
+    name: z.string().register(z.globalRegistry, {
         description: 'The display name of the updated role.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the updated role.'
-    })),
-    roleId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    roleId: z.string().register(z.globalRegistry, {
         description: 'The ID of the updated role.'
-    }))
+    })
 });
 
 /**
  * Role search response item.
  */
 export const zRoleResult = z.object({
-    name: z.optional(z.string().register(z.globalRegistry, {
+    name: z.string().register(z.globalRegistry, {
         description: 'The role name.'
-    })),
-    roleId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    roleId: z.string().register(z.globalRegistry, {
         description: 'The role id.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the role.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'Role search response item.'
 });
@@ -4201,19 +4250,19 @@ export const zRoleFilter = z.object({
 });
 
 export const zRoleUserResult = z.object({
-    username: z.optional(zUsername)
+    username: zUsername
 });
 
 export const zRoleClientResult = z.object({
-    clientId: z.optional(z.string().register(z.globalRegistry, {
+    clientId: z.string().register(z.globalRegistry, {
         description: 'The ID of the client.'
-    }))
+    })
 });
 
 export const zRoleGroupResult = z.object({
-    groupId: z.optional(z.string().register(z.globalRegistry, {
+    groupId: z.string().register(z.globalRegistry, {
         description: 'The id of the group.'
-    }))
+    })
 });
 
 /**
@@ -4265,6 +4314,16 @@ export const zJobWorkerStatisticsQuery = z.object({
     page: z.optional(zCursorForwardPagination)
 }).register(z.globalRegistry, {
     description: 'Job worker statistics query.'
+});
+
+/**
+ * Job time-series statistics query.
+ */
+export const zJobTimeSeriesStatisticsQuery = z.object({
+    filter: zJobTimeSeriesStatisticsFilter,
+    page: z.optional(zCursorForwardPagination)
+}).register(z.globalRegistry, {
+    description: 'Job time-series statistics query.'
 });
 
 /**
@@ -5020,6 +5079,18 @@ export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object
 }));
 
 /**
+ * Job time-series statistics query result.
+ */
+export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zJobTimeSeriesStatisticsItem).register(z.globalRegistry, {
+        description: 'The list of time-bucketed statistics items, ordered ascending by time.'
+    }),
+    page: zSearchQueryPageResponse
+}).register(z.globalRegistry, {
+    description: 'Job time-series statistics query result.'
+}));
+
+/**
  * Job search response.
  */
 export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
@@ -5172,13 +5243,14 @@ export const zTenantCreateRequest = z.object({
 });
 
 export const zTenantCreateResult = z.object({
-    tenantId: z.optional(zTenantId),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    tenantId: zTenantId,
+    name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the tenant.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zTenantUpdateRequest = z.object({
@@ -5191,26 +5263,28 @@ export const zTenantUpdateRequest = z.object({
 });
 
 export const zTenantUpdateResult = z.object({
-    tenantId: z.optional(zTenantId),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    tenantId: zTenantId,
+    name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
-    })),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the tenant.'
-    }))
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 /**
  * Tenant search response item.
  */
 export const zTenantResult = z.object({
-    name: z.optional(z.string().register(z.globalRegistry, {
+    name: z.string().register(z.globalRegistry, {
         description: 'The tenant name.'
-    })),
-    tenantId: z.optional(zTenantId),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The tenant description.'
-    }))
+    }),
+    tenantId: zTenantId,
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'Tenant search response item.'
 });
@@ -5299,7 +5373,7 @@ export const zTenantSearchQueryResult = zSearchQueryResponse.and(z.object({
 }));
 
 export const zTenantUserResult = z.object({
-    username: z.optional(zUsername)
+    username: zUsername
 });
 
 export const zTenantUserSearchResult = zSearchQueryResponse.and(z.object({
@@ -5324,9 +5398,9 @@ export const zTenantUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
 }));
 
 export const zTenantClientResult = z.object({
-    clientId: z.optional(z.string().register(z.globalRegistry, {
+    clientId: z.string().register(z.globalRegistry, {
         description: 'The ID of the client.'
-    }))
+    })
 });
 
 export const zTenantClientSearchResult = zSearchQueryResponse.and(z.object({
@@ -5351,9 +5425,9 @@ export const zTenantClientSearchQueryRequest = zSearchQueryRequest.and(z.object(
 }));
 
 export const zTenantGroupResult = z.object({
-    groupId: z.optional(z.string().register(z.globalRegistry, {
+    groupId: z.string().register(z.globalRegistry, {
         description: 'The groupId of the group.'
-    }))
+    })
 });
 
 export const zTenantGroupSearchResult = zSearchQueryResponse.and(z.object({
@@ -5647,13 +5721,15 @@ export const zUserRequest = z.object({
 });
 
 export const zUserCreateResult = z.object({
-    username: z.optional(zUsername),
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the user.'
-    })),
-    email: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The email of the user.'
-    }))
+    username: zUsername,
+    name: z.union([
+        z.string(),
+        z.null()
+    ]),
+    email: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zUserUpdateRequest = z.object({
@@ -5669,23 +5745,27 @@ export const zUserUpdateRequest = z.object({
 });
 
 export const zUserUpdateResult = z.object({
-    username: z.optional(zUsername),
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the user.'
-    })),
-    email: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The email of the user.'
-    }))
+    username: zUsername,
+    name: z.union([
+        z.string(),
+        z.null()
+    ]),
+    email: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zUserResult = z.object({
-    username: z.optional(zUsername),
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the user.'
-    })),
-    email: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The email of the user.'
-    }))
+    username: zUsername,
+    name: z.union([
+        z.string(),
+        z.null()
+    ]),
+    email: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 export const zUserSearchQuerySortRequest = z.object({
@@ -7875,9 +7955,9 @@ export const zSearchClientsForGroupData = z.object({
  */
 export const zSearchClientsForGroupResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        clientId: z.optional(z.string().register(z.globalRegistry, {
+        clientId: z.string().register(z.globalRegistry, {
             description: 'The ID of the client.'
-        }))
+        })
     })).register(z.globalRegistry, {
         description: 'The matching client IDs.'
     })
@@ -8033,7 +8113,7 @@ export const zSearchUsersForGroupData = z.object({
  */
 export const zSearchUsersForGroupResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        username: z.optional(zUsername)
+        username: zUsername
     })).register(z.globalRegistry, {
         description: 'The matching members.'
     })
@@ -8266,6 +8346,17 @@ export const zGetJobWorkerStatisticsData = z.object({
  * The job worker statistics result.
  */
 export const zGetJobWorkerStatisticsResponse = zJobWorkerStatisticsQueryResult;
+
+export const zGetJobTimeSeriesStatisticsData = z.object({
+    body: zJobTimeSeriesStatisticsQuery,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The job time-series statistics result.
+ */
+export const zGetJobTimeSeriesStatisticsResponse = zJobTimeSeriesStatisticsQueryResult;
 
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),
@@ -8849,9 +8940,9 @@ export const zSearchClientsForRoleData = z.object({
  */
 export const zSearchClientsForRoleResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        clientId: z.optional(z.string().register(z.globalRegistry, {
+        clientId: z.string().register(z.globalRegistry, {
             description: 'The ID of the client.'
-        }))
+        })
     })).register(z.globalRegistry, {
         description: 'The matching clients.'
     })
@@ -9041,7 +9132,7 @@ export const zSearchUsersForRoleData = z.object({
  */
 export const zSearchUsersForRoleResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        username: z.optional(zUsername)
+        username: zUsername
     })).register(z.globalRegistry, {
         description: 'The matching users.'
     })
@@ -9229,9 +9320,9 @@ export const zSearchClientsForTenantData = z.object({
  */
 export const zSearchClientsForTenantResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        clientId: z.optional(z.string().register(z.globalRegistry, {
+        clientId: z.string().register(z.globalRegistry, {
             description: 'The ID of the client.'
-        }))
+        })
     })).register(z.globalRegistry, {
         description: 'The matching clients.'
     })
@@ -9458,7 +9549,7 @@ export const zSearchUsersForTenantData = z.object({
  */
 export const zSearchUsersForTenantResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        username: z.optional(zUsername)
+        username: zUsername
     })).register(z.globalRegistry, {
         description: 'The matching users.'
     })
@@ -9531,13 +9622,15 @@ export const zSearchUsersData = z.object({
  */
 export const zSearchUsersResponse = zSearchQueryResponse.and(z.object({
     items: z.array(z.object({
-        username: z.optional(zUsername),
-        name: z.optional(z.string().register(z.globalRegistry, {
-            description: 'The name of the user.'
-        })),
-        email: z.optional(z.string().register(z.globalRegistry, {
-            description: 'The email of the user.'
-        }))
+        username: zUsername,
+        name: z.union([
+            z.string(),
+            z.null()
+        ]),
+        email: z.union([
+            z.string(),
+            z.null()
+        ])
     })).register(z.globalRegistry, {
         description: 'The matching users.'
     })
@@ -9572,13 +9665,15 @@ export const zGetUserData = z.object({
  * The user is successfully returned.
  */
 export const zGetUserResponse = z.object({
-    username: z.optional(zUsername),
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the user.'
-    })),
-    email: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The email of the user.'
-    }))
+    username: zUsername,
+    name: z.union([
+        z.string(),
+        z.null()
+    ]),
+    email: z.union([
+        z.string(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'The user is successfully returned.'
 });
@@ -9595,13 +9690,15 @@ export const zUpdateUserData = z.object({
  * The user was updated successfully.
  */
 export const zUpdateUserResponse = z.object({
-    username: z.optional(zUsername),
-    name: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The name of the user.'
-    })),
-    email: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The email of the user.'
-    }))
+    username: zUsername,
+    name: z.union([
+        z.string(),
+        z.null()
+    ]),
+    email: z.union([
+        z.string(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'The user was updated successfully.'
 });
