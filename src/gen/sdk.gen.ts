@@ -704,7 +704,7 @@ export const createDeployment = <ThrowOnError extends boolean = true>(options: O
  *
  * Upload a document to the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const createDocument = <ThrowOnError extends boolean = true>(options: Options<CreateDocumentData, ThrowOnError>) => {
@@ -738,7 +738,7 @@ export const createDocument = <ThrowOnError extends boolean = true>(options: Opt
  * each of which contains the file name of the document that failed to upload and the reason for the failure.
  * The client can choose to retry the whole batch or individual documents based on the response.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const createDocuments = <ThrowOnError extends boolean = true>(options: Options<CreateDocumentsData, ThrowOnError>) => {
@@ -760,7 +760,7 @@ export const createDocuments = <ThrowOnError extends boolean = true>(options: Op
  *
  * Delete a document from the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const deleteDocument = <ThrowOnError extends boolean = true>(options: Options<DeleteDocumentData, ThrowOnError>) => {
@@ -777,7 +777,7 @@ export const deleteDocument = <ThrowOnError extends boolean = true>(options: Opt
  *
  * Download a document from the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const getDocument = <ThrowOnError extends boolean = true>(options: Options<GetDocumentData, ThrowOnError>) => {
@@ -794,7 +794,7 @@ export const getDocument = <ThrowOnError extends boolean = true>(options: Option
  *
  * Create a link to a document in the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP
  *
  */
 export const createDocumentLink = <ThrowOnError extends boolean = true>(options: Options<CreateDocumentLinkData, ThrowOnError>) => {
