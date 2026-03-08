@@ -1,9 +1,8 @@
 # [8.9.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.10...v8.9.0-alpha.11) (2026-03-06)
 
-
 ### Features
 
-* add per-operation retry config. New tuning for backpressure ([9dd921a](https://github.com/camunda/orchestration-cluster-api-js/commit/9dd921a0eae67d56d0e8a7d6423ac7d8a3edd3b4))
+- add per-operation retry config. New tuning for backpressure ([9dd921a](https://github.com/camunda/orchestration-cluster-api-js/commit/9dd921a0eae67d56d0e8a7d6423ac7d8a3edd3b4))
 
 # [8.9.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.9...v8.9.0-alpha.10) (2026-03-05)
 

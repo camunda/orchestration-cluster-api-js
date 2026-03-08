@@ -2436,9 +2436,9 @@ export const zDecisionInstanceResult = z.object({
         description: 'The name of the DMN decision.'
     }),
     decisionDefinitionType: zDecisionDefinitionTypeEnum,
-    decisionDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+    decisionDefinitionVersion: z.int().register(z.globalRegistry, {
         description: 'The version of the decision.'
-    })),
+    }),
     decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKey,
     decisionEvaluationKey: zDecisionEvaluationKey,
     elementInstanceKey: z.union([
@@ -3548,7 +3548,7 @@ export const zProblemDetail = z.object({
 export const zProcessDefinitionFilter = z.object({
     name: z.optional(zStringFilterProperty),
     isLatestVersion: z.optional(z.boolean().register(z.globalRegistry, {
-        description: 'Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\n'
+        description: 'Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\nWhen using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.\n'
     })),
     resourceName: z.optional(z.string().register(z.globalRegistry, {
         description: 'Resource name of this process definition.'
@@ -4821,7 +4821,8 @@ export const zProcessInstanceSearchQuerySortRequest = z.object({
         'endDate',
         'state',
         'hasIncident',
-        'tenantId'
+        'tenantId',
+        'businessId'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -6923,7 +6924,8 @@ export const zBaseProcessInstanceFilterFields = z.object({
         description: 'Whether the element instance has an incident or not.'
     })),
     incidentErrorHashCode: z.optional(zIntegerFilterProperty),
-    tags: z.optional(zTagSet)
+    tags: z.optional(zTagSet),
+    businessId: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Base process instance search filter.'
 });

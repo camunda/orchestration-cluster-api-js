@@ -14131,6 +14131,7 @@
           "decisionDefinitionKey",
           "decisionDefinitionName",
           "decisionDefinitionType",
+          "decisionDefinitionVersion",
           "decisionEvaluationInstanceKey",
           "decisionEvaluationKey",
           "elementInstanceKey",
@@ -21074,7 +21075,7 @@
             "description": "Name of this process definition."
           },
           "isLatestVersion": {
-            "description": "Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\n",
+            "description": "Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\nWhen using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.\n",
             "type": "boolean"
           },
           "resourceName": {
@@ -21912,7 +21913,8 @@
               "endDate",
               "state",
               "hasIncident",
-              "tenantId"
+              "tenantId",
+              "businessId"
             ]
           },
           "order": {
@@ -22071,6 +22073,14 @@
           },
           "tags": {
             "$ref": "#/components/schemas/TagSet"
+          },
+          "businessId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
+            "description": "The business id associated with the process instance."
           }
         }
       },

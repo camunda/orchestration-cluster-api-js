@@ -1806,7 +1806,7 @@ export type DecisionInstanceResult = {
     /**
      * The version of the decision.
      */
-    decisionDefinitionVersion?: number;
+    decisionDefinitionVersion: number;
     decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey;
     /**
      * The key of the decision evaluation where this instance was created.
@@ -1932,12 +1932,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -5685,6 +5685,7 @@ export type ProcessDefinitionFilter = {
      * Whether to only return the latest version of each process definition.
      * When using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.
      * The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
+     * When using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.
      *
      */
     isLatestVersion?: boolean;
@@ -6200,7 +6201,7 @@ export type ProcessInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'processInstanceKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processDefinitionVersionTag' | 'processDefinitionKey' | 'parentProcessInstanceKey' | 'parentElementInstanceKey' | 'startDate' | 'endDate' | 'state' | 'hasIncident' | 'tenantId';
+    field: 'processInstanceKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processDefinitionVersionTag' | 'processDefinitionKey' | 'parentProcessInstanceKey' | 'parentElementInstanceKey' | 'startDate' | 'endDate' | 'state' | 'hasIncident' | 'tenantId' | 'businessId';
     order?: SortOrderEnum;
 };
 
@@ -6287,6 +6288,10 @@ export type BaseProcessInstanceFilterFields = {
      */
     incidentErrorHashCode?: IntegerFilterProperty;
     tags?: TagSet;
+    /**
+     * The business id associated with the process instance.
+     */
+    businessId?: StringFilterProperty;
 };
 
 /**
@@ -16304,7 +16309,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:d98cbb5c3029b0473bf47fc32f81c6bbc2826a89834042bda2c097c75582a914
+// specHash=sha256:d8cde0287ea420262805c9e0a17ebd236f813a0586d927d4b08736b6b4ebe0f1
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
