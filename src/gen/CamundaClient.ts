@@ -3088,7 +3088,7 @@ export class CamundaClient {
    *
    * Upload a document to the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId createDocument
@@ -3151,7 +3151,7 @@ export class CamundaClient {
    *
    * Create a link to a document in the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, GCP
+   * Note that this is currently supported for document stores of type: AWS, Azure, GCP
    *
     *
    * @operationId createDocumentLink
@@ -3228,7 +3228,7 @@ export class CamundaClient {
    * each of which contains the file name of the document that failed to upload and the reason for the failure.
    * The client can choose to retry the whole batch or individual documents based on the response.
    *
-   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId createDocuments
@@ -4070,7 +4070,7 @@ export class CamundaClient {
    *
    * Delete a document from the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId deleteDocument
@@ -5608,7 +5608,7 @@ export class CamundaClient {
    *
    * Download a document from the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId getDocument
