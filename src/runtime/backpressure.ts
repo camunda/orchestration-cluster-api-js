@@ -18,6 +18,9 @@ export interface BackpressureConfig {
   maxWaiters?: number; // max queued waiters before fail-fast rejection (default 1000)
   healthyRecoveryMultiplier?: number; // multiplicative increase factor when healthy (default 1.5)
   unlimitedAfterHealthyMs?: number; // return to unlimited after this many ms of healthy (default 30000)
+  backoffInitialMs?: number; // initial backoff delay at floor (default 25)
+  backoffMaxMs?: number; // maximum backoff delay (default 2000)
+  backoffEscalate?: number; // backoff multiplier on each 429 at floor (default 2.0)
 }
 
 export type BackpressureSeverity = 'healthy' | 'soft' | 'severe';
@@ -26,6 +29,7 @@ export interface BackpressureManagerOptions {
   logger?: Logger;
   config?: BackpressureConfig;
   now?: () => number;
+  sleep?: (ms: number) => Promise<void>; // injectable for testing
 }
 
 interface Waiter {
@@ -37,6 +41,7 @@ interface Waiter {
 export class BackpressureManager {
   private logger?: Logger;
   private now: () => number;
+  private sleep: (ms: number) => Promise<void>;
   private cfg: Required<BackpressureConfig>;
   private severity: BackpressureSeverity = 'healthy';
   private consecutive = 0;
@@ -47,10 +52,12 @@ export class BackpressureManager {
   private lastRecoverCheck = 0;
   private observeOnly = false;
   private healthySince = 0; // timestamp when severity last became healthy
+  private backoffMs = 0; // current backoff delay in ms (0 = no backoff)
 
   constructor(opts: BackpressureManagerOptions = {}) {
     this.logger = opts.logger;
     this.now = opts.now || (() => Date.now());
+    this.sleep = opts.sleep || ((ms) => new Promise<void>((r) => setTimeout(r, ms)));
     this.cfg = {
       enabled: true,
       initialMaxConcurrency: null,
@@ -64,6 +71,9 @@ export class BackpressureManager {
       maxWaiters: 1000,
       healthyRecoveryMultiplier: 1.5,
       unlimitedAfterHealthyMs: 30_000,
+      backoffInitialMs: 25,
+      backoffMaxMs: 2000,
+      backoffEscalate: 2.0,
       ...opts.config,
     } as Required<BackpressureConfig>;
     this.observeOnly = !!this.cfg.observeOnly;
@@ -83,6 +93,7 @@ export class BackpressureManager {
       permitsMax: this.cfg.enabled === false ? null : this.permitsMax,
       permitsCurrent: this.cfg.enabled === false ? 0 : this.permitsCurrent,
       waiters: this.waiters.length,
+      backoffMs: this.backoffMs,
     };
   }
 
@@ -110,6 +121,12 @@ export class BackpressureManager {
     if (this.observeOnly) return; // never gate in observe-only mode
     if (!this.isEnabled()) return;
     if (this.permitsMax === null) return; // unlimited fast path
+    // Backoff-at-floor: delay before acquiring to rate-limit at floor
+    if (this.backoffMs > 0) {
+      await this.sleep(this.backoffMs);
+      // Re-check after sleep — may have gone unlimited
+      if (this.permitsMax === null) return;
+    }
     // Attempt immediate acquire
     if (this.permitsCurrent < (this.permitsMax || 0)) {
       this.permitsCurrent++;
@@ -180,6 +197,20 @@ export class BackpressureManager {
     } else if (this.severity === 'soft') {
       if (!this.observeOnly) this.scalePermits(this.cfg.reduceFactor);
     }
+    // Escalate backoff when stuck at floor + severe
+    if (
+      !this.observeOnly &&
+      this.permitsMax !== null &&
+      this.permitsMax <= this.cfg.floorConcurrency &&
+      this.severity === 'severe'
+    ) {
+      if (this.backoffMs === 0) {
+        this.backoffMs = this.cfg.backoffInitialMs;
+      } else {
+        this.backoffMs = Math.min(this.cfg.backoffMaxMs, this.backoffMs * this.cfg.backoffEscalate);
+      }
+      this.log('backoff.escalate', { delayMs: this.backoffMs });
+    }
     if (this.severity !== prevSeverity)
       this.log('severity', { severity: this.severity }, prevSeverity);
   }
@@ -187,6 +218,11 @@ export class BackpressureManager {
   recordHealthyHint() {
     // Called after a successful call with no backpressure classification
     if (!this.cfg.enabled && !this.observeOnly) return;
+    // Reset backoff immediately on success — server has capacity
+    if (this.backoffMs > 0) {
+      this.backoffMs = 0;
+      this.log('backoff.clear', { reason: 'healthy-hint' });
+    }
     const now = this.now();
     // Passive recovery check piggy-backed
     this.maybeRecover(now);
@@ -214,7 +250,14 @@ export class BackpressureManager {
         this.healthySince = now;
       }
       if (this.severity === 'healthy') this.consecutive = 0;
-      if (prev !== this.severity) this.log('severity', { severity: this.severity }, prev);
+      if (prev !== this.severity) {
+        // Clear backoff when severity improves
+        if (this.backoffMs > 0) {
+          this.backoffMs = 0;
+          this.log('backoff.clear', { reason: 'severity-decay' });
+        }
+        this.log('severity', { severity: this.severity }, prev);
+      }
     }
     // Recovery: grow permits back toward and beyond the bootstrap cap.
     // Phase 1 (soft/recovering): additive increase (+recoveryStep) up to bootstrap cap.
@@ -226,6 +269,11 @@ export class BackpressureManager {
         // Phase 1: additive recovery while not yet healthy
         if (this.permitsMax < bootstrapCap) {
           this.permitsMax = Math.min(bootstrapCap, this.permitsMax + this.cfg.recoveryStep);
+          // Clear backoff when leaving floor
+          if (this.permitsMax > this.cfg.floorConcurrency && this.backoffMs > 0) {
+            this.backoffMs = 0;
+            this.log('backoff.clear', { reason: 'left-floor' });
+          }
           this.log('permits.recover', { max: this.permitsMax, phase: 'additive' }, this.severity);
           this.release();
         }
@@ -234,6 +282,7 @@ export class BackpressureManager {
         if (this.healthySince > 0 && now - this.healthySince >= this.cfg.unlimitedAfterHealthyMs) {
           this.permitsMax = null;
           this.permitsCurrent = 0;
+          this.backoffMs = 0;
           // Drain all waiters since we're now unlimited
           while (this.waiters.length) {
             const w = this.waiters.shift();

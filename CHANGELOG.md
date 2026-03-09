@@ -1,9 +1,8 @@
 # [8.9.0-alpha.12](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.11...v8.9.0-alpha.12) (2026-03-08)
 
-
 ### Features
 
-* build from hardened contract in 8.9 ([03ef35a](https://github.com/camunda/orchestration-cluster-api-js/commit/03ef35a9cda1913bf11bd42b07ae95829d4118cc))
+- build from hardened contract in 8.9 ([03ef35a](https://github.com/camunda/orchestration-cluster-api-js/commit/03ef35a9cda1913bf11bd42b07ae95829d4118cc))
 
 # [8.9.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.10...v8.9.0-alpha.11) (2026-03-06)
 

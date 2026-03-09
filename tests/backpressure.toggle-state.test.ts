@@ -54,5 +54,6 @@ describe('Backpressure legacy profile observe-only', () => {
     expect(s).toHaveProperty('permitsMax');
     expect(s).toHaveProperty('permitsCurrent');
     expect(s).toHaveProperty('waiters');
+    expect(s).toHaveProperty('backoffMs');
   });
 });

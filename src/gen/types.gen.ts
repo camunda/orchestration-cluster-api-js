@@ -1932,12 +1932,12 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
+export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
+export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | 'UNSPECIFIED' | 'UNKNOWN';
 
 /**
  * Advanced filter
@@ -16309,7 +16309,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:4e259f78ef16ae4a34e64cf42291ee3226d023d990339073540c0fd15e20ca06
+// specHash=sha256:d8cde0287ea420262805c9e0a17ebd236f813a0586d927d4b08736b6b4ebe0f1
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
