@@ -259,18 +259,18 @@ export const zAuthorizationFilter = z.object({
 });
 
 export const zBatchOperationError = z.object({
-    partitionId: z.optional(z.int().register(z.globalRegistry, {
+    partitionId: z.int().register(z.globalRegistry, {
         description: 'The partition ID where the error occurred.'
-    })),
-    type: z.optional(z.enum([
+    }),
+    type: z.enum([
         'QUERY_FAILED',
         'RESULT_BUFFER_SIZE_EXCEEDED'
     ]).register(z.globalRegistry, {
         description: 'The type of the error that occurred during the batch operation.'
-    })),
-    message: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    message: z.string().register(z.globalRegistry, {
         description: 'The error message that occurred during the batch operation.'
-    }))
+    })
 });
 
 /**
@@ -440,10 +440,10 @@ export const zTopologyResponse = z.object({
     brokers: z.array(zBrokerInfo).register(z.globalRegistry, {
         description: 'A list of brokers that are part of this cluster.'
     }),
-    clusterId: z.optional(z.union([
+    clusterId: z.union([
         z.string(),
         z.null()
-    ])),
+    ]),
     clusterSize: z.int().register(z.globalRegistry, {
         description: 'The number of brokers in the cluster.'
     }),
@@ -481,15 +481,15 @@ export const zEndCursor = z.string().regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9
  * A decision input that was evaluated within this decision evaluation.
  */
 export const zEvaluatedDecisionInputItem = z.object({
-    inputId: z.optional(z.string().register(z.globalRegistry, {
+    inputId: z.string().register(z.globalRegistry, {
         description: 'The identifier of the decision input.'
-    })),
-    inputName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    inputName: z.string().register(z.globalRegistry, {
         description: 'The name of the decision input.'
-    })),
-    inputValue: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the decision input.'
-    }))
+    }),
+    inputValue: z.string().register(z.globalRegistry, {
+        description: 'The value of the decision input.'
+    })
 }).register(z.globalRegistry, {
     description: 'A decision input that was evaluated within this decision evaluation.'
 });
@@ -498,15 +498,15 @@ export const zEvaluatedDecisionInputItem = z.object({
  * The evaluated decision outputs.
  */
 export const zEvaluatedDecisionOutputItem = z.object({
-    outputId: z.optional(z.string().register(z.globalRegistry, {
+    outputId: z.string().register(z.globalRegistry, {
         description: 'The ID of the evaluated decison output item.'
-    })),
-    outputName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    outputName: z.string().register(z.globalRegistry, {
         description: 'The name of the of the evaluated decison output item.'
-    })),
-    outputValue: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    outputValue: z.string().register(z.globalRegistry, {
         description: 'The value of the evaluated decison output item.'
-    })),
+    }),
     ruleId: z.union([
         z.string(),
         z.null()
@@ -523,12 +523,12 @@ export const zEvaluatedDecisionOutputItem = z.object({
  * A decision rule that matched within this decision evaluation.
  */
 export const zMatchedDecisionRuleItem = z.object({
-    ruleId: z.optional(z.string().register(z.globalRegistry, {
+    ruleId: z.string().register(z.globalRegistry, {
         description: 'The ID of the matched rule.'
-    })),
-    ruleIndex: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    ruleIndex: z.int().register(z.globalRegistry, {
         description: 'The index of the matched rule.'
-    })),
+    }),
     evaluatedOutputs: z.array(zEvaluatedDecisionOutputItem).register(z.globalRegistry, {
         description: 'The evaluated decision outputs.'
     })
@@ -561,18 +561,18 @@ export const zDecisionInstanceStateEnum = z.enum([
 });
 
 export const zDocumentCreationFailureDetail = z.object({
-    fileName: z.optional(z.string().register(z.globalRegistry, {
+    fileName: z.string().register(z.globalRegistry, {
         description: 'The name of the file that failed to upload.'
-    })),
-    status: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    status: z.int().register(z.globalRegistry, {
         description: 'The HTTP status code of the failure.'
-    })),
-    title: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    title: z.string().register(z.globalRegistry, {
         description: 'A short, human-readable summary of the problem type.'
-    })),
-    detail: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    detail: z.string().register(z.globalRegistry, {
         description: 'A human-readable explanation specific to this occurrence of the problem.'
-    }))
+    })
 });
 
 export const zDocumentLinkRequest = z.object({
@@ -1388,15 +1388,15 @@ export const zAdvancedIncidentStateFilter = z.object({
 });
 
 export const zIncidentProcessInstanceStatisticsByErrorResult = z.object({
-    errorHashCode: z.optional(z.int().register(z.globalRegistry, {
+    errorHashCode: z.int().register(z.globalRegistry, {
         description: 'The hash code identifying a specific incident error..'
-    })),
-    errorMessage: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    errorMessage: z.string().register(z.globalRegistry, {
         description: 'The error message associated with the incident error hash code.'
-    })),
-    activeInstancesWithErrorCount: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    activeInstancesWithErrorCount: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The number of active process instances that currently have an active incident with this error.\n'
-    }))
+    })
 });
 
 /**
@@ -1534,6 +1534,42 @@ export const zJobTimeSeriesStatisticsItem = z.object({
     failed: zStatusMetric
 }).register(z.globalRegistry, {
     description: 'Aggregated job metrics for a single time bucket.'
+});
+
+/**
+ * Job error statistics search filter.
+ */
+export const zJobErrorStatisticsFilter = z.object({
+    from: z.iso.datetime().register(z.globalRegistry, {
+        description: 'Start of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    to: z.iso.datetime().register(z.globalRegistry, {
+        description: 'End of the time window to filter metrics. ISO 8601 date-time format.\n'
+    }),
+    jobType: z.string().register(z.globalRegistry, {
+        description: 'Job type to return error metrics for.'
+    }),
+    errorCode: z.optional(zStringFilterProperty),
+    errorMessage: z.optional(zStringFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Job error statistics search filter.'
+});
+
+/**
+ * Aggregated error metrics for a single error type and message combination.
+ */
+export const zJobErrorStatisticsItem = z.object({
+    errorCode: z.string().register(z.globalRegistry, {
+        description: 'The error code identifier.'
+    }),
+    errorMessage: z.string().register(z.globalRegistry, {
+        description: 'The error message.'
+    }),
+    workers: z.int().register(z.globalRegistry, {
+        description: 'Number of distinct workers that encountered this error.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Aggregated error metrics for a single error type and message combination.'
 });
 
 export const zJobFailRequest = z.object({
@@ -2011,8 +2047,8 @@ export const zConditionalEvaluationInstruction = z.object({
 });
 
 export const zProcessInstanceReference = z.object({
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey)
+    processDefinitionKey: zProcessDefinitionKey,
+    processInstanceKey: zProcessInstanceKey
 });
 
 export const zEvaluateConditionalResult = z.object({
@@ -2041,18 +2077,18 @@ export const zDeploymentProcessResult = z.object({
 });
 
 export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processDefinitionName: z.optional(z.string().register(z.globalRegistry, {
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionName: z.string().register(z.globalRegistry, {
         description: 'The name of the process definition.'
-    })),
-    processDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    processDefinitionVersion: z.int().register(z.globalRegistry, {
         description: 'The version of the process definition.'
-    })),
-    tenantId: z.optional(zTenantId),
-    activeInstancesWithErrorCount: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    tenantId: zTenantId,
+    activeInstancesWithErrorCount: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The number of active process instances that currently have an incident\nwith the specified error hash code.\n'
-    }))
+    })
 });
 
 /**
@@ -2074,15 +2110,15 @@ export const zFormKey = zLongKey;
  * A deployed form.
  */
 export const zDeploymentFormResult = z.object({
-    formId: z.optional(zFormId),
-    version: z.optional(z.int().register(z.globalRegistry, {
+    formId: zFormId,
+    version: z.int().register(z.globalRegistry, {
         description: 'The version of the deployed form.'
-    })),
-    resourceName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    resourceName: z.string().register(z.globalRegistry, {
         description: 'The name of the resource.'
-    })),
-    tenantId: z.optional(zTenantId),
-    formKey: z.optional(zFormKey)
+    }),
+    tenantId: zTenantId,
+    formKey: zFormKey
 }).register(z.globalRegistry, {
     description: 'A deployed form.'
 });
@@ -2103,13 +2139,13 @@ export const zFormResult = z.object({
  * Contains properties of a user task.
  */
 export const zUserTaskProperties = z.object({
-    action: z.optional(z.string().register(z.globalRegistry, {
+    action: z.string().register(z.globalRegistry, {
         description: 'The action performed on the user task.'
-    })),
-    assignee: z.optional(z.union([
+    }),
+    assignee: z.union([
         z.string(),
         z.null()
-    ])),
+    ]),
     candidateGroups: z.array(z.string()).register(z.globalRegistry, {
         description: 'The groups eligible to claim the task.'
     }),
@@ -2119,23 +2155,26 @@ export const zUserTaskProperties = z.object({
     changedAttributes: z.array(z.string()).register(z.globalRegistry, {
         description: 'The attributes that were changed in the task.'
     }),
-    dueDate: z.optional(z.union([
+    dueDate: z.union([
         z.string(),
         z.null()
-    ])),
-    followUpDate: z.optional(z.union([
+    ]),
+    followUpDate: z.union([
         z.string(),
         z.null()
-    ])),
-    formKey: z.optional(zFormKey),
-    priority: z.optional(z.union([
+    ]),
+    formKey: z.union([
+        zFormKey,
+        z.null()
+    ]),
+    priority: z.union([
         z.int().gte(0).lte(100),
         z.null()
-    ])),
-    userTaskKey: z.optional(z.union([
+    ]),
+    userTaskKey: z.union([
         zUserTaskKey,
         z.null()
-    ]))
+    ])
 }).register(z.globalRegistry, {
     description: 'Contains properties of a user task.'
 });
@@ -2162,10 +2201,10 @@ export const zElementInstanceResult = z.object({
     startDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'Date when element instance started.'
     }),
-    endDate: z.optional(z.union([
+    endDate: z.union([
         z.iso.datetime(),
         z.null()
-    ])),
+    ]),
     elementId: zElementId,
     elementName: z.string().register(z.globalRegistry, {
         description: 'The element name for this element instance.'
@@ -2213,10 +2252,10 @@ export const zElementInstanceResult = z.object({
         z.null()
     ]),
     processDefinitionKey: zProcessDefinitionKey,
-    incidentKey: z.optional(z.union([
+    incidentKey: z.union([
         zIncidentKey,
         z.null()
-    ]))
+    ])
 });
 
 /**
@@ -2281,10 +2320,10 @@ export const zActivatedJobResult = z.object({
     elementInstanceKey: zElementInstanceKey,
     kind: zJobKindEnum,
     listenerEventType: zJobListenerEventTypeEnum,
-    userTask: z.optional(z.union([
+    userTask: z.union([
         zUserTaskProperties,
         z.null()
-    ])),
+    ]),
     tags: zTagSet,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
@@ -2307,38 +2346,38 @@ export const zJobSearchResult = z.object({
     customHeaders: z.record(z.string(), z.string()).register(z.globalRegistry, {
         description: 'A set of custom headers defined during modelling.'
     }),
-    deadline: z.optional(z.union([
+    deadline: z.union([
         z.iso.datetime(),
         z.null()
-    ])),
-    deniedReason: z.optional(z.union([
+    ]),
+    deniedReason: z.union([
         z.string(),
         z.null()
-    ])),
+    ]),
     elementId: z.union([
         zElementId,
         z.null()
     ]),
     elementInstanceKey: zElementInstanceKey,
-    endTime: z.optional(z.union([
+    endTime: z.union([
         z.iso.datetime(),
         z.null()
-    ])),
-    errorCode: z.optional(z.union([
+    ]),
+    errorCode: z.union([
         z.string(),
         z.null()
-    ])),
-    errorMessage: z.optional(z.union([
+    ]),
+    errorMessage: z.union([
         z.string(),
         z.null()
-    ])),
+    ]),
     hasFailedWithRetriesLeft: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the job has failed with retries left.'
     }),
-    isDenied: z.optional(z.union([
+    isDenied: z.union([
         z.boolean(),
         z.null()
-    ])),
+    ]),
     jobKey: zJobKey,
     kind: zJobKindEnum,
     listenerEventType: zJobListenerEventTypeEnum,
@@ -2360,12 +2399,14 @@ export const zJobSearchResult = z.object({
     worker: z.string().register(z.globalRegistry, {
         description: 'The name of the worker of this job.'
     }),
-    creationTime: z.optional(z.iso.datetime().register(z.globalRegistry, {
-        description: 'When the job was created. Field is present for jobs created after 8.9.'
-    })),
-    lastUpdateTime: z.optional(z.iso.datetime().register(z.globalRegistry, {
-        description: 'When the job was last updated. Field is present for jobs created after 8.9.'
-    }))
+    creationTime: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
+    lastUpdateTime: z.union([
+        z.iso.datetime(),
+        z.null()
+    ])
 });
 
 /**
@@ -2398,28 +2439,28 @@ export const zDecisionEvaluationInstanceKey = zLongKey;
  * A decision that was evaluated.
  */
 export const zEvaluatedDecisionResult = z.object({
-    decisionDefinitionId: z.optional(zDecisionDefinitionId),
-    decisionDefinitionName: z.optional(z.string().register(z.globalRegistry, {
+    decisionDefinitionId: zDecisionDefinitionId,
+    decisionDefinitionName: z.string().register(z.globalRegistry, {
         description: 'The name of the decision which was evaluated.'
-    })),
-    decisionDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    decisionDefinitionVersion: z.int().register(z.globalRegistry, {
         description: 'The version of the decision which was evaluated.'
-    })),
+    }),
     decisionDefinitionType: z.string().register(z.globalRegistry, {
         description: 'The type of the decision which was evaluated.'
     }),
-    output: z.optional(z.string().register(z.globalRegistry, {
+    output: z.string().register(z.globalRegistry, {
         description: 'JSON document that will instantiate the result of the decision which was evaluated.\n'
-    })),
-    tenantId: z.optional(zTenantId),
+    }),
+    tenantId: zTenantId,
     matchedRules: z.array(zMatchedDecisionRuleItem).register(z.globalRegistry, {
         description: 'The decision rules that matched within this decision evaluation.'
     }),
     evaluatedInputs: z.array(zEvaluatedDecisionInputItem).register(z.globalRegistry, {
         description: 'The decision inputs that were evaluated within this decision evaluation.'
     }),
-    decisionDefinitionKey: z.optional(zDecisionDefinitionKey),
-    decisionEvaluationInstanceKey: z.optional(zDecisionEvaluationInstanceKey)
+    decisionDefinitionKey: zDecisionDefinitionKey,
+    decisionEvaluationInstanceKey: zDecisionEvaluationInstanceKey
 }).register(z.globalRegistry, {
     description: 'A decision that was evaluated.'
 });
@@ -2581,19 +2622,19 @@ export const zDecisionRequirementsResult = z.object({
  * A deployed decision.
  */
 export const zDeploymentDecisionResult = z.object({
-    decisionDefinitionId: z.optional(zDecisionDefinitionId),
-    version: z.optional(z.int().register(z.globalRegistry, {
+    decisionDefinitionId: zDecisionDefinitionId,
+    version: z.int().register(z.globalRegistry, {
         description: 'The assigned decision version.'
-    })),
-    name: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    name: z.string().register(z.globalRegistry, {
         description: 'The DMN name of the decision, as parsed during deployment.'
-    })),
-    tenantId: z.optional(zTenantId),
-    decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    tenantId: zTenantId,
+    decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'The dmn ID of the decision requirements graph that this decision is part of, as parsed during deployment.\n'
-    })),
-    decisionDefinitionKey: z.optional(zDecisionDefinitionKey),
-    decisionRequirementsKey: z.optional(zDecisionRequirementsKey)
+    }),
+    decisionDefinitionKey: zDecisionDefinitionKey,
+    decisionRequirementsKey: zDecisionRequirementsKey
 }).register(z.globalRegistry, {
     description: 'A deployed decision.'
 });
@@ -2602,20 +2643,20 @@ export const zDeploymentDecisionResult = z.object({
  * Deployed decision requirements.
  */
 export const zDeploymentDecisionRequirementsResult = z.object({
-    decisionRequirementsId: z.optional(z.string().register(z.globalRegistry, {
+    decisionRequirementsId: z.string().register(z.globalRegistry, {
         description: 'The id of the deployed decision requirements.'
-    })),
-    decisionRequirementsName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    decisionRequirementsName: z.string().register(z.globalRegistry, {
         description: 'The name of the deployed decision requirements.'
-    })),
-    version: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    version: z.int().register(z.globalRegistry, {
         description: 'The version of the deployed decision requirements.'
-    })),
-    resourceName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    resourceName: z.string().register(z.globalRegistry, {
         description: 'The name of the resource.'
-    })),
-    tenantId: z.optional(zTenantId),
-    decisionRequirementsKey: z.optional(zDecisionRequirementsKey)
+    }),
+    tenantId: zTenantId,
+    decisionRequirementsKey: zDecisionRequirementsKey
 }).register(z.globalRegistry, {
     description: 'Deployed decision requirements.'
 });
@@ -2634,17 +2675,17 @@ export const zResourceKey = z.union([
  * A deployed Resource.
  */
 export const zDeploymentResourceResult = z.object({
-    resourceId: z.optional(z.string().register(z.globalRegistry, {
+    resourceId: z.string().register(z.globalRegistry, {
         description: 'The resource id of the deployed resource.'
-    })),
-    resourceName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    resourceName: z.string().register(z.globalRegistry, {
         description: 'The name of the deployed resource.'
-    })),
-    version: z.optional(z.int().register(z.globalRegistry, {
+    }),
+    version: z.int().register(z.globalRegistry, {
         description: 'The description of the deployed resource.'
-    })),
-    tenantId: z.optional(zTenantId),
-    resourceKey: z.optional(zResourceKey)
+    }),
+    tenantId: zTenantId,
+    resourceKey: zResourceKey
 }).register(z.globalRegistry, {
     description: 'A deployed Resource.'
 });
@@ -2777,14 +2818,14 @@ export const zBatchOperationResponse = z.object({
     batchOperationKey: zBatchOperationKey,
     state: zBatchOperationStateEnum,
     batchOperationType: zBatchOperationTypeEnum,
-    startDate: z.optional(z.union([
+    startDate: z.union([
         z.iso.datetime(),
         z.null()
-    ])),
-    endDate: z.optional(z.union([
+    ]),
+    endDate: z.union([
         z.iso.datetime(),
         z.null()
-    ])),
+    ]),
     actorType: z.union([
         zAuditLogActorTypeEnum,
         z.null()
@@ -2808,17 +2849,17 @@ export const zBatchOperationResponse = z.object({
 });
 
 export const zBatchOperationItemResponse = z.object({
-    operationType: z.optional(zBatchOperationTypeEnum),
-    batchOperationKey: z.optional(zBatchOperationKey),
-    itemKey: z.optional(z.string().register(z.globalRegistry, {
+    operationType: zBatchOperationTypeEnum,
+    batchOperationKey: zBatchOperationKey,
+    itemKey: z.string().register(z.globalRegistry, {
         description: 'Key of the item, e.g. a process instance key.'
-    })),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    }),
+    processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
     ]),
-    state: z.optional(z.enum([
+    state: z.enum([
         'ACTIVE',
         'COMPLETED',
         'SKIPPED',
@@ -2826,22 +2867,23 @@ export const zBatchOperationItemResponse = z.object({
         'FAILED'
     ]).register(z.globalRegistry, {
         description: 'State of the item.'
-    })),
-    processedDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
-        description: 'the date this item was processed.'
-    })),
-    errorMessage: z.optional(z.union([
+    }),
+    processedDate: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
+    errorMessage: z.union([
         z.string(),
         z.null()
-    ]))
+    ])
 });
 
 export const zDeleteResourceResponse = z.object({
     resourceKey: zResourceKey,
-    batchOperation: z.optional(z.union([
+    batchOperation: z.union([
         zBatchOperationCreatedResult,
         z.null()
-    ]))
+    ])
 });
 
 /**
@@ -3417,27 +3459,37 @@ export const zAdvancedMessageSubscriptionStateFilter = z.object({
 export const zMessageSubscriptionKey = zLongKey;
 
 export const zMessageSubscriptionResult = z.object({
-    messageSubscriptionKey: z.optional(zMessageSubscriptionKey),
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    messageSubscriptionKey: zMessageSubscriptionKey,
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionKey: z.union([
+        zProcessDefinitionKey,
+        z.null()
+    ]),
+    processInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
     ]),
-    elementId: z.optional(zElementId),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    messageSubscriptionState: z.optional(zMessageSubscriptionStateEnum),
-    lastUpdatedDate: z.optional(z.iso.datetime().register(z.globalRegistry, {
+    elementId: zElementId,
+    elementInstanceKey: z.union([
+        zElementInstanceKey,
+        z.null()
+    ]),
+    messageSubscriptionState: zMessageSubscriptionStateEnum,
+    lastUpdatedDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'The last updated date of the message subscription.'
-    })),
-    messageName: z.optional(z.string().register(z.globalRegistry, {
+    }),
+    messageName: z.string().register(z.globalRegistry, {
         description: 'The name of the message associated with the message subscription.'
-    })),
-    correlationKey: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The correlation key of the message subscription.'
-    })),
-    tenantId: z.optional(zTenantId)
+    }),
+    correlationKey: z.union([
+        z.string(),
+        z.null()
+    ]),
+    tenantId: zTenantId
 });
 
 /**
@@ -3490,16 +3542,20 @@ export const zMessagePublicationResult = z.object({
 });
 
 export const zCorrelatedMessageSubscriptionResult = z.object({
-    correlationKey: z.string().register(z.globalRegistry, {
-        description: 'The correlation key of the message.'
-    }),
+    correlationKey: z.union([
+        z.string(),
+        z.null()
+    ]),
     correlationTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The time when the message was correlated.'
     }),
     elementId: z.string().register(z.globalRegistry, {
         description: 'The element ID that received the message.'
     }),
-    elementInstanceKey: z.optional(zElementInstanceKey),
+    elementInstanceKey: z.union([
+        zElementInstanceKey,
+        z.null()
+    ]),
     messageKey: zMessageKey,
     messageName: z.string().register(z.globalRegistry, {
         description: 'The name of the message.'
@@ -3508,7 +3564,7 @@ export const zCorrelatedMessageSubscriptionResult = z.object({
         description: 'The partition ID that correlated the message.'
     }),
     processDefinitionId: zProcessDefinitionId,
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
+    processDefinitionKey: zProcessDefinitionKey,
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
@@ -3596,19 +3652,19 @@ export const zProcessDefinitionResult = z.object({
  * Process element statistics response.
  */
 export const zProcessElementStatisticsResult = z.object({
-    elementId: z.optional(zElementId),
-    active: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    elementId: zElementId,
+    active: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The total number of active instances of the element.'
-    })),
-    canceled: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    canceled: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The total number of canceled instances of the element.'
-    })),
-    incidents: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    incidents: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The total number of incidents for the element.'
-    })),
-    completed: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    completed: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The total number of completed instances of the element.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Process element statistics response.'
 });
@@ -3625,36 +3681,36 @@ export const zProcessDefinitionElementStatisticsQueryResult = z.object({
 });
 
 export const zProcessDefinitionMessageSubscriptionStatisticsResult = z.object({
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    tenantId: z.optional(zTenantId),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstancesWithActiveSubscriptions: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    processDefinitionId: zProcessDefinitionId,
+    tenantId: zTenantId,
+    processDefinitionKey: zProcessDefinitionKey,
+    processInstancesWithActiveSubscriptions: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The number of process instances with active message subscriptions.'
-    })),
-    activeSubscriptions: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    activeSubscriptions: z.coerce.bigint().register(z.globalRegistry, {
         description: 'The total number of active message subscriptions for this process definition key.'
-    }))
+    })
 });
 
 /**
  * Process definition instance statistics response.
  */
 export const zProcessDefinitionInstanceStatisticsResult = z.object({
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    tenantId: z.optional(zTenantId),
-    latestProcessDefinitionName: z.optional(z.union([
+    processDefinitionId: zProcessDefinitionId,
+    tenantId: zTenantId,
+    latestProcessDefinitionName: z.union([
         z.string(),
         z.null()
-    ])),
-    hasMultipleVersions: z.optional(z.boolean().register(z.globalRegistry, {
+    ]),
+    hasMultipleVersions: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether multiple versions of this process definition instance are deployed.'
-    })),
-    activeInstancesWithoutIncidentCount: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    activeInstancesWithoutIncidentCount: z.coerce.bigint().register(z.globalRegistry, {
         description: 'Total number of currently active process instances of this definition that do not have incidents.'
-    })),
-    activeInstancesWithIncidentCount: z.optional(z.coerce.bigint().register(z.globalRegistry, {
+    }),
+    activeInstancesWithIncidentCount: z.coerce.bigint().register(z.globalRegistry, {
         description: 'Total number of currently active process instances of this definition that have at least one incident.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Process definition instance statistics response.'
 });
@@ -3800,10 +3856,10 @@ export const zCreateProcessInstanceResult = z.object({
     processDefinitionKey: zProcessDefinitionKey,
     processInstanceKey: zProcessInstanceKey,
     tags: zTagSet,
-    businessId: z.optional(z.union([
+    businessId: z.union([
         zBusinessId,
         z.null()
-    ]))
+    ])
 });
 
 export const zCancelProcessInstanceRequest = z.union([
@@ -3832,18 +3888,18 @@ export const zProcessInstanceCallHierarchyEntry = z.object({
  * Process instance sequence flow result.
  */
 export const zProcessInstanceSequenceFlowResult = z.object({
-    sequenceFlowId: z.optional(z.string().register(z.globalRegistry, {
+    sequenceFlowId: z.string().register(z.globalRegistry, {
         description: 'The sequence flow id.'
-    })),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    }),
+    processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
     ]),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    elementId: z.optional(zElementId),
-    tenantId: z.optional(zTenantId)
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionId: zProcessDefinitionId,
+    elementId: zElementId,
+    tenantId: zTenantId
 }).register(z.globalRegistry, {
     description: 'Process instance sequence flow result.'
 });
@@ -4324,6 +4380,16 @@ export const zJobTimeSeriesStatisticsQuery = z.object({
     page: z.optional(zCursorForwardPagination)
 }).register(z.globalRegistry, {
     description: 'Job time-series statistics query.'
+});
+
+/**
+ * Job error statistics query.
+ */
+export const zJobErrorStatisticsQuery = z.object({
+    filter: zJobErrorStatisticsFilter,
+    page: z.optional(zCursorForwardPagination)
+}).register(z.globalRegistry, {
+    description: 'Job error statistics query.'
 });
 
 /**
@@ -5092,6 +5158,18 @@ export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.ob
 }));
 
 /**
+ * Job error statistics query result.
+ */
+export const zJobErrorStatisticsQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zJobErrorStatisticsItem).register(z.globalRegistry, {
+        description: 'The list of per-error statistics items.'
+    }),
+    page: zSearchQueryPageResponse
+}).register(z.globalRegistry, {
+    description: 'Job error statistics query result.'
+}));
+
+/**
  * Job search response.
  */
 export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
@@ -5231,6 +5309,43 @@ export const zUsageMetricsResponse = zUsageMetricsResponseItem.and(z.object({
     })
 }));
 
+/**
+ * Configuration for job metrics collection and export.
+ */
+export const zJobMetricsConfigurationResponse = z.object({
+    enabled: z.boolean().register(z.globalRegistry, {
+        description: 'Whether job metrics export is enabled.'
+    }),
+    exportInterval: z.string().register(z.globalRegistry, {
+        description: 'The interval at which job metrics are exported, as an ISO 8601 duration.'
+    }),
+    maxWorkerNameLength: z.int().register(z.globalRegistry, {
+        description: 'The maximum length of the worker name used in job metrics labels.'
+    }),
+    maxJobTypeLength: z.int().register(z.globalRegistry, {
+        description: 'The maximum length of the job type used in job metrics labels.'
+    }),
+    maxTenantIdLength: z.int().register(z.globalRegistry, {
+        description: 'The maximum length of the tenant ID used in job metrics labels.'
+    }),
+    maxUniqueKeys: z.int().register(z.globalRegistry, {
+        description: 'The maximum number of unique metric keys tracked for job metrics.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for job metrics collection and export.'
+});
+
+/**
+ * Envelope for all system configuration sections. Each property
+ * represents a feature area.
+ *
+ */
+export const zSystemConfigurationResponse = z.object({
+    jobMetrics: zJobMetricsConfigurationResponse
+}).register(z.globalRegistry, {
+    description: 'Envelope for all system configuration sections. Each property\nrepresents a feature area.\n'
+});
+
 export const zTenantCreateRequest = z.object({
     tenantId: z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
         description: 'The unique ID for the tenant. Must be 255 characters or less. Can contain letters, numbers, [`_`, `-`, `+`, `.`, `@`].'
@@ -5291,18 +5406,18 @@ export const zTenantResult = z.object({
 });
 
 export const zCamundaUserResult = z.object({
-    username: z.optional(z.union([
+    username: z.union([
         zUsername,
         z.null()
-    ])),
-    displayName: z.optional(z.union([
+    ]),
+    displayName: z.union([
         z.string(),
         z.null()
-    ])),
-    email: z.optional(z.union([
+    ]),
+    email: z.union([
         z.string(),
         z.null()
-    ])),
+    ]),
     authorizedComponents: z.array(z.string()).register(z.globalRegistry, {
         description: 'The web components the user is authorized to use.'
     }),
@@ -5841,12 +5956,12 @@ export const zVariableResultBase = z.object({
  * Variable search response item.
  */
 export const zVariableSearchResult = zVariableResultBase.and(z.object({
-    value: z.optional(z.string().register(z.globalRegistry, {
+    value: z.string().register(z.globalRegistry, {
         description: 'Value of this variable. Can be truncated.'
-    })),
-    isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
+    }),
+    isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
-    }))
+    })
 }).register(z.globalRegistry, {
     description: 'Variable search response item.'
 }));
@@ -8360,6 +8475,17 @@ export const zGetJobTimeSeriesStatisticsData = z.object({
  */
 export const zGetJobTimeSeriesStatisticsResponse = zJobTimeSeriesStatisticsQueryResult;
 
+export const zGetJobErrorStatisticsData = z.object({
+    body: zJobErrorStatisticsQuery,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The job error statistics result.
+ */
+export const zGetJobErrorStatisticsResponse = zJobErrorStatisticsQueryResult;
+
 export const zGetLicenseData = z.object({
     body: z.optional(z.never()),
     path: z.optional(z.never()),
@@ -9234,6 +9360,17 @@ export const zGetUsageMetricsData = z.object({
  * The usage metrics search result.
  */
 export const zGetUsageMetricsResponse = zUsageMetricsResponse;
+
+export const zGetSystemConfigurationData = z.object({
+    body: z.optional(z.never()),
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * Current system configuration grouped by feature area.
+ */
+export const zGetSystemConfigurationResponse = zSystemConfigurationResponse;
 
 export const zCreateTenantData = z.object({
     body: zTenantCreateRequest,

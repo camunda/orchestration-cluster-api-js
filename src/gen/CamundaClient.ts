@@ -48,7 +48,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 180
+// Operations: 182
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -375,6 +375,14 @@ export type getIncidentConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getIncident>> 
 };
+type getJobErrorStatisticsOptions = Parameters<typeof Sdk.getJobErrorStatistics>[0];
+type getJobErrorStatisticsBody = (NonNullable<getJobErrorStatisticsOptions> extends { body?: infer B } ? B : never);
+export type getJobErrorStatisticsInput = getJobErrorStatisticsBody;
+/** Management of eventual consistency **/
+export type getJobErrorStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getJobErrorStatistics>> 
+};
 type getJobTimeSeriesStatisticsOptions = Parameters<typeof Sdk.getJobTimeSeriesStatistics>[0];
 type getJobTimeSeriesStatisticsBody = (NonNullable<getJobTimeSeriesStatisticsOptions> extends { body?: infer B } ? B : never);
 export type getJobTimeSeriesStatisticsInput = getJobTimeSeriesStatisticsBody;
@@ -530,6 +538,8 @@ export type getStartProcessFormConsistency = {
 };
 type getStatusOptions = Parameters<typeof Sdk.getStatus>[0];
 export type getStatusInput = void;
+type getSystemConfigurationOptions = Parameters<typeof Sdk.getSystemConfiguration>[0];
+export type getSystemConfigurationInput = void;
 type getTenantOptions = Parameters<typeof Sdk.getTenant>[0];
 type getTenantPathParam_tenantId = (NonNullable<getTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
 export type getTenantInput = { tenantId: getTenantPathParam_tenantId };
@@ -3088,7 +3098,7 @@ export class CamundaClient {
    *
    * Upload a document to the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId createDocument
@@ -3151,7 +3161,7 @@ export class CamundaClient {
    *
    * Create a link to a document in the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, Azure, GCP
+   * Note that this is currently supported for document stores of type: AWS, GCP
    *
     *
    * @operationId createDocumentLink
@@ -3228,7 +3238,7 @@ export class CamundaClient {
    * each of which contains the file name of the document that failed to upload and the reason for the failure.
    * The client can choose to retry the whole batch or individual documents based on the response.
    *
-   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId createDocuments
@@ -4070,7 +4080,7 @@ export class CamundaClient {
    *
    * Delete a document from the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId deleteDocument
@@ -5608,7 +5618,7 @@ export class CamundaClient {
    *
    * Download a document from the Camunda 8 cluster.
    *
-   * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
+   * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
    * @operationId getDocument
@@ -6044,6 +6054,70 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getIncident', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get error metrics for a job type
+   *
+   * Returns aggregated metrics per error for the given jobType.
+   *
+    *
+   * @operationId getJobErrorStatistics
+   * @tags Job
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getJobErrorStatistics(input: getJobErrorStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getJobErrorStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getJobErrorStatistics>>;
+  getJobErrorStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getJobErrorStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('getJobErrorStatistics', Schemas.zGetJobErrorStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getJobErrorStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getJobErrorStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetJobErrorStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetJobErrorStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getJobErrorStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getJobErrorStatistics', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }
@@ -7422,6 +7496,60 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'getStatus', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * System configuration (alpha)
+   *
+   * Returns the current system configuration. The response is an envelope
+   * that groups settings by feature area.
+   *
+   * This endpoint is an alpha feature and may be subject to change
+   * in future releases.
+   *
+    *
+   * @operationId getSystemConfiguration
+   * @tags System
+   */
+  getSystemConfiguration(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getSystemConfiguration>>;
+  getSystemConfiguration(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getSystemConfiguration(opts as any);
+        let data = this._evaluateResponse(_raw, 'getSystemConfiguration', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetSystemConfigurationResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zGetSystemConfigurationResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getSystemConfiguration', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getSystemConfiguration', exempt: false, retryOverride: options?.retry });
     });
   }
 

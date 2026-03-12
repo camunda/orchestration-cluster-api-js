@@ -1,6 +1,6 @@
 {
-  "operations": 180,
-  "tests": 182,
+  "operations": 182,
+  "tests": 184,
   "missing": [],
   "ignored": [],
   "files": [
@@ -78,6 +78,7 @@
     "getGroup.test.ts",
     "getIncident.test.ts",
     "getIncidentProcessInstanceStatistics.test.ts",
+    "getJobErrorStatistics.test.ts",
     "getJobTimeSeriesStatistics.test.ts",
     "getJobTypeStatistics.test.ts",
     "getJobWorkerStatistics.test.ts",
@@ -100,6 +101,7 @@
     "getRole.test.ts",
     "getStartProcessForm.test.ts",
     "getStatus.test.ts",
+    "getSystemConfiguration.test.ts",
     "getTenant.test.ts",
     "getTenantClusterVariable.test.ts",
     "getTopology.test.ts",

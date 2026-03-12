@@ -2242,7 +2242,7 @@
         ],
         "operationId": "createDocument",
         "summary": "Upload document",
-        "description": "Upload a document to the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+        "description": "Upload a document to the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
         "parameters": [
           {
             "name": "storeId",
@@ -2326,7 +2326,7 @@
         ],
         "operationId": "createDocuments",
         "summary": "Upload multiple documents",
-        "description": "Upload multiple documents to the Camunda 8 cluster.\n\nThe caller must provide a file name for each document, which will be used in case of a multi-status response\nto identify which documents failed to upload. The file name can be provided in the `Content-Disposition` header\nof the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. These\nare matched with the files based on index, and must have the same length as the files array.\nTo pass homogenous metadata for all files, spread the metadata over the metadata array.\nA filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` header\nof the file part.\n\nIn case of a multi-status response, the response body will contain a list of `DocumentBatchProblemDetail` objects,\neach of which contains the file name of the document that failed to upload and the reason for the failure.\nThe client can choose to retry the whole batch or individual documents based on the response.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+        "description": "Upload multiple documents to the Camunda 8 cluster.\n\nThe caller must provide a file name for each document, which will be used in case of a multi-status response\nto identify which documents failed to upload. The file name can be provided in the `Content-Disposition` header\nof the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. These\nare matched with the files based on index, and must have the same length as the files array.\nTo pass homogenous metadata for all files, spread the metadata over the metadata array.\nA filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` header\nof the file part.\n\nIn case of a multi-status response, the response body will contain a list of `DocumentBatchProblemDetail` objects,\neach of which contains the file name of the document that failed to upload and the reason for the failure.\nThe client can choose to retry the whole batch or individual documents based on the response.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
         "parameters": [
           {
             "name": "storeId",
@@ -2420,7 +2420,7 @@
         ],
         "operationId": "getDocument",
         "summary": "Download document",
-        "description": "Download a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+        "description": "Download a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
         "parameters": [
           {
             "name": "documentId",
@@ -2484,7 +2484,7 @@
         ],
         "operationId": "deleteDocument",
         "summary": "Delete document",
-        "description": "Delete a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+        "description": "Delete a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
         "parameters": [
           {
             "name": "documentId",
@@ -2533,7 +2533,7 @@
         ],
         "operationId": "createDocumentLink",
         "summary": "Create document link",
-        "description": "Create a link to a document in the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP\n",
+        "description": "Create a link to a document in the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP\n",
         "parameters": [
           {
             "name": "documentId",
@@ -5000,6 +5000,51 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/JobTimeSeriesStatisticsQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
+    "/jobs/statistics/errors": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Job"
+        ],
+        "operationId": "getJobErrorStatistics",
+        "summary": "Get error metrics for a job type",
+        "description": "Returns aggregated metrics per error for the given jobType.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobErrorStatisticsQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The job error statistics result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobErrorStatisticsQueryResult"
                 }
               }
             }
@@ -8403,6 +8448,49 @@
         }
       }
     },
+    "/system/configuration": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "operationId": "getSystemConfiguration",
+        "x-eventually-consistent": false,
+        "summary": "System configuration (alpha)",
+        "description": "Returns the current system configuration. The response is an envelope\nthat groups settings by feature area.\n\nThis endpoint is an alpha feature and may be subject to change\nin future releases.\n",
+        "responses": {
+          "200": {
+            "description": "Current system configuration grouped by feature area.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemConfigurationResponse"
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "jobMetrics": {
+                        "enabled": true,
+                        "exportInterval": "PT5M",
+                        "maxWorkerNameLength": 100,
+                        "maxJobTypeLength": 100,
+                        "maxTenantIdLength": 30,
+                        "maxUniqueKeys": 9500
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        }
+      }
+    },
     "/tenants": {
       "post": {
         "x-eventually-consistent": false,
@@ -11380,7 +11468,6 @@
       },
       "AuditLogEntityKeyFilterProperty": {
         "description": "EntityKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/AuditLogEntityKeyExactMatch"
@@ -11433,7 +11520,6 @@
       },
       "EntityTypeFilterProperty": {
         "description": "AuditLogEntityTypeEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/EntityTypeExactMatch"
@@ -11482,7 +11568,6 @@
       },
       "OperationTypeFilterProperty": {
         "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/OperationTypeExactMatch"
@@ -11531,7 +11616,6 @@
       },
       "CategoryFilterProperty": {
         "description": "AuditLogCategoryEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/CategoryExactMatch"
@@ -11580,7 +11664,6 @@
       },
       "AuditLogResultFilterProperty": {
         "description": "AuditLogResultEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/AuditLogResultExactMatch"
@@ -11629,7 +11712,6 @@
       },
       "AuditLogActorTypeFilterProperty": {
         "description": "AuditLogActorTypeEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/AuditLogActorTypeExactMatch"
@@ -11685,7 +11767,10 @@
           "roles",
           "salesPlanType",
           "c8Links",
-          "canLogout"
+          "canLogout",
+          "displayName",
+          "email",
+          "username"
         ],
         "properties": {
           "username": {
@@ -11783,7 +11868,6 @@
           },
           "resourceType": {
             "description": "The type of resource to add permissions to.",
-            "type": "string",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ResourceTypeEnum"
@@ -11827,7 +11911,6 @@
           },
           "resourceType": {
             "description": "The type of resource to add permissions to.",
-            "type": "string",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ResourceTypeEnum"
@@ -11942,7 +12025,6 @@
           },
           "resourceType": {
             "description": "The type of resource to search permissions for.",
-            "type": "string",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ResourceTypeEnum"
@@ -11972,7 +12054,6 @@
           },
           "resourceType": {
             "description": "The type of resource that the permissions relate to.",
-            "type": "string",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ResourceTypeEnum"
@@ -12288,7 +12369,9 @@
           "operationsTotalCount",
           "actorType",
           "actorId",
-          "errors"
+          "errors",
+          "endDate",
+          "startDate"
         ],
         "type": "object",
         "properties": {
@@ -12357,6 +12440,11 @@
         }
       },
       "BatchOperationError": {
+        "required": [
+          "message",
+          "partitionId",
+          "type"
+        ],
         "type": "object",
         "properties": {
           "partitionId": {
@@ -12497,7 +12585,14 @@
       "BatchOperationItemResponse": {
         "type": "object",
         "required": [
-          "rootProcessInstanceKey"
+          "rootProcessInstanceKey",
+          "batchOperationKey",
+          "errorMessage",
+          "itemKey",
+          "operationType",
+          "processedDate",
+          "processInstanceKey",
+          "state"
         ],
         "properties": {
           "operationType": {
@@ -12544,12 +12639,13 @@
             ]
           },
           "processedDate": {
-            "description": "the date this item was processed.",
+            "description": "The date this item was processed.\nThis is `null` if the item has not yet been processed.\n",
+            "nullable": true,
             "type": "string",
             "format": "date-time"
           },
           "errorMessage": {
-            "description": "the error message from the engine in case of a failed operation.",
+            "description": "The error message from the engine in case of a failed operation.",
             "nullable": true,
             "type": "string"
           }
@@ -12789,7 +12885,6 @@
       },
       "BatchOperationTypeFilterProperty": {
         "description": "BatchOperationTypeEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/BatchOperationTypeExactMatch"
@@ -12838,7 +12933,6 @@
       },
       "BatchOperationStateFilterProperty": {
         "description": "BatchOperationStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/BatchOperationStateExactMatch"
@@ -12887,7 +12981,6 @@
       },
       "BatchOperationItemStateFilterProperty": {
         "description": "BatchOperationItemStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/BatchOperationItemStateExactMatch"
@@ -13140,7 +13233,6 @@
       },
       "ClusterVariableScopeFilterProperty": {
         "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ClusterVariableScopeExactMatch"
@@ -13218,7 +13310,8 @@
           "partitionsCount",
           "replicationFactor",
           "gatewayVersion",
-          "lastCompletedChangeId"
+          "lastCompletedChangeId",
+          "clusterId"
         ],
         "properties": {
           "brokers": {
@@ -13423,6 +13516,10 @@
         "type": "string"
       },
       "ProcessInstanceReference": {
+        "required": [
+          "processDefinitionKey",
+          "processInstanceKey"
+        ],
         "type": "object",
         "properties": {
           "processDefinitionKey": {
@@ -13845,7 +13942,14 @@
         "required": [
           "decisionDefinitionType",
           "evaluatedInputs",
-          "matchedRules"
+          "matchedRules",
+          "decisionDefinitionId",
+          "decisionDefinitionKey",
+          "decisionDefinitionName",
+          "decisionDefinitionVersion",
+          "decisionEvaluationInstanceKey",
+          "output",
+          "tenantId"
         ],
         "x-semantic-provider": [
           "decisionEvaluationInstanceKey"
@@ -14287,6 +14391,11 @@
         ]
       },
       "EvaluatedDecisionInputItem": {
+        "required": [
+          "inputId",
+          "inputName",
+          "inputValue"
+        ],
         "type": "object",
         "description": "A decision input that was evaluated within this decision evaluation.",
         "properties": {
@@ -14299,7 +14408,7 @@
             "description": "The name of the decision input."
           },
           "inputValue": {
-            "description": "The description of the decision input.",
+            "description": "The value of the decision input.",
             "type": "string"
           }
         }
@@ -14307,7 +14416,10 @@
       "EvaluatedDecisionOutputItem": {
         "required": [
           "ruleId",
-          "ruleIndex"
+          "ruleIndex",
+          "outputId",
+          "outputName",
+          "outputValue"
         ],
         "type": "object",
         "description": "The evaluated decision outputs.",
@@ -14339,7 +14451,9 @@
       },
       "MatchedDecisionRuleItem": {
         "required": [
-          "evaluatedOutputs"
+          "evaluatedOutputs",
+          "ruleId",
+          "ruleIndex"
         ],
         "type": "object",
         "description": "A decision rule that matched within this decision evaluation.",
@@ -14444,7 +14558,6 @@
       },
       "DecisionInstanceStateFilterProperty": {
         "description": "DecisionInstanceStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/DecisionInstanceStateExactMatch"
@@ -14750,6 +14863,15 @@
           "decisionDefinitionKey",
           "decisionRequirementsKey"
         ],
+        "required": [
+          "decisionDefinitionId",
+          "decisionDefinitionKey",
+          "decisionRequirementsId",
+          "decisionRequirementsKey",
+          "name",
+          "tenantId",
+          "version"
+        ],
         "properties": {
           "decisionDefinitionId": {
             "allOf": [
@@ -14804,6 +14926,14 @@
         "x-semantic-provider": [
           "decisionRequirementsKey"
         ],
+        "required": [
+          "decisionRequirementsId",
+          "decisionRequirementsKey",
+          "decisionRequirementsName",
+          "resourceName",
+          "tenantId",
+          "version"
+        ],
         "properties": {
           "decisionRequirementsId": {
             "description": "The id of the deployed decision requirements.",
@@ -14846,6 +14976,13 @@
         "x-semantic-provider": [
           "formKey"
         ],
+        "required": [
+          "formId",
+          "formKey",
+          "resourceName",
+          "tenantId",
+          "version"
+        ],
         "properties": {
           "formId": {
             "allOf": [
@@ -14883,6 +15020,13 @@
           "resourceKey"
         ],
         "type": "object",
+        "required": [
+          "resourceId",
+          "resourceKey",
+          "resourceName",
+          "tenantId",
+          "version"
+        ],
         "properties": {
           "resourceId": {
             "description": "The resource id of the deployed resource.",
@@ -14928,7 +15072,8 @@
       "DeleteResourceResponse": {
         "type": "object",
         "required": [
-          "resourceKey"
+          "resourceKey",
+          "batchOperation"
         ],
         "properties": {
           "resourceKey": {
@@ -15029,7 +15174,6 @@
       },
       "DeploymentKeyFilterProperty": {
         "description": "DeploymentKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/DeploymentKeyExactMatch"
@@ -15082,7 +15226,6 @@
       },
       "ResourceKeyFilterProperty": {
         "description": "ResourceKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ResourceKeyExactMatch"
@@ -15174,6 +15317,12 @@
       },
       "DocumentCreationFailureDetail": {
         "type": "object",
+        "required": [
+          "detail",
+          "fileName",
+          "status",
+          "title"
+        ],
         "properties": {
           "fileName": {
             "type": "string",
@@ -15550,7 +15699,6 @@
       },
       "ElementInstanceStateFilterProperty": {
         "description": "ElementInstanceStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ElementInstanceStateExactMatch"
@@ -15631,7 +15779,9 @@
           "elementInstanceKey",
           "processInstanceKey",
           "processDefinitionKey",
-          "rootProcessInstanceKey"
+          "rootProcessInstanceKey",
+          "endDate",
+          "incidentKey"
         ],
         "properties": {
           "processDefinitionId": {
@@ -15923,7 +16073,6 @@
       },
       "BasicStringFilterProperty": {
         "description": "String property with basic advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "type": "string",
@@ -15937,7 +16086,6 @@
       },
       "StringFilterProperty": {
         "description": "String property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "type": "string",
@@ -16000,7 +16148,6 @@
       },
       "IntegerFilterProperty": {
         "description": "Integer property with advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "type": "integer",
@@ -16064,7 +16211,6 @@
       },
       "DateTimeFilterProperty": {
         "description": "Date-time property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "type": "string",
@@ -16355,7 +16501,6 @@
       },
       "GlobalListenerSourceFilterProperty": {
         "description": "Global listener source property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/GlobalListenerSourceExactMatch"
@@ -16404,7 +16549,6 @@
       },
       "GlobalTaskListenerEventTypeFilterProperty": {
         "description": "Global listener event type property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/GlobalTaskListenerEventTypeExactMatch"
@@ -17062,7 +17206,6 @@
       },
       "IncidentErrorTypeFilterProperty": {
         "description": "IncidentErrorTypeEnum with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/IncidentErrorTypeExactMatch"
@@ -17140,7 +17283,6 @@
       },
       "IncidentStateFilterProperty": {
         "description": "IncidentStateEnum with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/IncidentStateExactMatch"
@@ -17425,6 +17567,11 @@
       },
       "IncidentProcessInstanceStatisticsByErrorResult": {
         "type": "object",
+        "required": [
+          "activeInstancesWithErrorCount",
+          "errorHashCode",
+          "errorMessage"
+        ],
         "properties": {
           "errorHashCode": {
             "type": "integer",
@@ -17514,6 +17661,14 @@
       },
       "IncidentProcessInstanceStatisticsByDefinitionResult": {
         "type": "object",
+        "required": [
+          "activeInstancesWithErrorCount",
+          "processDefinitionId",
+          "processDefinitionKey",
+          "processDefinitionName",
+          "processDefinitionVersion",
+          "tenantId"
+        ],
         "properties": {
           "processDefinitionId": {
             "$ref": "#/components/schemas/ProcessDefinitionId"
@@ -17922,6 +18077,119 @@
           }
         }
       },
+      "JobErrorStatisticsQuery": {
+        "description": "Job error statistics query.",
+        "type": "object",
+        "required": [
+          "filter"
+        ],
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/JobErrorStatisticsFilter"
+          },
+          "page": {
+            "description": "Search cursor pagination.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorForwardPagination"
+              }
+            ]
+          }
+        }
+      },
+      "JobErrorStatisticsFilter": {
+        "description": "Job error statistics search filter.",
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "jobType"
+        ],
+        "properties": {
+          "from": {
+            "description": "Start of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-28T15:51:28.071Z"
+          },
+          "to": {
+            "description": "End of the time window to filter metrics. ISO 8601 date-time format.\n",
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-07-29T15:51:28.071Z"
+          },
+          "jobType": {
+            "description": "Job type to return error metrics for.",
+            "type": "string",
+            "example": "fetch-customer-data"
+          },
+          "errorCode": {
+            "description": "Optional error code filter with advanced search capabilities.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          },
+          "errorMessage": {
+            "description": "Optional error message filter with advanced search capabilities.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          }
+        }
+      },
+      "JobErrorStatisticsQueryResult": {
+        "description": "Job error statistics query result.",
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The list of per-error statistics items.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobErrorStatisticsItem"
+            }
+          }
+        }
+      },
+      "JobErrorStatisticsItem": {
+        "description": "Aggregated error metrics for a single error type and message combination.",
+        "type": "object",
+        "required": [
+          "errorCode",
+          "errorMessage",
+          "workers"
+        ],
+        "properties": {
+          "errorCode": {
+            "description": "The error code identifier.",
+            "type": "string",
+            "example": "UNHANDLED_ERROR_EVENT"
+          },
+          "errorMessage": {
+            "description": "The error message.",
+            "type": "string",
+            "example": "An unexpected error occurred."
+          },
+          "workers": {
+            "description": "Number of distinct workers that encountered this error.",
+            "type": "integer",
+            "format": "int32",
+            "example": 15
+          }
+        }
+      },
       "JobActivationRequest": {
         "type": "object",
         "additionalProperties": false,
@@ -18030,7 +18298,8 @@
           "kind",
           "listenerEventType",
           "rootProcessInstanceKey",
-          "tags"
+          "tags",
+          "userTask"
         ],
         "properties": {
           "type": {
@@ -18161,7 +18430,14 @@
         "required": [
           "candidateGroups",
           "candidateUsers",
-          "changedAttributes"
+          "changedAttributes",
+          "action",
+          "assignee",
+          "dueDate",
+          "followUpDate",
+          "formKey",
+          "priority",
+          "userTaskKey"
         ],
         "type": "object",
         "description": "Contains properties of a user task.",
@@ -18212,6 +18488,7 @@
                 "$ref": "#/components/schemas/FormKey"
               }
             ],
+            "nullable": true,
             "description": "The key of the form associated with the user task."
           },
           "priority": {
@@ -18512,7 +18789,15 @@
           "tenantId",
           "type",
           "worker",
-          "rootProcessInstanceKey"
+          "rootProcessInstanceKey",
+          "creationTime",
+          "deadline",
+          "deniedReason",
+          "endTime",
+          "errorCode",
+          "errorMessage",
+          "isDenied",
+          "lastUpdateTime"
         ],
         "properties": {
           "customHeaders": {
@@ -18643,11 +18928,13 @@
           },
           "creationTime": {
             "description": "When the job was created. Field is present for jobs created after 8.9.",
+            "nullable": true,
             "type": "string",
             "format": "date-time"
           },
           "lastUpdateTime": {
             "description": "When the job was last updated. Field is present for jobs created after 8.9.",
+            "nullable": true,
             "type": "string",
             "format": "date-time"
           }
@@ -18945,7 +19232,6 @@
       },
       "JobKindFilterProperty": {
         "description": "JobKindEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/JobKindExactMatch"
@@ -18994,7 +19280,6 @@
       },
       "JobListenerEventTypeFilterProperty": {
         "description": "JobListenerEventTypeEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/JobListenerEventTypeExactMatch"
@@ -19043,7 +19328,6 @@
       },
       "JobStateFilterProperty": {
         "description": "JobStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/JobStateExactMatch"
@@ -19291,7 +19575,6 @@
       },
       "ProcessDefinitionKeyFilterProperty": {
         "description": "ProcessDefinitionKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ProcessDefinitionKeyExactMatch"
@@ -19344,7 +19627,6 @@
       },
       "ProcessInstanceKeyFilterProperty": {
         "description": "ProcessInstanceKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ProcessInstanceKeyExactMatch"
@@ -19397,7 +19679,6 @@
       },
       "ElementInstanceKeyFilterProperty": {
         "description": "ElementInstanceKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ElementInstanceKeyExactMatch"
@@ -19450,7 +19731,6 @@
       },
       "JobKeyFilterProperty": {
         "description": "JobKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/JobKeyExactMatch"
@@ -19503,7 +19783,6 @@
       },
       "DecisionDefinitionKeyFilterProperty": {
         "description": "DecisionDefinitionKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/DecisionDefinitionKeyExactMatch"
@@ -19556,7 +19835,6 @@
       },
       "ScopeKeyFilterProperty": {
         "description": "ScopeKey property with full advanced search capabilities. Filter by the key of the\nelement instance or process instance that defines the scope of a variable.\n",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ScopeKeyExactMatch"
@@ -19609,7 +19887,6 @@
       },
       "VariableKeyFilterProperty": {
         "description": "VariableKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/VariableKeyExactMatch"
@@ -19662,7 +19939,6 @@
       },
       "DecisionEvaluationInstanceKeyFilterProperty": {
         "description": "DecisionEvaluationInstanceKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/DecisionEvaluationInstanceKeyExactMatch"
@@ -19715,7 +19991,6 @@
       },
       "AuditLogKeyFilterProperty": {
         "description": "AuditLogKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/AuditLogKeyExactMatch"
@@ -19768,7 +20043,6 @@
       },
       "FormKeyFilterProperty": {
         "description": "FormKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/FormKeyExactMatch"
@@ -19821,7 +20095,6 @@
       },
       "DecisionEvaluationKeyFilterProperty": {
         "description": "DecisionEvaluationKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/DecisionEvaluationKeyExactMatch"
@@ -19874,7 +20147,6 @@
       },
       "DecisionRequirementsKeyFilterProperty": {
         "description": "DecisionRequirementsKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/DecisionRequirementsKeyExactMatch"
@@ -20322,7 +20594,18 @@
       "MessageSubscriptionResult": {
         "type": "object",
         "required": [
-          "rootProcessInstanceKey"
+          "rootProcessInstanceKey",
+          "correlationKey",
+          "elementId",
+          "elementInstanceKey",
+          "lastUpdatedDate",
+          "messageName",
+          "messageSubscriptionKey",
+          "messageSubscriptionState",
+          "processDefinitionId",
+          "processDefinitionKey",
+          "processInstanceKey",
+          "tenantId"
         ],
         "properties": {
           "messageSubscriptionKey": {
@@ -20347,6 +20630,7 @@
                 "$ref": "#/components/schemas/ProcessDefinitionKey"
               }
             ],
+            "nullable": true,
             "description": "The process definition key associated with this message subscription."
           },
           "processInstanceKey": {
@@ -20355,6 +20639,7 @@
                 "$ref": "#/components/schemas/ProcessInstanceKey"
               }
             ],
+            "nullable": true,
             "description": "The process instance key associated with this message subscription."
           },
           "rootProcessInstanceKey": {
@@ -20380,6 +20665,7 @@
                 "$ref": "#/components/schemas/ElementInstanceKey"
               }
             ],
+            "nullable": true,
             "description": "The element instance key associated with this message subscription."
           },
           "messageSubscriptionState": {
@@ -20396,6 +20682,7 @@
           },
           "correlationKey": {
             "type": "string",
+            "nullable": true,
             "description": "The correlation key of the message subscription."
           },
           "tenantId": {
@@ -20572,9 +20859,25 @@
       },
       "CorrelatedMessageSubscriptionResult": {
         "type": "object",
+        "required": [
+          "correlationKey",
+          "correlationTime",
+          "elementId",
+          "messageKey",
+          "messageName",
+          "partitionId",
+          "processDefinitionId",
+          "processInstanceKey",
+          "subscriptionKey",
+          "tenantId",
+          "rootProcessInstanceKey",
+          "elementInstanceKey",
+          "processDefinitionKey"
+        ],
         "properties": {
           "correlationKey": {
             "description": "The correlation key of the message.",
+            "nullable": true,
             "type": "string"
           },
           "correlationTime": {
@@ -20592,7 +20895,8 @@
                 "$ref": "#/components/schemas/ElementInstanceKey"
               }
             ],
-            "description": "The element instance key that received the message."
+            "nullable": true,
+            "description": "The element instance key that received the message.\nIt is `null` for start event subscriptions.\n"
           },
           "messageKey": {
             "allOf": [
@@ -20660,20 +20964,7 @@
             ],
             "description": "The tenant ID associated with this correlated message subscription."
           }
-        },
-        "required": [
-          "correlationKey",
-          "correlationTime",
-          "elementId",
-          "messageKey",
-          "messageName",
-          "partitionId",
-          "processDefinitionId",
-          "processInstanceKey",
-          "subscriptionKey",
-          "tenantId",
-          "rootProcessInstanceKey"
-        ]
+        }
       },
       "CorrelatedMessageSubscriptionSearchQuery": {
         "type": "object",
@@ -20844,7 +21135,6 @@
       },
       "MessageSubscriptionStateFilterProperty": {
         "description": "MessageSubscriptionStateEnum with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/MessageSubscriptionStateExactMatch"
@@ -20934,7 +21224,6 @@
       },
       "MessageSubscriptionKeyFilterProperty": {
         "description": "MessageSubscriptionKey property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/MessageSubscriptionKeyExactMatch"
@@ -21237,6 +21526,13 @@
       "ProcessElementStatisticsResult": {
         "description": "Process element statistics response.",
         "type": "object",
+        "required": [
+          "active",
+          "canceled",
+          "completed",
+          "elementId",
+          "incidents"
+        ],
         "properties": {
           "elementId": {
             "allOf": [
@@ -21311,6 +21607,13 @@
       },
       "ProcessDefinitionMessageSubscriptionStatisticsResult": {
         "type": "object",
+        "required": [
+          "activeSubscriptions",
+          "processDefinitionId",
+          "processDefinitionKey",
+          "processInstancesWithActiveSubscriptions",
+          "tenantId"
+        ],
         "properties": {
           "processDefinitionId": {
             "description": "The process definition ID associated with this message subscription.",
@@ -21391,6 +21694,14 @@
       "ProcessDefinitionInstanceStatisticsResult": {
         "description": "Process definition instance statistics response.",
         "type": "object",
+        "required": [
+          "activeInstancesWithIncidentCount",
+          "activeInstancesWithoutIncidentCount",
+          "hasMultipleVersions",
+          "latestProcessDefinitionName",
+          "processDefinitionId",
+          "tenantId"
+        ],
         "properties": {
           "processDefinitionId": {
             "$ref": "#/components/schemas/ProcessDefinitionId"
@@ -21831,7 +22142,8 @@
           "tenantId",
           "variables",
           "processInstanceKey",
-          "tags"
+          "tags",
+          "businessId"
         ],
         "type": "object",
         "properties": {
@@ -22384,7 +22696,13 @@
         "description": "Process instance sequence flow result.",
         "type": "object",
         "required": [
-          "rootProcessInstanceKey"
+          "rootProcessInstanceKey",
+          "elementId",
+          "processDefinitionId",
+          "processDefinitionKey",
+          "processInstanceKey",
+          "sequenceFlowId",
+          "tenantId"
         ],
         "properties": {
           "sequenceFlowId": {
@@ -22853,7 +23171,6 @@
       },
       "ProcessInstanceStateFilterProperty": {
         "description": "ProcessInstanceStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/ProcessInstanceStateExactMatch"
@@ -23570,6 +23887,66 @@
             "description": "The amount of unique active task users.",
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "SystemConfigurationResponse": {
+        "description": "Envelope for all system configuration sections. Each property\nrepresents a feature area.\n",
+        "type": "object",
+        "required": [
+          "jobMetrics"
+        ],
+        "properties": {
+          "jobMetrics": {
+            "$ref": "#/components/schemas/JobMetricsConfigurationResponse"
+          }
+        }
+      },
+      "JobMetricsConfigurationResponse": {
+        "description": "Configuration for job metrics collection and export.",
+        "type": "object",
+        "required": [
+          "enabled",
+          "exportInterval",
+          "maxWorkerNameLength",
+          "maxJobTypeLength",
+          "maxTenantIdLength",
+          "maxUniqueKeys"
+        ],
+        "properties": {
+          "enabled": {
+            "description": "Whether job metrics export is enabled.",
+            "type": "boolean",
+            "example": true
+          },
+          "exportInterval": {
+            "description": "The interval at which job metrics are exported, as an ISO 8601 duration.",
+            "type": "string",
+            "example": "PT5M"
+          },
+          "maxWorkerNameLength": {
+            "description": "The maximum length of the worker name used in job metrics labels.",
+            "type": "integer",
+            "format": "int32",
+            "example": 100
+          },
+          "maxJobTypeLength": {
+            "description": "The maximum length of the job type used in job metrics labels.",
+            "type": "integer",
+            "format": "int32",
+            "example": 100
+          },
+          "maxTenantIdLength": {
+            "description": "The maximum length of the tenant ID used in job metrics labels.",
+            "type": "integer",
+            "format": "int32",
+            "example": 30
+          },
+          "maxUniqueKeys": {
+            "description": "The maximum number of unique metric keys tracked for job metrics.",
+            "type": "integer",
+            "format": "int32",
+            "example": 9500
           }
         }
       },
@@ -24626,7 +25003,6 @@
       },
       "UserTaskStateFilterProperty": {
         "description": "UserTaskStateEnum property with full advanced search capabilities.",
-        "type": "object",
         "oneOf": [
           {
             "$ref": "#/components/schemas/UserTaskStateExactMatch"
@@ -25060,6 +25436,10 @@
         }
       },
       "VariableSearchResult": {
+        "required": [
+          "isTruncated",
+          "value"
+        ],
         "description": "Variable search response item.",
         "type": "object",
         "allOf": [

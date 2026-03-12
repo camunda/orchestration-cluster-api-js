@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:4e259f78ef16ae4a34e64cf42291ee3226d023d990339073540c0fd15e20ca06",
+  "specHash": "sha256:1f6f79cd37f12d55c776a8271354b39bba675c467687e093707b8dbdd0a97341",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -2161,6 +2161,14 @@
       ]
     },
     {
+      "operationId": "getJobErrorStatistics",
+      "path": "/jobs/statistics/errors",
+      "method": "post",
+      "tags": [
+        "Job"
+      ]
+    },
+    {
       "operationId": "searchMappingRule",
       "path": "/mapping-rules/search",
       "method": "post",
@@ -3250,7 +3258,7 @@
         "Document"
       ],
       "summary": "Upload document",
-      "description": "Upload a document to the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+      "description": "Upload a document to the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -3277,7 +3285,7 @@
         "Document"
       ],
       "summary": "Upload multiple documents",
-      "description": "Upload multiple documents to the Camunda 8 cluster.\n\nThe caller must provide a file name for each document, which will be used in case of a multi-status response\nto identify which documents failed to upload. The file name can be provided in the `Content-Disposition` header\nof the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. These\nare matched with the files based on index, and must have the same length as the files array.\nTo pass homogenous metadata for all files, spread the metadata over the metadata array.\nA filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` header\nof the file part.\n\nIn case of a multi-status response, the response body will contain a list of `DocumentBatchProblemDetail` objects,\neach of which contains the file name of the document that failed to upload and the reason for the failure.\nThe client can choose to retry the whole batch or individual documents based on the response.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+      "description": "Upload multiple documents to the Camunda 8 cluster.\n\nThe caller must provide a file name for each document, which will be used in case of a multi-status response\nto identify which documents failed to upload. The file name can be provided in the `Content-Disposition` header\nof the file part or in the `fileName` field of the metadata. You can add a parallel array of metadata objects. These\nare matched with the files based on index, and must have the same length as the files array.\nTo pass homogenous metadata for all files, spread the metadata over the metadata array.\nA filename value provided explicitly via the metadata array in the request overrides the `Content-Disposition` header\nof the file part.\n\nIn case of a multi-status response, the response body will contain a list of `DocumentBatchProblemDetail` objects,\neach of which contains the file name of the document that failed to upload and the reason for the failure.\nThe client can choose to retry the whole batch or individual documents based on the response.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -3300,7 +3308,7 @@
         "Document"
       ],
       "summary": "Download document",
-      "description": "Download a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+      "description": "Download a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -3329,7 +3337,7 @@
         "Document"
       ],
       "summary": "Delete document",
-      "description": "Delete a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)\n",
+      "description": "Delete a document from the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)\n",
       "eventuallyConsistent": false,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -3354,7 +3362,7 @@
         "Document"
       ],
       "summary": "Create document link",
-      "description": "Create a link to a document in the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, Azure, GCP\n",
+      "description": "Create a link to a document in the Camunda 8 cluster.\n\nNote that this is currently supported for document stores of type: AWS, GCP\n",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -4175,6 +4183,24 @@
       ],
       "summary": "Get time-series metrics for a job type",
       "description": "Returns a list of time-bucketed metrics ordered ascending by time.\nThe `from` and `to` fields select the time window of interest.\nEach item in the response corresponds to one time bucket of the requested resolution.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "getJobErrorStatistics",
+      "path": "/jobs/statistics/errors",
+      "method": "post",
+      "tags": [
+        "Job"
+      ],
+      "summary": "Get error metrics for a job type",
+      "description": "Returns aggregated metrics per error for the given jobType.\n",
       "eventuallyConsistent": true,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -5327,6 +5353,24 @@
       "optionalTenantIdInBody": false
     },
     {
+      "operationId": "getSystemConfiguration",
+      "path": "/system/configuration",
+      "method": "get",
+      "tags": [
+        "System"
+      ],
+      "summary": "System configuration (alpha)",
+      "description": "Returns the current system configuration. The response is an envelope\nthat groups settings by feature area.\n\nThis endpoint is an alpha feature and may be subject to change\nin future releases.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
       "operationId": "createTenant",
       "path": "/tenants",
       "method": "post",
@@ -6114,8 +6158,8 @@
   "integrity": {
     "totalSemanticKeys": 35,
     "totalUnions": 51,
-    "totalOperations": 180,
-    "totalEventuallyConsistent": 79,
+    "totalOperations": 182,
+    "totalEventuallyConsistent": 80,
     "totalDeprecatedEnumSchemas": 2
   }
 }

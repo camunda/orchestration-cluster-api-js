@@ -1,9 +1,8 @@
 # [8.9.0-alpha.13](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.12...v8.9.0-alpha.13) (2026-03-09)
 
-
 ### Features
 
-* add backoff-at-floor to backpressure algorithm ([a0504bc](https://github.com/camunda/orchestration-cluster-api-js/commit/a0504bcdfd3e24c47e168cddc59aeae957bfc8dd))
+- add backoff-at-floor to backpressure algorithm ([a0504bc](https://github.com/camunda/orchestration-cluster-api-js/commit/a0504bcdfd3e24c47e168cddc59aeae957bfc8dd))
 
 # [8.9.0-alpha.12](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.11...v8.9.0-alpha.12) (2026-03-08)
 

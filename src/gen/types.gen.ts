@@ -506,15 +506,15 @@ export type CamundaUserResult = {
     /**
      * The username of the user.
      */
-    username?: Username | null;
+    username: Username | null;
     /**
      * The display name of the user.
      */
-    displayName?: string | null;
+    displayName: string | null;
     /**
      * The email of the user.
      */
-    email?: string | null;
+    email: string | null;
     /**
      * The web components the user is authorized to use.
      */
@@ -779,13 +779,13 @@ export type BatchOperationResponse = {
      * This is `null` if the batch operation has not yet started.
      *
      */
-    startDate?: string | null;
+    startDate: string | null;
     /**
      * The end date of the batch operation.
      * This is `null` if the batch operation is still running.
      *
      */
-    endDate?: string | null;
+    endDate: string | null;
     /**
      * The type of the actor who performed the operation.
      * This is `null` if the batch operation was created before 8.9,
@@ -819,15 +819,15 @@ export type BatchOperationError = {
     /**
      * The partition ID where the error occurred.
      */
-    partitionId?: number;
+    partitionId: number;
     /**
      * The type of the error that occurred during the batch operation.
      */
-    type?: 'QUERY_FAILED' | 'RESULT_BUFFER_SIZE_EXCEEDED';
+    type: 'QUERY_FAILED' | 'RESULT_BUFFER_SIZE_EXCEEDED';
     /**
      * The error message that occurred during the batch operation.
      */
-    message?: string;
+    message: string;
 };
 
 export type BatchOperationItemSearchQuerySortRequest = {
@@ -886,19 +886,19 @@ export type BatchOperationItemSearchQueryResult = SearchQueryResponse & {
 };
 
 export type BatchOperationItemResponse = {
-    operationType?: BatchOperationTypeEnum;
+    operationType: BatchOperationTypeEnum;
     /**
      * The key (or operate legacy ID) of the batch operation.
      */
-    batchOperationKey?: BatchOperationKey;
+    batchOperationKey: BatchOperationKey;
     /**
      * Key of the item, e.g. a process instance key.
      */
-    itemKey?: string;
+    itemKey: string;
     /**
      * the process instance key of the processed item.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -909,15 +909,17 @@ export type BatchOperationItemResponse = {
     /**
      * State of the item.
      */
-    state?: 'ACTIVE' | 'COMPLETED' | 'SKIPPED' | 'CANCELED' | 'FAILED';
+    state: 'ACTIVE' | 'COMPLETED' | 'SKIPPED' | 'CANCELED' | 'FAILED';
     /**
-     * the date this item was processed.
+     * The date this item was processed.
+     * This is `null` if the item has not yet been processed.
+     *
      */
-    processedDate?: string;
+    processedDate: string | null;
     /**
-     * the error message from the engine in case of a failed operation.
+     * The error message from the engine in case of a failed operation.
      */
-    errorMessage?: string | null;
+    errorMessage: string | null;
 };
 
 /**
@@ -1301,7 +1303,7 @@ export type TopologyResponse = {
     /**
      * The cluster Id.
      */
-    clusterId?: string | null;
+    clusterId: string | null;
     /**
      * The number of brokers in the cluster.
      */
@@ -1413,11 +1415,11 @@ export type ProcessInstanceReference = {
     /**
      * The key of the process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The key of the created process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
 };
 
 /**
@@ -1651,15 +1653,15 @@ export type EvaluatedDecisionResult = {
     /**
      * The ID of the decision which was evaluated.
      */
-    decisionDefinitionId?: DecisionDefinitionId;
+    decisionDefinitionId: DecisionDefinitionId;
     /**
      * The name of the decision which was evaluated.
      */
-    decisionDefinitionName?: string;
+    decisionDefinitionName: string;
     /**
      * The version of the decision which was evaluated.
      */
-    decisionDefinitionVersion?: number;
+    decisionDefinitionVersion: number;
     /**
      * The type of the decision which was evaluated.
      */
@@ -1668,11 +1670,11 @@ export type EvaluatedDecisionResult = {
      * JSON document that will instantiate the result of the decision which was evaluated.
      *
      */
-    output?: string;
+    output: string;
     /**
      * The tenant ID of the evaluated decision.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The decision rules that matched within this decision evaluation.
      */
@@ -1684,11 +1686,11 @@ export type EvaluatedDecisionResult = {
     /**
      * The unique key identifying the decision which was evaluate.
      */
-    decisionDefinitionKey?: DecisionDefinitionKey;
+    decisionDefinitionKey: DecisionDefinitionKey;
     /**
      * The unique key identifying this decision evaluation instance.
      */
-    decisionEvaluationInstanceKey?: DecisionEvaluationInstanceKey;
+    decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey;
 };
 
 export type DecisionInstanceSearchQuerySortRequest = {
@@ -1874,15 +1876,15 @@ export type EvaluatedDecisionInputItem = {
     /**
      * The identifier of the decision input.
      */
-    inputId?: string;
+    inputId: string;
     /**
      * The name of the decision input.
      */
-    inputName?: string;
+    inputName: string;
     /**
-     * The description of the decision input.
+     * The value of the decision input.
      */
-    inputValue?: string;
+    inputValue: string;
 };
 
 /**
@@ -1892,15 +1894,15 @@ export type EvaluatedDecisionOutputItem = {
     /**
      * The ID of the evaluated decison output item.
      */
-    outputId?: string;
+    outputId: string;
     /**
      * The name of the of the evaluated decison output item.
      */
-    outputName?: string;
+    outputName: string;
     /**
      * The value of the evaluated decison output item.
      */
-    outputValue?: string;
+    outputValue: string;
     /**
      * The ID of the matched rule.
      */
@@ -1918,11 +1920,11 @@ export type MatchedDecisionRuleItem = {
     /**
      * The ID of the matched rule.
      */
-    ruleId?: string;
+    ruleId: string;
     /**
      * The index of the matched rule.
      */
-    ruleIndex?: number;
+    ruleIndex: number;
     /**
      * The evaluated decision outputs.
      */
@@ -2128,34 +2130,34 @@ export type DeploymentDecisionResult = {
      * unique identifier for a specific decision.
      *
      */
-    decisionDefinitionId?: DecisionDefinitionId;
+    decisionDefinitionId: DecisionDefinitionId;
     /**
      * The assigned decision version.
      */
-    version?: number;
+    version: number;
     /**
      * The DMN name of the decision, as parsed during deployment.
      */
-    name?: string;
+    name: string;
     /**
      * The tenant ID of the deployed decision.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The dmn ID of the decision requirements graph that this decision is part of, as parsed during deployment.
      *
      */
-    decisionRequirementsId?: string;
+    decisionRequirementsId: string;
     /**
      * The assigned decision key, which acts as a unique identifier for this decision.
      *
      */
-    decisionDefinitionKey?: DecisionDefinitionKey;
+    decisionDefinitionKey: DecisionDefinitionKey;
     /**
      * The assigned key of the decision requirements graph that this decision is part of.
      *
      */
-    decisionRequirementsKey?: DecisionRequirementsKey;
+    decisionRequirementsKey: DecisionRequirementsKey;
 };
 
 /**
@@ -2165,28 +2167,28 @@ export type DeploymentDecisionRequirementsResult = {
     /**
      * The id of the deployed decision requirements.
      */
-    decisionRequirementsId?: string;
+    decisionRequirementsId: string;
     /**
      * The name of the deployed decision requirements.
      */
-    decisionRequirementsName?: string;
+    decisionRequirementsName: string;
     /**
      * The version of the deployed decision requirements.
      */
-    version?: number;
+    version: number;
     /**
      * The name of the resource.
      */
-    resourceName?: string;
+    resourceName: string;
     /**
      * The tenant ID of the deployed decision requirements.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The assigned decision requirements key, which acts as a unique identifier for this decision requirements.
      *
      */
-    decisionRequirementsKey?: DecisionRequirementsKey;
+    decisionRequirementsKey: DecisionRequirementsKey;
 };
 
 /**
@@ -2198,20 +2200,20 @@ export type DeploymentFormResult = {
      * unique identifier for a specific form.
      *
      */
-    formId?: FormId;
+    formId: FormId;
     /**
      * The version of the deployed form.
      */
-    version?: number;
+    version: number;
     /**
      * The name of the resource.
      */
-    resourceName?: string;
-    tenantId?: TenantId;
+    resourceName: string;
+    tenantId: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this form.
      */
-    formKey?: FormKey;
+    formKey: FormKey;
 };
 
 /**
@@ -2221,20 +2223,20 @@ export type DeploymentResourceResult = {
     /**
      * The resource id of the deployed resource.
      */
-    resourceId?: string;
+    resourceId: string;
     /**
      * The name of the deployed resource.
      */
-    resourceName?: string;
+    resourceName: string;
     /**
      * The description of the deployed resource.
      */
-    version?: number;
-    tenantId?: TenantId;
+    version: number;
+    tenantId: TenantId;
     /**
      * The assigned key, which acts as a unique identifier for this Resource.
      */
-    resourceKey?: ResourceKey;
+    resourceKey: ResourceKey;
 };
 
 export type DeleteResourceRequest = {
@@ -2265,7 +2267,7 @@ export type DeleteResourceResponse = {
      * this field will be `null`.
      *
      */
-    batchOperation?: BatchOperationCreatedResult | null;
+    batchOperation: BatchOperationCreatedResult | null;
 };
 
 export type ResourceResult = {
@@ -2395,19 +2397,19 @@ export type DocumentCreationFailureDetail = {
     /**
      * The name of the file that failed to upload.
      */
-    fileName?: string;
+    fileName: string;
     /**
      * The HTTP status code of the failure.
      */
-    status?: number;
+    status: number;
     /**
      * A short, human-readable summary of the problem type.
      */
-    title?: string;
+    title: string;
     /**
      * A human-readable explanation specific to this occurrence of the problem.
      */
-    detail?: string;
+    detail: string;
 };
 
 export type DocumentCreationBatchResponse = {
@@ -2648,7 +2650,7 @@ export type ElementInstanceResult = {
     /**
      * Date when element instance finished.
      */
-    endDate?: string | null;
+    endDate: string | null;
     /**
      * The element ID for this element instance.
      */
@@ -2695,7 +2697,7 @@ export type ElementInstanceResult = {
     /**
      * Incident key associated with this element instance.
      */
-    incidentKey?: IncidentKey | null;
+    incidentKey: IncidentKey | null;
 };
 
 /**
@@ -3597,16 +3599,16 @@ export type IncidentProcessInstanceStatisticsByErrorResult = {
     /**
      * The hash code identifying a specific incident error..
      */
-    errorHashCode?: number;
+    errorHashCode: number;
     /**
      * The error message associated with the incident error hash code.
      */
-    errorMessage?: string;
+    errorMessage: string;
     /**
      * The number of active process instances that currently have an active incident with this error.
      *
      */
-    activeInstancesWithErrorCount?: number;
+    activeInstancesWithErrorCount: number;
 };
 
 export type IncidentProcessInstanceStatisticsByErrorQuerySortRequest = {
@@ -3642,23 +3644,23 @@ export type IncidentProcessInstanceStatisticsByDefinitionQueryResult = SearchQue
 };
 
 export type IncidentProcessInstanceStatisticsByDefinitionResult = {
-    processDefinitionId?: ProcessDefinitionId;
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionId: ProcessDefinitionId;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The name of the process definition.
      */
-    processDefinitionName?: string;
+    processDefinitionName: string;
     /**
      * The version of the process definition.
      */
-    processDefinitionVersion?: number;
-    tenantId?: TenantId;
+    processDefinitionVersion: number;
+    tenantId: TenantId;
     /**
      * The number of active process instances that currently have an incident
      * with the specified error hash code.
      *
      */
-    activeInstancesWithErrorCount?: number;
+    activeInstancesWithErrorCount: number;
 };
 
 /**
@@ -3884,6 +3886,74 @@ export type JobTimeSeriesStatisticsItem = {
     failed: StatusMetric;
 };
 
+/**
+ * Job error statistics query.
+ */
+export type JobErrorStatisticsQuery = {
+    filter: JobErrorStatisticsFilter;
+    /**
+     * Search cursor pagination.
+     */
+    page?: CursorForwardPagination;
+};
+
+/**
+ * Job error statistics search filter.
+ */
+export type JobErrorStatisticsFilter = {
+    /**
+     * Start of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    from: string;
+    /**
+     * End of the time window to filter metrics. ISO 8601 date-time format.
+     *
+     */
+    to: string;
+    /**
+     * Job type to return error metrics for.
+     */
+    jobType: string;
+    /**
+     * Optional error code filter with advanced search capabilities.
+     */
+    errorCode?: StringFilterProperty;
+    /**
+     * Optional error message filter with advanced search capabilities.
+     */
+    errorMessage?: StringFilterProperty;
+};
+
+/**
+ * Job error statistics query result.
+ */
+export type JobErrorStatisticsQueryResult = SearchQueryResponse & {
+    /**
+     * The list of per-error statistics items.
+     */
+    items: Array<JobErrorStatisticsItem>;
+    page: SearchQueryPageResponse;
+};
+
+/**
+ * Aggregated error metrics for a single error type and message combination.
+ */
+export type JobErrorStatisticsItem = {
+    /**
+     * The error code identifier.
+     */
+    errorCode: string;
+    /**
+     * The error message.
+     */
+    errorMessage: string;
+    /**
+     * Number of distinct workers that encountered this error.
+     */
+    workers: number;
+};
+
 export type JobActivationRequest = {
     /**
      * The job type, as defined in the BPMN process (e.g. <zeebe:taskDefinition type="payment-service" />)
@@ -4000,7 +4070,7 @@ export type ActivatedJobResult = {
      * This is `null` if the job is not a user task.
      *
      */
-    userTask?: UserTaskProperties | null;
+    userTask: UserTaskProperties | null;
     tags: TagSet;
     /**
      * The key of the root process instance. The root process instance is the top-level
@@ -4018,11 +4088,11 @@ export type UserTaskProperties = {
     /**
      * The action performed on the user task.
      */
-    action?: string;
+    action: string;
     /**
      * The user assigned to the task.
      */
-    assignee?: string | null;
+    assignee: string | null;
     /**
      * The groups eligible to claim the task.
      */
@@ -4038,23 +4108,23 @@ export type UserTaskProperties = {
     /**
      * The due date of the user task in ISO 8601 format.
      */
-    dueDate?: string | null;
+    dueDate: string | null;
     /**
      * The follow-up date of the user task in ISO 8601 format.
      */
-    followUpDate?: string | null;
+    followUpDate: string | null;
     /**
      * The key of the form associated with the user task.
      */
-    formKey?: FormKey;
+    formKey: FormKey | null;
     /**
      * The priority of the user task.
      */
-    priority?: number | null;
+    priority: number | null;
     /**
      * The unique key identifying the user task.
      */
-    userTaskKey?: UserTaskKey | null;
+    userTaskKey: UserTaskKey | null;
 };
 
 /**
@@ -4193,11 +4263,11 @@ export type JobSearchResult = {
     /**
      * If the job has been activated, when it will next be available to be activated.
      */
-    deadline?: string | null;
+    deadline: string | null;
     /**
      * The reason provided by the user task listener for denying the work.
      */
-    deniedReason?: string | null;
+    deniedReason: string | null;
     /**
      * The element ID associated with the job. May be missing on job failure.
      */
@@ -4211,15 +4281,15 @@ export type JobSearchResult = {
      * This is `null` if the job is not in an end state yet.
      *
      */
-    endTime?: string | null;
+    endTime: string | null;
     /**
      * The error code provided for a failed job.
      */
-    errorCode?: string | null;
+    errorCode: string | null;
     /**
      * The error message that provides additional context for a failed job.
      */
-    errorMessage?: string | null;
+    errorMessage: string | null;
     /**
      * Indicates whether the job has failed with retries left.
      */
@@ -4227,7 +4297,7 @@ export type JobSearchResult = {
     /**
      * Indicates whether the user task listener denies the work.
      */
-    isDenied?: boolean | null;
+    isDenied: boolean | null;
     /**
      * The key, a unique identifier for the job.
      */
@@ -4270,11 +4340,11 @@ export type JobSearchResult = {
     /**
      * When the job was created. Field is present for jobs created after 8.9.
      */
-    creationTime?: string;
+    creationTime: string | null;
     /**
      * When the job was last updated. Field is present for jobs created after 8.9.
      */
-    lastUpdateTime?: string;
+    lastUpdateTime: string | null;
 };
 
 export type JobFailRequest = {
@@ -5298,19 +5368,19 @@ export type MessageSubscriptionResult = {
     /**
      * The message subscription key associated with this message subscription.
      */
-    messageSubscriptionKey?: MessageSubscriptionKey;
+    messageSubscriptionKey: MessageSubscriptionKey;
     /**
      * The process definition ID associated with this message subscription.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId;
     /**
      * The process definition key associated with this message subscription.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with this message subscription.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -5321,25 +5391,25 @@ export type MessageSubscriptionResult = {
     /**
      * The element ID associated with this message subscription.
      */
-    elementId?: ElementId;
+    elementId: ElementId;
     /**
      * The element instance key associated with this message subscription.
      */
-    elementInstanceKey?: ElementInstanceKey;
-    messageSubscriptionState?: MessageSubscriptionStateEnum;
+    elementInstanceKey: ElementInstanceKey | null;
+    messageSubscriptionState: MessageSubscriptionStateEnum;
     /**
      * The last updated date of the message subscription.
      */
-    lastUpdatedDate?: string;
+    lastUpdatedDate: string;
     /**
      * The name of the message associated with the message subscription.
      */
-    messageName?: string;
+    messageName: string;
     /**
      * The correlation key of the message subscription.
      */
-    correlationKey?: string;
-    tenantId?: TenantId;
+    correlationKey: string | null;
+    tenantId: TenantId;
 };
 
 export type MessageSubscriptionSearchQuerySortRequest = {
@@ -5422,7 +5492,7 @@ export type CorrelatedMessageSubscriptionResult = {
     /**
      * The correlation key of the message.
      */
-    correlationKey: string;
+    correlationKey: string | null;
     /**
      * The time when the message was correlated.
      */
@@ -5433,8 +5503,10 @@ export type CorrelatedMessageSubscriptionResult = {
     elementId: string;
     /**
      * The element instance key that received the message.
+     * It is `null` for start event subscriptions.
+     *
      */
-    elementInstanceKey?: ElementInstanceKey;
+    elementInstanceKey: ElementInstanceKey | null;
     /**
      * The message key.
      */
@@ -5454,7 +5526,7 @@ export type CorrelatedMessageSubscriptionResult = {
     /**
      * The process definition key associated with this correlated message subscription.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The process instance key associated with this correlated message subscription.
      */
@@ -5788,23 +5860,23 @@ export type ProcessElementStatisticsResult = {
     /**
      * The element ID for which the results are aggregated.
      */
-    elementId?: ElementId;
+    elementId: ElementId;
     /**
      * The total number of active instances of the element.
      */
-    active?: number;
+    active: number;
     /**
      * The total number of canceled instances of the element.
      */
-    canceled?: number;
+    canceled: number;
     /**
      * The total number of incidents for the element.
      */
-    incidents?: number;
+    incidents: number;
     /**
      * The total number of completed instances of the element.
      */
-    completed?: number;
+    completed: number;
 };
 
 export type ProcessDefinitionMessageSubscriptionStatisticsQuery = {
@@ -5829,23 +5901,23 @@ export type ProcessDefinitionMessageSubscriptionStatisticsResult = {
     /**
      * The process definition ID associated with this message subscription.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId;
     /**
      * The tenant ID associated with this message subscription.
      */
-    tenantId?: TenantId;
+    tenantId: TenantId;
     /**
      * The process definition key associated with this message subscription.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The number of process instances with active message subscriptions.
      */
-    processInstancesWithActiveSubscriptions?: number;
+    processInstancesWithActiveSubscriptions: number;
     /**
      * The total number of active message subscriptions for this process definition key.
      */
-    activeSubscriptions?: number;
+    activeSubscriptions: number;
 };
 
 export type ProcessDefinitionInstanceStatisticsQuery = {
@@ -5870,24 +5942,24 @@ export type ProcessDefinitionInstanceStatisticsQueryResult = SearchQueryResponse
  * Process definition instance statistics response.
  */
 export type ProcessDefinitionInstanceStatisticsResult = {
-    processDefinitionId?: ProcessDefinitionId;
-    tenantId?: TenantId;
+    processDefinitionId: ProcessDefinitionId;
+    tenantId: TenantId;
     /**
      * Name of the latest deployed process definition instance version.
      */
-    latestProcessDefinitionName?: string | null;
+    latestProcessDefinitionName: string | null;
     /**
      * Indicates whether multiple versions of this process definition instance are deployed.
      */
-    hasMultipleVersions?: boolean;
+    hasMultipleVersions: boolean;
     /**
      * Total number of currently active process instances of this definition that do not have incidents.
      */
-    activeInstancesWithoutIncidentCount?: number;
+    activeInstancesWithoutIncidentCount: number;
     /**
      * Total number of currently active process instances of this definition that have at least one incident.
      */
-    activeInstancesWithIncidentCount?: number;
+    activeInstancesWithIncidentCount: number;
 };
 
 export type ProcessDefinitionInstanceStatisticsQuerySortRequest = {
@@ -6194,7 +6266,7 @@ export type CreateProcessInstanceResult = {
     /**
      * Business id as provided on creation.
      */
-    businessId?: BusinessId | null;
+    businessId: BusinessId | null;
 };
 
 export type ProcessInstanceSearchQuerySortRequest = {
@@ -6511,11 +6583,11 @@ export type ProcessInstanceSequenceFlowResult = {
     /**
      * The sequence flow id.
      */
-    sequenceFlowId?: string;
+    sequenceFlowId: string;
     /**
      * The key of this process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -6526,16 +6598,16 @@ export type ProcessInstanceSequenceFlowResult = {
     /**
      * The process definition key.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey: ProcessDefinitionKey;
     /**
      * The process definition id.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId: ProcessDefinitionId;
     /**
      * The element id for this sequence flow, as provided in the BPMN process.
      */
-    elementId?: ElementId;
-    tenantId?: TenantId;
+    elementId: ElementId;
+    tenantId: TenantId;
 };
 
 /**
@@ -7184,6 +7256,45 @@ export type UsageMetricsResponseItem = {
      * The amount of unique active task users.
      */
     assignees: number;
+};
+
+/**
+ * Envelope for all system configuration sections. Each property
+ * represents a feature area.
+ *
+ */
+export type SystemConfigurationResponse = {
+    jobMetrics: JobMetricsConfigurationResponse;
+};
+
+/**
+ * Configuration for job metrics collection and export.
+ */
+export type JobMetricsConfigurationResponse = {
+    /**
+     * Whether job metrics export is enabled.
+     */
+    enabled: boolean;
+    /**
+     * The interval at which job metrics are exported, as an ISO 8601 duration.
+     */
+    exportInterval: string;
+    /**
+     * The maximum length of the worker name used in job metrics labels.
+     */
+    maxWorkerNameLength: number;
+    /**
+     * The maximum length of the job type used in job metrics labels.
+     */
+    maxJobTypeLength: number;
+    /**
+     * The maximum length of the tenant ID used in job metrics labels.
+     */
+    maxTenantIdLength: number;
+    /**
+     * The maximum number of unique metric keys tracked for job metrics.
+     */
+    maxUniqueKeys: number;
 };
 
 export type TenantCreateRequest = {
@@ -7990,11 +8101,11 @@ export type VariableSearchResult = VariableResultBase & {
     /**
      * Value of this variable. Can be truncated.
      */
-    value?: string;
+    value: string;
     /**
      * Whether the value is truncated or not.
      */
-    isTruncated?: boolean;
+    isTruncated: boolean;
 };
 
 /**
@@ -12067,6 +12178,43 @@ export type GetJobTimeSeriesStatisticsResponses = {
 
 export type GetJobTimeSeriesStatisticsResponse = GetJobTimeSeriesStatisticsResponses[keyof GetJobTimeSeriesStatisticsResponses];
 
+export type GetJobErrorStatisticsData = {
+    body: JobErrorStatisticsQuery;
+    path?: never;
+    query?: never;
+    url: '/jobs/statistics/errors';
+};
+
+export type GetJobErrorStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetJobErrorStatisticsError = GetJobErrorStatisticsErrors[keyof GetJobErrorStatisticsErrors];
+
+export type GetJobErrorStatisticsResponses = {
+    /**
+     * The job error statistics result.
+     */
+    200: JobErrorStatisticsQueryResult;
+};
+
+export type GetJobErrorStatisticsResponse = GetJobErrorStatisticsResponses[keyof GetJobErrorStatisticsResponses];
+
 export type GetLicenseData = {
     body?: never;
     path?: never;
@@ -14614,6 +14762,35 @@ export type GetUsageMetricsResponses = {
 
 export type GetUsageMetricsResponse = GetUsageMetricsResponses[keyof GetUsageMetricsResponses];
 
+export type GetSystemConfigurationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/system/configuration';
+};
+
+export type GetSystemConfigurationErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetSystemConfigurationError = GetSystemConfigurationErrors[keyof GetSystemConfigurationErrors];
+
+export type GetSystemConfigurationResponses = {
+    /**
+     * Current system configuration grouped by feature area.
+     */
+    200: SystemConfigurationResponse;
+};
+
+export type GetSystemConfigurationResponse = GetSystemConfigurationResponses[keyof GetSystemConfigurationResponses];
+
 export type CreateTenantData = {
     body: TenantCreateRequest;
     path?: never;
@@ -16309,7 +16486,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:4e259f78ef16ae4a34e64cf42291ee3226d023d990339073540c0fd15e20ca06
+// specHash=sha256:1f6f79cd37f12d55c776a8271354b39bba675c467687e093707b8dbdd0a97341
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
