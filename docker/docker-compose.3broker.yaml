@@ -1,0 +1,76 @@
+# Three-broker cluster for backpressure benchmarking
+# 3 brokers with embedded gateways, 3 partitions — realistic distributed setup
+# Usage: docker compose -f docker/docker-compose.3broker.yaml up -d
+#
+# Endpoints (via broker0):
+#   REST API:   http://localhost:8080
+#   gRPC API:   localhost:26500
+#   Monitoring: http://localhost:9600/actuator
+
+x-common: &common
+  image: camunda/camunda:${CAMUNDA_VERSION:-8.9-SNAPSHOT}
+  environment: &common-env
+    SPRING_PROFILES_ACTIVE: 'broker,consolidated-auth'
+    # Cluster topology — 3 brokers, 3 partitions, RF 3
+    ZEEBE_BROKER_CLUSTER_CLUSTERSIZE: '3'
+    ZEEBE_BROKER_CLUSTER_PARTITIONSCOUNT: '3'
+    ZEEBE_BROKER_CLUSTER_REPLICATIONFACTOR: '3'
+    # Network
+    ZEEBE_BROKER_NETWORK_HOST: '0.0.0.0'
+    ZEEBE_BROKER_CLUSTER_INITIALCONTACTPOINTS: 'broker0:26502,broker1:26502,broker2:26502'
+    # H2 in-memory per node (sufficient for command-based benchmarks)
+    CAMUNDA_DATABASE_URL: 'jdbc:h2:mem:cpt;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
+    CAMUNDA_DATABASE_TYPE: 'rdbms'
+    CAMUNDA_DATABASE_USERNAME: 'sa'
+    CAMUNDA_DATABASE_PASSWORD: ''
+    CAMUNDA_DATA_SECONDARY_STORAGE_TYPE: 'rdbms'
+    ZEEBE_BROKER_EXPORTERS_RDBMS_CLASSNAME: 'io.camunda.exporter.rdbms.RdbmsExporter'
+    ZEEBE_BROKER_EXPORTERS_RDBMS_ARGS_FLUSH_INTERVAL: 'PT0S'
+    # Auth disabled for benchmarking
+    CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI: 'true'
+    CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED: 'false'
+    # Expose Prometheus metrics at /actuator/prometheus
+    MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: 'health,prometheus'
+    # Enable execution latency metrics (job activation time, job lifetime, PI execution time)
+    ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED: 'true'
+  networks:
+    - camunda-cluster
+  restart: unless-stopped
+  healthcheck:
+    test: ['CMD', 'wget', '-qO', '-', 'http://localhost:9600/actuator/health/status']
+    interval: 5s
+    timeout: 3s
+    retries: 30
+
+services:
+  broker0:
+    <<: *common
+    container_name: broker0
+    environment:
+      <<: *common-env
+      ZEEBE_BROKER_CLUSTER_NODEID: '0'
+      ZEEBE_BROKER_NETWORK_ADVERTISEDHOST: 'broker0'
+    ports:
+      - '8080:8080' # REST API
+      - '26500:26500' # gRPC
+      - '9600:9600' # Monitoring
+
+  broker1:
+    <<: *common
+    container_name: broker1
+    environment:
+      <<: *common-env
+      ZEEBE_BROKER_CLUSTER_NODEID: '1'
+      ZEEBE_BROKER_NETWORK_ADVERTISEDHOST: 'broker1'
+
+  broker2:
+    <<: *common
+    container_name: broker2
+    environment:
+      <<: *common-env
+      ZEEBE_BROKER_CLUSTER_NODEID: '2'
+      ZEEBE_BROKER_NETWORK_ADVERTISEDHOST: 'broker2'
+
+networks:
+  camunda-cluster:
+    name: camunda-cluster

@@ -46,6 +46,10 @@
     "camundacon:backpressure:multi:aggressive": "PROFILE=AGGRESSIVE tsx camundacon/backpressure/multi-client.ts",
     "camundacon:backpressure:multi:conservative": "PROFILE=CONSERVATIVE tsx camundacon/backpressure/multi-client.ts",
     "camundacon:backpressure:multi:stress": "NUM_CLIENTS=5 SPIKE_CLIENTS=3 TARGET_PER_CLIENT=1000 CLIENT_CONCURRENCY=100 PROFILE=BALANCED tsx camundacon/backpressure/multi-client.ts",
+    "camundacon:matrix": "tsx camundacon/backpressure/matrix/run-matrix.ts",
+    "camundacon:matrix:dry-run": "tsx camundacon/backpressure/matrix/run-matrix.ts --dry-run",
+    "camundacon:matrix:quick": "tsx camundacon/backpressure/matrix/run-matrix.ts --modes rest-balanced --handlers cpu --clients 25 --isolations shared --no-restart",
+    "camundacon:matrix:analyze": "tsx camundacon/backpressure/matrix/analyze.ts",
     "camundacon:tags:first": "tsx camundacon/tags/first.ts",
     "camundacon:tags:second": "tsx camundacon/tags/second.ts",
     "camundacon:tags:third": "tsx camundacon/tags/third.ts",
@@ -95,6 +99,7 @@
     "zod": "^4"
   },
   "devDependencies": {
+    "@camunda8/sdk": "^8.8.7",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@hey-api/client-fetch": "^0.13.1",

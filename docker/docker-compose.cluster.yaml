@@ -1,0 +1,59 @@
+# Single-broker cluster for backpressure benchmarking
+# 1 broker with embedded gateway, 1 partition — concentrates all load on one node
+# Usage: docker compose -f docker/docker-compose.cluster.yaml up -d
+#
+# Endpoints:
+#   REST API:   http://localhost:8080
+#   gRPC API:   localhost:26500
+#   Monitoring: http://localhost:9600/actuator
+
+x-common: &common
+  image: camunda/camunda:${CAMUNDA_VERSION:-8.9-SNAPSHOT}
+  environment: &common-env
+    SPRING_PROFILES_ACTIVE: 'broker,consolidated-auth'
+    # Cluster topology — single broker
+    ZEEBE_BROKER_CLUSTER_CLUSTERSIZE: '1'
+    ZEEBE_BROKER_CLUSTER_PARTITIONSCOUNT: '1'
+    ZEEBE_BROKER_CLUSTER_REPLICATIONFACTOR: '1'
+    # Network
+    ZEEBE_BROKER_NETWORK_HOST: '0.0.0.0'
+    # H2 in-memory per node (sufficient for command-based benchmarks)
+    CAMUNDA_DATABASE_URL: 'jdbc:h2:mem:cpt;DB_CLOSE_DELAY=-1;MODE=PostgreSQL'
+    CAMUNDA_DATABASE_TYPE: 'rdbms'
+    CAMUNDA_DATABASE_USERNAME: 'sa'
+    CAMUNDA_DATABASE_PASSWORD: ''
+    CAMUNDA_DATA_SECONDARY_STORAGE_TYPE: 'rdbms'
+    ZEEBE_BROKER_EXPORTERS_RDBMS_CLASSNAME: 'io.camunda.exporter.rdbms.RdbmsExporter'
+    ZEEBE_BROKER_EXPORTERS_RDBMS_ARGS_FLUSH_INTERVAL: 'PT0S'
+    # Auth disabled for benchmarking
+    CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI: 'true'
+    CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED: 'false'
+    # Expose Prometheus metrics at /actuator/prometheus
+    MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: 'health,prometheus'
+    # Enable execution latency metrics (job activation time, job lifetime, PI execution time)
+    ZEEBE_BROKER_EXECUTIONMETRICSEXPORTERENABLED: 'true'
+  networks:
+    - camunda-cluster
+  restart: unless-stopped
+  healthcheck:
+    test: ['CMD', 'wget', '-qO', '-', 'http://localhost:9600/actuator/health/status']
+    interval: 5s
+    timeout: 3s
+    retries: 30
+
+services:
+  broker0:
+    <<: *common
+    container_name: broker0
+    environment:
+      <<: *common-env
+      ZEEBE_BROKER_CLUSTER_NODEID: '0'
+      ZEEBE_BROKER_NETWORK_ADVERTISEDHOST: 'broker0'
+    ports:
+      - '8080:8080' # REST API
+      - '26500:26500' # gRPC
+      - '9600:9600' # Monitoring
+
+networks:
+  camunda-cluster:
+    name: camunda-cluster
