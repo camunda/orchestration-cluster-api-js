@@ -2275,7 +2275,8 @@ export class CamundaClient {
   /**
    * Assign user task
    *
-   * Assigns a user task with the given key to the given assignee.
+   * Assigns a user task with the given key to the given assignee. Assignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @example Assign a user task
    * {@includeCode ../../examples/user-task.ts#AssignUserTask}
@@ -2581,7 +2582,8 @@ export class CamundaClient {
   /**
    * Cancel process instance
    *
-   * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted.
+   * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted. Cancellation can wait on listener-related processing; when that processing does not complete in time, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @example Cancel a process instance
    * {@includeCode ../../examples/process-instance.ts#CancelProcessInstance}
@@ -2768,7 +2770,8 @@ export class CamundaClient {
   /**
    * Complete user task
    *
-   * Completes a user task with the given key.
+   * Completes a user task with the given key. Completion waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @example Complete a user task
    * {@includeCode ../../examples/user-task.ts#CompleteUserTask}
@@ -3301,6 +3304,10 @@ export class CamundaClient {
    *
    * Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.
    * Specify the element instance in the `elementInstanceKey` parameter.
+   * Variable updates can be delayed by listener-related processing; if processing exceeds the
+   * request timeout, this endpoint can return 504. Other gateway timeout causes are also
+   * possible. Retry with backoff and inspect listener worker availability and logs when this
+   * repeats.
    *
     *
    * @operationId createElementInstanceVariables
@@ -6255,7 +6262,7 @@ export class CamundaClient {
   /**
    * Get job statistics by worker
    *
-   * Returns aggregated metrics per worker for the given jobType.
+   * Get statistics about jobs, grouped by worker, for a given job type.
    *
     *
    * @operationId getJobWorkerStatistics
@@ -12171,7 +12178,8 @@ export class CamundaClient {
   /**
    * Unassign user task
    *
-   * Removes the assignee of a task with the given key.
+   * Removes the assignee of a task with the given key. Unassignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @example Unassign a user task
    * {@includeCode ../../examples/user-task.ts#UnassignUserTask}
@@ -12836,7 +12844,8 @@ export class CamundaClient {
   /**
    * Update user task
    *
-   * Update a user task with the given key.
+   * Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @operationId updateUserTask
    * @tags User task

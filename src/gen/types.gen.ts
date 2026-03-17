@@ -47,10 +47,6 @@ export type AuditLogResult = {
      */
     tenantId: TenantId | null;
     result: AuditLogResultEnum;
-    /**
-     * Additional notes about the operation.
-     */
-    annotation: string | null;
     category: AuditLogCategoryEnum;
     /**
      * The process definition ID.
@@ -139,7 +135,7 @@ export type AuditLogSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'actorId' | 'actorType' | 'annotation' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
+    field: 'actorId' | 'actorType' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
     order?: SortOrderEnum;
 };
 
@@ -2758,7 +2754,14 @@ export type ExpressionEvaluationResult = {
     /**
      * List of warnings generated during expression evaluation
      */
-    warnings: Array<string>;
+    warnings: Array<ExpressionEvaluationWarningItem>;
+};
+
+export type ExpressionEvaluationWarningItem = {
+    /**
+     * The warning message
+     */
+    message: string;
 };
 
 /**
@@ -3502,7 +3505,7 @@ export type IncidentSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'incidentKey' | 'processDefinitionKey' | 'processDefinitionId' | 'processInstanceKey' | 'errorType' | 'errorMessage' | 'elementId' | 'elementInstanceKey' | 'creationTime' | 'state' | 'jobKey' | 'tenantId';
+    field: 'incidentKey' | 'processDefinitionKey' | 'processDefinitionId' | 'processInstanceKey' | 'errorType' | 'elementId' | 'elementInstanceKey' | 'creationTime' | 'state' | 'jobKey' | 'tenantId';
     order?: SortOrderEnum;
 };
 
@@ -3817,7 +3820,7 @@ export type JobWorkerStatisticsQueryResult = SearchQueryResponse & {
  */
 export type JobWorkerStatisticsItem = {
     /**
-     * The worker identifier.
+     * The name of the worker activating the jobs, mostly used for logging purposes.
      */
     worker: string;
     created: StatusMetric;
@@ -6333,8 +6336,16 @@ export type BaseProcessInstanceFilterFields = {
     parentElementInstanceKey?: ElementInstanceKeyFilterProperty;
     /**
      * The batch operation id.
+     * **Deprecated**: Use `batchOperationKey` instead. This field will be removed in a future release. If both `batchOperationId` and `batchOperationKey` are provided, the request will be rejected with a 400 error.
+     *
+     *
+     * @deprecated
      */
     batchOperationId?: StringFilterProperty;
+    /**
+     * The batch operation key.
+     */
+    batchOperationKey?: StringFilterProperty;
     /**
      * The error message related to the process.
      */
@@ -10502,6 +10513,12 @@ export type CreateElementInstanceVariablesErrors = {
      *
      */
     503: ProblemDetail;
+    /**
+     * The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.
+     * Troubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists
+     *
+     */
+    504: ProblemDetail;
 };
 
 export type CreateElementInstanceVariablesError = CreateElementInstanceVariablesErrors[keyof CreateElementInstanceVariablesErrors];
@@ -13298,6 +13315,12 @@ export type CancelProcessInstanceErrors = {
      *
      */
     503: ProblemDetail;
+    /**
+     * The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.
+     * Troubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists
+     *
+     */
+    504: ProblemDetail;
 };
 
 export type CancelProcessInstanceError = CancelProcessInstanceErrors[keyof CancelProcessInstanceErrors];
@@ -16079,6 +16102,12 @@ export type UpdateUserTaskErrors = {
      *
      */
     503: ProblemDetail;
+    /**
+     * The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.
+     * Troubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists
+     *
+     */
+    504: ProblemDetail;
 };
 
 export type UpdateUserTaskError = UpdateUserTaskErrors[keyof UpdateUserTaskErrors];
@@ -16127,6 +16156,12 @@ export type UnassignUserTaskErrors = {
      *
      */
     503: ProblemDetail;
+    /**
+     * The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.
+     * Troubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists
+     *
+     */
+    504: ProblemDetail;
 };
 
 export type UnassignUserTaskError = UnassignUserTaskErrors[keyof UnassignUserTaskErrors];
@@ -16175,6 +16210,12 @@ export type AssignUserTaskErrors = {
      *
      */
     503: ProblemDetail;
+    /**
+     * The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.
+     * Troubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists
+     *
+     */
+    504: ProblemDetail;
 };
 
 export type AssignUserTaskError = AssignUserTaskErrors[keyof AssignUserTaskErrors];
@@ -16257,6 +16298,12 @@ export type CompleteUserTaskErrors = {
      *
      */
     503: ProblemDetail;
+    /**
+     * The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.
+     * Troubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists
+     *
+     */
+    504: ProblemDetail;
 };
 
 export type CompleteUserTaskError = CompleteUserTaskErrors[keyof CompleteUserTaskErrors];
@@ -16486,7 +16533,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:1f6f79cd37f12d55c776a8271354b39bba675c467687e093707b8dbdd0a97341
+// specHash=sha256:25deca52be9f91b4862766dd0317f1b59ebc6e2a92bb3baa61a97e4cbb3af59a
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -16573,13 +16620,13 @@ export namespace ConditionalEvaluationKey {
 // Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
 export namespace DecisionDefinitionId {
   export function assumeExists(value: string): DecisionDefinitionId {
-    assertConstraint(value, 'DecisionDefinitionId', { pattern: "^[A-Za-z0-9_@.+-]+$", minLength: 1, maxLength: 256 });
+    assertConstraint(value, 'DecisionDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
     return value as any;
   }
   export function getValue(key: DecisionDefinitionId): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'DecisionDefinitionId', { pattern: "^[A-Za-z0-9_@.+-]+$", minLength: 1, maxLength: 256 });
+      assertConstraint(value, 'DecisionDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
       return true;
     } catch { return false; }
   }
@@ -16809,13 +16856,13 @@ export namespace MessageSubscriptionKey {
 // Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
 export namespace ProcessDefinitionId {
   export function assumeExists(value: string): ProcessDefinitionId {
-    assertConstraint(value, 'ProcessDefinitionId', { pattern: "^[a-zA-Z_][a-zA-Z0-9_\\-\\.]*$", minLength: 1 });
+    assertConstraint(value, 'ProcessDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
     return value as any;
   }
   export function getValue(key: ProcessDefinitionId): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'ProcessDefinitionId', { pattern: "^[a-zA-Z_][a-zA-Z0-9_\\-\\.]*$", minLength: 1 });
+      assertConstraint(value, 'ProcessDefinitionId', { pattern: "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$", minLength: 1 });
       return true;
     } catch { return false; }
   }

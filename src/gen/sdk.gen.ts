@@ -893,6 +893,10 @@ export const searchElementInstanceIncidents = <ThrowOnError extends boolean = tr
  *
  * Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.
  * Specify the element instance in the `elementInstanceKey` parameter.
+ * Variable updates can be delayed by listener-related processing; if processing exceeds the
+ * request timeout, this endpoint can return 504. Other gateway timeout causes are also
+ * possible. Retry with backoff and inspect listener worker availability and logs when this
+ * repeats.
  *
  */
 export const createElementInstanceVariables = <ThrowOnError extends boolean = true>(options: Options<CreateElementInstanceVariablesData, ThrowOnError>) => {
@@ -1498,7 +1502,7 @@ export const getJobTypeStatistics = <ThrowOnError extends boolean = true>(option
 /**
  * Get job statistics by worker
  *
- * Returns aggregated metrics per worker for the given jobType.
+ * Get statistics about jobs, grouped by worker, for a given job type.
  *
  */
 export const getJobWorkerStatistics = <ThrowOnError extends boolean = true>(options: Options<GetJobWorkerStatisticsData, ThrowOnError>) => {
@@ -2040,7 +2044,8 @@ export const getProcessInstanceCallHierarchy = <ThrowOnError extends boolean = t
 /**
  * Cancel process instance
  *
- * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted.
+ * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted. Cancellation can wait on listener-related processing; when that processing does not complete in time, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
  */
 export const cancelProcessInstance = <ThrowOnError extends boolean = true>(options: Options<CancelProcessInstanceData, ThrowOnError>) => {
     return (options.client ?? client).post<CancelProcessInstanceResponses, CancelProcessInstanceErrors, ThrowOnError>({
@@ -3061,7 +3066,8 @@ export const getUserTask = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Update user task
  *
- * Update a user task with the given key.
+ * Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
  */
 export const updateUserTask = <ThrowOnError extends boolean = true>(options: Options<UpdateUserTaskData, ThrowOnError>) => {
     return (options.client ?? client).patch<UpdateUserTaskResponses, UpdateUserTaskErrors, ThrowOnError>({
@@ -3079,7 +3085,8 @@ export const updateUserTask = <ThrowOnError extends boolean = true>(options: Opt
 /**
  * Unassign user task
  *
- * Removes the assignee of a task with the given key.
+ * Removes the assignee of a task with the given key. Unassignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
  */
 export const unassignUserTask = <ThrowOnError extends boolean = true>(options: Options<UnassignUserTaskData, ThrowOnError>) => {
     return (options.client ?? client).delete<UnassignUserTaskResponses, UnassignUserTaskErrors, ThrowOnError>({
@@ -3093,7 +3100,8 @@ export const unassignUserTask = <ThrowOnError extends boolean = true>(options: O
 /**
  * Assign user task
  *
- * Assigns a user task with the given key to the given assignee.
+ * Assigns a user task with the given key to the given assignee. Assignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
  */
 export const assignUserTask = <ThrowOnError extends boolean = true>(options: Options<AssignUserTaskData, ThrowOnError>) => {
     return (options.client ?? client).post<AssignUserTaskResponses, AssignUserTaskErrors, ThrowOnError>({
@@ -3129,7 +3137,8 @@ export const searchUserTaskAuditLogs = <ThrowOnError extends boolean = true>(opt
 /**
  * Complete user task
  *
- * Completes a user task with the given key.
+ * Completes a user task with the given key. Completion waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
  */
 export const completeUserTask = <ThrowOnError extends boolean = true>(options: Options<CompleteUserTaskData, ThrowOnError>) => {
     return (options.client ?? client).post<CompleteUserTaskResponses, CompleteUserTaskErrors, ThrowOnError>({

@@ -621,6 +621,12 @@ export const zExpressionEvaluationRequest = z.object({
     ]))
 });
 
+export const zExpressionEvaluationWarningItem = z.object({
+    message: z.string().register(z.globalRegistry, {
+        description: 'The warning message'
+    })
+});
+
 export const zExpressionEvaluationResult = z.object({
     expression: z.string().register(z.globalRegistry, {
         description: 'The evaluated expression'
@@ -628,7 +634,7 @@ export const zExpressionEvaluationResult = z.object({
     result: z.unknown().register(z.globalRegistry, {
         description: 'The result value. Its type can vary.'
     }),
-    warnings: z.array(z.string()).register(z.globalRegistry, {
+    warnings: z.array(zExpressionEvaluationWarningItem).register(z.globalRegistry, {
         description: 'List of warnings generated during expression evaluation'
     })
 });
@@ -1178,7 +1184,7 @@ export const zGroupClientResult = z.object({
 /**
  * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
  */
-export const zProcessDefinitionId = z.string().min(1).regex(/^[a-zA-Z_][a-zA-Z0-9_\-\.]*$/).register(z.globalRegistry, {
+export const zProcessDefinitionId = z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N}_\-\.]*$/u).register(z.globalRegistry, {
     description: 'Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.'
 });
 
@@ -1229,7 +1235,7 @@ export const zFormId = z.string().register(z.globalRegistry, {
 /**
  * Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.
  */
-export const zDecisionDefinitionId = z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
+export const zDecisionDefinitionId = z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N}_\-\.]*$/u).register(z.globalRegistry, {
     description: 'Id of a decision definition, from the model. Only ids of decision definitions that are deployed are useful.'
 });
 
@@ -1493,7 +1499,7 @@ export const zJobWorkerStatisticsFilter = z.object({
  */
 export const zJobWorkerStatisticsItem = z.object({
     worker: z.string().register(z.globalRegistry, {
-        description: 'The worker identifier.'
+        description: 'The name of the worker activating the jobs, mostly used for logging purposes.'
     }),
     created: zStatusMetric,
     completed: zStatusMetric,
@@ -2962,10 +2968,6 @@ export const zAuditLogResult = z.object({
         z.null()
     ]),
     result: zAuditLogResultEnum,
-    annotation: z.union([
-        z.string(),
-        z.null()
-    ]),
     category: zAuditLogCategoryEnum,
     processDefinitionId: z.union([
         zProcessDefinitionId,
@@ -4430,7 +4432,6 @@ export const zAuditLogSearchQuerySortRequest = z.object({
     field: z.enum([
         'actorId',
         'actorType',
-        'annotation',
         'auditLogKey',
         'batchOperationKey',
         'batchOperationType',
@@ -4677,7 +4678,6 @@ export const zIncidentSearchQuerySortRequest = z.object({
         'processDefinitionId',
         'processInstanceKey',
         'errorType',
-        'errorMessage',
         'elementId',
         'elementInstanceKey',
         'creationTime',
@@ -7029,6 +7029,7 @@ export const zBaseProcessInstanceFilterFields = z.object({
     parentProcessInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
     parentElementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
     batchOperationId: z.optional(zStringFilterProperty),
+    batchOperationKey: z.optional(zStringFilterProperty),
     errorMessage: z.optional(zStringFilterProperty),
     hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Whether the process has failed jobs with retries left.'

@@ -2827,7 +2827,7 @@
         ],
         "operationId": "createElementInstanceVariables",
         "summary": "Update element instance variables",
-        "description": "Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.\nSpecify the element instance in the `elementInstanceKey` parameter.\n",
+        "description": "Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.\nSpecify the element instance in the `elementInstanceKey` parameter.\nVariable updates can be delayed by listener-related processing; if processing exceeds the\nrequest timeout, this endpoint can return 504. Other gateway timeout causes are also\npossible. Retry with backoff and inspect listener worker availability and logs when this\nrepeats.\n",
         "parameters": [
           {
             "name": "elementInstanceKey",
@@ -2861,6 +2861,9 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          },
+          "504": {
+            "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
         }
       }
@@ -4937,7 +4940,7 @@
         ],
         "operationId": "getJobWorkerStatistics",
         "summary": "Get job statistics by worker",
-        "description": "Returns aggregated metrics per worker for the given jobType.\n",
+        "description": "Get statistics about jobs, grouped by worker, for a given job type.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -6439,7 +6442,7 @@
         ],
         "operationId": "cancelProcessInstance",
         "summary": "Cancel process instance",
-        "description": "Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted.",
+        "description": "Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted. Cancellation can wait on listener-related processing; when that processing does not complete in time, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.\n",
         "parameters": [
           {
             "name": "processInstanceKey",
@@ -6490,6 +6493,9 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          },
+          "504": {
+            "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
         }
       }
@@ -10162,7 +10168,7 @@
         ],
         "operationId": "updateUserTask",
         "summary": "Update user task",
-        "description": "Update a user task with the given key.",
+        "description": "Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.\n",
         "parameters": [
           {
             "name": "userTaskKey",
@@ -10216,6 +10222,27 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          },
+          "504": {
+            "description": "The request timed out between the gateway and the broker. For these endpoints, this often happens when user task listeners are configured and the corresponding listener job is not completed within the request timeout. Common causes include no available job workers for the listener type, busy or crashed job workers, or delayed job completion. As with any gateway timeout, general timeout causes (for example transient network issues) can also result in a 504 response.\nTroubleshooting: - verify that job workers for the listener type are running and healthy - check worker logs for crashes, retries, and completion failures - check network connectivity between workers, gateway, and broker - retry with backoff after transient failures - fail without retries if a problem persists\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                },
+                "examples": {
+                  "taskListenerTimeout": {
+                    "value": {
+                      "type": "about:blank",
+                      "title": "DEADLINE_EXCEEDED",
+                      "status": 504,
+                      "detail": "Expected to handle request, but request timed out between gateway and broker",
+                      "instance": "/v2/user-tasks/123/completion"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -10228,7 +10255,7 @@
         ],
         "operationId": "unassignUserTask",
         "summary": "Unassign user task",
-        "description": "Removes the assignee of a task with the given key.",
+        "description": "Removes the assignee of a task with the given key. Unassignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.\n",
         "parameters": [
           {
             "name": "userTaskKey",
@@ -10272,6 +10299,9 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          },
+          "504": {
+            "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
         }
       }
@@ -10284,7 +10314,7 @@
         ],
         "operationId": "assignUserTask",
         "summary": "Assign user task",
-        "description": "Assigns a user task with the given key to the given assignee.",
+        "description": "Assigns a user task with the given key to the given assignee. Assignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.\n",
         "parameters": [
           {
             "name": "userTaskKey",
@@ -10338,6 +10368,9 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          },
+          "504": {
+            "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
         }
       }
@@ -10400,7 +10433,7 @@
         ],
         "operationId": "completeUserTask",
         "summary": "Complete user task",
-        "description": "Completes a user task with the given key.",
+        "description": "Completes a user task with the given key. Completion waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.\n",
         "parameters": [
           {
             "name": "userTaskKey",
@@ -10454,6 +10487,9 @@
           },
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
+          },
+          "504": {
+            "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
         }
       }
@@ -10806,7 +10842,6 @@
           "agentElementId",
           "tenantId",
           "result",
-          "annotation",
           "category",
           "processDefinitionId",
           "processDefinitionKey",
@@ -10898,11 +10933,6 @@
           },
           "result": {
             "$ref": "#/components/schemas/AuditLogResultEnum"
-          },
-          "annotation": {
-            "type": "string",
-            "description": "Additional notes about the operation.",
-            "nullable": true
           },
           "category": {
             "$ref": "#/components/schemas/AuditLogCategoryEnum"
@@ -11073,7 +11103,6 @@
             "enum": [
               "actorId",
               "actorType",
-              "annotation",
               "auditLogKey",
               "batchOperationKey",
               "batchOperationType",
@@ -16011,9 +16040,22 @@
             "type": "array",
             "description": "List of warnings generated during expression evaluation",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/ExpressionEvaluationWarningItem"
             },
             "example": []
+          }
+        }
+      },
+      "ExpressionEvaluationWarningItem": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "The warning message",
+            "example": "No function found with name 'random' and 1 parameters"
           }
         }
       },
@@ -16989,7 +17031,7 @@
         "type": "string",
         "x-semantic-type": "ProcessDefinitionId",
         "minLength": 1,
-        "pattern": "^[a-zA-Z_][a-zA-Z0-9_\\-\\.]*$",
+        "pattern": "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$",
         "example": "new-account-onboarding-workflow"
       },
       "ElementId": {
@@ -17012,8 +17054,7 @@
         "x-semantic-type": "DecisionDefinitionId",
         "type": "string",
         "minLength": 1,
-        "maxLength": 256,
-        "pattern": "^[A-Za-z0-9_@.+-]+$",
+        "pattern": "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$",
         "example": "new-hire-onboarding-workflow"
       },
       "GlobalListenerId": {
@@ -17359,7 +17400,6 @@
               "processDefinitionId",
               "processInstanceKey",
               "errorType",
-              "errorMessage",
               "elementId",
               "elementInstanceKey",
               "creationTime",
@@ -17960,7 +18000,7 @@
         ],
         "properties": {
           "worker": {
-            "description": "The worker identifier.",
+            "description": "The name of the worker activating the jobs, mostly used for logging purposes.",
             "type": "string",
             "example": "worker-1"
           },
@@ -22341,7 +22381,16 @@
                 "$ref": "#/components/schemas/StringFilterProperty"
               }
             ],
-            "description": "The batch operation id."
+            "description": "The batch operation id.\n**Deprecated**: Use `batchOperationKey` instead. This field will be removed in a future release. If both `batchOperationId` and `batchOperationKey` are provided, the request will be rejected with a 400 error.\n",
+            "deprecated": true
+          },
+          "batchOperationKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
+            "description": "The batch operation key."
           },
           "errorMessage": {
             "allOf": [

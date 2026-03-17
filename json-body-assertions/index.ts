@@ -61,6 +61,9 @@ export const RESPONSE_INDEX = {
     GET: {
       '200': 1,
     },
+    PUT: {
+      '200': 1,
+    },
   },
   '/cluster-variables/search': {
     POST: {
@@ -74,6 +77,9 @@ export const RESPONSE_INDEX = {
   },
   '/cluster-variables/tenants/{tenantId}/{name}': {
     GET: {
+      '200': 1,
+    },
+    PUT: {
       '200': 1,
     },
   },
@@ -109,6 +115,11 @@ export const RESPONSE_INDEX = {
   },
   '/decision-instances/{decisionEvaluationInstanceKey}': {
     GET: {
+      '200': 1,
+    },
+  },
+  '/decision-instances/deletion': {
+    POST: {
       '200': 1,
     },
   },
@@ -159,6 +170,24 @@ export const RESPONSE_INDEX = {
     },
   },
   '/expression/evaluation': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/global-task-listeners': {
+    POST: {
+      '201': 1,
+    },
+  },
+  '/global-task-listeners/{id}': {
+    GET: {
+      '200': 1,
+    },
+    PUT: {
+      '200': 1,
+    },
+  },
+  '/global-task-listeners/search': {
     POST: {
       '200': 1,
     },
@@ -231,6 +260,31 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
+  '/jobs/statistics/global': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/jobs/statistics/by-types': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/jobs/statistics/by-workers': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/jobs/statistics/time-series': {
+    POST: {
+      '200': 1,
+    },
+  },
+  '/jobs/statistics/errors': {
+    POST: {
+      '200': 1,
+    },
+  },
   '/license': {
     GET: {
       '200': 1,
@@ -299,7 +353,7 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
-  '/process-definitions/{processDefinitionId}/statistics/process-instances': {
+  '/process-definitions/statistics/process-instances-by-version': {
     POST: {
       '200': 1,
     },
@@ -349,11 +403,6 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
-  '/process-instances/{processInstanceKey}/deletion': {
-    POST: {
-      '200': 1,
-    },
-  },
   '/process-instances/{processInstanceKey}/incident-resolution': {
     POST: {
       '200': 1,
@@ -375,6 +424,11 @@ export const RESPONSE_INDEX = {
     },
   },
   '/resources/{resourceKey}': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/resources/{resourceKey}/content': {
     GET: {
       '200': 1,
     },
@@ -422,12 +476,22 @@ export const RESPONSE_INDEX = {
       '200': 1,
     },
   },
+  '/setup/user': {
+    POST: {
+      '201': 1,
+    },
+  },
   '/signals/broadcast': {
     POST: {
       '200': 1,
     },
   },
   '/system/usage-metrics': {
+    GET: {
+      '200': 1,
+    },
+  },
+  '/system/configuration': {
     GET: {
       '200': 1,
     },

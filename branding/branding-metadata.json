@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:1f6f79cd37f12d55c776a8271354b39bba675c467687e093707b8dbdd0a97341",
+  "specHash": "sha256:25deca52be9f91b4862766dd0317f1b59ebc6e2a92bb3baa61a97e4cbb3af59a",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -263,9 +263,8 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^[A-Za-z0-9_@.+-]+$",
+        "pattern": "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$",
         "minLength": 1,
-        "maxLength": 256,
         "format": "DecisionDefinitionId"
       },
       "examples": [
@@ -993,7 +992,7 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^[a-zA-Z_][a-zA-Z0-9_\\-\\.]*$",
+        "pattern": "^[\\p{L}_][\\p{L}\\p{N}_\\-\\.]*$",
         "minLength": 1,
         "format": "ProcessDefinitionId"
       },
