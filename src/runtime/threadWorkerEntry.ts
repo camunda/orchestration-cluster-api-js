@@ -48,10 +48,15 @@ async function loadHandler(
   const cached = handlerCache.get(handlerModule);
   if (cached) return cached;
 
-  const modulePath =
-    handlerModule.startsWith('.') || handlerModule.startsWith('/')
-      ? new URL(handlerModule, `file://${process.cwd()}/`).href
-      : handlerModule;
+  // Convert filesystem paths to file:// URLs for dynamic import().
+  // Handles relative (./ ../) paths, Unix absolute (/), and Windows absolute (C:\).
+  const isPath =
+    handlerModule.startsWith('.') ||
+    handlerModule.startsWith('/') ||
+    /^[a-zA-Z]:[\\/]/.test(handlerModule);
+  const modulePath = isPath
+    ? new URL(handlerModule, `file://${process.cwd()}/`).href
+    : handlerModule;
   const mod = await import(modulePath);
   const handler = mod.default ?? mod.handler;
   if (typeof handler !== 'function') {
@@ -80,6 +85,21 @@ parentPort.on('message', async (msg: JobMessage & { clientPort?: any }) => {
     const job = createJobProxy(jobData, clientProxy);
 
     await handlerFn(job, clientProxy);
+
+    // If the handler never acknowledged the job (no complete/fail/error/ignore),
+    // treat it as an error so the broker can retry rather than silently dropping it.
+    if (!job.acknowledged) {
+      const result: JobResult = {
+        type: 'job-result',
+        taskId,
+        ok: false,
+        error:
+          `Handler for '${handlerModule}' returned without acknowledging the job. ` +
+          'Call job.complete(), job.fail(), job.error(), or job.ignore().',
+      };
+      parentPort!.postMessage(result);
+      return;
+    }
 
     const result: JobResult = { type: 'job-result', taskId, ok: true };
     parentPort!.postMessage(result);

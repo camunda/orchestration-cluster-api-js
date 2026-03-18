@@ -15,6 +15,8 @@ export interface PoolWorker {
   worker: import('node:worker_threads').Worker;
   busy: boolean;
   ready: boolean;
+  /** The taskId currently being processed by this worker (if busy). */
+  currentTaskId?: string;
 }
 
 export interface PendingJob {
@@ -84,6 +86,7 @@ export class ThreadPool {
     const { randomUUID, MessageChannel } = this._node;
     const taskId = randomUUID();
     pw.busy = true;
+    pw.currentTaskId = taskId;
 
     const { port1: mainPort, port2: workerPort } = new MessageChannel();
     installClientCallHandler(mainPort, this._client);
@@ -106,13 +109,31 @@ export class ThreadPool {
     ]);
   }
 
-  /** Terminate all threads. */
+  /** Terminate all threads and reject any in-flight tasks. */
   terminate(): void {
     this._terminated = true;
     for (const pw of this._pool) {
       pw.worker.terminate().catch(() => {});
     }
     this._pool = [];
+    // Reject all pending tasks so callers don't hang.
+    for (const [, pending] of this._pending) {
+      pending.reject(new Error('Thread pool terminated'));
+    }
+    this._pending.clear();
+  }
+
+  /** Reject the pending task for a worker that errored/exited and reset its state. */
+  private _rejectWorkerTask(pw: PoolWorker, message: string): void {
+    pw.busy = false;
+    if (pw.currentTaskId) {
+      const pending = this._pending.get(pw.currentTaskId);
+      if (pending) {
+        this._pending.delete(pw.currentTaskId);
+        pending.reject(new Error(message));
+      }
+      pw.currentTaskId = undefined;
+    }
   }
 
   private async _init(requestedSize?: number): Promise<void> {
@@ -178,6 +199,7 @@ export class ThreadPool {
             { taskId: msg.taskId, ok: msg.ok, error: msg.error },
           ]);
           pw.busy = false;
+          pw.currentTaskId = undefined;
           const pending = this._pending.get(msg.taskId);
           if (pending) {
             if (msg.ok) {
@@ -192,13 +214,14 @@ export class ThreadPool {
 
       worker.on('error', (err) => {
         this._log.error('thread.error', err);
-        pw.busy = false;
+        this._rejectWorkerTask(pw, `Worker thread error: ${err.message}`);
         pw.ready = false;
       });
 
       worker.on('exit', (code) => {
         if (!this._terminated) {
           this._log.warn('thread.exit', { code });
+          this._rejectWorkerTask(pw, `Worker thread exited unexpectedly (code ${code})`);
         }
       });
 

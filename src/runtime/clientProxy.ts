@@ -23,6 +23,12 @@ export interface ClientCallResult {
   error?: string;
 }
 
+/** Fallback UUID generator for runtimes where globalThis.crypto.randomUUID is unavailable. */
+let _counter = 0;
+function fallbackUUID(): string {
+  return `${Date.now().toString(36)}-${(++_counter).toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 /**
  * Create a Proxy that looks like CamundaClient but forwards every method call
  * over a MessagePort to the main thread. Runs inside a worker thread.
@@ -36,7 +42,9 @@ export function createClientProxy(port: MessagePort): CamundaClient {
       if (method === 'toJSON') return undefined;
 
       return (...args: unknown[]) => {
-        const callId = crypto.randomUUID();
+        const callId = globalThis.crypto?.randomUUID
+          ? globalThis.crypto.randomUUID()
+          : fallbackUUID();
         const msg: ClientCallMessage = { type: 'client-call', callId, method, args };
         port.postMessage(msg);
         return new Promise<unknown>((resolve, reject) => {
