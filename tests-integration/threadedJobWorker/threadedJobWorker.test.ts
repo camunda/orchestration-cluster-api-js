@@ -4,7 +4,12 @@ import { describe, it, expect } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
 
-describe('createThreadedJobWorker', () => {
+// The handler fixture is a .ts file loaded via dynamic import() in the worker thread.
+// Node < 22 cannot import .ts files, so skip the entire suite on older runtimes.
+const nodeVersion = parseInt(process.versions.node, 10);
+const describeIf = nodeVersion >= 22 ? describe : describe.skip;
+
+describeIf('createThreadedJobWorker', () => {
   it(
     'services a job via a threaded worker',
     async () => {
