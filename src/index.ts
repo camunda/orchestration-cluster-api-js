@@ -4,6 +4,13 @@ import { createCamundaClientLoose, type CamundaClientLoose, type Loose } from '.
 // Public re-exports for worker API
 export type { JobWorkerConfig, JobWorker, Job, JobActionReceipt } from './runtime/jobWorker';
 export { JobActionReceipt as JobActionReceiptSymbol } from './runtime/jobWorker';
+export type {
+  ThreadedJobWorkerConfig,
+  ThreadedJobWorker,
+  ThreadedJob,
+  ThreadedJobHandler,
+} from './runtime/threadedJobWorker';
+export type { ThreadPool } from './runtime/threadPool';
 
 export {
   createCamundaResultClient,

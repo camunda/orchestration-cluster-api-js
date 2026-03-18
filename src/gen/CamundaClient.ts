@@ -33,6 +33,8 @@ import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
+import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
+import { ThreadPool } from '../runtime/threadPool';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -196,8 +198,8 @@ type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthoriz
 export type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
 type deleteDecisionInstanceOptions = Parameters<typeof Sdk.deleteDecisionInstance>[0];
 type deleteDecisionInstanceBody = (NonNullable<deleteDecisionInstanceOptions> extends { body?: infer B } ? B : never);
-type deleteDecisionInstancePathParam_decisionInstanceKey = (NonNullable<deleteDecisionInstanceOptions> extends { path: { decisionInstanceKey: infer P } } ? P : any);
-export type deleteDecisionInstanceInput = deleteDecisionInstanceBody & { decisionInstanceKey: deleteDecisionInstancePathParam_decisionInstanceKey };
+type deleteDecisionInstancePathParam_decisionEvaluationKey = (NonNullable<deleteDecisionInstanceOptions> extends { path: { decisionEvaluationKey: infer P } } ? P : any);
+export type deleteDecisionInstanceInput = deleteDecisionInstanceBody & { decisionEvaluationKey: deleteDecisionInstancePathParam_decisionEvaluationKey };
 type deleteDecisionInstancesBatchOperationOptions = Parameters<typeof Sdk.deleteDecisionInstancesBatchOperation>[0];
 type deleteDecisionInstancesBatchOperationBody = (NonNullable<deleteDecisionInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 export type deleteDecisionInstancesBatchOperationInput = deleteDecisionInstancesBatchOperationBody;
@@ -1184,6 +1186,8 @@ export class CamundaClient {
   private _bp: BackpressureManager;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
+  /** Shared thread pool for all threaded job workers (lazy-initialised on first use). */
+  private _threadPool: ThreadPool | null = null;
   /** Support logger (Node-only; no-op in browser). */
   private _supportLogger: SupportLogger = new (class implements SupportLogger {
     log() {}
@@ -1547,7 +1551,7 @@ export class CamundaClient {
   getWorkers() {
     return [...this._workers];
   }
-  /** Stop all registered job workers (best-effort). */
+  /** Stop all registered job workers (best-effort) and terminate the shared thread pool. */
   stopAllWorkers() {
     for (const w of this._workers) {
       try {
@@ -1556,6 +1560,18 @@ export class CamundaClient {
         this._log.warn('worker.stop.error', e);
       }
     }
+    if (this._threadPool) {
+      this._threadPool.terminate();
+      this._threadPool = null;
+    }
+  }
+
+  /** Get or lazily create the shared thread pool for threaded job workers. */
+  private _getOrCreateThreadPool(threadPoolSize?: number): ThreadPool {
+    if (!this._threadPool) {
+      this._threadPool = new ThreadPool(this as any, threadPoolSize);
+    }
+    return this._threadPool;
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
   // Generated methods
@@ -3973,9 +3989,9 @@ export class CamundaClient {
   deleteDecisionInstance(input: deleteDecisionInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteDecisionInstance>>;
   deleteDecisionInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const { decisionInstanceKey, ..._body } = arg || {};
+      const { decisionEvaluationKey, ..._body } = arg || {};
       let envelope: any = {};
-      envelope.path = { decisionInstanceKey };
+      envelope.path = { decisionEvaluationKey };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const maybe = await this._validation.gateRequest('deleteDecisionInstance', Schemas.zDeleteDecisionInstanceData, envelope);
@@ -12918,6 +12934,36 @@ export class CamundaClient {
     Headers extends import('zod').ZodTypeAny = any,
   >(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
     const worker = new JobWorker(this as any, cfg as JobWorkerConfig);
+    this._workers.push(worker);
+    return worker;
+  }
+
+  /**
+   * Create a threaded job worker that runs handler logic in a pool of worker threads.
+   * The handler must be a separate module file that exports a default function with
+   * signature `(job, client) => Promise<JobActionReceipt>`.
+   *
+   * This keeps the main event loop free for polling and I/O, dramatically improving
+   * throughput for CPU-bound job handlers.
+   *
+   * @param cfg Threaded worker configuration
+   * @example Create a threaded job worker
+   * ```ts
+   * const worker = client.createThreadedJobWorker({
+   *   jobType: 'cpu-heavy-task',
+   *   handlerModule: './my-handler.js',
+   *   maxParallelJobs: 32,
+   *   jobTimeoutMs: 30000,
+   * })
+   * ```
+   */
+  createThreadedJobWorker<
+    In extends import('zod').ZodTypeAny = any,
+    Out extends import('zod').ZodTypeAny = any,
+    Headers extends import('zod').ZodTypeAny = any,
+  >(cfg: ThreadedJobWorkerConfig<In, Out, Headers>): ThreadedJobWorker {
+    const pool = this._getOrCreateThreadPool(cfg.threadPoolSize);
+    const worker = new ThreadedJobWorker(this as any, pool, cfg as ThreadedJobWorkerConfig);
     this._workers.push(worker);
     return worker;
   }

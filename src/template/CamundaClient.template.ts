@@ -33,6 +33,8 @@ import {
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
+import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
+import { ThreadPool } from '../runtime/threadPool';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
@@ -142,6 +144,8 @@ export class CamundaClient {
   private _bp: BackpressureManager;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
+  /** Shared thread pool for all threaded job workers (lazy-initialised on first use). */
+  private _threadPool: ThreadPool | null = null;
   /** Support logger (Node-only; no-op in browser). */
   private _supportLogger: SupportLogger = new (class implements SupportLogger {
     log() {}
@@ -505,7 +509,7 @@ export class CamundaClient {
   getWorkers() {
     return [...this._workers];
   }
-  /** Stop all registered job workers (best-effort). */
+  /** Stop all registered job workers (best-effort) and terminate the shared thread pool. */
   stopAllWorkers() {
     for (const w of this._workers) {
       try {
@@ -514,6 +518,18 @@ export class CamundaClient {
         this._log.warn('worker.stop.error', e);
       }
     }
+    if (this._threadPool) {
+      this._threadPool.terminate();
+      this._threadPool = null;
+    }
+  }
+
+  /** Get or lazily create the shared thread pool for threaded job workers. */
+  private _getOrCreateThreadPool(threadPoolSize?: number): ThreadPool {
+    if (!this._threadPool) {
+      this._threadPool = new ThreadPool(this as any, threadPoolSize);
+    }
+    return this._threadPool;
   }
   // === AUTO-GENERATED CAMUNDA METHODS START ===
   // === AUTO-GENERATED CAMUNDA METHODS END ===
@@ -532,6 +548,36 @@ export class CamundaClient {
     Headers extends import('zod').ZodTypeAny = any,
   >(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
     const worker = new JobWorker(this as any, cfg as JobWorkerConfig);
+    this._workers.push(worker);
+    return worker;
+  }
+
+  /**
+   * Create a threaded job worker that runs handler logic in a pool of worker threads.
+   * The handler must be a separate module file that exports a default function with
+   * signature `(job, client) => Promise<JobActionReceipt>`.
+   *
+   * This keeps the main event loop free for polling and I/O, dramatically improving
+   * throughput for CPU-bound job handlers.
+   *
+   * @param cfg Threaded worker configuration
+   * @example Create a threaded job worker
+   * ```ts
+   * const worker = client.createThreadedJobWorker({
+   *   jobType: 'cpu-heavy-task',
+   *   handlerModule: './my-handler.js',
+   *   maxParallelJobs: 32,
+   *   jobTimeoutMs: 30000,
+   * })
+   * ```
+   */
+  createThreadedJobWorker<
+    In extends import('zod').ZodTypeAny = any,
+    Out extends import('zod').ZodTypeAny = any,
+    Headers extends import('zod').ZodTypeAny = any,
+  >(cfg: ThreadedJobWorkerConfig<In, Out, Headers>): ThreadedJobWorker {
+    const pool = this._getOrCreateThreadPool(cfg.threadPoolSize);
+    const worker = new ThreadedJobWorker(this as any, pool, cfg as ThreadedJobWorkerConfig);
     this._workers.push(worker);
     return worker;
   }

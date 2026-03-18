@@ -7654,7 +7654,7 @@ export const zDeleteDecisionInstanceData = z.object({
         z.null()
     ])),
     path: z.object({
-        decisionInstanceKey: zDecisionInstanceKey
+        decisionEvaluationKey: zDecisionEvaluationKey
     }),
     query: z.optional(z.never())
 });

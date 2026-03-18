@@ -6,7 +6,6 @@ import {
   createCamundaResultClient,
   isOk,
   isErr,
-  type CamundaOptions,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateClient

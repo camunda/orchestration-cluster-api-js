@@ -9836,12 +9836,12 @@ export type DeleteDecisionInstanceData = {
     } | null;
     path: {
         /**
-         * The key of the decision instance to delete.
+         * The key of the decision evaluation to delete.
          */
-        decisionInstanceKey: DecisionInstanceKey;
+        decisionEvaluationKey: DecisionEvaluationKey;
     };
     query?: never;
-    url: '/decision-instances/{decisionInstanceKey}/deletion';
+    url: '/decision-instances/{decisionEvaluationKey}/deletion';
 };
 
 export type DeleteDecisionInstanceErrors = {
@@ -12934,6 +12934,14 @@ export type CreateProcessInstanceErrors = {
      * The provided data is not valid.
      */
     400: ProblemDetail;
+    /**
+     * The process instance creation was rejected due to a business ID uniqueness conflict.
+     * This can happen only when Business ID Uniqueness Control is enabled and an
+     * active root process instance with the provided business ID already exists
+     * for the same process definition and tenant.
+     *
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -16533,10 +16541,10 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:25deca52be9f91b4862766dd0317f1b59ebc6e2a92bb3baa61a97e4cbb3af59a
+// specHash=sha256:e8ed19366bcdd1f5f82cb197ccd94ae0bcf51f6563f8de6a323457749f37f936
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
-  if (c.pattern && !(new RegExp(c.pattern).test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
+  if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
 `);
   if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);

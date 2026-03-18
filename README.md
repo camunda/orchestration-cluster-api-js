@@ -671,6 +671,107 @@ Call `client.getBackpressureState()` to obtain:
 }
 ```
 
+### Threaded Job Workers (Node.js Only)
+
+For CPU-intensive job handlers, `createThreadedJobWorker` offloads handler execution to a pool of Node.js `worker_threads`. Polling and I/O remain on the main event loop, while handler logic runs in parallel threads — dramatically improving throughput when the handler does CPU-bound work (JSON processing, validation, transformation, cryptography).
+
+#### When to use
+
+- Your handler spends significant time on CPU work (not just waiting for HTTP responses)
+- You observe that a single-threaded worker saturates one CPU core while throughput plateaus
+- You need to process more jobs per second without deploying additional instances
+
+If your handler is mostly I/O-bound (HTTP calls, database queries), the standard `createJobWorker` is sufficient.
+
+#### Handler module
+
+The handler must be a **separate file** (not an inline function) that exports a default async function:
+
+```ts
+// my-handler.ts (or my-handler.js)
+import type { ThreadedJobHandler } from '@camunda8/orchestration-cluster-api';
+
+const handler: ThreadedJobHandler = async (job, client) => {
+  const { orderId } = job.variables;
+  // CPU-intensive work here...
+  const result = heavyComputation(orderId);
+  return job.complete({ result });
+};
+export default handler;
+```
+
+Typing your handler as `ThreadedJobHandler` gives full intellisense for `job` (variables, action methods like `complete()`, `fail()`, `error()`) and `client` (every `CamundaClient` API method).
+
+The handler receives two arguments:
+
+1. **`job`** — a proxy with the same shape as a regular job worker job (`variables`, `customHeaders`, `jobKey`, plus action methods: `complete()`, `fail()`, `error()`, `cancelWorkflow()`, `ignore()`)
+2. **`client`** — a proxy to the `CamundaClient` on the main thread. You can call any SDK method (e.g. `client.publishMessage(...)`, `client.createProcessInstance(...)`) and it will be forwarded to the main thread and executed there.
+
+#### Minimal example
+
+```ts
+import createCamundaClient from '@camunda8/orchestration-cluster-api';
+import path from 'node:path';
+
+const client = createCamundaClient();
+
+const worker = client.createThreadedJobWorker({
+  jobType: 'cpu-heavy-task',
+  handlerModule: path.join(import.meta.dirname, 'my-handler.js'),
+  maxParallelJobs: 32,
+  jobTimeoutMs: 30_000,
+});
+```
+
+#### Configuration
+
+`createThreadedJobWorker` accepts all the same options as `createJobWorker` (except `jobHandler`), plus:
+
+| Option           | Type     | Default                     | Description                                                      |
+| ---------------- | -------- | --------------------------- | ---------------------------------------------------------------- |
+| `handlerModule`  | `string` | (required)                  | Path to handler module (absolute or relative to `process.cwd()`) |
+| `threadPoolSize` | `number` | `os.availableParallelism()` | Number of worker threads in the pool                             |
+
+Other familiar options: `jobType`, `maxParallelJobs`, `jobTimeoutMs`, `pollIntervalMs`, `pollTimeoutMs`, `fetchVariables`, `inputSchema`, `outputSchema`, `customHeadersSchema`, `validateSchemas`, `autoStart`, `startupJitterMaxSeconds`, `workerName`.
+
+#### Lifecycle
+
+Threaded workers integrate with the same lifecycle as regular workers:
+
+```ts
+// Returned by getWorkers()
+const allWorkers = client.getWorkers();
+
+// Stopped by stopAllWorkers()
+client.stopAllWorkers();
+
+// Graceful shutdown (waits for in-flight jobs to finish)
+const { timedOut, remainingJobs } = await worker.stopGracefully({ waitUpToMs: 10_000 });
+```
+
+#### Pool stats
+
+```ts
+worker.poolSize; // number of threads
+worker.busyThreads; // threads currently processing a job
+worker.activeJobs; // total jobs dispatched but not yet completed
+```
+
+#### How it works
+
+1. The main thread polls `activateJobs` using the same mechanism as `createJobWorker`
+2. Activated jobs are serialized and dispatched to an idle thread via `MessageChannel`
+3. The thread loads the handler module (lazy, on first job), creates a proxy for `job` action methods and `client` API calls
+4. Action methods (`job.complete()`, `job.fail()`, etc.) and client calls are forwarded back to the main thread over the `MessagePort` and executed there
+5. The result is relayed back, and the thread is marked idle for the next job
+
+#### Constraints
+
+- **Node.js only**: `worker_threads` is not available in browsers or Deno
+- **Handler must be a file module**: Inline functions cannot be transferred to threads
+- **Job variables must be JSON-serializable**: Functions and class instances on the job are stripped during transfer
+- **Client calls are async round-trips**: Each `client.xyz()` call crosses a thread boundary, adding a small amount of latency per call
+
 ---
 
 ## Authentication

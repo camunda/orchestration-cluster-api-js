@@ -1,7 +1,7 @@
-// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
 import { describe, it } from 'vitest';
 
 import { createCamundaClient } from '../../dist';
+import { validateResponseShape } from '../../json-body-assertions';
 
 describe('searchJobs', () => {
   it('can search Jobs', async () => {
@@ -22,9 +22,7 @@ describe('searchJobs', () => {
       { consistency: { waitUpToMs: 10_000 } }
     );
 
-    // commented out due to https://github.com/camunda/camunda/issues/44415
-    // This test fails when RDBMS is used as the storage provider, but succeeds on ES.
-    // validateResponseShape({ path: '/jobs/search', method: 'POST', status: '200' }, response);
+    validateResponseShape({ path: '/jobs/search', method: 'POST', status: '200' }, response);
     await camunda.cancelProcessInstance({ processInstanceKey });
   });
 });

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:25deca52be9f91b4862766dd0317f1b59ebc6e2a92bb3baa61a97e4cbb3af59a",
+  "specHash": "sha256:e8ed19366bcdd1f5f82cb197ccd94ae0bcf51f6563f8de6a323457749f37f936",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -3137,7 +3137,7 @@
     },
     {
       "operationId": "deleteDecisionInstance",
-      "path": "/decision-instances/{decisionInstanceKey}/deletion",
+      "path": "/decision-instances/{decisionEvaluationKey}/deletion",
       "method": "post",
       "tags": [
         "Decision instance"
@@ -3149,7 +3149,7 @@
       "requestBodyUnion": false,
       "bodyOnly": false,
       "pathParams": [
-        "decisionInstanceKey"
+        "decisionEvaluationKey"
       ],
       "queryParams": [],
       "requestBodyUnionRefs": [],

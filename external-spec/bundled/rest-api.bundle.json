@@ -1903,7 +1903,7 @@
         }
       }
     },
-    "/decision-instances/{decisionInstanceKey}/deletion": {
+    "/decision-instances/{decisionEvaluationKey}/deletion": {
       "post": {
         "x-eventually-consistent": false,
         "tags": [
@@ -1914,12 +1914,12 @@
         "description": "Delete all associated decision evaluations based on provided key.",
         "parameters": [
           {
-            "name": "decisionInstanceKey",
+            "name": "decisionEvaluationKey",
             "in": "path",
             "required": true,
-            "description": "The key of the decision instance to delete.",
+            "description": "The key of the decision evaluation to delete.",
             "schema": {
-              "$ref": "#/components/schemas/DecisionInstanceKey"
+              "$ref": "#/components/schemas/DecisionEvaluationKey"
             }
           }
         ],
@@ -5994,6 +5994,16 @@
           },
           "400": {
             "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "409": {
+            "description": "The process instance creation was rejected due to a business ID uniqueness conflict.\nThis can happen only when Business ID Uniqueness Control is enabled and an\nactive root process instance with the provided business ID already exists\nfor the same process definition and tenant.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
