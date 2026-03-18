@@ -140,8 +140,15 @@ export class ThreadPool {
     const size = requestedSize ?? cpus;
 
     const fs = await import('node:fs');
-    const jsPath = join(__dirname, 'threadWorkerEntry.js');
-    const tsPath = join(__dirname, 'threadWorkerEntry.ts');
+    const url = await import('node:url');
+    // __dirname works in CJS and vitest/tsx, but not in native ESM dist output.
+    // Derive directory from import.meta.url when available, falling back to __dirname.
+    const dir =
+      typeof __dirname !== 'undefined'
+        ? __dirname
+        : pathMod.dirname(url.fileURLToPath(import.meta.url));
+    const jsPath = join(dir, 'threadWorkerEntry.js');
+    const tsPath = join(dir, 'threadWorkerEntry.ts');
     const entryPath = fs.existsSync(jsPath) ? jsPath : tsPath;
 
     const execArgv = entryPath.endsWith('.ts')

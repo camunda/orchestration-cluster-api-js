@@ -10,6 +10,6 @@ const handler: ThreadedJobHandler = async (job, _client) => {
   if (!orderId) {
     return job.fail({ errorMessage: 'Missing orderId variable' });
   }
-  return job.complete({ variables: { processed: true, handledBy: 'threaded-worker' } });
+  return job.complete({ processed: true, handledBy: 'threaded-worker' });
 };
 export default handler;
