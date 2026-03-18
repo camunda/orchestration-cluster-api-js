@@ -603,7 +603,7 @@ export const deleteDecisionInstance = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).post<DeleteDecisionInstanceResponses, DeleteDecisionInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
-        url: '/decision-instances/{decisionInstanceKey}/deletion',
+        url: '/decision-instances/{decisionEvaluationKey}/deletion',
         ...options,
         headers: {
             'Content-Type': 'application/json',

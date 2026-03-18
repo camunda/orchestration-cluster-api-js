@@ -1,10 +1,10 @@
 {
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
-    "commit": "16dc957d4bfa4723199e0237b143b948109cba99",
-    "generatedAt": "2026-03-13T04:55:53.820Z",
+    "commit": "c1795241da56bc2488e79909f8acbf4c1fd93ab5",
+    "generatedAt": "2026-03-18T19:26:05.035Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "909179ce0bf49a50f9ad6ba04b747c40538902ea26cbe86720b49a377e8eeeb6"
+    "specSha256": "ff696885520308483d98c0d71f76b959f5a6bf4ed5ebddf96e18f7544f014875"
   },
   "responses": [
     {
@@ -31,11 +31,6 @@
                 },
                 {
                   "name": "agentElementId",
-                  "type": "string",
-                  "nullable": true
-                },
-                {
-                  "name": "annotation",
                   "type": "string",
                   "nullable": true
                 },
@@ -261,11 +256,6 @@
           },
           {
             "name": "agentElementId",
-            "type": "string",
-            "nullable": true
-          },
-          {
-            "name": "annotation",
             "type": "string",
             "nullable": true
           },
@@ -2964,7 +2954,16 @@
           },
           {
             "name": "warnings",
-            "type": "array<string>"
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "message",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
           }
         ],
         "optional": []
@@ -7550,11 +7549,6 @@
                 },
                 {
                   "name": "agentElementId",
-                  "type": "string",
-                  "nullable": true
-                },
-                {
-                  "name": "annotation",
                   "type": "string",
                   "nullable": true
                 },
