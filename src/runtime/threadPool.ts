@@ -38,6 +38,9 @@ export class ThreadPool {
   private _client: CamundaClient;
   private _ready: Promise<void>;
   private _terminated = false;
+  private _entryPath = '';
+  private _execArgv: string[] = [];
+  private _Worker!: typeof import('node:worker_threads').Worker;
 
   constructor(client: CamundaClient, size?: number) {
     this._client = client;
@@ -136,13 +139,70 @@ export class ThreadPool {
     }
   }
 
+  /** Replace a dead worker in the pool with a freshly spawned one. */
+  private _respawn(deadPw: PoolWorker): void {
+    const idx = this._pool.indexOf(deadPw);
+    if (idx === -1) return;
+    const newPw = this._spawnWorker();
+    this._pool[idx] = newPw;
+    this._log.info(() => ['thread.respawn', { index: idx }]);
+  }
+
+  /** Create a single worker thread and wire up its event handlers. */
+  private _spawnWorker(): PoolWorker {
+    const worker = new this._Worker(this._entryPath, { execArgv: this._execArgv });
+    const pw: PoolWorker = { worker, busy: false, ready: false };
+
+    worker.on('message', (msg: any) => {
+      if (msg.type === 'ready') {
+        pw.ready = true;
+        this._log.debug(() => ['thread.ready']);
+        return;
+      }
+      if (msg.type === 'job-result') {
+        this._log.debug(() => [
+          'thread.job-result',
+          { taskId: msg.taskId, ok: msg.ok, error: msg.error },
+        ]);
+        pw.busy = false;
+        pw.currentTaskId = undefined;
+        const pending = this._pending.get(msg.taskId);
+        if (pending) {
+          if (msg.ok) {
+            pending.resolve(true);
+          } else {
+            pending.reject(new Error(msg.error || 'Handler failed'));
+          }
+        }
+        return;
+      }
+    });
+
+    worker.on('error', (err) => {
+      this._log.error('thread.error', err);
+      this._rejectWorkerTask(pw, `Worker thread error: ${err.message}`);
+      pw.ready = false;
+      // Note: 'exit' fires after 'error', so respawn is handled there.
+    });
+
+    worker.on('exit', (code) => {
+      if (!this._terminated) {
+        this._log.warn('thread.exit', { code });
+        this._rejectWorkerTask(pw, `Worker thread exited unexpectedly (code ${code})`);
+        this._respawn(pw);
+      }
+    });
+
+    return pw;
+  }
+
   private async _init(requestedSize?: number): Promise<void> {
     const [workerThreads, pathMod, crypto] = await Promise.all([
       import('node:worker_threads'),
       import('node:path'),
       import('node:crypto'),
     ]);
-    const { Worker } = workerThreads;
+    this._Worker = workerThreads.Worker;
     const { join } = pathMod;
 
     this._node = {
@@ -177,55 +237,14 @@ export class ThreadPool {
     // Node 24+: TypeScript stripping is unflagged, but the flags are still accepted (harmless).
     // Node < 22: flags don't exist; .ts handlers won't work (users must compile to .js).
     const nodeMajor = parseInt(process.versions.node, 10);
-    const execArgv =
+    this._execArgv =
       entryPath.endsWith('.ts') || nodeMajor >= 22
         ? ['--experimental-strip-types', '--experimental-transform-types']
         : [];
+    this._entryPath = entryPath;
 
     for (let i = 0; i < size; i++) {
-      const worker = new Worker(entryPath, { execArgv });
-
-      const pw: PoolWorker = { worker, busy: false, ready: false };
-
-      worker.on('message', (msg: any) => {
-        if (msg.type === 'ready') {
-          pw.ready = true;
-          this._log.debug(() => ['thread.ready', { index: i }]);
-          return;
-        }
-        if (msg.type === 'job-result') {
-          this._log.debug(() => [
-            'thread.job-result',
-            { taskId: msg.taskId, ok: msg.ok, error: msg.error },
-          ]);
-          pw.busy = false;
-          pw.currentTaskId = undefined;
-          const pending = this._pending.get(msg.taskId);
-          if (pending) {
-            if (msg.ok) {
-              pending.resolve(true);
-            } else {
-              pending.reject(new Error(msg.error || 'Handler failed'));
-            }
-          }
-          return;
-        }
-      });
-
-      worker.on('error', (err) => {
-        this._log.error('thread.error', err);
-        this._rejectWorkerTask(pw, `Worker thread error: ${err.message}`);
-        pw.ready = false;
-      });
-
-      worker.on('exit', (code) => {
-        if (!this._terminated) {
-          this._log.warn('thread.exit', { code });
-          this._rejectWorkerTask(pw, `Worker thread exited unexpectedly (code ${code})`);
-        }
-      });
-
-      this._pool.push(pw);
+      this._pool.push(this._spawnWorker());
     }
 
     this._log.info(() => ['thread-pool.init', { size, entryPath }]);
