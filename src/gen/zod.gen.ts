@@ -4970,7 +4970,7 @@ export const zSearchQueryPageResponse = z.object({
         description: 'Total items matching the criteria.'
     }),
     hasMoreTotalItems: z.boolean().register(z.globalRegistry, {
-        description: 'Indicates whether there are more items matching the criteria beyond the returned items.\nThis is useful for determining if additional requests are needed to retrieve all results.\n'
+        description: 'Indicates whether the `totalItems` value has been capped due to system limits. When true, `totalItems` is a lower bound and the actual number of matching items is greater than the reported value.\n'
     }),
     startCursor: z.union([
         zStartCursor,

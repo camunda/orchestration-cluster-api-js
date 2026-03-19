@@ -20,7 +20,7 @@ export interface PoolWorker {
 }
 
 export interface PendingJob {
-  resolve: (ok: boolean) => void;
+  resolve: (ok: boolean, completionAction?: { method: string; args: unknown[] }) => void;
   reject: (err: Error) => void;
 }
 
@@ -41,6 +41,7 @@ export class ThreadPool {
   private _entryPath = '';
   private _execArgv: string[] = [];
   private _Worker!: typeof import('node:worker_threads').Worker;
+  private _onThreadReady?: () => void;
 
   constructor(client: CamundaClient, size?: number) {
     this._client = client;
@@ -68,6 +69,11 @@ export class ThreadPool {
     return this._pool.filter((pw) => pw.ready && !pw.busy).length;
   }
 
+  /** Register a callback invoked whenever a thread becomes ready or idle. */
+  set onThreadReady(cb: (() => void) | undefined) {
+    this._onThreadReady = cb;
+  }
+
   /** Find the first ready & idle thread. */
   getIdleWorker(): PoolWorker | undefined {
     return this._pool.find((pw) => pw.ready && !pw.busy);
@@ -82,7 +88,7 @@ export class ThreadPool {
     jobData: Record<string, unknown>,
     handlerModule: string,
     callbacks: {
-      onComplete: () => void;
+      onComplete: (completionAction?: { method: string; args: unknown[] }) => void;
       onError: (err: Error) => void;
     }
   ): Promise<void> {
@@ -95,10 +101,10 @@ export class ThreadPool {
     installClientCallHandler(mainPort, this._client);
 
     this._pending.set(taskId, {
-      resolve: () => {
+      resolve: (_ok: boolean, completionAction?: { method: string; args: unknown[] }) => {
         this._pending.delete(taskId);
         mainPort.close();
-        callbacks.onComplete();
+        callbacks.onComplete(completionAction);
       },
       reject: (err: Error) => {
         this._pending.delete(taskId);
@@ -157,6 +163,7 @@ export class ThreadPool {
       if (msg.type === 'ready') {
         pw.ready = true;
         this._log.debug(() => ['thread.ready']);
+        this._onThreadReady?.();
         return;
       }
       if (msg.type === 'job-result') {
@@ -169,7 +176,7 @@ export class ThreadPool {
         const pending = this._pending.get(msg.taskId);
         if (pending) {
           if (msg.ok) {
-            pending.resolve(true);
+            pending.resolve(true, msg.completionAction);
           } else {
             pending.reject(new Error(msg.error || 'Handler failed'));
           }

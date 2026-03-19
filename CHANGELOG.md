@@ -1,9 +1,8 @@
 # [8.9.0-alpha.15](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.14...v8.9.0-alpha.15) (2026-03-19)
 
-
 ### Bug Fixes
 
-* respawn worker threads after error/exit ([0155eff](https://github.com/camunda/orchestration-cluster-api-js/commit/0155eff714ba0fb6c7b81e3883977da87008972a))
+- respawn worker threads after error/exit ([0155eff](https://github.com/camunda/orchestration-cluster-api-js/commit/0155eff714ba0fb6c7b81e3883977da87008972a))
 
 # [8.9.0-alpha.14](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.13...v8.9.0-alpha.14) (2026-03-18)
 

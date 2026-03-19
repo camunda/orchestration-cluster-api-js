@@ -123,6 +123,9 @@ export class ThreadedJobWorker {
     this._name = cfg.workerName || `threaded-worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
 
+    // Drain queued jobs when a thread becomes ready or idle
+    this._pool.onThreadReady = () => this._drainQueue();
+
     if (this._cfg.autoStart) this.start();
   }
 
@@ -234,7 +237,22 @@ export class ThreadedJobWorker {
     const jobData = this._serializeJob(raw);
 
     this._pool.dispatch(pw, jobData, this._cfg.handlerModule, {
-      onComplete: () => {
+      onComplete: (completionAction) => {
+        // Execute the completion API call on the main thread's event loop —
+        // this runs concurrently without blocking any worker thread.
+        if (completionAction) {
+          const { method, args } = completionAction;
+          const fn = (this._client as any)[method];
+          if (typeof fn === 'function') {
+            fn.apply(this._client, args).catch((err: any) => {
+              this._log.error('job.completion.error', {
+                jobKey: raw.jobKey,
+                method,
+                err: err?.message,
+              });
+            });
+          }
+        }
         this._decrementOnce();
         this._drainQueue();
       },
@@ -285,9 +303,10 @@ export class ThreadedJobWorker {
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
     }
-    // Cap activation to idle threads to avoid client-side queueing.
-    const availableThreads = this._pool.idleCount;
-    const batchSize = Math.min(this._cfg.maxParallelJobs - this._activeJobs, availableThreads);
+    // Activate up to the concurrency headroom. Jobs that arrive when all
+    // threads are busy are queued in _jobQueue and dispatched via _drainQueue
+    // as threads become idle, keeping the pipeline full.
+    const batchSize = this._cfg.maxParallelJobs - this._activeJobs;
     if (batchSize <= 0) {
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;

@@ -37,6 +37,12 @@ interface JobResult {
   taskId: string;
   ok: boolean;
   error?: string;
+  /** When the handler acknowledged the job via complete/fail/error,
+   *  the action is captured here for the main thread to execute. */
+  completionAction?: {
+    method: string;
+    args: unknown[];
+  };
 }
 
 /** Cache of loaded handlers keyed by module path. Each thread loads a handler once per unique path. */
@@ -101,7 +107,12 @@ parentPort.on('message', async (msg: JobMessage & { clientPort?: any }) => {
       return;
     }
 
-    const result: JobResult = { type: 'job-result', taskId, ok: true };
+    const result: JobResult = {
+      type: 'job-result',
+      taskId,
+      ok: true,
+      completionAction: job._completionAction || undefined,
+    };
     parentPort!.postMessage(result);
   } catch (err: any) {
     const result: JobResult = {
@@ -133,41 +144,46 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
 
   const job: any = { ...jobData };
 
+  /**
+   * Completion actions (complete/fail/error/cancelWorkflow) are stored as intent
+   * rather than proxied through the MessagePort. The thread returns immediately,
+   * and the main thread executes the API call asynchronously. This keeps threads
+   * free for CPU work instead of blocking on I/O round-trips.
+   */
+
   job.complete = async (variables: Record<string, unknown> = {}) => {
-    try {
-      await client.completeJob({ variables, jobKey: jobData.jobKey });
-    } finally {
-      ack();
-    }
+    ack();
+    job._completionAction = {
+      method: 'completeJob',
+      args: [{ variables, jobKey: jobData.jobKey }],
+    };
     return JobActionReceipt;
   };
 
   job.fail = async (reason: any) => {
-    try {
-      await client.failJob({ ...reason, jobKey: jobData.jobKey });
-    } finally {
-      ack();
-    }
+    ack();
+    job._completionAction = {
+      method: 'failJob',
+      args: [{ ...reason, jobKey: jobData.jobKey }],
+    };
     return JobActionReceipt;
   };
 
   job.error = async (error: any) => {
-    try {
-      await client.throwJobError({ ...error, jobKey: jobData.jobKey });
-    } finally {
-      ack();
-    }
+    ack();
+    job._completionAction = {
+      method: 'throwJobError',
+      args: [{ ...error, jobKey: jobData.jobKey }],
+    };
     return JobActionReceipt;
   };
 
   job.cancelWorkflow = async () => {
-    try {
-      await client.cancelProcessInstance({
-        processInstanceKey: jobData.processInstanceKey,
-      });
-    } finally {
-      ack();
-    }
+    ack();
+    job._completionAction = {
+      method: 'cancelProcessInstance',
+      args: [{ processInstanceKey: jobData.processInstanceKey }],
+    };
     return JobActionReceipt;
   };
 
@@ -176,6 +192,7 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
     return JobActionReceipt;
   };
 
+  // Non-completion actions still proxy through the client (rare, need response)
   job.modifyJobTimeout = ({ newTimeoutMs }: { newTimeoutMs: number }) =>
     client.updateJob({ changeset: { timeout: newTimeoutMs }, jobKey: jobData.jobKey });
 

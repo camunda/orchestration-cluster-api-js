@@ -7193,8 +7193,7 @@ export type SearchQueryPageResponse = {
      */
     totalItems: number;
     /**
-     * Indicates whether there are more items matching the criteria beyond the returned items.
-     * This is useful for determining if additional requests are needed to retrieve all results.
+     * Indicates whether the `totalItems` value has been capped due to system limits. When true, `totalItems` is a lower bound and the actual number of matching items is greater than the reported value.
      *
      */
     hasMoreTotalItems: boolean;
@@ -16541,7 +16540,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:e8ed19366bcdd1f5f82cb197ccd94ae0bcf51f6563f8de6a323457749f37f936
+// specHash=sha256:a57bb411eea6a7a7602a1b2ef9c1af8ec1aa6a4284978706ed6a2f15c76bab69
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
