@@ -1,19 +1,17 @@
 # [8.9.0-alpha.14](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.13...v8.9.0-alpha.14) (2026-03-18)
 
-
 ### Bug Fixes
 
-* address PR review comments for threaded worker ([3eabf5d](https://github.com/camunda/orchestration-cluster-api-js/commit/3eabf5dfc2424a875a498978acec7a865a0d151b))
-* emit threadWorkerEntry to dist and resolve path in ESM ([3f00041](https://github.com/camunda/orchestration-cluster-api-js/commit/3f0004199040fbc904426520efccdd9528b2afcd))
-* fix constraint validation for unicode regex ([8347376](https://github.com/camunda/orchestration-cluster-api-js/commit/834737664db9a76177cd9f7c652141bc20a45ddb))
-
+- address PR review comments for threaded worker ([3eabf5d](https://github.com/camunda/orchestration-cluster-api-js/commit/3eabf5dfc2424a875a498978acec7a865a0d151b))
+- emit threadWorkerEntry to dist and resolve path in ESM ([3f00041](https://github.com/camunda/orchestration-cluster-api-js/commit/3f0004199040fbc904426520efccdd9528b2afcd))
+- fix constraint validation for unicode regex ([8347376](https://github.com/camunda/orchestration-cluster-api-js/commit/834737664db9a76177cd9f7c652141bc20a45ddb))
 
 ### Features
 
-* add performance test, rebuild latest ([1984ad3](https://github.com/camunda/orchestration-cluster-api-js/commit/1984ad38a83f1c652e1f30b2e9751e9800b8cf2e))
-* add threadedJobWorker ([1e6b049](https://github.com/camunda/orchestration-cluster-api-js/commit/1e6b049c09cd7078c70b020cc4f9370f527a444d))
-* build from latest stable/8.9 ([2798004](https://github.com/camunda/orchestration-cluster-api-js/commit/279800491c202f46b0fea7efc8a7a3ced328a339))
-* rebuild from latest stable/8.9 ([e2c8d04](https://github.com/camunda/orchestration-cluster-api-js/commit/e2c8d04280f4991eb5e2564688bc9dbce3c748a8))
+- add performance test, rebuild latest ([1984ad3](https://github.com/camunda/orchestration-cluster-api-js/commit/1984ad38a83f1c652e1f30b2e9751e9800b8cf2e))
+- add threadedJobWorker ([1e6b049](https://github.com/camunda/orchestration-cluster-api-js/commit/1e6b049c09cd7078c70b020cc4f9370f527a444d))
+- build from latest stable/8.9 ([2798004](https://github.com/camunda/orchestration-cluster-api-js/commit/279800491c202f46b0fea7efc8a7a3ced328a339))
+- rebuild from latest stable/8.9 ([e2c8d04](https://github.com/camunda/orchestration-cluster-api-js/commit/e2c8d04280f4991eb5e2564688bc9dbce3c748a8))
 
 # [8.9.0-alpha.13](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.12...v8.9.0-alpha.13) (2026-03-09)
 
