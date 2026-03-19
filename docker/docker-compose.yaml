@@ -23,7 +23,7 @@ services:
       LOGGING_LEVEL_IO_CAMUNDA_DB_RDBMS: 'INFO'
       LOGGING_LEVEL_ORG_MYBATIS: 'INFO'
     ports:
-      - '8080:8080' # REST API (ZEEBE_REST_ADDRESS -> http://localhost:8080)
+      - '${CAMUNDA_REST_PORT:-8088}:8080' # REST API (ZEEBE_REST_ADDRESS -> http://localhost:8080)
       - '26500:26500' # gRPC Gateway
       - '9600:9600' # Monitoring / actuator / test time control
       # Uncomment if you need direct access to internal broker ports:

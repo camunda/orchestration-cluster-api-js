@@ -222,10 +222,21 @@ export class ThreadedJobWorker {
   // ─── Job dispatch ───
 
   private _drainQueue() {
+    this._log.trace(() => [
+      'drain.start',
+      { queued: this._jobQueue.length, idle: this._pool.idleCount, active: this._activeJobs },
+    ]);
     while (this._jobQueue.length > 0) {
       const idle = this._pool.getIdleWorker();
-      if (!idle) break;
+      if (!idle) {
+        this._log.trace(() => ['drain.noIdle', { queued: this._jobQueue.length }]);
+        break;
+      }
       const item = this._jobQueue.shift()!;
+      this._log.trace(() => [
+        'drain.dispatch',
+        { jobKey: item.raw.jobKey, queued: this._jobQueue.length },
+      ]);
       this._dispatchToThread(idle, item.raw);
     }
   }
@@ -236,22 +247,45 @@ export class ThreadedJobWorker {
   ) {
     const jobData = this._serializeJob(raw);
 
+    this._log.trace(() => [
+      'dispatch.send',
+      { jobKey: raw.jobKey, handler: this._cfg.handlerModule },
+    ]);
+
     this._pool.dispatch(pw, jobData, this._cfg.handlerModule, {
       onComplete: (completionAction) => {
+        this._log.trace(() => [
+          'dispatch.onComplete',
+          {
+            jobKey: raw.jobKey,
+            hasAction: !!completionAction,
+            method: completionAction?.method,
+            active: this._activeJobs,
+          },
+        ]);
         // Execute the completion API call on the main thread's event loop —
         // this runs concurrently without blocking any worker thread.
         if (completionAction) {
           const { method, args } = completionAction;
           const fn = (this._client as any)[method];
           if (typeof fn === 'function') {
-            fn.apply(this._client, args).catch((err: any) => {
-              this._log.error('job.completion.error', {
-                jobKey: raw.jobKey,
-                method,
-                err: err?.message,
+            this._log.trace(() => ['dispatch.completion.fire', { jobKey: raw.jobKey, method }]);
+            fn.apply(this._client, args)
+              .then(() => {
+                this._log.trace(() => ['dispatch.completion.ok', { jobKey: raw.jobKey, method }]);
+              })
+              .catch((err: any) => {
+                this._log.error('job.completion.error', {
+                  jobKey: raw.jobKey,
+                  method,
+                  err: err?.message,
+                });
               });
-            });
+          } else {
+            this._log.error('job.completion.noMethod', { jobKey: raw.jobKey, method });
           }
+        } else {
+          this._log.trace(() => ['dispatch.onComplete.noAction', { jobKey: raw.jobKey }]);
         }
         this._decrementOnce();
         this._drainQueue();
@@ -352,7 +386,12 @@ export class ThreadedJobWorker {
   }
 
   private _handleJob(raw: ActivatedJobResult & Partial<EnrichedActivatedJob>) {
+    this._log.trace(() => [
+      'job.handle',
+      { jobKey: raw.jobKey, active: this._activeJobs, queued: this._jobQueue.length },
+    ]);
     if (this._stopped) {
+      this._log.trace(() => ['job.handle.stopped', { jobKey: raw.jobKey }]);
       this._decrementOnce();
       return;
     }
@@ -381,8 +420,13 @@ export class ThreadedJobWorker {
     const enriched = Object.assign(raw, { variables, customHeaders: headers });
     const idle = this._pool.getIdleWorker();
     if (idle) {
+      this._log.trace(() => ['job.handle.dispatch', { jobKey: raw.jobKey }]);
       this._dispatchToThread(idle, enriched);
     } else {
+      this._log.trace(() => [
+        'job.handle.queued',
+        { jobKey: raw.jobKey, queueLen: this._jobQueue.length + 1 },
+      ]);
       this._jobQueue.push({ raw: enriched });
     }
   }
@@ -398,6 +442,8 @@ export class ThreadedJobWorker {
   }
 
   private _decrementOnce() {
+    const was = this._activeJobs;
     this._activeJobs = Math.max(0, this._activeJobs - 1);
+    this._log.trace(() => ['job.active', { was, now: this._activeJobs }]);
   }
 }

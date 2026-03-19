@@ -97,11 +97,17 @@ export class ThreadPool {
     pw.busy = true;
     pw.currentTaskId = taskId;
 
+    this._log.trace(() => ['pool.dispatch', { taskId, jobKey: jobData.jobKey, handlerModule }]);
+
     const { port1: mainPort, port2: workerPort } = new MessageChannel();
     installClientCallHandler(mainPort, this._client);
 
     this._pending.set(taskId, {
       resolve: (_ok: boolean, completionAction?: { method: string; args: unknown[] }) => {
+        this._log.trace(() => [
+          'pool.resolve',
+          { taskId, hasAction: !!completionAction, method: completionAction?.method },
+        ]);
         this._pending.delete(taskId);
         mainPort.close();
         callbacks.onComplete(completionAction);
@@ -171,6 +177,15 @@ export class ThreadPool {
           'thread.job-result',
           { taskId: msg.taskId, ok: msg.ok, error: msg.error },
         ]);
+        this._log.trace(() => [
+          'thread.job-result.detail',
+          {
+            taskId: msg.taskId,
+            hasCompletionAction: !!msg.completionAction,
+            method: msg.completionAction?.method,
+            pending: this._pending.has(msg.taskId),
+          },
+        ]);
         pw.busy = false;
         pw.currentTaskId = undefined;
         const pending = this._pending.get(msg.taskId);
@@ -180,6 +195,8 @@ export class ThreadPool {
           } else {
             pending.reject(new Error(msg.error || 'Handler failed'));
           }
+        } else {
+          this._log.warn('thread.job-result.noPending', { taskId: msg.taskId });
         }
         return;
       }
@@ -246,7 +263,11 @@ export class ThreadPool {
     const nodeMajor = parseInt(process.versions.node, 10);
     this._execArgv =
       entryPath.endsWith('.ts') || nodeMajor >= 22
-        ? ['--experimental-strip-types', '--experimental-transform-types']
+        ? [
+            '--experimental-strip-types',
+            '--experimental-transform-types',
+            '--disable-warning=ExperimentalWarning',
+          ]
         : [];
     this._entryPath = entryPath;
 

@@ -11,7 +11,7 @@
     <bpmn:sequenceFlow id="Flow_2" sourceRef="Activity_1" targetRef="EndEvent_1" />
     <bpmn:serviceTask id="Activity_1" name="Threaded Task">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="threaded-test-job" />
+        <zeebe:taskDefinition type="=jobType" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1</bpmn:incoming>
       <bpmn:outgoing>Flow_2</bpmn:outgoing>
