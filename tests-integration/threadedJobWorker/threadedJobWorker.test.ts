@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { describe, it, expect } from 'vitest';
 
-import { createCamundaClient } from '../../dist';
+import { createCamundaClient, ProcessInstanceKey } from '../../dist';
 
 // The handler fixture is a .ts file loaded via dynamic import() in the worker thread.
 // Node < 22 cannot import .ts files, so skip the entire suite on older runtimes.
@@ -13,7 +13,7 @@ const describeIf = nodeVersion >= 22 ? describe : describe.skip;
 /** Cancel a process instance, swallowing 404 (already completed). */
 async function safeCancel(
   camunda: ReturnType<typeof createCamundaClient>,
-  processInstanceKey: string
+  processInstanceKey: ProcessInstanceKey
 ) {
   try {
     await camunda.cancelProcessInstance({ processInstanceKey });
@@ -40,7 +40,7 @@ describeIf('createThreadedJobWorker', () => {
       threadPoolSize: 1,
     });
 
-    let processInstanceKey: string | undefined;
+    let processInstanceKey: ProcessInstanceKey | undefined;
     try {
       const result = await camunda.createProcessInstance({
         processDefinitionKey,
@@ -76,7 +76,7 @@ describeIf('createThreadedJobWorker', () => {
       threadPoolSize: 2,
     });
 
-    const instanceKeys: string[] = [];
+    const instanceKeys: ProcessInstanceKey[] = [];
     try {
       const instances = await Promise.all(
         Array.from({ length: 3 }, () =>
