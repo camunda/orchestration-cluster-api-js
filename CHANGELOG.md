@@ -1,3 +1,11 @@
+# [8.9.0-alpha.16](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.15...v8.9.0-alpha.16) (2026-03-19)
+
+
+### Bug Fixes
+
+* threaded worker performance regression fix ([dad2fa8](https://github.com/camunda/orchestration-cluster-api-js/commit/dad2fa88f5598bc9530745e44628fefa417e6e23))
+* use correct default port in docker-compose ([3cb1641](https://github.com/camunda/orchestration-cluster-api-js/commit/3cb16417f97bb3f64f646bc85857ae4ed38708c1))
+
 # [8.9.0-alpha.15](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.14...v8.9.0-alpha.15) (2026-03-19)
 
 ### Bug Fixes
