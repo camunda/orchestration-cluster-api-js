@@ -146,6 +146,10 @@ export type ${o.opId}Consistency = {
 };`);
   }
 
+  // Generate static VOID_RESPONSES set so _isVoidResponse doesn't need runtime zod access
+  const voidEntries = [...voidResponses].map((n) => `'${n}'`).join(', ');
+  support.push(`const VOID_RESPONSES = new Set([${voidEntries}]);`);
+
   // Extended deployment result (public) - built atop generated REST types
   support.push(
     '/** Extended deployment result with typed buckets for direct access to deployed artifacts. */'
@@ -258,10 +262,12 @@ export type ${o.opId}Consistency = {
         );
         methods.push('      }');
       }
-      // Request validation against full envelope schema
+      // Request validation against full envelope schema (lazy-loads zod schemas on first use)
+      const reqSchemaName = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Data`;
       methods.push(`      if (this._validation.settings.req !== 'none') {`);
+      methods.push(`        const _schemas = await this._loadSchemas();`);
       methods.push(
-        `        const maybe = await this._validation.gateRequest('${o.originalOpId}', Schemas.z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Data, envelope);`
+        `        const maybe = await this._validation.gateRequest('${o.originalOpId}', _schemas.${reqSchemaName}, envelope);`
       );
       methods.push(`        if (this._validation.settings.req === 'strict') envelope = maybe;`);
       methods.push('      }');
@@ -311,7 +317,8 @@ export type ${o.opId}Consistency = {
       const respName = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response`;
       if (availableResponses.has(respName)) {
         methods.push("        if (this._validation.settings.res !== 'none') {");
-        methods.push(`          const _schema = Schemas.${respName};`);
+        methods.push(`          const _schemas = await this._loadSchemas();`);
+        methods.push(`          const _schema = _schemas.${respName};`);
         methods.push('          if (_schema) {');
         methods.push(
           `            const maybeR = await this._validation.gateResponse('${o.originalOpId}', _schema, data);`
@@ -406,7 +413,8 @@ export type ${o.opId}Consistency = {
       const respName2 = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response`;
       if (availableResponses.has(respName2)) {
         methods.push("        if (this._validation.settings.res !== 'none') {");
-        methods.push(`          const _schema = Schemas.${respName2};`);
+        methods.push(`          const _schemas = await this._loadSchemas();`);
+        methods.push(`          const _schema = _schemas.${respName2};`);
         methods.push('          if (_schema) {');
         methods.push(
           `            const maybeR = await this._validation.gateResponse('${o.originalOpId}', _schema, data);`

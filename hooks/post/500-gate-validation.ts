@@ -39,6 +39,10 @@ code = code.replace(
   'responseValidator: undefined,'
 );
 
+// Strip the zod.gen import line — validators are neutralized so the import is dead code.
+// Removing it prevents sdk.gen.ts from eagerly loading the 10K-line zod schema module.
+code = code.replace(/^import\s*\{[^}]*\}\s*from\s*'\.\/zod\.gen';\s*\n/m, '');
+
 // Ensure at least one Options export still follows imports (no change expected) – no action.
 
 fs.writeFileSync(sdkPath, code, 'utf8');

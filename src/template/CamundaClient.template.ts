@@ -4,7 +4,6 @@
 // TEMPLATE: DO NOT add generated operation methods here; generator will produce CamundaClient.ts from this template.
 import { createClient } from '../gen/client/client.gen';
 import * as Sdk from '../gen/sdk.gen';
-import * as Schemas from '../gen/zod.gen';
 import { createAuthFacade } from '../runtime/auth';
 import type { CamundaConfig } from '../runtime/unifiedConfiguration';
 import type { EnvOverrides } from '../runtime/configSchema';
@@ -430,12 +429,18 @@ export class CamundaClient {
 
   // Helper for detecting documented void responses (stable public contract)
   // Referenced from generated code - DO NOT REMOVE
+  // Uses build-time generated VOID_RESPONSES set (no runtime zod dependency needed)
   private _isVoidResponse(name: string): boolean {
-    try {
-      return (Schemas as any)[name]?.type === 'void';
-    } catch {
-      return false;
+    return VOID_RESPONSES.has(name);
+  }
+
+  // Lazy-load zod schemas on first validation use. Returns cached module.
+  private _schemasPromise: Promise<typeof import('../gen/zod.gen')> | null = null;
+  private _loadSchemas(): Promise<typeof import('../gen/zod.gen')> {
+    if (!this._schemasPromise) {
+      this._schemasPromise = import('../gen/zod.gen');
     }
+    return this._schemasPromise;
   }
 
   /** Internal invocation helper to apply global backpressure gating + retry + normalization */
