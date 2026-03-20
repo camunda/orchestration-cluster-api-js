@@ -1,3 +1,10 @@
+# [8.9.0-alpha.17](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.16...v8.9.0-alpha.17) (2026-03-20)
+
+
+### Features
+
+* lazy-load zod validation schemas to reduce baseline memory footprint ([3d598ef](https://github.com/camunda/orchestration-cluster-api-js/commit/3d598effb41fa31a25eaf743160858f9eee18d83))
+
 # [8.9.0-alpha.16](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.15...v8.9.0-alpha.16) (2026-03-19)
 
 ### Bug Fixes
