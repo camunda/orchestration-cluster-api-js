@@ -1180,6 +1180,7 @@ export class CamundaClient {
     oauth: { oauthUrl: '', timeoutMs: 0, retry: { max: 0, baseDelayMs: 0 } } as any,
     tokenAudience: '',
   } as any);
+  private _baseFetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
@@ -1208,6 +1209,7 @@ export class CamundaClient {
       transport: opts.log?.transport,
     });
     const baseFetch = opts.fetch;
+    this._baseFetch = baseFetch;
     this._fetch = baseFetch;
     // Telemetry wrap (after logger & config known). If user provided explicit telemetry, honor it.
     // Else if environment enabled auto telemetry logging, wrap with mirrorToLog + optional correlation.
@@ -1333,7 +1335,9 @@ export class CamundaClient {
   // Merge new overrides and re-hydrate.
   configure(next: CamundaOptions) {
     if (next.config) this._overrides = { ...this._overrides, ...next.config };
-    if (next.fetch) this._fetch = next.fetch;
+    if (next.fetch) this._baseFetch = next.fetch;
+    // Always wrap from the base fetch to avoid accumulating closure layers on repeated configure() calls.
+    this._fetch = this._baseFetch;
     const { config } = hydrateConfig({ overrides: this._overrides, env: next.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Re-wrap fetch if telemetry present OR env auto telemetry toggled

@@ -118,6 +118,9 @@ export function eventualPoll<T>(
       if (abortSignal.aborted) externalAbort();
       else abortSignal.addEventListener('abort', externalAbort);
     }
+    const cleanup = () => {
+      if (abortSignal) abortSignal.removeEventListener('abort', externalAbort);
+    };
 
     const loop = (resolve: (v: T) => void, reject: (e: any) => void) => {
       if (cancelled || outerSignal.aborted) return reject(new Error('Cancelled'));
@@ -126,12 +129,14 @@ export function eventualPoll<T>(
       const settleOk = (val: T) => {
         if (settled) return;
         settled = true;
+        cleanup();
         if (options.errorMode === 'result') (resolve as any)({ ok: true, value: val } as Result<T>);
         else resolve(val);
       };
       const settleErr = (err: any) => {
         if (settled) return;
         settled = true;
+        cleanup();
         if (options.errorMode === 'result')
           (resolve as any)({ ok: false, error: err } as Result<T>);
         else reject(err);
