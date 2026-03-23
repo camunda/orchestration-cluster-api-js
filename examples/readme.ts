@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import createCamundaClient, {
   createCamundaResultClient,
+  isSdkError,
   isOk,
   JobKey,
   ProcessDefinitionId,
@@ -13,7 +14,6 @@ import createCamundaClient, {
   ProcessInstanceKey,
   type JobActionReceipt,
 } from '@camunda8/orchestration-cluster-api';
-import { isSdkError } from '@camunda8/orchestration-cluster-api/dist/runtime/errors';
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------

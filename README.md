@@ -1166,8 +1166,7 @@ All SDK-thrown operational errors normalize to a discriminated union (`SdkError`
 <!-- snippet:ReadmeErrorHandlingImport+ReadmeErrorHandling -->
 
 ```ts
-import { createCamundaClient } from '@camunda8/orchestration-cluster-api';
-import { isSdkError } from '@camunda8/orchestration-cluster-api/dist/runtime/errors';
+import { createCamundaClient, isSdkError } from '@camunda8/orchestration-cluster-api';
 
 const client = createCamundaClient();
 

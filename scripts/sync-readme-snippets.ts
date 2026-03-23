@@ -69,17 +69,31 @@ function dedent(text: string): string {
 
 function loadAllRegions(): Map<string, string> {
   const allRegions = new Map<string, string>();
+  const regionSources = new Map<string, string>();
 
   const files = fs
     .readdirSync(EXAMPLES_DIR)
     .filter((f) => f.endsWith('.ts') || f.endsWith('.txt'))
     .sort();
 
+  const duplicates: string[] = [];
+
   for (const file of files) {
     const regions = parseRegionTags(path.join(EXAMPLES_DIR, file));
     for (const [key, value] of regions) {
+      if (allRegions.has(key)) {
+        duplicates.push(`region "${key}" defined in both ${regionSources.get(key)} and ${file}`);
+      }
       allRegions.set(key, value);
+      regionSources.set(key, file);
     }
+  }
+
+  if (duplicates.length > 0) {
+    for (const msg of duplicates) {
+      process.stderr.write(`ERROR: duplicate ${msg}\n`);
+    }
+    process.exit(1);
   }
 
   return allRegions;

@@ -17,8 +17,7 @@ import { ProcessDefinitionKey, ProcessInstanceKey } from '@camunda8/orchestratio
 //#endregion ReadmeBrandedKeysImport
 
 //#region ReadmeErrorHandlingImport
-import { createCamundaClient } from '@camunda8/orchestration-cluster-api';
-import { isSdkError } from '@camunda8/orchestration-cluster-api/dist/runtime/errors';
+import { createCamundaClient, isSdkError } from '@camunda8/orchestration-cluster-api';
 //#endregion ReadmeErrorHandlingImport
 
 //#region ReadmeResultClientImport
