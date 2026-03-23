@@ -1,9 +1,8 @@
 # [8.9.0-alpha.18](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.17...v8.9.0-alpha.18) (2026-03-21)
 
-
 ### Bug Fixes
 
-* prevent fetch wrapper accumulation and abort listener leak ([b5658d6](https://github.com/camunda/orchestration-cluster-api-js/commit/b5658d6ec8567d4dc5215400a3d154b9caa47f7f))
+- prevent fetch wrapper accumulation and abort listener leak ([b5658d6](https://github.com/camunda/orchestration-cluster-api-js/commit/b5658d6ec8567d4dc5215400a3d154b9caa47f7f))
 
 # [8.9.0-alpha.17](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.16...v8.9.0-alpha.17) (2026-03-20)
 
