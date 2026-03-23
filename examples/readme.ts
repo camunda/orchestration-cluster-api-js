@@ -2,6 +2,8 @@
 // These snippets are synced into README.md by scripts/sync-readme-snippets.ts.
 // They are type-checked during build (via tsc --noEmit) to guard against API drift.
 
+import path from 'node:path';
+
 import createCamundaClient, {
   createCamundaResultClient,
   isOk,
@@ -12,7 +14,6 @@ import createCamundaClient, {
   type JobActionReceipt,
 } from '@camunda8/orchestration-cluster-api';
 import { isSdkError } from '@camunda8/orchestration-cluster-api/dist/runtime/errors';
-import path from 'node:path';
 import { z } from 'zod';
 
 // ---------------------------------------------------------------------------
@@ -262,7 +263,7 @@ async function _readmeCancelable() {
   //#region ReadmeCancelable
   const p = camunda.searchProcessInstances(
     { filter: { processDefinitionKey: defKey } },
-    {}
+    { consistency: { waitUpToMs: 0 } }
   );
   setTimeout(() => p.cancel(), 100); // best‑effort cancel
   try {
@@ -368,7 +369,7 @@ async function _readmeResultClient() {
   const camundaR = createCamundaResultClient();
   const res = await camundaR.createDeployment({ resources: [file] });
   if (isOk(res)) {
-    console.log('Deployment key', res.value.deployments[0].deploymentKey);
+    console.log('Deployment key', res.value.deploymentKey);
   } else {
     console.error('Deployment failed', res.error);
   }

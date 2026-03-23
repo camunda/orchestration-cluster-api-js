@@ -176,11 +176,9 @@ Pass a partial `HttpRetryPolicy` to override individual fields. Unspecified fiel
 <!-- snippet:ReadmeRetryOverride -->
 
 ```ts
-import type { OperationOptions } from '@camunda8/orchestration-cluster-api';
-
 // More aggressive retry for this operation only
 await camunda.createProcessInstance(
-  { processDefinitionId: 'payment-process' },
+  { processDefinitionId: ProcessDefinitionId.assumeExists('payment-process') },
   { retry: { maxAttempts: 8, maxDelayMs: 5000 } }
 );
 
@@ -487,7 +485,7 @@ const Output = z.object({ processed: z.boolean() });
 const worker = client.createJobWorker({
   jobType: 'process-order',
   maxParallelJobs: 10,
-  timeoutMs: 15_000, // long‑poll timeout (server side requestTimeout)
+  jobTimeoutMs: 15_000, // long‑poll timeout (server side requestTimeout)
   pollIntervalMs: 100, // delay between polls when no jobs / at capacity
   // Optional: only fetch specific variables during activation
   fetchVariables: ['orderId'],
@@ -499,6 +497,7 @@ const worker = client.createJobWorker({
   jobHandler: (job) => {
     // Access typed variables
     const vars = job.variables; // inferred from Input schema
+    console.log(`Processing order: ${vars.orderId}`);
     // Do work...
     return job.complete({ variables: { processed: true } });
   },
@@ -648,6 +647,7 @@ Action methods return a unique symbol (not a string) to avoid accidental misuse 
 
 ```ts
 import { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
+
 const receipt: JobActionReceipt = await job.complete({ variables: { processed: true } });
 ```
 
@@ -883,7 +883,7 @@ Import branded key helpers directly:
 <!-- snippet:ReadmeBrandedKeysImport+ReadmeBrandedKeys -->
 
 ```ts
-import { ProcessDefinitionKey, ProcessInstanceKey } from '@camunda8/orchestration-cluster';
+import { ProcessDefinitionKey, ProcessInstanceKey } from '@camunda8/orchestration-cluster-api';
 
 const defKey = ProcessDefinitionKey.assumeExists('2251799813686749');
 // @ts-expect-error – cannot assign def key to instance key
@@ -900,6 +900,9 @@ All methods return a `CancelablePromise<T>`:
 
 ```ts
 const p = camunda.searchProcessInstances(
+  { filter: { processDefinitionKey: defKey } },
+  { consistency: { waitUpToMs: 0 } }
+);
 setTimeout(() => p.cancel(), 100); // best‑effort cancel
 try {
   await p; // resolves if not cancelled
@@ -1000,15 +1003,19 @@ Use this to understand convergence speed and data shape evolution during tests o
 <!-- snippet:ReadmeEventualConsistency -->
 
 ```ts
-const jobs = await camunda.searchJobs({
-  filter: { type: 'payment' },
-  consistency: {
-    waitUpToMs: 5000,
-    pollIntervalMs: 200,
-    trace: true,
-    predicate: (r) => Array.isArray(r.items) && r.items.some((j) => j.state === 'CREATED'),
+const jobs = await camunda.searchJobs(
+  {
+    filter: { type: 'payment' },
   },
-});
+  {
+    consistency: {
+      waitUpToMs: 5000,
+      pollIntervalMs: 200,
+      trace: true,
+      predicate: (r) => Array.isArray(r.items) && r.items.some((j) => j.state === 'CREATED'),
+    },
+  }
+);
 ```
 
 On timeout an `EventualConsistencyTimeoutError` includes diagnostic fields: `{ attempts, elapsedMs, lastStatus, lastResponse, operationId }`.
@@ -1210,12 +1217,12 @@ If you prefer FP‑style explicit error handling instead of exceptions, use the 
 <!-- snippet:ReadmeResultClientImport+ReadmeResultClient -->
 
 ```ts
-import { createCamundaResultClient, isOk } from '@camunda8/orchestration-cluster';
+import { createCamundaResultClient, isOk } from '@camunda8/orchestration-cluster-api';
 
 const camundaR = createCamundaResultClient();
 const res = await camundaR.createDeployment({ resources: [file] });
 if (isOk(res)) {
-  console.log('Deployment key', res.value.deployments[0].deploymentKey);
+  console.log('Deployment key', res.value.deploymentKey);
 } else {
   console.error('Deployment failed', res.error);
 }
