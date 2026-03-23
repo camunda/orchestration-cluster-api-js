@@ -1,3 +1,17 @@
+# [8.9.0-alpha.19](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.18...v8.9.0-alpha.19) (2026-03-23)
+
+
+### Bug Fixes
+
+* address PR review comments ([028f361](https://github.com/camunda/orchestration-cluster-api-js/commit/028f361e31a6b84e0446eda095f67c0c9b9b68eb))
+* address review feedback for Node 20 compat and type imports ([de1000c](https://github.com/camunda/orchestration-cluster-api-js/commit/de1000cde930a4bd0f55d5d538a1622a6800c824))
+* correct type errors in readme examples ([ddea9ad](https://github.com/camunda/orchestration-cluster-api-js/commit/ddea9ad241cdce0bbe99917319dd2c9d9722645e))
+
+
+### Features
+
+* add compilable README examples with snippet sync ([a687a47](https://github.com/camunda/orchestration-cluster-api-js/commit/a687a47bf628c5da9f2a94677cdf79b5fcaf0671))
+
 # [8.9.0-alpha.18](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.17...v8.9.0-alpha.18) (2026-03-21)
 
 ### Bug Fixes
