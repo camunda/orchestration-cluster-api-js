@@ -80,7 +80,9 @@
     "docker:es:start": "docker compose -f docker/docker-compose-es.yaml up -d",
     "docker:es:stop": "docker compose -f docker/docker-compose-es.yaml down && npm run docker:es:cleanup",
     "docker:es:cleanup": "docker volume rm docker_elastic && docker volume rm docker_zeebe && docker volume rm docker_prometheus-data && docker volume rm docker_grafana-data",
-    "docs:api": "rm -rf docs/* && typedoc"
+    "docs:api": "rm -rf docs/* && typedoc",
+    "sync-readme": "tsx scripts/sync-readme-snippets.ts",
+    "sync-readme:check": "tsx scripts/sync-readme-snippets.ts --check"
   },
   "files": [
     "dist",

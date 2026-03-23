@@ -8,7 +8,8 @@
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
-      "@camunda8/orchestration-cluster-api": ["../src/index.ts"]
+      "@camunda8/orchestration-cluster-api": ["../src/index.ts"],
+      "@camunda8/orchestration-cluster-api/dist/runtime/errors": ["../src/runtime/errors.ts"]
     }
   },
   "include": ["./*.ts"]

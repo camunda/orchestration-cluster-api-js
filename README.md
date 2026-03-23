@@ -50,6 +50,8 @@ When this happens, we signal it in the [CHANGELOG](https://github.com/camunda/or
 
 Keep configuration out of application code. Let the factory read `CAMUNDA_*` variables from the environment (12‑factor style). This makes rotation, secret management, and environment promotion safer & simpler.
 
+<!-- snippet:ReadmeDefaultImport+ReadmeQuickStart -->
+
 ```ts
 import createCamundaClient from '@camunda8/orchestration-cluster-api';
 
@@ -90,6 +92,8 @@ CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS=2000  # optional: cap (ms)
 
 Use only when you must supply or mutate configuration dynamically (e.g. multi‑tenant routing, tests, ephemeral preview environments) or in the browser. Keys mirror their `CAMUNDA_*` env names.
 
+<!-- snippet:ReadmeOverrides -->
+
 ```ts
 const camunda = createCamundaClient({
   config: {
@@ -104,6 +108,8 @@ const camunda = createCamundaClient({
 ### Advanced: Custom Fetch Implementation
 
 Inject a custom `fetch` to add tracing, mock responses, instrumentation, circuit breakers, etc.
+
+<!-- snippet:ReadmeCustomFetch -->
 
 ```ts
 const camunda = createCamundaClient({
@@ -156,6 +162,8 @@ Every API method accepts an optional trailing `options` parameter that lets you 
 
 ### Disable Retry for a Single Call
 
+<!-- snippet:ReadmeDisableRetry -->
+
 ```ts
 // This call will not retry on transient errors
 await camunda.completeJob({ jobKey }, { retry: false });
@@ -164,6 +172,8 @@ await camunda.completeJob({ jobKey }, { retry: false });
 ### Override Specific Retry Settings
 
 Pass a partial `HttpRetryPolicy` to override individual fields. Unspecified fields inherit from the global configuration.
+
+<!-- snippet:ReadmeRetryOverride -->
 
 ```ts
 import type { OperationOptions } from '@camunda8/orchestration-cluster-api';
@@ -462,6 +472,8 @@ The SDK provides a lightweight polling job worker for service task job types usi
 
 ### Minimal Example
 
+<!-- snippet:ReadmeJobWorkerImport+ReadmeJobWorkerMinimal -->
+
 ```ts
 import createCamundaClient from '@camunda8/orchestration-cluster-api';
 import { z } from 'zod';
@@ -505,6 +517,8 @@ Note on variable fetching:
 TypeScript inference:
 
 - When you provide `inputSchema`, the type of `fetchVariables` is constrained to the keys of the inferred `variables` type from that schema. Example:
+
+<!-- snippet:ReadmeJobWorkerInference -->
 
 ```ts
 const Input = z.object({ orderId: z.string(), amount: z.number() });
@@ -583,6 +597,8 @@ If `validateSchemas` is true:
 
 Use `await worker.stopGracefully({ waitUpToMs?, checkIntervalMs? })` to drain without force‑cancelling the current activation request.
 
+<!-- snippet:ReadmeJobWorkerGraceful -->
+
 ```ts
 // Attempt graceful drain for up to 8 seconds
 const { remainingJobs, timedOut } = await worker.stopGracefully({ waitUpToMs: 8000 });
@@ -610,6 +626,8 @@ You can register multiple workers on a single client instance—one per job type
 
 When deploying multiple application instances simultaneously (e.g. a rolling restart or scale-up), all workers start polling at the same time and can saturate the server with activation requests. Set `startupJitterMaxSeconds` to spread out the initial poll across a random window:
 
+<!-- snippet:ReadmeJobWorkerJitter -->
+
 ```ts
 client.createJobWorker({
   jobType: 'process-order',
@@ -625,6 +643,8 @@ A value of `0` (the default) means no delay.
 ### Receipt Type (Unique Symbol)
 
 Action methods return a unique symbol (not a string) to avoid accidental misuse and allow internal metrics. If you store the receipt, annotate its type as `JobActionReceipt` to preserve uniqueness:
+
+<!-- snippet:ReadmeReceiptImport+ReadmeReceipt -->
 
 ```ts
 import { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
@@ -708,6 +728,8 @@ The handler receives two arguments:
 2. **`client`** — a proxy to the `CamundaClient` on the main thread. You can call any SDK method (e.g. `client.publishMessage(...)`, `client.createProcessInstance(...)`) and it will be forwarded to the main thread and executed there.
 
 #### Minimal example
+
+<!-- snippet:ReadmeThreadedWorkerImport+ReadmeThreadedWorker -->
 
 ```ts
 import createCamundaClient from '@camunda8/orchestration-cluster-api';
@@ -858,6 +880,8 @@ If both cert & key are available an https.Agent is attached to all outbound call
 
 Import branded key helpers directly:
 
+<!-- snippet:ReadmeBrandedKeysImport+ReadmeBrandedKeys -->
+
 ```ts
 import { ProcessDefinitionKey, ProcessInstanceKey } from '@camunda8/orchestration-cluster';
 
@@ -872,8 +896,10 @@ They are zero‑cost runtime strings with compile‑time separation.
 
 All methods return a `CancelablePromise<T>`:
 
+<!-- snippet:ReadmeCancelable -->
+
 ```ts
-const p = camunda.searchProcessInstances({ filter: { processDefinitionKey: defKey } });
+const p = camunda.searchProcessInstances(
 setTimeout(() => p.cancel(), 100); // best‑effort cancel
 try {
   await p; // resolves if not cancelled
@@ -971,6 +997,8 @@ Use this to understand convergence speed and data shape evolution during tests o
 
 ### Example
 
+<!-- snippet:ReadmeEventualConsistency -->
+
 ```ts
 const jobs = await camunda.searchJobs({
   filter: { type: 'payment' },
@@ -988,6 +1016,8 @@ On timeout an `EventualConsistencyTimeoutError` includes diagnostic fields: `{ a
 ## Logging
 
 Per‑client logger; no global singleton. The level defaults from `CAMUNDA_SDK_LOG_LEVEL` (default `error`).
+
+<!-- snippet:ReadmeLogging -->
 
 ```ts
 const client = createCamundaClient({
@@ -1126,6 +1156,8 @@ May throw:
 
 All SDK-thrown operational errors normalize to a discriminated union (`SdkError`) when they originate from HTTP, network, auth, or validation layers. Use the guard `isSdkError` to narrow inside a catch:
 
+<!-- snippet:ReadmeErrorHandlingImport+ReadmeErrorHandling -->
+
 ```ts
 import { createCamundaClient } from '@camunda8/orchestration-cluster-api';
 import { isSdkError } from '@camunda8/orchestration-cluster-api/dist/runtime/errors';
@@ -1174,6 +1206,8 @@ Guarantees:
 _Note that this feature is experimental and subject to change._
 
 If you prefer FP‑style explicit error handling instead of exceptions, use the result client wrapper:
+
+<!-- snippet:ReadmeResultClientImport+ReadmeResultClient -->
 
 ```ts
 import { createCamundaResultClient, isOk } from '@camunda8/orchestration-cluster';
@@ -1260,6 +1294,8 @@ The deployment endpoint requires each resource to have a filename (extension use
 
 ### Browser
 
+<!-- snippet:ReadmeDeployBrowser -->
+
 ```ts
 const bpmnXml = `<definitions id="process" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL">...</definitions>`;
 const file = new File([bpmnXml], 'order-process.bpmn', { type: 'application/xml' });
@@ -1278,6 +1314,8 @@ await camunda.createDeployment({ resources: [file] });
 ### Node (Recommended Convenience)
 
 Use the built-in helper `deployResourcesFromFiles(...)` to read local files and create `File` objects automatically. It returns the enriched `ExtendedDeploymentResult` (adds typed arrays: `processes`, `decisions`, `decisionRequirements`, `forms`, `resources`).
+
+<!-- snippet:ReadmeDeployNode -->
 
 ```ts
 const result = await camunda.deployResourcesFromFiles([
@@ -1329,6 +1367,8 @@ Empty arrays are rejected. Always use correct extensions so the server can class
 
 Create isolated clients per test file:
 
+<!-- snippet:ReadmeTestingClient -->
+
 ```ts
 const client = createCamundaClient({
   config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080', CAMUNDA_AUTH_STRATEGY: 'NONE' },
@@ -1336,6 +1376,8 @@ const client = createCamundaClient({
 ```
 
 Inject a mock fetch:
+
+<!-- snippet:ReadmeTestingMock -->
 
 ```ts
 const client = createCamundaClient({
