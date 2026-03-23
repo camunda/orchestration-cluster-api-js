@@ -21,7 +21,12 @@ export {
 } from './resultClient';
 export { createCamundaFpClient, type CamundaFpClient, type Either, isLeft, isRight } from './fp-ts';
 export * from './gen/types.gen';
-export { CamundaValidationError, EventualConsistencyTimeoutError } from './runtime/errors';
+export {
+  CamundaValidationError,
+  EventualConsistencyTimeoutError,
+  isSdkError,
+} from './runtime/errors';
+export type { SdkError } from './runtime/errors';
 // Re-export all public types from CamundaClient (Input, Consistency, CancelablePromise, etc.)
 export * from './gen/CamundaClient';
 // eventualPoll unified with result mode; no separate export

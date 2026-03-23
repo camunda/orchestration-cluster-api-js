@@ -50,6 +50,8 @@ jobs:
           path: _generation-drift.patch
       - name: Unit Tests
         run: npm test
+      - name: Check README snippets are up-to-date
+        run: npm run sync-readme:check
   
       - name: Start Integration Stack
         working-directory: docker
