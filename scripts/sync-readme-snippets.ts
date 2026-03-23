@@ -10,6 +10,7 @@
  *   tsx scripts/sync-readme-snippets.ts --check  # CI mode: exit 1 if out of sync
  *
  * Region tags use `//#region Name` ... `//#endregion Name`.
+ * Tag names may contain word characters, hyphens, and dots (e.g. `MyRegion`, `my-region.1`).
  * Markers in README.md use `<!-- snippet:RegionName -->` before a fenced
  * code block. The script replaces everything between the opening and closing
  * fences (inclusive) with freshly extracted content.
@@ -20,8 +21,9 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const REPO_ROOT = path.resolve(import.meta.dirname, '..');
+const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const README_PATH = path.join(REPO_ROOT, 'README.md');
 const EXAMPLES_DIR = path.join(REPO_ROOT, 'examples');
 
@@ -37,8 +39,8 @@ function parseRegionTags(filePath: string): Map<string, string> {
 
   for (const line of text.split('\n')) {
     const stripped = line.trim();
-    const openMatch = stripped.match(/^\/\/#region\s+(\w+)\s*$/);
-    const closeMatch = stripped.match(/^\/\/#endregion\s+(\w+)\s*$/);
+    const openMatch = stripped.match(/^\/\/#region\s+([\w.-]+)\s*$/);
+    const closeMatch = stripped.match(/^\/\/#endregion\s+([\w.-]+)\s*$/);
 
     if (openMatch) {
       currentTag = openMatch[1];
@@ -103,7 +105,7 @@ function loadAllRegions(): Map<string, string> {
 // README rewriting
 // ---------------------------------------------------------------------------
 
-const SNIPPET_MARKER = /^<!--\s*snippet:([\w+]+)\s*-->$/;
+const SNIPPET_MARKER = /^<!--\s*snippet:([\w.+-]+)\s*-->$/;
 
 function resolveRegion(name: string, regions: Map<string, string>): string | null {
   if (!name.includes('+')) {

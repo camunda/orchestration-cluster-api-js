@@ -10,6 +10,7 @@ import { z } from 'zod';
 //#region ReadmeThreadedWorkerImport
 import createCamundaClient from '@camunda8/orchestration-cluster-api';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 //#endregion ReadmeThreadedWorkerImport
 
 //#region ReadmeBrandedKeysImport
@@ -25,5 +26,5 @@ import { createCamundaResultClient, isOk } from '@camunda8/orchestration-cluster
 //#endregion ReadmeResultClientImport
 
 //#region ReadmeReceiptImport
-import { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
+import type { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
 //#endregion ReadmeReceiptImport

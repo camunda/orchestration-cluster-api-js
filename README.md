@@ -646,7 +646,7 @@ Action methods return a unique symbol (not a string) to avoid accidental misuse 
 <!-- snippet:ReadmeReceiptImport+ReadmeReceipt -->
 
 ```ts
-import { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
+import type { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
 
 const receipt: JobActionReceipt = await job.complete({ variables: { processed: true } });
 ```
@@ -734,12 +734,13 @@ The handler receives two arguments:
 ```ts
 import createCamundaClient from '@camunda8/orchestration-cluster-api';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const client = createCamundaClient();
 
 const worker = client.createThreadedJobWorker({
   jobType: 'cpu-heavy-task',
-  handlerModule: path.join(import.meta.dirname, 'my-handler.js'),
+  handlerModule: path.join(path.dirname(fileURLToPath(import.meta.url)), 'my-handler.js'),
   maxParallelJobs: 32,
   jobTimeoutMs: 30_000,
 });

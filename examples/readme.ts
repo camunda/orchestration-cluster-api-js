@@ -3,6 +3,7 @@
 // They are type-checked during build (via tsc --noEmit) to guard against API drift.
 
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import createCamundaClient, {
   createCamundaResultClient,
@@ -232,7 +233,7 @@ async function _readmeThreadedWorker() {
 
   const worker = client.createThreadedJobWorker({
     jobType: 'cpu-heavy-task',
-    handlerModule: path.join(import.meta.dirname, 'my-handler.js'),
+    handlerModule: path.join(path.dirname(fileURLToPath(import.meta.url)), 'my-handler.js'),
     maxParallelJobs: 32,
     jobTimeoutMs: 30_000,
   });
