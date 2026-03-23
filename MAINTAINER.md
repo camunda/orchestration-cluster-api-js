@@ -176,11 +176,52 @@ Special cases: `createDeployment` enforces `File[]` for `resources`.
 
 Examples use `//#region Name` / `//#endregion Name` markers to define named regions that can be referenced individually.
 
+There are two separate systems that consume these regions:
+
+1. **README snippet sync** — injects code into `README.md` (user-facing documentation)
+2. **API docs example injection** — injects `@example` JSDoc tags into generated source (TypeDoc API reference)
+
+### README Snippet Sync
+
+`scripts/sync-readme-snippets.ts` extracts region-tagged code from example files and injects it into `README.md`. It runs as `npm run sync-readme` during the build.
+
+**How it works:**
+
+- Scans all `examples/*.ts` and `examples/*.txt` files for `//#region Name` blocks
+- Finds matching `<!-- snippet:Name -->` markers in `README.md`
+- Replaces the content between marker pairs with the extracted code
+
+**Marker format in README.md:**
+
+````markdown
+<!-- snippet:ReadmeCreateClient -->
+
+````ts
+// This content is auto-replaced by the region named ReadmeCreateClient
+```​
+<!-- /snippet:ReadmeCreateClient -->
+````
+````
+
+**Composite regions:** Use `+` to concatenate multiple regions:
+
+```markdown
+<!-- snippet:ReadmeDefaultImport+ReadmeCreateClient -->
+```
+
+This inserts `ReadmeDefaultImport` followed by `ReadmeCreateClient` into a single code block.
+
+**Import regions:** `examples/readme-imports.txt` contains import-only regions (e.g., `ReadmeDefaultImport`, `ReadmeJobWorkerImport`) using the same `//#region` syntax.
+
+**Naming convention:** Regions wired to the README use a `Readme` prefix (e.g., `ReadmeCreateClient`, `ReadmeActivateJobs`). Non-prefixed regions are used only for API docs injection and type-checking.
+
+**CI enforcement:** `npm run sync-readme:check` runs in CI and fails if the README is out of sync. The build runs `npm run sync-readme` automatically to keep it updated.
+
 ### Type-Checking (Hook 950)
 
 Examples are type-checked at build time via `tsc --noEmit -p examples/tsconfig.json`. This catches type-contract regressions when the upstream spec changes. The separate tsconfig maps `@camunda8/orchestration-cluster-api` to `../src/index.ts` for direct type resolution.
 
-### Operation Map
+### API Docs Example Injection (Hook 450)
 
 `examples/operation-map.json` maps operation IDs to example file+region references:
 
@@ -191,9 +232,17 @@ Examples are type-checked at build time via `tsc --noEmit -p examples/tsconfig.j
 }
 ```
 
-Hook 450 reads this map and injects `@example` JSDoc tags with `{@includeCode}` inline tags into the generated source.
+Hook 450 reads this map and injects `@example` JSDoc tags with `{@includeCode}` inline tags into the generated source. These tags are rendered by TypeDoc when generating the API reference (`npm run docs:api`).
 
 ### Adding a New Example
+
+**For the README:**
+
+1. Add a `//#region ReadmeMyExample` ... `//#endregion ReadmeMyExample` block to the appropriate example file (use the `Readme` prefix).
+2. Add a `<!-- snippet:ReadmeMyExample -->` ... `<!-- /snippet:ReadmeMyExample -->` marker pair in `README.md`.
+3. Run `npm run sync-readme` (or `npm run build:local`) to populate the snippet.
+
+**For API docs:**
 
 1. Add a `//#region MyExample` ... `//#endregion MyExample` block to the appropriate example file.
 2. Add a mapping entry to `examples/operation-map.json`.
