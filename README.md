@@ -31,22 +31,24 @@ Runtime support:
 
 For older Node versions supply a fetch ponyfill AND a `File` shim (or upgrade). For legacy browsers, add a fetch polyfill (e.g. `whatwg-fetch`).
 
-## Versioning
+### Versioning
 
-This SDK does **not** follow traditional semver. The **major.minor** version tracks the Camunda server version, so you can easily match the SDK to your deployment target (e.g. SDK `8.9.x` targets Camunda `8.9`).
+This SDK has a different release cadence from the Camunda server. Features and fixes land in the SDK during a server release.
 
-**Patch releases** contain fixes, features, and occasionally **breaking type changes**. A breaking type change typically means an upstream API definition fix that corrects the shape of a request or response model — your code may stop type-checking even though it worked before.
+The major version of the SDK signals a 1:1 type coherence with the server API for a Camunda minor release.
 
-When this happens, we signal it in the [CHANGELOG](https://github.com/camunda/orchestration-cluster-api-js/releases).
+SDK version `n.y.z` -> server version `8.n`, so the type surface of SDK version 9.y.z matches the API surface of Camunda 8.9.
 
-**Recommended approach:**
+Using a later SDK version, for example: SDK version 10.y.z with Camunda 8.9, means that the SDK contains additive surfaces that are not guaranteed at runtime, and the compiler cannot warn of unsupported operations.
 
-- **Ride the latest** — accept that types may shift and update your code when it happens. This keeps you on the most accurate API surface.
-- **Pin and review** — pin to a specific patch version in `package.json` and review the [CHANGELOG](https://github.com/camunda/orchestration-cluster-api-js/releases) before upgrading:
+Using an earlier SDK version, for example: SDK version 9.y.z with Camunda 8.10, results in slightly degraded compiler reasoning: exhaustiveness checks cannot be guaranteed by the compiler for any extended surfaces (principally, enums with added members).
 
-  ```json
-  "@camunda8/orchestration-cluster-api": "8.9.3"
-  ```
+In the vast majority of use-cases, this will not be an issue; but you should be aware that using the matching SDK major version for the server minor version provides the strongest compiler guarantees about runtime reliability.
+
+**Recommended approach**:
+
+- Check the [CHANGELOG](https://github.com/camunda/orchestration-cluster-api-js/releases).
+- As a sanity check during server version upgrade, rebuild applications with the matching SDK major version to identify any affected runtime surfaces.
 
 ## Quick Start (Zero‑Config – Recommended)
 
