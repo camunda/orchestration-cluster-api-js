@@ -15,7 +15,7 @@ Type‑safe, promise‑based client for the Camunda 8 Orchestration Cluster REST
 - Eventual consistency helper for polling endpoints
 - Immutable, deep‑frozen configuration accessible through a factory‑created client instance
 - Automatic body-level tenantId defaulting: if a request body supports an optional tenantId and you omit it, the SDK fills it from CAMUNDA_DEFAULT_TENANT_ID (path params are never auto-filled)
-- Automatic transient HTTP retry (429, 503, network) with exponential backoff + full jitter (configurable via CAMUNDA_SDK_HTTP_RETRY\*). Non-retryable 500s fail fast. Pluggable strategy surface (default uses p-retry when available, internal fallback otherwise).
+- Automatic transient HTTP retry (429, 503, network) with exponential backoff + full jitter (configurable via CAMUNDA_SDK_HTTP_RETRY\*). Non-retryable 500s fail fast.
 - Per-method retry override: disable or customize retry policy on any individual API call without changing global settings
 
 ## Install

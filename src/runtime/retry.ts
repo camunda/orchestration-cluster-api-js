@@ -1,4 +1,4 @@
-// Generic HTTP retry abstraction with default p-retry implementation.
+// Generic HTTP retry abstraction.
 // Allows pluggable strategy via CamundaClient.configure in future.
 import type { Logger } from './logger';
 
@@ -38,9 +38,6 @@ export interface CreateRetryOptions {
   random?: () => number; // for test determinism
 }
 
-// Lightweight internal implementation (no dependency) if p-retry not desirable.
-// We will still default to dynamic import of p-retry to leverage proven logic, but
-// fall back to this if import fails (e.g., bundle exclusion).
 async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -126,68 +123,6 @@ export function defaultHttpClassifier(err: any): RetryClassification {
     }
   }
   return { retryable: false, reason: 'non-retryable' };
-}
-
-// Dynamic p-retry wrapper (attempts = policy.maxAttempts). Only used if available.
-export async function executeWithPRetry<T>(
-  fn: () => Promise<T>,
-  policy: HttpRetryPolicy,
-  classify: (err: any) => RetryClassification,
-  onAttempt?: (info: { attempt: number; nextDelayMs: number; reason: string }) => void,
-  logger?: Logger
-): Promise<T> {
-  try {
-    const mod: any = await import('p-retry');
-    const pRetry = mod.default || mod;
-    let attempt = 0;
-    // Wrap the user fn so we can classify BEFORE p-retry decides to schedule another attempt.
-    const wrapped = async () => {
-      try {
-        return await fn();
-      } catch (e) {
-        const classification = classify(e);
-        if (!classification.retryable) {
-          // Abort immediately; p-retry will not perform further attempts.
-          throw new pRetry.AbortError(e);
-        }
-        // Attach reason for logging in onFailedAttempt without re-classifying.
-        (e as any).__retryReason = classification.reason;
-        throw e;
-      }
-    };
-    return await pRetry(wrapped, {
-      retries: policy.maxAttempts - 1,
-      onFailedAttempt: (err: any) => {
-        attempt = err.attemptNumber; // 1-based
-        const original = err.originalError || err;
-        const reason = original.__retryReason || classify(original).reason;
-        // Compute next delay similar to our fallback (exponential full jitter)
-        const exp = policy.baseDelayMs * 2 ** (attempt - 1);
-        const cap = Math.min(exp, policy.maxDelayMs);
-        const nextDelay = Math.floor(Math.random() * cap);
-        onAttempt?.({ attempt, nextDelayMs: nextDelay, reason });
-        logger?.trace(() => [
-          'http.retry.scheduled',
-          {
-            attempt: attempt + 1,
-            max: policy.maxAttempts,
-            delayMs: nextDelay,
-            reason,
-          },
-        ]);
-      },
-      factor: 2,
-      minTimeout: policy.baseDelayMs,
-      maxTimeout: policy.maxDelayMs,
-      randomize: true,
-      forever: false,
-      // We manage abort by throwing classification check above
-    });
-  } catch {
-    // Fallback to internal executor if p-retry missing
-    const exec = createRetryExecutor({ policy, logger, onAttempt });
-    return exec(fn, classify);
-  }
 }
 
 export async function executeWithHttpRetry<T>(
