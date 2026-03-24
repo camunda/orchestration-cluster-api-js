@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:a57bb411eea6a7a7602a1b2ef9c1af8ec1aa6a4284978706ed6a2f15c76bab69",
+  "specHash": "sha256:b22cdcdbe15582dfd819636e7ca11871ce4b73efab173c676937333e9c39f60e",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -772,36 +772,6 @@
         "deprecated": false
       },
       "stableId": "process-instance-key"
-    },
-    {
-      "name": "ScopeKey",
-      "semanticType": "ScopeKey",
-      "category": "system-key",
-      "description": "System-generated key for a scope. A scope can hold variables and represents either an\nelement instance in a BPMN process or the process instance itself.\n",
-      "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
-        "inlineFragments": 0
-      },
-      "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
-      },
-      "examples": [
-        "2251799813683890"
-      ],
-      "extensions": {
-        "x-semantic-type": "ScopeKey"
-      },
-      "flags": {
-        "semanticKey": true,
-        "includesLongKeyRef": true,
-        "deprecated": false
-      },
-      "stableId": "scope-key"
     },
     {
       "name": "SignalKey",
@@ -1730,6 +1700,22 @@
       "stableId": "resource-key-filter-property"
     },
     {
+      "name": "ScopeKey",
+      "kind": "union-wrapper",
+      "description": "System-generated key for a scope. A scope can hold variables and represents either an\nelement instance in a BPMN process or the process instance itself.\n",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "ProcessInstanceKey"
+        },
+        {
+          "branchType": "ref",
+          "ref": "ElementInstanceKey"
+        }
+      ],
+      "stableId": "scope-key"
+    },
+    {
       "name": "ScopeKeyFilterProperty",
       "kind": "union-wrapper",
       "description": "ScopeKey property with full advanced search capabilities. Filter by the key of the\nelement instance or process instance that defines the scope of a variable.\n",
@@ -2450,6 +2436,14 @@
     {
       "operationId": "searchUserTaskAuditLogs",
       "path": "/user-tasks/{userTaskKey}/audit-logs/search",
+      "method": "post",
+      "tags": [
+        "User task"
+      ]
+    },
+    {
+      "operationId": "searchUserTaskEffectiveVariables",
+      "path": "/user-tasks/{userTaskKey}/effective-variables/search",
       "method": "post",
       "tags": [
         "User task"
@@ -6028,6 +6022,31 @@
       "optionalTenantIdInBody": false
     },
     {
+      "operationId": "searchUserTaskEffectiveVariables",
+      "path": "/user-tasks/{userTaskKey}/effective-variables/search",
+      "method": "post",
+      "tags": [
+        "User task"
+      ],
+      "summary": "Search user task effective variables",
+      "description": "Search for the effective variables of a user task. This endpoint returns deduplicated\nvariables where each variable name appears at most once. When the same variable name exists\nat multiple scope levels in the scope hierarchy, the value from the innermost scope (closest\nto the user task) takes precedence. This is useful for retrieving the actual runtime state\nof variables as seen by the user task. By default, long variable values in the response are\ntruncated.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "userTaskKey"
+      ],
+      "queryParams": [
+        {
+          "name": "truncateValues",
+          "required": false
+        }
+      ],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
       "operationId": "getUserTaskForm",
       "path": "/user-tasks/{userTaskKey}/form",
       "method": "get",
@@ -6055,7 +6074,7 @@
         "User task"
       ],
       "summary": "Search user task variables",
-      "description": "Search for user task variables based on given criteria. This endpoint returns all variables\nvisible from the user task's scope, including variables from parent scopes in the scope\nhierarchy. By default, long variable values in the response are truncated.\n",
+      "description": "Search for user task variables based on given criteria. This endpoint returns all variable\ndocuments visible from the user task's scope, including variables from parent scopes in the\nscope hierarchy. If the same variable name exists at multiple scope levels, each scope's\nvariable is returned as a separate result. Use the\n`/user-tasks/{userTaskKey}/effective-variables/search` endpoint to get deduplicated variables\nwhere the innermost scope takes precedence. By default, long variable values in the response\nare truncated.\n",
       "eventuallyConsistent": true,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -6155,10 +6174,10 @@
     }
   ],
   "integrity": {
-    "totalSemanticKeys": 35,
-    "totalUnions": 51,
-    "totalOperations": 182,
-    "totalEventuallyConsistent": 80,
+    "totalSemanticKeys": 34,
+    "totalUnions": 52,
+    "totalOperations": 183,
+    "totalEventuallyConsistent": 81,
     "totalDeprecatedEnumSchemas": 2
   }
 }

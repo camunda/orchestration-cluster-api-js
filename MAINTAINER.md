@@ -193,7 +193,7 @@ There are two separate systems that consume these regions:
 
 **Marker format in README.md:**
 
-````markdown
+`````markdown
 <!-- snippet:ReadmeCreateClient -->
 
 ````ts
@@ -201,6 +201,8 @@ There are two separate systems that consume these regions:
 ```​
 <!-- /snippet:ReadmeCreateClient -->
 ````
+`````
+
 ````
 
 **Composite regions:** Use `+` to concatenate multiple regions:
@@ -497,3 +499,4 @@ The PR branch is version-scoped (e.g. `update-ts-sdk-docs/8.8`), so backport and
 ---
 
 Contributions: open a draft PR early when altering generator semantics (branding, class synthesis, facade layering) to surface design discussion before large diffs land.
+````

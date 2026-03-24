@@ -1556,7 +1556,7 @@ export type DecisionEvaluationById = {
      */
     decisionDefinitionId: DecisionDefinitionId;
     /**
-     * The message variables as JSON document.
+     * The decision evaluation variables as JSON document.
      */
     variables?: {
         [key: string]: unknown;
@@ -1573,7 +1573,7 @@ export type DecisionEvaluationById = {
 export type DecisionEvaluationByKey = {
     decisionDefinitionKey: DecisionDefinitionKey;
     /**
-     * The message variables as JSON document.
+     * The decision evaluation variables as JSON document.
      */
     variables?: {
         [key: string]: unknown;
@@ -4685,7 +4685,7 @@ export type VariableKey = CamundaKey<'VariableKey'>;
  * element instance in a BPMN process or the process instance itself.
  *
  */
-export type ScopeKey = CamundaKey<'ScopeKey'>;
+export type ScopeKey = ProcessInstanceKey | ElementInstanceKey;
 
 /**
  * System-generated key for a incident.
@@ -7832,6 +7832,25 @@ export type UserTaskVariableSearchQueryRequest = SearchQueryRequest & {
 };
 
 /**
+ * User task effective variable search query request. Uses offset-based pagination only.
+ *
+ */
+export type UserTaskEffectiveVariableSearchQueryRequest = {
+    /**
+     * Pagination parameters.
+     */
+    page?: OffsetPagination;
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<UserTaskVariableSearchQuerySortRequest>;
+    /**
+     * The user task variable search filters.
+     */
+    filter?: UserTaskVariableFilter;
+};
+
+/**
  * User task search query request.
  */
 export type UserTaskAuditLogSearchQueryRequest = SearchQueryRequest & {
@@ -10858,10 +10877,9 @@ export type SearchGroupsErrors = {
      */
     403: ProblemDetail;
     /**
-     * A Problem detail object as described in [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457). There may be additional properties specific to the problem type.
-     *
+     * An internal error occurred while processing the request.
      */
-    500: unknown;
+    500: ProblemDetail;
 };
 
 export type SearchGroupsError = SearchGroupsErrors[keyof SearchGroupsErrors];
@@ -11662,6 +11680,12 @@ export type ResolveIncidentErrors = {
      * The incident with the incidentKey is not found.
      */
     404: ProblemDetail;
+    /**
+     * The incident cannot be resolved due to an invalid state.
+     * For example, the associated job may have no retries left.
+     *
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -16324,6 +16348,68 @@ export type CompleteUserTaskResponses = {
 
 export type CompleteUserTaskResponse = CompleteUserTaskResponses[keyof CompleteUserTaskResponses];
 
+export type SearchUserTaskEffectiveVariablesData = {
+    /**
+     * User task effective variable search query request. Uses offset-based pagination only.
+     *
+     */
+    body?: {
+        /**
+         * Pagination parameters.
+         */
+        page?: OffsetPagination;
+        /**
+         * Sort field criteria.
+         */
+        sort?: Array<{
+            /**
+             * The field to sort by.
+             */
+            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
+            order?: SortOrderEnum;
+        }>;
+        /**
+         * The user task variable search filters.
+         */
+        filter?: UserTaskVariableFilter;
+    };
+    path: {
+        /**
+         * The key of the user task.
+         */
+        userTaskKey: UserTaskKey;
+    };
+    query?: {
+        /**
+         * When true (default), long variable values in the response are truncated. When false, full variable values are returned.
+         */
+        truncateValues?: boolean;
+    };
+    url: '/user-tasks/{userTaskKey}/effective-variables/search';
+};
+
+export type SearchUserTaskEffectiveVariablesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchUserTaskEffectiveVariablesError = SearchUserTaskEffectiveVariablesErrors[keyof SearchUserTaskEffectiveVariablesErrors];
+
+export type SearchUserTaskEffectiveVariablesResponses = {
+    /**
+     * The user task effective variable search result.
+     */
+    200: VariableSearchQueryResult;
+};
+
+export type SearchUserTaskEffectiveVariablesResponse = SearchUserTaskEffectiveVariablesResponses[keyof SearchUserTaskEffectiveVariablesResponses];
+
 export type GetUserTaskFormData = {
     body?: never;
     path: {
@@ -16540,7 +16626,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:a57bb411eea6a7a7602a1b2ef9c1af8ec1aa6a4284978706ed6a2f15c76bab69
+// specHash=sha256:b22cdcdbe15582dfd819636e7ca11871ce4b73efab173c676937333e9c39f60e
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -16898,20 +16984,6 @@ export namespace ProcessInstanceKey {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'ProcessInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
-      return true;
-    } catch { return false; }
-  }
-}
-// System-generated key for a scope. A scope can hold variables and represents either an element instance in a BPMN process or the process instance itself. 
-export namespace ScopeKey {
-  export function assumeExists(value: string): ScopeKey {
-    assertConstraint(value, 'ScopeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
-    return value as any;
-  }
-  export function getValue(key: ScopeKey): string { return key; }
-  export function isValid(value: string): boolean {
-    try {
-      assertConstraint(value, 'ScopeKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
       return true;
     } catch { return false; }
   }

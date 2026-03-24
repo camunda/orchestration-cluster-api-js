@@ -1270,7 +1270,7 @@ export const zTenantId = z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-
 export const zDecisionEvaluationById = z.object({
     decisionDefinitionId: zDecisionDefinitionId,
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'The message variables as JSON document.'
+        description: 'The decision evaluation variables as JSON document.'
     })),
     tenantId: z.optional(zTenantId)
 });
@@ -2195,7 +2195,10 @@ export const zVariableKey = zLongKey;
  * element instance in a BPMN process or the process instance itself.
  *
  */
-export const zScopeKey = zLongKey;
+export const zScopeKey = z.union([
+    zProcessInstanceKey,
+    zElementInstanceKey
+]);
 
 /**
  * System-generated key for a incident.
@@ -2426,7 +2429,7 @@ export const zDecisionDefinitionKey = zLongKey;
 export const zDecisionEvaluationByKey = z.object({
     decisionDefinitionKey: zDecisionDefinitionKey,
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'The message variables as JSON document.'
+        description: 'The decision evaluation variables as JSON document.'
     })),
     tenantId: z.optional(zTenantId)
 });
@@ -5801,6 +5804,20 @@ export const zUserTaskVariableSearchQueryRequest = zSearchQueryRequest.and(z.obj
 }).register(z.globalRegistry, {
     description: 'User task search query request.'
 }));
+
+/**
+ * User task effective variable search query request. Uses offset-based pagination only.
+ *
+ */
+export const zUserTaskEffectiveVariableSearchQueryRequest = z.object({
+    page: z.optional(zOffsetPagination),
+    sort: z.optional(z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zUserTaskVariableFilter)
+}).register(z.globalRegistry, {
+    description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
+});
 
 /**
  * Advanced filter
@@ -9939,6 +9956,43 @@ export const zCompleteUserTaskData = z.object({
 export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
     description: 'The user task was completed successfully.'
 });
+
+export const zSearchUserTaskEffectiveVariablesData = z.object({
+    body: z.optional(z.object({
+        page: z.optional(zOffsetPagination),
+        sort: z.optional(z.array(z.object({
+            field: z.enum([
+                'value',
+                'name',
+                'tenantId',
+                'variableKey',
+                'scopeKey',
+                'processInstanceKey'
+            ]).register(z.globalRegistry, {
+                description: 'The field to sort by.'
+            }),
+            order: z.optional(zSortOrderEnum)
+        })).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        })),
+        filter: z.optional(zUserTaskVariableFilter)
+    }).register(z.globalRegistry, {
+        description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
+    })),
+    path: z.object({
+        userTaskKey: zUserTaskKey
+    }),
+    query: z.optional(z.object({
+        truncateValues: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
+        }))
+    }))
+});
+
+/**
+ * The user task effective variable search result.
+ */
+export const zSearchUserTaskEffectiveVariablesResponse = zVariableSearchQueryResult;
 
 export const zGetUserTaskFormData = z.object({
     body: z.optional(z.never()),

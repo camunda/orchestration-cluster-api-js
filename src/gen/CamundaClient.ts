@@ -49,7 +49,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 182
+// Operations: 183
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -951,6 +951,16 @@ export type searchUserTaskAuditLogsInput = searchUserTaskAuditLogsBody & { userT
 export type searchUserTaskAuditLogsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskAuditLogs>> 
+};
+type searchUserTaskEffectiveVariablesOptions = Parameters<typeof Sdk.searchUserTaskEffectiveVariables>[0];
+type searchUserTaskEffectiveVariablesBody = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { body?: infer B } ? B : never);
+type searchUserTaskEffectiveVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+type searchUserTaskEffectiveVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+export type searchUserTaskEffectiveVariablesInput = searchUserTaskEffectiveVariablesBody & { userTaskKey: searchUserTaskEffectiveVariablesPathParam_userTaskKey; truncateValues?: searchUserTaskEffectiveVariablesQueryParam_truncateValues };
+/** Management of eventual consistency **/
+export type searchUserTaskEffectiveVariablesConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskEffectiveVariables>> 
 };
 type searchUserTasksOptions = Parameters<typeof Sdk.searchUserTasks>[0];
 type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
@@ -11462,6 +11472,81 @@ export class CamundaClient {
   }
 
   /**
+   * Search user task effective variables
+   *
+   * Search for the effective variables of a user task. This endpoint returns deduplicated
+   * variables where each variable name appears at most once. When the same variable name exists
+   * at multiple scope levels in the scope hierarchy, the value from the innermost scope (closest
+   * to the user task) takes precedence. This is useful for retrieving the actual runtime state
+   * of variables as seen by the user task. By default, long variable values in the response are
+   * truncated.
+   *
+    *
+   * @operationId searchUserTaskEffectiveVariables
+   * @tags User task
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchUserTaskEffectiveVariables(input: searchUserTaskEffectiveVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskEffectiveVariablesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskEffectiveVariables>>;
+  searchUserTaskEffectiveVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskEffectiveVariablesConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { userTaskKey, truncateValues, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { userTaskKey };
+      envelope.query = { truncateValues };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('searchUserTaskEffectiveVariables', _schemas.zSearchUserTaskEffectiveVariablesData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.query) opts.query = envelope.query;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchUserTaskEffectiveVariables(opts);
+        let data = this._evaluateResponse(_raw, 'searchUserTaskEffectiveVariables', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchUserTaskEffectiveVariablesResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSearchUserTaskEffectiveVariablesResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchUserTaskEffectiveVariables', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchUserTaskEffectiveVariables', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Search user tasks
    *
    * Search for user tasks based on given criteria.
@@ -11531,9 +11616,13 @@ export class CamundaClient {
   /**
    * Search user task variables
    *
-   * Search for user task variables based on given criteria. This endpoint returns all variables
-   * visible from the user task's scope, including variables from parent scopes in the scope
-   * hierarchy. By default, long variable values in the response are truncated.
+   * Search for user task variables based on given criteria. This endpoint returns all variable
+   * documents visible from the user task's scope, including variables from parent scopes in the
+   * scope hierarchy. If the same variable name exists at multiple scope levels, each scope's
+   * variable is returned as a separate result. Use the
+   * `/user-tasks/{userTaskKey}/effective-variables/search` endpoint to get deduplicated variables
+   * where the innermost scope takes precedence. By default, long variable values in the response
+   * are truncated.
    *
     *
    * @operationId searchUserTaskVariables
