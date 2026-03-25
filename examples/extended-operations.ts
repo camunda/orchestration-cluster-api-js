@@ -384,3 +384,28 @@ async function activateAdHocSubProcessActivitiesExample() {
   });
 }
 //#endregion ActivateAdHocSubProcessActivities
+
+// Suppress "declared but never read"
+void deleteProcessInstanceExample;
+void migrateProcessInstanceExample;
+void modifyProcessInstanceExample;
+void getProcessInstanceStatisticsExample;
+void getProcessInstanceSequenceFlowsExample;
+void getProcessInstanceCallHierarchyExample;
+void searchProcessInstanceIncidentsExample;
+void resolveProcessInstanceIncidentsExample;
+void getProcessDefinitionExample;
+void getProcessDefinitionXmlExample;
+void searchProcessDefinitionsExample;
+void getProcessDefinitionStatisticsExample;
+void getProcessDefinitionInstanceStatisticsExample;
+void getProcessDefinitionInstanceVersionStatisticsExample;
+void getProcessDefinitionMessageSubscriptionStatisticsExample;
+void getStartProcessFormExample;
+void getVariableExample;
+void searchVariablesExample;
+void getElementInstanceExample;
+void searchElementInstancesExample;
+void searchElementInstanceIncidentsExample;
+void createElementInstanceVariablesExample;
+void activateAdHocSubProcessActivitiesExample;

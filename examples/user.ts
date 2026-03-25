@@ -86,3 +86,19 @@ async function deleteUserExample() {
   await camunda.deleteUser({ username });
 }
 //#endregion DeleteUser
+
+// Suppress "declared but never read"
+void createUserExample;
+void createAdminUserExample;
+void getUserExample;
+void searchUsersExample;
+void updateUserExample;
+void deleteUserExample;
+
+// Suppress "declared but never read"
+void createUserExample;
+void createAdminUserExample;
+void getUserExample;
+void searchUsersExample;
+void updateUserExample;
+void deleteUserExample;

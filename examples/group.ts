@@ -190,3 +190,37 @@ async function searchMappingRulesForGroupExample() {
   }
 }
 //#endregion SearchMappingRulesForGroup
+
+// Suppress "declared but never read"
+void createGroupExample;
+void getGroupExample;
+void searchGroupsExample;
+void updateGroupExample;
+void deleteGroupExample;
+void assignUserToGroupExample;
+void unassignUserFromGroupExample;
+void assignClientToGroupExample;
+void unassignClientFromGroupExample;
+void searchUsersForGroupExample;
+void searchClientsForGroupExample;
+void searchRolesForGroupExample;
+void assignMappingRuleToGroupExample;
+void unassignMappingRuleFromGroupExample;
+void searchMappingRulesForGroupExample;
+
+// Suppress "declared but never read"
+void createGroupExample;
+void getGroupExample;
+void searchGroupsExample;
+void updateGroupExample;
+void deleteGroupExample;
+void assignUserToGroupExample;
+void unassignUserFromGroupExample;
+void assignClientToGroupExample;
+void unassignClientFromGroupExample;
+void searchUsersForGroupExample;
+void searchClientsForGroupExample;
+void searchRolesForGroupExample;
+void assignMappingRuleToGroupExample;
+void unassignMappingRuleFromGroupExample;
+void searchMappingRulesForGroupExample;

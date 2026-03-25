@@ -252,3 +252,47 @@ async function searchMappingRulesForTenantExample() {
   }
 }
 //#endregion SearchMappingRulesForTenant
+
+// Suppress "declared but never read"
+void createTenantExample;
+void getTenantExample;
+void searchTenantsExample;
+void updateTenantExample;
+void deleteTenantExample;
+void assignUserToTenantExample;
+void unassignUserFromTenantExample;
+void assignGroupToTenantExample;
+void unassignGroupFromTenantExample;
+void assignRoleToTenantExample;
+void unassignRoleFromTenantExample;
+void assignClientToTenantExample;
+void unassignClientFromTenantExample;
+void assignMappingRuleToTenantExample;
+void unassignMappingRuleFromTenantExample;
+void searchUsersForTenantExample;
+void searchClientsForTenantExample;
+void searchGroupIdsForTenantExample;
+void searchRolesForTenantExample;
+void searchMappingRulesForTenantExample;
+
+// Suppress "declared but never read"
+void createTenantExample;
+void getTenantExample;
+void searchTenantsExample;
+void updateTenantExample;
+void deleteTenantExample;
+void assignUserToTenantExample;
+void unassignUserFromTenantExample;
+void assignGroupToTenantExample;
+void unassignGroupFromTenantExample;
+void assignRoleToTenantExample;
+void unassignRoleFromTenantExample;
+void assignClientToTenantExample;
+void unassignClientFromTenantExample;
+void assignMappingRuleToTenantExample;
+void unassignMappingRuleFromTenantExample;
+void searchUsersForTenantExample;
+void searchClientsForTenantExample;
+void searchGroupIdsForTenantExample;
+void searchRolesForTenantExample;
+void searchMappingRulesForTenantExample;

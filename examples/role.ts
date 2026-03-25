@@ -212,3 +212,41 @@ async function searchMappingRulesForRoleExample() {
   }
 }
 //#endregion SearchMappingRulesForRole
+
+// Suppress "declared but never read"
+void createRoleExample;
+void getRoleExample;
+void searchRolesExample;
+void updateRoleExample;
+void deleteRoleExample;
+void assignRoleToUserExample;
+void unassignRoleFromUserExample;
+void assignRoleToGroupExample;
+void unassignRoleFromGroupExample;
+void assignRoleToClientExample;
+void unassignRoleFromClientExample;
+void assignRoleToMappingRuleExample;
+void unassignRoleFromMappingRuleExample;
+void searchUsersForRoleExample;
+void searchGroupsForRoleExample;
+void searchClientsForRoleExample;
+void searchMappingRulesForRoleExample;
+
+// Suppress "declared but never read"
+void createRoleExample;
+void getRoleExample;
+void searchRolesExample;
+void updateRoleExample;
+void deleteRoleExample;
+void assignRoleToUserExample;
+void unassignRoleFromUserExample;
+void assignRoleToGroupExample;
+void unassignRoleFromGroupExample;
+void assignRoleToClientExample;
+void unassignRoleFromClientExample;
+void assignRoleToMappingRuleExample;
+void unassignRoleFromMappingRuleExample;
+void searchUsersForRoleExample;
+void searchGroupsForRoleExample;
+void searchClientsForRoleExample;
+void searchMappingRulesForRoleExample;

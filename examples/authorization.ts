@@ -47,7 +47,7 @@ async function searchAuthorizationsExample() {
   );
 
   for (const auth of result.items ?? []) {
-    console.log(`${auth.authorizationKey}: ${auth.ownerId} → ${auth.resourceType}`);
+    console.log(`${auth.authorizationKey}: ${auth.ownerId} - ${auth.resourceType}`);
   }
 }
 //#endregion SearchAuthorizations
@@ -82,3 +82,17 @@ async function deleteAuthorizationExample() {
   await camunda.deleteAuthorization({ authorizationKey });
 }
 //#endregion DeleteAuthorization
+
+// Suppress "declared but never read"
+void createAuthorizationExample;
+void getAuthorizationExample;
+void searchAuthorizationsExample;
+void updateAuthorizationExample;
+void deleteAuthorizationExample;
+
+// Suppress "declared but never read"
+void createAuthorizationExample;
+void getAuthorizationExample;
+void searchAuthorizationsExample;
+void updateAuthorizationExample;
+void deleteAuthorizationExample;

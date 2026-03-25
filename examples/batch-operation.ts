@@ -183,3 +183,31 @@ async function deleteDecisionInstancesBatchOperationExample() {
   console.log(`Batch operation key: ${result.batchOperationKey}`);
 }
 //#endregion DeleteDecisionInstancesBatchOperation
+
+// Suppress "declared but never read"
+void getBatchOperationExample;
+void searchBatchOperationsExample;
+void searchBatchOperationItemsExample;
+void cancelBatchOperationExample;
+void suspendBatchOperationExample;
+void resumeBatchOperationExample;
+void cancelProcessInstancesBatchOperationExample;
+void deleteProcessInstancesBatchOperationExample;
+void migrateProcessInstancesBatchOperationExample;
+void modifyProcessInstancesBatchOperationExample;
+void resolveIncidentsBatchOperationExample;
+void deleteDecisionInstancesBatchOperationExample;
+
+// Suppress "declared but never read"
+void getBatchOperationExample;
+void searchBatchOperationsExample;
+void searchBatchOperationItemsExample;
+void cancelBatchOperationExample;
+void suspendBatchOperationExample;
+void resumeBatchOperationExample;
+void cancelProcessInstancesBatchOperationExample;
+void deleteProcessInstancesBatchOperationExample;
+void migrateProcessInstancesBatchOperationExample;
+void modifyProcessInstancesBatchOperationExample;
+void resolveIncidentsBatchOperationExample;
+void deleteDecisionInstancesBatchOperationExample;

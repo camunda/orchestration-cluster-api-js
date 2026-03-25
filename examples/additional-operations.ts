@@ -270,3 +270,41 @@ async function searchUserTaskAuditLogsExample() {
   }
 }
 //#endregion SearchUserTaskAuditLogs
+
+// Suppress "declared but never read"
+void getDecisionDefinitionXmlExample;
+void getDecisionInstanceExample;
+void searchDecisionInstancesExample;
+void deleteDecisionInstanceExample;
+void getDecisionRequirementsExample;
+void getDecisionRequirementsXmlExample;
+void searchDecisionRequirementsExample;
+void createDocumentLinkExample;
+void deleteDocumentExample;
+void throwJobErrorExample;
+void updateJobExample;
+void searchJobsExample;
+void getUserTaskExample;
+void updateUserTaskExample;
+void getUserTaskFormExample;
+void searchUserTaskVariablesExample;
+void searchUserTaskAuditLogsExample;
+
+// Suppress "declared but never read"
+void getDecisionDefinitionXmlExample;
+void getDecisionInstanceExample;
+void searchDecisionInstancesExample;
+void deleteDecisionInstanceExample;
+void getDecisionRequirementsExample;
+void getDecisionRequirementsXmlExample;
+void searchDecisionRequirementsExample;
+void createDocumentLinkExample;
+void deleteDocumentExample;
+void throwJobErrorExample;
+void updateJobExample;
+void searchJobsExample;
+void getUserTaskExample;
+void updateUserTaskExample;
+void getUserTaskFormExample;
+void searchUserTaskVariablesExample;
+void searchUserTaskAuditLogsExample;

@@ -68,3 +68,17 @@ async function deleteMappingRuleExample() {
   await camunda.deleteMappingRule({ mappingRuleId: 'ldap-group-mapping' });
 }
 //#endregion DeleteMappingRule
+
+// Suppress "declared but never read"
+void createMappingRuleExample;
+void getMappingRuleExample;
+void searchMappingRulesExample;
+void updateMappingRuleExample;
+void deleteMappingRuleExample;
+
+// Suppress "declared but never read"
+void createMappingRuleExample;
+void getMappingRuleExample;
+void searchMappingRulesExample;
+void updateMappingRuleExample;
+void deleteMappingRuleExample;

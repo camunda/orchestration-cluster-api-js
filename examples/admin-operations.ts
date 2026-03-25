@@ -206,7 +206,7 @@ async function getSystemConfigurationExample() {
 
   const config = await camunda.getSystemConfiguration();
 
-  console.log(`Configuration loaded`);
+  console.log(`Configuration loaded: ${JSON.stringify(config)}`);
 }
 //#endregion GetSystemConfiguration
 
@@ -261,7 +261,7 @@ async function evaluateConditionalsExample() {
     tenantId: TenantId.assumeExists('customer-service'),
   });
 
-  console.log(`Evaluated conditionals`);
+  console.log(`Evaluated conditionals: ${JSON.stringify(result)}`);
 }
 //#endregion EvaluateConditionals
 
@@ -298,7 +298,7 @@ async function getResourceContentExample() {
     resourceKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
   });
 
-  console.log(`Content retrieved`);
+  console.log(`Content retrieved (type: ${typeof content})`);
 }
 //#endregion GetResourceContent
 
@@ -314,7 +314,7 @@ async function getUsageMetricsExample() {
     { consistency: { waitUpToMs: 5000 } }
   );
 
-  console.log(`Usage metrics retrieved`);
+  console.log(`Usage metrics retrieved: ${JSON.stringify(metrics)}`);
 }
 //#endregion GetUsageMetrics
 
@@ -505,6 +505,44 @@ async function getGlobalJobStatisticsExample() {
     { consistency: { waitUpToMs: 5000 } }
   );
 
-  console.log(`Statistics retrieved`);
+  console.log(`Statistics retrieved: ${JSON.stringify(result)}`);
 }
 //#endregion GetGlobalJobStatistics
+
+// Suppress "declared but never read"
+void getGlobalClusterVariableExample;
+void createGlobalClusterVariableExample;
+void updateGlobalClusterVariableExample;
+void deleteGlobalClusterVariableExample;
+void getTenantClusterVariableExample;
+void createTenantClusterVariableExample;
+void updateTenantClusterVariableExample;
+void deleteTenantClusterVariableExample;
+void searchClusterVariablesExample;
+void createGlobalTaskListenerExample;
+void getGlobalTaskListenerExample;
+void updateGlobalTaskListenerExample;
+void deleteGlobalTaskListenerExample;
+void searchGlobalTaskListenersExample;
+void getLicenseExample;
+void getSystemConfigurationExample;
+void getAuthenticationExample;
+void getStatusExample;
+void pinClockExample;
+void resetClockExample;
+void evaluateConditionalsExample;
+void evaluateExpressionExample;
+void getResourceExample;
+void getResourceContentExample;
+void getUsageMetricsExample;
+void searchMessageSubscriptionsExample;
+void searchCorrelatedMessageSubscriptionsExample;
+void getAuditLogExample;
+void searchAuditLogsExample;
+void getProcessInstanceStatisticsByErrorExample;
+void getProcessInstanceStatisticsByDefinitionExample;
+void getJobErrorStatisticsExample;
+void getJobTimeSeriesStatisticsExample;
+void getJobTypeStatisticsExample;
+void getJobWorkerStatisticsExample;
+void getGlobalJobStatisticsExample;
