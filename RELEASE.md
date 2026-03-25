@@ -90,6 +90,8 @@ git push -u origin stable/8.9
 
 2. Update the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` to `8.9`.
 
+3. Add a Dependabot entry for the new stable branch in [.github/dependabot.yml](.github/dependabot.yml). Dependabot does not support wildcard branch patterns, so each `stable/*` branch must be listed explicitly.
+
 After promotion:
 
 - Releases from `stable/8.9` will be the “current stable” and will publish to npm dist-tag `latest`.
