@@ -44,7 +44,7 @@ jobs:
       - name: Upload Drift Patch
         # Only upload a single canonical drift patch from Node 20.x to avoid artifact 409 conflicts
         if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x' && matrix.stack == 'simple'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: generation-drift
           path: _generation-drift.patch
@@ -97,7 +97,7 @@ jobs:
           docker compose -f $COMPOSE_FILE down -v || true
       - name: Upload Logs Artifact (on failure)
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           # Include node version and stack so parallel matrix legs don't conflict
           name: integration-docker-logs-${{ matrix.node }}-${{ matrix.stack }}
