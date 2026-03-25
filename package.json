@@ -96,7 +96,7 @@
     "zod": "^4"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.3.0",
+    "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@hey-api/client-fetch": "^0.13.1",
     "@hey-api/openapi-ts": "^0.82.2",
