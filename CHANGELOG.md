@@ -1,3 +1,10 @@
+# [8.9.0-alpha.21](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.20...v8.9.0-alpha.21) (2026-03-25)
+
+
+### Bug Fixes
+
+* add void suppressions and fix unused variables in examples ([36c8c6d](https://github.com/camunda/orchestration-cluster-api-js/commit/36c8c6d2e42a7c8c9ac6586d1ab0125d96bb5715))
+
 # [8.9.0-alpha.20](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.19...v8.9.0-alpha.20) (2026-03-24)
 
 ### Bug Fixes
