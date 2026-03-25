@@ -1603,6 +1603,8 @@ export class CamundaClient {
    * provided adHocSubProcessInstanceKey.
    *
     *
+   * @example Activate ad-hoc sub-process activities
+   * {@includeCode ../../examples/extended-operations.ts#ActivateAdHocSubProcessActivities}
    * @operationId activateAdHocSubProcessActivities
    * @tags Ad-hoc sub-process
    */
@@ -1731,6 +1733,8 @@ export class CamundaClient {
    * Members of the group inherit the group authorizations, roles, and tenant assignments.
    *
     *
+   * @example Assign a client to a group
+   * {@includeCode ../../examples/group.ts#AssignClientToGroup}
    * @operationId assignClientToGroup
    * @tags Group
    */
@@ -1793,6 +1797,8 @@ export class CamundaClient {
    * The client can then access tenant data and perform authorized actions.
    *
     *
+   * @example Assign a client to a tenant
+   * {@includeCode ../../examples/tenant.ts#AssignClientToTenant}
    * @operationId assignClientToTenant
    * @tags Tenant
    */
@@ -1855,6 +1861,8 @@ export class CamundaClient {
    * Group members (users, clients) can then access tenant data and perform authorized actions.
    *
     *
+   * @example Assign a group to a tenant
+   * {@includeCode ../../examples/tenant.ts#AssignGroupToTenant}
    * @operationId assignGroupToTenant
    * @tags Tenant
    */
@@ -1915,6 +1923,8 @@ export class CamundaClient {
    *
    * Assigns a mapping rule to a group.
     *
+   * @example Assign a mapping rule to a group
+   * {@includeCode ../../examples/group.ts#AssignMappingRuleToGroup}
    * @operationId assignMappingRuleToGroup
    * @tags Group
    */
@@ -1975,6 +1985,8 @@ export class CamundaClient {
    *
    * Assign a single mapping rule to a specified tenant.
     *
+   * @example Assign a mapping rule to a tenant
+   * {@includeCode ../../examples/tenant.ts#AssignMappingRuleToTenant}
    * @operationId assignMappingRuleToTenant
    * @tags Tenant
    */
@@ -2035,6 +2047,8 @@ export class CamundaClient {
    *
    * Assigns the specified role to the client. The client will inherit the authorizations associated with this role.
     *
+   * @example Assign a role to a client
+   * {@includeCode ../../examples/role.ts#AssignRoleToClient}
    * @operationId assignRoleToClient
    * @tags Role
    */
@@ -2095,6 +2109,8 @@ export class CamundaClient {
    *
    * Assigns the specified role to the group. Every member of the group (user or client) will inherit the authorizations associated with this role.
     *
+   * @example Assign a role to a group
+   * {@includeCode ../../examples/role.ts#AssignRoleToGroup}
    * @operationId assignRoleToGroup
    * @tags Role
    */
@@ -2155,6 +2171,8 @@ export class CamundaClient {
    *
    * Assigns a role to a mapping rule.
     *
+   * @example Assign a role to a mapping rule
+   * {@includeCode ../../examples/role.ts#AssignRoleToMappingRule}
    * @operationId assignRoleToMappingRule
    * @tags Role
    */
@@ -2217,6 +2235,8 @@ export class CamundaClient {
    * Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
    *
     *
+   * @example Assign a role to a tenant
+   * {@includeCode ../../examples/tenant.ts#AssignRoleToTenant}
    * @operationId assignRoleToTenant
    * @tags Tenant
    */
@@ -2277,6 +2297,8 @@ export class CamundaClient {
    *
    * Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
     *
+   * @example Assign a role to a user
+   * {@includeCode ../../examples/role.ts#AssignRoleToUser}
    * @operationId assignRoleToUser
    * @tags Role
    */
@@ -2404,6 +2426,8 @@ export class CamundaClient {
    * Group members inherit the group authorizations, roles, and tenant assignments.
    *
     *
+   * @example Assign a user to a group
+   * {@includeCode ../../examples/group.ts#AssignUserToGroup}
    * @operationId assignUserToGroup
    * @tags Group
    */
@@ -2464,6 +2488,8 @@ export class CamundaClient {
    *
    * Assign a single user to a specified tenant. The user can then access tenant data and perform authorized actions.
     *
+   * @example Assign a user to a tenant
+   * {@includeCode ../../examples/tenant.ts#AssignUserToTenant}
    * @operationId assignUserToTenant
    * @tags Tenant
    */
@@ -2592,6 +2618,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Cancel a batch operation
+   * {@includeCode ../../examples/batch-operation.ts#CancelBatchOperation}
    * @operationId cancelBatchOperation
    * @tags Batch operation
    */
@@ -2723,6 +2751,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Cancel process instances in batch
+   * {@includeCode ../../examples/batch-operation.ts#CancelProcessInstancesBatchOperation}
    * @operationId cancelProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -2983,6 +3013,8 @@ export class CamundaClient {
    *
    * Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
     *
+   * @example Create an admin user
+   * {@includeCode ../../examples/user.ts#CreateAdminUser}
    * @operationId createAdminUser
    * @tags Setup
    */
@@ -3043,6 +3075,8 @@ export class CamundaClient {
    *
    * Create the authorization.
     *
+   * @example Create an authorization
+   * {@includeCode ../../examples/authorization.ts#CreateAuthorization}
    * @operationId createAuthorization
    * @tags Authorization
    */
@@ -3255,6 +3289,8 @@ export class CamundaClient {
    * Note that this is currently supported for document stores of type: AWS, GCP
    *
     *
+   * @example Create a document link
+   * {@includeCode ../../examples/additional-operations.ts#CreateDocumentLink}
    * @operationId createDocumentLink
    * @tags Document
    */
@@ -3402,6 +3438,8 @@ export class CamundaClient {
    * repeats.
    *
     *
+   * @example Create element instance variables
+   * {@includeCode ../../examples/extended-operations.ts#CreateElementInstanceVariables}
    * @operationId createElementInstanceVariables
    * @tags Element instance
    */
@@ -3464,6 +3502,8 @@ export class CamundaClient {
    *
    * Create a global-scoped cluster variable.
     *
+   * @example Create a global cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#CreateGlobalClusterVariable}
    * @operationId createGlobalClusterVariable
    * @tags Cluster Variable
    */
@@ -3524,6 +3564,8 @@ export class CamundaClient {
    *
    * Create a new global user task listener.
     *
+   * @example Create a global task listener
+   * {@includeCode ../../examples/admin-operations.ts#CreateGlobalTaskListener}
    * @operationId createGlobalTaskListener
    * @tags Global listener
    */
@@ -3584,6 +3626,8 @@ export class CamundaClient {
    *
    * Create a new group.
     *
+   * @example Create a group
+   * {@includeCode ../../examples/group.ts#CreateGroup}
    * @operationId createGroup
    * @tags Group
    */
@@ -3645,6 +3689,8 @@ export class CamundaClient {
    * Create a new mapping rule
    *
     *
+   * @example Create a mapping rule
+   * {@includeCode ../../examples/mapping-rule.ts#CreateMappingRule}
    * @operationId createMappingRule
    * @tags Mapping rule
    */
@@ -3779,6 +3825,8 @@ export class CamundaClient {
    *
    * Create a new role.
     *
+   * @example Create a role
+   * {@includeCode ../../examples/role.ts#CreateRole}
    * @operationId createRole
    * @tags Role
    */
@@ -3839,6 +3887,8 @@ export class CamundaClient {
    *
    * Creates a new tenant.
     *
+   * @example Create a tenant
+   * {@includeCode ../../examples/tenant.ts#CreateTenant}
    * @operationId createTenant
    * @tags Tenant
    */
@@ -3899,6 +3949,8 @@ export class CamundaClient {
    *
    * Create a new cluster variable for the given tenant.
     *
+   * @example Create a tenant cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#CreateTenantClusterVariable}
    * @operationId createTenantClusterVariable
    * @tags Cluster Variable
    */
@@ -3961,6 +4013,8 @@ export class CamundaClient {
    *
    * Create a new user.
     *
+   * @example Create a user
+   * {@includeCode ../../examples/user.ts#CreateUser}
    * @operationId createUser
    * @tags User
    */
@@ -4021,6 +4075,8 @@ export class CamundaClient {
    *
    * Deletes the authorization with the given key.
     *
+   * @example Delete an authorization
+   * {@includeCode ../../examples/authorization.ts#DeleteAuthorization}
    * @operationId deleteAuthorization
    * @tags Authorization
    */
@@ -4081,6 +4137,8 @@ export class CamundaClient {
    *
    * Delete all associated decision evaluations based on provided key.
     *
+   * @example Delete a decision instance
+   * {@includeCode ../../examples/additional-operations.ts#DeleteDecisionInstance}
    * @operationId deleteDecisionInstance
    * @tags Decision instance
    */
@@ -4145,6 +4203,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Delete decision instances in batch
+   * {@includeCode ../../examples/batch-operation.ts#DeleteDecisionInstancesBatchOperation}
    * @operationId deleteDecisionInstancesBatchOperation
    * @tags Decision instance
    */
@@ -4208,6 +4268,8 @@ export class CamundaClient {
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
+   * @example Delete a document
+   * {@includeCode ../../examples/additional-operations.ts#DeleteDocument}
    * @operationId deleteDocument
    * @tags Document
    */
@@ -4270,6 +4332,8 @@ export class CamundaClient {
    *
    * Delete a global-scoped cluster variable.
     *
+   * @example Delete a global cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#DeleteGlobalClusterVariable}
    * @operationId deleteGlobalClusterVariable
    * @tags Cluster Variable
    */
@@ -4330,6 +4394,8 @@ export class CamundaClient {
    *
    * Deletes a global user task listener.
     *
+   * @example Delete a global task listener
+   * {@includeCode ../../examples/admin-operations.ts#DeleteGlobalTaskListener}
    * @operationId deleteGlobalTaskListener
    * @tags Global listener
    */
@@ -4390,6 +4456,8 @@ export class CamundaClient {
    *
    * Deletes the group with the given ID.
     *
+   * @example Delete a group
+   * {@includeCode ../../examples/group.ts#DeleteGroup}
    * @operationId deleteGroup
    * @tags Group
    */
@@ -4451,6 +4519,8 @@ export class CamundaClient {
    * Deletes the mapping rule with the given ID.
    *
     *
+   * @example Delete a mapping rule
+   * {@includeCode ../../examples/mapping-rule.ts#DeleteMappingRule}
    * @operationId deleteMappingRule
    * @tags Mapping rule
    */
@@ -4511,6 +4581,8 @@ export class CamundaClient {
    *
    * Deletes a process instance. Only instances that are completed or terminated can be deleted.
     *
+   * @example Delete a process instance
+   * {@includeCode ../../examples/extended-operations.ts#DeleteProcessInstance}
    * @operationId deleteProcessInstance
    * @tags Process instance
    */
@@ -4576,6 +4648,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Delete process instances in batch
+   * {@includeCode ../../examples/batch-operation.ts#DeleteProcessInstancesBatchOperation}
    * @operationId deleteProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -4712,6 +4786,8 @@ export class CamundaClient {
    *
    * Deletes the role with the given ID.
     *
+   * @example Delete a role
+   * {@includeCode ../../examples/role.ts#DeleteRole}
    * @operationId deleteRole
    * @tags Role
    */
@@ -4772,6 +4848,8 @@ export class CamundaClient {
    *
    * Deletes an existing tenant.
     *
+   * @example Delete a tenant
+   * {@includeCode ../../examples/tenant.ts#DeleteTenant}
    * @operationId deleteTenant
    * @tags Tenant
    */
@@ -4832,6 +4910,8 @@ export class CamundaClient {
    *
    * Delete a tenant-scoped cluster variable.
     *
+   * @example Delete a tenant cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#DeleteTenantClusterVariable}
    * @operationId deleteTenantClusterVariable
    * @tags Cluster Variable
    */
@@ -4892,6 +4972,8 @@ export class CamundaClient {
    *
    * Deletes a user.
     *
+   * @example Delete a user
+   * {@includeCode ../../examples/user.ts#DeleteUser}
    * @operationId deleteUser
    * @tags User
    */
@@ -4955,6 +5037,8 @@ export class CamundaClient {
    * Multiple root-level conditional start events of the same process definition can trigger if their conditions evaluate to true.
    *
     *
+   * @example Evaluate conditionals
+   * {@includeCode ../../examples/admin-operations.ts#EvaluateConditionals}
    * @operationId evaluateConditionals
    * @tags Conditional
    */
@@ -5091,6 +5175,8 @@ export class CamundaClient {
    *
    * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
     *
+   * @example Evaluate an expression
+   * {@includeCode ../../examples/admin-operations.ts#EvaluateExpression}
    * @operationId evaluateExpression
    * @tags Expression
    */
@@ -5220,6 +5306,8 @@ export class CamundaClient {
    *
    * Get an audit log entry by auditLogKey.
     *
+   * @example Get an audit log entry
+   * {@includeCode ../../examples/admin-operations.ts#GetAuditLog}
    * @operationId getAuditLog
    * @tags Audit Log
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5285,6 +5373,8 @@ export class CamundaClient {
    *
    * Retrieves the current authenticated user.
     *
+   * @example Get authentication info
+   * {@includeCode ../../examples/admin-operations.ts#GetAuthentication}
    * @operationId getAuthentication
    * @tags Authentication
    */
@@ -5335,6 +5425,8 @@ export class CamundaClient {
    *
    * Get authorization by the given key.
     *
+   * @example Get an authorization
+   * {@includeCode ../../examples/authorization.ts#GetAuthorization}
    * @operationId getAuthorization
    * @tags Authorization
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5400,6 +5492,8 @@ export class CamundaClient {
    *
    * Get batch operation by key.
     *
+   * @example Get a batch operation
+   * {@includeCode ../../examples/batch-operation.ts#GetBatchOperation}
    * @operationId getBatchOperation
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5597,6 +5691,8 @@ export class CamundaClient {
    *
    * Returns a decision instance.
     *
+   * @example Get a decision instance
+   * {@includeCode ../../examples/additional-operations.ts#GetDecisionInstance}
    * @operationId getDecisionInstance
    * @tags Decision instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5662,6 +5758,8 @@ export class CamundaClient {
    *
    * Returns Decision Requirements as JSON.
     *
+   * @example Get decision requirements
+   * {@includeCode ../../examples/additional-operations.ts#GetDecisionRequirements}
    * @operationId getDecisionRequirements
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5857,6 +5955,8 @@ export class CamundaClient {
    *
    * Returns element instance as JSON.
     *
+   * @example Get an element instance
+   * {@includeCode ../../examples/extended-operations.ts#GetElementInstance}
    * @operationId getElementInstance
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5922,6 +6022,8 @@ export class CamundaClient {
    *
    * Get a global-scoped cluster variable.
     *
+   * @example Get a global cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#GetGlobalClusterVariable}
    * @operationId getGlobalClusterVariable
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5988,6 +6090,8 @@ export class CamundaClient {
    * Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
    *
     *
+   * @example Get global job statistics
+   * {@includeCode ../../examples/admin-operations.ts#GetGlobalJobStatistics}
    * @operationId getGlobalJobStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6053,6 +6157,8 @@ export class CamundaClient {
    *
    * Get a global user task listener by its id.
     *
+   * @example Get a global task listener
+   * {@includeCode ../../examples/admin-operations.ts#GetGlobalTaskListener}
    * @operationId getGlobalTaskListener
    * @tags Global listener
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6118,6 +6224,8 @@ export class CamundaClient {
    *
    * Get a group by its ID.
     *
+   * @example Get a group
+   * {@includeCode ../../examples/group.ts#GetGroup}
    * @operationId getGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6252,6 +6360,8 @@ export class CamundaClient {
    * Returns aggregated metrics per error for the given jobType.
    *
     *
+   * @example Get job error statistics
+   * {@includeCode ../../examples/admin-operations.ts#GetJobErrorStatistics}
    * @operationId getJobErrorStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6320,6 +6430,8 @@ export class CamundaClient {
    * Each item in the response corresponds to one time bucket of the requested resolution.
    *
     *
+   * @example Get job time series statistics
+   * {@includeCode ../../examples/admin-operations.ts#GetJobTimeSeriesStatistics}
    * @operationId getJobTimeSeriesStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6386,6 +6498,8 @@ export class CamundaClient {
    * Get statistics about jobs, grouped by job type.
    *
     *
+   * @example Get job type statistics
+   * {@includeCode ../../examples/admin-operations.ts#GetJobTypeStatistics}
    * @operationId getJobTypeStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6452,6 +6566,8 @@ export class CamundaClient {
    * Get statistics about jobs, grouped by worker, for a given job type.
    *
     *
+   * @example Get job worker statistics
+   * {@includeCode ../../examples/admin-operations.ts#GetJobWorkerStatistics}
    * @operationId getJobWorkerStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6517,6 +6633,8 @@ export class CamundaClient {
    *
    * Obtains the status of the current Camunda license.
     *
+   * @example Get license information
+   * {@includeCode ../../examples/admin-operations.ts#GetLicense}
    * @operationId getLicense
    * @tags License
    */
@@ -6568,6 +6686,8 @@ export class CamundaClient {
    * Gets the mapping rule with the given ID.
    *
     *
+   * @example Get a mapping rule
+   * {@includeCode ../../examples/mapping-rule.ts#GetMappingRule}
    * @operationId getMappingRule
    * @tags Mapping rule
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6633,6 +6753,8 @@ export class CamundaClient {
    *
    * Returns process definition as JSON.
     *
+   * @example Get a process definition
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinition}
    * @operationId getProcessDefinition
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6699,6 +6821,8 @@ export class CamundaClient {
    * Get statistics about process instances, grouped by process definition and tenant.
    *
     *
+   * @example Get process definition instance statistics
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionInstanceStatistics}
    * @operationId getProcessDefinitionInstanceStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6766,6 +6890,8 @@ export class CamundaClient {
    * The process definition ID must be provided as a required field in the request body filter.
    *
     *
+   * @example Get version statistics
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionInstanceVersionStatistics}
    * @operationId getProcessDefinitionInstanceVersionStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6832,6 +6958,8 @@ export class CamundaClient {
    * Get message subscription statistics, grouped by process definition.
    *
     *
+   * @example Get message subscription statistics
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionMessageSubscriptionStatistics}
    * @operationId getProcessDefinitionMessageSubscriptionStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6897,6 +7025,8 @@ export class CamundaClient {
    *
    * Get statistics about elements in currently running process instances by process definition key and search filter.
     *
+   * @example Get process definition element statistics
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionStatistics}
    * @operationId getProcessDefinitionStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7096,6 +7226,8 @@ export class CamundaClient {
    *
    * Returns the call hierarchy for a given process instance, showing its ancestry up to the root instance.
     *
+   * @example Get process instance call hierarchy
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessInstanceCallHierarchy}
    * @operationId getProcessInstanceCallHierarchy
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7161,6 +7293,8 @@ export class CamundaClient {
    *
    * Get sequence flows taken by the process instance.
     *
+   * @example Get process instance sequence flows
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessInstanceSequenceFlows}
    * @operationId getProcessInstanceSequenceFlows
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7226,6 +7360,8 @@ export class CamundaClient {
    *
    * Get statistics about elements by the process instance key.
     *
+   * @example Get process instance statistics
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessInstanceStatistics}
    * @operationId getProcessInstanceStatistics
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7294,6 +7430,8 @@ export class CamundaClient {
    * provided as a filter in the request body.
    *
     *
+   * @example Get instance statistics by definition
+   * {@includeCode ../../examples/admin-operations.ts#GetProcessInstanceStatisticsByDefinition}
    * @operationId getProcessInstanceStatisticsByDefinition
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7361,6 +7499,8 @@ export class CamundaClient {
    * grouped by incident error hash code.
    *
     *
+   * @example Get instance statistics by error
+   * {@includeCode ../../examples/admin-operations.ts#GetProcessInstanceStatisticsByError}
    * @operationId getProcessInstanceStatisticsByError
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7430,6 +7570,8 @@ export class CamundaClient {
    * :::
    *
     *
+   * @example Get a resource
+   * {@includeCode ../../examples/admin-operations.ts#GetResource}
    * @operationId getResource
    * @tags Resource
    */
@@ -7494,6 +7636,8 @@ export class CamundaClient {
    * :::
    *
     *
+   * @example Get resource content
+   * {@includeCode ../../examples/admin-operations.ts#GetResourceContent}
    * @operationId getResourceContent
    * @tags Resource
    */
@@ -7554,6 +7698,8 @@ export class CamundaClient {
    *
    * Get a role by its ID.
     *
+   * @example Get a role
+   * {@includeCode ../../examples/role.ts#GetRole}
    * @operationId getRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7621,6 +7767,8 @@ export class CamundaClient {
    * Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
    *
     *
+   * @example Get start process form
+   * {@includeCode ../../examples/extended-operations.ts#GetStartProcessForm}
    * @operationId getStartProcessForm
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7686,6 +7834,8 @@ export class CamundaClient {
    *
    * Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
     *
+   * @example Check cluster status
+   * {@includeCode ../../examples/admin-operations.ts#GetStatus}
    * @operationId getStatus
    * @tags Cluster
    */
@@ -7741,6 +7891,8 @@ export class CamundaClient {
    * in future releases.
    *
     *
+   * @example Get system configuration
+   * {@includeCode ../../examples/admin-operations.ts#GetSystemConfiguration}
    * @operationId getSystemConfiguration
    * @tags System
    */
@@ -7791,6 +7943,8 @@ export class CamundaClient {
    *
    * Retrieves a single tenant by tenant ID.
     *
+   * @example Get a tenant
+   * {@includeCode ../../examples/tenant.ts#GetTenant}
    * @operationId getTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7856,6 +8010,8 @@ export class CamundaClient {
    *
    * Get a tenant-scoped cluster variable.
     *
+   * @example Get a tenant cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#GetTenantClusterVariable}
    * @operationId getTenantClusterVariable
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7973,6 +8129,8 @@ export class CamundaClient {
    *
    * Retrieve the usage metrics based on given criteria.
     *
+   * @example Get usage metrics
+   * {@includeCode ../../examples/admin-operations.ts#GetUsageMetrics}
    * @operationId getUsageMetrics
    * @tags System
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8038,6 +8196,8 @@ export class CamundaClient {
    *
    * Get a user by its username.
     *
+   * @example Get a user
+   * {@includeCode ../../examples/user.ts#GetUser}
    * @operationId getUser
    * @tags User
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8103,6 +8263,8 @@ export class CamundaClient {
    *
    * Get the user task by the user task key.
     *
+   * @example Get a user task
+   * {@includeCode ../../examples/additional-operations.ts#GetUserTask}
    * @operationId getUserTask
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8170,6 +8332,8 @@ export class CamundaClient {
    * Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
    *
     *
+   * @example Get a user task form
+   * {@includeCode ../../examples/additional-operations.ts#GetUserTaskForm}
    * @operationId getUserTaskForm
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8239,6 +8403,8 @@ export class CamundaClient {
    * The variable's scopeKey indicates whether it's a process-level variable or scoped to a
    * specific element instance.
     *
+   * @example Get a variable
+   * {@includeCode ../../examples/extended-operations.ts#GetVariable}
    * @operationId getVariable
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8311,6 +8477,8 @@ export class CamundaClient {
    * latest process improvements.
    *
     *
+   * @example Migrate a process instance
+   * {@includeCode ../../examples/extended-operations.ts#MigrateProcessInstance}
    * @operationId migrateProcessInstance
    * @tags Process instance
    */
@@ -8377,6 +8545,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Migrate process instances in batch
+   * {@includeCode ../../examples/batch-operation.ts#MigrateProcessInstancesBatchOperation}
    * @operationId migrateProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -8443,6 +8613,8 @@ export class CamundaClient {
    * For example, because an external system is not available or doesn't respond as expected.
    *
     *
+   * @example Modify a process instance
+   * {@includeCode ../../examples/extended-operations.ts#ModifyProcessInstance}
    * @operationId modifyProcessInstance
    * @tags Process instance
    */
@@ -8511,6 +8683,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Modify process instances in batch
+   * {@includeCode ../../examples/batch-operation.ts#ModifyProcessInstancesBatchOperation}
    * @operationId modifyProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -8577,6 +8751,8 @@ export class CamundaClient {
    * in future releases.
    *
     *
+   * @example Pin the cluster clock
+   * {@includeCode ../../examples/admin-operations.ts#PinClock}
    * @operationId pinClock
    * @tags Clock
    */
@@ -8714,6 +8890,8 @@ export class CamundaClient {
    * in future releases.
    *
     *
+   * @example Reset the cluster clock
+   * {@includeCode ../../examples/admin-operations.ts#ResetClock}
    * @operationId resetClock
    * @tags Clock
    */
@@ -8834,6 +9012,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Resolve incidents in batch
+   * {@includeCode ../../examples/batch-operation.ts#ResolveIncidentsBatchOperation}
    * @operationId resolveIncidentsBatchOperation
    * @tags Process instance
    */
@@ -8894,6 +9074,8 @@ export class CamundaClient {
    *
    * Creates a batch operation to resolve multiple incidents of a process instance.
     *
+   * @example Resolve process instance incidents
+   * {@includeCode ../../examples/extended-operations.ts#ResolveProcessInstanceIncidents}
    * @operationId resolveProcessInstanceIncidents
    * @tags Process instance
    */
@@ -8956,6 +9138,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Resume a batch operation
+   * {@includeCode ../../examples/batch-operation.ts#ResumeBatchOperation}
    * @operationId resumeBatchOperation
    * @tags Batch operation
    */
@@ -9018,6 +9202,8 @@ export class CamundaClient {
    *
    * Search for audit logs based on given criteria.
     *
+   * @example Search audit logs
+   * {@includeCode ../../examples/admin-operations.ts#SearchAuditLogs}
    * @operationId searchAuditLogs
    * @tags Audit Log
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9083,6 +9269,8 @@ export class CamundaClient {
    *
    * Search for authorizations based on given criteria.
     *
+   * @example Search authorizations
+   * {@includeCode ../../examples/authorization.ts#SearchAuthorizations}
    * @operationId searchAuthorizations
    * @tags Authorization
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9148,6 +9336,8 @@ export class CamundaClient {
    *
    * Search for batch operation items based on given criteria.
     *
+   * @example Search batch operation items
+   * {@includeCode ../../examples/batch-operation.ts#SearchBatchOperationItems}
    * @operationId searchBatchOperationItems
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9213,6 +9403,8 @@ export class CamundaClient {
    *
    * Search for batch operations based on given criteria.
     *
+   * @example Search batch operations
+   * {@includeCode ../../examples/batch-operation.ts#SearchBatchOperations}
    * @operationId searchBatchOperations
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9278,6 +9470,8 @@ export class CamundaClient {
    *
    * Search clients assigned to a group.
     *
+   * @example Search clients in a group
+   * {@includeCode ../../examples/group.ts#SearchClientsForGroup}
    * @operationId searchClientsForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9345,6 +9539,8 @@ export class CamundaClient {
    *
    * Search clients with assigned role.
     *
+   * @example Search clients for a role
+   * {@includeCode ../../examples/role.ts#SearchClientsForRole}
    * @operationId searchClientsForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9412,6 +9608,8 @@ export class CamundaClient {
    *
    * Retrieves a filtered and sorted list of clients for a specified tenant.
     *
+   * @example Search clients for a tenant
+   * {@includeCode ../../examples/tenant.ts#SearchClientsForTenant}
    * @operationId searchClientsForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9477,6 +9675,8 @@ export class CamundaClient {
   /**
    * Search for cluster variables based on given criteria. By default, long variable values in the response are truncated.
     *
+   * @example Search cluster variables
+   * {@includeCode ../../examples/admin-operations.ts#SearchClusterVariables}
    * @operationId searchClusterVariables
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9544,6 +9744,8 @@ export class CamundaClient {
    *
    * Search correlated message subscriptions based on given criteria.
     *
+   * @example Search correlated message subscriptions
+   * {@includeCode ../../examples/admin-operations.ts#SearchCorrelatedMessageSubscriptions}
    * @operationId searchCorrelatedMessageSubscriptions
    * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9676,6 +9878,8 @@ export class CamundaClient {
    *
    * Search for decision instances based on given criteria.
     *
+   * @example Search decision instances
+   * {@includeCode ../../examples/additional-operations.ts#SearchDecisionInstances}
    * @operationId searchDecisionInstances
    * @tags Decision instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9741,6 +9945,8 @@ export class CamundaClient {
    *
    * Search for decision requirements based on given criteria.
     *
+   * @example Search decision requirements
+   * {@includeCode ../../examples/additional-operations.ts#SearchDecisionRequirements}
    * @operationId searchDecisionRequirements
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9813,6 +10019,8 @@ export class CamundaClient {
    * to the root element itself.
    *
     *
+   * @example Search element instance incidents
+   * {@includeCode ../../examples/extended-operations.ts#SearchElementInstanceIncidents}
    * @operationId searchElementInstanceIncidents
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9880,6 +10088,8 @@ export class CamundaClient {
    *
    * Search for element instances based on given criteria.
     *
+   * @example Search element instances
+   * {@includeCode ../../examples/extended-operations.ts#SearchElementInstances}
    * @operationId searchElementInstances
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9945,6 +10155,8 @@ export class CamundaClient {
    *
    * Search for global user task listeners based on given criteria.
     *
+   * @example Search global task listeners
+   * {@includeCode ../../examples/admin-operations.ts#SearchGlobalTaskListeners}
    * @operationId searchGlobalTaskListeners
    * @tags Global listener
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10010,6 +10222,8 @@ export class CamundaClient {
    *
    * Retrieves a filtered and sorted list of groups for a specified tenant.
     *
+   * @example Search groups for a tenant
+   * {@includeCode ../../examples/tenant.ts#SearchGroupIdsForTenant}
    * @operationId searchGroupIdsForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10077,6 +10291,8 @@ export class CamundaClient {
    *
    * Search for groups based on given criteria.
     *
+   * @example Search groups
+   * {@includeCode ../../examples/group.ts#SearchGroups}
    * @operationId searchGroups
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10142,6 +10358,8 @@ export class CamundaClient {
    *
    * Search groups with assigned role.
     *
+   * @example Search groups for a role
+   * {@includeCode ../../examples/role.ts#SearchGroupsForRole}
    * @operationId searchGroupsForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10277,6 +10495,8 @@ export class CamundaClient {
    *
    * Search for jobs based on given criteria.
     *
+   * @example Search jobs
+   * {@includeCode ../../examples/additional-operations.ts#SearchJobs}
    * @operationId searchJobs
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10343,6 +10563,8 @@ export class CamundaClient {
    * Search for mapping rules based on given criteria.
    *
     *
+   * @example Search mapping rules
+   * {@includeCode ../../examples/mapping-rule.ts#SearchMappingRule}
    * @operationId searchMappingRule
    * @tags Mapping rule
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10408,6 +10630,8 @@ export class CamundaClient {
    *
    * Search mapping rules assigned to a group.
     *
+   * @example Search mapping rules for a group
+   * {@includeCode ../../examples/group.ts#SearchMappingRulesForGroup}
    * @operationId searchMappingRulesForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10475,6 +10699,8 @@ export class CamundaClient {
    *
    * Search mapping rules with assigned role.
     *
+   * @example Search mapping rules for a role
+   * {@includeCode ../../examples/role.ts#SearchMappingRulesForRole}
    * @operationId searchMappingRulesForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10542,6 +10768,8 @@ export class CamundaClient {
    *
    * Retrieves a filtered and sorted list of MappingRules for a specified tenant.
     *
+   * @example Search mapping rules for a tenant
+   * {@includeCode ../../examples/tenant.ts#SearchMappingRulesForTenant}
    * @operationId searchMappingRulesForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10609,6 +10837,8 @@ export class CamundaClient {
    *
    * Search for message subscriptions based on given criteria.
     *
+   * @example Search message subscriptions
+   * {@includeCode ../../examples/admin-operations.ts#SearchMessageSubscriptions}
    * @operationId searchMessageSubscriptions
    * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10674,6 +10904,8 @@ export class CamundaClient {
    *
    * Search for process definitions based on given criteria.
     *
+   * @example Search process definitions
+   * {@includeCode ../../examples/extended-operations.ts#SearchProcessDefinitions}
    * @operationId searchProcessDefinitions
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10745,6 +10977,8 @@ export class CamundaClient {
    * subprocesses or called processes under the root instance while excluding incidents directly tied to the root.
    *
     *
+   * @example Search process instance incidents
+   * {@includeCode ../../examples/extended-operations.ts#SearchProcessInstanceIncidents}
    * @operationId searchProcessInstanceIncidents
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10879,6 +11113,8 @@ export class CamundaClient {
    *
    * Search for roles based on given criteria.
     *
+   * @example Search roles
+   * {@includeCode ../../examples/role.ts#SearchRoles}
    * @operationId searchRoles
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10944,6 +11180,8 @@ export class CamundaClient {
    *
    * Search roles assigned to a group.
     *
+   * @example Search roles for a group
+   * {@includeCode ../../examples/group.ts#SearchRolesForGroup}
    * @operationId searchRolesForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11011,6 +11249,8 @@ export class CamundaClient {
    *
    * Retrieves a filtered and sorted list of roles for a specified tenant.
     *
+   * @example Search roles for a tenant
+   * {@includeCode ../../examples/tenant.ts#SearchRolesForTenant}
    * @operationId searchRolesForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11078,6 +11318,8 @@ export class CamundaClient {
    *
    * Retrieves a filtered and sorted list of tenants.
     *
+   * @example Search tenants
+   * {@includeCode ../../examples/tenant.ts#SearchTenants}
    * @operationId searchTenants
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11143,6 +11385,8 @@ export class CamundaClient {
    *
    * Search for users based on given criteria.
     *
+   * @example Search users
+   * {@includeCode ../../examples/user.ts#SearchUsers}
    * @operationId searchUsers
    * @tags User
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11208,6 +11452,8 @@ export class CamundaClient {
    *
    * Search users assigned to a group.
     *
+   * @example Search users in a group
+   * {@includeCode ../../examples/group.ts#SearchUsersForGroup}
    * @operationId searchUsersForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11275,6 +11521,8 @@ export class CamundaClient {
    *
    * Search users with assigned role.
     *
+   * @example Search users for a role
+   * {@includeCode ../../examples/role.ts#SearchUsersForRole}
    * @operationId searchUsersForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11342,6 +11590,8 @@ export class CamundaClient {
    *
    * Retrieves a filtered and sorted list of users for a specified tenant.
     *
+   * @example Search users for a tenant
+   * {@includeCode ../../examples/tenant.ts#SearchUsersForTenant}
    * @operationId searchUsersForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11409,6 +11659,8 @@ export class CamundaClient {
    *
    * Search for user task audit logs based on given criteria.
     *
+   * @example Search user task audit logs
+   * {@includeCode ../../examples/additional-operations.ts#SearchUserTaskAuditLogs}
    * @operationId searchUserTaskAuditLogs
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11625,6 +11877,8 @@ export class CamundaClient {
    * are truncated.
    *
     *
+   * @example Search user task variables
+   * {@includeCode ../../examples/additional-operations.ts#SearchUserTaskVariables}
    * @operationId searchUserTaskVariables
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11702,6 +11956,8 @@ export class CamundaClient {
    *
    * By default, long variable values in the response are truncated.
     *
+   * @example Search variables
+   * {@includeCode ../../examples/extended-operations.ts#SearchVariables}
    * @operationId searchVariables
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11771,6 +12027,8 @@ export class CamundaClient {
    * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
    *
     *
+   * @example Suspend a batch operation
+   * {@includeCode ../../examples/batch-operation.ts#SuspendBatchOperation}
    * @operationId suspendBatchOperation
    * @tags Batch operation
    */
@@ -11834,6 +12092,8 @@ export class CamundaClient {
    * Reports a business error (i.e. non-technical) that occurs while processing a job.
    *
     *
+   * @example Throw a job error
+   * {@includeCode ../../examples/additional-operations.ts#ThrowJobError}
    * @operationId throwJobError
    * @tags Job
    */
@@ -11898,6 +12158,8 @@ export class CamundaClient {
    * The client is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
    *
     *
+   * @example Unassign a client from a group
+   * {@includeCode ../../examples/group.ts#UnassignClientFromGroup}
    * @operationId unassignClientFromGroup
    * @tags Group
    */
@@ -11960,6 +12222,8 @@ export class CamundaClient {
    * The client can no longer access tenant data.
    *
     *
+   * @example Unassign a client from a tenant
+   * {@includeCode ../../examples/tenant.ts#UnassignClientFromTenant}
    * @operationId unassignClientFromTenant
    * @tags Tenant
    */
@@ -12022,6 +12286,8 @@ export class CamundaClient {
    * Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
    *
     *
+   * @example Unassign a group from a tenant
+   * {@includeCode ../../examples/tenant.ts#UnassignGroupFromTenant}
    * @operationId unassignGroupFromTenant
    * @tags Tenant
    */
@@ -12082,6 +12348,8 @@ export class CamundaClient {
    *
    * Unassigns a mapping rule from a group.
     *
+   * @example Unassign a mapping rule from a group
+   * {@includeCode ../../examples/group.ts#UnassignMappingRuleFromGroup}
    * @operationId unassignMappingRuleFromGroup
    * @tags Group
    */
@@ -12142,6 +12410,8 @@ export class CamundaClient {
    *
    * Unassigns a single mapping rule from a specified tenant without deleting the rule.
     *
+   * @example Unassign a mapping rule from a tenant
+   * {@includeCode ../../examples/tenant.ts#UnassignMappingRuleFromTenant}
    * @operationId unassignMappingRuleFromTenant
    * @tags Tenant
    */
@@ -12202,6 +12472,8 @@ export class CamundaClient {
    *
    * Unassigns the specified role from the client. The client will no longer inherit the authorizations associated with this role.
     *
+   * @example Unassign a role from a client
+   * {@includeCode ../../examples/role.ts#UnassignRoleFromClient}
    * @operationId unassignRoleFromClient
    * @tags Role
    */
@@ -12262,6 +12534,8 @@ export class CamundaClient {
    *
    * Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
     *
+   * @example Unassign a role from a group
+   * {@includeCode ../../examples/role.ts#UnassignRoleFromGroup}
    * @operationId unassignRoleFromGroup
    * @tags Role
    */
@@ -12322,6 +12596,8 @@ export class CamundaClient {
    *
    * Unassigns a role from a mapping rule.
     *
+   * @example Unassign a role from a mapping rule
+   * {@includeCode ../../examples/role.ts#UnassignRoleFromMappingRule}
    * @operationId unassignRoleFromMappingRule
    * @tags Role
    */
@@ -12385,6 +12661,8 @@ export class CamundaClient {
    * tenant's data - unless they are assigned directly to the tenant.
    *
     *
+   * @example Unassign a role from a tenant
+   * {@includeCode ../../examples/tenant.ts#UnassignRoleFromTenant}
    * @operationId unassignRoleFromTenant
    * @tags Tenant
    */
@@ -12445,6 +12723,8 @@ export class CamundaClient {
    *
    * Unassigns a role from a user. The user will no longer inherit the authorizations associated with this role.
     *
+   * @example Unassign a role from a user
+   * {@includeCode ../../examples/role.ts#UnassignRoleFromUser}
    * @operationId unassignRoleFromUser
    * @tags Role
    */
@@ -12507,6 +12787,8 @@ export class CamundaClient {
    * The user is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
    *
     *
+   * @example Unassign a user from a group
+   * {@includeCode ../../examples/group.ts#UnassignUserFromGroup}
    * @operationId unassignUserFromGroup
    * @tags Group
    */
@@ -12569,6 +12851,8 @@ export class CamundaClient {
    * The user can no longer access tenant data.
    *
     *
+   * @example Unassign a user from a tenant
+   * {@includeCode ../../examples/tenant.ts#UnassignUserFromTenant}
    * @operationId unassignUserFromTenant
    * @tags Tenant
    */
@@ -12692,6 +12976,8 @@ export class CamundaClient {
    *
    * Update the authorization with the given key.
     *
+   * @example Update an authorization
+   * {@includeCode ../../examples/authorization.ts#UpdateAuthorization}
    * @operationId updateAuthorization
    * @tags Authorization
    */
@@ -12756,6 +13042,8 @@ export class CamundaClient {
    * The variable must exist, otherwise a 404 error is returned.
    *
     *
+   * @example Update a global cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#UpdateGlobalClusterVariable}
    * @operationId updateGlobalClusterVariable
    * @tags Cluster Variable
    */
@@ -12818,6 +13106,8 @@ export class CamundaClient {
    *
    * Updates a global user task listener.
     *
+   * @example Update a global task listener
+   * {@includeCode ../../examples/admin-operations.ts#UpdateGlobalTaskListener}
    * @operationId updateGlobalTaskListener
    * @tags Global listener
    */
@@ -12880,6 +13170,8 @@ export class CamundaClient {
    *
    * Update a group with the given ID.
     *
+   * @example Update a group
+   * {@includeCode ../../examples/group.ts#UpdateGroup}
    * @operationId updateGroup
    * @tags Group
    */
@@ -12942,6 +13234,8 @@ export class CamundaClient {
    *
    * Update a job with the given key.
     *
+   * @example Update a job
+   * {@includeCode ../../examples/additional-operations.ts#UpdateJob}
    * @operationId updateJob
    * @tags Job
    */
@@ -13005,6 +13299,8 @@ export class CamundaClient {
    * Update a mapping rule.
    *
     *
+   * @example Update a mapping rule
+   * {@includeCode ../../examples/mapping-rule.ts#UpdateMappingRule}
    * @operationId updateMappingRule
    * @tags Mapping rule
    */
@@ -13067,6 +13363,8 @@ export class CamundaClient {
    *
    * Update a role with the given ID.
     *
+   * @example Update a role
+   * {@includeCode ../../examples/role.ts#UpdateRole}
    * @operationId updateRole
    * @tags Role
    */
@@ -13129,6 +13427,8 @@ export class CamundaClient {
    *
    * Updates an existing tenant.
     *
+   * @example Update a tenant
+   * {@includeCode ../../examples/tenant.ts#UpdateTenant}
    * @operationId updateTenant
    * @tags Tenant
    */
@@ -13193,6 +13493,8 @@ export class CamundaClient {
    * The variable must exist, otherwise a 404 error is returned.
    *
     *
+   * @example Update a tenant cluster variable
+   * {@includeCode ../../examples/admin-operations.ts#UpdateTenantClusterVariable}
    * @operationId updateTenantClusterVariable
    * @tags Cluster Variable
    */
@@ -13255,6 +13557,8 @@ export class CamundaClient {
    *
    * Updates a user.
     *
+   * @example Update a user
+   * {@includeCode ../../examples/user.ts#UpdateUser}
    * @operationId updateUser
    * @tags User
    */
@@ -13318,6 +13622,8 @@ export class CamundaClient {
    * Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
    *
     *
+   * @example Update a user task
+   * {@includeCode ../../examples/additional-operations.ts#UpdateUserTask}
    * @operationId updateUserTask
    * @tags User task
    */

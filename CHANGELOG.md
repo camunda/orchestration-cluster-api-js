@@ -1,9 +1,8 @@
 # [8.9.0-alpha.20](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.19...v8.9.0-alpha.20) (2026-03-24)
 
-
 ### Bug Fixes
 
-* remove unused p-retry dependency ([4065fa2](https://github.com/camunda/orchestration-cluster-api-js/commit/4065fa2dcd7074c457c2b1cf2b349177e9b26780))
+- remove unused p-retry dependency ([4065fa2](https://github.com/camunda/orchestration-cluster-api-js/commit/4065fa2dcd7074c457c2b1cf2b349177e9b26780))
 
 # [8.9.0-alpha.19](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.18...v8.9.0-alpha.19) (2026-03-23)
 

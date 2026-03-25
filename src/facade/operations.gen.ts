@@ -63,6 +63,8 @@ type _cancelProcessInstancesBatchOperation_Body = CancelProcessInstancesBatchOpe
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Cancel process instances in batch
+ * {@includeCode ../../examples/batch-operation.ts#CancelProcessInstancesBatchOperation}
  * @operationId cancelProcessInstancesBatchOperation
  * @tags Process instance
  */
@@ -95,6 +97,8 @@ type _createAdminUser_Body = CreateAdminUserData extends { body?: infer B } ? B 
  *
  * Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
   *
+ * @example Create an admin user
+ * {@includeCode ../../examples/user.ts#CreateAdminUser}
  * @operationId createAdminUser
  * @tags Setup
  */
@@ -108,6 +112,8 @@ type _createAuthorization_Body = CreateAuthorizationData extends { body?: infer 
  *
  * Create the authorization.
   *
+ * @example Create an authorization
+ * {@includeCode ../../examples/authorization.ts#CreateAuthorization}
  * @operationId createAuthorization
  * @tags Authorization
  */
@@ -138,6 +144,8 @@ type _createGlobalClusterVariable_Body = CreateGlobalClusterVariableData extends
  *
  * Create a global-scoped cluster variable.
   *
+ * @example Create a global cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#CreateGlobalClusterVariable}
  * @operationId createGlobalClusterVariable
  * @tags Cluster Variable
  */
@@ -151,6 +159,8 @@ type _createGlobalTaskListener_Body = CreateGlobalTaskListenerData extends { bod
  *
  * Create a new global user task listener.
   *
+ * @example Create a global task listener
+ * {@includeCode ../../examples/admin-operations.ts#CreateGlobalTaskListener}
  * @operationId createGlobalTaskListener
  * @tags Global listener
  */
@@ -164,6 +174,8 @@ type _createGroup_Body = CreateGroupData extends { body?: infer B } ? B : never;
  *
  * Create a new group.
   *
+ * @example Create a group
+ * {@includeCode ../../examples/group.ts#CreateGroup}
  * @operationId createGroup
  * @tags Group
  */
@@ -178,6 +190,8 @@ type _createMappingRule_Body = CreateMappingRuleData extends { body?: infer B } 
  * Create a new mapping rule
  *
   *
+ * @example Create a mapping rule
+ * {@includeCode ../../examples/mapping-rule.ts#CreateMappingRule}
  * @operationId createMappingRule
  * @tags Mapping rule
  */
@@ -214,6 +228,8 @@ type _createRole_Body = CreateRoleData extends { body?: infer B } ? B : never;
  *
  * Create a new role.
   *
+ * @example Create a role
+ * {@includeCode ../../examples/role.ts#CreateRole}
  * @operationId createRole
  * @tags Role
  */
@@ -227,6 +243,8 @@ type _createTenant_Body = CreateTenantData extends { body?: infer B } ? B : neve
  *
  * Creates a new tenant.
   *
+ * @example Create a tenant
+ * {@includeCode ../../examples/tenant.ts#CreateTenant}
  * @operationId createTenant
  * @tags Tenant
  */
@@ -240,6 +258,8 @@ type _createUser_Body = CreateUserData extends { body?: infer B } ? B : never;
  *
  * Create a new user.
   *
+ * @example Create a user
+ * {@includeCode ../../examples/user.ts#CreateUser}
  * @operationId createUser
  * @tags User
  */
@@ -255,6 +275,8 @@ type _deleteDecisionInstancesBatchOperation_Body = DeleteDecisionInstancesBatchO
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Delete decision instances in batch
+ * {@includeCode ../../examples/batch-operation.ts#DeleteDecisionInstancesBatchOperation}
  * @operationId deleteDecisionInstancesBatchOperation
  * @tags Decision instance
  */
@@ -271,6 +293,8 @@ type _deleteProcessInstancesBatchOperation_Body = DeleteProcessInstancesBatchOpe
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Delete process instances in batch
+ * {@includeCode ../../examples/batch-operation.ts#DeleteProcessInstancesBatchOperation}
  * @operationId deleteProcessInstancesBatchOperation
  * @tags Process instance
  */
@@ -287,6 +311,8 @@ type _evaluateConditionals_Body = EvaluateConditionalsData extends { body?: infe
  * Multiple root-level conditional start events of the same process definition can trigger if their conditions evaluate to true.
  *
   *
+ * @example Evaluate conditionals
+ * {@includeCode ../../examples/admin-operations.ts#EvaluateConditionals}
  * @operationId evaluateConditionals
  * @tags Conditional
  */
@@ -321,6 +347,8 @@ type _evaluateExpression_Body = EvaluateExpressionData extends { body?: infer B 
  *
  * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
   *
+ * @example Evaluate an expression
+ * {@includeCode ../../examples/admin-operations.ts#EvaluateExpression}
  * @operationId evaluateExpression
  * @tags Expression
  */
@@ -335,6 +363,8 @@ type _getJobErrorStatistics_Body = GetJobErrorStatisticsData extends { body?: in
  * Returns aggregated metrics per error for the given jobType.
  *
   *
+ * @example Get job error statistics
+ * {@includeCode ../../examples/admin-operations.ts#GetJobErrorStatistics}
  * @operationId getJobErrorStatistics
  * @tags Job
   *
@@ -355,6 +385,8 @@ type _getJobTimeSeriesStatistics_Body = GetJobTimeSeriesStatisticsData extends {
  * Each item in the response corresponds to one time bucket of the requested resolution.
  *
   *
+ * @example Get job time series statistics
+ * {@includeCode ../../examples/admin-operations.ts#GetJobTimeSeriesStatistics}
  * @operationId getJobTimeSeriesStatistics
  * @tags Job
   *
@@ -373,6 +405,8 @@ type _getJobTypeStatistics_Body = GetJobTypeStatisticsData extends { body?: infe
  * Get statistics about jobs, grouped by job type.
  *
   *
+ * @example Get job type statistics
+ * {@includeCode ../../examples/admin-operations.ts#GetJobTypeStatistics}
  * @operationId getJobTypeStatistics
  * @tags Job
   *
@@ -391,6 +425,8 @@ type _getJobWorkerStatistics_Body = GetJobWorkerStatisticsData extends { body?: 
  * Get statistics about jobs, grouped by worker, for a given job type.
  *
   *
+ * @example Get job worker statistics
+ * {@includeCode ../../examples/admin-operations.ts#GetJobWorkerStatistics}
  * @operationId getJobWorkerStatistics
  * @tags Job
   *
@@ -409,6 +445,8 @@ type _getProcessDefinitionInstanceStatistics_Body = GetProcessDefinitionInstance
  * Get statistics about process instances, grouped by process definition and tenant.
  *
   *
+ * @example Get process definition instance statistics
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionInstanceStatistics}
  * @operationId getProcessDefinitionInstanceStatistics
  * @tags Process definition
   *
@@ -428,6 +466,8 @@ type _getProcessDefinitionInstanceVersionStatistics_Body = GetProcessDefinitionI
  * The process definition ID must be provided as a required field in the request body filter.
  *
   *
+ * @example Get version statistics
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionInstanceVersionStatistics}
  * @operationId getProcessDefinitionInstanceVersionStatistics
  * @tags Process definition
   *
@@ -446,6 +486,8 @@ type _getProcessDefinitionMessageSubscriptionStatistics_Body = GetProcessDefinit
  * Get message subscription statistics, grouped by process definition.
  *
   *
+ * @example Get message subscription statistics
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionMessageSubscriptionStatistics}
  * @operationId getProcessDefinitionMessageSubscriptionStatistics
  * @tags Process definition
   *
@@ -466,6 +508,8 @@ type _getProcessInstanceStatisticsByDefinition_Body = GetProcessInstanceStatisti
  * provided as a filter in the request body.
  *
   *
+ * @example Get instance statistics by definition
+ * {@includeCode ../../examples/admin-operations.ts#GetProcessInstanceStatisticsByDefinition}
  * @operationId getProcessInstanceStatisticsByDefinition
  * @tags Incident
   *
@@ -485,6 +529,8 @@ type _getProcessInstanceStatisticsByError_Body = GetProcessInstanceStatisticsByE
  * grouped by incident error hash code.
  *
   *
+ * @example Get instance statistics by error
+ * {@includeCode ../../examples/admin-operations.ts#GetProcessInstanceStatisticsByError}
  * @operationId getProcessInstanceStatisticsByError
  * @tags Incident
   *
@@ -506,6 +552,8 @@ type _migrateProcessInstancesBatchOperation_Body = MigrateProcessInstancesBatchO
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Migrate process instances in batch
+ * {@includeCode ../../examples/batch-operation.ts#MigrateProcessInstancesBatchOperation}
  * @operationId migrateProcessInstancesBatchOperation
  * @tags Process instance
  */
@@ -525,6 +573,8 @@ type _modifyProcessInstancesBatchOperation_Body = ModifyProcessInstancesBatchOpe
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Modify process instances in batch
+ * {@includeCode ../../examples/batch-operation.ts#ModifyProcessInstancesBatchOperation}
  * @operationId modifyProcessInstancesBatchOperation
  * @tags Process instance
  */
@@ -544,6 +594,8 @@ type _pinClock_Body = PinClockData extends { body?: infer B } ? B : never;
  * in future releases.
  *
   *
+ * @example Pin the cluster clock
+ * {@includeCode ../../examples/admin-operations.ts#PinClock}
  * @operationId pinClock
  * @tags Clock
  */
@@ -581,6 +633,8 @@ type _resolveIncidentsBatchOperation_Body = ResolveIncidentsBatchOperationData e
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Resolve incidents in batch
+ * {@includeCode ../../examples/batch-operation.ts#ResolveIncidentsBatchOperation}
  * @operationId resolveIncidentsBatchOperation
  * @tags Process instance
  */
@@ -594,6 +648,8 @@ type _searchAuditLogs_Body = SearchAuditLogsData extends { body?: infer B } ? B 
  *
  * Search for audit logs based on given criteria.
   *
+ * @example Search audit logs
+ * {@includeCode ../../examples/admin-operations.ts#SearchAuditLogs}
  * @operationId searchAuditLogs
  * @tags Audit Log
   *
@@ -611,6 +667,8 @@ type _searchAuthorizations_Body = SearchAuthorizationsData extends { body?: infe
  *
  * Search for authorizations based on given criteria.
   *
+ * @example Search authorizations
+ * {@includeCode ../../examples/authorization.ts#SearchAuthorizations}
  * @operationId searchAuthorizations
  * @tags Authorization
   *
@@ -628,6 +686,8 @@ type _searchBatchOperationItems_Body = SearchBatchOperationItemsData extends { b
  *
  * Search for batch operation items based on given criteria.
   *
+ * @example Search batch operation items
+ * {@includeCode ../../examples/batch-operation.ts#SearchBatchOperationItems}
  * @operationId searchBatchOperationItems
  * @tags Batch operation
   *
@@ -645,6 +705,8 @@ type _searchBatchOperations_Body = SearchBatchOperationsData extends { body?: in
  *
  * Search for batch operations based on given criteria.
   *
+ * @example Search batch operations
+ * {@includeCode ../../examples/batch-operation.ts#SearchBatchOperations}
  * @operationId searchBatchOperations
  * @tags Batch operation
   *
@@ -662,6 +724,8 @@ type _searchCorrelatedMessageSubscriptions_Body = SearchCorrelatedMessageSubscri
  *
  * Search correlated message subscriptions based on given criteria.
   *
+ * @example Search correlated message subscriptions
+ * {@includeCode ../../examples/admin-operations.ts#SearchCorrelatedMessageSubscriptions}
  * @operationId searchCorrelatedMessageSubscriptions
  * @tags Message subscription
   *
@@ -698,6 +762,8 @@ type _searchDecisionInstances_Body = SearchDecisionInstancesData extends { body?
  *
  * Search for decision instances based on given criteria.
   *
+ * @example Search decision instances
+ * {@includeCode ../../examples/additional-operations.ts#SearchDecisionInstances}
  * @operationId searchDecisionInstances
  * @tags Decision instance
   *
@@ -715,6 +781,8 @@ type _searchDecisionRequirements_Body = SearchDecisionRequirementsData extends {
  *
  * Search for decision requirements based on given criteria.
   *
+ * @example Search decision requirements
+ * {@includeCode ../../examples/additional-operations.ts#SearchDecisionRequirements}
  * @operationId searchDecisionRequirements
  * @tags Decision requirements
   *
@@ -732,6 +800,8 @@ type _searchElementInstances_Body = SearchElementInstancesData extends { body?: 
  *
  * Search for element instances based on given criteria.
   *
+ * @example Search element instances
+ * {@includeCode ../../examples/extended-operations.ts#SearchElementInstances}
  * @operationId searchElementInstances
  * @tags Element instance
   *
@@ -749,6 +819,8 @@ type _searchGlobalTaskListeners_Body = SearchGlobalTaskListenersData extends { b
  *
  * Search for global user task listeners based on given criteria.
   *
+ * @example Search global task listeners
+ * {@includeCode ../../examples/admin-operations.ts#SearchGlobalTaskListeners}
  * @operationId searchGlobalTaskListeners
  * @tags Global listener
   *
@@ -766,6 +838,8 @@ type _searchGroups_Body = SearchGroupsData extends { body?: infer B } ? B : neve
  *
  * Search for groups based on given criteria.
   *
+ * @example Search groups
+ * {@includeCode ../../examples/group.ts#SearchGroups}
  * @operationId searchGroups
  * @tags Group
   *
@@ -803,6 +877,8 @@ type _searchJobs_Body = SearchJobsData extends { body?: infer B } ? B : never;
  *
  * Search for jobs based on given criteria.
   *
+ * @example Search jobs
+ * {@includeCode ../../examples/additional-operations.ts#SearchJobs}
  * @operationId searchJobs
  * @tags Job
   *
@@ -821,6 +897,8 @@ type _searchMappingRule_Body = SearchMappingRuleData extends { body?: infer B } 
  * Search for mapping rules based on given criteria.
  *
   *
+ * @example Search mapping rules
+ * {@includeCode ../../examples/mapping-rule.ts#SearchMappingRule}
  * @operationId searchMappingRule
  * @tags Mapping rule
   *
@@ -838,6 +916,8 @@ type _searchMessageSubscriptions_Body = SearchMessageSubscriptionsData extends {
  *
  * Search for message subscriptions based on given criteria.
   *
+ * @example Search message subscriptions
+ * {@includeCode ../../examples/admin-operations.ts#SearchMessageSubscriptions}
  * @operationId searchMessageSubscriptions
  * @tags Message subscription
   *
@@ -855,6 +935,8 @@ type _searchProcessDefinitions_Body = SearchProcessDefinitionsData extends { bod
  *
  * Search for process definitions based on given criteria.
   *
+ * @example Search process definitions
+ * {@includeCode ../../examples/extended-operations.ts#SearchProcessDefinitions}
  * @operationId searchProcessDefinitions
  * @tags Process definition
   *
@@ -891,6 +973,8 @@ type _searchRoles_Body = SearchRolesData extends { body?: infer B } ? B : never;
  *
  * Search for roles based on given criteria.
   *
+ * @example Search roles
+ * {@includeCode ../../examples/role.ts#SearchRoles}
  * @operationId searchRoles
  * @tags Role
   *
@@ -908,6 +992,8 @@ type _searchTenants_Body = SearchTenantsData extends { body?: infer B } ? B : ne
  *
  * Retrieves a filtered and sorted list of tenants.
   *
+ * @example Search tenants
+ * {@includeCode ../../examples/tenant.ts#SearchTenants}
  * @operationId searchTenants
  * @tags Tenant
   *
@@ -925,6 +1011,8 @@ type _searchUsers_Body = SearchUsersData extends { body?: infer B } ? B : never;
  *
  * Search for users based on given criteria.
   *
+ * @example Search users
+ * {@includeCode ../../examples/user.ts#SearchUsers}
  * @operationId searchUsers
  * @tags User
   *
@@ -963,6 +1051,8 @@ export function searchUserTasks(body: _searchUserTasks_Body, ec: { consistency: 
  * provided adHocSubProcessInstanceKey.
  *
   *
+ * @example Activate ad-hoc sub-process activities
+ * {@includeCode ../../examples/extended-operations.ts#ActivateAdHocSubProcessActivities}
  * @operationId activateAdHocSubProcessActivities
  * @tags Ad-hoc sub-process
  */
@@ -977,6 +1067,8 @@ export function activateAdHocSubProcessActivities(options?: Parameters<typeof _a
  * Members of the group inherit the group authorizations, roles, and tenant assignments.
  *
   *
+ * @example Assign a client to a group
+ * {@includeCode ../../examples/group.ts#AssignClientToGroup}
  * @operationId assignClientToGroup
  * @tags Group
  */
@@ -991,6 +1083,8 @@ export function assignClientToGroup(options?: Parameters<typeof _assignClientToG
  * The client can then access tenant data and perform authorized actions.
  *
   *
+ * @example Assign a client to a tenant
+ * {@includeCode ../../examples/tenant.ts#AssignClientToTenant}
  * @operationId assignClientToTenant
  * @tags Tenant
  */
@@ -1005,6 +1099,8 @@ export function assignClientToTenant(options?: Parameters<typeof _assignClientTo
  * Group members (users, clients) can then access tenant data and perform authorized actions.
  *
   *
+ * @example Assign a group to a tenant
+ * {@includeCode ../../examples/tenant.ts#AssignGroupToTenant}
  * @operationId assignGroupToTenant
  * @tags Tenant
  */
@@ -1017,6 +1113,8 @@ export function assignGroupToTenant(options?: Parameters<typeof _assignGroupToTe
  *
  * Assigns a mapping rule to a group.
   *
+ * @example Assign a mapping rule to a group
+ * {@includeCode ../../examples/group.ts#AssignMappingRuleToGroup}
  * @operationId assignMappingRuleToGroup
  * @tags Group
  */
@@ -1029,6 +1127,8 @@ export function assignMappingRuleToGroup(options?: Parameters<typeof _assignMapp
  *
  * Assign a single mapping rule to a specified tenant.
   *
+ * @example Assign a mapping rule to a tenant
+ * {@includeCode ../../examples/tenant.ts#AssignMappingRuleToTenant}
  * @operationId assignMappingRuleToTenant
  * @tags Tenant
  */
@@ -1041,6 +1141,8 @@ export function assignMappingRuleToTenant(options?: Parameters<typeof _assignMap
  *
  * Assigns the specified role to the client. The client will inherit the authorizations associated with this role.
   *
+ * @example Assign a role to a client
+ * {@includeCode ../../examples/role.ts#AssignRoleToClient}
  * @operationId assignRoleToClient
  * @tags Role
  */
@@ -1053,6 +1155,8 @@ export function assignRoleToClient(options?: Parameters<typeof _assignRoleToClie
  *
  * Assigns the specified role to the group. Every member of the group (user or client) will inherit the authorizations associated with this role.
   *
+ * @example Assign a role to a group
+ * {@includeCode ../../examples/role.ts#AssignRoleToGroup}
  * @operationId assignRoleToGroup
  * @tags Role
  */
@@ -1065,6 +1169,8 @@ export function assignRoleToGroup(options?: Parameters<typeof _assignRoleToGroup
  *
  * Assigns a role to a mapping rule.
   *
+ * @example Assign a role to a mapping rule
+ * {@includeCode ../../examples/role.ts#AssignRoleToMappingRule}
  * @operationId assignRoleToMappingRule
  * @tags Role
  */
@@ -1079,6 +1185,8 @@ export function assignRoleToMappingRule(options?: Parameters<typeof _assignRoleT
  * Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
  *
   *
+ * @example Assign a role to a tenant
+ * {@includeCode ../../examples/tenant.ts#AssignRoleToTenant}
  * @operationId assignRoleToTenant
  * @tags Tenant
  */
@@ -1091,6 +1199,8 @@ export function assignRoleToTenant(options?: Parameters<typeof _assignRoleToTena
  *
  * Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
   *
+ * @example Assign a role to a user
+ * {@includeCode ../../examples/role.ts#AssignRoleToUser}
  * @operationId assignRoleToUser
  * @tags Role
  */
@@ -1120,6 +1230,8 @@ export function assignUserTask(options?: Parameters<typeof _assignUserTask>[0]):
  * Group members inherit the group authorizations, roles, and tenant assignments.
  *
   *
+ * @example Assign a user to a group
+ * {@includeCode ../../examples/group.ts#AssignUserToGroup}
  * @operationId assignUserToGroup
  * @tags Group
  */
@@ -1132,6 +1244,8 @@ export function assignUserToGroup(options?: Parameters<typeof _assignUserToGroup
  *
  * Assign a single user to a specified tenant. The user can then access tenant data and perform authorized actions.
   *
+ * @example Assign a user to a tenant
+ * {@includeCode ../../examples/tenant.ts#AssignUserToTenant}
  * @operationId assignUserToTenant
  * @tags Tenant
  */
@@ -1146,6 +1260,8 @@ export function assignUserToTenant(options?: Parameters<typeof _assignUserToTena
  * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Cancel a batch operation
+ * {@includeCode ../../examples/batch-operation.ts#CancelBatchOperation}
  * @operationId cancelBatchOperation
  * @tags Batch operation
  */
@@ -1221,6 +1337,8 @@ export function createDocument(options?: Parameters<typeof _createDocument>[0]):
  * Note that this is currently supported for document stores of type: AWS, GCP
  *
   *
+ * @example Create a document link
+ * {@includeCode ../../examples/additional-operations.ts#CreateDocumentLink}
  * @operationId createDocumentLink
  * @tags Document
  */
@@ -1266,6 +1384,8 @@ export function createDocuments(options?: Parameters<typeof _createDocuments>[0]
  * repeats.
  *
   *
+ * @example Create element instance variables
+ * {@includeCode ../../examples/extended-operations.ts#CreateElementInstanceVariables}
  * @operationId createElementInstanceVariables
  * @tags Element instance
  */
@@ -1278,6 +1398,8 @@ export function createElementInstanceVariables(options?: Parameters<typeof _crea
  *
  * Create a new cluster variable for the given tenant.
   *
+ * @example Create a tenant cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#CreateTenantClusterVariable}
  * @operationId createTenantClusterVariable
  * @tags Cluster Variable
  */
@@ -1290,6 +1412,8 @@ export function createTenantClusterVariable(options?: Parameters<typeof _createT
  *
  * Deletes the authorization with the given key.
   *
+ * @example Delete an authorization
+ * {@includeCode ../../examples/authorization.ts#DeleteAuthorization}
  * @operationId deleteAuthorization
  * @tags Authorization
  */
@@ -1302,6 +1426,8 @@ export function deleteAuthorization(options?: Parameters<typeof _deleteAuthoriza
  *
  * Delete all associated decision evaluations based on provided key.
   *
+ * @example Delete a decision instance
+ * {@includeCode ../../examples/additional-operations.ts#DeleteDecisionInstance}
  * @operationId deleteDecisionInstance
  * @tags Decision instance
  */
@@ -1317,6 +1443,8 @@ export function deleteDecisionInstance(options?: Parameters<typeof _deleteDecisi
  * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
  *
   *
+ * @example Delete a document
+ * {@includeCode ../../examples/additional-operations.ts#DeleteDocument}
  * @operationId deleteDocument
  * @tags Document
  */
@@ -1329,6 +1457,8 @@ export function deleteDocument(options?: Parameters<typeof _deleteDocument>[0]):
  *
  * Delete a global-scoped cluster variable.
   *
+ * @example Delete a global cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#DeleteGlobalClusterVariable}
  * @operationId deleteGlobalClusterVariable
  * @tags Cluster Variable
  */
@@ -1341,6 +1471,8 @@ export function deleteGlobalClusterVariable(options?: Parameters<typeof _deleteG
  *
  * Deletes a global user task listener.
   *
+ * @example Delete a global task listener
+ * {@includeCode ../../examples/admin-operations.ts#DeleteGlobalTaskListener}
  * @operationId deleteGlobalTaskListener
  * @tags Global listener
  */
@@ -1353,6 +1485,8 @@ export function deleteGlobalTaskListener(options?: Parameters<typeof _deleteGlob
  *
  * Deletes the group with the given ID.
   *
+ * @example Delete a group
+ * {@includeCode ../../examples/group.ts#DeleteGroup}
  * @operationId deleteGroup
  * @tags Group
  */
@@ -1366,6 +1500,8 @@ export function deleteGroup(options?: Parameters<typeof _deleteGroup>[0]): Cance
  * Deletes the mapping rule with the given ID.
  *
   *
+ * @example Delete a mapping rule
+ * {@includeCode ../../examples/mapping-rule.ts#DeleteMappingRule}
  * @operationId deleteMappingRule
  * @tags Mapping rule
  */
@@ -1378,6 +1514,8 @@ export function deleteMappingRule(options?: Parameters<typeof _deleteMappingRule
  *
  * Deletes a process instance. Only instances that are completed or terminated can be deleted.
   *
+ * @example Delete a process instance
+ * {@includeCode ../../examples/extended-operations.ts#DeleteProcessInstance}
  * @operationId deleteProcessInstance
  * @tags Process instance
  */
@@ -1416,6 +1554,8 @@ export function deleteResource(options?: Parameters<typeof _deleteResource>[0]):
  *
  * Deletes the role with the given ID.
   *
+ * @example Delete a role
+ * {@includeCode ../../examples/role.ts#DeleteRole}
  * @operationId deleteRole
  * @tags Role
  */
@@ -1428,6 +1568,8 @@ export function deleteRole(options?: Parameters<typeof _deleteRole>[0]): Cancela
  *
  * Deletes an existing tenant.
   *
+ * @example Delete a tenant
+ * {@includeCode ../../examples/tenant.ts#DeleteTenant}
  * @operationId deleteTenant
  * @tags Tenant
  */
@@ -1440,6 +1582,8 @@ export function deleteTenant(options?: Parameters<typeof _deleteTenant>[0]): Can
  *
  * Delete a tenant-scoped cluster variable.
   *
+ * @example Delete a tenant cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#DeleteTenantClusterVariable}
  * @operationId deleteTenantClusterVariable
  * @tags Cluster Variable
  */
@@ -1452,6 +1596,8 @@ export function deleteTenantClusterVariable(options?: Parameters<typeof _deleteT
  *
  * Deletes a user.
   *
+ * @example Delete a user
+ * {@includeCode ../../examples/user.ts#DeleteUser}
  * @operationId deleteUser
  * @tags User
  */
@@ -1479,6 +1625,8 @@ export function failJob(options?: Parameters<typeof _failJob>[0]): CancelablePro
  *
  * Get an audit log entry by auditLogKey.
   *
+ * @example Get an audit log entry
+ * {@includeCode ../../examples/admin-operations.ts#GetAuditLog}
  * @operationId getAuditLog
  * @tags Audit Log
   *
@@ -1495,6 +1643,8 @@ export function getAuditLog(options: Parameters<typeof _getAuditLog>[0] | undefi
  *
  * Retrieves the current authenticated user.
   *
+ * @example Get authentication info
+ * {@includeCode ../../examples/admin-operations.ts#GetAuthentication}
  * @operationId getAuthentication
  * @tags Authentication
  */
@@ -1507,6 +1657,8 @@ export function getAuthentication(options?: Parameters<typeof _getAuthentication
  *
  * Get authorization by the given key.
   *
+ * @example Get an authorization
+ * {@includeCode ../../examples/authorization.ts#GetAuthorization}
  * @operationId getAuthorization
  * @tags Authorization
   *
@@ -1523,6 +1675,8 @@ export function getAuthorization(options: Parameters<typeof _getAuthorization>[0
  *
  * Get batch operation by key.
   *
+ * @example Get a batch operation
+ * {@includeCode ../../examples/batch-operation.ts#GetBatchOperation}
  * @operationId getBatchOperation
  * @tags Batch operation
   *
@@ -1575,6 +1729,8 @@ export const getDecisionDefinitionXML = getDecisionDefinitionXml;
  *
  * Returns a decision instance.
   *
+ * @example Get a decision instance
+ * {@includeCode ../../examples/additional-operations.ts#GetDecisionInstance}
  * @operationId getDecisionInstance
  * @tags Decision instance
   *
@@ -1591,6 +1747,8 @@ export function getDecisionInstance(options: Parameters<typeof _getDecisionInsta
  *
  * Returns Decision Requirements as JSON.
   *
+ * @example Get decision requirements
+ * {@includeCode ../../examples/additional-operations.ts#GetDecisionRequirements}
  * @operationId getDecisionRequirements
  * @tags Decision requirements
   *
@@ -1640,6 +1798,8 @@ export function getDocument(options?: Parameters<typeof _getDocument>[0]): Cance
  *
  * Returns element instance as JSON.
   *
+ * @example Get an element instance
+ * {@includeCode ../../examples/extended-operations.ts#GetElementInstance}
  * @operationId getElementInstance
  * @tags Element instance
   *
@@ -1656,6 +1816,8 @@ export function getElementInstance(options: Parameters<typeof _getElementInstanc
  *
  * Get a global-scoped cluster variable.
   *
+ * @example Get a global cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#GetGlobalClusterVariable}
  * @operationId getGlobalClusterVariable
  * @tags Cluster Variable
   *
@@ -1673,6 +1835,8 @@ export function getGlobalClusterVariable(options: Parameters<typeof _getGlobalCl
  * Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
  *
   *
+ * @example Get global job statistics
+ * {@includeCode ../../examples/admin-operations.ts#GetGlobalJobStatistics}
  * @operationId getGlobalJobStatistics
  * @tags Job
   *
@@ -1689,6 +1853,8 @@ export function getGlobalJobStatistics(options: Parameters<typeof _getGlobalJobS
  *
  * Get a global user task listener by its id.
   *
+ * @example Get a global task listener
+ * {@includeCode ../../examples/admin-operations.ts#GetGlobalTaskListener}
  * @operationId getGlobalTaskListener
  * @tags Global listener
   *
@@ -1705,6 +1871,8 @@ export function getGlobalTaskListener(options: Parameters<typeof _getGlobalTaskL
  *
  * Get a group by its ID.
   *
+ * @example Get a group
+ * {@includeCode ../../examples/group.ts#GetGroup}
  * @operationId getGroup
  * @tags Group
   *
@@ -1740,6 +1908,8 @@ export function getIncident(options: Parameters<typeof _getIncident>[0] | undefi
  *
  * Obtains the status of the current Camunda license.
   *
+ * @example Get license information
+ * {@includeCode ../../examples/admin-operations.ts#GetLicense}
  * @operationId getLicense
  * @tags License
  */
@@ -1753,6 +1923,8 @@ export function getLicense(options?: Parameters<typeof _getLicense>[0]): Cancela
  * Gets the mapping rule with the given ID.
  *
   *
+ * @example Get a mapping rule
+ * {@includeCode ../../examples/mapping-rule.ts#GetMappingRule}
  * @operationId getMappingRule
  * @tags Mapping rule
   *
@@ -1769,6 +1941,8 @@ export function getMappingRule(options: Parameters<typeof _getMappingRule>[0] | 
  *
  * Returns process definition as JSON.
   *
+ * @example Get a process definition
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinition}
  * @operationId getProcessDefinition
  * @tags Process definition
   *
@@ -1785,6 +1959,8 @@ export function getProcessDefinition(options: Parameters<typeof _getProcessDefin
  *
  * Get statistics about elements in currently running process instances by process definition key and search filter.
   *
+ * @example Get process definition element statistics
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionStatistics}
  * @operationId getProcessDefinitionStatistics
  * @tags Process definition
   *
@@ -1837,6 +2013,8 @@ export function getProcessInstance(options: Parameters<typeof _getProcessInstanc
  *
  * Returns the call hierarchy for a given process instance, showing its ancestry up to the root instance.
   *
+ * @example Get process instance call hierarchy
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessInstanceCallHierarchy}
  * @operationId getProcessInstanceCallHierarchy
  * @tags Process instance
   *
@@ -1853,6 +2031,8 @@ export function getProcessInstanceCallHierarchy(options: Parameters<typeof _getP
  *
  * Get sequence flows taken by the process instance.
   *
+ * @example Get process instance sequence flows
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessInstanceSequenceFlows}
  * @operationId getProcessInstanceSequenceFlows
  * @tags Process instance
   *
@@ -1869,6 +2049,8 @@ export function getProcessInstanceSequenceFlows(options: Parameters<typeof _getP
  *
  * Get statistics about elements by the process instance key.
   *
+ * @example Get process instance statistics
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessInstanceStatistics}
  * @operationId getProcessInstanceStatistics
  * @tags Process instance
   *
@@ -1889,6 +2071,8 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
  * :::
  *
   *
+ * @example Get a resource
+ * {@includeCode ../../examples/admin-operations.ts#GetResource}
  * @operationId getResource
  * @tags Resource
  */
@@ -1905,6 +2089,8 @@ export function getResource(options?: Parameters<typeof _getResource>[0]): Cance
  * :::
  *
   *
+ * @example Get resource content
+ * {@includeCode ../../examples/admin-operations.ts#GetResourceContent}
  * @operationId getResourceContent
  * @tags Resource
  */
@@ -1917,6 +2103,8 @@ export function getResourceContent(options?: Parameters<typeof _getResourceConte
  *
  * Get a role by its ID.
   *
+ * @example Get a role
+ * {@includeCode ../../examples/role.ts#GetRole}
  * @operationId getRole
  * @tags Role
   *
@@ -1935,6 +2123,8 @@ export function getRole(options: Parameters<typeof _getRole>[0] | undefined, ec:
  * Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
  *
   *
+ * @example Get start process form
+ * {@includeCode ../../examples/extended-operations.ts#GetStartProcessForm}
  * @operationId getStartProcessForm
  * @tags Process definition
   *
@@ -1951,6 +2141,8 @@ export function getStartProcessForm(options: Parameters<typeof _getStartProcessF
  *
  * Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
   *
+ * @example Check cluster status
+ * {@includeCode ../../examples/admin-operations.ts#GetStatus}
  * @operationId getStatus
  * @tags Cluster
  */
@@ -1968,6 +2160,8 @@ export function getStatus(options?: Parameters<typeof _getStatus>[0]): Cancelabl
  * in future releases.
  *
   *
+ * @example Get system configuration
+ * {@includeCode ../../examples/admin-operations.ts#GetSystemConfiguration}
  * @operationId getSystemConfiguration
  * @tags System
  */
@@ -1980,6 +2174,8 @@ export function getSystemConfiguration(options?: Parameters<typeof _getSystemCon
  *
  * Retrieves a single tenant by tenant ID.
   *
+ * @example Get a tenant
+ * {@includeCode ../../examples/tenant.ts#GetTenant}
  * @operationId getTenant
  * @tags Tenant
   *
@@ -1996,6 +2192,8 @@ export function getTenant(options: Parameters<typeof _getTenant>[0] | undefined,
  *
  * Get a tenant-scoped cluster variable.
   *
+ * @example Get a tenant cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#GetTenantClusterVariable}
  * @operationId getTenantClusterVariable
  * @tags Cluster Variable
   *
@@ -2026,6 +2224,8 @@ export function getTopology(options?: Parameters<typeof _getTopology>[0]): Cance
  *
  * Retrieve the usage metrics based on given criteria.
   *
+ * @example Get usage metrics
+ * {@includeCode ../../examples/admin-operations.ts#GetUsageMetrics}
  * @operationId getUsageMetrics
  * @tags System
   *
@@ -2042,6 +2242,8 @@ export function getUsageMetrics(options: Parameters<typeof _getUsageMetrics>[0] 
  *
  * Get a user by its username.
   *
+ * @example Get a user
+ * {@includeCode ../../examples/user.ts#GetUser}
  * @operationId getUser
  * @tags User
   *
@@ -2058,6 +2260,8 @@ export function getUser(options: Parameters<typeof _getUser>[0] | undefined, ec:
  *
  * Get the user task by the user task key.
   *
+ * @example Get a user task
+ * {@includeCode ../../examples/additional-operations.ts#GetUserTask}
  * @operationId getUserTask
  * @tags User task
   *
@@ -2076,6 +2280,8 @@ export function getUserTask(options: Parameters<typeof _getUserTask>[0] | undefi
  * Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
  *
   *
+ * @example Get a user task form
+ * {@includeCode ../../examples/additional-operations.ts#GetUserTaskForm}
  * @operationId getUserTaskForm
  * @tags User task
   *
@@ -2096,6 +2302,8 @@ export function getUserTaskForm(options: Parameters<typeof _getUserTaskForm>[0] 
  * The variable's scopeKey indicates whether it's a process-level variable or scoped to a
  * specific element instance.
   *
+ * @example Get a variable
+ * {@includeCode ../../examples/extended-operations.ts#GetVariable}
  * @operationId getVariable
  * @tags Variable
   *
@@ -2119,6 +2327,8 @@ export function getVariable(options: Parameters<typeof _getVariable>[0] | undefi
  * latest process improvements.
  *
   *
+ * @example Migrate a process instance
+ * {@includeCode ../../examples/extended-operations.ts#MigrateProcessInstance}
  * @operationId migrateProcessInstance
  * @tags Process instance
  */
@@ -2137,6 +2347,8 @@ export function migrateProcessInstance(options?: Parameters<typeof _migrateProce
  * For example, because an external system is not available or doesn't respond as expected.
  *
   *
+ * @example Modify a process instance
+ * {@includeCode ../../examples/extended-operations.ts#ModifyProcessInstance}
  * @operationId modifyProcessInstance
  * @tags Process instance
  */
@@ -2155,6 +2367,8 @@ export function modifyProcessInstance(options?: Parameters<typeof _modifyProcess
  * in future releases.
  *
   *
+ * @example Reset the cluster clock
+ * {@includeCode ../../examples/admin-operations.ts#ResetClock}
  * @operationId resetClock
  * @tags Clock
  */
@@ -2183,6 +2397,8 @@ export function resolveIncident(options?: Parameters<typeof _resolveIncident>[0]
  *
  * Creates a batch operation to resolve multiple incidents of a process instance.
   *
+ * @example Resolve process instance incidents
+ * {@includeCode ../../examples/extended-operations.ts#ResolveProcessInstanceIncidents}
  * @operationId resolveProcessInstanceIncidents
  * @tags Process instance
  */
@@ -2197,6 +2413,8 @@ export function resolveProcessInstanceIncidents(options?: Parameters<typeof _res
  * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Resume a batch operation
+ * {@includeCode ../../examples/batch-operation.ts#ResumeBatchOperation}
  * @operationId resumeBatchOperation
  * @tags Batch operation
  */
@@ -2209,6 +2427,8 @@ export function resumeBatchOperation(options?: Parameters<typeof _resumeBatchOpe
  *
  * Search clients assigned to a group.
   *
+ * @example Search clients in a group
+ * {@includeCode ../../examples/group.ts#SearchClientsForGroup}
  * @operationId searchClientsForGroup
  * @tags Group
   *
@@ -2225,6 +2445,8 @@ export function searchClientsForGroup(options: Parameters<typeof _searchClientsF
  *
  * Search clients with assigned role.
   *
+ * @example Search clients for a role
+ * {@includeCode ../../examples/role.ts#SearchClientsForRole}
  * @operationId searchClientsForRole
  * @tags Role
   *
@@ -2241,6 +2463,8 @@ export function searchClientsForRole(options: Parameters<typeof _searchClientsFo
  *
  * Retrieves a filtered and sorted list of clients for a specified tenant.
   *
+ * @example Search clients for a tenant
+ * {@includeCode ../../examples/tenant.ts#SearchClientsForTenant}
  * @operationId searchClientsForTenant
  * @tags Tenant
   *
@@ -2255,6 +2479,8 @@ export function searchClientsForTenant(options: Parameters<typeof _searchClients
 /**
  * Search for cluster variables based on given criteria. By default, long variable values in the response are truncated.
   *
+ * @example Search cluster variables
+ * {@includeCode ../../examples/admin-operations.ts#SearchClusterVariables}
  * @operationId searchClusterVariables
  * @tags Cluster Variable
   *
@@ -2278,6 +2504,8 @@ export function searchClusterVariables(options: Parameters<typeof _searchCluster
  * to the root element itself.
  *
   *
+ * @example Search element instance incidents
+ * {@includeCode ../../examples/extended-operations.ts#SearchElementInstanceIncidents}
  * @operationId searchElementInstanceIncidents
  * @tags Element instance
   *
@@ -2294,6 +2522,8 @@ export function searchElementInstanceIncidents(options: Parameters<typeof _searc
  *
  * Retrieves a filtered and sorted list of groups for a specified tenant.
   *
+ * @example Search groups for a tenant
+ * {@includeCode ../../examples/tenant.ts#SearchGroupIdsForTenant}
  * @operationId searchGroupIdsForTenant
  * @tags Tenant
   *
@@ -2310,6 +2540,8 @@ export function searchGroupIdsForTenant(options: Parameters<typeof _searchGroupI
  *
  * Search groups with assigned role.
   *
+ * @example Search groups for a role
+ * {@includeCode ../../examples/role.ts#SearchGroupsForRole}
  * @operationId searchGroupsForRole
  * @tags Role
   *
@@ -2326,6 +2558,8 @@ export function searchGroupsForRole(options: Parameters<typeof _searchGroupsForR
  *
  * Search mapping rules assigned to a group.
   *
+ * @example Search mapping rules for a group
+ * {@includeCode ../../examples/group.ts#SearchMappingRulesForGroup}
  * @operationId searchMappingRulesForGroup
  * @tags Group
   *
@@ -2342,6 +2576,8 @@ export function searchMappingRulesForGroup(options: Parameters<typeof _searchMap
  *
  * Search mapping rules with assigned role.
   *
+ * @example Search mapping rules for a role
+ * {@includeCode ../../examples/role.ts#SearchMappingRulesForRole}
  * @operationId searchMappingRulesForRole
  * @tags Role
   *
@@ -2358,6 +2594,8 @@ export function searchMappingRulesForRole(options: Parameters<typeof _searchMapp
  *
  * Retrieves a filtered and sorted list of MappingRules for a specified tenant.
   *
+ * @example Search mapping rules for a tenant
+ * {@includeCode ../../examples/tenant.ts#SearchMappingRulesForTenant}
  * @operationId searchMappingRulesForTenant
  * @tags Tenant
   *
@@ -2380,6 +2618,8 @@ export function searchMappingRulesForTenant(options: Parameters<typeof _searchMa
  * subprocesses or called processes under the root instance while excluding incidents directly tied to the root.
  *
   *
+ * @example Search process instance incidents
+ * {@includeCode ../../examples/extended-operations.ts#SearchProcessInstanceIncidents}
  * @operationId searchProcessInstanceIncidents
  * @tags Process instance
   *
@@ -2396,6 +2636,8 @@ export function searchProcessInstanceIncidents(options: Parameters<typeof _searc
  *
  * Search roles assigned to a group.
   *
+ * @example Search roles for a group
+ * {@includeCode ../../examples/group.ts#SearchRolesForGroup}
  * @operationId searchRolesForGroup
  * @tags Group
   *
@@ -2412,6 +2654,8 @@ export function searchRolesForGroup(options: Parameters<typeof _searchRolesForGr
  *
  * Retrieves a filtered and sorted list of roles for a specified tenant.
   *
+ * @example Search roles for a tenant
+ * {@includeCode ../../examples/tenant.ts#SearchRolesForTenant}
  * @operationId searchRolesForTenant
  * @tags Tenant
   *
@@ -2428,6 +2672,8 @@ export function searchRolesForTenant(options: Parameters<typeof _searchRolesForT
  *
  * Search users assigned to a group.
   *
+ * @example Search users in a group
+ * {@includeCode ../../examples/group.ts#SearchUsersForGroup}
  * @operationId searchUsersForGroup
  * @tags Group
   *
@@ -2444,6 +2690,8 @@ export function searchUsersForGroup(options: Parameters<typeof _searchUsersForGr
  *
  * Search users with assigned role.
   *
+ * @example Search users for a role
+ * {@includeCode ../../examples/role.ts#SearchUsersForRole}
  * @operationId searchUsersForRole
  * @tags Role
   *
@@ -2460,6 +2708,8 @@ export function searchUsersForRole(options: Parameters<typeof _searchUsersForRol
  *
  * Retrieves a filtered and sorted list of users for a specified tenant.
   *
+ * @example Search users for a tenant
+ * {@includeCode ../../examples/tenant.ts#SearchUsersForTenant}
  * @operationId searchUsersForTenant
  * @tags Tenant
   *
@@ -2476,6 +2726,8 @@ export function searchUsersForTenant(options: Parameters<typeof _searchUsersForT
  *
  * Search for user task audit logs based on given criteria.
   *
+ * @example Search user task audit logs
+ * {@includeCode ../../examples/additional-operations.ts#SearchUserTaskAuditLogs}
  * @operationId searchUserTaskAuditLogs
  * @tags User task
   *
@@ -2521,6 +2773,8 @@ export function searchUserTaskEffectiveVariables(options: Parameters<typeof _sea
  * are truncated.
  *
   *
+ * @example Search user task variables
+ * {@includeCode ../../examples/additional-operations.ts#SearchUserTaskVariables}
  * @operationId searchUserTaskVariables
  * @tags User task
   *
@@ -2545,6 +2799,8 @@ export function searchUserTaskVariables(options: Parameters<typeof _searchUserTa
  *
  * By default, long variable values in the response are truncated.
   *
+ * @example Search variables
+ * {@includeCode ../../examples/extended-operations.ts#SearchVariables}
  * @operationId searchVariables
  * @tags Variable
   *
@@ -2563,6 +2819,8 @@ export function searchVariables(options: Parameters<typeof _searchVariables>[0] 
  * This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
   *
+ * @example Suspend a batch operation
+ * {@includeCode ../../examples/batch-operation.ts#SuspendBatchOperation}
  * @operationId suspendBatchOperation
  * @tags Batch operation
  */
@@ -2576,6 +2834,8 @@ export function suspendBatchOperation(options?: Parameters<typeof _suspendBatchO
  * Reports a business error (i.e. non-technical) that occurs while processing a job.
  *
   *
+ * @example Throw a job error
+ * {@includeCode ../../examples/additional-operations.ts#ThrowJobError}
  * @operationId throwJobError
  * @tags Job
  */
@@ -2590,6 +2850,8 @@ export function throwJobError(options?: Parameters<typeof _throwJobError>[0]): C
  * The client is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
  *
   *
+ * @example Unassign a client from a group
+ * {@includeCode ../../examples/group.ts#UnassignClientFromGroup}
  * @operationId unassignClientFromGroup
  * @tags Group
  */
@@ -2604,6 +2866,8 @@ export function unassignClientFromGroup(options?: Parameters<typeof _unassignCli
  * The client can no longer access tenant data.
  *
   *
+ * @example Unassign a client from a tenant
+ * {@includeCode ../../examples/tenant.ts#UnassignClientFromTenant}
  * @operationId unassignClientFromTenant
  * @tags Tenant
  */
@@ -2618,6 +2882,8 @@ export function unassignClientFromTenant(options?: Parameters<typeof _unassignCl
  * Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
  *
   *
+ * @example Unassign a group from a tenant
+ * {@includeCode ../../examples/tenant.ts#UnassignGroupFromTenant}
  * @operationId unassignGroupFromTenant
  * @tags Tenant
  */
@@ -2630,6 +2896,8 @@ export function unassignGroupFromTenant(options?: Parameters<typeof _unassignGro
  *
  * Unassigns a mapping rule from a group.
   *
+ * @example Unassign a mapping rule from a group
+ * {@includeCode ../../examples/group.ts#UnassignMappingRuleFromGroup}
  * @operationId unassignMappingRuleFromGroup
  * @tags Group
  */
@@ -2642,6 +2910,8 @@ export function unassignMappingRuleFromGroup(options?: Parameters<typeof _unassi
  *
  * Unassigns a single mapping rule from a specified tenant without deleting the rule.
   *
+ * @example Unassign a mapping rule from a tenant
+ * {@includeCode ../../examples/tenant.ts#UnassignMappingRuleFromTenant}
  * @operationId unassignMappingRuleFromTenant
  * @tags Tenant
  */
@@ -2654,6 +2924,8 @@ export function unassignMappingRuleFromTenant(options?: Parameters<typeof _unass
  *
  * Unassigns the specified role from the client. The client will no longer inherit the authorizations associated with this role.
   *
+ * @example Unassign a role from a client
+ * {@includeCode ../../examples/role.ts#UnassignRoleFromClient}
  * @operationId unassignRoleFromClient
  * @tags Role
  */
@@ -2666,6 +2938,8 @@ export function unassignRoleFromClient(options?: Parameters<typeof _unassignRole
  *
  * Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
   *
+ * @example Unassign a role from a group
+ * {@includeCode ../../examples/role.ts#UnassignRoleFromGroup}
  * @operationId unassignRoleFromGroup
  * @tags Role
  */
@@ -2678,6 +2952,8 @@ export function unassignRoleFromGroup(options?: Parameters<typeof _unassignRoleF
  *
  * Unassigns a role from a mapping rule.
   *
+ * @example Unassign a role from a mapping rule
+ * {@includeCode ../../examples/role.ts#UnassignRoleFromMappingRule}
  * @operationId unassignRoleFromMappingRule
  * @tags Role
  */
@@ -2693,6 +2969,8 @@ export function unassignRoleFromMappingRule(options?: Parameters<typeof _unassig
  * tenant's data - unless they are assigned directly to the tenant.
  *
   *
+ * @example Unassign a role from a tenant
+ * {@includeCode ../../examples/tenant.ts#UnassignRoleFromTenant}
  * @operationId unassignRoleFromTenant
  * @tags Tenant
  */
@@ -2705,6 +2983,8 @@ export function unassignRoleFromTenant(options?: Parameters<typeof _unassignRole
  *
  * Unassigns a role from a user. The user will no longer inherit the authorizations associated with this role.
   *
+ * @example Unassign a role from a user
+ * {@includeCode ../../examples/role.ts#UnassignRoleFromUser}
  * @operationId unassignRoleFromUser
  * @tags Role
  */
@@ -2719,6 +2999,8 @@ export function unassignRoleFromUser(options?: Parameters<typeof _unassignRoleFr
  * The user is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
  *
   *
+ * @example Unassign a user from a group
+ * {@includeCode ../../examples/group.ts#UnassignUserFromGroup}
  * @operationId unassignUserFromGroup
  * @tags Group
  */
@@ -2733,6 +3015,8 @@ export function unassignUserFromGroup(options?: Parameters<typeof _unassignUserF
  * The user can no longer access tenant data.
  *
   *
+ * @example Unassign a user from a tenant
+ * {@includeCode ../../examples/tenant.ts#UnassignUserFromTenant}
  * @operationId unassignUserFromTenant
  * @tags Tenant
  */
@@ -2760,6 +3044,8 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
  *
  * Update the authorization with the given key.
   *
+ * @example Update an authorization
+ * {@includeCode ../../examples/authorization.ts#UpdateAuthorization}
  * @operationId updateAuthorization
  * @tags Authorization
  */
@@ -2774,6 +3060,8 @@ export function updateAuthorization(options?: Parameters<typeof _updateAuthoriza
  * The variable must exist, otherwise a 404 error is returned.
  *
   *
+ * @example Update a global cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#UpdateGlobalClusterVariable}
  * @operationId updateGlobalClusterVariable
  * @tags Cluster Variable
  */
@@ -2786,6 +3074,8 @@ export function updateGlobalClusterVariable(options?: Parameters<typeof _updateG
  *
  * Updates a global user task listener.
   *
+ * @example Update a global task listener
+ * {@includeCode ../../examples/admin-operations.ts#UpdateGlobalTaskListener}
  * @operationId updateGlobalTaskListener
  * @tags Global listener
  */
@@ -2798,6 +3088,8 @@ export function updateGlobalTaskListener(options?: Parameters<typeof _updateGlob
  *
  * Update a group with the given ID.
   *
+ * @example Update a group
+ * {@includeCode ../../examples/group.ts#UpdateGroup}
  * @operationId updateGroup
  * @tags Group
  */
@@ -2810,6 +3102,8 @@ export function updateGroup(options?: Parameters<typeof _updateGroup>[0]): Cance
  *
  * Update a job with the given key.
   *
+ * @example Update a job
+ * {@includeCode ../../examples/additional-operations.ts#UpdateJob}
  * @operationId updateJob
  * @tags Job
  */
@@ -2823,6 +3117,8 @@ export function updateJob(options?: Parameters<typeof _updateJob>[0]): Cancelabl
  * Update a mapping rule.
  *
   *
+ * @example Update a mapping rule
+ * {@includeCode ../../examples/mapping-rule.ts#UpdateMappingRule}
  * @operationId updateMappingRule
  * @tags Mapping rule
  */
@@ -2835,6 +3131,8 @@ export function updateMappingRule(options?: Parameters<typeof _updateMappingRule
  *
  * Update a role with the given ID.
   *
+ * @example Update a role
+ * {@includeCode ../../examples/role.ts#UpdateRole}
  * @operationId updateRole
  * @tags Role
  */
@@ -2847,6 +3145,8 @@ export function updateRole(options?: Parameters<typeof _updateRole>[0]): Cancela
  *
  * Updates an existing tenant.
   *
+ * @example Update a tenant
+ * {@includeCode ../../examples/tenant.ts#UpdateTenant}
  * @operationId updateTenant
  * @tags Tenant
  */
@@ -2861,6 +3161,8 @@ export function updateTenant(options?: Parameters<typeof _updateTenant>[0]): Can
  * The variable must exist, otherwise a 404 error is returned.
  *
   *
+ * @example Update a tenant cluster variable
+ * {@includeCode ../../examples/admin-operations.ts#UpdateTenantClusterVariable}
  * @operationId updateTenantClusterVariable
  * @tags Cluster Variable
  */
@@ -2873,6 +3175,8 @@ export function updateTenantClusterVariable(options?: Parameters<typeof _updateT
  *
  * Updates a user.
   *
+ * @example Update a user
+ * {@includeCode ../../examples/user.ts#UpdateUser}
  * @operationId updateUser
  * @tags User
  */
@@ -2886,6 +3190,8 @@ export function updateUser(options?: Parameters<typeof _updateUser>[0]): Cancela
  * Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
  *
   *
+ * @example Update a user task
+ * {@includeCode ../../examples/additional-operations.ts#UpdateUserTask}
  * @operationId updateUserTask
  * @tags User task
  */
