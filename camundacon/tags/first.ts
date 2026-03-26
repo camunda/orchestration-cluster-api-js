@@ -1,5 +1,4 @@
-import readline from 'readline';
-
+import readline from 'node:readline';
 import { createCamundaClientLoose as createCamundaClient } from '../../dist';
 
 main();

@@ -1,7 +1,5 @@
 import { MessageChannel } from 'node:worker_threads';
-
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createClientProxy, installClientCallHandler } from '../src/runtime/clientProxy';
 
 describe('ClientProxy', () => {

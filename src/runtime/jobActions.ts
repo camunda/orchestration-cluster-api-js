@@ -1,7 +1,6 @@
-import { JobActionReceipt } from './jobWorker';
-
 import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses, ThrowJobErrorData } from '../gen/types.gen';
+import { JobActionReceipt } from './jobWorker';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 type JobErrorRequest = ThrowJobErrorData['body'];
@@ -53,11 +52,7 @@ export function enrichActivatedJob(
     }
   };
   const job: Partial<EnrichedActivatedJob> = { ...raw, log };
-  job.complete = async (
-    variables: {
-      [k: string]: any;
-    } = {}
-  ): Promise<JobActionReceipt> => {
+  job.complete = async (variables: { [k: string]: any } = {}): Promise<JobActionReceipt> => {
     try {
       await client.completeJob({ variables, jobKey: raw.jobKey });
     } finally {

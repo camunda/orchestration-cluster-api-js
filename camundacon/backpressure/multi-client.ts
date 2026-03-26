@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-
 import { createCamundaClient } from '../../src';
 import * as CamundaKeys from '../../src/gen';
 
@@ -104,7 +103,7 @@ async function runClient(
   metrics: ClientMetrics,
   processDefinitionKey: string,
   concurrency: number,
-  t0: number,
+  _t0: number,
   abortSignal: AbortSignal
 ): Promise<ClientMetrics> {
   const client = createCamundaClient({
@@ -238,7 +237,7 @@ function reportProgress(
       '  ID          | Started | Done    | Thrpt   | Severity | Permits    | Waiters | Errors'
     )
   );
-  console.log(chalk.gray('  ' + '-'.repeat(85)));
+  console.log(chalk.gray(`  ${'-'.repeat(85)}`));
 
   let aggThroughput = 0;
   const snapshotClients: Snapshot['clients'] = [];
@@ -306,7 +305,7 @@ async function cleanup() {
 
 // --- Print summary ---
 function printSummary(allMetrics: ClientMetrics[]) {
-  console.log('\n' + chalk.bold('═══ Final Summary ═══'));
+  console.log(`\n${chalk.bold('═══ Final Summary ═══')}`);
   console.log(`Profile: ${PROFILE}  Clients: ${allMetrics.length}`);
   console.log('');
 

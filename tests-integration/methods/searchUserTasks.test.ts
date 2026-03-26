@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
-
-import { createCamundaClient, UserTaskKey } from '../../dist';
+import { describe, expect, it } from 'vitest';
+import { createCamundaClient, type UserTaskKey } from '../../dist';
 
 describe('searchUserTasks', () => {
   it('can search user tasks', async () => {

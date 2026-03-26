@@ -2,7 +2,7 @@ function currentBranchName() {
   if (process.env.GITHUB_REF_NAME) return process.env.GITHUB_REF_NAME;
   try {
     // Lazy require to avoid making this file ESM.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+
     const { execSync } = require('node:child_process');
     return execSync('git rev-parse --abbrev-ref HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
       .toString()

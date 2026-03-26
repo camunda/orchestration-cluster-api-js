@@ -4,9 +4,9 @@
 
 import {
   createCamundaClient,
-  TenantId,
   GlobalListenerId,
   ProcessDefinitionKey,
+  TenantId,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetGlobalClusterVariable

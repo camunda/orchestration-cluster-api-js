@@ -51,7 +51,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
   }
   function evalArgs(args: any[]): any[] {
     // Support lazy function args: if an arg is a function with zero arity, call it.
-    return args.map((a) => (typeof a === 'function' && a.length === 0 ? a() : a)).flat();
+    return args.flatMap((a) => (typeof a === 'function' && a.length === 0 ? a() : a));
   }
   function emit(level: LogLevel, scope: string, rawArgs: any[]) {
     if (!isEnabled(level)) return;
@@ -66,7 +66,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
     } else {
       const tag = `[camunda-sdk][${level}]${scope ? `[${scope}]` : ''}`;
       const method = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
-      // eslint-disable-next-line no-console
+
       console[method](tag, ...args);
     }
   }
@@ -76,13 +76,12 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
     if (transport) {
       try {
         transport(evt);
-        // eslint-disable-next-line no-empty
       } catch {}
     } else {
       const tag = `[camunda-sdk][${level}]${scope ? `[${scope}]` : ''}`;
       const method = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
-      // eslint-disable-next-line no-console
-      console[method](tag, code + ':', msg, data ?? '');
+
+      console[method](tag, `${code}:`, msg, data ?? '');
     }
   }
   const make = (scope: string): Logger => ({

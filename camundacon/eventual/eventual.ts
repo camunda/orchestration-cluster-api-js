@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-
 import { createCamundaClient } from '../../src';
 
 async function main() {

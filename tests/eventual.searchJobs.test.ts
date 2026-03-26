@@ -1,6 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-import { EventualConsistencyTimeoutError, createCamundaClient } from '../src';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createCamundaClient, EventualConsistencyTimeoutError } from '../src';
 
 // We monkey patch fetch to simulate eventual consistency responses.
 

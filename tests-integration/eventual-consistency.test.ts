@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import {
   createCamundaClient,
   EventualConsistencyTimeoutError,
@@ -34,7 +33,7 @@ describe('eventual consistency', () => {
         {
           filter: {
             processDefinitionId: ProcessDefinitionId.assumeExists(
-              'this-definitely-does-not-exist' + Date.now().toString()
+              `this-definitely-does-not-exist${Date.now().toString()}`
             ),
           },
         },
@@ -50,7 +49,7 @@ describe('eventual consistency', () => {
       {
         filter: {
           processDefinitionId: ProcessDefinitionId.assumeExists(
-            'this-definitely-does-not-exist' + Date.now().toString()
+            `this-definitely-does-not-exist${Date.now().toString()}`
           ),
         },
       },
@@ -60,25 +59,23 @@ describe('eventual consistency', () => {
     await expect(res).rejects.toThrow('Cancelled');
   });
 
-  it(
-    'throws EventualConsistencyTimeoutError when nothing is found',
-    { timeout: 2_000 },
-    async () => {
-      const camunda = createCamundaClient();
+  it('throws EventualConsistencyTimeoutError when nothing is found', {
+    timeout: 2_000,
+  }, async () => {
+    const camunda = createCamundaClient();
 
-      const res = camunda.searchProcessInstances(
-        {
-          filter: {
-            processDefinitionId: ProcessDefinitionId.assumeExists(
-              'this-definitely-does-not-exist' + Date.now().toString()
-            ),
-          },
+    const res = camunda.searchProcessInstances(
+      {
+        filter: {
+          processDefinitionId: ProcessDefinitionId.assumeExists(
+            `this-definitely-does-not-exist${Date.now().toString()}`
+          ),
         },
-        { consistency: { waitUpToMs: 1_000 } }
-      );
-      await expect(res).rejects.toThrowError(EventualConsistencyTimeoutError);
-    }
-  );
+      },
+      { consistency: { waitUpToMs: 1_000 } }
+    );
+    await expect(res).rejects.toThrowError(EventualConsistencyTimeoutError);
+  });
 
   it('throws NOT_FOUND when nothing is found and waitUpToMs is 0', { timeout: 2_000 }, async () => {
     const camunda = createCamundaClient();
@@ -92,19 +89,17 @@ describe('eventual consistency', () => {
     await expect(res).rejects.toThrowError('NOT_FOUND');
   });
 
-  it(
-    'throws EventualConsistencyTimeoutError when nothing is found and waitUpToMs is 1_000',
-    { timeout: 2_000 },
-    async () => {
-      const camunda = createCamundaClient();
+  it('throws EventualConsistencyTimeoutError when nothing is found and waitUpToMs is 1_000', {
+    timeout: 2_000,
+  }, async () => {
+    const camunda = createCamundaClient();
 
-      const res = camunda.getProcessInstance(
-        {
-          processInstanceKey: ProcessInstanceKey.assumeExists(Date.now().toString()),
-        },
-        { consistency: { waitUpToMs: 1_000 } }
-      );
-      await expect(res).rejects.toThrowError(EventualConsistencyTimeoutError);
-    }
-  );
+    const res = camunda.getProcessInstance(
+      {
+        processInstanceKey: ProcessInstanceKey.assumeExists(Date.now().toString()),
+      },
+      { consistency: { waitUpToMs: 1_000 } }
+    );
+    await expect(res).rejects.toThrowError(EventualConsistencyTimeoutError);
+  });
 });

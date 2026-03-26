@@ -43,7 +43,7 @@ const ACTIVATE_BATCH = parseInt(process.env.ACTIVATE_BATCH || '32', 10);
 const READY_DIR = process.env.READY_DIR || '';
 const GO_FILE = process.env.GO_FILE || '';
 const RESULTS_DIR = process.env.RESULTS_DIR || '';
-const PAYLOAD_SIZE_KB = parseInt(process.env.PAYLOAD_SIZE_KB || '10', 10);
+const _PAYLOAD_SIZE_KB = parseInt(process.env.PAYLOAD_SIZE_KB || '10', 10);
 const SCENARIO_TIMEOUT_S = parseInt(process.env.SCENARIO_TIMEOUT_S || '300', 10);
 
 // ─── Local HTTP sim server (for http handler type) ───────
@@ -284,7 +284,7 @@ async function runGrpcPollWorker(): Promise<Record<string, unknown>> {
   const deadline = t0 + SCENARIO_TIMEOUT_S * 1000;
 
   // gRPC polling worker — uses ActivateJobs RPC (long-polling)
-  const worker = zeebe.createWorker({
+  const _worker = zeebe.createWorker({
     taskType: 'test-job',
     taskHandler: async (job) => {
       if (HANDLER_TYPE === 'cpu' && HANDLER_LATENCY_MS > 0) {

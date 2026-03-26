@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Adds the unicode (u) flag to regex literals containing Unicode property escapes (\p{...}).
 // The upstream spec uses patterns like [\p{L}_][\p{L}\p{N}_\-\.]* which require the u flag

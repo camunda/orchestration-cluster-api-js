@@ -5,8 +5,9 @@
  * Main thread side: installClientCallHandler(port, client)
  * Worker thread side: createClientProxy(port) → CamundaClient-shaped proxy
  */
-import type { CamundaClient } from '../gen/CamundaClient';
+
 import type { MessagePort } from 'node:worker_threads';
+import type { CamundaClient } from '../gen/CamundaClient';
 
 // Wire protocol
 export interface ClientCallMessage {

@@ -1,9 +1,8 @@
 // Factory producing a client with all CamundaKey<T>-branded string types downgraded to plain string.
 // Purely a type-level transformation: runtime behavior identical to createCamundaClient.
 
-import { createCamundaClient } from './gen/CamundaClient';
-
 import type { CancelablePromise } from './gen/CamundaClient';
+import { createCamundaClient } from './gen/CamundaClient';
 
 // Detect a branded string of the form string & { readonly __brand: ... }
 type IsBrandedKey<T> = T extends string & { readonly __brand: infer _B } ? true : false;

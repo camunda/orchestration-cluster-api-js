@@ -186,7 +186,7 @@ export class EventualConsistencyTimeoutError extends Error {
           typeof params.lastResponse === 'string'
             ? params.lastResponse
             : JSON.stringify(params.lastResponse);
-        this.lastResponseSnippet = s.length > 8192 ? s.slice(0, 8192) + '…[truncated]' : s;
+        this.lastResponseSnippet = s.length > 8192 ? `${s.slice(0, 8192)}…[truncated]` : s;
       } catch (_e) {
         // ignore serialization errors
       }

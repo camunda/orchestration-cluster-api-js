@@ -1,8 +1,8 @@
 // Simple post-build smoke test executed via `npm run test:dist`
 // Runs outside vitest to avoid source transform/build race.
 import { stat } from 'node:fs/promises';
-import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 async function main() {
   const root = path.resolve(process.cwd());

@@ -1,9 +1,9 @@
 import type { Logger } from './logger';
 import type {
-  TelemetryHooks,
+  TelemetryAuthErrorEvent,
   TelemetryAuthStartEvent,
   TelemetryAuthSuccessEvent,
-  TelemetryAuthErrorEvent,
+  TelemetryHooks,
 } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
 
@@ -59,7 +59,7 @@ class OAuthManager {
     private correlationProvider?: () => string | undefined
   ) {
     const hashBase = `${cfg.oauth.oauthUrl}|${cfg.oauth.clientId || ''}|${cfg.tokenAudience}|${cfg.oauth.scope || ''}`;
-    this.storageKey = 'camunda_oauth_token_cache_' + this.simpleHash(hashBase);
+    this.storageKey = `camunda_oauth_token_cache_${this.simpleHash(hashBase)}`;
     this.session =
       this.isBrowser && typeof window.sessionStorage !== 'undefined' ? window.sessionStorage : null;
     // Load disk cache (Node) or session cache (browser)
@@ -91,11 +91,10 @@ class OAuthManager {
     }
     if (!this.session && this.cfg.oauth.cacheDir && this.isNode()) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const fs = require('fs');
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const path = require('path');
-        const file = path.join(this.cfg.oauth.cacheDir, this.storageKey + '.json');
+        const fs = require('node:fs');
+
+        const path = require('node:path');
+        const file = path.join(this.cfg.oauth.cacheDir, `${this.storageKey}.json`);
         if (fs.existsSync(file)) {
           const raw = fs.readFileSync(file, 'utf8');
           this.token = JSON.parse(raw);
@@ -115,14 +114,13 @@ class OAuthManager {
         }
       } else if (this.cfg.oauth.cacheDir && this.isNode()) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const fs = require('fs');
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const path = require('path');
+          const fs = require('node:fs');
+
+          const path = require('node:path');
           if (!fs.existsSync(this.cfg.oauth.cacheDir))
             fs.mkdirSync(this.cfg.oauth.cacheDir, { recursive: true });
-          const file = path.join(this.cfg.oauth.cacheDir, this.storageKey + '.json');
-          const tmp = file + '.tmp';
+          const file = path.join(this.cfg.oauth.cacheDir, `${this.storageKey}.json`);
+          const tmp = `${file}.tmp`;
           fs.writeFileSync(tmp, JSON.stringify(this.token), { mode: 0o600 });
           fs.renameSync(tmp, file);
         } catch {
@@ -179,11 +177,10 @@ class OAuthManager {
         this.session.removeItem(this.storageKey);
       } else if (this.cfg.oauth.cacheDir && this.isNode()) {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const fs = require('fs');
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const path = require('path');
-          const file = path.join(this.cfg.oauth.cacheDir, this.storageKey + '.json');
+          const fs = require('node:fs');
+
+          const path = require('node:path');
+          const file = path.join(this.cfg.oauth.cacheDir, `${this.storageKey}.json`);
           if (fs.existsSync(file)) fs.unlinkSync(file);
         } catch {
           /*ignore*/
@@ -287,7 +284,7 @@ class OAuthManager {
         lastErr = e;
         attempt++;
         if (attempt >= max) break;
-        const delay = base * Math.pow(2, attempt - 1);
+        const delay = base * 2 ** (attempt - 1);
         const jitter = delay * 0.2 * (Math.random() - 0.5); // +/-20%
         const sleep = delay + jitter;
         try {
@@ -332,7 +329,7 @@ class OAuthManager {
 
 class BasicAuthManager {
   private token: string;
-  constructor(private cfg: CamundaConfig) {
+  constructor(cfg: CamundaConfig) {
     const u = cfg.auth.basic?.username?.trim();
     const p = cfg.auth.basic?.password?.trim();
     if (!u || !p)
@@ -398,10 +395,9 @@ export function createAuthFacade(
   let nodeAgent: any = null;
   if (cfg.mtls && typeof process !== 'undefined' && process.versions?.node) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const https = require('https');
+      const fs = require('node:fs');
+
+      const https = require('node:https');
       const material: any = {};
       if (cfg.mtls.cert || cfg.mtls.certPath)
         material.cert = cfg.mtls.cert || fs.readFileSync(cfg.mtls.certPath, 'utf8');
@@ -414,7 +410,6 @@ export function createAuthFacade(
       // Expose for request layer reuse without import cycles.
       try {
         (globalThis as any).__CAMUNDA_MTLS_AGENT = nodeAgent;
-        // eslint-disable-next-line no-empty
       } catch {}
     } catch (e) {
       authLogger.warn(
@@ -433,8 +428,8 @@ export function createAuthFacade(
   return {
     async getAuthHeaders() {
       const h: Record<string, string> = {};
-      if (oauth) h['Authorization'] = 'Bearer ' + (await oauth.getToken(withAgent));
-      else if (basic) h['Authorization'] = basic.getHeader();
+      if (oauth) h.Authorization = `Bearer ${await oauth.getToken(withAgent)}`;
+      else if (basic) h.Authorization = basic.getHeader();
       let acc = h;
       for (const hook of hooks) {
         acc = await hook(acc);
@@ -452,6 +447,7 @@ export function createAuthFacade(
       hooks.push(h);
     },
     debug__setTokenExpiry(epochMs: number) {
+      // biome-ignore lint/complexity/useLiteralKeys: bracket notation bypasses TS private access check
       if (oauth && oauth['token']) {
         (oauth as any).token.expires_at_epoch_ms = epochMs;
       }

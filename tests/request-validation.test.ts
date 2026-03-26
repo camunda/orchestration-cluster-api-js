@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
-
 import { createCamundaClient } from '../src';
 
 // We rely on generated schema for ProcessInstanceCreationInstruction.

@@ -1,5 +1,4 @@
-import { describe, it, expectTypeOf } from 'vitest';
-
+import { describe, expectTypeOf, it } from 'vitest';
 import { createCamundaClientLoose } from '../src';
 
 // This is a compile-time only test validating that a plain string is accepted

@@ -1,10 +1,9 @@
-import { z } from 'zod';
-
+import type { z } from 'zod';
+import type { CamundaClient } from '../gen/CamundaClient';
+import type { ActivateJobsResponses } from '../gen/types.gen';
 import type { EnrichedActivatedJob } from './jobActions';
 import type { JobActionReceipt } from './jobWorker';
 import type { ThreadPool } from './threadPool';
-import type { CamundaClient } from '../gen/CamundaClient';
-import type { ActivateJobsResponses } from '../gen/types.gen';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 

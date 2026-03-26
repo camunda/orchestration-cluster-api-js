@@ -1,7 +1,6 @@
 import { createCamundaClient } from '../../src';
 
 function log(...args: any[]) {
-  // eslint-disable-next-line no-console
   console.log('[integration-cleanup]', ...args);
 }
 

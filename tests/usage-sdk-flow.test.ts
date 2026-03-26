@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient, ProcessInstanceKey } from '../src';
 
 describe('End-to-end usage (mocked) - create instance -> search', () => {

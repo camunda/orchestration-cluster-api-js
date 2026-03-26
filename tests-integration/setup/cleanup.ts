@@ -11,7 +11,6 @@
  * deletion is required later, we can extend this with deployment enumeration.
  */
 import { afterEach, inject } from 'vitest';
-
 import { cancelActiveInstancesForDefinitions } from './cancelTasks';
 
 afterEach(async () => {

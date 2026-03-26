@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient, ProcessInstanceKey } from '../src';
 
 function makeClient(capture: { url?: string; request?: Request; bodyText?: string }) {

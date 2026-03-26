@@ -1,7 +1,5 @@
-import fs from 'fs';
-
-import { describe, it, expect, vi } from 'vitest';
-
+import fs from 'node:fs';
+import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
 import { createAuthFacade } from '../src/runtime/auth';
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
@@ -14,9 +12,9 @@ const CA = '-----BEGIN CERTIFICATE-----\nFAKECA\n-----END CERTIFICATE-----';
 describe('mTLS config precedence', () => {
   it('prefers inline over path', async () => {
     const tmpDir = fs.mkdtempSync('/tmp/mtls-test-');
-    const certPath = tmpDir + '/c.pem';
-    const keyPath = tmpDir + '/k.pem';
-    const caPath = tmpDir + '/ca.pem';
+    const certPath = `${tmpDir}/c.pem`;
+    const keyPath = `${tmpDir}/k.pem`;
+    const caPath = `${tmpDir}/ca.pem`;
     fs.writeFileSync(certPath, CERT.replace('FAKECERT', 'FROM_PATH'));
     fs.writeFileSync(keyPath, KEY.replace('FAKEKEY', 'FROM_PATH'));
     fs.writeFileSync(caPath, CA.replace('FAKECA', 'FROM_PATH'));
@@ -41,9 +39,9 @@ describe('mTLS config precedence', () => {
 
   it('handles path-only material', async () => {
     const tmpDir = fs.mkdtempSync('/tmp/mtls-test-');
-    const certPath = tmpDir + '/c.pem';
-    const keyPath = tmpDir + '/k.pem';
-    const caPath = tmpDir + '/ca.pem';
+    const certPath = `${tmpDir}/c.pem`;
+    const keyPath = `${tmpDir}/k.pem`;
+    const caPath = `${tmpDir}/ca.pem`;
     fs.writeFileSync(certPath, CERT);
     fs.writeFileSync(keyPath, KEY);
     fs.writeFileSync(caPath, CA);
@@ -64,9 +62,9 @@ describe('mTLS config precedence', () => {
 
   it('wraps fetch when agent present (paths precedence)', async () => {
     const tmp = fs.mkdtempSync('/tmp/mtls-newgen-');
-    const certPath = tmp + '/c.pem';
-    const keyPath = tmp + '/k.pem';
-    const caPath = tmp + '/ca.pem';
+    const certPath = `${tmp}/c.pem`;
+    const keyPath = `${tmp}/k.pem`;
+    const caPath = `${tmp}/ca.pem`;
     fs.writeFileSync(certPath, CERT);
     fs.writeFileSync(keyPath, KEY);
     fs.writeFileSync(caPath, CA);

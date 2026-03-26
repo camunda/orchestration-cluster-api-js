@@ -7,8 +7,8 @@
  * compatibility but file has been removed.
  * Idempotent & non-invasive: safe to run multiple times.
  */
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const sdkPath = path.resolve(process.cwd(), 'src/gen/sdk.gen.ts');
 if (!fs.existsSync(sdkPath)) {

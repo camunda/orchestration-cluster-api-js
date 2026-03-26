@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
 
 // Helper to craft a problem+json response

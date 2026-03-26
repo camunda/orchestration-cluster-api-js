@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../src';
 
 // Auto telemetry when log level=trace and CAMUNDA_SDK_TELEMETRY_LOG unset

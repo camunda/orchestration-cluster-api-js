@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../src';
 
 // Ensure debug-level redacted configuration emission works and secrets are masked

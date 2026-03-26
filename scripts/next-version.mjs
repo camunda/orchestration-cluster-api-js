@@ -22,7 +22,7 @@ async function main() {
       dryRun: true,
       ci: false,
     });
-    if (result && result.nextRelease && result.nextRelease.version) {
+    if (result?.nextRelease?.version) {
       // Optional diagnostics (do not affect callers that only parse next_version=)
       if (result.nextRelease.channel) console.log(`release_channel=${result.nextRelease.channel}`);
       console.log(`next_version=${result.nextRelease.version}`);

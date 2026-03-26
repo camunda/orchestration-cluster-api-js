@@ -5,17 +5,15 @@
 
 // Static import for path placed before other module imports to satisfy lint ordering
 import path from 'node:path';
-
 import { createEnv } from 'typed-env';
-
 import {
-  SCHEMA,
-  EnvVarKey,
-  EnvOverrides,
   allKeys,
-  schemaEntry,
+  type EnvOverrides,
+  type EnvVarKey,
   isSecret,
   requiredWhen as requiredWhenMeta,
+  SCHEMA,
+  schemaEntry,
 } from './configSchema';
 
 export type AuthStrategy = 'NONE' | 'OAUTH' | 'BASIC';
@@ -268,8 +266,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
   // Flag: did the user explicitly set an auth strategy (via env or overrides)?
   const userSetStrategy =
-    provided['CAMUNDA_AUTH_STRATEGY'] !== undefined &&
-    provided['CAMUNDA_AUTH_STRATEGY'].trim() !== '';
+    provided.CAMUNDA_AUTH_STRATEGY !== undefined && provided.CAMUNDA_AUTH_STRATEGY.trim() !== '';
 
   // Build typed-env schema with parser functions that accumulate errors instead of throwing early
   const parseErrors: ConfigErrorDetail[] = [];
@@ -345,33 +342,33 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
   // Alias handling: promote CAMUNDA_SUPPORT_LOGGER to CAMUNDA_SUPPORT_LOG_ENABLED if set
   if (
-    envInput['CAMUNDA_SUPPORT_LOG_ENABLED'] === undefined &&
-    envInput['CAMUNDA_SUPPORT_LOGGER'] !== undefined
+    envInput.CAMUNDA_SUPPORT_LOG_ENABLED === undefined &&
+    envInput.CAMUNDA_SUPPORT_LOGGER !== undefined
   ) {
-    envInput['CAMUNDA_SUPPORT_LOG_ENABLED'] = envInput['CAMUNDA_SUPPORT_LOGGER'];
+    envInput.CAMUNDA_SUPPORT_LOG_ENABLED = envInput.CAMUNDA_SUPPORT_LOGGER;
   }
 
   // Alias: accept ZEEBE_REST_ADDRESS as CAMUNDA_REST_ADDRESS (if primary unset)
   if (
-    envInput['CAMUNDA_REST_ADDRESS'] === undefined &&
-    baseEnv['ZEEBE_REST_ADDRESS'] !== undefined &&
-    baseEnv['ZEEBE_REST_ADDRESS']!.trim() !== ''
+    envInput.CAMUNDA_REST_ADDRESS === undefined &&
+    baseEnv.ZEEBE_REST_ADDRESS !== undefined &&
+    baseEnv.ZEEBE_REST_ADDRESS!.trim() !== ''
   ) {
-    envInput['CAMUNDA_REST_ADDRESS'] = baseEnv['ZEEBE_REST_ADDRESS']!.trim();
+    envInput.CAMUNDA_REST_ADDRESS = baseEnv.ZEEBE_REST_ADDRESS!.trim();
   }
 
   // Implicit auth strategy inference: if OAUTH URL provided and no explicit strategy, default to OAUTH
   if (
-    (envInput['CAMUNDA_AUTH_STRATEGY'] === undefined ||
-      envInput['CAMUNDA_AUTH_STRATEGY'].trim() === '') &&
-    envInput['CAMUNDA_OAUTH_URL'] !== undefined &&
-    envInput['CAMUNDA_OAUTH_URL'].trim() !== '' &&
-    envInput['CAMUNDA_CLIENT_ID'] !== undefined &&
-    envInput['CAMUNDA_CLIENT_ID'].trim() !== '' &&
-    envInput['CAMUNDA_CLIENT_SECRET'] !== undefined &&
-    envInput['CAMUNDA_CLIENT_SECRET'].trim() !== ''
+    (envInput.CAMUNDA_AUTH_STRATEGY === undefined ||
+      envInput.CAMUNDA_AUTH_STRATEGY.trim() === '') &&
+    envInput.CAMUNDA_OAUTH_URL !== undefined &&
+    envInput.CAMUNDA_OAUTH_URL.trim() !== '' &&
+    envInput.CAMUNDA_CLIENT_ID !== undefined &&
+    envInput.CAMUNDA_CLIENT_ID.trim() !== '' &&
+    envInput.CAMUNDA_CLIENT_SECRET !== undefined &&
+    envInput.CAMUNDA_CLIENT_SECRET.trim() !== ''
   ) {
-    envInput['CAMUNDA_AUTH_STRATEGY'] = 'OAUTH';
+    envInput.CAMUNDA_AUTH_STRATEGY = 'OAUTH';
   }
 
   // Run typed-env (will not throw for our parser-based validation; parseErrors collects issues)
@@ -398,19 +395,19 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   // might be overridden by schema default application.
   if (
     !userSetStrategy &&
-    rawMap['CAMUNDA_AUTH_STRATEGY'] === 'NONE' &&
-    rawMap['CAMUNDA_OAUTH_URL'] &&
-    rawMap['CAMUNDA_OAUTH_URL']!.trim() !== '' &&
-    rawMap['CAMUNDA_CLIENT_ID'] &&
-    rawMap['CAMUNDA_CLIENT_ID']!.trim() !== '' &&
-    rawMap['CAMUNDA_CLIENT_SECRET'] &&
-    rawMap['CAMUNDA_CLIENT_SECRET']!.trim() !== ''
+    rawMap.CAMUNDA_AUTH_STRATEGY === 'NONE' &&
+    rawMap.CAMUNDA_OAUTH_URL &&
+    rawMap.CAMUNDA_OAUTH_URL!.trim() !== '' &&
+    rawMap.CAMUNDA_CLIENT_ID &&
+    rawMap.CAMUNDA_CLIENT_ID!.trim() !== '' &&
+    rawMap.CAMUNDA_CLIENT_SECRET &&
+    rawMap.CAMUNDA_CLIENT_SECRET!.trim() !== ''
   ) {
-    rawMap['CAMUNDA_AUTH_STRATEGY'] = 'OAUTH';
+    rawMap.CAMUNDA_AUTH_STRATEGY = 'OAUTH';
   }
 
   // Parse primitives (int, boolean, enum normalization) replicating original semantics
-  const authStrategyRaw = (rawMap['CAMUNDA_AUTH_STRATEGY'] || 'NONE').toString();
+  const authStrategyRaw = (rawMap.CAMUNDA_AUTH_STRATEGY || 'NONE').toString();
   const authStrategy = authStrategyRaw.trim().toUpperCase();
   if (!['NONE', 'OAUTH', 'BASIC'].includes(authStrategy)) {
     errors.push({
@@ -458,14 +455,14 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
 
   // mTLS completeness validation: if any cert/key indicator present require both sides
-  const mtlsCertProvided = !!(rawMap['CAMUNDA_MTLS_CERT'] || rawMap['CAMUNDA_MTLS_CERT_PATH']);
-  const mtlsKeyProvided = !!(rawMap['CAMUNDA_MTLS_KEY'] || rawMap['CAMUNDA_MTLS_KEY_PATH']);
+  const mtlsCertProvided = !!(rawMap.CAMUNDA_MTLS_CERT || rawMap.CAMUNDA_MTLS_CERT_PATH);
+  const mtlsKeyProvided = !!(rawMap.CAMUNDA_MTLS_KEY || rawMap.CAMUNDA_MTLS_KEY_PATH);
   const mtlsAny =
     mtlsCertProvided ||
     mtlsKeyProvided ||
-    rawMap['CAMUNDA_MTLS_CA'] ||
-    rawMap['CAMUNDA_MTLS_CA_PATH'] ||
-    rawMap['CAMUNDA_MTLS_KEY_PASSPHRASE'];
+    rawMap.CAMUNDA_MTLS_CA ||
+    rawMap.CAMUNDA_MTLS_CA_PATH ||
+    rawMap.CAMUNDA_MTLS_KEY_PASSPHRASE;
   if (mtlsAny && (!mtlsCertProvided || !mtlsKeyProvided)) {
     errors.push({
       code: ConfigErrorCode.CONFIG_MISSING_REQUIRED,
@@ -475,7 +472,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
 
   // Parse validation config after potential errors so we gather full set
-  const validationRaw = rawMap['CAMUNDA_SDK_VALIDATION'] || 'req:none,res:none';
+  const validationRaw = rawMap.CAMUNDA_SDK_VALIDATION || 'req:none,res:none';
   const validation = parseValidation(validationRaw, errors);
 
   // If any errors, throw aggregated (sorted by key then code for determinism)
@@ -497,21 +494,19 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
 
   // Normalize restAddress to ensure it ends with /v2 (idempotent)
-  let _restAddress = rawMap['CAMUNDA_REST_ADDRESS']!;
+  let _restAddress = rawMap.CAMUNDA_REST_ADDRESS!;
   if (_restAddress) {
     // Trim whitespace and trailing slashes first
     _restAddress = _restAddress.trim();
     // If it already ends with /v2 or /v2/, leave as-is; else append
     if (!/\/v2\/?$/i.test(_restAddress)) {
-      _restAddress = _restAddress.replace(/\/+$/, '') + '/v2';
+      _restAddress = `${_restAddress.replace(/\/+$/, '')}/v2`;
     } else {
       // Canonicalize to no trailing slash (optional design choice); keep existing behavior by not altering
     }
   }
   // Apply backpressure profile defaults if individual vars not explicitly provided.
-  const profile = (rawMap['CAMUNDA_SDK_BACKPRESSURE_PROFILE'] || 'BALANCED')
-    .toString()
-    .toUpperCase();
+  const profile = (rawMap.CAMUNDA_SDK_BACKPRESSURE_PROFILE || 'BALANCED').toString().toUpperCase();
   interface BpPreset {
     initialMax: number;
     soft: number;
@@ -600,108 +595,106 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   ensure('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS', preset.unlimitedAfterHealthyMs);
   const config: CamundaConfig = {
     restAddress: _restAddress,
-    tokenAudience: rawMap['CAMUNDA_TOKEN_AUDIENCE']!,
-    defaultTenantId: rawMap['CAMUNDA_DEFAULT_TENANT_ID'] || '<default>',
+    tokenAudience: rawMap.CAMUNDA_TOKEN_AUDIENCE!,
+    defaultTenantId: rawMap.CAMUNDA_DEFAULT_TENANT_ID || '<default>',
     httpRetry: {
-      maxAttempts: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS'] || '3', 10),
-      baseDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS'] || '100', 10),
-      maxDelayMs: parseInt(rawMap['CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS'] || '2000', 10),
+      maxAttempts: parseInt(rawMap.CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS || '3', 10),
+      baseDelayMs: parseInt(rawMap.CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS || '100', 10),
+      maxDelayMs: parseInt(rawMap.CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS || '2000', 10),
     },
     backpressure: {
       enabled: profile !== 'LEGACY',
       profile,
       observeOnly: profile === 'LEGACY',
-      initialMax: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX'] || '16', 10),
+      initialMax: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX || '16', 10),
       softFactor: Math.min(
         1,
         Math.max(
           0.01,
-          (parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR'] || '70', 10) || 70) / 100
+          (parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR || '70', 10) || 70) / 100
         )
       ),
       severeFactor: Math.min(
         1,
         Math.max(
           0.01,
-          (parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR'] || '50', 10) || 50) / 100
+          (parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR || '50', 10) || 50) / 100
         )
       ),
       recoveryIntervalMs: parseInt(
-        rawMap['CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS'] || '1000',
+        rawMap.CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS || '1000',
         10
       ),
-      recoveryStep: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP'] || '1', 10),
-      decayQuietMs: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS'] || '2000', 10),
-      floor: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_FLOOR'] || '1', 10),
-      severeThreshold: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD'] || '3', 10),
-      maxWaiters: parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS'] || '1000', 10),
+      recoveryStep: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP || '1', 10),
+      decayQuietMs: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS || '2000', 10),
+      floor: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_FLOOR || '1', 10),
+      severeThreshold: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD || '3', 10),
+      maxWaiters: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS || '1000', 10),
       healthyRecoveryMultiplier: Math.max(
         1,
-        (parseInt(rawMap['CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER'] || '150', 10) ||
+        (parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER || '150', 10) ||
           150) / 100
       ),
       unlimitedAfterHealthyMs: parseInt(
-        rawMap['CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS'] || '30000',
+        rawMap.CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS || '30000',
         10
       ),
     },
     oauth: {
-      clientId: rawMap['CAMUNDA_CLIENT_ID']?.trim() || undefined,
-      clientSecret: rawMap['CAMUNDA_CLIENT_SECRET']?.trim() || undefined,
-      oauthUrl: rawMap['CAMUNDA_OAUTH_URL']!,
-      grantType: rawMap['CAMUNDA_OAUTH_GRANT_TYPE']!,
-      scope: rawMap['CAMUNDA_OAUTH_SCOPE']?.trim() || undefined,
-      timeoutMs: parseInt(rawMap['CAMUNDA_OAUTH_TIMEOUT_MS']!, 10),
+      clientId: rawMap.CAMUNDA_CLIENT_ID?.trim() || undefined,
+      clientSecret: rawMap.CAMUNDA_CLIENT_SECRET?.trim() || undefined,
+      oauthUrl: rawMap.CAMUNDA_OAUTH_URL!,
+      grantType: rawMap.CAMUNDA_OAUTH_GRANT_TYPE!,
+      scope: rawMap.CAMUNDA_OAUTH_SCOPE?.trim() || undefined,
+      timeoutMs: parseInt(rawMap.CAMUNDA_OAUTH_TIMEOUT_MS!, 10),
       retry: {
-        max: parseInt(rawMap['CAMUNDA_OAUTH_RETRY_MAX']!, 10),
-        baseDelayMs: parseInt(rawMap['CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS']!, 10),
+        max: parseInt(rawMap.CAMUNDA_OAUTH_RETRY_MAX!, 10),
+        baseDelayMs: parseInt(rawMap.CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS!, 10),
       },
-      cacheDir: rawMap['CAMUNDA_OAUTH_CACHE_DIR']?.trim() || undefined,
+      cacheDir: rawMap.CAMUNDA_OAUTH_CACHE_DIR?.trim() || undefined,
     },
     auth: {
       strategy: authStrategy as AuthStrategy,
       basic:
         authStrategy === 'BASIC'
           ? {
-              username: rawMap['CAMUNDA_BASIC_AUTH_USERNAME']?.trim(),
-              password: rawMap['CAMUNDA_BASIC_AUTH_PASSWORD']?.trim(),
+              username: rawMap.CAMUNDA_BASIC_AUTH_USERNAME?.trim(),
+              password: rawMap.CAMUNDA_BASIC_AUTH_PASSWORD?.trim(),
             }
           : undefined,
     },
     validation: { req: validation.req, res: validation.res, raw: validation.raw },
-    logLevel: (rawMap['CAMUNDA_SDK_LOG_LEVEL'] as CamundaConfig['logLevel']) || 'error',
+    logLevel: (rawMap.CAMUNDA_SDK_LOG_LEVEL as CamundaConfig['logLevel']) || 'error',
     eventual: {
-      pollDefaultMs: parseInt(rawMap['CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS'] || '500', 10),
+      pollDefaultMs: parseInt(rawMap.CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS || '500', 10),
     },
     mtls:
-      rawMap['CAMUNDA_MTLS_CERT_PATH'] ||
-      rawMap['CAMUNDA_MTLS_KEY_PATH'] ||
-      rawMap['CAMUNDA_MTLS_CA_PATH'] ||
-      rawMap['CAMUNDA_MTLS_CERT'] ||
-      rawMap['CAMUNDA_MTLS_KEY'] ||
-      rawMap['CAMUNDA_MTLS_CA'] ||
-      rawMap['CAMUNDA_MTLS_KEY_PASSPHRASE']
+      rawMap.CAMUNDA_MTLS_CERT_PATH ||
+      rawMap.CAMUNDA_MTLS_KEY_PATH ||
+      rawMap.CAMUNDA_MTLS_CA_PATH ||
+      rawMap.CAMUNDA_MTLS_CERT ||
+      rawMap.CAMUNDA_MTLS_KEY ||
+      rawMap.CAMUNDA_MTLS_CA ||
+      rawMap.CAMUNDA_MTLS_KEY_PASSPHRASE
         ? {
-            cert: rawMap['CAMUNDA_MTLS_CERT'] || undefined,
-            key: rawMap['CAMUNDA_MTLS_KEY'] || undefined,
-            ca: rawMap['CAMUNDA_MTLS_CA'] || undefined,
-            keyPassphrase: rawMap['CAMUNDA_MTLS_KEY_PASSPHRASE'] || undefined,
-            certPath: rawMap['CAMUNDA_MTLS_CERT_PATH'] || undefined,
-            keyPath: rawMap['CAMUNDA_MTLS_KEY_PATH'] || undefined,
-            caPath: rawMap['CAMUNDA_MTLS_CA_PATH'] || undefined,
+            cert: rawMap.CAMUNDA_MTLS_CERT || undefined,
+            key: rawMap.CAMUNDA_MTLS_KEY || undefined,
+            ca: rawMap.CAMUNDA_MTLS_CA || undefined,
+            keyPassphrase: rawMap.CAMUNDA_MTLS_KEY_PASSPHRASE || undefined,
+            certPath: rawMap.CAMUNDA_MTLS_CERT_PATH || undefined,
+            keyPath: rawMap.CAMUNDA_MTLS_KEY_PATH || undefined,
+            caPath: rawMap.CAMUNDA_MTLS_CA_PATH || undefined,
           }
         : undefined,
     telemetry: {
-      log: (rawMap['CAMUNDA_SDK_TELEMETRY_LOG'] || 'false').toString().toLowerCase() === 'true',
+      log: (rawMap.CAMUNDA_SDK_TELEMETRY_LOG || 'false').toString().toLowerCase() === 'true',
       correlation:
-        (rawMap['CAMUNDA_SDK_TELEMETRY_CORRELATION'] || 'false').toString().toLowerCase() ===
-        'true',
+        (rawMap.CAMUNDA_SDK_TELEMETRY_CORRELATION || 'false').toString().toLowerCase() === 'true',
     },
     supportLog: {
-      enabled:
-        (rawMap['CAMUNDA_SUPPORT_LOG_ENABLED'] || 'false').toString().toLowerCase() === 'true',
+      enabled: (rawMap.CAMUNDA_SUPPORT_LOG_ENABLED || 'false').toString().toLowerCase() === 'true',
       filePath:
-        rawMap['CAMUNDA_SUPPORT_LOG_FILE_PATH'] ||
+        rawMap.CAMUNDA_SUPPORT_LOG_FILE_PATH ||
         (typeof process !== 'undefined' && typeof process.cwd === 'function'
           ? path.join(process.cwd(), 'camunda-support.log')
           : 'camunda-support.log'),
@@ -781,7 +774,7 @@ export async function hydrateConfigAsync(
 }
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
-  let to: any; // eslint-disable-line
+  let to: any;
   return await Promise.race([
     p.then((v) => {
       clearTimeout(to);

@@ -9,7 +9,7 @@ import { z } from 'zod';
 // Prototype shim for chainable .register(registry, meta?) returning same schema.
 try {
   const proto: any = (z as any).ZodType?.prototype;
-  if (proto && !Object.prototype.hasOwnProperty.call(proto, 'register')) {
+  if (proto && !Object.hasOwn(proto, 'register')) {
     Object.defineProperty(proto, 'register', {
       value: function (_registry: unknown, meta?: { description?: string }) {
         // If description provided and no explicit description already, apply via .describe
@@ -35,5 +35,3 @@ try {
 // and the prototype patch below (adding .register) would be lost, breaking generated
 // schema code that calls .register().
 export const __zodAugmentApplied = true;
-
-export {}; // ensure this is a module

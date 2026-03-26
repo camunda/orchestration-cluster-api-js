@@ -2,9 +2,7 @@
 // Mirrors logic from related SDK example while adapting to existing unified configuration & redaction.
 // Tree-shakable: Node-only modules imported dynamically and guarded by process/version detection.
 
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { packageVersion } from '../runtime/version';
-
 import type { CamundaConfig } from './unifiedConfiguration';
 
 export interface SupportLogger {
@@ -12,7 +10,6 @@ export interface SupportLogger {
 }
 
 export class NoopSupportLogger implements SupportLogger {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   log(_message: any, _addTimestamp = true): void {
     /* no-op */
   }
@@ -20,7 +17,7 @@ export class NoopSupportLogger implements SupportLogger {
 
 // Circular-safe JSON stringify borrowed pattern (simplified)
 function safeStringifyReplacer(seen: WeakSet<object>) {
-  return function (_: string, value: any) {
+  return (_: string, value: any) => {
     if (value && typeof value?.toJSON === 'function') {
       try {
         value = value.toJSON();
@@ -68,8 +65,6 @@ function obscureSensitiveInfo(raw: Record<string, string | undefined>) {
 export class CamundaSupportLogger implements SupportLogger {
   private enabled: boolean;
   private filepath: string;
-  /** marker used by writeSupportLogPreamble to avoid duplicate emission */
-  private __preambleEmitted = false;
 
   constructor(config: CamundaConfig) {
     const enabled = !!config.supportLog?.enabled;
@@ -109,7 +104,7 @@ export class CamundaSupportLogger implements SupportLogger {
       fs.appendFileSync(this.filepath, line);
     } catch (err) {
       // Last resort: console.error to surface inability to write
-      // eslint-disable-next-line no-console
+
       console.error(`Failed to write support log to ${this.filepath}:`, err);
     }
   }
@@ -166,13 +161,13 @@ export function writeSupportLogPreamble(logger: SupportLogger, config: CamundaCo
         cpus: os.cpus().length,
         uptime: os.uptime(),
       };
-      logger.log('/** OS Information */\n' + safeStringify(osInfo) + '\n', false);
+      logger.log(`/** OS Information */\n${safeStringify(osInfo)}\n`, false);
     } catch {
       /* ignore */
     }
     const raw = config.__raw || {};
     const obscured = obscureSensitiveInfo(raw);
-    logger.log('/** Configuration */\n' + safeStringify(obscured) + '\n', false);
+    logger.log(`/** Configuration */\n${safeStringify(obscured)}\n`, false);
   } catch {
     /* swallow */
   }

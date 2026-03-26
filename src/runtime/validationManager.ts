@@ -1,9 +1,7 @@
-import { ZodTypeAny } from 'zod';
-
+import type { ZodTypeAny } from 'zod';
+import type { Logger } from './logger';
 import { applySchemaValidation } from './validationCore';
 import { detectExtrasAndMaybeThrow } from './validationExtras';
-
-import type { Logger } from './logger';
 
 export type ValidationMode = 'strict' | 'warn' | 'none' | 'fanatical';
 

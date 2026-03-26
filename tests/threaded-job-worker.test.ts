@@ -1,7 +1,5 @@
 import path from 'node:path';
-
-import { describe, it, expect, afterEach } from 'vitest';
-
+import { afterEach, describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../src';
 import { ThreadedJobWorker } from '../src/runtime/threadedJobWorker';
 

@@ -34,7 +34,7 @@ interface RunResult {
 }
 
 // ─── Helpers ─────────────────────────────────────────────
-function resultLabel(r: RunResult): string {
+function _resultLabel(r: RunResult): string {
   const iso = r.isolation === 'independent' ? 'ind' : 'shr';
   return `${r.numClients}c-${r.sdkMode}-${r.handlerType}-${iso}`;
 }

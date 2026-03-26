@@ -3,8 +3,7 @@
  * Generates Markdown documentation for configuration derived from SCHEMA.
  * Output: docs/CONFIG_REFERENCE.md
  */
-import { writeFileSync, mkdirSync } from 'node:fs';
-
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { SCHEMA } from '../src/runtime/configSchema';
 
 function escapeCell(v: any): string {
@@ -19,7 +18,7 @@ function table(): string {
     .map(([key, raw]) => {
       const entry: any = raw;
       const type =
-        entry.type === 'enum' ? 'enum(' + (entry.choices || []).join(' | ') + ')' : entry.type;
+        entry.type === 'enum' ? `enum(${(entry.choices || []).join(' | ')})` : entry.type;
       const def = entry.default !== undefined ? `\`${entry.default}\`` : '—';
       const req = entry.requiredWhen
         ? `When ${entry.requiredWhen.key}=${entry.requiredWhen.equals}`

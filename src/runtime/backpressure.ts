@@ -99,7 +99,7 @@ export class BackpressureManager {
 
   private log(evt: string, data: any, prevSeverity?: BackpressureSeverity) {
     // Always emit trace-level detailed event.
-    this.logger?.trace?.(() => ['backpressure.' + evt, data]);
+    this.logger?.trace?.(() => [`backpressure.${evt}`, data]);
     if (evt === 'severity') {
       const curr = data.severity as BackpressureSeverity;
       // Unhealthy boundary crossings at info: entering unhealthy (healthy->soft/severe)

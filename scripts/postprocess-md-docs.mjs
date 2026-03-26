@@ -9,8 +9,8 @@
  * Usage: node scripts/postprocess-md-docs.mjs [docs-md]
  */
 
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, basename, dirname } from 'node:path';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 
 const docsDir = process.argv[2] || 'docs-md';
 
@@ -114,7 +114,7 @@ ${positionLine}mdx:
  * convert styled HTML (from OpenAPI descriptions) to markdown for cleaner output.
  */
 function cleanHtml(filePath) {
-  let content = readFileSync(filePath, 'utf-8');
+  const content = readFileSync(filePath, 'utf-8');
 
   // Separate frontmatter from body
   let frontmatter = '';
@@ -207,7 +207,7 @@ function createCategoryFiles(dir) {
       if (CATEGORY_POSITIONS[entry] !== undefined) {
         category.position = CATEGORY_POSITIONS[entry];
       }
-      writeFileSync(categoryFile, JSON.stringify(category, null, 2) + '\n', 'utf-8');
+      writeFileSync(categoryFile, `${JSON.stringify(category, null, 2)}\n`, 'utf-8');
     }
 
     // Recurse into subdirectories
@@ -223,7 +223,7 @@ function addTechnicalPreviewBanner(filePath) {
   // Match files under the fp/ directory
   if (!rel.includes('/fp/') && !rel.endsWith('/fp/index.md')) return;
 
-  let content = readFileSync(filePath, 'utf-8');
+  const content = readFileSync(filePath, 'utf-8');
   const banner =
     '\n:::caution Technical Preview\nThe Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.\n:::\n';
 
@@ -231,7 +231,7 @@ function addTechnicalPreviewBanner(filePath) {
   const h1End = content.match(/^#\s+.+$/m);
   if (h1End) {
     const pos = h1End.index + h1End[0].length;
-    const updated = content.slice(0, pos) + '\n' + banner + content.slice(pos);
+    const updated = `${content.slice(0, pos)}\n${banner}${content.slice(pos)}`;
     if (updated !== content) {
       writeFileSync(filePath, updated, 'utf-8');
     }

@@ -103,7 +103,7 @@ function redactUrl(u: string): string {
     const url = new URL(u);
     if (url.searchParams && Array.from(url.searchParams.keys()).length) {
       const keys = Array.from(new Set(Array.from(url.searchParams.keys())));
-      url.search = keys.length ? '?' + keys.map((k) => k).join('&') : '';
+      url.search = keys.length ? `?${keys.map((k) => k).join('&')}` : '';
     }
     return url.toString();
   } catch {
@@ -157,7 +157,7 @@ export function wrapFetch(
     else if (typeof Request !== 'undefined' && input instanceof Request) origUrl = input.url;
     else origUrl = (input as any)?.url || input?.toString?.() || String(input);
     const redactedUrl = redactUrl(origUrl);
-    const requestId = 'r' + (++globalRequestCounter).toString(36);
+    const requestId = `r${(++globalRequestCounter).toString(36)}`;
     const correlationId = opts.correlation ? opts.correlation() : undefined;
     const start = Date.now();
     // Unsafe deep diagnostics: capture body when log level 'silly'. Only handles readily serializable bodies.
@@ -196,7 +196,7 @@ export function wrapFetch(
             }
           }
           if (bodyPreview && bodyPreview.length > 4000)
-            bodyPreview = bodyPreview.slice(0, 4000) + '…';
+            bodyPreview = `${bodyPreview.slice(0, 4000)}…`;
         }
       }
     } catch {

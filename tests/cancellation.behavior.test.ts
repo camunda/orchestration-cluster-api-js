@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
 
 // Ensures that calling cancel() on an in-flight SDK operation aborts the underlying fetch

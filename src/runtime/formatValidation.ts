@@ -1,5 +1,11 @@
-import { ZodError, ZodIssue, ZodTypeAny, ZodUnion, ZodObject, ZodRawShape } from 'zod';
-
+import {
+  type ZodError,
+  type ZodIssue,
+  ZodObject,
+  type ZodRawShape,
+  type ZodTypeAny,
+  type ZodUnion,
+} from 'zod';
 import type { Logger } from './logger';
 
 export interface FormattedValidation {
@@ -161,7 +167,7 @@ export function formatValidationError(params: {
   error: ZodError;
 }): FormattedValidation {
   const { side, operationId, schemaName, schema, value, error } = params;
-  const prefix = `Invalid ${operationId ? operationId + ' ' : ''}${side}`.trim();
+  const prefix = `Invalid ${operationId ? `${operationId} ` : ''}${side}`.trim();
   const providedKeys =
     value && typeof value === 'object' && !Array.isArray(value) ? Object.keys(value) : [];
   let union: FormattedUnion | undefined;
@@ -177,7 +183,7 @@ export function formatValidationError(params: {
     providedKeys.length ? `provided keys: { ${providedKeys.join(', ')} }` : undefined,
   ].filter(Boolean);
   const summary = summaryParts.join(' ');
-  const message = `${prefix}${schemaName ? ' (' + schemaName + ')' : ''}: ${union ? 'no union variant matched' : 'validation failed'}`;
+  const message = `${prefix}${schemaName ? ` (${schemaName})` : ''}: ${union ? 'no union variant matched' : 'validation failed'}`;
   const issues = [...(union?.lines || []), ...issueLines];
   return { message, summary, issues };
 }

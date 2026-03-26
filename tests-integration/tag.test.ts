@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient, Tag } from '../src';
 
 describe('tag demo', () => {

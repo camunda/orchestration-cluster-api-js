@@ -14,7 +14,7 @@ export function installAuthInterceptor(
     try {
       if (getStrategy() === 'NONE') return request;
       const hdrs = await getAuthHeaders();
-      const auth = hdrs?.['Authorization'];
+      const auth = hdrs?.Authorization;
       if (auth && !request.headers.get('Authorization')) {
         const h = new Headers(request.headers);
         h.set('Authorization', auth);

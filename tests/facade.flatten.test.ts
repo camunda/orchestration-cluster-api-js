@@ -1,7 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-
-import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 // Regression guard: body-only operations must expose ONLY a (body, ...) signature.
 // They are identified in the generated facade by the trio of type aliases:
@@ -66,7 +65,7 @@ describe('facade body-only operation flattening', () => {
     }
     if (violations.length) {
       // Provide helpful diff-like output
-      throw new Error('Body-only facade flattening regressions:\n' + violations.join('\n'));
+      throw new Error(`Body-only facade flattening regressions:\n${violations.join('\n')}`);
     }
   });
 });

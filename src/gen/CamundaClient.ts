@@ -1,6 +1,4 @@
 // @generated from CamundaClient.template.ts - DO NOT EDIT DIRECTLY
-/* eslint-disable unused-imports/no-unused-imports */
-/* eslint-disable import/order */
 import { createClient } from '../gen/client/client.gen';
 import * as Sdk from '../gen/sdk.gen';
 import { createAuthFacade } from '../runtime/auth';

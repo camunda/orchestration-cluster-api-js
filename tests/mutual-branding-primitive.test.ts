@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
-
-import { ProcessInstanceKey, DecisionInstanceKey } from '../src';
+import { describe, expect, it } from 'vitest';
+import { DecisionInstanceKey, ProcessInstanceKey } from '../src';
 
 describe('Key branding (structural)', () => {
   it('allows cross-assignment today (documenting gap)', () => {

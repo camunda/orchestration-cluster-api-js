@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import logLine from 'single-line-log';
-
 import { createCamundaClient } from '../../src';
 import * as CamundaKeys from '../../src/gen';
 
@@ -96,7 +95,7 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
           })
           .then((r: any) => {
             started++;
-            if (r && r.processInstanceKey) startedKeys.push(r.processInstanceKey);
+            if (r?.processInstanceKey) startedKeys.push(r.processInstanceKey);
           })
           .catch(() => {
             // Swallow & continue (transient or backpressure classification)
@@ -162,7 +161,7 @@ async function runScenario(procDefKey: string, scenario: ScenarioConfig) {
   // Stop worker after completion target
   try {
     worker.stop();
-  } catch (e) {
+  } catch (_e) {
     /* ignore */
   }
 
@@ -241,10 +240,10 @@ async function main() {
 
   const scenarioName = process.env.CAMUNDA_SDK_BACKPRESSURE_PROFILE ?? 'LEGACY';
   const sc = scenarios[scenarioName];
-  // eslint-disable-next-line no-console
+
   console.log(`\n[backpressure-profile] Starting scenario: ${sc.name}`);
   const metrics = await runScenario(processDefinitionKey, sc);
-  // eslint-disable-next-line no-console
+
   console.log('[backpressure-profile] Scenario complete', metrics);
   process.exit(0);
 }

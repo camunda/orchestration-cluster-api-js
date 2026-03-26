@@ -1,5 +1,5 @@
 // Functional-style wrapper that converts thrown errors into Result objects.
-import { createCamundaClient, CamundaOptions, CamundaClient } from './gen/CamundaClient';
+import { type CamundaClient, type CamundaOptions, createCamundaClient } from './gen/CamundaClient';
 
 export type Result<T, E = unknown> = { ok: true; value: T } | { ok: false; error: E };
 export const isOk = <T, E>(r: Result<T, E>): r is { ok: true; value: T } => r.ok;

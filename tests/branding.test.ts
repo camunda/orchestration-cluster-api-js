@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
-
-import { ProcessInstanceKey, ProcessDefinitionKey } from '../src';
+import { describe, expect, it } from 'vitest';
+import { ProcessDefinitionKey, ProcessInstanceKey } from '../src';
 
 // compile-time only test helpers (no runtime execution for type errors)
 describe('branding nominal incompatibility', () => {

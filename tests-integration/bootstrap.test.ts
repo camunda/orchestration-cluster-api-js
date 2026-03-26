@@ -1,8 +1,11 @@
-import fs from 'fs';
-
-import { describe, it, expect } from 'vitest';
-
-import { createCamundaClient, createCamundaResultClient, ProcessDefinitionKey, Tag } from '../dist';
+import fs from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import {
+  createCamundaClient,
+  createCamundaResultClient,
+  type ProcessDefinitionKey,
+  Tag,
+} from '../dist';
 import { extractJobTypesFromBpmnFile } from '../test-support/bpmn';
 
 describe('integration acceptance', () => {

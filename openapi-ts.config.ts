@@ -1,5 +1,4 @@
 import { defineConfig } from '@hey-api/openapi-ts';
-
 import { defineConfig as defineBranding } from './plugins/branding-plugin';
 import { LOCAL_BUNDLED_SPEC_PATH } from './scripts/spec-location';
 

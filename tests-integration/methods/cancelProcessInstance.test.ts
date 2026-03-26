@@ -1,5 +1,4 @@
-import { describe, it, vitest, expect } from 'vitest';
-
+import { describe, expect, it, vitest } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 vitest.setConfig({ testTimeout: 15_000 });

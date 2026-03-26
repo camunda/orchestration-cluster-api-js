@@ -1,7 +1,5 @@
 import { randomUUID } from 'node:crypto';
-
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../../src';
 
 describe('correlateMessage', { timeout: 10_000 }, () => {

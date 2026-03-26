@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 /** Postprocess: enrich activateJobs with action methods & adjust signature. */
 function patchCamundaClient(filePath: string) {

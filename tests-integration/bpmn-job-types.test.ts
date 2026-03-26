@@ -1,10 +1,8 @@
 import { join } from 'node:path';
-
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import {
-  extractJobTypesFromBpmnFile,
   extractJobTypesFromBpmn,
+  extractJobTypesFromBpmnFile,
   jobTypes,
 } from '../test-support/bpmn';
 

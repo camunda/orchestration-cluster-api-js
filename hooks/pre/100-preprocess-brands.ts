@@ -35,7 +35,7 @@ const specMetadata = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
 const keys = (specMetadata.semanticKeys || []).map((k: any) => ({
   ...k,
   brand: { tsType: `${GENERIC_TYPE_NAME}<'${k.name}'>` },
-  zod: { schemaName: 'z' + k.name, transformPipeline: ['brand-cast'] },
+  zod: { schemaName: `z${k.name}`, transformPipeline: ['brand-cast'] },
   source: { schemaPointer: `#/components/schemas/${k.name}` },
 }));
 
@@ -49,7 +49,7 @@ const unions = (specMetadata.unions || []).map((u: any) => ({
   tsType: (u.branches || [])
     .map((br: any) => br.ref || br.brand || br.tsType || 'string')
     .join(' | '),
-  zod: { schemaName: 'z' + u.name },
+  zod: { schemaName: `z${u.name}` },
   source: { schemaPointer: `#/components/schemas/${u.name}` },
 }));
 
@@ -84,7 +84,7 @@ if (!metadata.keys.length) {
 }
 
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
-fs.writeFileSync(outPath, JSON.stringify(metadata, null, 2) + '\n', 'utf8');
+fs.writeFileSync(outPath, `${JSON.stringify(metadata, null, 2)}\n`, 'utf8');
 
 console.log('[preprocess-brands] Branding metadata generated from spec-metadata.json.');
 console.log(`  Source: ${path.relative(process.cwd(), metaPath)}`);
@@ -92,5 +92,3 @@ console.log(`  Out   : ${path.relative(process.cwd(), outPath)}`);
 console.log(`  Keys  : ${metadata.integrity.totalPrimaryKeys}`);
 console.log(`  Unions: ${metadata.integrity.totalUnionWrappers}`);
 console.log(`  Arrays: ${metadata.arrays.length}`);
-
-export {}; // ensure module scope

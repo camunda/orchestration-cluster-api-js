@@ -11,7 +11,6 @@
  * Handlers are cached by module path so each import happens only once per thread.
  */
 import { parentPort } from 'node:worker_threads';
-
 import { createClientProxy } from './clientProxy.ts';
 
 // Inline the JobActionReceipt constant to avoid importing the full SDK dependency chain

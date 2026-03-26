@@ -63,7 +63,6 @@ const DEFAULT_PAYLOAD_SIZE_KB = 10;
 const DEFAULT_PRE_CREATE_COUNT = 50_000;
 
 // ANSI colour stripping
-// eslint-disable-next-line no-control-regex
 const ANSI_RE = /\x1b\[[0-9;]*m/g;
 function stripAnsi(text: string): string {
   return text.replace(ANSI_RE, '');
@@ -93,7 +92,7 @@ function resultLabel(r: RunResult): string {
   return `${r.cluster}-${r.numClients}c-${r.sdkMode}-${r.handlerType}-${iso}`;
 }
 
-function errorRate(r: RunResult): number {
+function _errorRate(r: RunResult): number {
   const total = r.totalCompleted + r.totalErrors;
   return total > 0 ? r.totalErrors / total : 0;
 }
@@ -307,8 +306,8 @@ function computeMetricsDelta(
     jobsPushed: d('zeebe_broker_jobs_pushed_count_total'),
     jobsPushFailed: d('zeebe_broker_jobs_push_fail_count_total'),
     recordsProcessed: d('zeebe_stream_processor_records_total'),
-    backpressureLimit: after.gauges['zeebe_backpressure_requests_limit'] || 0,
-    backpressureInflight: after.gauges['zeebe_backpressure_inflight_requests_count'] || 0,
+    backpressureLimit: after.gauges.zeebe_backpressure_requests_limit || 0,
+    backpressureInflight: after.gauges.zeebe_backpressure_inflight_requests_count || 0,
     jobActivationAvgMs: avgMs('zeebe_job_activation_time_seconds'),
     jobLifetimeAvgMs: avgMs('zeebe_job_life_time_seconds'),
     piExecutionAvgMs: avgMs('zeebe_process_instance_execution_time_seconds'),
@@ -475,7 +474,7 @@ async function runScenario(
     result.serverMetrics = computeMetricsDelta(metricsBefore, metricsAfter);
 
     // Save raw output
-    const output = stdout + '\n' + stderr;
+    const output = `${stdout}\n${stderr}`;
     fs.mkdirSync(path.dirname(outputFile), { recursive: true });
     fs.writeFileSync(outputFile, output);
 

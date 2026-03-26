@@ -8,9 +8,10 @@ export interface RetryContext {
   lastError?: any;
 }
 
-export interface RetryStrategy {
-  <T>(op: () => Promise<T>, classify?: (err: any) => RetryClassification): Promise<T>;
-}
+export type RetryStrategy = <T>(
+  op: () => Promise<T>,
+  classify?: (err: any) => RetryClassification
+) => Promise<T>;
 
 export type RetryClassification =
   | { retryable: true; reason: string }

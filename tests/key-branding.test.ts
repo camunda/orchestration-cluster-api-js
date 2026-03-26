@@ -1,8 +1,6 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
+import type { ProcessDefinitionKey, ProcessInstanceKey } from '../src/gen';
 import * as CamundaKeys from '../src/gen';
-
-import type { ProcessInstanceKey, ProcessDefinitionKey } from '../src/gen';
 
 // NOTE: Branding test
 

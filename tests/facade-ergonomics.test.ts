@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
 
 // Smoke test: flattened body-only wrapper and passthrough exist, return a CancelablePromise with cancel()

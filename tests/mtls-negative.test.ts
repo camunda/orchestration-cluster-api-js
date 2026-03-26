@@ -1,6 +1,5 @@
-import { describe, it, expect } from 'vitest';
-
-import { hydrateConfig, CamundaConfigurationError } from '../src/runtime/unifiedConfiguration';
+import { describe, expect, it } from 'vitest';
+import { CamundaConfigurationError, hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 // Negative tests asserting incomplete mTLS pairs rejected.
 describe('mTLS negative configuration', () => {

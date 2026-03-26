@@ -3,11 +3,9 @@
  * Centralizes request/response schema validation so future callers (e.g. streaming, batch)
  * can reuse consistent semantics without depending on ValidationManager internals.
  */
-import { ZodError, ZodTypeAny } from 'zod';
-
+import { ZodError, type ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
 import { formatValidationError, logFormattedValidation } from './formatValidation';
-
 import type { Logger } from './logger';
 import type { ValidationMode } from './validationManager';
 

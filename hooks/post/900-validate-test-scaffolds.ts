@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Validates that every exported SDK operation has a corresponding test scaffold.
 // Exit code 1 if any are missing (excluding ignored list in manifest.json).
@@ -43,7 +43,7 @@ const missing = operations.filter(
 if (missing.length) {
   console.error(
     '[validate-test-scaffolds] Missing test scaffolds for operations:\n' +
-      missing.map((o) => '  - ' + o).join('\n')
+      missing.map((o) => `  - ${o}`).join('\n')
   );
   console.error('Run: npm run scaffold:methods');
   process.exit(1);

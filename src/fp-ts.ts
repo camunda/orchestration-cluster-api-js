@@ -2,8 +2,8 @@
 // Produces TaskEither-like thunks structurally compatible with fp-ts/TaskEither.
 // Includes domain error typing and small helper combinators.
 
-import { createCamundaClient, CamundaClient, CamundaOptions } from './gen/CamundaClient';
-import { EventualConsistencyTimeoutError, CamundaValidationError } from './runtime/errors';
+import { type CamundaClient, type CamundaOptions, createCamundaClient } from './gen/CamundaClient';
+import { CamundaValidationError, EventualConsistencyTimeoutError } from './runtime/errors';
 
 // Basic Either + TaskEither structural types (kept minimal to avoid runtime dependency).
 export type Left<E> = { _tag: 'Left'; left: E };
@@ -144,7 +144,7 @@ export function retryTE<E, A>(
       attempt++;
       const retry = attempt < max && (shouldRetry ? await shouldRetry(res.left, attempt) : true);
       if (!retry) return res;
-      const delay = Math.min(2000, baseDelayMs * Math.pow(2, attempt - 1));
+      const delay = Math.min(2000, baseDelayMs * 2 ** (attempt - 1));
       await new Promise((r) => setTimeout(r, delay));
     }
     return lastLeft!; // last failure
@@ -183,7 +183,7 @@ export function eventuallyTE<E, A>(
   return async () => {
     const start = Date.now();
     let attempt = 0;
-    // eslint-disable-next-line no-constant-condition
+
     while (true) {
       attempt++;
       try {

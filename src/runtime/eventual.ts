@@ -2,18 +2,18 @@
 // This file purposely avoids depending on generated core modules (legacy path ../gen/core/* removed)
 // and instead provides a lightweight CancelablePromise wrapper locally so it can be used
 // by codegen without circular deps.
-import { EventualConsistencyTimeoutError } from './errors';
-import { hydrateConfig } from './unifiedConfiguration';
 
 import type { Result } from '../resultClient';
+import { EventualConsistencyTimeoutError } from './errors';
 import type { Logger } from './logger';
+import { hydrateConfig } from './unifiedConfiguration';
 
 export interface CancelablePromise<T> extends Promise<T> {
   cancel(): void;
 }
 
 function toCancelable<T>(
-  factory: (signal: AbortSignal) => void | Promise<T>
+  factory: (signal: AbortSignal) => undefined | Promise<T>
 ): CancelablePromise<T> {
   const ac = new AbortController();
   let rejectFn: (e: any) => void = () => {};
@@ -54,7 +54,6 @@ export interface ConsistencyOptions<T> {
 }
 
 // Internal union shape (reserved for potential future use when refactoring invoke handling)
-// eslint-disable-next-line unused-imports/no-unused-vars
 type PollInvokeResult<T> =
   | { kind: 'success'; value: T; status?: number }
   | { kind: 'error'; error: any; status?: number };
@@ -229,11 +228,11 @@ export function eventualPoll<T>(
             const ra =
               err?.headers?.['retry-after'] ||
               err?.headers?.['Retry-After'] ||
-              err?.body?.['retryAfter'] ||
+              err?.body?.retryAfter ||
               err?.body?.['Retry-After'];
             if (ra) {
               const parsed = parseInt(ra, 10);
-              if (!isNaN(parsed)) delay = parsed < 1000 ? parsed * 1000 : parsed;
+              if (!Number.isNaN(parsed)) delay = parsed < 1000 ? parsed * 1000 : parsed;
             }
             delay = Math.min(delay, pollInterval * 5, 2000, remaining);
             const jitter = 0.9 + Math.random() * 0.2;

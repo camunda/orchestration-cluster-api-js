@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../src';
 
 // Helper to capture state quickly without real network: use disabled fetch (no ops invoked)

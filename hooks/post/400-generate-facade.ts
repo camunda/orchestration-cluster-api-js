@@ -51,7 +51,7 @@ async function main() {
     const sdkSrc = fs.readFileSync(SDK_GEN_PATH, 'utf8');
     // Safer scan: find each /** ... */ then ensure the next non-whitespace chars start with export const <name>
     let idx = 0;
-    // eslint-disable-next-line no-constant-condition
+
     while (true) {
       const start = sdkSrc.indexOf('/**', idx);
       if (start === -1) break;
@@ -110,7 +110,7 @@ async function main() {
   );
   if (bodyOnlyOps.length) {
     const dataTypeImports = bodyOnlyOps.map((o) => `${capitalizeFirst(o.opId)}Data`);
-    lines.push('import { ' + dataTypeImports.join(', ') + " } from '../gen/types.gen';");
+    lines.push(`import { ${dataTypeImports.join(', ')} } from '../gen/types.gen';`);
   }
   const anyEventual = allOps.some((o) => o.eventual);
   if (anyEventual) {
@@ -255,7 +255,7 @@ async function main() {
   lines.push(
     `// SENTINEL_FACADE_PREWRITE hash=${hash} totalWrappers=${allOps.length} elements=${lines.length} physicalLines=${physicalLineCount}`
   );
-  fs.writeFileSync(OUT_FILE, preContent + '\n' + lines[lines.length - 1] + '\n', 'utf8');
+  fs.writeFileSync(OUT_FILE, `${preContent}\n${lines[lines.length - 1]}\n`, 'utf8');
   console.log(
     `[facade-gen] Wrote ${bodyOnlyOps.length} flattened + ${passthroughOps.length} passthrough wrappers (total ${allOps.length}) -> ${path.relative(ROOT, OUT_FILE)} (hash=${hash}, elements=${lines.length}, physicalLines=${physicalLineCount})`
   );
@@ -288,7 +288,7 @@ async function main() {
       '// @generated facade barrel',
       "export * from '../facade/operations.gen';",
       keyNames.length
-        ? 'export { ' + keyNames.join(', ') + " } from './types.gen';"
+        ? `export { ${keyNames.join(', ')} } from './types.gen';`
         : '//' + ' no key names found',
     ].join('\n');
     const barrelPath = path.join(ROOT, 'src/gen/facade.gen.ts');
@@ -311,7 +311,7 @@ function buildJsDoc(
   if (op.description) parts.push(...String(op.description).split(/\r?\n/));
   if (originalOpId) parts.push(`@operationId ${originalOpId}`);
   if (op.tags?.length) parts.push(`@tags ${op.tags.join(', ')}`);
-  return '/**\n' + parts.map((l) => ' * ' + l.replace(/\*/g, '')).join('\n') + '\n */';
+  return `/**\n${parts.map((l) => ` * ${l.replace(/\*/g, '')}`).join('\n')}\n */`;
 }
 
 function forwardJsDoc(op: any, sourceMap: Record<string, string>): string {
@@ -322,7 +322,7 @@ function forwardJsDoc(op: any, sourceMap: Record<string, string>): string {
     injection.push(' *');
     injection.push(` * @operationId ${originalOpId}`);
     if (op.tags?.length) injection.push(` * @tags ${op.tags.join(', ')}`);
-    return base.replace(/\*\/$/, injection.join('\n') + '\n */');
+    return base.replace(/\*\/$/, `${injection.join('\n')}\n */`);
   }
   return buildJsDoc(op, originalOpId);
 }

@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Rewrites the side-effect import of zod-augment in generated zod.gen.ts into
 // a named import that references a dummy export, ensuring retention under tree-shaking.

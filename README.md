@@ -1400,7 +1400,7 @@ Inject a mock fetch:
 
 ```ts
 const client = createCamundaClient({
-  fetch: async (input, init) => new Response(JSON.stringify({ ok: true }), { status: 200 }),
+  fetch: async (_input, _init) => new Response(JSON.stringify({ ok: true }), { status: 200 }),
 });
 ```
 

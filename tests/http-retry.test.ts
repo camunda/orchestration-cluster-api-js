@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from 'vitest';
-
 import { createCamundaClient } from '../src';
 
 describe('http retry', () => {

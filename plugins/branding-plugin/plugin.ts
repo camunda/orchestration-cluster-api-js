@@ -1,6 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-
+import fs from 'node:fs';
+import path from 'node:path';
 import type { BrandingPlugin } from './types';
 
 interface BrandingMetadataKey {
@@ -168,7 +167,7 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
     const targetTypesSuffix = path.join('src', 'gen', 'types.gen.ts');
     const targetZodSuffix = path.join('src', 'gen', 'zod.gen.ts');
     const originalWrite = fs.writeFileSync.bind(fs);
-    fs.writeFileSync = function (filePath: any, data: any, ...rest: any[]) {
+    fs.writeFileSync = (filePath: any, data: any, ...rest: any[]) => {
       try {
         if (typeof filePath === 'string' && typeof data === 'string') {
           // Patch types.gen.ts branding

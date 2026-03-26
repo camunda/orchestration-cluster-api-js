@@ -1,5 +1,3 @@
-/* eslint-disable unused-imports/no-unused-imports */
-/* eslint-disable import/order */
 // TEMPLATE: Canonical Camunda class template (manually maintained)
 // TEMPLATE: DO NOT add generated operation methods here; generator will produce CamundaClient.ts from this template.
 import { createClient } from '../gen/client/client.gen';

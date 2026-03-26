@@ -1,5 +1,4 @@
-import { test, expect } from 'vitest';
-
+import { expect, test } from 'vitest';
 import { createCamundaClient, createCamundaClientLoose } from '../dist';
 
 // This test seems to be a duplicate of ActivateJobs.test.ts, and fails when both are enabled
@@ -80,7 +79,7 @@ test('Can cancel an in-flight REST job activation call', async () => {
     maxJobsToActivate: 2,
     requestTimeout: 5000,
     timeout: 5000,
-    type: 'non-existent-type-' + Date.now().toString(),
+    type: `non-existent-type-${Date.now().toString()}`,
     worker: 'test',
   });
 

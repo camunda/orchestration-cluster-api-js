@@ -7,9 +7,9 @@
  *
  * All node: imports are dynamic to keep the module tree browser-safe.
  */
-import { installClientCallHandler } from './clientProxy';
 
 import type { CamundaClient } from '../gen/CamundaClient';
+import { installClientCallHandler } from './clientProxy';
 
 export interface PoolWorker {
   worker: import('node:worker_threads').Worker;

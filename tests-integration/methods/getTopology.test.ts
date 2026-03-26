@@ -1,5 +1,4 @@
 import { describe, it } from 'vitest';
-
 import { createCamundaClient } from '../../dist';
 import { validateResponseShape } from '../../json-body-assertions';
 

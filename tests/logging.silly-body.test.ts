@@ -1,5 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient, ProcessDefinitionKey } from '../src';
 
 describe('silly level HTTP body logging', () => {

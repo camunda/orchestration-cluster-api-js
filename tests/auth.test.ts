@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-
+import { describe, expect, it, vi } from 'vitest';
 import { createAuthFacade } from '../src/runtime/auth';
-import { hydrateConfig, CamundaConfigurationError } from '../src/runtime/unifiedConfiguration';
+import { CamundaConfigurationError, hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 function mockFetchSequence(
   responses: { ok: boolean; status?: number; json: any; delayMs?: number }[]

@@ -1,7 +1,5 @@
-import { ZodTypeAny, ZodObject } from 'zod';
-
+import { ZodObject, type ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
-
 import type { Logger } from './logger';
 
 export type ExtrasPolicy = 'ignore' | 'warn' | 'error';
@@ -69,13 +67,12 @@ export function detectExtrasAndMaybeThrow(opts: DetectOptions) {
   // Capture sample (root only) if capture dir configured (always for fanatical by design)
   if (settings.captureDir) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const pathMod = require('path');
+      const fs = require('node:fs');
+
+      const pathMod = require('node:path');
       if (!fs.existsSync(settings.captureDir))
         fs.mkdirSync(settings.captureDir, { recursive: true, mode: 0o700 });
-      const sig = operationId + '|' + flatIssues.sort().join('|');
+      const sig = `${operationId}|${flatIssues.sort().join('|')}`;
       const h = hash(sig);
       if (!seenCaptures.has(h)) {
         seenCaptures.add(h);

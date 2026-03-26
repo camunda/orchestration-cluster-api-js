@@ -7,7 +7,7 @@
  *   - src/gen/CamundaClient.ts
  *   - src/facade/operations.gen.ts
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = process.cwd();
@@ -52,7 +52,7 @@ for (const filePath of targets) {
     ]);
 
     // Insert example lines before the @operationId line
-    const injection = exampleLines.join('\n') + '\n';
+    const injection = `${exampleLines.join('\n')}\n`;
     src = src.slice(0, lineStart) + injection + src.slice(lineStart);
     fileInjections += examples.length;
   }

@@ -1,13 +1,10 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-
-import { cancelActiveInstancesForDefinitions } from './cancelTasks';
-
 import type { TestProject } from 'vitest/node';
+import { cancelActiveInstancesForDefinitions } from './cancelTasks';
 
 // Basic logger (avoid bringing full logger plumbing)
 function log(...args: any[]) {
-  // eslint-disable-next-line no-console
   console.log('[integration-cleanup]', ...args);
 }
 

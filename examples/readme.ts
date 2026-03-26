@@ -4,16 +4,15 @@
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-
 import createCamundaClient, {
   createCamundaResultClient,
-  isSdkError,
   isOk,
+  isSdkError,
+  type JobActionReceipt,
   JobKey,
   ProcessDefinitionId,
   ProcessDefinitionKey,
-  ProcessInstanceKey,
-  type JobActionReceipt,
+  type ProcessInstanceKey,
 } from '@camunda8/orchestration-cluster-api';
 import { z } from 'zod';
 
@@ -425,7 +424,7 @@ async function _readmeTestingClient() {
 async function _readmeTestingMock() {
   //#region ReadmeTestingMock
   const client = createCamundaClient({
-    fetch: async (input, init) => new Response(JSON.stringify({ ok: true }), { status: 200 }),
+    fetch: async (_input, _init) => new Response(JSON.stringify({ ok: true }), { status: 200 }),
   });
   //#endregion ReadmeTestingMock
   void client;

@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient, JobActionReceiptSymbol } from '../../dist';
 
 describe('activateJobs', () => {
@@ -37,7 +36,7 @@ describe('activateJobs', () => {
   it('can cancel an activateJobs call', async () => {
     const camunda = createCamundaClient();
     // Use a unique job type so there are guaranteed to be no jobs; activation will long-poll.
-    const uniqueType = 'no-jobs-' + Date.now();
+    const uniqueType = `no-jobs-${Date.now()}`;
     const activation = camunda.activateJobs({
       maxJobsToActivate: 1,
       type: uniqueType,

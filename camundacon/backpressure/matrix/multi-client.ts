@@ -706,7 +706,7 @@ async function runSharedGrpcPoll(processDefKey: string): Promise<WorkerResult[]>
   const deadline = t0 + SCENARIO_TIMEOUT_S * 1000;
 
   // Shared gRPC worker (polling — ActivateJobs RPC)
-  const worker = zeebe.createWorker({
+  const _worker = zeebe.createWorker({
     taskType: 'test-job',
     taskHandler: async (job) => {
       if (HANDLER_TYPE === 'cpu' && HANDLER_LATENCY_MS > 0) {

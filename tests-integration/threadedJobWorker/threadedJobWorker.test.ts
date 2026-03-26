@@ -1,9 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
-
-import { describe, it, expect } from 'vitest';
-
-import { createCamundaClient, ProcessInstanceKey } from '../../dist';
+import { describe, expect, it } from 'vitest';
+import { createCamundaClient, type ProcessInstanceKey } from '../../dist';
 
 // The handler fixture is a .ts file loaded via dynamic import() in the worker thread.
 // Node < 22 cannot import .ts files, so skip the entire suite on older runtimes.

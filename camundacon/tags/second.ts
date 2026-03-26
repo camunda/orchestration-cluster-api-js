@@ -1,5 +1,4 @@
-import readline from 'readline';
-
+import readline from 'node:readline';
 import { createCamundaClient, Tag } from '../../dist';
 
 main();

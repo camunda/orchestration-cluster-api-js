@@ -66,11 +66,10 @@
     "docs:config": "tsx scripts/generate-config-doc.ts",
     "docs:md": "rm -rf docs-md && typedoc --options typedoc-md.json && node scripts/postprocess-md-docs.mjs docs-md",
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
-    "lint-staged": "npx lint-staged",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
+    "lint": "biome lint .",
+    "lint:fix": "biome check . --write",
+    "format": "biome format . --write",
+    "format:check": "biome check .",
     "release": "semantic-release",
     "prepare": "husky install",
     "update:assertions": "npx assert-json-body",
@@ -108,6 +107,7 @@
     }
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.9",
     "@camunda8/sdk": "^8.8.7",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
@@ -117,19 +117,11 @@
     "@semantic-release/git": "^10.0.1",
     "@types/node": "^20.14.9",
     "@types/single-line-log": "^1.1.2",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
     "assert-json-body": "^1.5.0",
     "camunda-schema-bundler": "^1.4.0",
     "chalk": "^5.6.2",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.2",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-unused-imports": "^3.2.0",
     "fp-ts": "^2.16.11",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.8",
-    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "semantic-release": "^25.0.2",
     "single-line-log": "^1.1.2",
@@ -140,14 +132,7 @@
     "typescript": "^5.4.5",
     "vitest": "^3.2.4"
   },
-  "lint-staged": {
-    "*.{ts,tsx,js,json,md,yml,yaml}": [
-      "prettier --write"
-    ],
-    "*.{ts,tsx}": [
-      "eslint --fix"
-    ]
-  },
+
   "engines": {
     "node": ">=22"
   }

@@ -3,8 +3,8 @@
 
 import {
   createCamundaClient,
-  JobKey,
   type JobActionReceipt,
+  JobKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region ActivateJobs
@@ -61,7 +61,7 @@ async function failJobExample() {
 async function createJobWorkerExample() {
   const camunda = createCamundaClient();
 
-  const worker = camunda.createJobWorker({
+  const _worker = camunda.createJobWorker({
     jobType: 'payment-processing',
     jobTimeoutMs: 30000,
     maxParallelJobs: 5,
@@ -80,7 +80,7 @@ async function createJobWorkerExample() {
 async function jobWorkerExample() {
   const camunda = createCamundaClient();
 
-  const worker = camunda.createJobWorker({
+  const _worker = camunda.createJobWorker({
     jobType: 'payment-processing',
     jobTimeoutMs: 30000,
     maxParallelJobs: 5,

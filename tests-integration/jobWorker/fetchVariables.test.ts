@@ -1,5 +1,4 @@
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 // This test verifies that when fetchVariables is configured on the worker,

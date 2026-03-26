@@ -1,6 +1,5 @@
 // AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.
-import { describe, it, expect } from 'vitest';
-
+import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 describe('createProcessInstance', () => {

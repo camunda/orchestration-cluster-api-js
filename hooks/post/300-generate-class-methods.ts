@@ -40,7 +40,7 @@ async function main() {
     const sdk = fs.readFileSync(SDK_GEN_PATH, 'utf8');
     const re = /\n\/\*\*([\s\S]*?)\*\/\nexport const (\w+)\s*=\s*</g;
     let m;
-    while ((m = re.exec(sdk))) docs[m[2]] = '/**' + m[1] + '*/';
+    while ((m = re.exec(sdk))) docs[m[2]] = `/**${m[1]}*/`;
   }
   // Collect available exported zod response schema names to avoid emitting invalid references
   const availableResponses = new Set<string>();
@@ -97,7 +97,7 @@ async function main() {
 
   const support: string[] = [];
   support.push('// Generated');
-  support.push('// Operations: ' + ops.length);
+  support.push(`// Operations: ${ops.length}`);
   support.push('type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;');
   support.push(
     'type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;'
@@ -120,7 +120,7 @@ async function main() {
     // Build unified Input type (domain-only).
     const pieces: string[] = [];
     if (o.pathParams.length || o.queryParams.length || o.hasBody) {
-      if (o.hasBody) pieces.push(o.opId + 'Body');
+      if (o.hasBody) pieces.push(`${o.opId}Body`);
       const extras: string[] = [];
       for (const pp of o.pathParams) extras.push(`${pp}: ${o.opId}PathParam_${pp}`);
       for (const qp of o.queryParams)
@@ -220,7 +220,7 @@ export type ${o.opId}Consistency = {
       );
     }
     methods.push(
-      `  ${o.opId}(${o.hasBody || o.pathParams.length || o.queryParams.length ? 'arg: any' : 'arg?: any'}${o.eventual ? ', /** Management of eventual consistency **/ consistencyManagement: ' + o.opId + 'Consistency' : ''}, options?: OperationOptions): CancelablePromise<any> {`
+      `  ${o.opId}(${o.hasBody || o.pathParams.length || o.queryParams.length ? 'arg: any' : 'arg?: any'}${o.eventual ? `, /** Management of eventual consistency **/ consistencyManagement: ${o.opId}Consistency` : ''}, options?: OperationOptions): CancelablePromise<any> {`
     );
     if (o.eventual) {
       methods.push(
@@ -446,8 +446,7 @@ export type ${o.opId}Consistency = {
   }
 
   const banner = '// @generated from CamundaClient.template.ts - DO NOT EDIT DIRECTLY\n';
-  const withTypes =
-    tpl.slice(0, tS + MARK_TYPES_START.length) + '\n' + support.join('\n') + '\n' + tpl.slice(tE);
+  const withTypes = `${tpl.slice(0, tS + MARK_TYPES_START.length)}\n${support.join('\n')}\n${tpl.slice(tE)}`;
   const w2S = withTypes.indexOf(MARK_METHODS_START);
   const w2E = withTypes.indexOf(MARK_METHODS_END);
   let finalSrc =
@@ -482,7 +481,7 @@ function forwardJsDoc(op: any, docs: Record<string, string>): string {
     inj.push(' *');
     inj.push(` * @operationId ${op.originalOpId}`);
     if (op.tags?.length) inj.push(` * @tags ${op.tags.join(', ')}`);
-    return base.replace(/\*\/$/, inj.join('\n') + '\n */');
+    return base.replace(/\*\/$/, `${inj.join('\n')}\n */`);
   }
   return buildJsDoc(op);
 }
@@ -497,7 +496,7 @@ function buildJsDoc(op: {
   if (op.description) parts.push(...String(op.description).split(/\r?\n/));
   parts.push(`@operationId ${op.originalOpId}`);
   if (op.tags?.length) parts.push(`@tags ${op.tags.join(', ')}`);
-  return '/**\n' + parts.map((l) => ' * ' + l.replace(/\*/g, '')).join('\n') + '\n */';
+  return `/**\n${parts.map((l) => ` * ${l.replace(/\*/g, '')}`).join('\n')}\n */`;
 }
 function indent(s: string, d: number) {
   const pad = ' '.repeat(d);
