@@ -99,6 +99,14 @@
     "typed-env": "^2.0.0",
     "zod": "^4"
   },
+  "peerDependencies": {
+    "fp-ts": "^2.16.11"
+  },
+  "peerDependenciesMeta": {
+    "fp-ts": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@camunda8/sdk": "^8.8.7",
     "@commitlint/cli": "^19.3.0",
@@ -121,7 +129,6 @@
     "fp-ts": "^2.16.11",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.8",
-    "openapi-typescript-codegen": "^0.29.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "semantic-release": "^25.0.2",
