@@ -8,7 +8,7 @@ import type { EnvOverrides } from '../runtime/configSchema';
 import { hydrateConfig } from '../runtime/unifiedConfiguration';
 import { ConsistencyOptions, eventualPoll } from '../runtime/eventual';
 import { installAuthInterceptor } from '../runtime/installAuthInterceptor';
-import { createLogger, Logger, LogLevel, LogTransport } from '../runtime/logger';
+import { createLogger, type Logger, type LogLevel, type LogTransport } from '../runtime/logger';
 import {
   createSupportLogger,
   type SupportLogger,
