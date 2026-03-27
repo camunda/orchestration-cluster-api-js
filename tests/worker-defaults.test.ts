@@ -83,8 +83,8 @@ describe('worker defaults: createJobWorker merge', () => {
   it('applies workerDefaults when per-worker config omits fields', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_TIMEOUT: '30000',
-        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_TIMEOUT: 30000,
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
       },
       fetch: noopFetch as any,
     });
@@ -102,8 +102,8 @@ describe('worker defaults: createJobWorker merge', () => {
   it('explicit per-worker config overrides workerDefaults', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_TIMEOUT: '30000',
-        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_TIMEOUT: 30000,
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
         CAMUNDA_WORKER_NAME: 'global-name',
       },
       fetch: noopFetch as any,
@@ -145,7 +145,7 @@ describe('worker defaults: validation', () => {
   it('throws when maxParallelJobs is not set anywhere', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_TIMEOUT: '30000',
+        CAMUNDA_WORKER_TIMEOUT: 30000,
       },
       fetch: noopFetch as any,
     });
@@ -161,7 +161,7 @@ describe('worker defaults: validation', () => {
   it('throws when jobTimeoutMs is not set anywhere', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
       },
       fetch: noopFetch as any,
     });
@@ -177,8 +177,8 @@ describe('worker defaults: validation', () => {
   it('succeeds when both required fields come from env defaults', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_TIMEOUT: '30000',
-        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_TIMEOUT: 30000,
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
       },
       fetch: noopFetch as any,
     });
@@ -211,8 +211,8 @@ describe('worker defaults: createThreadedJobWorker merge', () => {
   it('applies workerDefaults when threaded worker config omits maxParallelJobs and jobTimeoutMs', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_TIMEOUT: '30000',
-        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_TIMEOUT: 30000,
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
       },
       fetch: noopFetch as any,
     });
@@ -227,7 +227,7 @@ describe('worker defaults: createThreadedJobWorker merge', () => {
 
   it('throws when maxParallelJobs is missing for threaded worker', () => {
     const client = createCamundaClient({
-      config: { CAMUNDA_WORKER_TIMEOUT: '30000' },
+      config: { CAMUNDA_WORKER_TIMEOUT: 30000 },
       fetch: noopFetch as any,
     });
     expect(() =>
@@ -241,7 +241,7 @@ describe('worker defaults: createThreadedJobWorker merge', () => {
 
   it('throws when jobTimeoutMs is missing for threaded worker', () => {
     const client = createCamundaClient({
-      config: { CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4' },
+      config: { CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4 },
       fetch: noopFetch as any,
     });
     expect(() =>
@@ -256,8 +256,8 @@ describe('worker defaults: createThreadedJobWorker merge', () => {
   it('explicit threaded worker config overrides workerDefaults', () => {
     const client = createCamundaClient({
       config: {
-        CAMUNDA_WORKER_TIMEOUT: '30000',
-        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_TIMEOUT: 30000,
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
         CAMUNDA_WORKER_NAME: 'global-name',
       },
       fetch: noopFetch as any,

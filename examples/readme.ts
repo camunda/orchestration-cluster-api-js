@@ -515,8 +515,8 @@ async function _readmeWorkerDefaultsClient() {
   //#region ReadmeWorkerDefaultsClient
   const client = createCamundaClient({
     config: {
-      CAMUNDA_WORKER_TIMEOUT: '30000',
-      CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '8',
+      CAMUNDA_WORKER_TIMEOUT: 30000,
+      CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 8,
     },
   });
   //#endregion ReadmeWorkerDefaultsClient
