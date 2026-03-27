@@ -693,6 +693,59 @@ client.createJobWorker({
 
 A value of `0` (the default) means no delay.
 
+### Heritable Worker Defaults
+
+When running many workers with the same base configuration, you can set global defaults via environment variables. These apply to every worker created by the client unless the individual `JobWorkerConfig` explicitly overrides them.
+
+| Environment Variable                       | Worker Config Field        | Type   |
+| ------------------------------------------ | -------------------------- | ------ |
+| `CAMUNDA_WORKER_TIMEOUT`                   | `jobTimeoutMs`             | number |
+| `CAMUNDA_WORKER_MAX_CONCURRENT_JOBS`       | `maxParallelJobs`          | number |
+| `CAMUNDA_WORKER_REQUEST_TIMEOUT`           | `pollTimeoutMs`            | number |
+| `CAMUNDA_WORKER_NAME`                      | `workerName`               | string |
+| `CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS`| `startupJitterMaxSeconds`  | number |
+
+**Precedence:** explicit `JobWorkerConfig` value > environment variable > hardcoded default.
+
+Example — set defaults via environment:
+
+```bash
+export CAMUNDA_WORKER_TIMEOUT=30000
+export CAMUNDA_WORKER_MAX_CONCURRENT_JOBS=8
+export CAMUNDA_WORKER_NAME=order-service
+```
+
+```ts
+// Workers inherit timeout, concurrency, and name from environment
+const w1 = client.createJobWorker({
+  jobType: 'validate-order',
+  jobHandler: async (job) => job.complete(),
+});
+
+const w2 = client.createJobWorker({
+  jobType: 'ship-order',
+  jobHandler: async (job) => job.complete(),
+});
+
+// Per-worker override: this worker uses 32 concurrent jobs instead of the global 8
+const w3 = client.createJobWorker({
+  jobType: 'bulk-import',
+  maxParallelJobs: 32,
+  jobHandler: async (job) => job.complete(),
+});
+```
+
+You can also pass defaults programmatically via the client constructor:
+
+```ts
+const client = createCamundaClient({
+  config: {
+    CAMUNDA_WORKER_TIMEOUT: '30000',
+    CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '8',
+  },
+});
+```
+
 ### Receipt Type (Unique Symbol)
 
 Action methods return a unique symbol (not a string) to avoid accidental misuse and allow internal metrics. If you store the receipt, annotate its type as `JobActionReceipt` to preserve uniqueness:

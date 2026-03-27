@@ -209,6 +209,27 @@ export const SCHEMA = {
     default: false,
     doc: 'Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated).',
   },
+  // Worker defaults (heritable to all workers created via createJobWorker)
+  CAMUNDA_WORKER_TIMEOUT: {
+    type: 'int',
+    doc: 'Default job timeout in ms for all workers. Individual JobWorkerConfig.jobTimeoutMs overrides this.',
+  },
+  CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: {
+    type: 'int',
+    doc: 'Default max parallel jobs for all workers. Individual JobWorkerConfig.maxParallelJobs overrides this.',
+  },
+  CAMUNDA_WORKER_REQUEST_TIMEOUT: {
+    type: 'int',
+    doc: 'Default long-poll timeout in ms for all workers. Individual JobWorkerConfig.pollTimeoutMs overrides this.',
+  },
+  CAMUNDA_WORKER_NAME: {
+    type: 'string',
+    doc: 'Default worker name for all workers. Individual JobWorkerConfig.workerName overrides this.',
+  },
+  CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS: {
+    type: 'int',
+    doc: 'Default startup jitter in seconds for all workers. Individual JobWorkerConfig.startupJitterMaxSeconds overrides this.',
+  },
 } as const;
 
 export type EnvVarKey = keyof typeof SCHEMA;
