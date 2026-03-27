@@ -715,6 +715,7 @@ export CAMUNDA_WORKER_MAX_CONCURRENT_JOBS=8
 export CAMUNDA_WORKER_NAME=order-service
 ```
 
+<!-- snippet:ReadmeWorkerDefaultsEnv -->
 ```ts
 // Workers inherit timeout, concurrency, and name from environment
 const w1 = client.createJobWorker({
@@ -737,11 +738,12 @@ const w3 = client.createJobWorker({
 
 You can also pass defaults programmatically via the client constructor:
 
+<!-- snippet:ReadmeWorkerDefaultsClient -->
 ```ts
 const client = createCamundaClient({
   config: {
-    CAMUNDA_WORKER_TIMEOUT: 30000,
-    CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 8,
+    CAMUNDA_WORKER_TIMEOUT: '30000',
+    CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '8',
   },
 });
 ```

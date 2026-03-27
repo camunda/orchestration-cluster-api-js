@@ -479,6 +479,50 @@ async function _readmeTestingMock() {
   void client;
 }
 
+// ---------------------------------------------------------------------------
+// Heritable Worker Defaults
+// ---------------------------------------------------------------------------
+
+async function _readmeWorkerDefaultsEnv() {
+  const client = createCamundaClient();
+
+  //#region ReadmeWorkerDefaultsEnv
+  // Workers inherit timeout, concurrency, and name from environment
+  const w1 = client.createJobWorker({
+    jobType: 'validate-order',
+    jobHandler: async (job) => job.complete(),
+  });
+
+  const w2 = client.createJobWorker({
+    jobType: 'ship-order',
+    jobHandler: async (job) => job.complete(),
+  });
+
+  // Per-worker override: this worker uses 32 concurrent jobs instead of the global 8
+  const w3 = client.createJobWorker({
+    jobType: 'bulk-import',
+    maxParallelJobs: 32,
+    jobHandler: async (job) => job.complete(),
+  });
+  //#endregion ReadmeWorkerDefaultsEnv
+
+  void w1;
+  void w2;
+  void w3;
+}
+
+async function _readmeWorkerDefaultsClient() {
+  //#region ReadmeWorkerDefaultsClient
+  const client = createCamundaClient({
+    config: {
+      CAMUNDA_WORKER_TIMEOUT: '30000',
+      CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '8',
+    },
+  });
+  //#endregion ReadmeWorkerDefaultsClient
+  void client;
+}
+
 // Suppress "declared but never read"
 void _readmeQuickStart;
 void _readmeOverrides;
@@ -501,3 +545,5 @@ void _readmeDeployBrowser;
 void _readmeDeployNode;
 void _readmeTestingClient;
 void _readmeTestingMock;
+void _readmeWorkerDefaultsEnv;
+void _readmeWorkerDefaultsClient;
