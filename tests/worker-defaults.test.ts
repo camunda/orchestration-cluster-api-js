@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
 import { JobWorker } from '../src/runtime/jobWorker';
+import { ThreadedJobWorker } from '../src/runtime/threadedJobWorker';
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 /**
@@ -36,6 +37,11 @@ describe('worker defaults: config hydration', () => {
   it('hydrates CAMUNDA_WORKER_REQUEST_TIMEOUT into workerDefaults.pollTimeoutMs', () => {
     const { config } = hydrateConfig({ env: { CAMUNDA_WORKER_REQUEST_TIMEOUT: '15000' } });
     expect(config.workerDefaults?.pollTimeoutMs).toBe(15000);
+  });
+
+  it('hydrates negative CAMUNDA_WORKER_REQUEST_TIMEOUT (immediate completion)', () => {
+    const { config } = hydrateConfig({ env: { CAMUNDA_WORKER_REQUEST_TIMEOUT: '-1' } });
+    expect(config.workerDefaults?.pollTimeoutMs).toBe(-1);
   });
 
   it('hydrates CAMUNDA_WORKER_NAME into workerDefaults.workerName', () => {
@@ -197,6 +203,74 @@ describe('worker defaults: validation', () => {
       autoStart: false,
     });
     expect(worker).toBeInstanceOf(JobWorker);
+    worker.stop();
+  });
+});
+
+describe('worker defaults: createThreadedJobWorker merge', () => {
+  it('applies workerDefaults when threaded worker config omits maxParallelJobs and jobTimeoutMs', () => {
+    const client = createCamundaClient({
+      config: {
+        CAMUNDA_WORKER_TIMEOUT: '30000',
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+      },
+      fetch: noopFetch as any,
+    });
+    const worker = client.createThreadedJobWorker({
+      jobType: 'test-type',
+      handlerModule: './fake-handler.js',
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(ThreadedJobWorker);
+    worker.stop();
+  });
+
+  it('throws when maxParallelJobs is missing for threaded worker', () => {
+    const client = createCamundaClient({
+      config: { CAMUNDA_WORKER_TIMEOUT: '30000' },
+      fetch: noopFetch as any,
+    });
+    expect(() =>
+      client.createThreadedJobWorker({
+        jobType: 'test-type',
+        handlerModule: './fake-handler.js',
+        autoStart: false,
+      })
+    ).toThrow(/maxParallelJobs is required/);
+  });
+
+  it('throws when jobTimeoutMs is missing for threaded worker', () => {
+    const client = createCamundaClient({
+      config: { CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4' },
+      fetch: noopFetch as any,
+    });
+    expect(() =>
+      client.createThreadedJobWorker({
+        jobType: 'test-type',
+        handlerModule: './fake-handler.js',
+        autoStart: false,
+      })
+    ).toThrow(/jobTimeoutMs is required/);
+  });
+
+  it('explicit threaded worker config overrides workerDefaults', () => {
+    const client = createCamundaClient({
+      config: {
+        CAMUNDA_WORKER_TIMEOUT: '30000',
+        CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '4',
+        CAMUNDA_WORKER_NAME: 'global-name',
+      },
+      fetch: noopFetch as any,
+    });
+    const worker = client.createThreadedJobWorker({
+      jobType: 'test-type',
+      handlerModule: './fake-handler.js',
+      maxParallelJobs: 16,
+      jobTimeoutMs: 60000,
+      workerName: 'explicit-threaded-name',
+      autoStart: false,
+    });
+    expect(worker.name).toBe('explicit-threaded-name');
     worker.stop();
   });
 });

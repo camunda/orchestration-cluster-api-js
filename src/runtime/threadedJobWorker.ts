@@ -56,7 +56,7 @@ export interface ThreadedJobWorkerConfig<
   /** Immediately start polling for work - default `true` */
   autoStart?: boolean;
   /** concurrency limit */
-  maxParallelJobs: number;
+  maxParallelJobs?: number;
   /**
    * The request will be completed when at least one job is activated or after the requestTimeout.
    * If the requestTimeout = 0, the request will be completed after a default configured timeout in the broker.
@@ -64,7 +64,7 @@ export interface ThreadedJobWorkerConfig<
    */
   pollTimeoutMs?: number;
   /** Job activation timeout */
-  jobTimeoutMs: number;
+  jobTimeoutMs?: number;
   /** Zeebe job type */
   jobType: string;
   /** Optional list of variable names to fetch during activation */
@@ -119,6 +119,16 @@ export class ThreadedJobWorker {
     this._client = client;
     this._pool = pool;
     this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, ...cfg };
+    if (this._cfg.maxParallelJobs === undefined) {
+      throw new Error(
+        'maxParallelJobs is required: set it on ThreadedJobWorkerConfig or via CAMUNDA_WORKER_MAX_CONCURRENT_JOBS (environment variable or CamundaOptions.config override).'
+      );
+    }
+    if (this._cfg.jobTimeoutMs === undefined) {
+      throw new Error(
+        'jobTimeoutMs is required: set it on ThreadedJobWorkerConfig or via CAMUNDA_WORKER_TIMEOUT (environment variable or CamundaOptions.config override).'
+      );
+    }
     this._name = cfg.workerName || `threaded-worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
 

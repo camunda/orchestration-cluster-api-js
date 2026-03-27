@@ -219,8 +219,8 @@ export const SCHEMA = {
     doc: 'Default max parallel jobs for all workers. Individual JobWorkerConfig.maxParallelJobs overrides this.',
   },
   CAMUNDA_WORKER_REQUEST_TIMEOUT: {
-    type: 'int',
-    doc: 'Default long-poll timeout in ms for all workers. Individual JobWorkerConfig.pollTimeoutMs overrides this.',
+    type: 'string',
+    doc: 'Default long-poll timeout in ms for all workers (signed integer string; negative values are valid — they cause activation to complete immediately when no jobs are available). Individual JobWorkerConfig.pollTimeoutMs overrides this.',
   },
   CAMUNDA_WORKER_NAME: {
     type: 'string',

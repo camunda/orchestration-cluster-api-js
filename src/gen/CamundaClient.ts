@@ -13723,6 +13723,11 @@ export class CamundaClient {
    * This keeps the main event loop free for polling and I/O, dramatically improving
    * throughput for CPU-bound job handlers.
    *
+   * Worker configuration fields inherit global defaults resolved via the
+   * unified configuration (environment variables or equivalent `CAMUNDA_WORKER_*`
+   * keys provided via `CamundaOptions.config`) when not explicitly set on the
+   * config object.
+   *
    * @param cfg Threaded worker configuration
    * @example Create a threaded job worker
    * ```ts

@@ -740,8 +740,8 @@ You can also pass defaults programmatically via the client constructor:
 ```ts
 const client = createCamundaClient({
   config: {
-    CAMUNDA_WORKER_TIMEOUT: '30000',
-    CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: '8',
+    CAMUNDA_WORKER_TIMEOUT: 30000,
+    CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 8,
   },
 });
 ```
