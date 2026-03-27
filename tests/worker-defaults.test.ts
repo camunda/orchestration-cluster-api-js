@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
-import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 import { JobWorker } from '../src/runtime/jobWorker';
+import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 /**
  * Unit tests for heritable worker defaults (CAMUNDA_WORKER_* env vars).
@@ -14,11 +14,12 @@ import { JobWorker } from '../src/runtime/jobWorker';
  */
 
 const noopHandler = async () => 'JOB_ACTION_RECEIPT' as const;
-const noopFetch = vi.fn(async () =>
-  new Response(JSON.stringify({ jobs: [] }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  })
+const noopFetch = vi.fn(
+  async () =>
+    new Response(JSON.stringify({ jobs: [] }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    })
 );
 
 describe('worker defaults: config hydration', () => {

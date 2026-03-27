@@ -695,7 +695,7 @@ A value of `0` (the default) means no delay.
 
 ### Heritable Worker Defaults
 
-When running many workers with the same base configuration, you can set global defaults via environment variables. These apply to every worker created by the client unless the individual `JobWorkerConfig` explicitly overrides them.
+When running many workers with the same base configuration, you can set global defaults via environment variables (or equivalent keys in `CamundaOptions.config`). These apply to every worker created by the client (both `createJobWorker` and `createThreadedJobWorker`) unless the individual worker config explicitly overrides them.
 
 | Environment Variable                       | Worker Config Field        | Type   |
 | ------------------------------------------ | -------------------------- | ------ |
@@ -705,7 +705,7 @@ When running many workers with the same base configuration, you can set global d
 | `CAMUNDA_WORKER_NAME`                      | `workerName`               | string |
 | `CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS`| `startupJitterMaxSeconds`  | number |
 
-**Precedence:** explicit `JobWorkerConfig` value > environment variable > hardcoded default.
+**Precedence:** explicit worker config value > `CAMUNDA_WORKER_*` (from environment variables or `CamundaOptions.config` overrides) > hardcoded default (where applicable).
 
 Example — set defaults via environment:
 

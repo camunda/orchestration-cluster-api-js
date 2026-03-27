@@ -706,15 +706,28 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
           ? path.join(process.cwd(), 'camunda-support.log')
           : 'camunda-support.log'),
     },
-    workerDefaults: rawMap.CAMUNDA_WORKER_TIMEOUT || rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS || rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT || rawMap.CAMUNDA_WORKER_NAME || rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS
-      ? {
-          jobTimeoutMs: rawMap.CAMUNDA_WORKER_TIMEOUT ? parseInt(rawMap.CAMUNDA_WORKER_TIMEOUT, 10) : undefined,
-          maxParallelJobs: rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS ? parseInt(rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS, 10) : undefined,
-          pollTimeoutMs: rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT ? parseInt(rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT, 10) : undefined,
-          workerName: rawMap.CAMUNDA_WORKER_NAME || undefined,
-          startupJitterMaxSeconds: rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS ? parseInt(rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS, 10) : undefined,
-        }
-      : undefined,
+    workerDefaults:
+      rawMap.CAMUNDA_WORKER_TIMEOUT ||
+      rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS ||
+      rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT ||
+      rawMap.CAMUNDA_WORKER_NAME ||
+      rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS
+        ? {
+            jobTimeoutMs: rawMap.CAMUNDA_WORKER_TIMEOUT
+              ? parseInt(rawMap.CAMUNDA_WORKER_TIMEOUT, 10)
+              : undefined,
+            maxParallelJobs: rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS
+              ? parseInt(rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS, 10)
+              : undefined,
+            pollTimeoutMs: rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT
+              ? parseInt(rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT, 10)
+              : undefined,
+            workerName: rawMap.CAMUNDA_WORKER_NAME || undefined,
+            startupJitterMaxSeconds: rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS
+              ? parseInt(rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS, 10)
+              : undefined,
+          }
+        : undefined,
     __raw: { ...rawMap },
   };
 

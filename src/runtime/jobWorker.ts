@@ -92,12 +92,12 @@ export class JobWorker {
     this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, ...cfg };
     if (this._cfg.maxParallelJobs === undefined) {
       throw new Error(
-        'maxParallelJobs is required: set it on JobWorkerConfig or via CAMUNDA_WORKER_MAX_CONCURRENT_JOBS environment variable.'
+        'maxParallelJobs is required: set it on JobWorkerConfig, via CAMUNDA_WORKER_MAX_CONCURRENT_JOBS (environment variable or CamundaOptions.config override), or accept the inherited default.'
       );
     }
     if (this._cfg.jobTimeoutMs === undefined) {
       throw new Error(
-        'jobTimeoutMs is required: set it on JobWorkerConfig or via CAMUNDA_WORKER_TIMEOUT environment variable.'
+        'jobTimeoutMs is required: set it on JobWorkerConfig or via CAMUNDA_WORKER_TIMEOUT (environment variable or CamundaOptions.config override).'
       );
     }
     this._maxParallelJobs = this._cfg.maxParallelJobs;
