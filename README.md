@@ -542,7 +542,7 @@ client.createJobWorker({
 
 Your `jobHandler` must ultimately invoke exactly one of:
 
-- `job.complete({ variables? }, result?)` OR `job.complete()`
+- `job.complete(variables?, result?)` OR `job.complete()`
 - `job.fail({ errorMessage, retries?, retryBackoff? })`
 - `job.cancelWorkflow({})` (cancels the process instance)
 - `job.error({ errorCode, errorMessage? })` (throws a business error)

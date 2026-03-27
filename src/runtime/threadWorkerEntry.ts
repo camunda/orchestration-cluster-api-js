@@ -150,11 +150,11 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
    * free for CPU work instead of blocking on I/O round-trips.
    */
 
-  job.complete = async (variables: Record<string, unknown> = {}) => {
+  job.complete = async (variables: Record<string, unknown> = {}, result?: any) => {
     ack();
     job._completionAction = {
       method: 'completeJob',
-      args: [{ variables, jobKey: jobData.jobKey }],
+      args: [{ variables, jobKey: jobData.jobKey, result }],
     };
     return JobActionReceipt;
   };

@@ -67,6 +67,7 @@ describe('job.complete() with corrections', () => {
 
     await job.complete({}, result);
 
+    expect(completeJobMock).toHaveBeenCalledOnce();
     expect(completeJobMock).toHaveBeenCalledWith({
       variables: {},
       jobKey: 'test-job-1',
@@ -84,10 +85,12 @@ describe('job.complete() with corrections', () => {
 
     await job.complete({ processed: true });
 
-    expect(completeJobMock).toHaveBeenCalledWith({
-      variables: { processed: true },
-      jobKey: 'test-job-1',
-      result: undefined,
-    });
+    expect(completeJobMock).toHaveBeenCalledOnce();
+    expect(completeJobMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variables: { processed: true },
+        jobKey: 'test-job-1',
+      })
+    );
   });
 });
