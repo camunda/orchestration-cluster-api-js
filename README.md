@@ -542,7 +542,7 @@ client.createJobWorker({
 
 Your `jobHandler` must ultimately invoke exactly one of:
 
-- `job.complete({ variables? })` OR `job.complete()`
+- `job.complete({ variables? }, result?)` OR `job.complete()`
 - `job.fail({ errorMessage, retries?, retryBackoff? })`
 - `job.cancelWorkflow({})` (cancels the process instance)
 - `job.error({ errorCode, errorMessage? })` (throws a business error)
@@ -583,6 +583,51 @@ const ack = await job.ignore();
 ```ts
 // No-arg completion example
 ```
+
+### Job Corrections (User Task Listeners)
+
+When a job worker handles a [user task listener](https://docs.camunda.io/docs/components/concepts/user-task-listeners/), it can correct task properties (assignee, due date, candidate groups, etc.) by passing a `result` to `job.complete()`:
+
+```ts
+import type { JobResult } from '@camunda8/orchestration-cluster-api';
+
+const worker = client.createJobWorker({
+  jobType: 'io.camunda:userTaskListener',
+  jobTimeoutMs: 30_000,
+  maxParallelJobs: 5,
+  jobHandler: async (job) => {
+    const result: JobResult = {
+      type: 'userTask',
+      corrections: {
+        assignee: 'corrected-user',
+        priority: 80,
+      },
+    };
+    return job.complete({}, result);
+  },
+});
+```
+
+To deny a task completion (reject the work):
+
+```ts
+return job.complete({}, {
+  type: 'userTask',
+  denied: true,
+  deniedReason: 'Insufficient documentation',
+});
+```
+
+| Correctable attribute | Type | Clear value |
+|---|---|---|
+| `assignee` | `string` | Empty string `""` |
+| `dueDate` | `string` (ISO 8601) | Empty string `""` |
+| `followUpDate` | `string` (ISO 8601) | Empty string `""` |
+| `candidateUsers` | `string[]` | Empty array `[]` |
+| `candidateGroups` | `string[]` | Empty array `[]` |
+| `priority` | `number` (0–100) | — |
+
+Omitting an attribute or passing `null` preserves the persisted value.
 
 ### Concurrency & Backpressure
 
