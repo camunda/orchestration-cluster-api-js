@@ -85,12 +85,13 @@ describe('job.complete() with corrections', () => {
 
     await job.complete({ processed: true });
 
-    expect(completeJobMock).toHaveBeenCalledOnce();
-    expect(completeJobMock).toHaveBeenCalledWith(
+    const callArg = completeJobMock.mock.calls[0][0];
+    expect(callArg).toEqual(
       expect.objectContaining({
         variables: { processed: true },
         jobKey: 'test-job-1',
       })
     );
+    expect(callArg).not.toHaveProperty('result');
   });
 });

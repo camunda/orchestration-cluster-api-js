@@ -124,7 +124,7 @@ async function _readmeJobWorkerMinimal() {
       const vars = job.variables; // inferred from Input schema
       console.log(`Processing order: ${vars.orderId}`);
       // Do work...
-      return job.complete({ variables: { processed: true } });
+      return job.complete({ processed: true });
     },
   });
 
@@ -206,7 +206,7 @@ async function _readmeReceipt() {
     jobTimeoutMs: 30_000,
     jobHandler: async (job) => {
       //#region ReadmeReceipt
-      const receipt: JobActionReceipt = await job.complete({ variables: { processed: true } });
+      const receipt: JobActionReceipt = await job.complete({ processed: true });
       //#endregion ReadmeReceipt
       return receipt;
     },

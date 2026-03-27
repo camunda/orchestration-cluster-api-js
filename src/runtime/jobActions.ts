@@ -57,7 +57,11 @@ export function enrichActivatedJob(
     result?: JobResult
   ): Promise<JobActionReceipt> => {
     try {
-      await client.completeJob({ variables, jobKey: raw.jobKey, result });
+      await client.completeJob({
+        variables,
+        jobKey: raw.jobKey,
+        ...(result !== undefined && { result }),
+      });
     } finally {
       ack();
     }

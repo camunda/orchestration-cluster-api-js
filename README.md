@@ -503,11 +503,7 @@ const worker = client.createJobWorker({
     const vars = job.variables; // inferred from Input schema
     console.log(`Processing order: ${vars.orderId}`);
     // Do work...
-    return job.complete({ variables: { processed: true } });
-  },
-});
-
-// Later, on shutdown:
+    return job.complete({ processed: true });
 process.on('SIGINT', () => {
   worker.stop();
 });
@@ -569,9 +565,7 @@ Example patterns:
 
 ```ts
 // GOOD: explicit completion
-return job.complete({ variables: { processed: true } });
-
-// GOOD: No-arg completion example, sentinel stored for ultimate return
+return job.complete({ processed: true });, sentinel stored for ultimate return
 const ack = await job.complete();
 // ...
 return ack;
@@ -697,7 +691,7 @@ Action methods return a unique symbol (not a string) to avoid accidental misuse 
 ```ts
 import type { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
 
-const receipt: JobActionReceipt = await job.complete({ variables: { processed: true } });
+const receipt: JobActionReceipt = await job.complete({ processed: true });
 ```
 
 If you ignore the return value you don’t need to import the symbol.
