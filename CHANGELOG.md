@@ -1,3 +1,18 @@
+# [8.9.0-alpha.22](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.21...v8.9.0-alpha.22) (2026-03-30)
+
+
+### Bug Fixes
+
+* address PR review comments ([ae51b85](https://github.com/camunda/orchestration-cluster-api-js/commit/ae51b8534239de5bb0ca61c1897dfe89514a740d))
+* address PR review comments on job corrections ([3a82c3a](https://github.com/camunda/orchestration-cluster-api-js/commit/3a82c3a06e25f589ccc9638aba191affa8f25948))
+* address review comments on PR [#85](https://github.com/camunda/orchestration-cluster-api-js/issues/85) ([3d3a810](https://github.com/camunda/orchestration-cluster-api-js/commit/3d3a8109742e6b3fec2e17aecc729565da871ed9))
+* restore 'Later, on shutdown:' comment and fix test formatting ([aed9ba5](https://github.com/camunda/orchestration-cluster-api-js/commit/aed9ba5eb0ed5351da0c1c2a84cf3b40c88f63b5))
+
+
+### Features
+
+* support job corrections in worker job.complete() ([790e15d](https://github.com/camunda/orchestration-cluster-api-js/commit/790e15d675ef3fea09c47cb820a1bc960a075ff6))
+
 # [8.9.0-alpha.21](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.20...v8.9.0-alpha.21) (2026-03-25)
 
 
