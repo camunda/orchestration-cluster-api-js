@@ -107,6 +107,8 @@ export class ThreadedJobWorker {
   private _client: CamundaClient;
   private _pool: ThreadPool;
   private _cfg: ThreadedJobWorkerConfig;
+  private _maxParallelJobs: number;
+  private _jobTimeoutMs: number;
   private _name: string;
   private _activeJobs = 0;
   private _stopped = false;
@@ -129,6 +131,8 @@ export class ThreadedJobWorker {
         'jobTimeoutMs is required: set it on ThreadedJobWorkerConfig or via CAMUNDA_WORKER_TIMEOUT (environment variable or CamundaOptions.config override).'
       );
     }
+    this._maxParallelJobs = this._cfg.maxParallelJobs;
+    this._jobTimeoutMs = this._cfg.jobTimeoutMs;
     this._name = cfg.workerName || `threaded-worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
 
@@ -342,14 +346,14 @@ export class ThreadedJobWorker {
     if (this._stopped) return;
     // Ensure shared thread pool is ready before polling
     await this._pool.ready;
-    if (this._activeJobs >= this._cfg.maxParallelJobs) {
+    if (this._activeJobs >= this._maxParallelJobs) {
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
     }
     // Activate up to the concurrency headroom. Jobs that arrive when all
     // threads are busy are queued in _jobQueue and dispatched via _drainQueue
     // as threads become idle, keeping the pipeline full.
-    const batchSize = this._cfg.maxParallelJobs - this._activeJobs;
+    const batchSize = this._maxParallelJobs - this._activeJobs;
     if (batchSize <= 0) {
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
@@ -359,7 +363,7 @@ export class ThreadedJobWorker {
       worker: this._name,
       maxJobsToActivate: batchSize,
       requestTimeout: this._cfg.pollTimeoutMs ?? DEFAULT_LONGPOLL_TIMEOUT,
-      timeout: this._cfg.jobTimeoutMs,
+      timeout: this._jobTimeoutMs,
       ...(this._cfg.fetchVariables && this._cfg.fetchVariables.length > 0
         ? { fetchVariable: this._cfg.fetchVariables }
         : {}),
