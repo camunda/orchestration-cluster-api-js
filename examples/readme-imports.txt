@@ -28,3 +28,7 @@ import { createCamundaResultClient, isOk } from '@camunda8/orchestration-cluster
 //#region ReadmeReceiptImport
 import type { JobActionReceipt } from '@camunda8/orchestration-cluster-api';
 //#endregion ReadmeReceiptImport
+
+//#region ReadmeJobCorrectionsImport
+import type { JobResult } from '@camunda8/orchestration-cluster-api';
+//#endregion ReadmeJobCorrectionsImport

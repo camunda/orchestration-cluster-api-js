@@ -586,6 +586,8 @@ const ack = await job.ignore();
 
 When a job worker handles a [user task listener](https://docs.camunda.io/docs/components/concepts/user-task-listeners/), it can correct task properties (assignee, due date, candidate groups, etc.) by passing a `result` to `job.complete()`:
 
+<!-- snippet:ReadmeJobCorrectionsImport+ReadmeJobCorrections -->
+
 ```ts
 import type { JobResult } from '@camunda8/orchestration-cluster-api';
 
@@ -607,6 +609,8 @@ const worker = client.createJobWorker({
 ```
 
 To deny a task completion (reject the work):
+
+<!-- snippet:ReadmeJobCorrectionsDenial -->
 
 ```ts
 return job.complete({}, {
