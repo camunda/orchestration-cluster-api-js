@@ -1,9 +1,8 @@
 /**
  * Synchronize code snippets in README.md from compilable example files.
  *
- * Replaces code blocks between `<!-- snippet:RegionName -->` markers in
- * README.md with the corresponding region-tagged code from examples/*.ts
- * and examples/*.txt.
+ * Replaces code blocks between snippet markers in README.md with the
+ * corresponding region-tagged code from examples/*.ts and examples/*.txt.
  *
  * Usage:
  *   tsx scripts/sync-readme-snippets.ts          # update README.md in-place
@@ -11,11 +10,14 @@
  *
  * Region tags use `//#region Name` ... `//#endregion Name`.
  * Tag names may contain word characters, hyphens, and dots (e.g. `MyRegion`, `my-region.1`).
- * Markers in README.md use `<!-- snippet:RegionName -->` before a fenced
- * code block. The script replaces everything between the opening and closing
- * fences (inclusive) with freshly extracted content.
  *
- * Composite regions: `<!-- snippet:A+B -->` concatenates multiple regions
+ * Markers in README.md use the descriptive format::
+ *
+ *   <!-- snippet-source: examples/readme.ts | regions: RegionName -->
+ *
+ * Legacy markers (`<!-- snippet:RegionName -->`) are auto-migrated.
+ *
+ * Composite regions: `regions: A+B` concatenates multiple regions
  * separated by blank lines.
  */
 
@@ -69,7 +71,7 @@ function dedent(text: string): string {
   return lines.map((l) => (l.trim().length === 0 ? '' : l.slice(minIndent))).join('\n');
 }
 
-function loadAllRegions(): Map<string, string> {
+function loadAllRegions(): { regions: Map<string, string>; regionSources: Map<string, string> } {
   const allRegions = new Map<string, string>();
   const regionSources = new Map<string, string>();
 
@@ -84,10 +86,10 @@ function loadAllRegions(): Map<string, string> {
     const regions = parseRegionTags(path.join(EXAMPLES_DIR, file));
     for (const [key, value] of regions) {
       if (allRegions.has(key)) {
-        duplicates.push(`region "${key}" defined in both ${regionSources.get(key)} and ${file}`);
+        duplicates.push(`region "${key}" defined in both ${regionSources.get(key)} and examples/${file}`);
       }
       allRegions.set(key, value);
-      regionSources.set(key, file);
+      regionSources.set(key, `examples/${file}`);
     }
   }
 
@@ -98,14 +100,41 @@ function loadAllRegions(): Map<string, string> {
     process.exit(1);
   }
 
-  return allRegions;
+  return { regions: allRegions, regionSources };
 }
 
 // ---------------------------------------------------------------------------
 // README rewriting
 // ---------------------------------------------------------------------------
 
-const SNIPPET_MARKER = /^<!--\s*snippet:([\w.+-]+)\s*-->$/;
+// New descriptive format:
+//   <!-- snippet-source: examples/readme.ts | regions: RegionName -->
+const NEW_MARKER = /^<!--\s*snippet-source:\s*\S+\s*\|\s*regions:\s*([\w.+-]+)\s*-->$/;
+// Legacy format (for migration):
+//   <!-- snippet:RegionName -->
+const OLD_MARKER = /^<!--\s*snippet:([\w.+-]+)\s*-->$/;
+
+function matchMarker(line: string): RegExpMatchArray | null {
+  return line.match(NEW_MARKER) ?? line.match(OLD_MARKER);
+}
+
+function buildMarker(regionName: string, regionSources: Map<string, string>): string {
+  const parts = regionName.includes('+') ? regionName.split('+') : [regionName];
+  const sources = new Set<string>();
+  for (const part of parts) {
+    const source = regionSources.get(part);
+    if (source) sources.add(source);
+  }
+  let sourceFile: string;
+  if (sources.size === 0) {
+    sourceFile = 'examples/?.ts';
+  } else if (sources.size === 1) {
+    sourceFile = [...sources][0];
+  } else {
+    sourceFile = [...sources].sort().join(',');
+  }
+  return `<!-- snippet-source: ${sourceFile} | regions: ${regionName} -->`;
+}
 
 function resolveRegion(name: string, regions: Map<string, string>): string | null {
   if (!name.includes('+')) {
@@ -122,7 +151,11 @@ function resolveRegion(name: string, regions: Map<string, string>): string | nul
   return resolved.filter((r) => r).join('\n\n');
 }
 
-function syncReadme(regions: Map<string, string>, check: boolean): boolean {
+function syncReadme(
+  regions: Map<string, string>,
+  regionSources: Map<string, string>,
+  check: boolean
+): boolean {
   const readmeText = fs.readFileSync(README_PATH, 'utf-8');
   const lines = readmeText.split('\n');
 
@@ -131,10 +164,11 @@ function syncReadme(regions: Map<string, string>, check: boolean): boolean {
   let changed = false;
   const missing: string[] = [];
   const errors: string[] = [];
+  let snippetCount = 0;
 
   while (i < lines.length) {
     const line = lines[i];
-    const m = line.trim().match(SNIPPET_MARKER);
+    const m = matchMarker(line.trim());
 
     if (!m) {
       out.push(lines[i]);
@@ -154,8 +188,14 @@ function syncReadme(regions: Map<string, string>, check: boolean): boolean {
       continue;
     }
 
-    // Keep the marker line
-    out.push(lines[i]);
+    snippetCount++;
+
+    // Upgrade legacy marker to descriptive format
+    const newMarker = buildMarker(regionName, regionSources);
+    if (lines[i].trim() !== newMarker) {
+      changed = true;
+    }
+    out.push(newMarker);
     i++;
 
     // Skip whitespace between marker and opening fence
@@ -225,7 +265,7 @@ function syncReadme(regions: Map<string, string>, check: boolean): boolean {
 
   if (changed) {
     fs.writeFileSync(README_PATH, newText, 'utf-8');
-    console.log('README.md updated');
+    console.log(`README.md updated (${snippetCount} snippets synced)`);
   } else {
     console.log('README.md is already up to date');
   }
@@ -234,12 +274,65 @@ function syncReadme(regions: Map<string, string>, check: boolean): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Un-injected code block detection
+// ---------------------------------------------------------------------------
+
+const CHECKED_LANGUAGES = new Set(['ts', 'typescript', 'js', 'javascript']);
+
+// Exempt marker: <!-- snippet-exempt: reason --> signals the block is intentionally un-injected
+const EXEMPT_MARKER = /^<!--\s*snippet-exempt:.*-->$/;
+
+function detectUninjectedCodeBlocks(readmePath: string): Array<{ line: number; fence: string }> {
+  const text = fs.readFileSync(readmePath, 'utf-8');
+  const lines = text.split('\n');
+  const uninjected: Array<{ line: number; fence: string }> = [];
+
+  for (let idx = 0; idx < lines.length; idx++) {
+    const stripped = lines[idx].trim();
+    if (!stripped.startsWith('```')) continue;
+
+    const lang = stripped.slice(3).trim().toLowerCase();
+    if (!CHECKED_LANGUAGES.has(lang)) continue;
+
+    // Look backward for a snippet marker or exempt marker (skip blank lines)
+    let prev = idx - 1;
+    while (prev >= 0 && lines[prev].trim() === '') prev--;
+    if (prev >= 0) {
+      const prevTrimmed = lines[prev].trim();
+      if (matchMarker(prevTrimmed) || EXEMPT_MARKER.test(prevTrimmed)) continue;
+    }
+
+    uninjected.push({ line: idx + 1, fence: stripped });
+  }
+
+  return uninjected;
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
 const check = process.argv.includes('--check');
-const regions = loadAllRegions();
-const changed = syncReadme(regions, check);
+const { regions, regionSources } = loadAllRegions();
+const changed = syncReadme(regions, regionSources, check);
+
+// Detect un-injected TS/JS code blocks
+const uninjected = detectUninjectedCodeBlocks(README_PATH);
+if (uninjected.length > 0) {
+  process.stderr.write(
+    `\nWARNING: ${uninjected.length} TypeScript/JavaScript code block(s) in README.md are NOT snippet-injected (not type-checked):\n`
+  );
+  for (const { line, fence } of uninjected) {
+    process.stderr.write(`  line ${line}: ${fence}\n`);
+  }
+  if (check) {
+    process.stderr.write(
+      '\nAll TS/JS code blocks must be injected from compilable examples in examples/. ' +
+        'Add a snippet marker above each block, or move the code to examples/readme.ts with region tags.\n'
+    );
+    process.exit(1);
+  }
+}
 
 if (check && changed) {
   process.exit(1);

@@ -480,6 +480,7 @@ async function _readmeTestingMock() {
 }
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // Heritable Worker Defaults
 // ---------------------------------------------------------------------------
 
@@ -523,6 +524,99 @@ async function _readmeWorkerDefaultsClient() {
   void client;
 }
 
+// ---------------------------------------------------------------------------
+// Job Completion Patterns
+// ---------------------------------------------------------------------------
+
+async function _readmeJobCompletionPatterns() {
+  const client = createCamundaClient();
+  const worker = client.createJobWorker({
+    jobType: 'example',
+    maxParallelJobs: 1,
+    jobTimeoutMs: 30_000,
+    jobHandler: async (job) => {
+      //#region ReadmeJobCompletionPatterns
+      // GOOD: explicit completion
+      return job.complete({ variables: { processed: true } });
+
+      // GOOD: No-arg completion example, sentinel stored for ultimate return
+      const ack = await job.complete();
+      // ...
+      return ack;
+
+      // GOOD: explicit ignore
+      const ack2 = await job.ignore();
+      //#endregion ReadmeJobCompletionPatterns
+      return ack2;
+    },
+  });
+  void worker;
+}
+
+// ---------------------------------------------------------------------------
+// Backpressure State Shape
+// ---------------------------------------------------------------------------
+
+function _readmeBackpressureState() {
+  const client = createCamundaClient();
+  //#region ReadmeBackpressureState
+  const state = client.getBackpressureState();
+  // state.severity: 'healthy' | 'soft' | 'severe'
+  // state.consecutive: number — consecutive backpressure signals observed
+  // state.permitsMax: number | null — current concurrency cap (null => unlimited/not engaged)
+  // state.permitsCurrent: number — currently acquired permits
+  // state.waiters: number — queued operations waiting for a permit
+  //#endregion ReadmeBackpressureState
+  void state;
+}
+
+// ---------------------------------------------------------------------------
+// Threaded Worker Lifecycle
+// ---------------------------------------------------------------------------
+
+async function _readmeThreadedLifecycle() {
+  const client = createCamundaClient();
+  //#region ReadmeThreadedLifecycle
+  // Returned by getWorkers()
+  const allWorkers = client.getWorkers();
+
+  // Stopped by stopAllWorkers()
+  client.stopAllWorkers();
+  //#endregion ReadmeThreadedLifecycle
+  void allWorkers;
+}
+
+async function _readmeThreadedGraceful() {
+  const client = createCamundaClient();
+  const worker = client.createJobWorker({
+    jobType: 'example',
+    maxParallelJobs: 1,
+    jobTimeoutMs: 30_000,
+    jobHandler: async (job) => job.complete(),
+  });
+  //#region ReadmeThreadedGraceful
+  // Graceful shutdown (waits for in-flight jobs to finish)
+  const { timedOut, remainingJobs } = await worker.stopGracefully({ waitUpToMs: 10_000 });
+  //#endregion ReadmeThreadedGraceful
+  void timedOut;
+  void remainingJobs;
+}
+
+function _readmePoolStats() {
+  const client = createCamundaClient();
+  const worker = client.createThreadedJobWorker({
+    jobType: 'example',
+    handlerModule: './handler.js',
+    maxParallelJobs: 1,
+    jobTimeoutMs: 30_000,
+  });
+  //#region ReadmePoolStats
+  worker.poolSize; // number of threads
+  worker.busyThreads; // threads currently processing a job
+  worker.activeJobs; // total jobs dispatched but not yet completed
+  //#endregion ReadmePoolStats
+}
+
 // Suppress "declared but never read"
 void _readmeQuickStart;
 void _readmeOverrides;
@@ -547,3 +641,8 @@ void _readmeTestingClient;
 void _readmeTestingMock;
 void _readmeWorkerDefaultsEnv;
 void _readmeWorkerDefaultsClient;
+void _readmeJobCompletionPatterns;
+void _readmeBackpressureState;
+void _readmeThreadedLifecycle;
+void _readmeThreadedGraceful;
+void _readmePoolStats;
