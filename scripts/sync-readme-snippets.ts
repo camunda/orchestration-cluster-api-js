@@ -86,7 +86,9 @@ function loadAllRegions(): { regions: Map<string, string>; regionSources: Map<st
     const regions = parseRegionTags(path.join(EXAMPLES_DIR, file));
     for (const [key, value] of regions) {
       if (allRegions.has(key)) {
-        duplicates.push(`region "${key}" defined in both ${regionSources.get(key)} and examples/${file}`);
+        duplicates.push(
+          `region "${key}" defined in both ${regionSources.get(key)} and examples/${file}`
+        );
       }
       allRegions.set(key, value);
       regionSources.set(key, `examples/${file}`);
