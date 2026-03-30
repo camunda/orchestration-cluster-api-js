@@ -460,7 +460,7 @@
 
 <p>To deny a task completion (reject the work):</p>
 <!-- snippet:ReadmeJobCorrectionsDenial -->
-<pre><code class="ts"><span class="hl-3">return</span><span class="hl-1"> </span><span class="hl-4">job</span><span class="hl-1">.</span><span class="hl-0">complete</span><span class="hl-1">({}, {</span><br/><span class="hl-1">  </span><span class="hl-4">type:</span><span class="hl-1"> </span><span class="hl-2">&#39;userTask&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">denied:</span><span class="hl-1"> </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-4">deniedReason:</span><span class="hl-1"> </span><span class="hl-2">&#39;Insufficient documentation&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">});</span>
+<pre><code class="ts"><span class="hl-3">return</span><span class="hl-1"> </span><span class="hl-4">job</span><span class="hl-1">.</span><span class="hl-0">complete</span><span class="hl-1">(</span><br/><span class="hl-1">  {},</span><br/><span class="hl-1">  {</span><br/><span class="hl-1">    </span><span class="hl-4">type:</span><span class="hl-1"> </span><span class="hl-2">&#39;userTask&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">denied:</span><span class="hl-1"> </span><span class="hl-6">true</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-4">deniedReason:</span><span class="hl-1"> </span><span class="hl-2">&#39;Insufficient documentation&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">  }</span><br/><span class="hl-1">);</span>
 </code><button type="button">Copy</button></pre>
 
 <table>
