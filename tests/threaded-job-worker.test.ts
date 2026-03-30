@@ -10,14 +10,11 @@ import { ThreadedJobWorker } from '../src/runtime/threadedJobWorker';
  * avoiding any real server dependency. The thread pool is kept small (1 thread)
  * for determinism.
  *
- * Note: Tests spawn worker threads that run .ts source files directly, which
- * requires --experimental-strip-types (Node 22.6+). On Node < 22 the compiled
- * .js entry point is used in production, but vitest runs from source, so we
- * skip the entire suite on older runtimes.
+ * Note: Tests spawn worker threads that load the compiled dist/threadWorkerEntry.js,
+ * so a build must have been run at least once before these tests can pass.
  */
 
-const nodeVersion = parseInt(process.versions.node, 10);
-const describeIf = nodeVersion >= 22 ? describe : describe.skip;
+const describeIf = describe;
 
 function mockFetch(handlers: Record<string, (req: Request) => Promise<Response>>) {
   return async (input: RequestInfo | URL, init?: RequestInit) => {

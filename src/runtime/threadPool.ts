@@ -39,7 +39,6 @@ export class ThreadPool {
   private _ready: Promise<void>;
   private _terminated = false;
   private _entryPath = '';
-  private _execArgv: string[] = [];
   private _Worker!: typeof import('node:worker_threads').Worker;
   private _onThreadReady?: () => void;
 
@@ -162,7 +161,7 @@ export class ThreadPool {
 
   /** Create a single worker thread and wire up its event handlers. */
   private _spawnWorker(): PoolWorker {
-    const worker = new this._Worker(this._entryPath, { execArgv: this._execArgv });
+    const worker = new this._Worker(this._entryPath);
     const pw: PoolWorker = { worker, busy: false, ready: false };
 
     worker.on('message', (msg: any) => {
@@ -253,28 +252,24 @@ export class ThreadPool {
         ? __dirname
         : pathMod.dirname(url.fileURLToPath(import.meta.url));
     const jsPath = join(dir, 'threadWorkerEntry.js');
-    const tsPath = join(dir, 'threadWorkerEntry.ts');
-    const entryPath = fs.existsSync(jsPath) ? jsPath : tsPath;
-
-    // Enable TypeScript handler loading in worker threads.
-    // Node 22-23: these flags are needed for .ts imports via --experimental-strip-types.
-    // Node 24+: TypeScript stripping is unflagged, but the flags are still accepted (harmless).
-    // Node < 22: flags don't exist and must not be passed; .ts handlers won't work (users must compile to .js).
-    const nodeMajor = parseInt(process.versions.node, 10);
-    this._execArgv =
-      nodeMajor >= 22
-        ? [
-            '--experimental-strip-types',
-            '--experimental-transform-types',
-            '--disable-warning=ExperimentalWarning',
-          ]
-        : [];
-    this._entryPath = entryPath;
+    if (fs.existsSync(jsPath)) {
+      // Production: compiled entry sits alongside this file in dist/
+      this._entryPath = jsPath;
+    } else {
+      // Dev/test: running from source (e.g. vitest), look for the compiled entry in dist/
+      const distPath = pathMod.resolve(dir, '..', '..', 'dist', 'threadWorkerEntry.js');
+      if (!fs.existsSync(distPath)) {
+        throw new Error(
+          `threadWorkerEntry.js not found at ${jsPath} or ${distPath}. Run "npm run build" first.`
+        );
+      }
+      this._entryPath = distPath;
+    }
 
     for (let i = 0; i < size; i++) {
       this._pool.push(this._spawnWorker());
     }
 
-    this._log.info(() => ['thread-pool.init', { size, entryPath }]);
+    this._log.info(() => ['thread-pool.init', { size, entryPath: this._entryPath }]);
   }
 }
