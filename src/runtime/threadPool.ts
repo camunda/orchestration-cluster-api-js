@@ -259,10 +259,10 @@ export class ThreadPool {
     // Enable TypeScript handler loading in worker threads.
     // Node 22-23: these flags are needed for .ts imports via --experimental-strip-types.
     // Node 24+: TypeScript stripping is unflagged, but the flags are still accepted (harmless).
-    // Node < 22: flags don't exist; .ts handlers won't work (users must compile to .js).
+    // Node < 22: flags don't exist and must not be passed; .ts handlers won't work (users must compile to .js).
     const nodeMajor = parseInt(process.versions.node, 10);
     this._execArgv =
-      entryPath.endsWith('.ts') || nodeMajor >= 22
+      nodeMajor >= 22
         ? [
             '--experimental-strip-types',
             '--experimental-transform-types',
