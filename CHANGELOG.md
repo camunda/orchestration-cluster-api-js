@@ -1,3 +1,10 @@
+# [8.9.0-alpha.24](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.23...v8.9.0-alpha.24) (2026-03-30)
+
+
+### Bug Fixes
+
+* harden README code injection ([4745468](https://github.com/camunda/orchestration-cluster-api-js/commit/47454684f052027e1449367204e7097b2b26f271)), closes [#87](https://github.com/camunda/orchestration-cluster-api-js/issues/87)
+
 # [8.9.0-alpha.23](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.22...v8.9.0-alpha.23) (2026-03-30)
 
 
