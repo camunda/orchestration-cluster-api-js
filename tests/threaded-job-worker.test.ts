@@ -326,6 +326,128 @@ describeIf('ThreadedJobWorker', () => {
     expect(worker.stopped).toBe(true);
   });
 
+  it('forwards result payload to completion request body', async () => {
+    let activateCallCount = 0;
+    let completionBody: unknown;
+    let completeCount = 0;
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          activateCallCount++;
+          if (activateCallCount === 1) {
+            return new Response(JSON.stringify({ jobs: [createMockJob()] }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (url.includes('/v2/jobs/test-job-1/completion')) {
+          const rawBody = init?.body
+            ? (init.body as string)
+            : input instanceof Request
+              ? await input.text()
+              : '{}';
+          completionBody = JSON.parse(rawBody || '{}');
+          completeCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ error: `No mock for ${url}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete-with-result.ts'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+    });
+
+    await waitFor(() => completeCount >= 1, 10000);
+
+    expect(completeCount).toBe(1);
+    expect(completionBody).toMatchObject({
+      variables: { processed: true },
+      result: {
+        type: 'userTask',
+        corrections: { assignee: 'corrected-user', priority: 80 },
+      },
+    });
+  });
+
+  it('omits result from completion request when handler does not pass one', async () => {
+    let activateCallCount = 0;
+    let completionBody: unknown;
+    let completeCount = 0;
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          activateCallCount++;
+          if (activateCallCount === 1) {
+            return new Response(JSON.stringify({ jobs: [createMockJob()] }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (url.includes('/v2/jobs/test-job-1/completion')) {
+          const rawBody = init?.body
+            ? (init.body as string)
+            : input instanceof Request
+              ? await input.text()
+              : '{}';
+          completionBody = JSON.parse(rawBody || '{}');
+          completeCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ error: `No mock for ${url}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+    });
+
+    await waitFor(() => completeCount >= 1, 10000);
+
+    expect(completeCount).toBe(1);
+    expect(completionBody).not.toHaveProperty('result');
+  });
+
   it('exposes pool stats', async () => {
     const client = createCamundaClient({
       config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },

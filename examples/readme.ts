@@ -9,6 +9,7 @@ import createCamundaClient, {
   isOk,
   isSdkError,
   type JobActionReceipt,
+  type JobResult,
   JobKey,
   ProcessDefinitionId,
   ProcessDefinitionKey,
@@ -124,7 +125,7 @@ async function _readmeJobWorkerMinimal() {
       const vars = job.variables; // inferred from Input schema
       console.log(`Processing order: ${vars.orderId}`);
       // Do work...
-      return job.complete({ variables: { processed: true } });
+      return job.complete({ processed: true });
     },
   });
 
@@ -206,9 +207,54 @@ async function _readmeReceipt() {
     jobTimeoutMs: 30_000,
     jobHandler: async (job) => {
       //#region ReadmeReceipt
-      const receipt: JobActionReceipt = await job.complete({ variables: { processed: true } });
+      const receipt: JobActionReceipt = await job.complete({ processed: true });
       //#endregion ReadmeReceipt
       return receipt;
+    },
+  });
+  void worker;
+}
+
+// ---------------------------------------------------------------------------
+// Job Corrections (User Task Listeners)
+// ---------------------------------------------------------------------------
+
+async function _readmeJobCorrections() {
+  const client = createCamundaClient();
+  //#region ReadmeJobCorrections
+  const worker = client.createJobWorker({
+    jobType: 'io.camunda:userTaskListener',
+    jobTimeoutMs: 30_000,
+    maxParallelJobs: 5,
+    jobHandler: async (job) => {
+      const result: JobResult = {
+        type: 'userTask',
+        corrections: {
+          assignee: 'corrected-user',
+          priority: 80,
+        },
+      };
+      return job.complete({}, result);
+    },
+  });
+  //#endregion ReadmeJobCorrections
+  void worker;
+}
+
+async function _readmeJobCorrectionsDenial() {
+  const client = createCamundaClient();
+  const worker = client.createJobWorker({
+    jobType: 'io.camunda:userTaskListener',
+    jobTimeoutMs: 30_000,
+    maxParallelJobs: 5,
+    jobHandler: async (job) => {
+      //#region ReadmeJobCorrectionsDenial
+      return job.complete({}, {
+        type: 'userTask',
+        denied: true,
+        deniedReason: 'Insufficient documentation',
+      });
+      //#endregion ReadmeJobCorrectionsDenial
     },
   });
   void worker;

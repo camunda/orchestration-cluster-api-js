@@ -11,6 +11,7 @@
  * Handlers are cached by module path so each import happens only once per thread.
  */
 import { parentPort } from 'node:worker_threads';
+import type { JobResult as ApiJobResult } from '../gen/types.gen';
 import { createClientProxy } from './clientProxy.ts';
 
 // Inline the JobActionReceipt constant to avoid importing the full SDK dependency chain
@@ -150,11 +151,11 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
    * free for CPU work instead of blocking on I/O round-trips.
    */
 
-  job.complete = async (variables: Record<string, unknown> = {}) => {
+  job.complete = async (variables: Record<string, unknown> = {}, result?: ApiJobResult) => {
     ack();
     job._completionAction = {
       method: 'completeJob',
-      args: [{ variables, jobKey: jobData.jobKey }],
+      args: [{ variables, jobKey: jobData.jobKey, ...(result !== undefined && { result }) }],
     };
     return JobActionReceipt;
   };

@@ -1,5 +1,5 @@
 import type { CamundaClient } from '../gen/CamundaClient';
-import type { ActivateJobsResponses, ThrowJobErrorData } from '../gen/types.gen';
+import type { ActivateJobsResponses, JobResult, ThrowJobErrorData } from '../gen/types.gen';
 import { JobActionReceipt } from './jobWorker';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
@@ -7,7 +7,7 @@ type JobErrorRequest = ThrowJobErrorData['body'];
 
 /** Enriched job type with convenience methods. */
 export interface EnrichedActivatedJob extends ActivatedJobResult {
-  complete(variables?: { [k: string]: any }): Promise<JobActionReceipt>;
+  complete(variables?: { [k: string]: any }, result?: JobResult): Promise<JobActionReceipt>;
   fail(body: any): Promise<JobActionReceipt>;
   error(error: JobErrorRequest): Promise<JobActionReceipt>;
   cancelWorkflow(): Promise<JobActionReceipt>;
@@ -52,9 +52,16 @@ export function enrichActivatedJob(
     }
   };
   const job: Partial<EnrichedActivatedJob> = { ...raw, log };
-  job.complete = async (variables: { [k: string]: any } = {}): Promise<JobActionReceipt> => {
+  job.complete = async (
+    variables: { [k: string]: any } = {},
+    result?: JobResult
+  ): Promise<JobActionReceipt> => {
     try {
-      await client.completeJob({ variables, jobKey: raw.jobKey });
+      await client.completeJob({
+        variables,
+        jobKey: raw.jobKey,
+        ...(result !== undefined && { result }),
+      });
     } finally {
       ack();
     }
