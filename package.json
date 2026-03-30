@@ -91,7 +91,7 @@
     "access": "public"
   },
   "dependencies": {
-    "p-retry": "^6.0.1",
+    "p-retry": "^7.1.1",
     "typed-env": "^2.0.0",
     "zod": "^4"
   },
