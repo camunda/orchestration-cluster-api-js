@@ -504,6 +504,9 @@ const worker = client.createJobWorker({
     console.log(`Processing order: ${vars.orderId}`);
     // Do work...
     return job.complete({ processed: true });
+  },
+});
+
 process.on('SIGINT', () => {
   worker.stop();
 });
@@ -565,7 +568,7 @@ Example patterns:
 
 ```ts
 // GOOD: explicit completion
-return job.complete({ processed: true });, sentinel stored for ultimate return
+return job.complete({ processed: true }); // sentinel stored for ultimate return
 const ack = await job.complete();
 // ...
 return ack;
