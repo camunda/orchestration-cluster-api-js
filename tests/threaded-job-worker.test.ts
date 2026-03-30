@@ -69,7 +69,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: false,
@@ -92,7 +92,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: false,
@@ -112,7 +112,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: false,
@@ -163,7 +163,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,
@@ -218,7 +218,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-with-client.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-with-client.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,
@@ -263,7 +263,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-fail.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-fail.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,
@@ -307,7 +307,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,
@@ -368,7 +368,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete-with-result.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete-with-result.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,
@@ -432,7 +432,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,
@@ -453,7 +453,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.ts'),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
       maxParallelJobs: 4,
       jobTimeoutMs: 30000,
       autoStart: false,
