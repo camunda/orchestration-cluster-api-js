@@ -613,11 +613,14 @@ To deny a task completion (reject the work):
 <!-- snippet:ReadmeJobCorrectionsDenial -->
 
 ```ts
-return job.complete({}, {
-  type: 'userTask',
-  denied: true,
-  deniedReason: 'Insufficient documentation',
-});
+return job.complete(
+  {},
+  {
+    type: 'userTask',
+    denied: true,
+    deniedReason: 'Insufficient documentation',
+  }
+);
 ```
 
 | Correctable attribute | Type | Clear value |
