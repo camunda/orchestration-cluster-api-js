@@ -13683,6 +13683,11 @@ export class CamundaClient {
 
   /**
    * Create a job worker that activates and processes jobs of the given type.
+   *
+   * Worker configuration fields inherit global defaults resolved via the
+   * unified configuration (environment variables or equivalent `CAMUNDA_WORKER_*`
+   * keys provided via `CamundaOptions.config`) when not explicitly set on the
+   * config object.
    * @param cfg Worker configuration
    * @example Create a job worker
    * {@includeCode ../../examples/job.ts#CreateJobWorker}
@@ -13694,7 +13699,18 @@ export class CamundaClient {
     Out extends import('zod').ZodTypeAny = any,
     Headers extends import('zod').ZodTypeAny = any,
   >(cfg: JobWorkerConfig<In, Out, Headers>): JobWorker {
-    const worker = new JobWorker(this as any, cfg as JobWorkerConfig);
+    const defaults = this._config.workerDefaults;
+    const merged = defaults
+      ? {
+          ...cfg,
+          jobTimeoutMs: cfg.jobTimeoutMs ?? defaults.jobTimeoutMs,
+          maxParallelJobs: cfg.maxParallelJobs ?? defaults.maxParallelJobs,
+          pollTimeoutMs: cfg.pollTimeoutMs ?? defaults.pollTimeoutMs,
+          workerName: cfg.workerName ?? defaults.workerName,
+          startupJitterMaxSeconds: cfg.startupJitterMaxSeconds ?? defaults.startupJitterMaxSeconds,
+        }
+      : cfg;
+    const worker = new JobWorker(this as any, merged as JobWorkerConfig);
     this._workers.push(worker);
     return worker;
   }
@@ -13706,6 +13722,11 @@ export class CamundaClient {
    *
    * This keeps the main event loop free for polling and I/O, dramatically improving
    * throughput for CPU-bound job handlers.
+   *
+   * Worker configuration fields inherit global defaults resolved via the
+   * unified configuration (environment variables or equivalent `CAMUNDA_WORKER_*`
+   * keys provided via `CamundaOptions.config`) when not explicitly set on the
+   * config object.
    *
    * @param cfg Threaded worker configuration
    * @example Create a threaded job worker
@@ -13723,8 +13744,19 @@ export class CamundaClient {
     Out extends import('zod').ZodTypeAny = any,
     Headers extends import('zod').ZodTypeAny = any,
   >(cfg: ThreadedJobWorkerConfig<In, Out, Headers>): ThreadedJobWorker {
+    const defaults = this._config.workerDefaults;
+    const merged = defaults
+      ? {
+          ...cfg,
+          jobTimeoutMs: cfg.jobTimeoutMs ?? defaults.jobTimeoutMs,
+          maxParallelJobs: cfg.maxParallelJobs ?? defaults.maxParallelJobs,
+          pollTimeoutMs: cfg.pollTimeoutMs ?? defaults.pollTimeoutMs,
+          workerName: cfg.workerName ?? defaults.workerName,
+          startupJitterMaxSeconds: cfg.startupJitterMaxSeconds ?? defaults.startupJitterMaxSeconds,
+        }
+      : cfg;
     const pool = this._getOrCreateThreadPool(cfg.threadPoolSize);
-    const worker = new ThreadedJobWorker(this as any, pool, cfg as ThreadedJobWorkerConfig);
+    const worker = new ThreadedJobWorker(this as any, pool, merged as ThreadedJobWorkerConfig);
     this._workers.push(worker);
     return worker;
   }

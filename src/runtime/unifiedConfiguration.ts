@@ -115,6 +115,13 @@ export interface CamundaConfig {
   };
   telemetry?: { log: boolean; correlation: boolean };
   supportLog?: { enabled: boolean; filePath: string };
+  workerDefaults?: {
+    jobTimeoutMs?: number;
+    maxParallelJobs?: number;
+    pollTimeoutMs?: number;
+    workerName?: string;
+    startupJitterMaxSeconds?: number;
+  };
   // Raw access (canonical uppercase enums applied) keyed by env var (internal/debug)
   __raw: Record<string, string | undefined>;
 }
@@ -179,6 +186,23 @@ function parseInteger(raw: string, key: string, errors: ConfigErrorDetail[]): nu
     code: ConfigErrorCode.CONFIG_INVALID_INTEGER,
     key,
     message: `Invalid integer '${raw}'. Only unsigned base-10 integers allowed.`,
+  });
+  return undefined;
+}
+
+// Signed integer parser (allows negative values)
+function parseSignedInteger(
+  raw: string,
+  key: string,
+  errors: ConfigErrorDetail[]
+): number | undefined {
+  const v = raw.trim();
+  if (v === '') return undefined;
+  if (/^-?[0-9]+$/.test(v)) return parseInt(v, 10);
+  errors.push({
+    code: ConfigErrorCode.CONFIG_INVALID_INTEGER,
+    key,
+    message: `Invalid integer '${raw}'. Only base-10 integers (optionally negative) allowed.`,
   });
   return undefined;
 }
@@ -284,6 +308,13 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       return parsed;
     };
   }
+  function signedIntParserFactory(key: string) {
+    return (v: string) => {
+      const parsed = parseSignedInteger(v, key, parseErrors);
+      if (parsed === undefined) return undefined;
+      return parsed;
+    };
+  }
   function enumParserFactory(key: string, choices: readonly string[]) {
     // Case-insensitive parsing. Canonicalize to schema-declared casing style.
     // If all choices are lowercase => return lowercase value.
@@ -325,6 +356,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       typedEnvSchema[k] = base;
     } else if (entry.type === 'int') {
       const base: any = { parser: intParserFactory(k), ...baseOpt };
+      if (entry.default !== undefined) base.default = entry.default;
+      typedEnvSchema[k] = base;
+    } else if (entry.type === 'signedInt') {
+      const base: any = { parser: signedIntParserFactory(k), ...baseOpt };
       if (entry.default !== undefined) base.default = entry.default;
       typedEnvSchema[k] = base;
     } else if (entry.type === 'enum') {
@@ -699,6 +734,28 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
           ? path.join(process.cwd(), 'camunda-support.log')
           : 'camunda-support.log'),
     },
+    workerDefaults:
+      rawMap.CAMUNDA_WORKER_TIMEOUT ||
+      rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS ||
+      rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT ||
+      rawMap.CAMUNDA_WORKER_NAME ||
+      rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS
+        ? {
+            jobTimeoutMs: rawMap.CAMUNDA_WORKER_TIMEOUT
+              ? parseInt(rawMap.CAMUNDA_WORKER_TIMEOUT, 10)
+              : undefined,
+            maxParallelJobs: rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS
+              ? parseInt(rawMap.CAMUNDA_WORKER_MAX_CONCURRENT_JOBS, 10)
+              : undefined,
+            pollTimeoutMs: rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT
+              ? parseInt(rawMap.CAMUNDA_WORKER_REQUEST_TIMEOUT, 10)
+              : undefined,
+            workerName: rawMap.CAMUNDA_WORKER_NAME || undefined,
+            startupJitterMaxSeconds: rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS
+              ? parseInt(rawMap.CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS, 10)
+              : undefined,
+          }
+        : undefined,
     __raw: { ...rawMap },
   };
 

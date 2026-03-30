@@ -121,3 +121,26 @@ NODE`
   - the bundled spec snippet around the failing type
   - the generator version (`@hey-api/openapi-ts`)
   - and open an issue upstream or pin a known-good generator version.
+
+## README Code Examples
+
+Code blocks in `README.md` are **injected from compilable example files** — do not edit them inline.
+
+- **Source of truth**: `examples/readme.ts` (type-checked during build via `tsc --noEmit`)
+- **Sync script**: `scripts/sync-readme-snippets.ts`
+- **CI gate**: `tsx scripts/sync-readme-snippets.ts --check` (fails if README is out of sync)
+
+### How it works
+
+1. Wrap code in `examples/readme.ts` with `//#region RegionName` / `//#endregion RegionName` tags.
+2. In `README.md`, place `<!-- snippet:RegionName -->` immediately before the fenced code block.
+3. Run `tsx scripts/sync-readme-snippets.ts` to update README.
+4. Composite regions: `<!-- snippet:A+B -->` concatenates regions A and B separated by a blank line.
+
+### Adding or updating a README example
+
+1. Add/edit the region-tagged code in `examples/readme.ts`.
+2. Add/verify the `<!-- snippet:RegionName -->` marker in `README.md`.
+3. Run `tsx scripts/sync-readme-snippets.ts` to sync.
+
+**Never edit a snippet-marked code block directly in README.md** — it will be overwritten on the next sync.

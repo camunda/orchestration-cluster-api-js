@@ -59,7 +59,13 @@ runCommand('openapi-ts', 'openapi-ts -i ./external-spec/bundled/rest-api.bundle.
 // 3. Post-generation hooks
 for (const h of postHooks) runHook(h);
 
-// 4. Tests
+// 4. Build threadWorkerEntry so that threaded worker tests can locate the compiled entry
+runCommand(
+  'build threadWorkerEntry',
+  'tsup src/runtime/threadWorkerEntry.ts --format esm,cjs --sourcemap --out-dir dist --no-splitting'
+);
+
+// 5. Tests
 if (!skipTest) {
   runCommand(
     'test',

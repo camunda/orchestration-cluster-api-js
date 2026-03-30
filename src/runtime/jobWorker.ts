@@ -26,8 +26,8 @@ export interface JobWorkerConfig<
   jobHandler: (job: Job<In, Headers>) => Promise<JobActionReceipt> | JobActionReceipt;
   /** Immediately start polling for work - default `true` */
   autoStart?: boolean;
-  /** concurrency limit */
-  maxParallelJobs: number;
+  /** concurrency limit — falls back to CAMUNDA_WORKER_MAX_CONCURRENT_JOBS env var */
+  maxParallelJobs?: number;
   /**
    * The request will be completed when at least one job is activated or after the requestTimeout.
    * If the requestTimeout = 0, the request will be completed after a default configured timeout in the broker.
@@ -35,8 +35,8 @@ export interface JobWorkerConfig<
    *
    */
   pollTimeoutMs?: number;
-  /** Job activation timeout */
-  jobTimeoutMs: number;
+  /** Job activation timeout — falls back to CAMUNDA_WORKER_TIMEOUT env var */
+  jobTimeoutMs?: number;
   /** Zeebe job type */
   jobType: string;
   /** Optional list of variable names to fetch during activation */
@@ -78,6 +78,8 @@ const DEFAULT_LONGPOLL_TIMEOUT = 0;
 export class JobWorker {
   private _client: CamundaClient;
   private _cfg: JobWorkerConfig;
+  private _maxParallelJobs: number;
+  private _jobTimeoutMs: number;
   private _name: string;
   private _activeJobs = 0;
   private _stopped = false;
@@ -88,6 +90,18 @@ export class JobWorker {
   constructor(client: CamundaClient, cfg: JobWorkerConfig) {
     this._client = client;
     this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, ...cfg };
+    if (this._cfg.maxParallelJobs === undefined) {
+      throw new Error(
+        'maxParallelJobs is required: set it on JobWorkerConfig or via CAMUNDA_WORKER_MAX_CONCURRENT_JOBS (environment variable or CamundaOptions.config override).'
+      );
+    }
+    if (this._cfg.jobTimeoutMs === undefined) {
+      throw new Error(
+        'jobTimeoutMs is required: set it on JobWorkerConfig or via CAMUNDA_WORKER_TIMEOUT (environment variable or CamundaOptions.config override).'
+      );
+    }
+    this._maxParallelJobs = this._cfg.maxParallelJobs;
+    this._jobTimeoutMs = this._cfg.jobTimeoutMs;
     this._name = cfg.workerName || `worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
     if (cfg.maxBackoffTimeMs !== undefined) {
@@ -195,11 +209,11 @@ export class JobWorker {
     this._pollTimer = null;
     if (this._stopped) return;
     // If at capacity, defer
-    if (this._activeJobs >= this._cfg.maxParallelJobs) {
+    if (this._activeJobs >= this._maxParallelJobs) {
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
     }
-    const batchSize = this._cfg.maxParallelJobs - this._activeJobs;
+    const batchSize = this._maxParallelJobs - this._activeJobs;
     if (batchSize <= 0) {
       this._scheduleNext(this._cfg.pollIntervalMs!);
       return;
@@ -210,7 +224,7 @@ export class JobWorker {
       worker: this._name,
       maxJobsToActivate: batchSize,
       requestTimeout: this._cfg.pollTimeoutMs ?? DEFAULT_LONGPOLL_TIMEOUT,
-      timeout: this._cfg.jobTimeoutMs,
+      timeout: this._jobTimeoutMs,
       // API expects `fetchVariable`; map from config `fetchVariables`
       ...(this._cfg.fetchVariables && this._cfg.fetchVariables.length > 0
         ? { fetchVariable: this._cfg.fetchVariables }
