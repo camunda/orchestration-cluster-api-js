@@ -49,6 +49,6 @@
 | `CAMUNDA_SUPPORT_LOGGER` | boolean | `false` | Optional |  | Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated). |
 | `CAMUNDA_WORKER_TIMEOUT` | int | — | No default |  | Default job timeout in ms for all workers. Individual JobWorkerConfig.jobTimeoutMs overrides this. |
 | `CAMUNDA_WORKER_MAX_CONCURRENT_JOBS` | int | — | No default |  | Default max parallel jobs for all workers. Individual JobWorkerConfig.maxParallelJobs overrides this. |
-| `CAMUNDA_WORKER_REQUEST_TIMEOUT` | string | — | No default |  | Default long-poll timeout in ms for all workers (signed integer string; negative values are valid — they cause activation to complete immediately when no jobs are available). Individual JobWorkerConfig.pollTimeoutMs overrides this. |
+| `CAMUNDA_WORKER_REQUEST_TIMEOUT` | signedInt | — | No default |  | Default long-poll timeout in ms for all workers. Negative values cause activation to complete immediately when no jobs are available. Individual JobWorkerConfig.pollTimeoutMs overrides this. |
 | `CAMUNDA_WORKER_NAME` | string | — | No default |  | Default worker name for all workers. Individual JobWorkerConfig.workerName overrides this. |
 | `CAMUNDA_WORKER_STARTUP_JITTER_MAX_SECONDS` | int | — | No default |  | Default startup jitter in seconds for all workers. Individual JobWorkerConfig.startupJitterMaxSeconds overrides this. |
