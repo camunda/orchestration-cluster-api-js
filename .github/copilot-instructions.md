@@ -122,6 +122,17 @@ NODE`
   - the generator version (`@hey-api/openapi-ts`)
   - and open an issue upstream or pin a known-good generator version.
 
+## Pre-push checklist
+
+Before pushing any commits, **always** run `npm run build:local` (or `npm run build` if the upstream spec may have changed). This:
+
+1. Regenerates `src/gen/` from the bundled spec
+2. Syncs README code snippets from `examples/readme.ts` (fails if out of sync)
+3. Runs all unit tests
+4. Produces the `dist/` output
+
+If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing.
+
 ## README Code Examples
 
 Code blocks in `README.md` are **injected from compilable example files** — do not edit them inline.
@@ -133,14 +144,17 @@ Code blocks in `README.md` are **injected from compilable example files** — do
 ### How it works
 
 1. Wrap code in `examples/readme.ts` with `//#region RegionName` / `//#endregion RegionName` tags.
-2. In `README.md`, place `<!-- snippet:RegionName -->` immediately before the fenced code block.
+2. In `README.md`, place a snippet marker immediately before the fenced code block:
+   - New format: `<!-- snippet-source: examples/readme.ts | regions: RegionName -->`
+   - Legacy format `<!-- snippet:RegionName -->` is auto-migrated on sync.
 3. Run `tsx scripts/sync-readme-snippets.ts` to update README.
-4. Composite regions: `<!-- snippet:A+B -->` concatenates regions A and B separated by a blank line.
+4. Composite regions: `regions: A+B` concatenates regions A and B separated by a blank line.
+5. Blocks using external deps or pseudo-code that can't be type-checked: mark with `<!-- snippet-exempt: reason -->`.
 
 ### Adding or updating a README example
 
 1. Add/edit the region-tagged code in `examples/readme.ts`.
-2. Add/verify the `<!-- snippet:RegionName -->` marker in `README.md`.
+2. Add/verify the `<!-- snippet-source: ... -->` marker in `README.md`.
 3. Run `tsx scripts/sync-readme-snippets.ts` to sync.
 
 **Never edit a snippet-marked code block directly in README.md** — it will be overwritten on the next sync.
