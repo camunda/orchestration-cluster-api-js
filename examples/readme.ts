@@ -249,11 +249,14 @@ async function _readmeJobCorrectionsDenial() {
     maxParallelJobs: 5,
     jobHandler: async (job) => {
       //#region ReadmeJobCorrectionsDenial
-      return job.complete({}, {
-        type: 'userTask',
-        denied: true,
-        deniedReason: 'Insufficient documentation',
-      });
+      return job.complete(
+        {},
+        {
+          type: 'userTask',
+          denied: true,
+          deniedReason: 'Insufficient documentation',
+        }
+      );
       //#endregion ReadmeJobCorrectionsDenial
     },
   });
