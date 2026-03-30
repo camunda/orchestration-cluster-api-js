@@ -1,3 +1,22 @@
+# [8.9.0-alpha.23](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.22...v8.9.0-alpha.23) (2026-03-30)
+
+
+### Bug Fixes
+
+* address PR review comments ([fd357d5](https://github.com/camunda/orchestration-cluster-api-js/commit/fd357d5938dbb0e22d18711087b26560a802494c))
+* address PR review comments on heritable worker defaults ([efec39c](https://github.com/camunda/orchestration-cluster-api-js/commit/efec39c54c788f625f27f7be70c830321ff43ef6))
+* **config:** add signedInt schema type for CAMUNDA_WORKER_REQUEST_TIMEOUT ([9f9f794](https://github.com/camunda/orchestration-cluster-api-js/commit/9f9f7949e3b1cfcf90ab8abf723595276c41a18d))
+* **tests:** convert threaded handler fixtures to .js for Node 20 compat ([1e5f7b1](https://github.com/camunda/orchestration-cluster-api-js/commit/1e5f7b17931043adade84c7630264a1ed543cf2a))
+* **threadedJobWorker:** extract validated fields to fix TS strict null errors ([7097cbd](https://github.com/camunda/orchestration-cluster-api-js/commit/7097cbde12076b8ba0d35208cedf7ebe1c891493))
+* **threadPool:** don't pass TS strip flags to workers on Node < 22 ([dbf18d3](https://github.com/camunda/orchestration-cluster-api-js/commit/dbf18d3ab92ed1fd5fdf54988c1f613eaf7b09e3))
+* use number types for int config overrides in tests and examples ([f7bfa2f](https://github.com/camunda/orchestration-cluster-api-js/commit/f7bfa2f3d9be5152d4cf9a1ca6d0d4f8c117e14b))
+* wire README worker-defaults examples into snippet injection ([7759561](https://github.com/camunda/orchestration-cluster-api-js/commit/775956168f588dd02bf6e969ed641f3abb67e288))
+
+
+### Features
+
+* heritable worker defaults via CAMUNDA_WORKER_* env vars ([0311308](https://github.com/camunda/orchestration-cluster-api-js/commit/03113084fb15566bdf7d3bbb3d0d6e78ef582584))
+
 # [8.9.0-alpha.22](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.21...v8.9.0-alpha.22) (2026-03-30)
 
 
