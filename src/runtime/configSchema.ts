@@ -209,7 +209,7 @@ export const SCHEMA = {
     default: false,
     doc: 'Alias for CAMUNDA_SUPPORT_LOG_ENABLED (deprecated).',
   },
-  // Worker defaults (heritable to all workers created via createJobWorker)
+  // Worker defaults (heritable to all workers created via createJobWorker/createThreadedJobWorker)
   CAMUNDA_WORKER_TIMEOUT: {
     type: 'int',
     doc: 'Default job timeout in ms for all workers. Individual JobWorkerConfig.jobTimeoutMs overrides this.',
@@ -219,8 +219,8 @@ export const SCHEMA = {
     doc: 'Default max parallel jobs for all workers. Individual JobWorkerConfig.maxParallelJobs overrides this.',
   },
   CAMUNDA_WORKER_REQUEST_TIMEOUT: {
-    type: 'string',
-    doc: 'Default long-poll timeout in ms for all workers (signed integer string; negative values are valid — they cause activation to complete immediately when no jobs are available). Individual JobWorkerConfig.pollTimeoutMs overrides this.',
+    type: 'signedInt',
+    doc: 'Default long-poll timeout in ms for all workers. Negative values cause activation to complete immediately when no jobs are available. Individual JobWorkerConfig.pollTimeoutMs overrides this.',
   },
   CAMUNDA_WORKER_NAME: {
     type: 'string',
@@ -239,7 +239,7 @@ type PrimitiveType<T> = T extends { type: 'string' }
   ? string
   : T extends { type: 'boolean' }
     ? boolean
-    : T extends { type: 'int' }
+    : T extends { type: 'int' | 'signedInt' }
       ? number
       : T extends { type: 'enum'; choices: readonly (infer C)[] }
         ? C

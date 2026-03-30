@@ -190,6 +190,23 @@ function parseInteger(raw: string, key: string, errors: ConfigErrorDetail[]): nu
   return undefined;
 }
 
+// Signed integer parser (allows negative values)
+function parseSignedInteger(
+  raw: string,
+  key: string,
+  errors: ConfigErrorDetail[]
+): number | undefined {
+  const v = raw.trim();
+  if (v === '') return undefined;
+  if (/^-?[0-9]+$/.test(v)) return parseInt(v, 10);
+  errors.push({
+    code: ConfigErrorCode.CONFIG_INVALID_INTEGER,
+    key,
+    message: `Invalid integer '${raw}'. Only base-10 integers (optionally negative) allowed.`,
+  });
+  return undefined;
+}
+
 // Validation mini-language parser (strict per design)
 function parseValidation(
   raw: string,
@@ -291,6 +308,13 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       return parsed;
     };
   }
+  function signedIntParserFactory(key: string) {
+    return (v: string) => {
+      const parsed = parseSignedInteger(v, key, parseErrors);
+      if (parsed === undefined) return undefined;
+      return parsed;
+    };
+  }
   function enumParserFactory(key: string, choices: readonly string[]) {
     // Case-insensitive parsing. Canonicalize to schema-declared casing style.
     // If all choices are lowercase => return lowercase value.
@@ -332,6 +356,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       typedEnvSchema[k] = base;
     } else if (entry.type === 'int') {
       const base: any = { parser: intParserFactory(k), ...baseOpt };
+      if (entry.default !== undefined) base.default = entry.default;
+      typedEnvSchema[k] = base;
+    } else if (entry.type === 'signedInt') {
+      const base: any = { parser: signedIntParserFactory(k), ...baseOpt };
       if (entry.default !== undefined) base.default = entry.default;
       typedEnvSchema[k] = base;
     } else if (entry.type === 'enum') {
