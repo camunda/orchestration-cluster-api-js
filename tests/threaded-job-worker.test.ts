@@ -371,10 +371,7 @@ describeIf('ThreadedJobWorker', () => {
 
     worker = client.createThreadedJobWorker({
       jobType: 'test-task',
-      handlerModule: path.join(
-        __dirname,
-        'fixtures/threaded-handler-complete-with-result.ts'
-      ),
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete-with-result.ts'),
       maxParallelJobs: 1,
       jobTimeoutMs: 30000,
       autoStart: true,

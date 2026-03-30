@@ -507,6 +507,7 @@ const worker = client.createJobWorker({
   },
 });
 
+// Later, on shutdown:
 process.on('SIGINT', () => {
   worker.stop();
 });
