@@ -124,7 +124,7 @@ NODE`
 
 ## Pre-push checklist
 
-Before pushing any commits, **always** run `npm run build:local` (or `npm run build` if the upstream spec may have changed). This:
+Before pushing any commits, **always** run `npm run build`. This:
 
 1. Regenerates `src/gen/` from the bundled spec
 2. Syncs README code snippets from `examples/readme.ts` (fails if out of sync)
