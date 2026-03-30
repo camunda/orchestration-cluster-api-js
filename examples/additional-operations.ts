@@ -9,6 +9,7 @@ import {
   DecisionRequirementsKey,
   DocumentId,
   JobKey,
+  UserTaskKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetDecisionDefinitionXml
@@ -271,24 +272,68 @@ async function searchUserTaskAuditLogsExample() {
 }
 //#endregion SearchUserTaskAuditLogs
 
-// Suppress "declared but never read"
-void getDecisionDefinitionXmlExample;
-void getDecisionInstanceExample;
-void searchDecisionInstancesExample;
-void deleteDecisionInstanceExample;
-void getDecisionRequirementsExample;
-void getDecisionRequirementsXmlExample;
-void searchDecisionRequirementsExample;
-void createDocumentLinkExample;
-void deleteDocumentExample;
-void throwJobErrorExample;
-void updateJobExample;
-void searchJobsExample;
-void getUserTaskExample;
-void updateUserTaskExample;
-void getUserTaskFormExample;
-void searchUserTaskVariablesExample;
-void searchUserTaskAuditLogsExample;
+//#region CreateDocument
+async function createDocumentExample() {
+  const camunda = createCamundaClient();
+
+  const file = new Blob(['Hello, world!'], { type: 'text/plain' });
+
+  const result = await camunda.createDocument({
+    body: { file, metadata: { fileName: 'hello.txt' } },
+  });
+
+  console.log(`Document ID: ${result.documentId}`);
+}
+//#endregion CreateDocument
+
+//#region CreateDocuments
+async function createDocumentsExample() {
+  const camunda = createCamundaClient();
+
+  const file1 = new Blob(['File one'], { type: 'text/plain' });
+  const file2 = new Blob(['File two'], { type: 'text/plain' });
+
+  const result = await camunda.createDocuments({
+    body: {
+      files: [file1, file2],
+      metadataList: [{ fileName: 'one.txt' }, { fileName: 'two.txt' }],
+    },
+  });
+
+  for (const doc of result.createdDocuments ?? []) {
+    console.log(`Created: ${doc.documentId}`);
+  }
+}
+//#endregion CreateDocuments
+
+//#region GetDocument
+async function getDocumentExample() {
+  const camunda = createCamundaClient();
+
+  const documentId = DocumentId.assumeExists('doc-123');
+
+  await camunda.getDocument({ documentId });
+
+  console.log(`Downloaded document: ${documentId}`);
+}
+//#endregion GetDocument
+
+//#region SearchUserTaskEffectiveVariables
+async function searchUserTaskEffectiveVariablesExample() {
+  const camunda = createCamundaClient();
+
+  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
+
+  const result = await camunda.searchUserTaskEffectiveVariables(
+    { userTaskKey },
+    { consistency: { waitUpToMs: 5000 } }
+  );
+
+  for (const variable of result.items ?? []) {
+    console.log(`${variable.name} = ${variable.value}`);
+  }
+}
+//#endregion SearchUserTaskEffectiveVariables
 
 // Suppress "declared but never read"
 void getDecisionDefinitionXmlExample;
@@ -308,3 +353,30 @@ void updateUserTaskExample;
 void getUserTaskFormExample;
 void searchUserTaskVariablesExample;
 void searchUserTaskAuditLogsExample;
+void createDocumentExample;
+void createDocumentsExample;
+void getDocumentExample;
+void searchUserTaskEffectiveVariablesExample;
+
+// Suppress "declared but never read"
+void getDecisionDefinitionXmlExample;
+void getDecisionInstanceExample;
+void searchDecisionInstancesExample;
+void deleteDecisionInstanceExample;
+void getDecisionRequirementsExample;
+void getDecisionRequirementsXmlExample;
+void searchDecisionRequirementsExample;
+void createDocumentLinkExample;
+void deleteDocumentExample;
+void throwJobErrorExample;
+void updateJobExample;
+void searchJobsExample;
+void getUserTaskExample;
+void updateUserTaskExample;
+void getUserTaskFormExample;
+void searchUserTaskVariablesExample;
+void searchUserTaskAuditLogsExample;
+void createDocumentExample;
+void createDocumentsExample;
+void getDocumentExample;
+void searchUserTaskEffectiveVariablesExample;

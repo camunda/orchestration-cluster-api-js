@@ -915,5 +915,33 @@
       "region": "GetGlobalJobStatistics",
       "label": "Get global job statistics"
     }
+  ],
+  "createDocument": [
+    {
+      "file": "additional-operations.ts",
+      "region": "CreateDocument",
+      "label": "Upload a document"
+    }
+  ],
+  "createDocuments": [
+    {
+      "file": "additional-operations.ts",
+      "region": "CreateDocuments",
+      "label": "Upload multiple documents"
+    }
+  ],
+  "getDocument": [
+    {
+      "file": "additional-operations.ts",
+      "region": "GetDocument",
+      "label": "Download a document"
+    }
+  ],
+  "searchUserTaskEffectiveVariables": [
+    {
+      "file": "additional-operations.ts",
+      "region": "SearchUserTaskEffectiveVariables",
+      "label": "Search user task effective variables"
+    }
   ]
 }
