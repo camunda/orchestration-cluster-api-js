@@ -110,7 +110,7 @@
     "@biomejs/biome": "^2.4.9",
     "@camunda8/sdk": "^8.8.7",
     "@commitlint/cli": "^20.5.0",
-    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/config-conventional": "^20.5.0",
     "@hey-api/client-fetch": "^0.13.1",
     "@hey-api/openapi-ts": "^0.86.12",
     "@semantic-release/changelog": "^6.0.3",
