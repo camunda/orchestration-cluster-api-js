@@ -1,3 +1,16 @@
+# [8.9.0-alpha.25](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.24...v8.9.0-alpha.25) (2026-04-01)
+
+
+### Bug Fixes
+
+* remove duplicate import ([48f6d95](https://github.com/camunda/orchestration-cluster-api-js/commit/48f6d95f37b023c2d1b39f182ea8cc4c062bb88f))
+
+
+### Features
+
+* embed specHash from spec-metadata.json in published package ([1377f44](https://github.com/camunda/orchestration-cluster-api-js/commit/1377f44e505f524a2d43844227a71b904f1a4e90)), closes [#90](https://github.com/camunda/orchestration-cluster-api-js/issues/90)
+* embed specHash from spec-metadata.json in published package ([3e0b4f8](https://github.com/camunda/orchestration-cluster-api-js/commit/3e0b4f805551a0d516b2feb358b065eca45081b8)), closes [#90](https://github.com/camunda/orchestration-cluster-api-js/issues/90)
+
 # [8.9.0-alpha.24](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.23...v8.9.0-alpha.24) (2026-03-30)
 
 
