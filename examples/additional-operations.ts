@@ -320,26 +320,3 @@ void createDocumentExample;
 void createDocumentsExample;
 void getDocumentExample;
 void searchUserTaskEffectiveVariablesExample;
-
-// Suppress "declared but never read"
-void getDecisionDefinitionXmlExample;
-void getDecisionInstanceExample;
-void searchDecisionInstancesExample;
-void deleteDecisionInstanceExample;
-void getDecisionRequirementsExample;
-void getDecisionRequirementsXmlExample;
-void searchDecisionRequirementsExample;
-void createDocumentLinkExample;
-void deleteDocumentExample;
-void throwJobErrorExample;
-void updateJobExample;
-void searchJobsExample;
-void getUserTaskExample;
-void updateUserTaskExample;
-void getUserTaskFormExample;
-void searchUserTaskVariablesExample;
-void searchUserTaskAuditLogsExample;
-void createDocumentExample;
-void createDocumentsExample;
-void getDocumentExample;
-void searchUserTaskEffectiveVariablesExample;
