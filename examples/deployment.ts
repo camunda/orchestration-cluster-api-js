@@ -1,7 +1,10 @@
 // Compilable usage examples for deployment operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, ProcessDefinitionKey } from '@camunda8/orchestration-cluster-api';
+import {
+  createCamundaClient,
+  type ProcessDefinitionKey,
+} from '@camunda8/orchestration-cluster-api';
 
 //#region CreateDeployment
 async function createDeploymentExample() {

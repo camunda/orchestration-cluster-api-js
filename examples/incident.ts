@@ -1,7 +1,7 @@
 // Compilable usage examples for incident operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, IncidentKey } from '@camunda8/orchestration-cluster-api';
+import { createCamundaClient, type IncidentKey } from '@camunda8/orchestration-cluster-api';
 
 //#region GetIncident
 async function getIncidentExample(incidentKey: IncidentKey) {

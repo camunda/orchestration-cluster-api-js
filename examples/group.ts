@@ -1,7 +1,7 @@
 // Compilable usage examples for group management operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, Username } from '@camunda8/orchestration-cluster-api';
+import { createCamundaClient, type Username } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateGroup
 async function createGroupExample() {

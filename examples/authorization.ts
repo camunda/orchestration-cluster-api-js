@@ -1,7 +1,7 @@
 // Compilable usage examples for authorization operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { AuthorizationKey, createCamundaClient } from '@camunda8/orchestration-cluster-api';
+import { type AuthorizationKey, createCamundaClient } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateAuthorization
 async function createAuthorizationExample() {

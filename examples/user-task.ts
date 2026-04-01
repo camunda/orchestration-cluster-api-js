@@ -1,7 +1,7 @@
 // Compilable usage examples for user task operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, UserTaskKey } from '@camunda8/orchestration-cluster-api';
+import { createCamundaClient, type UserTaskKey } from '@camunda8/orchestration-cluster-api';
 
 //#region AssignUserTask
 async function assignUserTaskExample(userTaskKey: UserTaskKey) {

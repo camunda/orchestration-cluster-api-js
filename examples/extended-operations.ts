@@ -3,12 +3,12 @@
 
 import {
   createCamundaClient,
-  ElementId,
-  ElementInstanceKey,
-  ProcessDefinitionId,
-  ProcessDefinitionKey,
-  ProcessInstanceKey,
-  VariableKey,
+  type ElementId,
+  type ElementInstanceKey,
+  type ProcessDefinitionId,
+  type ProcessDefinitionKey,
+  type ProcessInstanceKey,
+  type VariableKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region DeleteProcessInstance
@@ -52,9 +52,7 @@ async function modifyProcessInstanceExample(
   await camunda.modifyProcessInstance({
     processInstanceKey,
     activateInstructions: [{ elementId }],
-    terminateInstructions: [
-      { elementInstanceKey },
-    ],
+    terminateInstructions: [{ elementInstanceKey }],
   });
 }
 //#endregion ModifyProcessInstance
@@ -205,7 +203,9 @@ async function getProcessDefinitionInstanceStatisticsExample() {
 //#endregion GetProcessDefinitionInstanceStatistics
 
 //#region GetProcessDefinitionInstanceVersionStatistics
-async function getProcessDefinitionInstanceVersionStatisticsExample(processDefinitionId: ProcessDefinitionId) {
+async function getProcessDefinitionInstanceVersionStatisticsExample(
+  processDefinitionId: ProcessDefinitionId
+) {
   const camunda = createCamundaClient();
 
   const result = await camunda.getProcessDefinitionInstanceVersionStatistics(
@@ -350,7 +350,10 @@ async function createElementInstanceVariablesExample(elementInstanceKey: Element
 //#endregion CreateElementInstanceVariables
 
 //#region ActivateAdHocSubProcessActivities
-async function activateAdHocSubProcessActivitiesExample(adHocSubProcessInstanceKey: ElementInstanceKey, elementId: ElementId) {
+async function activateAdHocSubProcessActivitiesExample(
+  adHocSubProcessInstanceKey: ElementInstanceKey,
+  elementId: ElementId
+) {
   const camunda = createCamundaClient();
 
   await camunda.activateAdHocSubProcessActivities({

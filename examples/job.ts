@@ -4,7 +4,7 @@
 import {
   createCamundaClient,
   type JobActionReceipt,
-  JobKey,
+  type JobKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region ActivateJobs

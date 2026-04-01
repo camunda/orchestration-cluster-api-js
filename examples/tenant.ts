@@ -1,7 +1,11 @@
 // Compilable usage examples for tenant management operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, TenantId, Username } from '@camunda8/orchestration-cluster-api';
+import {
+  createCamundaClient,
+  type TenantId,
+  type Username,
+} from '@camunda8/orchestration-cluster-api';
 
 //#region CreateTenant
 async function createTenantExample(tenantId: TenantId) {

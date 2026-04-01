@@ -3,9 +3,9 @@
 
 import {
   createCamundaClient,
-  ProcessDefinitionId,
-  ProcessDefinitionKey,
-  ProcessInstanceKey,
+  type ProcessDefinitionId,
+  type ProcessDefinitionKey,
+  type ProcessInstanceKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateProcessInstanceById

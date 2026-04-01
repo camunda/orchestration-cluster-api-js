@@ -8,17 +8,12 @@
  * Writes missing-examples.json for CI consumption.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-const rootDir = path.join(__dirname, "..");
-const specPath = path.join(
-  rootDir,
-  "external-spec",
-  "bundled",
-  "rest-api.bundle.json"
-);
-const mapPath = path.join(rootDir, "examples", "operation-map.json");
+const rootDir = path.join(__dirname, '..');
+const specPath = path.join(rootDir, 'external-spec', 'bundled', 'rest-api.bundle.json');
+const mapPath = path.join(rootDir, 'examples', 'operation-map.json');
 
 if (!fs.existsSync(specPath)) {
   console.error(`Spec not found at ${specPath}`);
@@ -26,19 +21,10 @@ if (!fs.existsSync(specPath)) {
   process.exit(2);
 }
 
-const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
-const operationMap = JSON.parse(fs.readFileSync(mapPath, "utf8"));
+const spec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+const operationMap = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
 
-const HTTP_METHODS = new Set([
-  "get",
-  "post",
-  "put",
-  "patch",
-  "delete",
-  "head",
-  "options",
-  "trace",
-]);
+const HTTP_METHODS = new Set(['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']);
 
 const specOps = [];
 for (const [pathStr, pathItem] of Object.entries(spec.paths || {})) {
@@ -48,7 +34,7 @@ for (const [pathStr, pathItem] of Object.entries(spec.paths || {})) {
         operationId: operation.operationId,
         method: method.toUpperCase(),
         path: pathStr,
-        summary: operation.summary || "",
+        summary: operation.summary || '',
       });
     }
   }
@@ -61,9 +47,7 @@ const missing = specOps.filter((op) => !mapKeys.has(op.operationId));
 console.log(`Spec operations: ${specOps.length}`);
 console.log(`Covered:         ${covered.length}`);
 console.log(`Missing:         ${missing.length}`);
-console.log(
-  `Coverage:        ${Math.round((covered.length / specOps.length) * 100)}%`
-);
+console.log(`Coverage:        ${Math.round((covered.length / specOps.length) * 100)}%`);
 
 if (missing.length > 0) {
   missing.sort((a, b) => a.operationId.localeCompare(b.operationId));
@@ -78,11 +62,8 @@ if (missing.length > 0) {
   console.log(`  2. Add an entry to examples/operation-map.json for each operation`);
   console.log(`  3. Or use the Copilot prompt: .github/prompts/add-missing-examples.prompt.md`);
 
-  fs.writeFileSync(
-    path.join(rootDir, "missing-examples.json"),
-    JSON.stringify(missing, null, 2)
-  );
+  fs.writeFileSync(path.join(rootDir, 'missing-examples.json'), JSON.stringify(missing, null, 2));
   process.exit(1);
 } else {
-  console.log("\nFull coverage!");
+  console.log('\nFull coverage!');
 }

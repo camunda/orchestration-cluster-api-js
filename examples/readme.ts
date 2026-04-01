@@ -9,9 +9,9 @@ import createCamundaClient, {
   isOk,
   isSdkError,
   type JobActionReceipt,
-  JobKey,
+  type JobKey,
   type JobResult,
-  ProcessDefinitionId,
+  type ProcessDefinitionId,
   ProcessDefinitionKey,
   type ProcessInstanceKey,
 } from '@camunda8/orchestration-cluster-api';

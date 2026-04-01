@@ -3,8 +3,8 @@
 
 import {
   createCamundaClient,
-  DecisionDefinitionId,
-  DecisionDefinitionKey,
+  type DecisionDefinitionId,
+  type DecisionDefinitionKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region EvaluateDecisionById

@@ -2,10 +2,10 @@
 // These examples are type-checked during build to guard against API regressions.
 
 import {
-  BatchOperationKey,
+  type BatchOperationKey,
   createCamundaClient,
-  ElementId,
-  ProcessDefinitionKey,
+  type ElementId,
+  type ProcessDefinitionKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetBatchOperation
@@ -80,7 +80,9 @@ async function resumeBatchOperationExample(batchOperationKey: BatchOperationKey)
 //#endregion ResumeBatchOperation
 
 //#region CancelProcessInstancesBatchOperation
-async function cancelProcessInstancesBatchOperationExample(processDefinitionKey: ProcessDefinitionKey) {
+async function cancelProcessInstancesBatchOperationExample(
+  processDefinitionKey: ProcessDefinitionKey
+) {
   const camunda = createCamundaClient();
 
   const result = await camunda.cancelProcessInstancesBatchOperation({
@@ -94,7 +96,9 @@ async function cancelProcessInstancesBatchOperationExample(processDefinitionKey:
 //#endregion CancelProcessInstancesBatchOperation
 
 //#region DeleteProcessInstancesBatchOperation
-async function deleteProcessInstancesBatchOperationExample(processDefinitionKey: ProcessDefinitionKey) {
+async function deleteProcessInstancesBatchOperationExample(
+  processDefinitionKey: ProcessDefinitionKey
+) {
   const camunda = createCamundaClient();
 
   const result = await camunda.deleteProcessInstancesBatchOperation({
