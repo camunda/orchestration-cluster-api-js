@@ -174,7 +174,6 @@ async function searchJobsExample() {
 async function getUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
-  const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
   const task = await camunda.getUserTask({ userTaskKey }, { consistency: { waitUpToMs: 5000 } });
 
   console.log(`Task: ${task.name} (${task.state})`);
@@ -185,7 +184,6 @@ async function getUserTaskExample(userTaskKey: UserTaskKey) {
 async function updateUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
-  const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
   await camunda.updateUserTask({
     userTaskKey,
     changeset: {
@@ -201,7 +199,6 @@ async function updateUserTaskExample(userTaskKey: UserTaskKey) {
 async function getUserTaskFormExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
-  const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
   const form = await camunda.getUserTaskForm(
     { userTaskKey },
     { consistency: { waitUpToMs: 5000 } }
@@ -217,7 +214,6 @@ async function getUserTaskFormExample(userTaskKey: UserTaskKey) {
 async function searchUserTaskVariablesExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
-  const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
   const result = await camunda.searchUserTaskVariables(
     { userTaskKey },
     { consistency: { waitUpToMs: 5000 } }
@@ -233,7 +229,6 @@ async function searchUserTaskVariablesExample(userTaskKey: UserTaskKey) {
 async function searchUserTaskAuditLogsExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
-  const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
   const result = await camunda.searchUserTaskAuditLogs(
     { userTaskKey },
     { consistency: { waitUpToMs: 5000 } }
