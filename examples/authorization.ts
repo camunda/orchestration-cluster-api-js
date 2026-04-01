@@ -20,10 +20,8 @@ async function createAuthorizationExample() {
 //#endregion CreateAuthorization
 
 //#region GetAuthorization
-async function getAuthorizationExample() {
+async function getAuthorizationExample(authorizationKey: AuthorizationKey) {
   const camunda = createCamundaClient();
-
-  const authorizationKey = AuthorizationKey.assumeExists('2251799813685249');
 
   const authorization = await camunda.getAuthorization(
     { authorizationKey },
@@ -53,10 +51,8 @@ async function searchAuthorizationsExample() {
 //#endregion SearchAuthorizations
 
 //#region UpdateAuthorization
-async function updateAuthorizationExample() {
+async function updateAuthorizationExample(authorizationKey: AuthorizationKey) {
   const camunda = createCamundaClient();
-
-  const authorizationKey = AuthorizationKey.assumeExists('2251799813685249');
 
   await camunda.updateAuthorization({
     authorizationKey,
@@ -74,10 +70,8 @@ async function updateAuthorizationExample() {
 //#endregion UpdateAuthorization
 
 //#region DeleteAuthorization
-async function deleteAuthorizationExample() {
+async function deleteAuthorizationExample(authorizationKey: AuthorizationKey) {
   const camunda = createCamundaClient();
-
-  const authorizationKey = AuthorizationKey.assumeExists('2251799813685249');
 
   await camunda.deleteAuthorization({ authorizationKey });
 }

@@ -3,13 +3,13 @@
 
 import {
   createCamundaClient,
-  DecisionDefinitionKey,
-  DecisionEvaluationInstanceKey,
-  DecisionEvaluationKey,
-  DecisionRequirementsKey,
-  DocumentId,
-  JobKey,
-  UserTaskKey,
+  type DecisionDefinitionKey,
+  type DecisionEvaluationInstanceKey,
+  type DecisionEvaluationKey,
+  type DecisionRequirementsKey,
+  type DocumentId,
+  type JobKey,
+  type UserTaskKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetDecisionDefinitionXml
@@ -26,7 +26,9 @@ async function getDecisionDefinitionXmlExample(decisionDefinitionKey: DecisionDe
 //#endregion GetDecisionDefinitionXml
 
 //#region GetDecisionInstance
-async function getDecisionInstanceExample(decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey) {
+async function getDecisionInstanceExample(
+  decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey
+) {
   const camunda = createCamundaClient();
 
   const instance = await camunda.getDecisionInstance(
@@ -250,7 +252,8 @@ async function createDocumentExample() {
   const file = new Blob(['Hello, world!'], { type: 'text/plain' });
 
   const result = await camunda.createDocument({
-    file, metadata: { fileName: 'hello.txt' },
+    file,
+    metadata: { fileName: 'hello.txt' },
   });
 
   console.log(`Document ID: ${result.documentId}`);

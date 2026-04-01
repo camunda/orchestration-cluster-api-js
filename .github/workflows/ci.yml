@@ -30,6 +30,8 @@ jobs:
         run: npm ci
       - name: Generate & Build
         run: npm run build
+      - name: Check SDK Example Coverage
+        run: node scripts/check-example-coverage.cjs
       - name: Detect Generation Drift (non-blocking)
         id: drift
         run: |

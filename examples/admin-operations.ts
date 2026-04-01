@@ -3,11 +3,11 @@
 // These examples are type-checked during build to guard against API regressions.
 
 import {
-  AuditLogKey,
+  type AuditLogKey,
   createCamundaClient,
-  GlobalListenerId,
-  ProcessDefinitionKey,
-  TenantId,
+  type GlobalListenerId,
+  type ProcessDefinitionKey,
+  type TenantId,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetGlobalClusterVariable

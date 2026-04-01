@@ -4,10 +4,8 @@
 import { createCamundaClient, IncidentKey } from '@camunda8/orchestration-cluster-api';
 
 //#region GetIncident
-async function getIncidentExample() {
+async function getIncidentExample(incidentKey: IncidentKey) {
   const camunda = createCamundaClient();
-
-  const incidentKey = IncidentKey.assumeExists('2251799813685249');
 
   const incident = await camunda.getIncident(
     { incidentKey },
@@ -21,10 +19,8 @@ async function getIncidentExample() {
 //#endregion GetIncident
 
 //#region ResolveIncident
-async function resolveIncidentExample() {
+async function resolveIncidentExample(incidentKey: IncidentKey) {
   const camunda = createCamundaClient();
-
-  const incidentKey = IncidentKey.assumeExists('2251799813685249');
 
   await camunda.resolveIncident({ incidentKey });
 }

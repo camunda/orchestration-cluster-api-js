@@ -21,12 +21,10 @@ async function createDeploymentExample() {
 //#endregion CreateDeployment
 
 //#region DeleteResource
-async function deleteResourceExample() {
+async function deleteResourceExample(resourceKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   // Use a process definition key as a resource key for deletion
-  const resourceKey = ProcessDefinitionKey.assumeExists('2251799813685249');
-
   await camunda.deleteResource({
     resourceKey,
   });

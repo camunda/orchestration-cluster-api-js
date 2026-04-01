@@ -4,11 +4,11 @@
 import { createCamundaClient, TenantId, Username } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateTenant
-async function createTenantExample() {
+async function createTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     name: 'Customer Service',
   });
 
@@ -17,10 +17,8 @@ async function createTenantExample() {
 //#endregion CreateTenant
 
 //#region GetTenant
-async function getTenantExample() {
+async function getTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
-
-  const tenantId = TenantId.assumeExists('customer-service');
 
   const tenant = await camunda.getTenant({ tenantId }, { consistency: { waitUpToMs: 5000 } });
 
@@ -46,10 +44,8 @@ async function searchTenantsExample() {
 //#endregion SearchTenants
 
 //#region UpdateTenant
-async function updateTenantExample() {
+async function updateTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
-
-  const tenantId = TenantId.assumeExists('customer-service');
 
   await camunda.updateTenant({
     tenantId,
@@ -59,131 +55,129 @@ async function updateTenantExample() {
 //#endregion UpdateTenant
 
 //#region DeleteTenant
-async function deleteTenantExample() {
+async function deleteTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
-
-  const tenantId = TenantId.assumeExists('customer-service');
 
   await camunda.deleteTenant({ tenantId });
 }
 //#endregion DeleteTenant
 
 //#region AssignUserToTenant
-async function assignUserToTenantExample() {
+async function assignUserToTenantExample(tenantId: TenantId, username: Username) {
   const camunda = createCamundaClient();
 
   await camunda.assignUserToTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
-    username: Username.assumeExists('alice'),
+    tenantId,
+    username,
   });
 }
 //#endregion AssignUserToTenant
 
 //#region UnassignUserFromTenant
-async function unassignUserFromTenantExample() {
+async function unassignUserFromTenantExample(tenantId: TenantId, username: Username) {
   const camunda = createCamundaClient();
 
   await camunda.unassignUserFromTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
-    username: Username.assumeExists('alice'),
+    tenantId,
+    username,
   });
 }
 //#endregion UnassignUserFromTenant
 
 //#region AssignGroupToTenant
-async function assignGroupToTenantExample() {
+async function assignGroupToTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.assignGroupToTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     groupId: 'engineering-team',
   });
 }
 //#endregion AssignGroupToTenant
 
 //#region UnassignGroupFromTenant
-async function unassignGroupFromTenantExample() {
+async function unassignGroupFromTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.unassignGroupFromTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     groupId: 'engineering-team',
   });
 }
 //#endregion UnassignGroupFromTenant
 
 //#region AssignRoleToTenant
-async function assignRoleToTenantExample() {
+async function assignRoleToTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.assignRoleToTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     roleId: 'process-admin',
   });
 }
 //#endregion AssignRoleToTenant
 
 //#region UnassignRoleFromTenant
-async function unassignRoleFromTenantExample() {
+async function unassignRoleFromTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.unassignRoleFromTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     roleId: 'process-admin',
   });
 }
 //#endregion UnassignRoleFromTenant
 
 //#region AssignClientToTenant
-async function assignClientToTenantExample() {
+async function assignClientToTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.assignClientToTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     clientId: 'my-service-account',
   });
 }
 //#endregion AssignClientToTenant
 
 //#region UnassignClientFromTenant
-async function unassignClientFromTenantExample() {
+async function unassignClientFromTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.unassignClientFromTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     clientId: 'my-service-account',
   });
 }
 //#endregion UnassignClientFromTenant
 
 //#region AssignMappingRuleToTenant
-async function assignMappingRuleToTenantExample() {
+async function assignMappingRuleToTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.assignMappingRuleToTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     mappingRuleId: 'rule-123',
   });
 }
 //#endregion AssignMappingRuleToTenant
 
 //#region UnassignMappingRuleFromTenant
-async function unassignMappingRuleFromTenantExample() {
+async function unassignMappingRuleFromTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.unassignMappingRuleFromTenant({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     mappingRuleId: 'rule-123',
   });
 }
 //#endregion UnassignMappingRuleFromTenant
 
 //#region SearchUsersForTenant
-async function searchUsersForTenantExample() {
+async function searchUsersForTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchUsersForTenant(
-    { tenantId: TenantId.assumeExists('customer-service') },
+    { tenantId },
     { consistency: { waitUpToMs: 5000 } }
   );
 
@@ -194,11 +188,11 @@ async function searchUsersForTenantExample() {
 //#endregion SearchUsersForTenant
 
 //#region SearchClientsForTenant
-async function searchClientsForTenantExample() {
+async function searchClientsForTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchClientsForTenant(
-    { tenantId: TenantId.assumeExists('customer-service') },
+    { tenantId },
     { consistency: { waitUpToMs: 5000 } }
   );
 
@@ -209,11 +203,11 @@ async function searchClientsForTenantExample() {
 //#endregion SearchClientsForTenant
 
 //#region SearchGroupIdsForTenant
-async function searchGroupIdsForTenantExample() {
+async function searchGroupIdsForTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchGroupIdsForTenant(
-    { tenantId: TenantId.assumeExists('customer-service') },
+    { tenantId },
     { consistency: { waitUpToMs: 5000 } }
   );
 
@@ -224,11 +218,11 @@ async function searchGroupIdsForTenantExample() {
 //#endregion SearchGroupIdsForTenant
 
 //#region SearchRolesForTenant
-async function searchRolesForTenantExample() {
+async function searchRolesForTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchRolesForTenant(
-    { tenantId: TenantId.assumeExists('customer-service') },
+    { tenantId },
     { consistency: { waitUpToMs: 5000 } }
   );
 
@@ -239,11 +233,11 @@ async function searchRolesForTenantExample() {
 //#endregion SearchRolesForTenant
 
 //#region SearchMappingRulesForTenant
-async function searchMappingRulesForTenantExample() {
+async function searchMappingRulesForTenantExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchMappingRulesForTenant(
-    { tenantId: TenantId.assumeExists('customer-service') },
+    { tenantId },
     { consistency: { waitUpToMs: 5000 } }
   );
 

@@ -12,28 +12,29 @@ import {
 } from '@camunda8/orchestration-cluster-api';
 
 //#region DeleteProcessInstance
-async function deleteProcessInstanceExample() {
+async function deleteProcessInstanceExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   await camunda.deleteProcessInstance({ processInstanceKey });
 }
 //#endregion DeleteProcessInstance
 
 //#region MigrateProcessInstance
-async function migrateProcessInstanceExample() {
+async function migrateProcessInstanceExample(
+  processInstanceKey: ProcessInstanceKey,
+  targetProcessDefinitionKey: ProcessDefinitionKey,
+  sourceElementId: ElementId,
+  targetElementId: ElementId
+) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   await camunda.migrateProcessInstance({
     processInstanceKey,
-    targetProcessDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685250'),
+    targetProcessDefinitionKey,
     mappingInstructions: [
       {
-        sourceElementId: ElementId.assumeExists('task-a'),
-        targetElementId: ElementId.assumeExists('task-b'),
+        sourceElementId,
+        targetElementId,
       },
     ],
   });
@@ -41,26 +42,26 @@ async function migrateProcessInstanceExample() {
 //#endregion MigrateProcessInstance
 
 //#region ModifyProcessInstance
-async function modifyProcessInstanceExample() {
+async function modifyProcessInstanceExample(
+  processInstanceKey: ProcessInstanceKey,
+  elementId: ElementId,
+  elementInstanceKey: ElementInstanceKey
+) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   await camunda.modifyProcessInstance({
     processInstanceKey,
-    activateInstructions: [{ elementId: ElementId.assumeExists('task-a') }],
+    activateInstructions: [{ elementId }],
     terminateInstructions: [
-      { elementInstanceKey: ElementInstanceKey.assumeExists('2251799813685260') },
+      { elementInstanceKey },
     ],
   });
 }
 //#endregion ModifyProcessInstance
 
 //#region GetProcessInstanceStatistics
-async function getProcessInstanceStatisticsExample() {
+async function getProcessInstanceStatisticsExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   const result = await camunda.getProcessInstanceStatistics(
     { processInstanceKey },
@@ -74,10 +75,8 @@ async function getProcessInstanceStatisticsExample() {
 //#endregion GetProcessInstanceStatistics
 
 //#region GetProcessInstanceSequenceFlows
-async function getProcessInstanceSequenceFlowsExample() {
+async function getProcessInstanceSequenceFlowsExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   const result = await camunda.getProcessInstanceSequenceFlows(
     { processInstanceKey },
@@ -91,10 +90,8 @@ async function getProcessInstanceSequenceFlowsExample() {
 //#endregion GetProcessInstanceSequenceFlows
 
 //#region GetProcessInstanceCallHierarchy
-async function getProcessInstanceCallHierarchyExample() {
+async function getProcessInstanceCallHierarchyExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   const result = await camunda.getProcessInstanceCallHierarchy(
     { processInstanceKey },
@@ -106,10 +103,8 @@ async function getProcessInstanceCallHierarchyExample() {
 //#endregion GetProcessInstanceCallHierarchy
 
 //#region SearchProcessInstanceIncidents
-async function searchProcessInstanceIncidentsExample() {
+async function searchProcessInstanceIncidentsExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   const result = await camunda.searchProcessInstanceIncidents(
     {
@@ -125,10 +120,8 @@ async function searchProcessInstanceIncidentsExample() {
 //#endregion SearchProcessInstanceIncidents
 
 //#region ResolveProcessInstanceIncidents
-async function resolveProcessInstanceIncidentsExample() {
+async function resolveProcessInstanceIncidentsExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
-
-  const processInstanceKey = ProcessInstanceKey.assumeExists('2251799813685249');
 
   const result = await camunda.resolveProcessInstanceIncidents({ processInstanceKey });
 
@@ -137,10 +130,8 @@ async function resolveProcessInstanceIncidentsExample() {
 //#endregion ResolveProcessInstanceIncidents
 
 //#region GetProcessDefinition
-async function getProcessDefinitionExample() {
+async function getProcessDefinitionExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const processDefinitionKey = ProcessDefinitionKey.assumeExists('2251799813685249');
 
   const definition = await camunda.getProcessDefinition(
     { processDefinitionKey },
@@ -152,10 +143,8 @@ async function getProcessDefinitionExample() {
 //#endregion GetProcessDefinition
 
 //#region GetProcessDefinitionXml
-async function getProcessDefinitionXmlExample() {
+async function getProcessDefinitionXmlExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const processDefinitionKey = ProcessDefinitionKey.assumeExists('2251799813685249');
 
   const xml = await camunda.getProcessDefinitionXml(
     { processDefinitionKey },
@@ -184,10 +173,8 @@ async function searchProcessDefinitionsExample() {
 //#endregion SearchProcessDefinitions
 
 //#region GetProcessDefinitionStatistics
-async function getProcessDefinitionStatisticsExample() {
+async function getProcessDefinitionStatisticsExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const processDefinitionKey = ProcessDefinitionKey.assumeExists('2251799813685249');
 
   const result = await camunda.getProcessDefinitionStatistics(
     { processDefinitionKey },
@@ -218,13 +205,13 @@ async function getProcessDefinitionInstanceStatisticsExample() {
 //#endregion GetProcessDefinitionInstanceStatistics
 
 //#region GetProcessDefinitionInstanceVersionStatistics
-async function getProcessDefinitionInstanceVersionStatisticsExample() {
+async function getProcessDefinitionInstanceVersionStatisticsExample(processDefinitionId: ProcessDefinitionId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.getProcessDefinitionInstanceVersionStatistics(
     {
       filter: {
-        processDefinitionId: ProcessDefinitionId.assumeExists('order-process'),
+        processDefinitionId,
       },
     },
     { consistency: { waitUpToMs: 5000 } }
@@ -256,10 +243,8 @@ async function getProcessDefinitionMessageSubscriptionStatisticsExample() {
 //#endregion GetProcessDefinitionMessageSubscriptionStatistics
 
 //#region GetStartProcessForm
-async function getStartProcessFormExample() {
+async function getStartProcessFormExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const processDefinitionKey = ProcessDefinitionKey.assumeExists('2251799813685249');
 
   const form = await camunda.getStartProcessForm(
     { processDefinitionKey },
@@ -273,10 +258,8 @@ async function getStartProcessFormExample() {
 //#endregion GetStartProcessForm
 
 //#region GetVariable
-async function getVariableExample() {
+async function getVariableExample(variableKey: VariableKey) {
   const camunda = createCamundaClient();
-
-  const variableKey = VariableKey.assumeExists('2251799813685249');
 
   const variable = await camunda.getVariable(
     { variableKey },
@@ -288,13 +271,13 @@ async function getVariableExample() {
 //#endregion GetVariable
 
 //#region SearchVariables
-async function searchVariablesExample() {
+async function searchVariablesExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchVariables(
     {
       filter: {
-        processInstanceKey: ProcessInstanceKey.assumeExists('2251799813685249'),
+        processInstanceKey,
       },
       page: { limit: 10 },
     },
@@ -308,10 +291,8 @@ async function searchVariablesExample() {
 //#endregion SearchVariables
 
 //#region GetElementInstance
-async function getElementInstanceExample() {
+async function getElementInstanceExample(elementInstanceKey: ElementInstanceKey) {
   const camunda = createCamundaClient();
-
-  const elementInstanceKey = ElementInstanceKey.assumeExists('2251799813685249');
 
   const element = await camunda.getElementInstance(
     { elementInstanceKey },
@@ -323,13 +304,13 @@ async function getElementInstanceExample() {
 //#endregion GetElementInstance
 
 //#region SearchElementInstances
-async function searchElementInstancesExample() {
+async function searchElementInstancesExample(processInstanceKey: ProcessInstanceKey) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchElementInstances(
     {
       filter: {
-        processInstanceKey: ProcessInstanceKey.assumeExists('2251799813685249'),
+        processInstanceKey,
       },
       page: { limit: 10 },
     },
@@ -343,10 +324,8 @@ async function searchElementInstancesExample() {
 //#endregion SearchElementInstances
 
 //#region SearchElementInstanceIncidents
-async function searchElementInstanceIncidentsExample() {
+async function searchElementInstanceIncidentsExample(elementInstanceKey: ElementInstanceKey) {
   const camunda = createCamundaClient();
-
-  const elementInstanceKey = ElementInstanceKey.assumeExists('2251799813685249');
 
   const result = await camunda.searchElementInstanceIncidents(
     { elementInstanceKey },
@@ -360,10 +339,8 @@ async function searchElementInstanceIncidentsExample() {
 //#endregion SearchElementInstanceIncidents
 
 //#region CreateElementInstanceVariables
-async function createElementInstanceVariablesExample() {
+async function createElementInstanceVariablesExample(elementInstanceKey: ElementInstanceKey) {
   const camunda = createCamundaClient();
-
-  const elementInstanceKey = ElementInstanceKey.assumeExists('2251799813685249');
 
   await camunda.createElementInstanceVariables({
     elementInstanceKey,
@@ -373,14 +350,12 @@ async function createElementInstanceVariablesExample() {
 //#endregion CreateElementInstanceVariables
 
 //#region ActivateAdHocSubProcessActivities
-async function activateAdHocSubProcessActivitiesExample() {
+async function activateAdHocSubProcessActivitiesExample(adHocSubProcessInstanceKey: ElementInstanceKey, elementId: ElementId) {
   const camunda = createCamundaClient();
-
-  const adHocSubProcessInstanceKey = ElementInstanceKey.assumeExists('2251799813685249');
 
   await camunda.activateAdHocSubProcessActivities({
     adHocSubProcessInstanceKey,
-    elements: [{ elementId: ElementId.assumeExists('task-a') }],
+    elements: [{ elementId }],
   });
 }
 //#endregion ActivateAdHocSubProcessActivities

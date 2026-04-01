@@ -4,10 +4,8 @@
 import { createCamundaClient, UserTaskKey } from '@camunda8/orchestration-cluster-api';
 
 //#region AssignUserTask
-async function assignUserTaskExample() {
+async function assignUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
-
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
 
   await camunda.assignUserTask({
     userTaskKey,
@@ -18,10 +16,8 @@ async function assignUserTaskExample() {
 //#endregion AssignUserTask
 
 //#region CompleteUserTask
-async function completeUserTaskExample() {
+async function completeUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
-
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
 
   await camunda.completeUserTask({
     userTaskKey,
@@ -34,10 +30,8 @@ async function completeUserTaskExample() {
 //#endregion CompleteUserTask
 
 //#region UnassignUserTask
-async function unassignUserTaskExample() {
+async function unassignUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
-
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
 
   await camunda.unassignUserTask({ userTaskKey });
 }

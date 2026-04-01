@@ -9,10 +9,8 @@ import {
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetBatchOperation
-async function getBatchOperationExample() {
+async function getBatchOperationExample(batchOperationKey: BatchOperationKey) {
   const camunda = createCamundaClient();
-
-  const batchOperationKey = BatchOperationKey.assumeExists('2251799813685249');
 
   const batch = await camunda.getBatchOperation(
     { batchOperationKey },
@@ -58,42 +56,36 @@ async function searchBatchOperationItemsExample() {
 //#endregion SearchBatchOperationItems
 
 //#region CancelBatchOperation
-async function cancelBatchOperationExample() {
+async function cancelBatchOperationExample(batchOperationKey: BatchOperationKey) {
   const camunda = createCamundaClient();
-
-  const batchOperationKey = BatchOperationKey.assumeExists('2251799813685249');
 
   await camunda.cancelBatchOperation({ batchOperationKey });
 }
 //#endregion CancelBatchOperation
 
 //#region SuspendBatchOperation
-async function suspendBatchOperationExample() {
+async function suspendBatchOperationExample(batchOperationKey: BatchOperationKey) {
   const camunda = createCamundaClient();
-
-  const batchOperationKey = BatchOperationKey.assumeExists('2251799813685249');
 
   await camunda.suspendBatchOperation({ batchOperationKey });
 }
 //#endregion SuspendBatchOperation
 
 //#region ResumeBatchOperation
-async function resumeBatchOperationExample() {
+async function resumeBatchOperationExample(batchOperationKey: BatchOperationKey) {
   const camunda = createCamundaClient();
-
-  const batchOperationKey = BatchOperationKey.assumeExists('2251799813685249');
 
   await camunda.resumeBatchOperation({ batchOperationKey });
 }
 //#endregion ResumeBatchOperation
 
 //#region CancelProcessInstancesBatchOperation
-async function cancelProcessInstancesBatchOperationExample() {
+async function cancelProcessInstancesBatchOperationExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   const result = await camunda.cancelProcessInstancesBatchOperation({
     filter: {
-      processDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+      processDefinitionKey,
     },
   });
 
@@ -102,12 +94,12 @@ async function cancelProcessInstancesBatchOperationExample() {
 //#endregion CancelProcessInstancesBatchOperation
 
 //#region DeleteProcessInstancesBatchOperation
-async function deleteProcessInstancesBatchOperationExample() {
+async function deleteProcessInstancesBatchOperationExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   const result = await camunda.deleteProcessInstancesBatchOperation({
     filter: {
-      processDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+      processDefinitionKey,
     },
   });
 
@@ -116,19 +108,24 @@ async function deleteProcessInstancesBatchOperationExample() {
 //#endregion DeleteProcessInstancesBatchOperation
 
 //#region MigrateProcessInstancesBatchOperation
-async function migrateProcessInstancesBatchOperationExample() {
+async function migrateProcessInstancesBatchOperationExample(
+  processDefinitionKey: ProcessDefinitionKey,
+  targetProcessDefinitionKey: ProcessDefinitionKey,
+  sourceElementId: ElementId,
+  targetElementId: ElementId
+) {
   const camunda = createCamundaClient();
 
   const result = await camunda.migrateProcessInstancesBatchOperation({
     filter: {
-      processDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+      processDefinitionKey,
     },
     migrationPlan: {
-      targetProcessDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685250'),
+      targetProcessDefinitionKey,
       mappingInstructions: [
         {
-          sourceElementId: ElementId.assumeExists('task-a'),
-          targetElementId: ElementId.assumeExists('task-b'),
+          sourceElementId,
+          targetElementId,
         },
       ],
     },
@@ -139,17 +136,21 @@ async function migrateProcessInstancesBatchOperationExample() {
 //#endregion MigrateProcessInstancesBatchOperation
 
 //#region ModifyProcessInstancesBatchOperation
-async function modifyProcessInstancesBatchOperationExample() {
+async function modifyProcessInstancesBatchOperationExample(
+  processDefinitionKey: ProcessDefinitionKey,
+  sourceElementId: ElementId,
+  targetElementId: ElementId
+) {
   const camunda = createCamundaClient();
 
   const result = await camunda.modifyProcessInstancesBatchOperation({
     filter: {
-      processDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+      processDefinitionKey,
     },
     moveInstructions: [
       {
-        sourceElementId: ElementId.assumeExists('task-a'),
-        targetElementId: ElementId.assumeExists('task-b'),
+        sourceElementId,
+        targetElementId,
       },
     ],
   });
@@ -159,12 +160,12 @@ async function modifyProcessInstancesBatchOperationExample() {
 //#endregion ModifyProcessInstancesBatchOperation
 
 //#region ResolveIncidentsBatchOperation
-async function resolveIncidentsBatchOperationExample() {
+async function resolveIncidentsBatchOperationExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   const result = await camunda.resolveIncidentsBatchOperation({
     filter: {
-      processDefinitionKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+      processDefinitionKey,
     },
   });
 
