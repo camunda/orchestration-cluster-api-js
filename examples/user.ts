@@ -1,14 +1,14 @@
 // Compilable usage examples for user management operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, Username } from '@camunda8/orchestration-cluster-api';
+import { createCamundaClient, type Username } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateUser
-async function createUserExample() {
+async function createUserExample(username: Username) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createUser({
-    username: Username.assumeExists('alice'),
+    username,
     name: 'Alice Smith',
     email: 'alice@example.com',
     password: 'secure-password-123',
@@ -19,11 +19,11 @@ async function createUserExample() {
 //#endregion CreateUser
 
 //#region CreateAdminUser
-async function createAdminUserExample() {
+async function createAdminUserExample(username: Username) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createAdminUser({
-    username: Username.assumeExists('admin'),
+    username,
     name: 'Admin User',
     email: 'admin@example.com',
     password: 'admin-password-123',
@@ -34,10 +34,8 @@ async function createAdminUserExample() {
 //#endregion CreateAdminUser
 
 //#region GetUser
-async function getUserExample() {
+async function getUserExample(username: Username) {
   const camunda = createCamundaClient();
-
-  const username = Username.assumeExists('alice');
 
   const user = await camunda.getUser({ username }, { consistency: { waitUpToMs: 5000 } });
 
@@ -64,10 +62,8 @@ async function searchUsersExample() {
 //#endregion SearchUsers
 
 //#region UpdateUser
-async function updateUserExample() {
+async function updateUserExample(username: Username) {
   const camunda = createCamundaClient();
-
-  const username = Username.assumeExists('alice');
 
   await camunda.updateUser({
     username,
@@ -78,10 +74,8 @@ async function updateUserExample() {
 //#endregion UpdateUser
 
 //#region DeleteUser
-async function deleteUserExample() {
+async function deleteUserExample(username: Username) {
   const camunda = createCamundaClient();
-
-  const username = Username.assumeExists('alice');
 
   await camunda.deleteUser({ username });
 }

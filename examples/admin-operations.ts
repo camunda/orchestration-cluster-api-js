@@ -3,10 +3,11 @@
 // These examples are type-checked during build to guard against API regressions.
 
 import {
+  type AuditLogKey,
   createCamundaClient,
-  GlobalListenerId,
-  ProcessDefinitionKey,
-  TenantId,
+  type GlobalListenerId,
+  type ProcessDefinitionKey,
+  type TenantId,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetGlobalClusterVariable
@@ -55,12 +56,12 @@ async function deleteGlobalClusterVariableExample() {
 //#endregion DeleteGlobalClusterVariable
 
 //#region GetTenantClusterVariable
-async function getTenantClusterVariableExample() {
+async function getTenantClusterVariableExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const variable = await camunda.getTenantClusterVariable(
     {
-      tenantId: TenantId.assumeExists('customer-service'),
+      tenantId,
       name: 'config',
     },
     { consistency: { waitUpToMs: 5000 } }
@@ -71,11 +72,11 @@ async function getTenantClusterVariableExample() {
 //#endregion GetTenantClusterVariable
 
 //#region CreateTenantClusterVariable
-async function createTenantClusterVariableExample() {
+async function createTenantClusterVariableExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createTenantClusterVariable({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     name: 'config',
     value: { region: 'us-east-1' },
   });
@@ -85,11 +86,11 @@ async function createTenantClusterVariableExample() {
 //#endregion CreateTenantClusterVariable
 
 //#region UpdateTenantClusterVariable
-async function updateTenantClusterVariableExample() {
+async function updateTenantClusterVariableExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.updateTenantClusterVariable({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     name: 'config',
     value: { region: 'eu-west-1' },
   });
@@ -97,11 +98,11 @@ async function updateTenantClusterVariableExample() {
 //#endregion UpdateTenantClusterVariable
 
 //#region DeleteTenantClusterVariable
-async function deleteTenantClusterVariableExample() {
+async function deleteTenantClusterVariableExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   await camunda.deleteTenantClusterVariable({
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
     name: 'config',
   });
 }
@@ -125,11 +126,11 @@ async function searchClusterVariablesExample() {
 //#endregion SearchClusterVariables
 
 //#region CreateGlobalTaskListener
-async function createGlobalTaskListenerExample() {
+async function createGlobalTaskListenerExample(id: GlobalListenerId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createGlobalTaskListener({
-    id: GlobalListenerId.assumeExists('audit-log-listener'),
+    id,
     eventTypes: ['completing'],
     type: 'audit-log-listener',
   });
@@ -139,11 +140,11 @@ async function createGlobalTaskListenerExample() {
 //#endregion CreateGlobalTaskListener
 
 //#region GetGlobalTaskListener
-async function getGlobalTaskListenerExample() {
+async function getGlobalTaskListenerExample(id: GlobalListenerId) {
   const camunda = createCamundaClient();
 
   const listener = await camunda.getGlobalTaskListener(
-    { id: GlobalListenerId.assumeExists('listener-123') },
+    { id },
     { consistency: { waitUpToMs: 5000 } }
   );
 
@@ -152,11 +153,11 @@ async function getGlobalTaskListenerExample() {
 //#endregion GetGlobalTaskListener
 
 //#region UpdateGlobalTaskListener
-async function updateGlobalTaskListenerExample() {
+async function updateGlobalTaskListenerExample(id: GlobalListenerId) {
   const camunda = createCamundaClient();
 
   await camunda.updateGlobalTaskListener({
-    id: GlobalListenerId.assumeExists('listener-123'),
+    id,
     eventTypes: ['completing'],
     type: 'updated-audit-listener',
   });
@@ -164,11 +165,11 @@ async function updateGlobalTaskListenerExample() {
 //#endregion UpdateGlobalTaskListener
 
 //#region DeleteGlobalTaskListener
-async function deleteGlobalTaskListenerExample() {
+async function deleteGlobalTaskListenerExample(id: GlobalListenerId) {
   const camunda = createCamundaClient();
 
   await camunda.deleteGlobalTaskListener({
-    id: GlobalListenerId.assumeExists('listener-123'),
+    id,
   });
 }
 //#endregion DeleteGlobalTaskListener
@@ -253,12 +254,12 @@ async function resetClockExample() {
 //#endregion ResetClock
 
 //#region EvaluateConditionals
-async function evaluateConditionalsExample() {
+async function evaluateConditionalsExample(tenantId: TenantId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.evaluateConditionals({
     variables: { orderReady: true },
-    tenantId: TenantId.assumeExists('customer-service'),
+    tenantId,
   });
 
   console.log(`Evaluated conditionals: ${JSON.stringify(result)}`);
@@ -279,11 +280,11 @@ async function evaluateExpressionExample() {
 //#endregion EvaluateExpression
 
 //#region GetResource
-async function getResourceExample() {
+async function getResourceExample(resourceKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   const resource = await camunda.getResource({
-    resourceKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+    resourceKey,
   });
 
   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
@@ -291,11 +292,11 @@ async function getResourceExample() {
 //#endregion GetResource
 
 //#region GetResourceContent
-async function getResourceContentExample() {
+async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   const content = await camunda.getResourceContent({
-    resourceKey: ProcessDefinitionKey.assumeExists('2251799813685249'),
+    resourceKey,
   });
 
   console.log(`Content retrieved (type: ${typeof content})`);
@@ -353,11 +354,8 @@ async function searchCorrelatedMessageSubscriptionsExample() {
 //#endregion SearchCorrelatedMessageSubscriptions
 
 //#region GetAuditLog
-async function getAuditLogExample() {
+async function getAuditLogExample(auditLogKey: AuditLogKey) {
   const camunda = createCamundaClient();
-
-  const { AuditLogKey } = await import('@camunda8/orchestration-cluster-api');
-  const auditLogKey = AuditLogKey.assumeExists('2251799813685249');
 
   const log = await camunda.getAuditLog({ auditLogKey }, { consistency: { waitUpToMs: 5000 } });
 

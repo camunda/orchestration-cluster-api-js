@@ -1,7 +1,10 @@
 // Compilable usage examples for deployment operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, ProcessDefinitionKey } from '@camunda8/orchestration-cluster-api';
+import {
+  createCamundaClient,
+  type ProcessDefinitionKey,
+} from '@camunda8/orchestration-cluster-api';
 
 //#region CreateDeployment
 async function createDeploymentExample() {
@@ -21,12 +24,10 @@ async function createDeploymentExample() {
 //#endregion CreateDeployment
 
 //#region DeleteResource
-async function deleteResourceExample() {
+async function deleteResourceExample(resourceKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
   // Use a process definition key as a resource key for deletion
-  const resourceKey = ProcessDefinitionKey.assumeExists('2251799813685249');
-
   await camunda.deleteResource({
     resourceKey,
   });

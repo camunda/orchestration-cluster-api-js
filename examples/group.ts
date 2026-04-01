@@ -1,7 +1,7 @@
 // Compilable usage examples for group management operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, Username } from '@camunda8/orchestration-cluster-api';
+import { createCamundaClient, type Username } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateGroup
 async function createGroupExample() {
@@ -66,23 +66,23 @@ async function deleteGroupExample() {
 //#endregion DeleteGroup
 
 //#region AssignUserToGroup
-async function assignUserToGroupExample() {
+async function assignUserToGroupExample(username: Username) {
   const camunda = createCamundaClient();
 
   await camunda.assignUserToGroup({
     groupId: 'engineering-team',
-    username: Username.assumeExists('alice'),
+    username,
   });
 }
 //#endregion AssignUserToGroup
 
 //#region UnassignUserFromGroup
-async function unassignUserFromGroupExample() {
+async function unassignUserFromGroupExample(username: Username) {
   const camunda = createCamundaClient();
 
   await camunda.unassignUserFromGroup({
     groupId: 'engineering-team',
-    username: Username.assumeExists('alice'),
+    username,
   });
 }
 //#endregion UnassignUserFromGroup

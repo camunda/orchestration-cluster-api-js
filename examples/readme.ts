@@ -9,9 +9,9 @@ import createCamundaClient, {
   isOk,
   isSdkError,
   type JobActionReceipt,
-  JobKey,
+  type JobKey,
   type JobResult,
-  ProcessDefinitionId,
+  type ProcessDefinitionId,
   ProcessDefinitionKey,
   type ProcessInstanceKey,
 } from '@camunda8/orchestration-cluster-api';
@@ -69,9 +69,8 @@ async function _readmeCustomFetch() {
 // Disable Retry
 // ---------------------------------------------------------------------------
 
-async function _readmeDisableRetry() {
+async function _readmeDisableRetry(jobKey: JobKey) {
   const camunda = createCamundaClient();
-  const jobKey = JobKey.assumeExists('2251799813685249');
   //#region ReadmeDisableRetry
   // This call will not retry on transient errors
   await camunda.completeJob({ jobKey }, { retry: false });
@@ -82,12 +81,12 @@ async function _readmeDisableRetry() {
 // Override Retry Settings
 // ---------------------------------------------------------------------------
 
-async function _readmeRetryOverride() {
+async function _readmeRetryOverride(processDefinitionId: ProcessDefinitionId) {
   const camunda = createCamundaClient();
   //#region ReadmeRetryOverride
   // More aggressive retry for this operation only
   await camunda.createProcessInstance(
-    { processDefinitionId: ProcessDefinitionId.assumeExists('payment-process') },
+    { processDefinitionId },
     { retry: { maxAttempts: 8, maxDelayMs: 5000 } }
   );
 
@@ -306,9 +305,8 @@ function _readmeBrandedKeys() {
 // Cancelable Operations
 // ---------------------------------------------------------------------------
 
-async function _readmeCancelable() {
+async function _readmeCancelable(defKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
-  const defKey = ProcessDefinitionKey.assumeExists('2251799813686749');
   //#region ReadmeCancelable
   const p = camunda.searchProcessInstances(
     { filter: { processDefinitionKey: defKey } },

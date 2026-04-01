@@ -1,7 +1,7 @@
 // Compilable usage examples for role management operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, Username } from '@camunda8/orchestration-cluster-api';
+import { createCamundaClient, type Username } from '@camunda8/orchestration-cluster-api';
 
 //#region CreateRole
 async function createRoleExample() {
@@ -66,23 +66,23 @@ async function deleteRoleExample() {
 //#endregion DeleteRole
 
 //#region AssignRoleToUser
-async function assignRoleToUserExample() {
+async function assignRoleToUserExample(username: Username) {
   const camunda = createCamundaClient();
 
   await camunda.assignRoleToUser({
     roleId: 'process-admin',
-    username: Username.assumeExists('alice'),
+    username,
   });
 }
 //#endregion AssignRoleToUser
 
 //#region UnassignRoleFromUser
-async function unassignRoleFromUserExample() {
+async function unassignRoleFromUserExample(username: Username) {
   const camunda = createCamundaClient();
 
   await camunda.unassignRoleFromUser({
     roleId: 'process-admin',
-    username: Username.assumeExists('alice'),
+    username,
   });
 }
 //#endregion UnassignRoleFromUser

@@ -4,7 +4,7 @@
 import {
   createCamundaClient,
   type JobActionReceipt,
-  JobKey,
+  type JobKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region ActivateJobs
@@ -27,10 +27,8 @@ async function activateJobsExample() {
 //#endregion ActivateJobs
 
 //#region CompleteJob
-async function completeJobExample() {
+async function completeJobExample(jobKey: JobKey) {
   const camunda = createCamundaClient();
-
-  const jobKey = JobKey.assumeExists('2251799813685249');
 
   await camunda.completeJob({
     jobKey,
@@ -43,10 +41,8 @@ async function completeJobExample() {
 //#endregion CompleteJob
 
 //#region FailJob
-async function failJobExample() {
+async function failJobExample(jobKey: JobKey) {
   const camunda = createCamundaClient();
-
-  const jobKey = JobKey.assumeExists('2251799813685249');
 
   await camunda.failJob({
     jobKey,

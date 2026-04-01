@@ -507,7 +507,7 @@
       "label": "Get a process definition"
     }
   ],
-  "getProcessDefinitionXml": [
+  "getProcessDefinitionXML": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinitionXml",
@@ -597,7 +597,7 @@
       "label": "Activate ad-hoc sub-process activities"
     }
   ],
-  "getDecisionDefinitionXml": [
+  "getDecisionDefinitionXML": [
     {
       "file": "additional-operations.ts",
       "region": "GetDecisionDefinitionXml",
@@ -632,7 +632,7 @@
       "label": "Get decision requirements"
     }
   ],
-  "getDecisionRequirementsXml": [
+  "getDecisionRequirementsXML": [
     {
       "file": "additional-operations.ts",
       "region": "GetDecisionRequirementsXml",
@@ -914,6 +914,34 @@
       "file": "admin-operations.ts",
       "region": "GetGlobalJobStatistics",
       "label": "Get global job statistics"
+    }
+  ],
+  "createDocument": [
+    {
+      "file": "additional-operations.ts",
+      "region": "CreateDocument",
+      "label": "Upload a document"
+    }
+  ],
+  "createDocuments": [
+    {
+      "file": "additional-operations.ts",
+      "region": "CreateDocuments",
+      "label": "Upload multiple documents"
+    }
+  ],
+  "getDocument": [
+    {
+      "file": "additional-operations.ts",
+      "region": "GetDocument",
+      "label": "Download a document"
+    }
+  ],
+  "searchUserTaskEffectiveVariables": [
+    {
+      "file": "additional-operations.ts",
+      "region": "SearchUserTaskEffectiveVariables",
+      "label": "Search user task effective variables"
     }
   ]
 }

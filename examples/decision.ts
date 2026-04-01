@@ -3,16 +3,16 @@
 
 import {
   createCamundaClient,
-  DecisionDefinitionId,
-  DecisionDefinitionKey,
+  type DecisionDefinitionId,
+  type DecisionDefinitionKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region EvaluateDecisionById
-async function evaluateDecisionByIdExample() {
+async function evaluateDecisionByIdExample(decisionDefinitionId: DecisionDefinitionId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.evaluateDecision({
-    decisionDefinitionId: DecisionDefinitionId.assumeExists('invoice-classification'),
+    decisionDefinitionId,
     variables: {
       amount: 1000,
       invoiceCategory: 'Misc',
@@ -25,10 +25,8 @@ async function evaluateDecisionByIdExample() {
 //#endregion EvaluateDecisionById
 
 //#region EvaluateDecisionByKey
-async function evaluateDecisionByKeyExample() {
+async function evaluateDecisionByKeyExample(decisionDefinitionKey: DecisionDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const decisionDefinitionKey = DecisionDefinitionKey.assumeExists('2251799813685249');
 
   const result = await camunda.evaluateDecision({
     decisionDefinitionKey,
@@ -43,10 +41,8 @@ async function evaluateDecisionByKeyExample() {
 //#endregion EvaluateDecisionByKey
 
 //#region GetDecisionDefinition
-async function getDecisionDefinitionExample() {
+async function getDecisionDefinitionExample(decisionDefinitionKey: DecisionDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const decisionDefinitionKey = DecisionDefinitionKey.assumeExists('2251799813685249');
 
   const definition = await camunda.getDecisionDefinition(
     { decisionDefinitionKey },
@@ -59,12 +55,12 @@ async function getDecisionDefinitionExample() {
 //#endregion GetDecisionDefinition
 
 //#region SearchDecisionDefinitions
-async function searchDecisionDefinitionsExample() {
+async function searchDecisionDefinitionsExample(decisionDefinitionId: DecisionDefinitionId) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchDecisionDefinitions(
     {
-      filter: { decisionDefinitionId: DecisionDefinitionId.assumeExists('invoice-classification') },
+      filter: { decisionDefinitionId },
     },
     { consistency: { waitUpToMs: 5000 } }
   );
