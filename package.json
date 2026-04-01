@@ -124,7 +124,7 @@
     "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^5.4.5",
     "vitest": "^3.2.4",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.3"
   },
   "lint-staged": {
     "*.{ts,tsx,js,json,md,yml,yaml}": [
