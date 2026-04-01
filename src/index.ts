@@ -5,6 +5,7 @@ import { type CamundaClientLoose, createCamundaClientLoose, type Loose } from '.
 export { type CamundaFpClient, createCamundaFpClient, type Either, isLeft, isRight } from './fp-ts';
 // Re-export all public types from CamundaClient (Input, Consistency, CancelablePromise, etc.)
 export * from './gen/CamundaClient';
+export { SPEC_HASH } from './gen/specHash';
 export * from './gen/types.gen';
 export {
   type CamundaResultClient,
