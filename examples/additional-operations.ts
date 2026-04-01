@@ -13,10 +13,8 @@ import {
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetDecisionDefinitionXml
-async function getDecisionDefinitionXmlExample() {
+async function getDecisionDefinitionXmlExample(decisionDefinitionKey: DecisionDefinitionKey) {
   const camunda = createCamundaClient();
-
-  const decisionDefinitionKey = DecisionDefinitionKey.assumeExists('2251799813685249');
 
   const xml = await camunda.getDecisionDefinitionXml(
     { decisionDefinitionKey },
@@ -28,11 +26,8 @@ async function getDecisionDefinitionXmlExample() {
 //#endregion GetDecisionDefinitionXml
 
 //#region GetDecisionInstance
-async function getDecisionInstanceExample() {
+async function getDecisionInstanceExample(decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey) {
   const camunda = createCamundaClient();
-
-  const decisionEvaluationInstanceKey =
-    DecisionEvaluationInstanceKey.assumeExists('2251799813685249');
 
   const instance = await camunda.getDecisionInstance(
     { decisionEvaluationInstanceKey },
@@ -61,20 +56,16 @@ async function searchDecisionInstancesExample() {
 //#endregion SearchDecisionInstances
 
 //#region DeleteDecisionInstance
-async function deleteDecisionInstanceExample() {
+async function deleteDecisionInstanceExample(decisionEvaluationKey: DecisionEvaluationKey) {
   const camunda = createCamundaClient();
-
-  const decisionEvaluationKey = DecisionEvaluationKey.assumeExists('2251799813685249');
 
   await camunda.deleteDecisionInstance({ decisionEvaluationKey });
 }
 //#endregion DeleteDecisionInstance
 
 //#region GetDecisionRequirements
-async function getDecisionRequirementsExample() {
+async function getDecisionRequirementsExample(decisionRequirementsKey: DecisionRequirementsKey) {
   const camunda = createCamundaClient();
-
-  const decisionRequirementsKey = DecisionRequirementsKey.assumeExists('2251799813685249');
 
   const requirements = await camunda.getDecisionRequirements(
     { decisionRequirementsKey },
@@ -86,10 +77,8 @@ async function getDecisionRequirementsExample() {
 //#endregion GetDecisionRequirements
 
 //#region GetDecisionRequirementsXml
-async function getDecisionRequirementsXmlExample() {
+async function getDecisionRequirementsXmlExample(decisionRequirementsKey: DecisionRequirementsKey) {
   const camunda = createCamundaClient();
-
-  const decisionRequirementsKey = DecisionRequirementsKey.assumeExists('2251799813685249');
 
   const xml = await camunda.getDecisionRequirementsXml(
     { decisionRequirementsKey },
@@ -118,10 +107,8 @@ async function searchDecisionRequirementsExample() {
 //#endregion SearchDecisionRequirements
 
 //#region CreateDocumentLink
-async function createDocumentLinkExample() {
+async function createDocumentLinkExample(documentId: DocumentId) {
   const camunda = createCamundaClient();
-
-  const documentId = DocumentId.assumeExists('doc-123');
 
   const link = await camunda.createDocumentLink({
     documentId,
@@ -133,20 +120,16 @@ async function createDocumentLinkExample() {
 //#endregion CreateDocumentLink
 
 //#region DeleteDocument
-async function deleteDocumentExample() {
+async function deleteDocumentExample(documentId: DocumentId) {
   const camunda = createCamundaClient();
-
-  const documentId = DocumentId.assumeExists('doc-123');
 
   await camunda.deleteDocument({ documentId });
 }
 //#endregion DeleteDocument
 
 //#region ThrowJobError
-async function throwJobErrorExample() {
+async function throwJobErrorExample(jobKey: JobKey) {
   const camunda = createCamundaClient();
-
-  const jobKey = JobKey.assumeExists('2251799813685249');
 
   await camunda.throwJobError({
     jobKey,
@@ -157,10 +140,8 @@ async function throwJobErrorExample() {
 //#endregion ThrowJobError
 
 //#region UpdateJob
-async function updateJobExample() {
+async function updateJobExample(jobKey: JobKey) {
   const camunda = createCamundaClient();
-
-  const jobKey = JobKey.assumeExists('2251799813685249');
 
   await camunda.updateJob({
     jobKey,
@@ -188,12 +169,10 @@ async function searchJobsExample() {
 //#endregion SearchJobs
 
 //#region GetUserTask
-async function getUserTaskExample() {
+async function getUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
   const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
-
   const task = await camunda.getUserTask({ userTaskKey }, { consistency: { waitUpToMs: 5000 } });
 
   console.log(`Task: ${task.name} (${task.state})`);
@@ -201,12 +180,10 @@ async function getUserTaskExample() {
 //#endregion GetUserTask
 
 //#region UpdateUserTask
-async function updateUserTaskExample() {
+async function updateUserTaskExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
   const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
-
   await camunda.updateUserTask({
     userTaskKey,
     changeset: {
@@ -219,12 +196,10 @@ async function updateUserTaskExample() {
 //#endregion UpdateUserTask
 
 //#region GetUserTaskForm
-async function getUserTaskFormExample() {
+async function getUserTaskFormExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
   const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
-
   const form = await camunda.getUserTaskForm(
     { userTaskKey },
     { consistency: { waitUpToMs: 5000 } }
@@ -237,12 +212,10 @@ async function getUserTaskFormExample() {
 //#endregion GetUserTaskForm
 
 //#region SearchUserTaskVariables
-async function searchUserTaskVariablesExample() {
+async function searchUserTaskVariablesExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
   const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
-
   const result = await camunda.searchUserTaskVariables(
     { userTaskKey },
     { consistency: { waitUpToMs: 5000 } }
@@ -255,12 +228,10 @@ async function searchUserTaskVariablesExample() {
 //#endregion SearchUserTaskVariables
 
 //#region SearchUserTaskAuditLogs
-async function searchUserTaskAuditLogsExample() {
+async function searchUserTaskAuditLogsExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
 
   const { UserTaskKey } = await import('@camunda8/orchestration-cluster-api');
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
-
   const result = await camunda.searchUserTaskAuditLogs(
     { userTaskKey },
     { consistency: { waitUpToMs: 5000 } }
@@ -279,7 +250,7 @@ async function createDocumentExample() {
   const file = new Blob(['Hello, world!'], { type: 'text/plain' });
 
   const result = await camunda.createDocument({
-    body: { file, metadata: { fileName: 'hello.txt' } },
+    file, metadata: { fileName: 'hello.txt' },
   });
 
   console.log(`Document ID: ${result.documentId}`);
@@ -294,10 +265,8 @@ async function createDocumentsExample() {
   const file2 = new Blob(['File two'], { type: 'text/plain' });
 
   const result = await camunda.createDocuments({
-    body: {
-      files: [file1, file2],
-      metadataList: [{ fileName: 'one.txt' }, { fileName: 'two.txt' }],
-    },
+    files: [file1, file2],
+    metadataList: [{ fileName: 'one.txt' }, { fileName: 'two.txt' }],
   });
 
   for (const doc of result.createdDocuments ?? []) {
@@ -307,10 +276,8 @@ async function createDocumentsExample() {
 //#endregion CreateDocuments
 
 //#region GetDocument
-async function getDocumentExample() {
+async function getDocumentExample(documentId: DocumentId) {
   const camunda = createCamundaClient();
-
-  const documentId = DocumentId.assumeExists('doc-123');
 
   await camunda.getDocument({ documentId });
 
@@ -319,10 +286,8 @@ async function getDocumentExample() {
 //#endregion GetDocument
 
 //#region SearchUserTaskEffectiveVariables
-async function searchUserTaskEffectiveVariablesExample() {
+async function searchUserTaskEffectiveVariablesExample(userTaskKey: UserTaskKey) {
   const camunda = createCamundaClient();
-
-  const userTaskKey = UserTaskKey.assumeExists('2251799813685249');
 
   const result = await camunda.searchUserTaskEffectiveVariables(
     { userTaskKey },
