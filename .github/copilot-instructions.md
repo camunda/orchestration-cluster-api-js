@@ -122,6 +122,26 @@ NODE`
   - the generator version (`@hey-api/openapi-ts`)
   - and open an issue upstream or pin a known-good generator version.
 
+## Bug fix process (red/green refactor)
+
+Every bug fix **must** follow the red/green refactor discipline:
+
+1. **Red** — Write a failing test **first**, before changing any production code. The test must fail for the reason you expect (the bug). Commit this separately or demonstrate the failure clearly in the PR.
+2. **Green** — Apply the minimal production fix that makes the test pass.
+3. **Refactor** (optional) — Clean up while keeping all tests green.
+
+### Test scope: target the defect class, not just the instance
+
+The regression test must be broad enough to detect the **class of defect**, not only the specific instance you are fixing. For example, if the bug is "generated method X omits a required parameter", the test should verify that **all** generated methods include their required parameters — not just method X.
+
+A test that only covers the exact instance provides weaker protection: the same category of bug can recur in a different method without being caught.
+
+### Why
+
+- The failing test **proves** the test can detect this category of defect.
+- The green step **proves** the fix resolves it.
+- A class-scoped test acts as a durable regression guard against future reintroduction of the same pattern.
+
 ## Pre-push checklist
 
 Before pushing any commits, **always** run `npm run build`. This:
