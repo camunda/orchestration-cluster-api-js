@@ -1,3 +1,12 @@
+# [8.9.0-alpha.26](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.25...v8.9.0-alpha.26) (2026-04-02)
+
+
+### Bug Fixes
+
+* address PR review comments ([eac304d](https://github.com/camunda/orchestration-cluster-api-js/commit/eac304d5aceec4d1b6d4e9c07cd68169019db928))
+* correct type errors in SDK examples ([4c95f12](https://github.com/camunda/orchestration-cluster-api-js/commit/4c95f12cf06e69d7b48b3e563cbddd6ebcefcfb7))
+* remove redundant dynamic UserTaskKey imports ([078f083](https://github.com/camunda/orchestration-cluster-api-js/commit/078f08332fc6b6b5600d25241b4fa94869d3278a))
+
 # [8.9.0-alpha.25](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.24...v8.9.0-alpha.25) (2026-04-01)
 
 
