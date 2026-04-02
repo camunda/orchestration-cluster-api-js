@@ -997,8 +997,8 @@ Set only the CA certificate to trust the server's self-signed certificate:
 # Path to PEM file:
 CAMUNDA_MTLS_CA_PATH=/path/to/ca.pem
 
-# Or inline PEM:
-CAMUNDA_MTLS_CA="-----BEGIN CERTIFICATE-----\n..."
+# Or inline PEM (must contain real newlines, not literal '\n'):
+CAMUNDA_MTLS_CA="$(cat /path/to/ca.pem)"
 ```
 
 ### Mutual TLS (client certificate)
