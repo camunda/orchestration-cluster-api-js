@@ -23,4 +23,24 @@ describe('mTLS negative configuration', () => {
       CamundaConfigurationError
     );
   });
+  it('errors when passphrase provided without key', () => {
+    const thrower = () => hydrateConfig({ env: { CAMUNDA_MTLS_KEY_PASSPHRASE: 'secret' } });
+    expect(thrower).toThrow(CamundaConfigurationError);
+    expect(thrower).toThrow(/CAMUNDA_MTLS_KEY_PASSPHRASE/);
+  });
+});
+
+describe('mTLS positive configuration', () => {
+  it('accepts CA-only without cert or key', () => {
+    const { config } = hydrateConfig({
+      env: { CAMUNDA_MTLS_CA: '-----BEGIN CERTIFICATE-----\nFAKECA\n-----END CERTIFICATE-----' },
+    });
+    expect(config.mtls?.ca).toBe('-----BEGIN CERTIFICATE-----\nFAKECA\n-----END CERTIFICATE-----');
+  });
+  it('accepts CA path only without cert or key', () => {
+    const { config } = hydrateConfig({
+      env: { CAMUNDA_MTLS_CA_PATH: '/tmp/ca.pem' },
+    });
+    expect(config.mtls?.caPath).toBe('/tmp/ca.pem');
+  });
 });

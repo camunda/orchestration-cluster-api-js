@@ -981,18 +981,49 @@ Browser usage: There is no disk concept—if executed in a browser the SDK (when
 
 If you need a custom persistence strategy (e.g. Redis / encrypted keychain), wrap the client and periodically call `client.forceAuthRefresh()` while storing and re‑injecting the token via a headers hook; first measure whether the built‑in disk cache already meets your needs.
 
-## mTLS (Node only)
+## Self-signed TLS / mTLS (Node only)
 
-Provide inline or path variables (inline wins):
+The SDK supports custom TLS certificates via environment variables. This is useful for:
 
+- **Self-signed server certificates** — trust a CA that signed your server's certificate, without presenting a client identity.
+- **Mutual TLS (mTLS)** — present a client certificate and key to prove the client's identity.
+- **Both** — trust a custom CA _and_ present client credentials.
+
+### Trusting a self-signed server certificate
+
+Set only the CA certificate to trust the server's self-signed certificate:
+
+```bash
+# Path to PEM file:
+CAMUNDA_MTLS_CA_PATH=/path/to/ca.pem
+
+# Or inline PEM (must contain real newlines, not literal '\n'):
+CAMUNDA_MTLS_CA="$(cat /path/to/ca.pem)"
 ```
-CAMUNDA_MTLS_CERT / CAMUNDA_MTLS_CERT_PATH
-CAMUNDA_MTLS_KEY  / CAMUNDA_MTLS_KEY_PATH
-CAMUNDA_MTLS_CA   / CAMUNDA_MTLS_CA_PATH (optional)
-CAMUNDA_MTLS_KEY_PASSPHRASE (optional)
+
+### Mutual TLS (client certificate)
+
+To present a client certificate for mutual TLS, provide both the certificate and private key:
+
+```bash
+CAMUNDA_MTLS_CERT_PATH=/path/to/client.crt
+CAMUNDA_MTLS_KEY_PATH=/path/to/client.key
+
+# Optional — passphrase if the key is encrypted:
+# CAMUNDA_MTLS_KEY_PASSPHRASE=secret
 ```
 
-If both cert & key are available an https.Agent is attached to all outbound calls (including token fetches).
+### Full mTLS with custom CA
+
+Combine a custom CA with client credentials:
+
+```bash
+CAMUNDA_MTLS_CA_PATH=/path/to/ca.pem
+CAMUNDA_MTLS_CERT_PATH=/path/to/client.crt
+CAMUNDA_MTLS_KEY_PATH=/path/to/client.key
+```
+
+Inline PEM values (`CAMUNDA_MTLS_CERT`, `CAMUNDA_MTLS_KEY`, `CAMUNDA_MTLS_CA`) take precedence over their `_PATH` counterparts. An `https.Agent` is attached to all outbound calls (including token fetches).
 
 ## Branded Keys
 

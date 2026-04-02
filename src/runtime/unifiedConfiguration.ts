@@ -489,20 +489,23 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     });
   }
 
-  // mTLS completeness validation: if any cert/key indicator present require both sides
+  // TLS / mTLS validation.
+  // CA-only is valid (trust a self-signed server cert without client identity).
+  // Client cert and key must come as a pair.
+  // A passphrase without a client key is invalid.
   const mtlsCertProvided = !!(rawMap.CAMUNDA_MTLS_CERT || rawMap.CAMUNDA_MTLS_CERT_PATH);
   const mtlsKeyProvided = !!(rawMap.CAMUNDA_MTLS_KEY || rawMap.CAMUNDA_MTLS_KEY_PATH);
-  const mtlsAny =
-    mtlsCertProvided ||
-    mtlsKeyProvided ||
-    rawMap.CAMUNDA_MTLS_CA ||
-    rawMap.CAMUNDA_MTLS_CA_PATH ||
-    rawMap.CAMUNDA_MTLS_KEY_PASSPHRASE;
-  if (mtlsAny && (!mtlsCertProvided || !mtlsKeyProvided)) {
+  if (mtlsCertProvided !== mtlsKeyProvided) {
     errors.push({
       code: ConfigErrorCode.CONFIG_MISSING_REQUIRED,
       message:
-        'Incomplete mTLS configuration; both certificate (CAMUNDA_MTLS_CERT|_PATH) and key (CAMUNDA_MTLS_KEY|_PATH) must be provided.',
+        'Incomplete mTLS configuration; both certificate (CAMUNDA_MTLS_CERT|_PATH) and key (CAMUNDA_MTLS_KEY|_PATH) must be provided together.',
+    });
+  }
+  if (rawMap.CAMUNDA_MTLS_KEY_PASSPHRASE && !mtlsKeyProvided) {
+    errors.push({
+      code: ConfigErrorCode.CONFIG_MISSING_REQUIRED,
+      message: 'CAMUNDA_MTLS_KEY_PASSPHRASE is set but no client key was provided.',
     });
   }
 
