@@ -1,3 +1,15 @@
+# [8.9.0-alpha.27](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.26...v8.9.0-alpha.27) (2026-04-02)
+
+
+### Bug Fixes
+
+* address review comments on mTLS tests and docs ([c7c26df](https://github.com/camunda/orchestration-cluster-api-js/commit/c7c26df1e3ab4bff848a5c4de7eacfc8e62f310a))
+
+
+### Features
+
+* support CA-only TLS (self-signed server certs) ([25f11a7](https://github.com/camunda/orchestration-cluster-api-js/commit/25f11a75a74e4cd32f5ada5ff8d41fc50398b902)), closes [#108](https://github.com/camunda/orchestration-cluster-api-js/issues/108)
+
 # [8.9.0-alpha.26](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.25...v8.9.0-alpha.26) (2026-04-02)
 
 
