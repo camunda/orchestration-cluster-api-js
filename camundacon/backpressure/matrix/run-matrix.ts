@@ -11,7 +11,7 @@
  * Matrix dimensions
  * ─────────────────
  *   CLUSTER:      1broker (single broker), 3broker (3-broker cluster)
- *   SDK_MODE:     rest-disabled, rest-balanced, grpc-stream, grpc-poll
+ *   SDK_MODE:     rest-disabled, rest-balanced
  *   HANDLER_TYPE: cpu (no-op handler), http (200ms simulated HTTP call)
  *   NUM_CLIENTS:  5, 10
  *   ISOLATION:    independent (child processes), shared (one client, N loops)
@@ -49,7 +49,7 @@ const MULTI_CLIENT_SCRIPT = path.join(SCRIPT_DIR, 'multi-client.ts');
 const RESULTS_DIR = path.join(SCRIPT_DIR, 'results');
 
 // ─── Defaults ────────────────────────────────────────────
-const DEFAULT_MODES = ['rest-disabled', 'rest-balanced', 'grpc-stream', 'grpc-poll'];
+const DEFAULT_MODES = ['rest-disabled', 'rest-balanced'];
 const DEFAULT_HANDLERS = ['cpu', 'http'];
 const DEFAULT_CLIENTS = [5, 10];
 const DEFAULT_ISOLATIONS = ['independent', 'shared'];
@@ -558,9 +558,7 @@ function generateReport(
   w(`- **Activate batch**: ${DEFAULT_ACTIVATE_BATCH}`);
   w(`- **Payload**: ${DEFAULT_PAYLOAD_SIZE_KB} KB per instance`);
   w(`- **Container restarted** between each run`);
-  w(
-    `- **SDK modes**: rest-disabled (LEGACY/no BP), rest-balanced (BALANCED BP), grpc-stream (@camunda8/sdk streamJobs), grpc-poll (@camunda8/sdk createWorker)`
-  );
+  w(`- **SDK modes**: rest-disabled (LEGACY/no BP), rest-balanced (BALANCED BP)`);
   w(
     `- **Clusters**: 1broker (single broker, high pressure), 3broker (3-broker cluster, reduced pressure)`
   );
@@ -766,7 +764,7 @@ function generateReport(
   w('');
   const modeNames = [...new Set(ok.map((r) => r.sdkMode))].sort();
   if (modeNames.length >= 2) {
-    const modeHeaders = modeNames.map((m) => m.replace('rest-', 'R:').replace('grpc-', 'G:'));
+    const modeHeaders = modeNames.map((m) => m.replace('rest-', 'R:'));
     w(`| Config | ${modeHeaders.join(' | ')} | Best |`);
     w(`|--------${modeHeaders.map(() => '|------').join('')}|------|`);
 
@@ -848,25 +846,6 @@ function generateReport(
     );
   }
   w('');
-
-  // Compare best gRPC mode vs REST Balanced
-  const grpcModes = modeStats.filter((m) => m.mode.startsWith('grpc-'));
-  if (balancedStats && grpcModes.length > 0) {
-    const bestGrpc = grpcModes.reduce((a, b) => (a.avgThroughput > b.avgThroughput ? a : b));
-    if (bestGrpc.avgThroughput > balancedStats.avgThroughput * 1.1) {
-      w(
-        `**${bestGrpc.mode} shows ${((bestGrpc.avgThroughput / balancedStats.avgThroughput - 1) * 100).toFixed(0)}% higher throughput** than REST Balanced, likely due to binary protocol efficiency.`
-      );
-    } else if (balancedStats.avgThroughput > bestGrpc.avgThroughput * 1.1) {
-      w(
-        `**REST Balanced outperforms ${bestGrpc.mode}** by ${((balancedStats.avgThroughput / bestGrpc.avgThroughput - 1) * 100).toFixed(0)}%, suggesting the adaptive backpressure system compensates for the REST overhead.`
-      );
-    } else {
-      w(
-        `**REST Balanced and ${bestGrpc.mode} show comparable throughput**, suggesting the adaptive backpressure system effectively bridges the protocol gap.`
-      );
-    }
-  }
 
   w('');
   w('---');

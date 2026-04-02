@@ -12,7 +12,7 @@
  *
  * Environment variables (set by orchestrator):
  *   CLIENT_ID             — unique worker identifier
- *   SDK_MODE              — rest-disabled | rest-balanced | grpc-stream
+ *   SDK_MODE              — rest-disabled | rest-balanced
  *   HANDLER_TYPE          — cpu | http
  *   HANDLER_LATENCY_MS    — simulated handler latency in ms (default: 0 for cpu, 200 for http)
  *   TARGET_PER_CLIENT     — number of process instances to create and complete
@@ -178,160 +178,6 @@ async function runRestWorker(): Promise<Record<string, unknown>> {
   };
 }
 
-// ─── gRPC SDK runner (worker-only, no producing) ─────────
-async function runGrpcWorker(): Promise<Record<string, unknown>> {
-  const { Camunda8 } = await import('@camunda8/sdk');
-
-  const c8 = new Camunda8({
-    ZEEBE_GRPC_ADDRESS: 'localhost:26500',
-    ZEEBE_REST_ADDRESS: 'http://localhost:8080',
-    CAMUNDA_OAUTH_DISABLED: true,
-    CAMUNDA_SECURE_CONNECTION: false,
-  } as any);
-
-  const zeebe = c8.getZeebeGrpcApiClient();
-
-  let httpSimPort = 0;
-  if (HANDLER_TYPE === 'http' && HANDLER_LATENCY_MS > 0) {
-    httpSimPort = await startHttpSimServer(HANDLER_LATENCY_MS);
-  }
-
-  let completed = 0;
-  const errors = 0;
-  let done = false;
-
-  const t0 = Date.now();
-  const deadline = t0 + SCENARIO_TIMEOUT_S * 1000;
-
-  // Job worker only — producer runs in the orchestrator process
-  const worker = zeebe.streamJobs({
-    type: 'test-job',
-    taskHandler: async (job) => {
-      if (HANDLER_TYPE === 'cpu' && HANDLER_LATENCY_MS > 0) {
-        cpuWork(HANDLER_LATENCY_MS);
-      } else if (HANDLER_TYPE === 'http' && httpSimPort > 0) {
-        await fetch(`http://127.0.0.1:${httpSimPort}/work`);
-      }
-      completed++;
-      if (completed >= TARGET) done = true;
-      return job.complete({});
-    },
-    pollMaxJobsToActivate: ACTIVATE_BATCH,
-    timeout: 30_000,
-    tenantIds: ['<default>'],
-    worker: 'test-worker',
-  });
-
-  // Wait until target reached or timeout
-  while (!done && Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 50));
-  }
-
-  done = true;
-  try {
-    await worker.close();
-  } catch {
-    /* ignore */
-  }
-  try {
-    await zeebe.close();
-  } catch {
-    /* ignore */
-  }
-
-  const elapsed = (Date.now() - t0) / 1000;
-  if (httpSimServer) httpSimServer.close();
-
-  return {
-    clientId: CLIENT_ID,
-    sdkMode: SDK_MODE,
-    handlerType: HANDLER_TYPE,
-    started: 0,
-    completed,
-    errors,
-    queueFullErrors: 0,
-    wallClockS: elapsed,
-    throughput: elapsed > 0 ? completed / elapsed : 0,
-    finalSeverity: 'n/a',
-    finalPermitsMax: null,
-    target: TARGET,
-  };
-}
-
-// ─── gRPC Polling SDK runner (worker-only, no producing) ─────
-async function runGrpcPollWorker(): Promise<Record<string, unknown>> {
-  const { Camunda8 } = await import('@camunda8/sdk');
-
-  const c8 = new Camunda8({
-    ZEEBE_GRPC_ADDRESS: 'localhost:26500',
-    ZEEBE_REST_ADDRESS: 'http://localhost:8080',
-    CAMUNDA_OAUTH_DISABLED: true,
-    CAMUNDA_SECURE_CONNECTION: false,
-  } as any);
-
-  const zeebe = c8.getZeebeGrpcApiClient();
-
-  let httpSimPort = 0;
-  if (HANDLER_TYPE === 'http' && HANDLER_LATENCY_MS > 0) {
-    httpSimPort = await startHttpSimServer(HANDLER_LATENCY_MS);
-  }
-
-  let completed = 0;
-  const errors = 0;
-  let done = false;
-
-  const t0 = Date.now();
-  const deadline = t0 + SCENARIO_TIMEOUT_S * 1000;
-
-  // gRPC polling worker — uses ActivateJobs RPC (long-polling)
-  const _worker = zeebe.createWorker({
-    taskType: 'test-job',
-    taskHandler: async (job) => {
-      if (HANDLER_TYPE === 'cpu' && HANDLER_LATENCY_MS > 0) {
-        cpuWork(HANDLER_LATENCY_MS);
-      } else if (HANDLER_TYPE === 'http' && httpSimPort > 0) {
-        await fetch(`http://127.0.0.1:${httpSimPort}/work`);
-      }
-      completed++;
-      if (completed >= TARGET) done = true;
-      return job.complete({});
-    },
-    maxJobsToActivate: ACTIVATE_BATCH,
-    timeout: 30_000,
-    pollInterval: 100,
-  });
-
-  // Wait until target reached or timeout
-  while (!done && Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 50));
-  }
-
-  done = true;
-  try {
-    await zeebe.close();
-  } catch {
-    /* ignore */
-  }
-
-  const elapsed = (Date.now() - t0) / 1000;
-  if (httpSimServer) httpSimServer.close();
-
-  return {
-    clientId: CLIENT_ID,
-    sdkMode: SDK_MODE,
-    handlerType: HANDLER_TYPE,
-    started: 0,
-    completed,
-    errors,
-    queueFullErrors: 0,
-    wallClockS: elapsed,
-    throughput: elapsed > 0 ? completed / elapsed : 0,
-    finalSeverity: 'n/a',
-    finalPermitsMax: null,
-    target: TARGET,
-  };
-}
-
 // ─── Main ────────────────────────────────────────────────────
 async function main() {
   // Signal ready
@@ -340,15 +186,8 @@ async function main() {
   // Wait for synchronized start
   await waitForGo();
 
-  // Run the appropriate SDK mode (worker-only — producer is in the orchestrator)
-  let result: Record<string, unknown>;
-  if (SDK_MODE === 'grpc-stream') {
-    result = await runGrpcWorker();
-  } else if (SDK_MODE === 'grpc-poll') {
-    result = await runGrpcPollWorker();
-  } else {
-    result = await runRestWorker();
-  }
+  // Run the REST SDK mode (worker-only — producer is in the orchestrator)
+  const result = await runRestWorker();
 
   // Write results and exit
   writeResult(result);
