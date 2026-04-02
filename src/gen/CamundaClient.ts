@@ -3222,6 +3222,8 @@ export class CamundaClient {
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
+   * @example Upload a document
+   * {@includeCode ../../examples/additional-operations.ts#CreateDocument}
    * @operationId createDocument
    * @tags Document
    */
@@ -3368,6 +3370,8 @@ export class CamundaClient {
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
+   * @example Upload multiple documents
+   * {@includeCode ../../examples/additional-operations.ts#CreateDocuments}
    * @operationId createDocuments
    * @tags Document
    */
@@ -5624,6 +5628,8 @@ export class CamundaClient {
    *
    * Returns decision definition as XML.
     *
+   * @example Get decision definition XML
+   * {@includeCode ../../examples/additional-operations.ts#GetDecisionDefinitionXml}
    * @operationId getDecisionDefinitionXML
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5823,6 +5829,8 @@ export class CamundaClient {
    *
    * Returns decision requirements as XML.
     *
+   * @example Get decision requirements XML
+   * {@includeCode ../../examples/additional-operations.ts#GetDecisionRequirementsXml}
    * @operationId getDecisionRequirementsXML
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5891,6 +5899,8 @@ export class CamundaClient {
    * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
    *
     *
+   * @example Download a document
+   * {@includeCode ../../examples/additional-operations.ts#GetDocument}
    * @operationId getDocument
    * @tags Document
    */
@@ -7092,6 +7102,8 @@ export class CamundaClient {
    *
    * Returns process definition as XML.
     *
+   * @example Get process definition XML
+   * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionXml}
    * @operationId getProcessDefinitionXML
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11732,6 +11744,8 @@ export class CamundaClient {
    * truncated.
    *
     *
+   * @example Search user task effective variables
+   * {@includeCode ../../examples/additional-operations.ts#SearchUserTaskEffectiveVariables}
    * @operationId searchUserTaskEffectiveVariables
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.

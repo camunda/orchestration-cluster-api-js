@@ -182,7 +182,7 @@ Pass a partial `HttpRetryPolicy` to override individual fields. Unspecified fiel
 ```ts
 // More aggressive retry for this operation only
 await camunda.createProcessInstance(
-  { processDefinitionId: ProcessDefinitionId.assumeExists('payment-process') },
+  { processDefinitionId },
   { retry: { maxAttempts: 8, maxDelayMs: 5000 } }
 );
 

@@ -1322,6 +1322,8 @@ export function completeUserTask(options?: Parameters<typeof _completeUserTask>[
  * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
  *
   *
+ * @example Upload a document
+ * {@includeCode ../../examples/additional-operations.ts#CreateDocument}
  * @operationId createDocument
  * @tags Document
  */
@@ -1366,6 +1368,8 @@ export function createDocumentLink(options?: Parameters<typeof _createDocumentLi
  * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
  *
   *
+ * @example Upload multiple documents
+ * {@includeCode ../../examples/additional-operations.ts#CreateDocuments}
  * @operationId createDocuments
  * @tags Document
  */
@@ -1711,6 +1715,8 @@ export function getDecisionDefinition(options: Parameters<typeof _getDecisionDef
  *
  * Returns decision definition as XML.
   *
+ * @example Get decision definition XML
+ * {@includeCode ../../examples/additional-operations.ts#GetDecisionDefinitionXml}
  * @operationId getDecisionDefinitionXML
  * @tags Decision definition
   *
@@ -1765,6 +1771,8 @@ export function getDecisionRequirements(options: Parameters<typeof _getDecisionR
  *
  * Returns decision requirements as XML.
   *
+ * @example Get decision requirements XML
+ * {@includeCode ../../examples/additional-operations.ts#GetDecisionRequirementsXml}
  * @operationId getDecisionRequirementsXML
  * @tags Decision requirements
   *
@@ -1786,6 +1794,8 @@ export const getDecisionRequirementsXML = getDecisionRequirementsXml;
  * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
  *
   *
+ * @example Download a document
+ * {@includeCode ../../examples/additional-operations.ts#GetDocument}
  * @operationId getDocument
  * @tags Document
  */
@@ -1977,6 +1987,8 @@ export function getProcessDefinitionStatistics(options: Parameters<typeof _getPr
  *
  * Returns process definition as XML.
   *
+ * @example Get process definition XML
+ * {@includeCode ../../examples/extended-operations.ts#GetProcessDefinitionXml}
  * @operationId getProcessDefinitionXML
  * @tags Process definition
   *
@@ -2750,6 +2762,8 @@ export function searchUserTaskAuditLogs(options: Parameters<typeof _searchUserTa
  * truncated.
  *
   *
+ * @example Search user task effective variables
+ * {@includeCode ../../examples/additional-operations.ts#SearchUserTaskEffectiveVariables}
  * @operationId searchUserTaskEffectiveVariables
  * @tags User task
   *
