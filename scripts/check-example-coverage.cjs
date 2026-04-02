@@ -65,7 +65,9 @@ if (missing.length > 0) {
 
   console.log(`\nTo fix this:`);
   console.log(`  1. Add an example for each missing operation in examples/,`);
-  console.log(`     wrapping the code in //#region <RegionName> ... //#endregion <RegionName> tags`);
+  console.log(
+    `     wrapping the code in //#region <RegionName> ... //#endregion <RegionName> tags`
+  );
   console.log(`     (pick a RegionName, typically PascalCase, e.g. CreateUser).`);
   console.log(`  2. Add or update an entry in examples/operation-map.json mapping the operationId`);
   console.log(`     to the chosen RegionName.`);

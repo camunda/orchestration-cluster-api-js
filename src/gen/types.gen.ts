@@ -502,7 +502,7 @@ export type CamundaUserResult = {
     /**
      * The username of the user.
      */
-    username: Username | null;
+    username: Username;
     /**
      * The display name of the user.
      */
@@ -16626,7 +16626,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:da0eafa2cce5b79401759619365587c5614ea69af070ba236705a5b2931b9d3f
+// specHash=sha256:ce28935d7c5d940ac3249eca6c65a20aaa50286c20c365ad00deb315534d2a16
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

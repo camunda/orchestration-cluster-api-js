@@ -5409,10 +5409,7 @@ export const zTenantResult = z.object({
 });
 
 export const zCamundaUserResult = z.object({
-    username: z.union([
-        zUsername,
-        z.null()
-    ]),
+    username: zUsername,
     displayName: z.union([
         z.string(),
         z.null()
