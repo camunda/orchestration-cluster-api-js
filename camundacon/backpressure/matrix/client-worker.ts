@@ -31,8 +31,16 @@ import * as http from 'node:http';
 import * as path from 'node:path';
 
 // ─── Config ──────────────────────────────────────────────
+const SUPPORTED_MODES = ['rest-disabled', 'rest-balanced'];
 const CLIENT_ID = process.env.CLIENT_ID || 'worker-0';
 const SDK_MODE = process.env.SDK_MODE || 'rest-balanced';
+if (!SUPPORTED_MODES.includes(SDK_MODE)) {
+  console.error(
+    `[${CLIENT_ID}] Error: unsupported SDK_MODE '${SDK_MODE}'. ` +
+      `Supported modes: ${SUPPORTED_MODES.join(', ')}`
+  );
+  process.exit(1);
+}
 const HANDLER_TYPE = process.env.HANDLER_TYPE || 'cpu';
 const HANDLER_LATENCY_MS = parseInt(
   process.env.HANDLER_LATENCY_MS || (HANDLER_TYPE === 'http' ? '200' : '0'),

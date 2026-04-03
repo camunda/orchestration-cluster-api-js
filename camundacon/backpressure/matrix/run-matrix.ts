@@ -49,7 +49,8 @@ const MULTI_CLIENT_SCRIPT = path.join(SCRIPT_DIR, 'multi-client.ts');
 const RESULTS_DIR = path.join(SCRIPT_DIR, 'results');
 
 // ─── Defaults ────────────────────────────────────────────
-const DEFAULT_MODES = ['rest-disabled', 'rest-balanced'];
+const SUPPORTED_MODES = ['rest-disabled', 'rest-balanced'] as const;
+const DEFAULT_MODES: string[] = [...SUPPORTED_MODES];
 const DEFAULT_HANDLERS = ['cpu', 'http'];
 const DEFAULT_CLIENTS = [5, 10];
 const DEFAULT_ISOLATIONS = ['independent', 'shared'];
@@ -942,6 +943,17 @@ function parseArgs(): {
         break;
     }
     i++;
+  }
+
+  const unsupportedModes = config.modes.filter(
+    (m) => !(SUPPORTED_MODES as readonly string[]).includes(m)
+  );
+  if (unsupportedModes.length > 0) {
+    console.error(
+      `Error: unsupported mode(s): ${unsupportedModes.join(', ')}. ` +
+        `Supported modes: ${SUPPORTED_MODES.join(', ')}`
+    );
+    process.exit(1);
   }
 
   return config;
