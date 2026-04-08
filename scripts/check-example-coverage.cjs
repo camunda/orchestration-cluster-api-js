@@ -94,10 +94,45 @@ const REGION_PATTERNS = [
 
 function extractRegions(content) {
   const regions = new Set();
+  const stack = [];
+
   for (const line of content.split(/\r?\n/)) {
-    for (const pattern of REGION_PATTERNS) {
-      const m = line.match(pattern.start);
-      if (m) regions.add(m[1].trim());
+    let matched = false;
+
+    for (let i = 0; i < REGION_PATTERNS.length; i++) {
+      const pattern = REGION_PATTERNS[i];
+      const startMatch = line.match(pattern.start);
+      if (startMatch) {
+        stack.push({ patternIndex: i, name: startMatch[1].trim() });
+        matched = true;
+        break;
+      }
+    }
+
+    if (matched) {
+      continue;
+    }
+
+    for (let i = 0; i < REGION_PATTERNS.length; i++) {
+      const pattern = REGION_PATTERNS[i];
+      const endMatch = line.match(pattern.end);
+      if (!endMatch) {
+        continue;
+      }
+
+      const current = stack[stack.length - 1];
+      if (!current || current.patternIndex !== i) {
+        break;
+      }
+
+      const closeName = endMatch[1] ? endMatch[1].trim() : null;
+      if (closeName && closeName !== current.name) {
+        break;
+      }
+
+      stack.pop();
+      regions.add(current.name);
+      break;
     }
   }
   return regions;
