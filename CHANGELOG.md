@@ -1,3 +1,10 @@
+# [8.9.0-alpha.29](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.28...v8.9.0-alpha.29) (2026-04-08)
+
+
+### Bug Fixes
+
+* validate SDK_MODE against supported modes in benchmark scripts ([5aa1785](https://github.com/camunda/orchestration-cluster-api-js/commit/5aa1785eda4aa456a7350e33376a1122fec2269d))
+
 # [8.9.0-alpha.28](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.27...v8.9.0-alpha.28) (2026-04-08)
 
 
