@@ -1,947 +1,1478 @@
 {
   "getTopology": [
-    { "file": "client.ts", "region": "GetTopology", "label": "Get cluster topology" }
+    {
+      "file": "client.ts",
+      "region": "GetTopology",
+      "label": "Get cluster topology",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "createProcessInstance": [
     {
       "file": "process-instance.ts",
       "region": "CreateProcessInstanceById",
-      "label": "Create by process definition ID"
+      "label": "Create by process definition ID",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     },
     {
       "file": "process-instance.ts",
       "region": "CreateProcessInstanceByKey",
-      "label": "Create by process definition key"
+      "label": "Create by process definition key",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "cancelProcessInstance": [
     {
       "file": "process-instance.ts",
       "region": "CancelProcessInstance",
-      "label": "Cancel a process instance"
+      "label": "Cancel a process instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessInstance": [
     {
       "file": "process-instance.ts",
       "region": "GetProcessInstance",
-      "label": "Get a process instance"
+      "label": "Get a process instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchProcessInstances": [
     {
       "file": "process-instance.ts",
       "region": "SearchProcessInstances",
-      "label": "Search process instances"
+      "label": "Search process instances",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createDeployment": [
-    { "file": "deployment.ts", "region": "CreateDeployment", "label": "Deploy resources" }
+    {
+      "file": "deployment.ts",
+      "region": "CreateDeployment",
+      "label": "Deploy resources",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "deleteResource": [
-    { "file": "deployment.ts", "region": "DeleteResource", "label": "Delete a resource" }
+    {
+      "file": "deployment.ts",
+      "region": "DeleteResource",
+      "label": "Delete a resource",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "evaluateDecision": [
     {
       "file": "decision.ts",
       "region": "EvaluateDecisionById",
-      "label": "Evaluate by decision definition ID"
+      "label": "Evaluate by decision definition ID",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     },
     {
       "file": "decision.ts",
       "region": "EvaluateDecisionByKey",
-      "label": "Evaluate by decision definition key"
+      "label": "Evaluate by decision definition key",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getDecisionDefinition": [
     {
       "file": "decision.ts",
       "region": "GetDecisionDefinition",
-      "label": "Get a decision definition"
+      "label": "Get a decision definition",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchDecisionDefinitions": [
     {
       "file": "decision.ts",
       "region": "SearchDecisionDefinitions",
-      "label": "Search decision definitions"
+      "label": "Search decision definitions",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignUserTask": [
-    { "file": "user-task.ts", "region": "AssignUserTask", "label": "Assign a user task" }
+    {
+      "file": "user-task.ts",
+      "region": "AssignUserTask",
+      "label": "Assign a user task",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "completeUserTask": [
-    { "file": "user-task.ts", "region": "CompleteUserTask", "label": "Complete a user task" }
+    {
+      "file": "user-task.ts",
+      "region": "CompleteUserTask",
+      "label": "Complete a user task",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignUserTask": [
-    { "file": "user-task.ts", "region": "UnassignUserTask", "label": "Unassign a user task" }
+    {
+      "file": "user-task.ts",
+      "region": "UnassignUserTask",
+      "label": "Unassign a user task",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchUserTasks": [
-    { "file": "user-task.ts", "region": "SearchUserTasks", "label": "Search user tasks" }
+    {
+      "file": "user-task.ts",
+      "region": "SearchUserTasks",
+      "label": "Search user tasks",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "activateJobs": [
-    { "file": "job.ts", "region": "ActivateJobs", "label": "Activate and process jobs" }
+    {
+      "file": "job.ts",
+      "region": "ActivateJobs",
+      "label": "Activate and process jobs",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
-  "completeJob": [{ "file": "job.ts", "region": "CompleteJob", "label": "Complete a job" }],
-  "failJob": [{ "file": "job.ts", "region": "FailJob", "label": "Fail a job with retry" }],
+  "completeJob": [
+    {
+      "file": "job.ts",
+      "region": "CompleteJob",
+      "label": "Complete a job",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "failJob": [
+    {
+      "file": "job.ts",
+      "region": "FailJob",
+      "label": "Fail a job with retry",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
   "correlateMessage": [
-    { "file": "message-signal.ts", "region": "CorrelateMessage", "label": "Correlate a message" }
+    {
+      "file": "message-signal.ts",
+      "region": "CorrelateMessage",
+      "label": "Correlate a message",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "publishMessage": [
-    { "file": "message-signal.ts", "region": "PublishMessage", "label": "Publish a message" }
+    {
+      "file": "message-signal.ts",
+      "region": "PublishMessage",
+      "label": "Publish a message",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "broadcastSignal": [
-    { "file": "message-signal.ts", "region": "BroadcastSignal", "label": "Broadcast a signal" }
+    {
+      "file": "message-signal.ts",
+      "region": "BroadcastSignal",
+      "label": "Broadcast a signal",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
-  "getIncident": [{ "file": "incident.ts", "region": "GetIncident", "label": "Get an incident" }],
+  "getIncident": [
+    {
+      "file": "incident.ts",
+      "region": "GetIncident",
+      "label": "Get an incident",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
   "resolveIncident": [
-    { "file": "incident.ts", "region": "ResolveIncident", "label": "Resolve an incident" }
+    {
+      "file": "incident.ts",
+      "region": "ResolveIncident",
+      "label": "Resolve an incident",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchIncidents": [
-    { "file": "incident.ts", "region": "SearchIncidents", "label": "Search incidents" }
+    {
+      "file": "incident.ts",
+      "region": "SearchIncidents",
+      "label": "Search incidents",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "createAuthorization": [
     {
       "file": "authorization.ts",
       "region": "CreateAuthorization",
-      "label": "Create an authorization"
+      "label": "Create an authorization",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getAuthorization": [
-    { "file": "authorization.ts", "region": "GetAuthorization", "label": "Get an authorization" }
+    {
+      "file": "authorization.ts",
+      "region": "GetAuthorization",
+      "label": "Get an authorization",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchAuthorizations": [
     {
       "file": "authorization.ts",
       "region": "SearchAuthorizations",
-      "label": "Search authorizations"
+      "label": "Search authorizations",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "updateAuthorization": [
     {
       "file": "authorization.ts",
       "region": "UpdateAuthorization",
-      "label": "Update an authorization"
+      "label": "Update an authorization",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteAuthorization": [
     {
       "file": "authorization.ts",
       "region": "DeleteAuthorization",
-      "label": "Delete an authorization"
+      "label": "Delete an authorization",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
-  "createUser": [{ "file": "user.ts", "region": "CreateUser", "label": "Create a user" }],
-  "createAdminUser": [
-    { "file": "user.ts", "region": "CreateAdminUser", "label": "Create an admin user" }
+  "createUser": [
+    {
+      "file": "user.ts",
+      "region": "CreateUser",
+      "label": "Create a user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
-  "getUser": [{ "file": "user.ts", "region": "GetUser", "label": "Get a user" }],
-  "searchUsers": [{ "file": "user.ts", "region": "SearchUsers", "label": "Search users" }],
-  "updateUser": [{ "file": "user.ts", "region": "UpdateUser", "label": "Update a user" }],
-  "deleteUser": [{ "file": "user.ts", "region": "DeleteUser", "label": "Delete a user" }],
-  "createGroup": [{ "file": "group.ts", "region": "CreateGroup", "label": "Create a group" }],
-  "getGroup": [{ "file": "group.ts", "region": "GetGroup", "label": "Get a group" }],
-  "searchGroups": [{ "file": "group.ts", "region": "SearchGroups", "label": "Search groups" }],
-  "updateGroup": [{ "file": "group.ts", "region": "UpdateGroup", "label": "Update a group" }],
-  "deleteGroup": [{ "file": "group.ts", "region": "DeleteGroup", "label": "Delete a group" }],
+  "createAdminUser": [
+    {
+      "file": "user.ts",
+      "region": "CreateAdminUser",
+      "label": "Create an admin user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "getUser": [
+    {
+      "file": "user.ts",
+      "region": "GetUser",
+      "label": "Get a user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "searchUsers": [
+    {
+      "file": "user.ts",
+      "region": "SearchUsers",
+      "label": "Search users",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "updateUser": [
+    {
+      "file": "user.ts",
+      "region": "UpdateUser",
+      "label": "Update a user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "deleteUser": [
+    {
+      "file": "user.ts",
+      "region": "DeleteUser",
+      "label": "Delete a user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "createGroup": [
+    {
+      "file": "group.ts",
+      "region": "CreateGroup",
+      "label": "Create a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "getGroup": [
+    {
+      "file": "group.ts",
+      "region": "GetGroup",
+      "label": "Get a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "searchGroups": [
+    {
+      "file": "group.ts",
+      "region": "SearchGroups",
+      "label": "Search groups",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "updateGroup": [
+    {
+      "file": "group.ts",
+      "region": "UpdateGroup",
+      "label": "Update a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "deleteGroup": [
+    {
+      "file": "group.ts",
+      "region": "DeleteGroup",
+      "label": "Delete a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
   "assignUserToGroup": [
-    { "file": "group.ts", "region": "AssignUserToGroup", "label": "Assign a user to a group" }
+    {
+      "file": "group.ts",
+      "region": "AssignUserToGroup",
+      "label": "Assign a user to a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignUserFromGroup": [
     {
       "file": "group.ts",
       "region": "UnassignUserFromGroup",
-      "label": "Unassign a user from a group"
+      "label": "Unassign a user from a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignClientToGroup": [
-    { "file": "group.ts", "region": "AssignClientToGroup", "label": "Assign a client to a group" }
+    {
+      "file": "group.ts",
+      "region": "AssignClientToGroup",
+      "label": "Assign a client to a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignClientFromGroup": [
     {
       "file": "group.ts",
       "region": "UnassignClientFromGroup",
-      "label": "Unassign a client from a group"
+      "label": "Unassign a client from a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchUsersForGroup": [
-    { "file": "group.ts", "region": "SearchUsersForGroup", "label": "Search users in a group" }
+    {
+      "file": "group.ts",
+      "region": "SearchUsersForGroup",
+      "label": "Search users in a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchClientsForGroup": [
-    { "file": "group.ts", "region": "SearchClientsForGroup", "label": "Search clients in a group" }
+    {
+      "file": "group.ts",
+      "region": "SearchClientsForGroup",
+      "label": "Search clients in a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchRolesForGroup": [
-    { "file": "group.ts", "region": "SearchRolesForGroup", "label": "Search roles for a group" }
+    {
+      "file": "group.ts",
+      "region": "SearchRolesForGroup",
+      "label": "Search roles for a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "assignMappingRuleToGroup": [
     {
       "file": "group.ts",
       "region": "AssignMappingRuleToGroup",
-      "label": "Assign a mapping rule to a group"
+      "label": "Assign a mapping rule to a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "unassignMappingRuleFromGroup": [
     {
       "file": "group.ts",
       "region": "UnassignMappingRuleFromGroup",
-      "label": "Unassign a mapping rule from a group"
+      "label": "Unassign a mapping rule from a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchMappingRulesForGroup": [
     {
       "file": "group.ts",
       "region": "SearchMappingRulesForGroup",
-      "label": "Search mapping rules for a group"
+      "label": "Search mapping rules for a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
-  "createRole": [{ "file": "role.ts", "region": "CreateRole", "label": "Create a role" }],
-  "getRole": [{ "file": "role.ts", "region": "GetRole", "label": "Get a role" }],
-  "searchRoles": [{ "file": "role.ts", "region": "SearchRoles", "label": "Search roles" }],
-  "updateRole": [{ "file": "role.ts", "region": "UpdateRole", "label": "Update a role" }],
-  "deleteRole": [{ "file": "role.ts", "region": "DeleteRole", "label": "Delete a role" }],
+  "createRole": [
+    {
+      "file": "role.ts",
+      "region": "CreateRole",
+      "label": "Create a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "getRole": [
+    {
+      "file": "role.ts",
+      "region": "GetRole",
+      "label": "Get a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "searchRoles": [
+    {
+      "file": "role.ts",
+      "region": "SearchRoles",
+      "label": "Search roles",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "updateRole": [
+    {
+      "file": "role.ts",
+      "region": "UpdateRole",
+      "label": "Update a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "deleteRole": [
+    {
+      "file": "role.ts",
+      "region": "DeleteRole",
+      "label": "Delete a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
   "assignRoleToUser": [
-    { "file": "role.ts", "region": "AssignRoleToUser", "label": "Assign a role to a user" }
+    {
+      "file": "role.ts",
+      "region": "AssignRoleToUser",
+      "label": "Assign a role to a user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignRoleFromUser": [
-    { "file": "role.ts", "region": "UnassignRoleFromUser", "label": "Unassign a role from a user" }
+    {
+      "file": "role.ts",
+      "region": "UnassignRoleFromUser",
+      "label": "Unassign a role from a user",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "assignRoleToGroup": [
-    { "file": "role.ts", "region": "AssignRoleToGroup", "label": "Assign a role to a group" }
+    {
+      "file": "role.ts",
+      "region": "AssignRoleToGroup",
+      "label": "Assign a role to a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignRoleFromGroup": [
     {
       "file": "role.ts",
       "region": "UnassignRoleFromGroup",
-      "label": "Unassign a role from a group"
+      "label": "Unassign a role from a group",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignRoleToClient": [
-    { "file": "role.ts", "region": "AssignRoleToClient", "label": "Assign a role to a client" }
+    {
+      "file": "role.ts",
+      "region": "AssignRoleToClient",
+      "label": "Assign a role to a client",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignRoleFromClient": [
     {
       "file": "role.ts",
       "region": "UnassignRoleFromClient",
-      "label": "Unassign a role from a client"
+      "label": "Unassign a role from a client",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignRoleToMappingRule": [
     {
       "file": "role.ts",
       "region": "AssignRoleToMappingRule",
-      "label": "Assign a role to a mapping rule"
+      "label": "Assign a role to a mapping rule",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "unassignRoleFromMappingRule": [
     {
       "file": "role.ts",
       "region": "UnassignRoleFromMappingRule",
-      "label": "Unassign a role from a mapping rule"
+      "label": "Unassign a role from a mapping rule",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchUsersForRole": [
-    { "file": "role.ts", "region": "SearchUsersForRole", "label": "Search users for a role" }
+    {
+      "file": "role.ts",
+      "region": "SearchUsersForRole",
+      "label": "Search users for a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchGroupsForRole": [
-    { "file": "role.ts", "region": "SearchGroupsForRole", "label": "Search groups for a role" }
+    {
+      "file": "role.ts",
+      "region": "SearchGroupsForRole",
+      "label": "Search groups for a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchClientsForRole": [
-    { "file": "role.ts", "region": "SearchClientsForRole", "label": "Search clients for a role" }
+    {
+      "file": "role.ts",
+      "region": "SearchClientsForRole",
+      "label": "Search clients for a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchMappingRulesForRole": [
     {
       "file": "role.ts",
       "region": "SearchMappingRulesForRole",
-      "label": "Search mapping rules for a role"
+      "label": "Search mapping rules for a role",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
-  "createTenant": [{ "file": "tenant.ts", "region": "CreateTenant", "label": "Create a tenant" }],
-  "getTenant": [{ "file": "tenant.ts", "region": "GetTenant", "label": "Get a tenant" }],
-  "searchTenants": [{ "file": "tenant.ts", "region": "SearchTenants", "label": "Search tenants" }],
-  "updateTenant": [{ "file": "tenant.ts", "region": "UpdateTenant", "label": "Update a tenant" }],
-  "deleteTenant": [{ "file": "tenant.ts", "region": "DeleteTenant", "label": "Delete a tenant" }],
+  "createTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "CreateTenant",
+      "label": "Create a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "getTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "GetTenant",
+      "label": "Get a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "searchTenants": [
+    {
+      "file": "tenant.ts",
+      "region": "SearchTenants",
+      "label": "Search tenants",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "updateTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "UpdateTenant",
+      "label": "Update a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
+  "deleteTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "DeleteTenant",
+      "label": "Delete a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
+  ],
   "assignUserToTenant": [
-    { "file": "tenant.ts", "region": "AssignUserToTenant", "label": "Assign a user to a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "AssignUserToTenant",
+      "label": "Assign a user to a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignUserFromTenant": [
     {
       "file": "tenant.ts",
       "region": "UnassignUserFromTenant",
-      "label": "Unassign a user from a tenant"
+      "label": "Unassign a user from a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignGroupToTenant": [
-    { "file": "tenant.ts", "region": "AssignGroupToTenant", "label": "Assign a group to a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "AssignGroupToTenant",
+      "label": "Assign a group to a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignGroupFromTenant": [
     {
       "file": "tenant.ts",
       "region": "UnassignGroupFromTenant",
-      "label": "Unassign a group from a tenant"
+      "label": "Unassign a group from a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignRoleToTenant": [
-    { "file": "tenant.ts", "region": "AssignRoleToTenant", "label": "Assign a role to a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "AssignRoleToTenant",
+      "label": "Assign a role to a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "unassignRoleFromTenant": [
     {
       "file": "tenant.ts",
       "region": "UnassignRoleFromTenant",
-      "label": "Unassign a role from a tenant"
+      "label": "Unassign a role from a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignClientToTenant": [
     {
       "file": "tenant.ts",
       "region": "AssignClientToTenant",
-      "label": "Assign a client to a tenant"
+      "label": "Assign a client to a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "unassignClientFromTenant": [
     {
       "file": "tenant.ts",
       "region": "UnassignClientFromTenant",
-      "label": "Unassign a client from a tenant"
+      "label": "Unassign a client from a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "assignMappingRuleToTenant": [
     {
       "file": "tenant.ts",
       "region": "AssignMappingRuleToTenant",
-      "label": "Assign a mapping rule to a tenant"
+      "label": "Assign a mapping rule to a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "unassignMappingRuleFromTenant": [
     {
       "file": "tenant.ts",
       "region": "UnassignMappingRuleFromTenant",
-      "label": "Unassign a mapping rule from a tenant"
+      "label": "Unassign a mapping rule from a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchUsersForTenant": [
-    { "file": "tenant.ts", "region": "SearchUsersForTenant", "label": "Search users for a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "SearchUsersForTenant",
+      "label": "Search users for a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchClientsForTenant": [
     {
       "file": "tenant.ts",
       "region": "SearchClientsForTenant",
-      "label": "Search clients for a tenant"
+      "label": "Search clients for a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchGroupIdsForTenant": [
     {
       "file": "tenant.ts",
       "region": "SearchGroupIdsForTenant",
-      "label": "Search groups for a tenant"
+      "label": "Search groups for a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchRolesForTenant": [
-    { "file": "tenant.ts", "region": "SearchRolesForTenant", "label": "Search roles for a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "SearchRolesForTenant",
+      "label": "Search roles for a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchMappingRulesForTenant": [
     {
       "file": "tenant.ts",
       "region": "SearchMappingRulesForTenant",
-      "label": "Search mapping rules for a tenant"
+      "label": "Search mapping rules for a tenant",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createMappingRule": [
-    { "file": "mapping-rule.ts", "region": "CreateMappingRule", "label": "Create a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "CreateMappingRule",
+      "label": "Create a mapping rule",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getMappingRule": [
-    { "file": "mapping-rule.ts", "region": "GetMappingRule", "label": "Get a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "GetMappingRule",
+      "label": "Get a mapping rule",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchMappingRule": [
-    { "file": "mapping-rule.ts", "region": "SearchMappingRule", "label": "Search mapping rules" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "SearchMappingRule",
+      "label": "Search mapping rules",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "updateMappingRule": [
-    { "file": "mapping-rule.ts", "region": "UpdateMappingRule", "label": "Update a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "UpdateMappingRule",
+      "label": "Update a mapping rule",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "deleteMappingRule": [
-    { "file": "mapping-rule.ts", "region": "DeleteMappingRule", "label": "Delete a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "DeleteMappingRule",
+      "label": "Delete a mapping rule",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "GetBatchOperation",
-      "label": "Get a batch operation"
+      "label": "Get a batch operation",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchBatchOperations": [
     {
       "file": "batch-operation.ts",
       "region": "SearchBatchOperations",
-      "label": "Search batch operations"
+      "label": "Search batch operations",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchBatchOperationItems": [
     {
       "file": "batch-operation.ts",
       "region": "SearchBatchOperationItems",
-      "label": "Search batch operation items"
+      "label": "Search batch operation items",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "cancelBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "CancelBatchOperation",
-      "label": "Cancel a batch operation"
+      "label": "Cancel a batch operation",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "suspendBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "SuspendBatchOperation",
-      "label": "Suspend a batch operation"
+      "label": "Suspend a batch operation",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "resumeBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "ResumeBatchOperation",
-      "label": "Resume a batch operation"
+      "label": "Resume a batch operation",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "cancelProcessInstancesBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "CancelProcessInstancesBatchOperation",
-      "label": "Cancel process instances in batch"
+      "label": "Cancel process instances in batch",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteProcessInstancesBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "DeleteProcessInstancesBatchOperation",
-      "label": "Delete process instances in batch"
+      "label": "Delete process instances in batch",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "migrateProcessInstancesBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "MigrateProcessInstancesBatchOperation",
-      "label": "Migrate process instances in batch"
+      "label": "Migrate process instances in batch",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "modifyProcessInstancesBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "ModifyProcessInstancesBatchOperation",
-      "label": "Modify process instances in batch"
+      "label": "Modify process instances in batch",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "resolveIncidentsBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "ResolveIncidentsBatchOperation",
-      "label": "Resolve incidents in batch"
+      "label": "Resolve incidents in batch",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteDecisionInstancesBatchOperation": [
     {
       "file": "batch-operation.ts",
       "region": "DeleteDecisionInstancesBatchOperation",
-      "label": "Delete decision instances in batch"
+      "label": "Delete decision instances in batch",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteProcessInstance": [
     {
       "file": "extended-operations.ts",
       "region": "DeleteProcessInstance",
-      "label": "Delete a process instance"
+      "label": "Delete a process instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "migrateProcessInstance": [
     {
       "file": "extended-operations.ts",
       "region": "MigrateProcessInstance",
-      "label": "Migrate a process instance"
+      "label": "Migrate a process instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "modifyProcessInstance": [
     {
       "file": "extended-operations.ts",
       "region": "ModifyProcessInstance",
-      "label": "Modify a process instance"
+      "label": "Modify a process instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessInstanceStatistics": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessInstanceStatistics",
-      "label": "Get process instance statistics"
+      "label": "Get process instance statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessInstanceSequenceFlows": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessInstanceSequenceFlows",
-      "label": "Get process instance sequence flows"
+      "label": "Get process instance sequence flows",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessInstanceCallHierarchy": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessInstanceCallHierarchy",
-      "label": "Get process instance call hierarchy"
+      "label": "Get process instance call hierarchy",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchProcessInstanceIncidents": [
     {
       "file": "extended-operations.ts",
       "region": "SearchProcessInstanceIncidents",
-      "label": "Search process instance incidents"
+      "label": "Search process instance incidents",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "resolveProcessInstanceIncidents": [
     {
       "file": "extended-operations.ts",
       "region": "ResolveProcessInstanceIncidents",
-      "label": "Resolve process instance incidents"
+      "label": "Resolve process instance incidents",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessDefinition": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinition",
-      "label": "Get a process definition"
+      "label": "Get a process definition",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessDefinitionXML": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinitionXml",
-      "label": "Get process definition XML"
+      "label": "Get process definition XML",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchProcessDefinitions": [
     {
       "file": "extended-operations.ts",
       "region": "SearchProcessDefinitions",
-      "label": "Search process definitions"
+      "label": "Search process definitions",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessDefinitionStatistics": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinitionStatistics",
-      "label": "Get process definition element statistics"
+      "label": "Get process definition element statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessDefinitionInstanceStatistics": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinitionInstanceStatistics",
-      "label": "Get process definition instance statistics"
+      "label": "Get process definition instance statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessDefinitionInstanceVersionStatistics": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinitionInstanceVersionStatistics",
-      "label": "Get version statistics"
+      "label": "Get version statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessDefinitionMessageSubscriptionStatistics": [
     {
       "file": "extended-operations.ts",
       "region": "GetProcessDefinitionMessageSubscriptionStatistics",
-      "label": "Get message subscription statistics"
+      "label": "Get message subscription statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getStartProcessForm": [
     {
       "file": "extended-operations.ts",
       "region": "GetStartProcessForm",
-      "label": "Get start process form"
+      "label": "Get start process form",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getVariable": [
-    { "file": "extended-operations.ts", "region": "GetVariable", "label": "Get a variable" }
+    {
+      "file": "extended-operations.ts",
+      "region": "GetVariable",
+      "label": "Get a variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchVariables": [
-    { "file": "extended-operations.ts", "region": "SearchVariables", "label": "Search variables" }
+    {
+      "file": "extended-operations.ts",
+      "region": "SearchVariables",
+      "label": "Search variables",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getElementInstance": [
     {
       "file": "extended-operations.ts",
       "region": "GetElementInstance",
-      "label": "Get an element instance"
+      "label": "Get an element instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchElementInstances": [
     {
       "file": "extended-operations.ts",
       "region": "SearchElementInstances",
-      "label": "Search element instances"
+      "label": "Search element instances",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchElementInstanceIncidents": [
     {
       "file": "extended-operations.ts",
       "region": "SearchElementInstanceIncidents",
-      "label": "Search element instance incidents"
+      "label": "Search element instance incidents",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createElementInstanceVariables": [
     {
       "file": "extended-operations.ts",
       "region": "CreateElementInstanceVariables",
-      "label": "Create element instance variables"
+      "label": "Create element instance variables",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "activateAdHocSubProcessActivities": [
     {
       "file": "extended-operations.ts",
       "region": "ActivateAdHocSubProcessActivities",
-      "label": "Activate ad-hoc sub-process activities"
+      "label": "Activate ad-hoc sub-process activities",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getDecisionDefinitionXML": [
     {
       "file": "additional-operations.ts",
       "region": "GetDecisionDefinitionXml",
-      "label": "Get decision definition XML"
+      "label": "Get decision definition XML",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getDecisionInstance": [
     {
       "file": "additional-operations.ts",
       "region": "GetDecisionInstance",
-      "label": "Get a decision instance"
+      "label": "Get a decision instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchDecisionInstances": [
     {
       "file": "additional-operations.ts",
       "region": "SearchDecisionInstances",
-      "label": "Search decision instances"
+      "label": "Search decision instances",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteDecisionInstance": [
     {
       "file": "additional-operations.ts",
       "region": "DeleteDecisionInstance",
-      "label": "Delete a decision instance"
+      "label": "Delete a decision instance",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getDecisionRequirements": [
     {
       "file": "additional-operations.ts",
       "region": "GetDecisionRequirements",
-      "label": "Get decision requirements"
+      "label": "Get decision requirements",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getDecisionRequirementsXML": [
     {
       "file": "additional-operations.ts",
       "region": "GetDecisionRequirementsXml",
-      "label": "Get decision requirements XML"
+      "label": "Get decision requirements XML",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchDecisionRequirements": [
     {
       "file": "additional-operations.ts",
       "region": "SearchDecisionRequirements",
-      "label": "Search decision requirements"
+      "label": "Search decision requirements",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createDocumentLink": [
     {
       "file": "additional-operations.ts",
       "region": "CreateDocumentLink",
-      "label": "Create a document link"
+      "label": "Create a document link",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteDocument": [
-    { "file": "additional-operations.ts", "region": "DeleteDocument", "label": "Delete a document" }
+    {
+      "file": "additional-operations.ts",
+      "region": "DeleteDocument",
+      "label": "Delete a document",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "throwJobError": [
-    { "file": "additional-operations.ts", "region": "ThrowJobError", "label": "Throw a job error" }
+    {
+      "file": "additional-operations.ts",
+      "region": "ThrowJobError",
+      "label": "Throw a job error",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "updateJob": [
-    { "file": "additional-operations.ts", "region": "UpdateJob", "label": "Update a job" }
+    {
+      "file": "additional-operations.ts",
+      "region": "UpdateJob",
+      "label": "Update a job",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchJobs": [
-    { "file": "additional-operations.ts", "region": "SearchJobs", "label": "Search jobs" }
+    {
+      "file": "additional-operations.ts",
+      "region": "SearchJobs",
+      "label": "Search jobs",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getUserTask": [
-    { "file": "additional-operations.ts", "region": "GetUserTask", "label": "Get a user task" }
+    {
+      "file": "additional-operations.ts",
+      "region": "GetUserTask",
+      "label": "Get a user task",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "updateUserTask": [
     {
       "file": "additional-operations.ts",
       "region": "UpdateUserTask",
-      "label": "Update a user task"
+      "label": "Update a user task",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getUserTaskForm": [
     {
       "file": "additional-operations.ts",
       "region": "GetUserTaskForm",
-      "label": "Get a user task form"
+      "label": "Get a user task form",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchUserTaskVariables": [
     {
       "file": "additional-operations.ts",
       "region": "SearchUserTaskVariables",
-      "label": "Search user task variables"
+      "label": "Search user task variables",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchUserTaskAuditLogs": [
     {
       "file": "additional-operations.ts",
       "region": "SearchUserTaskAuditLogs",
-      "label": "Search user task audit logs"
+      "label": "Search user task audit logs",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getGlobalClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "GetGlobalClusterVariable",
-      "label": "Get a global cluster variable"
+      "label": "Get a global cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createGlobalClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "CreateGlobalClusterVariable",
-      "label": "Create a global cluster variable"
+      "label": "Create a global cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "updateGlobalClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "UpdateGlobalClusterVariable",
-      "label": "Update a global cluster variable"
+      "label": "Update a global cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteGlobalClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "DeleteGlobalClusterVariable",
-      "label": "Delete a global cluster variable"
+      "label": "Delete a global cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getTenantClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "GetTenantClusterVariable",
-      "label": "Get a tenant cluster variable"
+      "label": "Get a tenant cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createTenantClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "CreateTenantClusterVariable",
-      "label": "Create a tenant cluster variable"
+      "label": "Create a tenant cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "updateTenantClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "UpdateTenantClusterVariable",
-      "label": "Update a tenant cluster variable"
+      "label": "Update a tenant cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteTenantClusterVariable": [
     {
       "file": "admin-operations.ts",
       "region": "DeleteTenantClusterVariable",
-      "label": "Delete a tenant cluster variable"
+      "label": "Delete a tenant cluster variable",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchClusterVariables": [
     {
       "file": "admin-operations.ts",
       "region": "SearchClusterVariables",
-      "label": "Search cluster variables"
+      "label": "Search cluster variables",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createGlobalTaskListener": [
     {
       "file": "admin-operations.ts",
       "region": "CreateGlobalTaskListener",
-      "label": "Create a global task listener"
+      "label": "Create a global task listener",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getGlobalTaskListener": [
     {
       "file": "admin-operations.ts",
       "region": "GetGlobalTaskListener",
-      "label": "Get a global task listener"
+      "label": "Get a global task listener",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "updateGlobalTaskListener": [
     {
       "file": "admin-operations.ts",
       "region": "UpdateGlobalTaskListener",
-      "label": "Update a global task listener"
+      "label": "Update a global task listener",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "deleteGlobalTaskListener": [
     {
       "file": "admin-operations.ts",
       "region": "DeleteGlobalTaskListener",
-      "label": "Delete a global task listener"
+      "label": "Delete a global task listener",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchGlobalTaskListeners": [
     {
       "file": "admin-operations.ts",
       "region": "SearchGlobalTaskListeners",
-      "label": "Search global task listeners"
+      "label": "Search global task listeners",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getLicense": [
-    { "file": "admin-operations.ts", "region": "GetLicense", "label": "Get license information" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetLicense",
+      "label": "Get license information",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getSystemConfiguration": [
     {
       "file": "admin-operations.ts",
       "region": "GetSystemConfiguration",
-      "label": "Get system configuration"
+      "label": "Get system configuration",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getAuthentication": [
     {
       "file": "admin-operations.ts",
       "region": "GetAuthentication",
-      "label": "Get authentication info"
+      "label": "Get authentication info",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getStatus": [
-    { "file": "admin-operations.ts", "region": "GetStatus", "label": "Check cluster status" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetStatus",
+      "label": "Check cluster status",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "pinClock": [
-    { "file": "admin-operations.ts", "region": "PinClock", "label": "Pin the cluster clock" }
+    {
+      "file": "admin-operations.ts",
+      "region": "PinClock",
+      "label": "Pin the cluster clock",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "resetClock": [
-    { "file": "admin-operations.ts", "region": "ResetClock", "label": "Reset the cluster clock" }
+    {
+      "file": "admin-operations.ts",
+      "region": "ResetClock",
+      "label": "Reset the cluster clock",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "evaluateConditionals": [
     {
       "file": "admin-operations.ts",
       "region": "EvaluateConditionals",
-      "label": "Evaluate conditionals"
+      "label": "Evaluate conditionals",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "evaluateExpression": [
     {
       "file": "admin-operations.ts",
       "region": "EvaluateExpression",
-      "label": "Evaluate an expression"
+      "label": "Evaluate an expression",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getResource": [
-    { "file": "admin-operations.ts", "region": "GetResource", "label": "Get a resource" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetResource",
+      "label": "Get a resource",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getResourceContent": [
     {
       "file": "admin-operations.ts",
       "region": "GetResourceContent",
-      "label": "Get resource content"
+      "label": "Get resource content",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getUsageMetrics": [
-    { "file": "admin-operations.ts", "region": "GetUsageMetrics", "label": "Get usage metrics" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetUsageMetrics",
+      "label": "Get usage metrics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchMessageSubscriptions": [
     {
       "file": "admin-operations.ts",
       "region": "SearchMessageSubscriptions",
-      "label": "Search message subscriptions"
+      "label": "Search message subscriptions",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchCorrelatedMessageSubscriptions": [
     {
       "file": "admin-operations.ts",
       "region": "SearchCorrelatedMessageSubscriptions",
-      "label": "Search correlated message subscriptions"
+      "label": "Search correlated message subscriptions",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getAuditLog": [
-    { "file": "admin-operations.ts", "region": "GetAuditLog", "label": "Get an audit log entry" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetAuditLog",
+      "label": "Get an audit log entry",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "searchAuditLogs": [
-    { "file": "admin-operations.ts", "region": "SearchAuditLogs", "label": "Search audit logs" }
+    {
+      "file": "admin-operations.ts",
+      "region": "SearchAuditLogs",
+      "label": "Search audit logs",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
+    }
   ],
   "getProcessInstanceStatisticsByError": [
     {
       "file": "admin-operations.ts",
       "region": "GetProcessInstanceStatisticsByError",
-      "label": "Get instance statistics by error"
+      "label": "Get instance statistics by error",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getProcessInstanceStatisticsByDefinition": [
     {
       "file": "admin-operations.ts",
       "region": "GetProcessInstanceStatisticsByDefinition",
-      "label": "Get instance statistics by definition"
+      "label": "Get instance statistics by definition",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getJobErrorStatistics": [
     {
       "file": "admin-operations.ts",
       "region": "GetJobErrorStatistics",
-      "label": "Get job error statistics"
+      "label": "Get job error statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getJobTimeSeriesStatistics": [
     {
       "file": "admin-operations.ts",
       "region": "GetJobTimeSeriesStatistics",
-      "label": "Get job time series statistics"
+      "label": "Get job time series statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getJobTypeStatistics": [
     {
       "file": "admin-operations.ts",
       "region": "GetJobTypeStatistics",
-      "label": "Get job type statistics"
+      "label": "Get job type statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getJobWorkerStatistics": [
     {
       "file": "admin-operations.ts",
       "region": "GetJobWorkerStatistics",
-      "label": "Get job worker statistics"
+      "label": "Get job worker statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getGlobalJobStatistics": [
     {
       "file": "admin-operations.ts",
       "region": "GetGlobalJobStatistics",
-      "label": "Get global job statistics"
+      "label": "Get global job statistics",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createDocument": [
     {
       "file": "additional-operations.ts",
       "region": "CreateDocument",
-      "label": "Upload a document"
+      "label": "Upload a document",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "createDocuments": [
     {
       "file": "additional-operations.ts",
       "region": "CreateDocuments",
-      "label": "Upload multiple documents"
+      "label": "Upload multiple documents",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "getDocument": [
     {
       "file": "additional-operations.ts",
       "region": "GetDocument",
-      "label": "Download a document"
+      "label": "Download a document",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
   "searchUserTaskEffectiveVariables": [
     {
       "file": "additional-operations.ts",
       "region": "SearchUserTaskEffectiveVariables",
-      "label": "Search user task effective variables"
+      "label": "Search user task effective variables",
+      "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ]
 }
