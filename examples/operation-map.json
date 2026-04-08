@@ -11,13 +11,13 @@
     {
       "file": "process-instance.ts",
       "region": "CreateProcessInstanceById",
-      "label": "Create by process definition ID",
+      "label": "By ID",
       "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     },
     {
       "file": "process-instance.ts",
       "region": "CreateProcessInstanceByKey",
-      "label": "Create by process definition key",
+      "label": "By key",
       "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
@@ -65,13 +65,13 @@
     {
       "file": "decision.ts",
       "region": "EvaluateDecisionById",
-      "label": "Evaluate by decision definition ID",
+      "label": "By ID",
       "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     },
     {
       "file": "decision.ts",
       "region": "EvaluateDecisionByKey",
-      "label": "Evaluate by decision definition key",
+      "label": "By key",
       "imports": "import { createCamundaClient } from '@camunda8/orchestration-cluster-api';"
     }
   ],
