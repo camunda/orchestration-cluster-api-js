@@ -1,3 +1,15 @@
+# [8.9.0-alpha.28](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.27...v8.9.0-alpha.28) (2026-04-08)
+
+
+### Bug Fixes
+
+* shorten discriminant labels for multi-entry operations ([701aed6](https://github.com/camunda/orchestration-cluster-api-js/commit/701aed6a471ef2b138380e34f14c1d0f4d3469c5))
+
+
+### Features
+
+* add imports field to operation-map entries ([a7ecf5f](https://github.com/camunda/orchestration-cluster-api-js/commit/a7ecf5fc68277565afecb2518de583e9f345de9b))
+
 # [8.9.0-alpha.27](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.26...v8.9.0-alpha.27) (2026-04-02)
 
 
