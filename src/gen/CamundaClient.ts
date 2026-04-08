@@ -3759,9 +3759,9 @@ export class CamundaClient {
    * when awaitCompletion is enabled.
    *
     *
-   * @example Create by process definition ID
+   * @example By ID
    * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceById}
-   * @example Create by process definition key
+   * @example By key
    * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceByKey}
    * @operationId createProcessInstance
    * @tags Process instance
@@ -5109,9 +5109,9 @@ export class CamundaClient {
    * version of the decision is used.
    *
     *
-   * @example Evaluate by decision definition ID
+   * @example By ID
    * {@includeCode ../../examples/decision.ts#EvaluateDecisionById}
-   * @example Evaluate by decision definition key
+   * @example By key
    * {@includeCode ../../examples/decision.ts#EvaluateDecisionByKey}
    * @operationId evaluateDecision
    * @tags Decision definition
@@ -6095,7 +6095,7 @@ export class CamundaClient {
   /**
    * Global job statistics
    *
-   * Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
+   * Returns global aggregated counts for jobs. Filter by the creation time window (required) and optionally by jobType.
    *
     *
    * @example Get global job statistics

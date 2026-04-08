@@ -211,9 +211,9 @@ type _createProcessInstance_Body = CreateProcessInstanceData extends { body?: in
  * when awaitCompletion is enabled.
  *
   *
- * @example Create by process definition ID
+ * @example By ID
  * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceById}
- * @example Create by process definition key
+ * @example By key
  * {@includeCode ../../examples/process-instance.ts#CreateProcessInstanceByKey}
  * @operationId createProcessInstance
  * @tags Process instance
@@ -330,9 +330,9 @@ type _evaluateDecision_Body = EvaluateDecisionData extends { body?: infer B } ? 
  * version of the decision is used.
  *
   *
- * @example Evaluate by decision definition ID
+ * @example By ID
  * {@includeCode ../../examples/decision.ts#EvaluateDecisionById}
- * @example Evaluate by decision definition key
+ * @example By key
  * {@includeCode ../../examples/decision.ts#EvaluateDecisionByKey}
  * @operationId evaluateDecision
  * @tags Decision definition
@@ -1842,7 +1842,7 @@ export function getGlobalClusterVariable(options: Parameters<typeof _getGlobalCl
 /**
  * Global job statistics
  *
- * Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
+ * Returns global aggregated counts for jobs. Filter by the creation time window (required) and optionally by jobType.
  *
   *
  * @example Get global job statistics
@@ -3213,4 +3213,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=41e24515d5d4ac2a totalWrappers=183 elements=1162 physicalLines=2845
+// SENTINEL_FACADE_PREWRITE hash=824f57825b7b2cb9 totalWrappers=183 elements=1162 physicalLines=2845

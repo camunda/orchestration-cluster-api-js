@@ -1466,7 +1466,7 @@ export const failJob = <ThrowOnError extends boolean = true>(options: Options<Fa
 /**
  * Global job statistics
  *
- * Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
+ * Returns global aggregated counts for jobs. Filter by the creation time window (required) and optionally by jobType.
  *
  */
 export const getGlobalJobStatistics = <ThrowOnError extends boolean = true>(options: Options<GetGlobalJobStatisticsData, ThrowOnError>) => {

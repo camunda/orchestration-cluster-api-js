@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:ce28935d7c5d940ac3249eca6c65a20aaa50286c20c365ad00deb315534d2a16",
+  "specHash": "sha256:5de81e6b2d3f152265e6f6f042a776f0bc2ca73572e9f5a8c54eee460f5c6161",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -4108,7 +4108,7 @@
         "Job"
       ],
       "summary": "Global job statistics",
-      "description": "Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.\n",
+      "description": "Returns global aggregated counts for jobs. Filter by the creation time window (required) and optionally by jobType.\n",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
