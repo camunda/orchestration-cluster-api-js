@@ -1,17 +1,21 @@
 {
   "getTopology": [
-    { "file": "client.ts", "region": "GetTopology", "label": "Get cluster topology" }
+    {
+      "file": "client.ts",
+      "region": "GetTopology",
+      "label": "Get cluster topology"
+    }
   ],
   "createProcessInstance": [
     {
       "file": "process-instance.ts",
       "region": "CreateProcessInstanceById",
-      "label": "Create by process definition ID"
+      "label": "By ID"
     },
     {
       "file": "process-instance.ts",
       "region": "CreateProcessInstanceByKey",
-      "label": "Create by process definition key"
+      "label": "By key"
     }
   ],
   "cancelProcessInstance": [
@@ -36,21 +40,29 @@
     }
   ],
   "createDeployment": [
-    { "file": "deployment.ts", "region": "CreateDeployment", "label": "Deploy resources" }
+    {
+      "file": "deployment.ts",
+      "region": "CreateDeployment",
+      "label": "Deploy resources"
+    }
   ],
   "deleteResource": [
-    { "file": "deployment.ts", "region": "DeleteResource", "label": "Delete a resource" }
+    {
+      "file": "deployment.ts",
+      "region": "DeleteResource",
+      "label": "Delete a resource"
+    }
   ],
   "evaluateDecision": [
     {
       "file": "decision.ts",
       "region": "EvaluateDecisionById",
-      "label": "Evaluate by decision definition ID"
+      "label": "By ID"
     },
     {
       "file": "decision.ts",
       "region": "EvaluateDecisionByKey",
-      "label": "Evaluate by decision definition key"
+      "label": "By key"
     }
   ],
   "getDecisionDefinition": [
@@ -68,37 +80,95 @@
     }
   ],
   "assignUserTask": [
-    { "file": "user-task.ts", "region": "AssignUserTask", "label": "Assign a user task" }
+    {
+      "file": "user-task.ts",
+      "region": "AssignUserTask",
+      "label": "Assign a user task"
+    }
   ],
   "completeUserTask": [
-    { "file": "user-task.ts", "region": "CompleteUserTask", "label": "Complete a user task" }
+    {
+      "file": "user-task.ts",
+      "region": "CompleteUserTask",
+      "label": "Complete a user task"
+    }
   ],
   "unassignUserTask": [
-    { "file": "user-task.ts", "region": "UnassignUserTask", "label": "Unassign a user task" }
+    {
+      "file": "user-task.ts",
+      "region": "UnassignUserTask",
+      "label": "Unassign a user task"
+    }
   ],
   "searchUserTasks": [
-    { "file": "user-task.ts", "region": "SearchUserTasks", "label": "Search user tasks" }
+    {
+      "file": "user-task.ts",
+      "region": "SearchUserTasks",
+      "label": "Search user tasks"
+    }
   ],
   "activateJobs": [
-    { "file": "job.ts", "region": "ActivateJobs", "label": "Activate and process jobs" }
+    {
+      "file": "job.ts",
+      "region": "ActivateJobs",
+      "label": "Activate and process jobs"
+    }
   ],
-  "completeJob": [{ "file": "job.ts", "region": "CompleteJob", "label": "Complete a job" }],
-  "failJob": [{ "file": "job.ts", "region": "FailJob", "label": "Fail a job with retry" }],
+  "completeJob": [
+    {
+      "file": "job.ts",
+      "region": "CompleteJob",
+      "label": "Complete a job"
+    }
+  ],
+  "failJob": [
+    {
+      "file": "job.ts",
+      "region": "FailJob",
+      "label": "Fail a job with retry"
+    }
+  ],
   "correlateMessage": [
-    { "file": "message-signal.ts", "region": "CorrelateMessage", "label": "Correlate a message" }
+    {
+      "file": "message-signal.ts",
+      "region": "CorrelateMessage",
+      "label": "Correlate a message"
+    }
   ],
   "publishMessage": [
-    { "file": "message-signal.ts", "region": "PublishMessage", "label": "Publish a message" }
+    {
+      "file": "message-signal.ts",
+      "region": "PublishMessage",
+      "label": "Publish a message"
+    }
   ],
   "broadcastSignal": [
-    { "file": "message-signal.ts", "region": "BroadcastSignal", "label": "Broadcast a signal" }
+    {
+      "file": "message-signal.ts",
+      "region": "BroadcastSignal",
+      "label": "Broadcast a signal"
+    }
   ],
-  "getIncident": [{ "file": "incident.ts", "region": "GetIncident", "label": "Get an incident" }],
+  "getIncident": [
+    {
+      "file": "incident.ts",
+      "region": "GetIncident",
+      "label": "Get an incident"
+    }
+  ],
   "resolveIncident": [
-    { "file": "incident.ts", "region": "ResolveIncident", "label": "Resolve an incident" }
+    {
+      "file": "incident.ts",
+      "region": "ResolveIncident",
+      "label": "Resolve an incident"
+    }
   ],
   "searchIncidents": [
-    { "file": "incident.ts", "region": "SearchIncidents", "label": "Search incidents" }
+    {
+      "file": "incident.ts",
+      "region": "SearchIncidents",
+      "label": "Search incidents"
+    }
   ],
   "createAuthorization": [
     {
@@ -108,7 +178,11 @@
     }
   ],
   "getAuthorization": [
-    { "file": "authorization.ts", "region": "GetAuthorization", "label": "Get an authorization" }
+    {
+      "file": "authorization.ts",
+      "region": "GetAuthorization",
+      "label": "Get an authorization"
+    }
   ],
   "searchAuthorizations": [
     {
@@ -131,21 +205,89 @@
       "label": "Delete an authorization"
     }
   ],
-  "createUser": [{ "file": "user.ts", "region": "CreateUser", "label": "Create a user" }],
-  "createAdminUser": [
-    { "file": "user.ts", "region": "CreateAdminUser", "label": "Create an admin user" }
+  "createUser": [
+    {
+      "file": "user.ts",
+      "region": "CreateUser",
+      "label": "Create a user"
+    }
   ],
-  "getUser": [{ "file": "user.ts", "region": "GetUser", "label": "Get a user" }],
-  "searchUsers": [{ "file": "user.ts", "region": "SearchUsers", "label": "Search users" }],
-  "updateUser": [{ "file": "user.ts", "region": "UpdateUser", "label": "Update a user" }],
-  "deleteUser": [{ "file": "user.ts", "region": "DeleteUser", "label": "Delete a user" }],
-  "createGroup": [{ "file": "group.ts", "region": "CreateGroup", "label": "Create a group" }],
-  "getGroup": [{ "file": "group.ts", "region": "GetGroup", "label": "Get a group" }],
-  "searchGroups": [{ "file": "group.ts", "region": "SearchGroups", "label": "Search groups" }],
-  "updateGroup": [{ "file": "group.ts", "region": "UpdateGroup", "label": "Update a group" }],
-  "deleteGroup": [{ "file": "group.ts", "region": "DeleteGroup", "label": "Delete a group" }],
+  "createAdminUser": [
+    {
+      "file": "user.ts",
+      "region": "CreateAdminUser",
+      "label": "Create an admin user"
+    }
+  ],
+  "getUser": [
+    {
+      "file": "user.ts",
+      "region": "GetUser",
+      "label": "Get a user"
+    }
+  ],
+  "searchUsers": [
+    {
+      "file": "user.ts",
+      "region": "SearchUsers",
+      "label": "Search users"
+    }
+  ],
+  "updateUser": [
+    {
+      "file": "user.ts",
+      "region": "UpdateUser",
+      "label": "Update a user"
+    }
+  ],
+  "deleteUser": [
+    {
+      "file": "user.ts",
+      "region": "DeleteUser",
+      "label": "Delete a user"
+    }
+  ],
+  "createGroup": [
+    {
+      "file": "group.ts",
+      "region": "CreateGroup",
+      "label": "Create a group"
+    }
+  ],
+  "getGroup": [
+    {
+      "file": "group.ts",
+      "region": "GetGroup",
+      "label": "Get a group"
+    }
+  ],
+  "searchGroups": [
+    {
+      "file": "group.ts",
+      "region": "SearchGroups",
+      "label": "Search groups"
+    }
+  ],
+  "updateGroup": [
+    {
+      "file": "group.ts",
+      "region": "UpdateGroup",
+      "label": "Update a group"
+    }
+  ],
+  "deleteGroup": [
+    {
+      "file": "group.ts",
+      "region": "DeleteGroup",
+      "label": "Delete a group"
+    }
+  ],
   "assignUserToGroup": [
-    { "file": "group.ts", "region": "AssignUserToGroup", "label": "Assign a user to a group" }
+    {
+      "file": "group.ts",
+      "region": "AssignUserToGroup",
+      "label": "Assign a user to a group"
+    }
   ],
   "unassignUserFromGroup": [
     {
@@ -155,7 +297,11 @@
     }
   ],
   "assignClientToGroup": [
-    { "file": "group.ts", "region": "AssignClientToGroup", "label": "Assign a client to a group" }
+    {
+      "file": "group.ts",
+      "region": "AssignClientToGroup",
+      "label": "Assign a client to a group"
+    }
   ],
   "unassignClientFromGroup": [
     {
@@ -165,13 +311,25 @@
     }
   ],
   "searchUsersForGroup": [
-    { "file": "group.ts", "region": "SearchUsersForGroup", "label": "Search users in a group" }
+    {
+      "file": "group.ts",
+      "region": "SearchUsersForGroup",
+      "label": "Search users in a group"
+    }
   ],
   "searchClientsForGroup": [
-    { "file": "group.ts", "region": "SearchClientsForGroup", "label": "Search clients in a group" }
+    {
+      "file": "group.ts",
+      "region": "SearchClientsForGroup",
+      "label": "Search clients in a group"
+    }
   ],
   "searchRolesForGroup": [
-    { "file": "group.ts", "region": "SearchRolesForGroup", "label": "Search roles for a group" }
+    {
+      "file": "group.ts",
+      "region": "SearchRolesForGroup",
+      "label": "Search roles for a group"
+    }
   ],
   "assignMappingRuleToGroup": [
     {
@@ -194,19 +352,61 @@
       "label": "Search mapping rules for a group"
     }
   ],
-  "createRole": [{ "file": "role.ts", "region": "CreateRole", "label": "Create a role" }],
-  "getRole": [{ "file": "role.ts", "region": "GetRole", "label": "Get a role" }],
-  "searchRoles": [{ "file": "role.ts", "region": "SearchRoles", "label": "Search roles" }],
-  "updateRole": [{ "file": "role.ts", "region": "UpdateRole", "label": "Update a role" }],
-  "deleteRole": [{ "file": "role.ts", "region": "DeleteRole", "label": "Delete a role" }],
+  "createRole": [
+    {
+      "file": "role.ts",
+      "region": "CreateRole",
+      "label": "Create a role"
+    }
+  ],
+  "getRole": [
+    {
+      "file": "role.ts",
+      "region": "GetRole",
+      "label": "Get a role"
+    }
+  ],
+  "searchRoles": [
+    {
+      "file": "role.ts",
+      "region": "SearchRoles",
+      "label": "Search roles"
+    }
+  ],
+  "updateRole": [
+    {
+      "file": "role.ts",
+      "region": "UpdateRole",
+      "label": "Update a role"
+    }
+  ],
+  "deleteRole": [
+    {
+      "file": "role.ts",
+      "region": "DeleteRole",
+      "label": "Delete a role"
+    }
+  ],
   "assignRoleToUser": [
-    { "file": "role.ts", "region": "AssignRoleToUser", "label": "Assign a role to a user" }
+    {
+      "file": "role.ts",
+      "region": "AssignRoleToUser",
+      "label": "Assign a role to a user"
+    }
   ],
   "unassignRoleFromUser": [
-    { "file": "role.ts", "region": "UnassignRoleFromUser", "label": "Unassign a role from a user" }
+    {
+      "file": "role.ts",
+      "region": "UnassignRoleFromUser",
+      "label": "Unassign a role from a user"
+    }
   ],
   "assignRoleToGroup": [
-    { "file": "role.ts", "region": "AssignRoleToGroup", "label": "Assign a role to a group" }
+    {
+      "file": "role.ts",
+      "region": "AssignRoleToGroup",
+      "label": "Assign a role to a group"
+    }
   ],
   "unassignRoleFromGroup": [
     {
@@ -216,7 +416,11 @@
     }
   ],
   "assignRoleToClient": [
-    { "file": "role.ts", "region": "AssignRoleToClient", "label": "Assign a role to a client" }
+    {
+      "file": "role.ts",
+      "region": "AssignRoleToClient",
+      "label": "Assign a role to a client"
+    }
   ],
   "unassignRoleFromClient": [
     {
@@ -240,13 +444,25 @@
     }
   ],
   "searchUsersForRole": [
-    { "file": "role.ts", "region": "SearchUsersForRole", "label": "Search users for a role" }
+    {
+      "file": "role.ts",
+      "region": "SearchUsersForRole",
+      "label": "Search users for a role"
+    }
   ],
   "searchGroupsForRole": [
-    { "file": "role.ts", "region": "SearchGroupsForRole", "label": "Search groups for a role" }
+    {
+      "file": "role.ts",
+      "region": "SearchGroupsForRole",
+      "label": "Search groups for a role"
+    }
   ],
   "searchClientsForRole": [
-    { "file": "role.ts", "region": "SearchClientsForRole", "label": "Search clients for a role" }
+    {
+      "file": "role.ts",
+      "region": "SearchClientsForRole",
+      "label": "Search clients for a role"
+    }
   ],
   "searchMappingRulesForRole": [
     {
@@ -255,13 +471,47 @@
       "label": "Search mapping rules for a role"
     }
   ],
-  "createTenant": [{ "file": "tenant.ts", "region": "CreateTenant", "label": "Create a tenant" }],
-  "getTenant": [{ "file": "tenant.ts", "region": "GetTenant", "label": "Get a tenant" }],
-  "searchTenants": [{ "file": "tenant.ts", "region": "SearchTenants", "label": "Search tenants" }],
-  "updateTenant": [{ "file": "tenant.ts", "region": "UpdateTenant", "label": "Update a tenant" }],
-  "deleteTenant": [{ "file": "tenant.ts", "region": "DeleteTenant", "label": "Delete a tenant" }],
+  "createTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "CreateTenant",
+      "label": "Create a tenant"
+    }
+  ],
+  "getTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "GetTenant",
+      "label": "Get a tenant"
+    }
+  ],
+  "searchTenants": [
+    {
+      "file": "tenant.ts",
+      "region": "SearchTenants",
+      "label": "Search tenants"
+    }
+  ],
+  "updateTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "UpdateTenant",
+      "label": "Update a tenant"
+    }
+  ],
+  "deleteTenant": [
+    {
+      "file": "tenant.ts",
+      "region": "DeleteTenant",
+      "label": "Delete a tenant"
+    }
+  ],
   "assignUserToTenant": [
-    { "file": "tenant.ts", "region": "AssignUserToTenant", "label": "Assign a user to a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "AssignUserToTenant",
+      "label": "Assign a user to a tenant"
+    }
   ],
   "unassignUserFromTenant": [
     {
@@ -271,7 +521,11 @@
     }
   ],
   "assignGroupToTenant": [
-    { "file": "tenant.ts", "region": "AssignGroupToTenant", "label": "Assign a group to a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "AssignGroupToTenant",
+      "label": "Assign a group to a tenant"
+    }
   ],
   "unassignGroupFromTenant": [
     {
@@ -281,7 +535,11 @@
     }
   ],
   "assignRoleToTenant": [
-    { "file": "tenant.ts", "region": "AssignRoleToTenant", "label": "Assign a role to a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "AssignRoleToTenant",
+      "label": "Assign a role to a tenant"
+    }
   ],
   "unassignRoleFromTenant": [
     {
@@ -319,7 +577,11 @@
     }
   ],
   "searchUsersForTenant": [
-    { "file": "tenant.ts", "region": "SearchUsersForTenant", "label": "Search users for a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "SearchUsersForTenant",
+      "label": "Search users for a tenant"
+    }
   ],
   "searchClientsForTenant": [
     {
@@ -336,7 +598,11 @@
     }
   ],
   "searchRolesForTenant": [
-    { "file": "tenant.ts", "region": "SearchRolesForTenant", "label": "Search roles for a tenant" }
+    {
+      "file": "tenant.ts",
+      "region": "SearchRolesForTenant",
+      "label": "Search roles for a tenant"
+    }
   ],
   "searchMappingRulesForTenant": [
     {
@@ -346,19 +612,39 @@
     }
   ],
   "createMappingRule": [
-    { "file": "mapping-rule.ts", "region": "CreateMappingRule", "label": "Create a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "CreateMappingRule",
+      "label": "Create a mapping rule"
+    }
   ],
   "getMappingRule": [
-    { "file": "mapping-rule.ts", "region": "GetMappingRule", "label": "Get a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "GetMappingRule",
+      "label": "Get a mapping rule"
+    }
   ],
   "searchMappingRule": [
-    { "file": "mapping-rule.ts", "region": "SearchMappingRule", "label": "Search mapping rules" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "SearchMappingRule",
+      "label": "Search mapping rules"
+    }
   ],
   "updateMappingRule": [
-    { "file": "mapping-rule.ts", "region": "UpdateMappingRule", "label": "Update a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "UpdateMappingRule",
+      "label": "Update a mapping rule"
+    }
   ],
   "deleteMappingRule": [
-    { "file": "mapping-rule.ts", "region": "DeleteMappingRule", "label": "Delete a mapping rule" }
+    {
+      "file": "mapping-rule.ts",
+      "region": "DeleteMappingRule",
+      "label": "Delete a mapping rule"
+    }
   ],
   "getBatchOperation": [
     {
@@ -557,10 +843,18 @@
     }
   ],
   "getVariable": [
-    { "file": "extended-operations.ts", "region": "GetVariable", "label": "Get a variable" }
+    {
+      "file": "extended-operations.ts",
+      "region": "GetVariable",
+      "label": "Get a variable"
+    }
   ],
   "searchVariables": [
-    { "file": "extended-operations.ts", "region": "SearchVariables", "label": "Search variables" }
+    {
+      "file": "extended-operations.ts",
+      "region": "SearchVariables",
+      "label": "Search variables"
+    }
   ],
   "getElementInstance": [
     {
@@ -654,19 +948,39 @@
     }
   ],
   "deleteDocument": [
-    { "file": "additional-operations.ts", "region": "DeleteDocument", "label": "Delete a document" }
+    {
+      "file": "additional-operations.ts",
+      "region": "DeleteDocument",
+      "label": "Delete a document"
+    }
   ],
   "throwJobError": [
-    { "file": "additional-operations.ts", "region": "ThrowJobError", "label": "Throw a job error" }
+    {
+      "file": "additional-operations.ts",
+      "region": "ThrowJobError",
+      "label": "Throw a job error"
+    }
   ],
   "updateJob": [
-    { "file": "additional-operations.ts", "region": "UpdateJob", "label": "Update a job" }
+    {
+      "file": "additional-operations.ts",
+      "region": "UpdateJob",
+      "label": "Update a job"
+    }
   ],
   "searchJobs": [
-    { "file": "additional-operations.ts", "region": "SearchJobs", "label": "Search jobs" }
+    {
+      "file": "additional-operations.ts",
+      "region": "SearchJobs",
+      "label": "Search jobs"
+    }
   ],
   "getUserTask": [
-    { "file": "additional-operations.ts", "region": "GetUserTask", "label": "Get a user task" }
+    {
+      "file": "additional-operations.ts",
+      "region": "GetUserTask",
+      "label": "Get a user task"
+    }
   ],
   "updateUserTask": [
     {
@@ -795,7 +1109,11 @@
     }
   ],
   "getLicense": [
-    { "file": "admin-operations.ts", "region": "GetLicense", "label": "Get license information" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetLicense",
+      "label": "Get license information"
+    }
   ],
   "getSystemConfiguration": [
     {
@@ -812,13 +1130,25 @@
     }
   ],
   "getStatus": [
-    { "file": "admin-operations.ts", "region": "GetStatus", "label": "Check cluster status" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetStatus",
+      "label": "Check cluster status"
+    }
   ],
   "pinClock": [
-    { "file": "admin-operations.ts", "region": "PinClock", "label": "Pin the cluster clock" }
+    {
+      "file": "admin-operations.ts",
+      "region": "PinClock",
+      "label": "Pin the cluster clock"
+    }
   ],
   "resetClock": [
-    { "file": "admin-operations.ts", "region": "ResetClock", "label": "Reset the cluster clock" }
+    {
+      "file": "admin-operations.ts",
+      "region": "ResetClock",
+      "label": "Reset the cluster clock"
+    }
   ],
   "evaluateConditionals": [
     {
@@ -835,7 +1165,11 @@
     }
   ],
   "getResource": [
-    { "file": "admin-operations.ts", "region": "GetResource", "label": "Get a resource" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetResource",
+      "label": "Get a resource"
+    }
   ],
   "getResourceContent": [
     {
@@ -845,7 +1179,11 @@
     }
   ],
   "getUsageMetrics": [
-    { "file": "admin-operations.ts", "region": "GetUsageMetrics", "label": "Get usage metrics" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetUsageMetrics",
+      "label": "Get usage metrics"
+    }
   ],
   "searchMessageSubscriptions": [
     {
@@ -862,10 +1200,18 @@
     }
   ],
   "getAuditLog": [
-    { "file": "admin-operations.ts", "region": "GetAuditLog", "label": "Get an audit log entry" }
+    {
+      "file": "admin-operations.ts",
+      "region": "GetAuditLog",
+      "label": "Get an audit log entry"
+    }
   ],
   "searchAuditLogs": [
-    { "file": "admin-operations.ts", "region": "SearchAuditLogs", "label": "Search audit logs" }
+    {
+      "file": "admin-operations.ts",
+      "region": "SearchAuditLogs",
+      "label": "Search audit logs"
+    }
   ],
   "getProcessInstanceStatisticsByError": [
     {
