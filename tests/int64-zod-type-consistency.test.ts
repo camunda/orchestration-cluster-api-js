@@ -20,7 +20,7 @@ describe('int64 Zod/TypeScript type consistency', () => {
     expect(
       matches.length,
       `Found ${matches.length} occurrence(s) of z.coerce.bigint() in zod.gen.ts. ` +
-        'All int64 fields should use z.coerce.number() to match the TypeScript types. ' +
+        'All int64 fields should use z.coerce.number().int() to match the TypeScript types. ' +
         'See https://github.com/camunda/orchestration-cluster-api-js/issues/124'
     ).toBe(0);
   });

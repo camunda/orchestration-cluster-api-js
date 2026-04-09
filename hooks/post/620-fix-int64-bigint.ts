@@ -26,7 +26,11 @@ if (!fs.existsSync(zodGenPath)) {
 }
 
 const source = fs.readFileSync(zodGenPath, 'utf8');
-let patched = source.replaceAll('z.coerce.bigint()', 'z.coerce.number()');
+
+// Replace z.coerce.bigint() with z.coerce.number().int() to keep integer
+// semantics (rejects 1.5 under strict/fanatical) while aligning the runtime
+// type with the TypeScript `number` declaration.
+let patched = source.replaceAll('z.coerce.bigint()', 'z.coerce.number().int()');
 
 // Also replace BigInt(...) literals used in .default(), .gte(), .min(), .max()
 // constraints — these are invalid on z.number() and should be plain numbers.
@@ -34,14 +38,14 @@ const bigIntLiteralCount = (patched.match(/BigInt\(\s*[\d-]+\s*\)/g) ?? []).leng
 patched = patched.replace(/BigInt\(\s*([\d-]+)\s*\)/g, '$1');
 
 const count = (source.match(/z\.coerce\.bigint\(\)/g) ?? []).length;
+const didPatch = count > 0 || bigIntLiteralCount > 0;
 
-if (count > 0) {
+if (didPatch) {
   fs.writeFileSync(zodGenPath, patched, 'utf8');
-  console.log(
-    `[fix-int64-bigint] Replaced ${count} z.coerce.bigint() → z.coerce.number()` +
-      (bigIntLiteralCount > 0 ? ` and ${bigIntLiteralCount} BigInt() literal(s)` : '') +
-      ' in zod.gen.ts'
-  );
+  const parts: string[] = [];
+  if (count > 0) parts.push(`${count} z.coerce.bigint() → z.coerce.number().int()`);
+  if (bigIntLiteralCount > 0) parts.push(`${bigIntLiteralCount} BigInt() literal(s)`);
+  console.log(`[fix-int64-bigint] Replaced ${parts.join(' and ')} in zod.gen.ts`);
 } else {
-  console.log('[fix-int64-bigint] No z.coerce.bigint() found — nothing to patch');
+  console.log('[fix-int64-bigint] No z.coerce.bigint() or BigInt() literals found — nothing to patch');
 }

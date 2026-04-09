@@ -258,7 +258,7 @@ Behavior:
 - `strict` - fail on type mismatch or missing required fields
 - `fanatical` - fail on type mismatch, missing required fields, or unknown additional fields
 
-> **Note on `int64` fields**: The upstream OpenAPI spec declares some fields (e.g. `totalItems`, `timeout`, `timestamp`) as `integer` with `format: int64`. The TypeScript types map these to `number`. JSON responses also deserialize as `number` (with precision loss beyond `Number.MAX_SAFE_INTEGER`). The Zod schemas align with this — all `int64` fields validate as `number`, so `strict` and `fanatical` modes return the same types as `none` and `warn`.
+> **Note on `int64` fields**: The upstream OpenAPI spec declares some fields (e.g. `totalItems`, `timeout`, `timestamp`) as `integer` with `format: int64`. The TypeScript types map these to `number`. JSON responses also deserialize as `number` (with precision loss beyond `Number.MAX_SAFE_INTEGER`). The Zod schemas use `z.coerce.number().int()` for these fields, preserving the integer constraint while keeping the runtime type aligned with TypeScript. All validation modes (`none`, `warn`, `strict`, `fanatical`) return `number`.
 
 ## Per-Method Retry Override
 

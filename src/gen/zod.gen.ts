@@ -319,7 +319,7 @@ export const zBatchOperationTypeEnum = z.enum([
 });
 
 export const zClockPinRequest = z.object({
-    timestamp: z.coerce.number().register(z.globalRegistry, {
+    timestamp: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The exact time in epoch milliseconds to which the clock should be pinned.'
     })
 });
@@ -576,7 +576,7 @@ export const zDocumentCreationFailureDetail = z.object({
 });
 
 export const zDocumentLinkRequest = z.object({
-    timeToLive: z.optional(z.coerce.number().register(z.globalRegistry, {
+    timeToLive: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'The time-to-live of the document link in ms.'
     })).default(3600000)
 });
@@ -1400,7 +1400,7 @@ export const zIncidentProcessInstanceStatisticsByErrorResult = z.object({
     errorMessage: z.string().register(z.globalRegistry, {
         description: 'The error message associated with the incident error hash code.'
     }),
-    activeInstancesWithErrorCount: z.coerce.number().register(z.globalRegistry, {
+    activeInstancesWithErrorCount: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The number of active process instances that currently have an active incident with this error.\n'
     })
 });
@@ -1420,7 +1420,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionFilter = z.object({
  * Metric for a single job status.
  */
 export const zStatusMetric = z.object({
-    count: z.coerce.number().register(z.globalRegistry, {
+    count: z.coerce.number().int().register(z.globalRegistry, {
         description: 'Number of jobs in this status.'
     }),
     lastUpdatedAt: z.union([
@@ -1585,7 +1585,7 @@ export const zJobFailRequest = z.object({
     errorMessage: z.optional(z.string().register(z.globalRegistry, {
         description: 'An optional error message describing why the job failed; if not provided, an empty string is used.'
     })),
-    retryBackOff: z.optional(z.coerce.number().register(z.globalRegistry, {
+    retryBackOff: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'An optional retry back off for the failed job. The job will not be retryable before the current time plus the back off time. The default is 0 which means the job is retryable immediately.'
     })).default(0),
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
@@ -1740,7 +1740,7 @@ export const zJobChangeset = z.object({
         z.null()
     ])),
     timeout: z.optional(z.union([
-        z.coerce.number(),
+        z.coerce.number().int(),
         z.null()
     ]))
 }).register(z.globalRegistry, {
@@ -1765,7 +1765,7 @@ export const zJobActivationRequest = z.object({
     worker: z.optional(z.string().register(z.globalRegistry, {
         description: 'The name of the worker activating the jobs, mostly used for logging purposes.'
     })),
-    timeout: z.coerce.number().register(z.globalRegistry, {
+    timeout: z.coerce.number().int().register(z.globalRegistry, {
         description: 'A job returned after this call will not be activated by another call until the timeout (in ms) has been reached.\n'
     }),
     maxJobsToActivate: z.int().register(z.globalRegistry, {
@@ -1774,7 +1774,7 @@ export const zJobActivationRequest = z.object({
     fetchVariable: z.optional(z.array(z.string()).register(z.globalRegistry, {
         description: 'A list of variables to fetch as the job variables; if empty, all visible variables at the time of activation for the scope of the job will be returned.'
     })),
-    requestTimeout: z.optional(z.coerce.number().register(z.globalRegistry, {
+    requestTimeout: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'The request will be completed when at least one job is activated or after the requestTimeout (in ms). If the requestTimeout = 0, a default timeout is used. If the requestTimeout < 0, long polling is disabled and the request is completed immediately, even when no job is activated.\n'
     })),
     tenantIds: z.optional(z.array(zTenantId).register(z.globalRegistry, {
@@ -1969,7 +1969,7 @@ export const zDocumentMetadata = z.object({
     expiresAt: z.optional(z.iso.datetime().register(z.globalRegistry, {
         description: 'The date and time when the document expires.'
     })),
-    size: z.optional(z.coerce.number().register(z.globalRegistry, {
+    size: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'The size of the document in bytes.'
     })),
     processDefinitionId: z.optional(zProcessDefinitionId),
@@ -1995,7 +1995,7 @@ export const zDocumentMetadataResponse = z.object({
         z.iso.datetime(),
         z.null()
     ]),
-    size: z.coerce.number().register(z.globalRegistry, {
+    size: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The size of the document in bytes.'
     }),
     processDefinitionId: z.union([
@@ -2092,7 +2092,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
         description: 'The version of the process definition.'
     }),
     tenantId: zTenantId,
-    activeInstancesWithErrorCount: z.coerce.number().register(z.globalRegistry, {
+    activeInstancesWithErrorCount: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The number of active process instances that currently have an incident\nwith the specified error hash code.\n'
     })
 });
@@ -2135,7 +2135,7 @@ export const zFormResult = z.object({
     schema: z.string().register(z.globalRegistry, {
         description: 'The form schema as a JSON document serialized as a string.'
     }),
-    version: z.coerce.number().register(z.globalRegistry, {
+    version: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The version of the the deployed form.'
     }),
     formKey: zFormKey
@@ -2316,7 +2316,7 @@ export const zActivatedJobResult = z.object({
     retries: z.int().register(z.globalRegistry, {
         description: 'The amount of retries left to this job (should always be positive).'
     }),
-    deadline: z.coerce.number().register(z.globalRegistry, {
+    deadline: z.coerce.number().int().register(z.globalRegistry, {
         description: 'When the job can be activated again, sent as a UNIX epoch timestamp.'
     }),
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
@@ -2900,7 +2900,7 @@ export const zDeleteResourceResponse = z.object({
  * Must be > 0 if provided.
  *
  */
-export const zOperationReference = z.coerce.number().gte(1).register(z.globalRegistry, {
+export const zOperationReference = z.coerce.number().int().gte(1).register(z.globalRegistry, {
     description: 'A reference key chosen by the user that will be part of all records resulting from this operation.\nMust be > 0 if provided.\n'
 });
 
@@ -3415,7 +3415,7 @@ export const zMessagePublicationRequest = z.object({
     correlationKey: z.optional(z.string().register(z.globalRegistry, {
         description: 'The correlation key of the message.'
     })).default(''),
-    timeToLive: z.optional(z.coerce.number().register(z.globalRegistry, {
+    timeToLive: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'Timespan (in ms) to buffer the message on the broker.'
     })).default(0),
     messageId: z.optional(z.string().register(z.globalRegistry, {
@@ -3658,16 +3658,16 @@ export const zProcessDefinitionResult = z.object({
  */
 export const zProcessElementStatisticsResult = z.object({
     elementId: zElementId,
-    active: z.coerce.number().register(z.globalRegistry, {
+    active: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The total number of active instances of the element.'
     }),
-    canceled: z.coerce.number().register(z.globalRegistry, {
+    canceled: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The total number of canceled instances of the element.'
     }),
-    incidents: z.coerce.number().register(z.globalRegistry, {
+    incidents: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The total number of incidents for the element.'
     }),
-    completed: z.coerce.number().register(z.globalRegistry, {
+    completed: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The total number of completed instances of the element.'
     })
 }).register(z.globalRegistry, {
@@ -3689,10 +3689,10 @@ export const zProcessDefinitionMessageSubscriptionStatisticsResult = z.object({
     processDefinitionId: zProcessDefinitionId,
     tenantId: zTenantId,
     processDefinitionKey: zProcessDefinitionKey,
-    processInstancesWithActiveSubscriptions: z.coerce.number().register(z.globalRegistry, {
+    processInstancesWithActiveSubscriptions: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The number of process instances with active message subscriptions.'
     }),
-    activeSubscriptions: z.coerce.number().register(z.globalRegistry, {
+    activeSubscriptions: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The total number of active message subscriptions for this process definition key.'
     })
 });
@@ -3710,10 +3710,10 @@ export const zProcessDefinitionInstanceStatisticsResult = z.object({
     hasMultipleVersions: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether multiple versions of this process definition instance are deployed.'
     }),
-    activeInstancesWithoutIncidentCount: z.coerce.number().register(z.globalRegistry, {
+    activeInstancesWithoutIncidentCount: z.coerce.number().int().register(z.globalRegistry, {
         description: 'Total number of currently active process instances of this definition that do not have incidents.'
     }),
-    activeInstancesWithIncidentCount: z.coerce.number().register(z.globalRegistry, {
+    activeInstancesWithIncidentCount: z.coerce.number().int().register(z.globalRegistry, {
         description: 'Total number of currently active process instances of this definition that have at least one incident.'
     })
 }).register(z.globalRegistry, {
@@ -3744,10 +3744,10 @@ export const zProcessDefinitionInstanceVersionStatisticsResult = z.object({
     processDefinitionVersion: z.int().register(z.globalRegistry, {
         description: 'The version number of the process definition.'
     }),
-    activeInstancesWithIncidentCount: z.coerce.number().register(z.globalRegistry, {
+    activeInstancesWithIncidentCount: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The number of active process instances for this version that currently have incidents.'
     }),
-    activeInstancesWithoutIncidentCount: z.coerce.number().register(z.globalRegistry, {
+    activeInstancesWithoutIncidentCount: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The number of active process instances for this version that do not have any incidents.'
     })
 }).register(z.globalRegistry, {
@@ -3800,7 +3800,7 @@ export const zProcessInstanceCreationInstructionById = z.object({
     fetchVariables: z.optional(z.array(z.string()).register(z.globalRegistry, {
         description: 'List of variables by name to be included in the response when awaitCompletion is set to true.\nIf empty, all visible variables in the root scope will be returned.\n'
     })),
-    requestTimeout: z.optional(z.coerce.number().register(z.globalRegistry, {
+    requestTimeout: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n'
     })).default(0),
     tags: z.optional(zTagSet),
@@ -3829,7 +3829,7 @@ export const zProcessInstanceCreationInstructionByKey = z.object({
     awaitCompletion: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Wait for the process instance to complete. If the process instance does not complete\nwithin the request timeout limit, a 504 response status will be returned. The process\ninstance will continue to run in the background regardless of the timeout. Disabled by\ndefault.\n'
     })).default(false),
-    requestTimeout: z.optional(z.coerce.number().register(z.globalRegistry, {
+    requestTimeout: z.optional(z.coerce.number().int().register(z.globalRegistry, {
         description: 'Timeout (in ms) the request waits for the process to complete. By default or\nwhen set to 0, the generic request timeout configured in the cluster is applied.\n'
     })).default(0),
     fetchVariables: z.optional(z.array(z.string()).register(z.globalRegistry, {
@@ -4969,7 +4969,7 @@ export const zRoleGroupSearchQueryRequest = zSearchQueryRequest.and(z.object({
  * Pagination information about the search results.
  */
 export const zSearchQueryPageResponse = z.object({
-    totalItems: z.coerce.number().register(z.globalRegistry, {
+    totalItems: z.coerce.number().int().register(z.globalRegistry, {
         description: 'Total items matching the criteria.'
     }),
     hasMoreTotalItems: z.boolean().register(z.globalRegistry, {
@@ -5292,19 +5292,19 @@ export const zSignalBroadcastResult = z.object({
 });
 
 export const zUsageMetricsResponseItem = z.object({
-    processInstances: z.coerce.number().register(z.globalRegistry, {
+    processInstances: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The amount of created root process instances.'
     }),
-    decisionInstances: z.coerce.number().register(z.globalRegistry, {
+    decisionInstances: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The amount of executed decision instances.'
     }),
-    assignees: z.coerce.number().register(z.globalRegistry, {
+    assignees: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The amount of unique active task users.'
     })
 });
 
 export const zUsageMetricsResponse = zUsageMetricsResponseItem.and(z.object({
-    activeTenants: z.coerce.number().register(z.globalRegistry, {
+    activeTenants: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The amount of active tenants.'
     }),
     tenants: z.record(z.string(), zUsageMetricsResponseItem).register(z.globalRegistry, {
