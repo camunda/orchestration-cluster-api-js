@@ -1,3 +1,11 @@
+# [8.9.0-alpha.37](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.36...v8.9.0-alpha.37) (2026-04-09)
+
+
+### Bug Fixes
+
+* fix for pull request finding ([e5f17cb](https://github.com/camunda/orchestration-cluster-api-js/commit/e5f17cb9d5c0ce73f6456018d9a27384597733b7))
+* prefer deployResourcesFromFiles in API spec examples ([fc4eb38](https://github.com/camunda/orchestration-cluster-api-js/commit/fc4eb38ec1e20d053c67a55d06d8dc68bfb2ce91))
+
 # [8.9.0-alpha.36](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.35...v8.9.0-alpha.36) (2026-04-09)
 
 
