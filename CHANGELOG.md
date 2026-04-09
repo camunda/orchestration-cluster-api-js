@@ -1,3 +1,10 @@
+# [8.9.0-alpha.32](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.31...v8.9.0-alpha.32) (2026-04-09)
+
+
+### Bug Fixes
+
+* disable source links in TypeDoc markdown to prevent SHA churn ([6754e9c](https://github.com/camunda/orchestration-cluster-api-js/commit/6754e9c2739893501ad99efc27809dda25110129))
+
 # [8.9.0-alpha.31](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.30...v8.9.0-alpha.31) (2026-04-09)
 
 
