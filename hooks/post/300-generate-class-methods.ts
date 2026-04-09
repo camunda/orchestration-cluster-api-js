@@ -54,7 +54,9 @@ async function main() {
       const name = mm[1];
       const rhs = mm[2];
       availableResponses.add(name);
-      if (/z\.void\s*\(\)/.test(rhs)) voidResponses.add(name);
+      // Only classify as void if the schema is pure z.void(), not a z.union
+      // that happens to contain z.void() alongside data types (e.g. 200+204).
+      if (/z\.void\s*\(\)/.test(rhs) && !/z\.union\s*\(/.test(rhs)) voidResponses.add(name);
     }
   }
 
