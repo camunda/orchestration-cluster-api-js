@@ -54,19 +54,29 @@ In the vast majority of use-cases, this will not be an issue; but you should be 
 
 SDK 9.x (for Camunda 8.9) introduces two categories of breaking type changes relative to SDK 8.x (for Camunda 8.8). Neither change affects runtime behavior — existing code that compiled against 8.x will run identically — but the compiler will flag type mismatches until you update.
 
-### Search result pagination: optional → required‑nullable
+### Search results: optional → required fields
 
-The `SearchQueryPageResponse` fields changed from **optional** to **required‑but‑nullable**:
+The search result types changed several fields from **optional** to **required**:
+
+**`SearchQueryPageResponse` (page metadata)**
 
 | Field | SDK 8.x (Camunda 8.8) | SDK 9.x (Camunda 8.9) |
 |-------|----------------------|----------------------|
+| `totalItems` | `totalItems?: number` | `totalItems: number` |
+| `hasMoreTotalItems` | `hasMoreTotalItems?: boolean` | `hasMoreTotalItems: boolean` |
 | `endCursor` | `endCursor?: EndCursor` | `endCursor: EndCursor \| null` |
 | `startCursor` | `startCursor?: StartCursor` | `startCursor: StartCursor \| null` |
-| `hasMoreTotalItems` | `hasMoreTotalItems?: boolean` | `hasMoreTotalItems: boolean` |
 
-This reflects upstream OpenAPI spec changes where these fields are now always present in the response, with `null` indicating "no value" rather than being absent.
+**`*SearchQueryResult` types (result containers)**
 
-**What to change**: Update any code that checks for these fields using optional chaining or `undefined` comparisons:
+| Field | SDK 8.x (Camunda 8.8) | SDK 9.x (Camunda 8.9) |
+|-------|----------------------|----------------------|
+| `items` | `items?: T[]` | `items: T[]` |
+| `page` | `page?: SearchQueryPageResponse` | `page: SearchQueryPageResponse` |
+
+This reflects upstream OpenAPI spec changes where these fields are now always present in the response, with `null` indicating "no value" for cursors rather than being absent.
+
+**What to change**: Update code that checks for these fields using optional chaining or `undefined` comparisons. The `items` array and `page` object are now always present, so optional chaining on them is unnecessary:
 
 <!-- snippet-exempt: migration example showing before/after patterns -->
 
@@ -75,11 +85,13 @@ This reflects upstream OpenAPI spec changes where these fields are now always pr
 if (result.page?.endCursor !== undefined) {
   nextPage(result.page.endCursor);
 }
+const count = result.items?.length ?? 0;
 
-// After (9.x) — check for null instead
+// After (9.x) — page and items are always present; check cursors for null
 if (result.page.endCursor !== null) {
   nextPage(result.page.endCursor);
 }
+const count = result.items.length;
 ```
 
 If you have a custom `PagedResponse` type, update its `page` shape to match:
