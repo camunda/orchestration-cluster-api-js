@@ -112,13 +112,35 @@ const allMethods = new Set([...generatedMethods, ...templateMethods]);
 // ── Step 3: Collect all example regions from examples/ ──────────────────────
 
 const REGION_START = /^\s*\/\/#region\s+(.+?)\s*$/;
+const REGION_END = /^\s*\/\/#endregion(?:\s+(.+?))?\s*$/;
 
 function extractRegions(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const regions = new Set();
+  const stack = [];
+
   for (const line of content.split(/\r?\n/)) {
-    const m = line.match(REGION_START);
-    if (m) regions.add(m[1].trim());
+    const startMatch = line.match(REGION_START);
+    if (startMatch) {
+      stack.push(startMatch[1].trim());
+      continue;
+    }
+
+    const endMatch = line.match(REGION_END);
+    if (!endMatch) {
+      continue;
+    }
+
+    if (stack.length === 0) {
+      continue;
+    }
+
+    const openRegion = stack.pop();
+    const endRegion = endMatch[1]?.trim();
+
+    if (!endRegion || endRegion === openRegion) {
+      regions.add(openRegion);
+    }
   }
   return regions;
 }
