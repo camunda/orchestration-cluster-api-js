@@ -35,6 +35,10 @@ If you are debugging generation issues, prefer reproducing with `npm run build:l
 - Spec location constants: `scripts/spec-location.ts`
 - Generator config: `openapi-ts.config.ts`
 
+## Caution: temporary clone directories under `external-spec/`
+
+The spec bundler creates `.tmp-clone-*` directories under `external-spec/upstream/` during sparse clones. These are transient and **must never be committed** — Git treats them as submodule gitlinks (mode `160000`), which breaks clones for anyone without the referenced commit. The `.gitignore` entry `external-spec/upstream/**/.tmp*` prevents this, but if a new `.tmp*` path slips through, remove it with `git rm --cached <path>` and verify with `git ls-tree -r HEAD | grep 160000`.
+
 ## Troubleshooting: `TS2304 Cannot find name '_heyapi_…_'`
 
 ### Symptom
