@@ -194,13 +194,13 @@ There are two separate systems that consume these regions:
 
 **Marker format in README.md:**
 
-```markdown
+````markdown
 <!-- snippet-source: examples/readme.ts | regions: ReadmeCreateClient -->
 
 ```ts
 // This content is auto-replaced by the region named ReadmeCreateClient
 ```
-```
+````
 
 Multiple source files can be listed comma-separated when a composite region spans files:
 
@@ -216,7 +216,7 @@ Multiple source files can be listed comma-separated when a composite region span
 
 **Naming convention:** Regions wired to the README use a `Readme` prefix (e.g., `ReadmeCreateClient`, `ReadmeActivateJobs`). Non-prefixed regions are used only for API docs injection and type-checking.
 
-**CI enforcement:** `npm run sync-readme:check` runs in CI and fails if the README is out of sync or contains un-injected TypeScript code blocks without a `<!-- snippet-exempt -->` marker. The build runs `npm run sync-readme` automatically to keep it updated.
+**CI enforcement:** `npm run sync-readme:check` runs in CI and fails if the README is out of sync or contains un-injected TypeScript/JavaScript code blocks without a `<!-- snippet-exempt -->` marker. The build runs `npm run sync-readme` automatically to keep it updated.
 
 ### Type-Checking (Hook 950)
 
