@@ -1602,6 +1602,7 @@ export class CamundaClient {
    *
     *
    * @example Activate ad-hoc sub-process activities
+   * ```ts
    * async function activateAdHocSubProcessActivitiesExample(
    *   adHocSubProcessInstanceKey: ElementInstanceKey,
    *   elementId: ElementId
@@ -1613,6 +1614,7 @@ export class CamundaClient {
    *     elements: [{ elementId }],
    *   });
    * }
+   * ```
    * @operationId activateAdHocSubProcessActivities
    * @tags Ad-hoc sub-process
    */
@@ -1677,6 +1679,7 @@ export class CamundaClient {
    *
     *
    * @example Activate and process jobs
+   * ```ts
    * async function activateJobsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -1693,6 +1696,7 @@ export class CamundaClient {
    *     await job.complete({ paymentId: 'PAY-123' });
    *   }
    * }
+   * ```
    * @operationId activateJobs
    * @tags Job
    */
@@ -1757,6 +1761,7 @@ export class CamundaClient {
    *
     *
    * @example Assign a client to a group
+   * ```ts
    * async function assignClientToGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -1765,6 +1770,7 @@ export class CamundaClient {
    *     clientId: 'my-service-account',
    *   });
    * }
+   * ```
    * @operationId assignClientToGroup
    * @tags Group
    */
@@ -1828,6 +1834,7 @@ export class CamundaClient {
    *
     *
    * @example Assign a client to a tenant
+   * ```ts
    * async function assignClientToTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -1836,6 +1843,7 @@ export class CamundaClient {
    *     clientId: 'my-service-account',
    *   });
    * }
+   * ```
    * @operationId assignClientToTenant
    * @tags Tenant
    */
@@ -1899,6 +1907,7 @@ export class CamundaClient {
    *
     *
    * @example Assign a group to a tenant
+   * ```ts
    * async function assignGroupToTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -1907,6 +1916,7 @@ export class CamundaClient {
    *     groupId: 'engineering-team',
    *   });
    * }
+   * ```
    * @operationId assignGroupToTenant
    * @tags Tenant
    */
@@ -1968,6 +1978,7 @@ export class CamundaClient {
    * Assigns a mapping rule to a group.
     *
    * @example Assign a mapping rule to a group
+   * ```ts
    * async function assignMappingRuleToGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -1976,6 +1987,7 @@ export class CamundaClient {
    *     mappingRuleId: 'rule-123',
    *   });
    * }
+   * ```
    * @operationId assignMappingRuleToGroup
    * @tags Group
    */
@@ -2037,6 +2049,7 @@ export class CamundaClient {
    * Assign a single mapping rule to a specified tenant.
     *
    * @example Assign a mapping rule to a tenant
+   * ```ts
    * async function assignMappingRuleToTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -2045,6 +2058,7 @@ export class CamundaClient {
    *     mappingRuleId: 'rule-123',
    *   });
    * }
+   * ```
    * @operationId assignMappingRuleToTenant
    * @tags Tenant
    */
@@ -2106,6 +2120,7 @@ export class CamundaClient {
    * Assigns the specified role to the client. The client will inherit the authorizations associated with this role.
     *
    * @example Assign a role to a client
+   * ```ts
    * async function assignRoleToClientExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -2114,6 +2129,7 @@ export class CamundaClient {
    *     clientId: 'my-service-account',
    *   });
    * }
+   * ```
    * @operationId assignRoleToClient
    * @tags Role
    */
@@ -2175,6 +2191,7 @@ export class CamundaClient {
    * Assigns the specified role to the group. Every member of the group (user or client) will inherit the authorizations associated with this role.
     *
    * @example Assign a role to a group
+   * ```ts
    * async function assignRoleToGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -2183,6 +2200,7 @@ export class CamundaClient {
    *     groupId: 'engineering-team',
    *   });
    * }
+   * ```
    * @operationId assignRoleToGroup
    * @tags Role
    */
@@ -2244,6 +2262,7 @@ export class CamundaClient {
    * Assigns a role to a mapping rule.
     *
    * @example Assign a role to a mapping rule
+   * ```ts
    * async function assignRoleToMappingRuleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -2252,6 +2271,7 @@ export class CamundaClient {
    *     mappingRuleId: 'rule-123',
    *   });
    * }
+   * ```
    * @operationId assignRoleToMappingRule
    * @tags Role
    */
@@ -2315,6 +2335,7 @@ export class CamundaClient {
    *
     *
    * @example Assign a role to a tenant
+   * ```ts
    * async function assignRoleToTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -2323,6 +2344,7 @@ export class CamundaClient {
    *     roleId: 'process-admin',
    *   });
    * }
+   * ```
    * @operationId assignRoleToTenant
    * @tags Tenant
    */
@@ -2384,6 +2406,7 @@ export class CamundaClient {
    * Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
     *
    * @example Assign a role to a user
+   * ```ts
    * async function assignRoleToUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -2392,6 +2415,7 @@ export class CamundaClient {
    *     username,
    *   });
    * }
+   * ```
    * @operationId assignRoleToUser
    * @tags Role
    */
@@ -2454,6 +2478,7 @@ export class CamundaClient {
    *
     *
    * @example Assign a user task
+   * ```ts
    * async function assignUserTaskExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -2463,6 +2488,7 @@ export class CamundaClient {
    *     allowOverride: true,
    *   });
    * }
+   * ```
    * @operationId assignUserTask
    * @tags User task
    */
@@ -2528,6 +2554,7 @@ export class CamundaClient {
    *
     *
    * @example Assign a user to a group
+   * ```ts
    * async function assignUserToGroupExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -2536,6 +2563,7 @@ export class CamundaClient {
    *     username,
    *   });
    * }
+   * ```
    * @operationId assignUserToGroup
    * @tags Group
    */
@@ -2597,6 +2625,7 @@ export class CamundaClient {
    * Assign a single user to a specified tenant. The user can then access tenant data and perform authorized actions.
     *
    * @example Assign a user to a tenant
+   * ```ts
    * async function assignUserToTenantExample(tenantId: TenantId, username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -2605,6 +2634,7 @@ export class CamundaClient {
    *     username,
    *   });
    * }
+   * ```
    * @operationId assignUserToTenant
    * @tags Tenant
    */
@@ -2666,6 +2696,7 @@ export class CamundaClient {
    * Broadcasts a signal.
     *
    * @example Broadcast a signal
+   * ```ts
    * async function broadcastSignalExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -2678,6 +2709,7 @@ export class CamundaClient {
    * 
    *   console.log(`Signal broadcast key: ${result.signalKey}`);
    * }
+   * ```
    * @operationId broadcastSignal
    * @tags Signal
    */
@@ -2745,11 +2777,13 @@ export class CamundaClient {
    *
     *
    * @example Cancel a batch operation
+   * ```ts
    * async function cancelBatchOperationExample(batchOperationKey: BatchOperationKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.cancelBatchOperation({ batchOperationKey });
    * }
+   * ```
    * @operationId cancelBatchOperation
    * @tags Batch operation
    */
@@ -2814,6 +2848,7 @@ export class CamundaClient {
    *
     *
    * @example Cancel a process instance
+   * ```ts
    * async function cancelProcessInstanceExample(processDefinitionId: ProcessDefinitionId) {
    *   const camunda = createCamundaClient();
    * 
@@ -2827,6 +2862,7 @@ export class CamundaClient {
    *     processInstanceKey: created.processInstanceKey,
    *   });
    * }
+   * ```
    * @operationId cancelProcessInstance
    * @tags Process instance
    */
@@ -2894,6 +2930,7 @@ export class CamundaClient {
    *
     *
    * @example Cancel process instances in batch
+   * ```ts
    * async function cancelProcessInstancesBatchOperationExample(
    *   processDefinitionKey: ProcessDefinitionKey
    * ) {
@@ -2907,6 +2944,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId cancelProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -2969,6 +3007,7 @@ export class CamundaClient {
    *
     *
    * @example Complete a job
+   * ```ts
    * async function completeJobExample(jobKey: JobKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -2980,6 +3019,7 @@ export class CamundaClient {
    *     },
    *   });
    * }
+   * ```
    * @operationId completeJob
    * @tags Job
    */
@@ -3044,6 +3084,7 @@ export class CamundaClient {
    *
     *
    * @example Complete a user task
+   * ```ts
    * async function completeUserTaskExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -3055,6 +3096,7 @@ export class CamundaClient {
    *     },
    *   });
    * }
+   * ```
    * @operationId completeUserTask
    * @tags User task
    */
@@ -3122,6 +3164,7 @@ export class CamundaClient {
    *
     *
    * @example Correlate a message
+   * ```ts
    * async function correlateMessageExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3136,6 +3179,7 @@ export class CamundaClient {
    * 
    *   console.log(`Message correlated to: ${result.processInstanceKey}`);
    * }
+   * ```
    * @operationId correlateMessage
    * @tags Message
    */
@@ -3201,6 +3245,7 @@ export class CamundaClient {
    * Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
     *
    * @example Create an admin user
+   * ```ts
    * async function createAdminUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -3213,6 +3258,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created admin user: ${result.username}`);
    * }
+   * ```
    * @operationId createAdminUser
    * @tags Setup
    */
@@ -3274,6 +3320,7 @@ export class CamundaClient {
    * Create the authorization.
     *
    * @example Create an authorization
+   * ```ts
    * async function createAuthorizationExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3287,6 +3334,7 @@ export class CamundaClient {
    * 
    *   console.log(`Authorization key: ${result.authorizationKey}`);
    * }
+   * ```
    * @operationId createAuthorization
    * @tags Authorization
    */
@@ -3350,6 +3398,7 @@ export class CamundaClient {
    *
     *
    * @example Deploy resources
+   * ```ts
    * async function createDeploymentExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3364,6 +3413,7 @@ export class CamundaClient {
    *     console.log(`  Process: ${process.processDefinitionId} v${process.processDefinitionVersion}`);
    *   }
    * }
+   * ```
    * @operationId createDeployment
    * @tags Resource
    * @returns Enriched deployment result with typed arrays (processes, decisions, decisionRequirements, forms, resources).
@@ -3448,6 +3498,7 @@ export class CamundaClient {
    *
     *
    * @example Upload a document
+   * ```ts
    * async function createDocumentExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3460,6 +3511,7 @@ export class CamundaClient {
    * 
    *   console.log(`Document ID: ${result.documentId}`);
    * }
+   * ```
    * @operationId createDocument
    * @tags Document
    */
@@ -3526,6 +3578,7 @@ export class CamundaClient {
    *
     *
    * @example Create a document link
+   * ```ts
    * async function createDocumentLinkExample(documentId: DocumentId) {
    *   const camunda = createCamundaClient();
    * 
@@ -3536,6 +3589,7 @@ export class CamundaClient {
    * 
    *   console.log(`Document link: ${link.url}`);
    * }
+   * ```
    * @operationId createDocumentLink
    * @tags Document
    */
@@ -3616,6 +3670,7 @@ export class CamundaClient {
    *
     *
    * @example Upload multiple documents
+   * ```ts
    * async function createDocumentsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3631,6 +3686,7 @@ export class CamundaClient {
    *     console.log(`Created: ${doc.documentId}`);
    *   }
    * }
+   * ```
    * @operationId createDocuments
    * @tags Document
    */
@@ -3700,6 +3756,7 @@ export class CamundaClient {
    *
     *
    * @example Create element instance variables
+   * ```ts
    * async function createElementInstanceVariablesExample(elementInstanceKey: ElementInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -3708,6 +3765,7 @@ export class CamundaClient {
    *     variables: { orderId: 'ORD-12345', status: 'processing' },
    *   });
    * }
+   * ```
    * @operationId createElementInstanceVariables
    * @tags Element instance
    */
@@ -3771,6 +3829,7 @@ export class CamundaClient {
    * Create a global-scoped cluster variable.
     *
    * @example Create a global cluster variable
+   * ```ts
    * async function createGlobalClusterVariableExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3781,6 +3840,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created: ${result.name}`);
    * }
+   * ```
    * @operationId createGlobalClusterVariable
    * @tags Cluster Variable
    */
@@ -3842,6 +3902,7 @@ export class CamundaClient {
    * Create a new global user task listener.
     *
    * @example Create a global task listener
+   * ```ts
    * async function createGlobalTaskListenerExample(id: GlobalListenerId) {
    *   const camunda = createCamundaClient();
    * 
@@ -3853,6 +3914,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created listener: ${result.id}`);
    * }
+   * ```
    * @operationId createGlobalTaskListener
    * @tags Global listener
    */
@@ -3914,6 +3976,7 @@ export class CamundaClient {
    * Create a new group.
     *
    * @example Create a group
+   * ```ts
    * async function createGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3924,6 +3987,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created group: ${result.groupId}`);
    * }
+   * ```
    * @operationId createGroup
    * @tags Group
    */
@@ -3986,6 +4050,7 @@ export class CamundaClient {
    *
     *
    * @example Create a mapping rule
+   * ```ts
    * async function createMappingRuleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -3998,6 +4063,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created mapping rule: ${result.mappingRuleId}`);
    * }
+   * ```
    * @operationId createMappingRule
    * @tags Mapping rule
    */
@@ -4065,6 +4131,7 @@ export class CamundaClient {
    *
     *
    * @example By ID
+   * ```ts
    * async function createProcessInstanceByIdExample(processDefinitionId: ProcessDefinitionId) {
    *   const camunda = createCamundaClient();
    * 
@@ -4078,7 +4145,9 @@ export class CamundaClient {
    * 
    *   console.log(`Started process instance: ${result.processInstanceKey}`);
    * }
+   * ```
    * @example By key
+   * ```ts
    * async function createProcessInstanceByKeyExample(processDefinitionKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -4093,6 +4162,7 @@ export class CamundaClient {
    * 
    *   console.log(`Started process instance: ${result.processInstanceKey}`);
    * }
+   * ```
    * @operationId createProcessInstance
    * @tags Process instance
    */
@@ -4158,6 +4228,7 @@ export class CamundaClient {
    * Create a new role.
     *
    * @example Create a role
+   * ```ts
    * async function createRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -4168,6 +4239,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created role: ${result.roleId}`);
    * }
+   * ```
    * @operationId createRole
    * @tags Role
    */
@@ -4229,6 +4301,7 @@ export class CamundaClient {
    * Creates a new tenant.
     *
    * @example Create a tenant
+   * ```ts
    * async function createTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -4239,6 +4312,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created tenant: ${result.tenantId}`);
    * }
+   * ```
    * @operationId createTenant
    * @tags Tenant
    */
@@ -4300,6 +4374,7 @@ export class CamundaClient {
    * Create a new cluster variable for the given tenant.
     *
    * @example Create a tenant cluster variable
+   * ```ts
    * async function createTenantClusterVariableExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -4311,6 +4386,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created: ${result.name}`);
    * }
+   * ```
    * @operationId createTenantClusterVariable
    * @tags Cluster Variable
    */
@@ -4374,6 +4450,7 @@ export class CamundaClient {
    * Create a new user.
     *
    * @example Create a user
+   * ```ts
    * async function createUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -4386,6 +4463,7 @@ export class CamundaClient {
    * 
    *   console.log(`Created user: ${result.username}`);
    * }
+   * ```
    * @operationId createUser
    * @tags User
    */
@@ -4447,11 +4525,13 @@ export class CamundaClient {
    * Deletes the authorization with the given key.
     *
    * @example Delete an authorization
+   * ```ts
    * async function deleteAuthorizationExample(authorizationKey: AuthorizationKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteAuthorization({ authorizationKey });
    * }
+   * ```
    * @operationId deleteAuthorization
    * @tags Authorization
    */
@@ -4513,11 +4593,13 @@ export class CamundaClient {
    * Delete all associated decision evaluations based on provided key.
     *
    * @example Delete a decision instance
+   * ```ts
    * async function deleteDecisionInstanceExample(decisionEvaluationKey: DecisionEvaluationKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteDecisionInstance({ decisionEvaluationKey });
    * }
+   * ```
    * @operationId deleteDecisionInstance
    * @tags Decision instance
    */
@@ -4583,6 +4665,7 @@ export class CamundaClient {
    *
     *
    * @example Delete decision instances in batch
+   * ```ts
    * async function deleteDecisionInstancesBatchOperationExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -4592,6 +4675,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId deleteDecisionInstancesBatchOperation
    * @tags Decision instance
    */
@@ -4656,11 +4740,13 @@ export class CamundaClient {
    *
     *
    * @example Delete a document
+   * ```ts
    * async function deleteDocumentExample(documentId: DocumentId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteDocument({ documentId });
    * }
+   * ```
    * @operationId deleteDocument
    * @tags Document
    */
@@ -4724,11 +4810,13 @@ export class CamundaClient {
    * Delete a global-scoped cluster variable.
     *
    * @example Delete a global cluster variable
+   * ```ts
    * async function deleteGlobalClusterVariableExample() {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteGlobalClusterVariable({ name: 'feature-flags' });
    * }
+   * ```
    * @operationId deleteGlobalClusterVariable
    * @tags Cluster Variable
    */
@@ -4790,6 +4878,7 @@ export class CamundaClient {
    * Deletes a global user task listener.
     *
    * @example Delete a global task listener
+   * ```ts
    * async function deleteGlobalTaskListenerExample(id: GlobalListenerId) {
    *   const camunda = createCamundaClient();
    * 
@@ -4797,6 +4886,7 @@ export class CamundaClient {
    *     id,
    *   });
    * }
+   * ```
    * @operationId deleteGlobalTaskListener
    * @tags Global listener
    */
@@ -4858,11 +4948,13 @@ export class CamundaClient {
    * Deletes the group with the given ID.
     *
    * @example Delete a group
+   * ```ts
    * async function deleteGroupExample() {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteGroup({ groupId: 'engineering-team' });
    * }
+   * ```
    * @operationId deleteGroup
    * @tags Group
    */
@@ -4925,11 +5017,13 @@ export class CamundaClient {
    *
     *
    * @example Delete a mapping rule
+   * ```ts
    * async function deleteMappingRuleExample() {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteMappingRule({ mappingRuleId: 'ldap-group-mapping' });
    * }
+   * ```
    * @operationId deleteMappingRule
    * @tags Mapping rule
    */
@@ -4991,11 +5085,13 @@ export class CamundaClient {
    * Deletes a process instance. Only instances that are completed or terminated can be deleted.
     *
    * @example Delete a process instance
+   * ```ts
    * async function deleteProcessInstanceExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteProcessInstance({ processInstanceKey });
    * }
+   * ```
    * @operationId deleteProcessInstance
    * @tags Process instance
    */
@@ -5062,6 +5158,7 @@ export class CamundaClient {
    *
     *
    * @example Delete process instances in batch
+   * ```ts
    * async function deleteProcessInstancesBatchOperationExample(
    *   processDefinitionKey: ProcessDefinitionKey
    * ) {
@@ -5075,6 +5172,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId deleteProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -5148,6 +5246,7 @@ export class CamundaClient {
    * will be deleted.
     *
    * @example Delete a resource
+   * ```ts
    * async function deleteResourceExample(resourceKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -5156,6 +5255,7 @@ export class CamundaClient {
    *     resourceKey,
    *   });
    * }
+   * ```
    * @operationId deleteResource
    * @tags Resource
    */
@@ -5219,11 +5319,13 @@ export class CamundaClient {
    * Deletes the role with the given ID.
     *
    * @example Delete a role
+   * ```ts
    * async function deleteRoleExample() {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteRole({ roleId: 'process-admin' });
    * }
+   * ```
    * @operationId deleteRole
    * @tags Role
    */
@@ -5285,11 +5387,13 @@ export class CamundaClient {
    * Deletes an existing tenant.
     *
    * @example Delete a tenant
+   * ```ts
    * async function deleteTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteTenant({ tenantId });
    * }
+   * ```
    * @operationId deleteTenant
    * @tags Tenant
    */
@@ -5351,6 +5455,7 @@ export class CamundaClient {
    * Delete a tenant-scoped cluster variable.
     *
    * @example Delete a tenant cluster variable
+   * ```ts
    * async function deleteTenantClusterVariableExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -5359,6 +5464,7 @@ export class CamundaClient {
    *     name: 'config',
    *   });
    * }
+   * ```
    * @operationId deleteTenantClusterVariable
    * @tags Cluster Variable
    */
@@ -5420,11 +5526,13 @@ export class CamundaClient {
    * Deletes a user.
     *
    * @example Delete a user
+   * ```ts
    * async function deleteUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteUser({ username });
    * }
+   * ```
    * @operationId deleteUser
    * @tags User
    */
@@ -5489,6 +5597,7 @@ export class CamundaClient {
    *
     *
    * @example Evaluate conditionals
+   * ```ts
    * async function evaluateConditionalsExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -5499,6 +5608,7 @@ export class CamundaClient {
    * 
    *   console.log(`Evaluated conditionals: ${JSON.stringify(result)}`);
    * }
+   * ```
    * @operationId evaluateConditionals
    * @tags Conditional
    */
@@ -5568,6 +5678,7 @@ export class CamundaClient {
    *
     *
    * @example By ID
+   * ```ts
    * async function evaluateDecisionByIdExample(decisionDefinitionId: DecisionDefinitionId) {
    *   const camunda = createCamundaClient();
    * 
@@ -5582,7 +5693,9 @@ export class CamundaClient {
    *   console.log(`Decision: ${result.decisionDefinitionId}`);
    *   console.log(`Output: ${result.output}`);
    * }
+   * ```
    * @example By key
+   * ```ts
    * async function evaluateDecisionByKeyExample(decisionDefinitionKey: DecisionDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -5596,6 +5709,7 @@ export class CamundaClient {
    * 
    *   console.log(`Decision output: ${result.output}`);
    * }
+   * ```
    * @operationId evaluateDecision
    * @tags Decision definition
    */
@@ -5661,6 +5775,7 @@ export class CamundaClient {
    * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
     *
    * @example Evaluate an expression
+   * ```ts
    * async function evaluateExpressionExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -5671,6 +5786,7 @@ export class CamundaClient {
    * 
    *   console.log(`Result: ${result.result}`);
    * }
+   * ```
    * @operationId evaluateExpression
    * @tags Expression
    */
@@ -5737,6 +5853,7 @@ export class CamundaClient {
    *
     *
    * @example Fail a job with retry
+   * ```ts
    * async function failJobExample(jobKey: JobKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -5747,6 +5864,7 @@ export class CamundaClient {
    *     retryBackOff: 5000,
    *   });
    * }
+   * ```
    * @operationId failJob
    * @tags Job
    */
@@ -5810,6 +5928,7 @@ export class CamundaClient {
    * Get an audit log entry by auditLogKey.
     *
    * @example Get an audit log entry
+   * ```ts
    * async function getAuditLogExample(auditLogKey: AuditLogKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -5817,6 +5936,7 @@ export class CamundaClient {
    * 
    *   console.log(`Audit log: ${log.operationType}`);
    * }
+   * ```
    * @operationId getAuditLog
    * @tags Audit Log
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -5883,6 +6003,7 @@ export class CamundaClient {
    * Retrieves the current authenticated user.
     *
    * @example Get authentication info
+   * ```ts
    * async function getAuthenticationExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -5890,6 +6011,7 @@ export class CamundaClient {
    * 
    *   console.log(`Authenticated as: ${user.username}`);
    * }
+   * ```
    * @operationId getAuthentication
    * @tags Authentication
    */
@@ -5941,6 +6063,7 @@ export class CamundaClient {
    * Get authorization by the given key.
     *
    * @example Get an authorization
+   * ```ts
    * async function getAuthorizationExample(authorizationKey: AuthorizationKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -5951,6 +6074,7 @@ export class CamundaClient {
    * 
    *   console.log(`Owner: ${authorization.ownerId} (${authorization.ownerType})`);
    * }
+   * ```
    * @operationId getAuthorization
    * @tags Authorization
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6017,6 +6141,7 @@ export class CamundaClient {
    * Get batch operation by key.
     *
    * @example Get a batch operation
+   * ```ts
    * async function getBatchOperationExample(batchOperationKey: BatchOperationKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6027,6 +6152,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch: ${batch.batchOperationType} (${batch.state})`);
    * }
+   * ```
    * @operationId getBatchOperation
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6093,6 +6219,7 @@ export class CamundaClient {
    * Returns a decision definition by key.
     *
    * @example Get a decision definition
+   * ```ts
    * async function getDecisionDefinitionExample(decisionDefinitionKey: DecisionDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6104,6 +6231,7 @@ export class CamundaClient {
    *   console.log(`Decision: ${definition.decisionDefinitionId}`);
    *   console.log(`Version: ${definition.version}`);
    * }
+   * ```
    * @operationId getDecisionDefinition
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6170,6 +6298,7 @@ export class CamundaClient {
    * Returns decision definition as XML.
     *
    * @example Get decision definition XML
+   * ```ts
    * async function getDecisionDefinitionXmlExample(decisionDefinitionKey: DecisionDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6180,6 +6309,7 @@ export class CamundaClient {
    * 
    *   console.log(`XML length: ${JSON.stringify(xml).length}`);
    * }
+   * ```
    * @operationId getDecisionDefinitionXML
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6246,6 +6376,7 @@ export class CamundaClient {
    * Returns a decision instance.
     *
    * @example Get a decision instance
+   * ```ts
    * async function getDecisionInstanceExample(
    *   decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey
    * ) {
@@ -6258,6 +6389,7 @@ export class CamundaClient {
    * 
    *   console.log(`Decision: ${instance.decisionDefinitionId}`);
    * }
+   * ```
    * @operationId getDecisionInstance
    * @tags Decision instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6324,6 +6456,7 @@ export class CamundaClient {
    * Returns Decision Requirements as JSON.
     *
    * @example Get decision requirements
+   * ```ts
    * async function getDecisionRequirementsExample(decisionRequirementsKey: DecisionRequirementsKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6334,6 +6467,7 @@ export class CamundaClient {
    * 
    *   console.log(`Requirements: ${requirements.decisionRequirementsId}`);
    * }
+   * ```
    * @operationId getDecisionRequirements
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6400,6 +6534,7 @@ export class CamundaClient {
    * Returns decision requirements as XML.
     *
    * @example Get decision requirements XML
+   * ```ts
    * async function getDecisionRequirementsXmlExample(decisionRequirementsKey: DecisionRequirementsKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6410,6 +6545,7 @@ export class CamundaClient {
    * 
    *   console.log(`XML length: ${JSON.stringify(xml).length}`);
    * }
+   * ```
    * @operationId getDecisionRequirementsXML
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6479,6 +6615,7 @@ export class CamundaClient {
    *
     *
    * @example Download a document
+   * ```ts
    * async function getDocumentExample(documentId: DocumentId) {
    *   const camunda = createCamundaClient();
    * 
@@ -6486,6 +6623,7 @@ export class CamundaClient {
    * 
    *   console.log(`Downloaded document: ${documentId}`);
    * }
+   * ```
    * @operationId getDocument
    * @tags Document
    */
@@ -6549,6 +6687,7 @@ export class CamundaClient {
    * Returns element instance as JSON.
     *
    * @example Get an element instance
+   * ```ts
    * async function getElementInstanceExample(elementInstanceKey: ElementInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6559,6 +6698,7 @@ export class CamundaClient {
    * 
    *   console.log(`Element: ${element.elementId} (${element.type})`);
    * }
+   * ```
    * @operationId getElementInstance
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6625,6 +6765,7 @@ export class CamundaClient {
    * Get a global-scoped cluster variable.
     *
    * @example Get a global cluster variable
+   * ```ts
    * async function getGlobalClusterVariableExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -6635,6 +6776,7 @@ export class CamundaClient {
    * 
    *   console.log(`${variable.name} = ${variable.value}`);
    * }
+   * ```
    * @operationId getGlobalClusterVariable
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6702,6 +6844,7 @@ export class CamundaClient {
    *
     *
    * @example Get global job statistics
+   * ```ts
    * async function getGlobalJobStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -6715,6 +6858,7 @@ export class CamundaClient {
    * 
    *   console.log(`Statistics retrieved: ${JSON.stringify(result)}`);
    * }
+   * ```
    * @operationId getGlobalJobStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6781,6 +6925,7 @@ export class CamundaClient {
    * Get a global user task listener by its id.
     *
    * @example Get a global task listener
+   * ```ts
    * async function getGlobalTaskListenerExample(id: GlobalListenerId) {
    *   const camunda = createCamundaClient();
    * 
@@ -6791,6 +6936,7 @@ export class CamundaClient {
    * 
    *   console.log(`Listener: ${listener.type} (${listener.eventTypes})`);
    * }
+   * ```
    * @operationId getGlobalTaskListener
    * @tags Global listener
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6857,6 +7003,7 @@ export class CamundaClient {
    * Get a group by its ID.
     *
    * @example Get a group
+   * ```ts
    * async function getGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -6867,6 +7014,7 @@ export class CamundaClient {
    * 
    *   console.log(`Group: ${group.name}`);
    * }
+   * ```
    * @operationId getGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -6934,6 +7082,7 @@ export class CamundaClient {
    *
     *
    * @example Get an incident
+   * ```ts
    * async function getIncidentExample(incidentKey: IncidentKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -6946,6 +7095,7 @@ export class CamundaClient {
    *   console.log(`State: ${incident.state}`);
    *   console.log(`Message: ${incident.errorMessage}`);
    * }
+   * ```
    * @operationId getIncident
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7013,6 +7163,7 @@ export class CamundaClient {
    *
     *
    * @example Get job error statistics
+   * ```ts
    * async function getJobErrorStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7031,6 +7182,7 @@ export class CamundaClient {
    *     console.log(`Error: ${stat.errorMessage}, workers: ${stat.workers}`);
    *   }
    * }
+   * ```
    * @operationId getJobErrorStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7100,6 +7252,7 @@ export class CamundaClient {
    *
     *
    * @example Get job time series statistics
+   * ```ts
    * async function getJobTimeSeriesStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7118,6 +7271,7 @@ export class CamundaClient {
    *     console.log(`Time: ${point.time}, created: ${point.created.count}`);
    *   }
    * }
+   * ```
    * @operationId getJobTimeSeriesStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7185,6 +7339,7 @@ export class CamundaClient {
    *
     *
    * @example Get job type statistics
+   * ```ts
    * async function getJobTypeStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7194,6 +7349,7 @@ export class CamundaClient {
    *     console.log(`Type: ${stat.jobType}, workers: ${stat.workers}`);
    *   }
    * }
+   * ```
    * @operationId getJobTypeStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7261,6 +7417,7 @@ export class CamundaClient {
    *
     *
    * @example Get job worker statistics
+   * ```ts
    * async function getJobWorkerStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7279,6 +7436,7 @@ export class CamundaClient {
    *     console.log(`Worker: ${stat.worker}, completed: ${stat.completed.count}`);
    *   }
    * }
+   * ```
    * @operationId getJobWorkerStatistics
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7345,6 +7503,7 @@ export class CamundaClient {
    * Obtains the status of the current Camunda license.
     *
    * @example Get license information
+   * ```ts
    * async function getLicenseExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7352,6 +7511,7 @@ export class CamundaClient {
    * 
    *   console.log(`License type: ${license.validLicense}`);
    * }
+   * ```
    * @operationId getLicense
    * @tags License
    */
@@ -7404,6 +7564,7 @@ export class CamundaClient {
    *
     *
    * @example Get a mapping rule
+   * ```ts
    * async function getMappingRuleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7414,6 +7575,7 @@ export class CamundaClient {
    * 
    *   console.log(`Rule: ${rule.name} (${rule.claimName}=${rule.claimValue})`);
    * }
+   * ```
    * @operationId getMappingRule
    * @tags Mapping rule
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7480,6 +7642,7 @@ export class CamundaClient {
    * Returns process definition as JSON.
     *
    * @example Get a process definition
+   * ```ts
    * async function getProcessDefinitionExample(processDefinitionKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -7490,6 +7653,7 @@ export class CamundaClient {
    * 
    *   console.log(`Process: ${definition.processDefinitionId} v${definition.version}`);
    * }
+   * ```
    * @operationId getProcessDefinition
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7557,6 +7721,7 @@ export class CamundaClient {
    *
     *
    * @example Get process definition instance statistics
+   * ```ts
    * async function getProcessDefinitionInstanceStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7571,6 +7736,7 @@ export class CamundaClient {
    *     );
    *   }
    * }
+   * ```
    * @operationId getProcessDefinitionInstanceStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7639,6 +7805,7 @@ export class CamundaClient {
    *
     *
    * @example Get version statistics
+   * ```ts
    * async function getProcessDefinitionInstanceVersionStatisticsExample(
    *   processDefinitionId: ProcessDefinitionId
    * ) {
@@ -7659,6 +7826,7 @@ export class CamundaClient {
    *     );
    *   }
    * }
+   * ```
    * @operationId getProcessDefinitionInstanceVersionStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7726,6 +7894,7 @@ export class CamundaClient {
    *
     *
    * @example Get message subscription statistics
+   * ```ts
    * async function getProcessDefinitionMessageSubscriptionStatisticsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -7740,6 +7909,7 @@ export class CamundaClient {
    *     );
    *   }
    * }
+   * ```
    * @operationId getProcessDefinitionMessageSubscriptionStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7806,6 +7976,7 @@ export class CamundaClient {
    * Get statistics about elements in currently running process instances by process definition key and search filter.
     *
    * @example Get process definition element statistics
+   * ```ts
    * async function getProcessDefinitionStatisticsExample(processDefinitionKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -7818,6 +7989,7 @@ export class CamundaClient {
    *     console.log(`Element ${stat.elementId}: active=${stat.active}`);
    *   }
    * }
+   * ```
    * @operationId getProcessDefinitionStatistics
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7886,6 +8058,7 @@ export class CamundaClient {
    * Returns process definition as XML.
     *
    * @example Get process definition XML
+   * ```ts
    * async function getProcessDefinitionXmlExample(processDefinitionKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -7896,6 +8069,7 @@ export class CamundaClient {
    * 
    *   console.log(`XML length: ${JSON.stringify(xml).length}`);
    * }
+   * ```
    * @operationId getProcessDefinitionXML
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -7962,6 +8136,7 @@ export class CamundaClient {
    * Get the process instance by the process instance key.
     *
    * @example Get a process instance
+   * ```ts
    * async function getProcessInstanceExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -7973,6 +8148,7 @@ export class CamundaClient {
    *   console.log(`State: ${instance.state}`);
    *   console.log(`Process: ${instance.processDefinitionId}`);
    * }
+   * ```
    * @operationId getProcessInstance
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8039,6 +8215,7 @@ export class CamundaClient {
    * Returns the call hierarchy for a given process instance, showing its ancestry up to the root instance.
     *
    * @example Get process instance call hierarchy
+   * ```ts
    * async function getProcessInstanceCallHierarchyExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -8049,6 +8226,7 @@ export class CamundaClient {
    * 
    *   console.log(`Call hierarchy entries: ${result.length}`);
    * }
+   * ```
    * @operationId getProcessInstanceCallHierarchy
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8115,6 +8293,7 @@ export class CamundaClient {
    * Get sequence flows taken by the process instance.
     *
    * @example Get process instance sequence flows
+   * ```ts
    * async function getProcessInstanceSequenceFlowsExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -8127,6 +8306,7 @@ export class CamundaClient {
    *     console.log(`Sequence flow: ${flow.sequenceFlowId}`);
    *   }
    * }
+   * ```
    * @operationId getProcessInstanceSequenceFlows
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8193,6 +8373,7 @@ export class CamundaClient {
    * Get statistics about elements by the process instance key.
     *
    * @example Get process instance statistics
+   * ```ts
    * async function getProcessInstanceStatisticsExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -8205,6 +8386,7 @@ export class CamundaClient {
    *     console.log(`Element ${stat.elementId}: active=${stat.active}`);
    *   }
    * }
+   * ```
    * @operationId getProcessInstanceStatistics
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8274,6 +8456,7 @@ export class CamundaClient {
    *
     *
    * @example Get instance statistics by definition
+   * ```ts
    * async function getProcessInstanceStatisticsByDefinitionExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -8292,6 +8475,7 @@ export class CamundaClient {
    *     );
    *   }
    * }
+   * ```
    * @operationId getProcessInstanceStatisticsByDefinition
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8360,6 +8544,7 @@ export class CamundaClient {
    *
     *
    * @example Get instance statistics by error
+   * ```ts
    * async function getProcessInstanceStatisticsByErrorExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -8372,6 +8557,7 @@ export class CamundaClient {
    *     console.log(`Error: ${stat.errorMessage}, count: ${stat.activeInstancesWithErrorCount}`);
    *   }
    * }
+   * ```
    * @operationId getProcessInstanceStatisticsByError
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8442,6 +8628,7 @@ export class CamundaClient {
    *
     *
    * @example Get a resource
+   * ```ts
    * async function getResourceExample(resourceKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -8451,6 +8638,7 @@ export class CamundaClient {
    * 
    *   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
    * }
+   * ```
    * @operationId getResource
    * @tags Resource
    */
@@ -8516,6 +8704,7 @@ export class CamundaClient {
    *
     *
    * @example Get resource content
+   * ```ts
    * async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -8525,6 +8714,7 @@ export class CamundaClient {
    * 
    *   console.log(`Content retrieved (type: ${typeof content})`);
    * }
+   * ```
    * @operationId getResourceContent
    * @tags Resource
    */
@@ -8586,6 +8776,7 @@ export class CamundaClient {
    * Get a role by its ID.
     *
    * @example Get a role
+   * ```ts
    * async function getRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -8596,6 +8787,7 @@ export class CamundaClient {
    * 
    *   console.log(`Role: ${role.name}`);
    * }
+   * ```
    * @operationId getRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8664,6 +8856,7 @@ export class CamundaClient {
    *
     *
    * @example Get start process form
+   * ```ts
    * async function getStartProcessFormExample(processDefinitionKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -8676,6 +8869,7 @@ export class CamundaClient {
    *     console.log(`Form key: ${form.formKey}`);
    *   }
    * }
+   * ```
    * @operationId getStartProcessForm
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8742,6 +8936,7 @@ export class CamundaClient {
    * Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
     *
    * @example Check cluster status
+   * ```ts
    * async function getStatusExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -8749,6 +8944,7 @@ export class CamundaClient {
    * 
    *   console.log('Cluster is healthy');
    * }
+   * ```
    * @operationId getStatus
    * @tags Cluster
    */
@@ -8805,6 +9001,7 @@ export class CamundaClient {
    *
     *
    * @example Get system configuration
+   * ```ts
    * async function getSystemConfigurationExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -8812,6 +9009,7 @@ export class CamundaClient {
    * 
    *   console.log(`Configuration loaded: ${JSON.stringify(config)}`);
    * }
+   * ```
    * @operationId getSystemConfiguration
    * @tags System
    */
@@ -8863,6 +9061,7 @@ export class CamundaClient {
    * Retrieves a single tenant by tenant ID.
     *
    * @example Get a tenant
+   * ```ts
    * async function getTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -8870,6 +9069,7 @@ export class CamundaClient {
    * 
    *   console.log(`Tenant: ${tenant.name}`);
    * }
+   * ```
    * @operationId getTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -8936,6 +9136,7 @@ export class CamundaClient {
    * Get a tenant-scoped cluster variable.
     *
    * @example Get a tenant cluster variable
+   * ```ts
    * async function getTenantClusterVariableExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -8949,6 +9150,7 @@ export class CamundaClient {
    * 
    *   console.log(`${variable.name} = ${variable.value}`);
    * }
+   * ```
    * @operationId getTenantClusterVariable
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9015,6 +9217,7 @@ export class CamundaClient {
    * Obtains the current topology of the cluster the gateway is part of.
     *
    * @example Get cluster topology
+   * ```ts
    * async function getTopologyExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -9026,6 +9229,7 @@ export class CamundaClient {
    *     console.log(`  Broker ${broker.nodeId}: ${broker.host}:${broker.port}`);
    *   }
    * }
+   * ```
    * @operationId getTopology
    * @tags Cluster
    */
@@ -9077,6 +9281,7 @@ export class CamundaClient {
    * Retrieve the usage metrics based on given criteria.
     *
    * @example Get usage metrics
+   * ```ts
    * async function getUsageMetricsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -9090,6 +9295,7 @@ export class CamundaClient {
    * 
    *   console.log(`Usage metrics retrieved: ${JSON.stringify(metrics)}`);
    * }
+   * ```
    * @operationId getUsageMetrics
    * @tags System
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9156,6 +9362,7 @@ export class CamundaClient {
    * Get a user by its username.
     *
    * @example Get a user
+   * ```ts
    * async function getUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -9163,6 +9370,7 @@ export class CamundaClient {
    * 
    *   console.log(`User: ${user.name} (${user.email})`);
    * }
+   * ```
    * @operationId getUser
    * @tags User
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9229,6 +9437,7 @@ export class CamundaClient {
    * Get the user task by the user task key.
     *
    * @example Get a user task
+   * ```ts
    * async function getUserTaskExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -9236,6 +9445,7 @@ export class CamundaClient {
    * 
    *   console.log(`Task: ${task.name} (${task.state})`);
    * }
+   * ```
    * @operationId getUserTask
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9304,6 +9514,7 @@ export class CamundaClient {
    *
     *
    * @example Get a user task form
+   * ```ts
    * async function getUserTaskFormExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -9316,6 +9527,7 @@ export class CamundaClient {
    *     console.log(`Form key: ${form.formKey}`);
    *   }
    * }
+   * ```
    * @operationId getUserTaskForm
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9386,6 +9598,7 @@ export class CamundaClient {
    * specific element instance.
     *
    * @example Get a variable
+   * ```ts
    * async function getVariableExample(variableKey: VariableKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -9396,6 +9609,7 @@ export class CamundaClient {
    * 
    *   console.log(`${variable.name} = ${variable.value}`);
    * }
+   * ```
    * @operationId getVariable
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -9469,6 +9683,7 @@ export class CamundaClient {
    *
     *
    * @example Migrate a process instance
+   * ```ts
    * async function migrateProcessInstanceExample(
    *   processInstanceKey: ProcessInstanceKey,
    *   targetProcessDefinitionKey: ProcessDefinitionKey,
@@ -9488,6 +9703,7 @@ export class CamundaClient {
    *     ],
    *   });
    * }
+   * ```
    * @operationId migrateProcessInstance
    * @tags Process instance
    */
@@ -9555,6 +9771,7 @@ export class CamundaClient {
    *
     *
    * @example Migrate process instances in batch
+   * ```ts
    * async function migrateProcessInstancesBatchOperationExample(
    *   processDefinitionKey: ProcessDefinitionKey,
    *   targetProcessDefinitionKey: ProcessDefinitionKey,
@@ -9580,6 +9797,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId migrateProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -9647,6 +9865,7 @@ export class CamundaClient {
    *
     *
    * @example Modify a process instance
+   * ```ts
    * async function modifyProcessInstanceExample(
    *   processInstanceKey: ProcessInstanceKey,
    *   elementId: ElementId,
@@ -9660,6 +9879,7 @@ export class CamundaClient {
    *     terminateInstructions: [{ elementInstanceKey }],
    *   });
    * }
+   * ```
    * @operationId modifyProcessInstance
    * @tags Process instance
    */
@@ -9729,6 +9949,7 @@ export class CamundaClient {
    *
     *
    * @example Modify process instances in batch
+   * ```ts
    * async function modifyProcessInstancesBatchOperationExample(
    *   processDefinitionKey: ProcessDefinitionKey,
    *   sourceElementId: ElementId,
@@ -9750,6 +9971,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId modifyProcessInstancesBatchOperation
    * @tags Process instance
    */
@@ -9817,6 +10039,7 @@ export class CamundaClient {
    *
     *
    * @example Pin the cluster clock
+   * ```ts
    * async function pinClockExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -9826,6 +10049,7 @@ export class CamundaClient {
    * 
    *   console.log('Clock pinned');
    * }
+   * ```
    * @operationId pinClock
    * @tags Clock
    */
@@ -9892,6 +10116,7 @@ export class CamundaClient {
    *
     *
    * @example Publish a message
+   * ```ts
    * async function publishMessageExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -9904,6 +10129,7 @@ export class CamundaClient {
    *     },
    *   });
    * }
+   * ```
    * @operationId publishMessage
    * @tags Message
    */
@@ -9975,6 +10201,7 @@ export class CamundaClient {
    *
     *
    * @example Reset the cluster clock
+   * ```ts
    * async function resetClockExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -9982,6 +10209,7 @@ export class CamundaClient {
    * 
    *   console.log('Clock reset');
    * }
+   * ```
    * @operationId resetClock
    * @tags Clock
    */
@@ -10035,11 +10263,13 @@ export class CamundaClient {
    *
     *
    * @example Resolve an incident
+   * ```ts
    * async function resolveIncidentExample(incidentKey: IncidentKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.resolveIncident({ incidentKey });
    * }
+   * ```
    * @operationId resolveIncident
    * @tags Incident
    */
@@ -10107,6 +10337,7 @@ export class CamundaClient {
    *
     *
    * @example Resolve incidents in batch
+   * ```ts
    * async function resolveIncidentsBatchOperationExample(processDefinitionKey: ProcessDefinitionKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -10118,6 +10349,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId resolveIncidentsBatchOperation
    * @tags Process instance
    */
@@ -10179,6 +10411,7 @@ export class CamundaClient {
    * Creates a batch operation to resolve multiple incidents of a process instance.
     *
    * @example Resolve process instance incidents
+   * ```ts
    * async function resolveProcessInstanceIncidentsExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -10186,6 +10419,7 @@ export class CamundaClient {
    * 
    *   console.log(`Batch operation key: ${result.batchOperationKey}`);
    * }
+   * ```
    * @operationId resolveProcessInstanceIncidents
    * @tags Process instance
    */
@@ -10249,11 +10483,13 @@ export class CamundaClient {
    *
     *
    * @example Resume a batch operation
+   * ```ts
    * async function resumeBatchOperationExample(batchOperationKey: BatchOperationKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.resumeBatchOperation({ batchOperationKey });
    * }
+   * ```
    * @operationId resumeBatchOperation
    * @tags Batch operation
    */
@@ -10317,6 +10553,7 @@ export class CamundaClient {
    * Search for audit logs based on given criteria.
     *
    * @example Search audit logs
+   * ```ts
    * async function searchAuditLogsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10331,6 +10568,7 @@ export class CamundaClient {
    *     console.log(`${log.auditLogKey}: ${log.operationType}`);
    *   }
    * }
+   * ```
    * @operationId searchAuditLogs
    * @tags Audit Log
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10397,6 +10635,7 @@ export class CamundaClient {
    * Search for authorizations based on given criteria.
     *
    * @example Search authorizations
+   * ```ts
    * async function searchAuthorizationsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10412,6 +10651,7 @@ export class CamundaClient {
    *     console.log(`${auth.authorizationKey}: ${auth.ownerId} - ${auth.resourceType}`);
    *   }
    * }
+   * ```
    * @operationId searchAuthorizations
    * @tags Authorization
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10478,6 +10718,7 @@ export class CamundaClient {
    * Search for batch operation items based on given criteria.
     *
    * @example Search batch operation items
+   * ```ts
    * async function searchBatchOperationItemsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10492,6 +10733,7 @@ export class CamundaClient {
    *     console.log(`Item: ${item.itemKey} (${item.state})`);
    *   }
    * }
+   * ```
    * @operationId searchBatchOperationItems
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10558,6 +10800,7 @@ export class CamundaClient {
    * Search for batch operations based on given criteria.
     *
    * @example Search batch operations
+   * ```ts
    * async function searchBatchOperationsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10572,6 +10815,7 @@ export class CamundaClient {
    *     console.log(`${batch.batchOperationKey}: ${batch.batchOperationType} (${batch.state})`);
    *   }
    * }
+   * ```
    * @operationId searchBatchOperations
    * @tags Batch operation
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10638,6 +10882,7 @@ export class CamundaClient {
    * Search clients assigned to a group.
     *
    * @example Search clients in a group
+   * ```ts
    * async function searchClientsForGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10650,6 +10895,7 @@ export class CamundaClient {
    *     console.log(`Client: ${client.clientId}`);
    *   }
    * }
+   * ```
    * @operationId searchClientsForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10718,6 +10964,7 @@ export class CamundaClient {
    * Search clients with assigned role.
     *
    * @example Search clients for a role
+   * ```ts
    * async function searchClientsForRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10730,6 +10977,7 @@ export class CamundaClient {
    *     console.log(`Client: ${client.clientId}`);
    *   }
    * }
+   * ```
    * @operationId searchClientsForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10798,6 +11046,7 @@ export class CamundaClient {
    * Retrieves a filtered and sorted list of clients for a specified tenant.
     *
    * @example Search clients for a tenant
+   * ```ts
    * async function searchClientsForTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -10810,6 +11059,7 @@ export class CamundaClient {
    *     console.log(`Client: ${client.clientId}`);
    *   }
    * }
+   * ```
    * @operationId searchClientsForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10876,6 +11126,7 @@ export class CamundaClient {
    * Search for cluster variables based on given criteria. By default, long variable values in the response are truncated.
     *
    * @example Search cluster variables
+   * ```ts
    * async function searchClusterVariablesExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10890,6 +11141,7 @@ export class CamundaClient {
    *     console.log(`${variable.name} = ${variable.value}`);
    *   }
    * }
+   * ```
    * @operationId searchClusterVariables
    * @tags Cluster Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -10958,6 +11210,7 @@ export class CamundaClient {
    * Search correlated message subscriptions based on given criteria.
     *
    * @example Search correlated message subscriptions
+   * ```ts
    * async function searchCorrelatedMessageSubscriptionsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -10972,6 +11225,7 @@ export class CamundaClient {
    *     console.log(`Correlated subscription: ${sub.messageName}`);
    *   }
    * }
+   * ```
    * @operationId searchCorrelatedMessageSubscriptions
    * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11038,6 +11292,7 @@ export class CamundaClient {
    * Search for decision definitions based on given criteria.
     *
    * @example Search decision definitions
+   * ```ts
    * async function searchDecisionDefinitionsExample(decisionDefinitionId: DecisionDefinitionId) {
    *   const camunda = createCamundaClient();
    * 
@@ -11052,6 +11307,7 @@ export class CamundaClient {
    *     console.log(`${definition.decisionDefinitionId} v${definition.version}`);
    *   }
    * }
+   * ```
    * @operationId searchDecisionDefinitions
    * @tags Decision definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11118,6 +11374,7 @@ export class CamundaClient {
    * Search for decision instances based on given criteria.
     *
    * @example Search decision instances
+   * ```ts
    * async function searchDecisionInstancesExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11132,6 +11389,7 @@ export class CamundaClient {
    *     console.log(`${instance.decisionEvaluationKey}: ${instance.decisionDefinitionId}`);
    *   }
    * }
+   * ```
    * @operationId searchDecisionInstances
    * @tags Decision instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11198,6 +11456,7 @@ export class CamundaClient {
    * Search for decision requirements based on given criteria.
     *
    * @example Search decision requirements
+   * ```ts
    * async function searchDecisionRequirementsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11212,6 +11471,7 @@ export class CamundaClient {
    *     console.log(`${req.decisionRequirementsKey}: ${req.decisionRequirementsId}`);
    *   }
    * }
+   * ```
    * @operationId searchDecisionRequirements
    * @tags Decision requirements
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11285,6 +11545,7 @@ export class CamundaClient {
    *
     *
    * @example Search element instance incidents
+   * ```ts
    * async function searchElementInstanceIncidentsExample(elementInstanceKey: ElementInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -11297,6 +11558,7 @@ export class CamundaClient {
    *     console.log(`Incident: ${incident.errorType}`);
    *   }
    * }
+   * ```
    * @operationId searchElementInstanceIncidents
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11365,6 +11627,7 @@ export class CamundaClient {
    * Search for element instances based on given criteria.
     *
    * @example Search element instances
+   * ```ts
    * async function searchElementInstancesExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -11382,6 +11645,7 @@ export class CamundaClient {
    *     console.log(`${element.elementId}: ${element.type} (${element.state})`);
    *   }
    * }
+   * ```
    * @operationId searchElementInstances
    * @tags Element instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11448,6 +11712,7 @@ export class CamundaClient {
    * Search for global user task listeners based on given criteria.
     *
    * @example Search global task listeners
+   * ```ts
    * async function searchGlobalTaskListenersExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11462,6 +11727,7 @@ export class CamundaClient {
    *     console.log(`${listener.id}: ${listener.type} (${listener.eventTypes})`);
    *   }
    * }
+   * ```
    * @operationId searchGlobalTaskListeners
    * @tags Global listener
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11528,6 +11794,7 @@ export class CamundaClient {
    * Retrieves a filtered and sorted list of groups for a specified tenant.
     *
    * @example Search groups for a tenant
+   * ```ts
    * async function searchGroupIdsForTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -11540,6 +11807,7 @@ export class CamundaClient {
    *     console.log(`Group: ${group.groupId}`);
    *   }
    * }
+   * ```
    * @operationId searchGroupIdsForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11608,6 +11876,7 @@ export class CamundaClient {
    * Search for groups based on given criteria.
     *
    * @example Search groups
+   * ```ts
    * async function searchGroupsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11622,6 +11891,7 @@ export class CamundaClient {
    *     console.log(`${group.groupId}: ${group.name}`);
    *   }
    * }
+   * ```
    * @operationId searchGroups
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11688,6 +11958,7 @@ export class CamundaClient {
    * Search groups with assigned role.
     *
    * @example Search groups for a role
+   * ```ts
    * async function searchGroupsForRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11700,6 +11971,7 @@ export class CamundaClient {
    *     console.log(`Group: ${group.groupId}`);
    *   }
    * }
+   * ```
    * @operationId searchGroupsForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11769,6 +12041,7 @@ export class CamundaClient {
    *
     *
    * @example Search incidents
+   * ```ts
    * async function searchIncidentsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11786,6 +12059,7 @@ export class CamundaClient {
    *   }
    *   console.log(`Total active incidents: ${result.page.totalItems}`);
    * }
+   * ```
    * @operationId searchIncidents
    * @tags Incident
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11852,6 +12126,7 @@ export class CamundaClient {
    * Search for jobs based on given criteria.
     *
    * @example Search jobs
+   * ```ts
    * async function searchJobsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11867,6 +12142,7 @@ export class CamundaClient {
    *     console.log(`Job ${job.jobKey}: ${job.type} (${job.state})`);
    *   }
    * }
+   * ```
    * @operationId searchJobs
    * @tags Job
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -11934,6 +12210,7 @@ export class CamundaClient {
    *
     *
    * @example Search mapping rules
+   * ```ts
    * async function searchMappingRulesExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -11948,6 +12225,7 @@ export class CamundaClient {
    *     console.log(`${rule.mappingRuleId}: ${rule.name}`);
    *   }
    * }
+   * ```
    * @operationId searchMappingRule
    * @tags Mapping rule
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12014,6 +12292,7 @@ export class CamundaClient {
    * Search mapping rules assigned to a group.
     *
    * @example Search mapping rules for a group
+   * ```ts
    * async function searchMappingRulesForGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12026,6 +12305,7 @@ export class CamundaClient {
    *     console.log(`Mapping rule: ${rule.name}`);
    *   }
    * }
+   * ```
    * @operationId searchMappingRulesForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12094,6 +12374,7 @@ export class CamundaClient {
    * Search mapping rules with assigned role.
     *
    * @example Search mapping rules for a role
+   * ```ts
    * async function searchMappingRulesForRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12106,6 +12387,7 @@ export class CamundaClient {
    *     console.log(`Mapping rule: ${rule.name}`);
    *   }
    * }
+   * ```
    * @operationId searchMappingRulesForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12174,6 +12456,7 @@ export class CamundaClient {
    * Retrieves a filtered and sorted list of MappingRules for a specified tenant.
     *
    * @example Search mapping rules for a tenant
+   * ```ts
    * async function searchMappingRulesForTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -12186,6 +12469,7 @@ export class CamundaClient {
    *     console.log(`Mapping rule: ${rule.name}`);
    *   }
    * }
+   * ```
    * @operationId searchMappingRulesForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12254,6 +12538,7 @@ export class CamundaClient {
    * Search for message subscriptions based on given criteria.
     *
    * @example Search message subscriptions
+   * ```ts
    * async function searchMessageSubscriptionsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12268,6 +12553,7 @@ export class CamundaClient {
    *     console.log(`Subscription: ${sub.messageName}`);
    *   }
    * }
+   * ```
    * @operationId searchMessageSubscriptions
    * @tags Message subscription
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12334,6 +12620,7 @@ export class CamundaClient {
    * Search for process definitions based on given criteria.
     *
    * @example Search process definitions
+   * ```ts
    * async function searchProcessDefinitionsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12348,6 +12635,7 @@ export class CamundaClient {
    *     console.log(`${def.processDefinitionKey}: ${def.processDefinitionId} v${def.version}`);
    *   }
    * }
+   * ```
    * @operationId searchProcessDefinitions
    * @tags Process definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12420,6 +12708,7 @@ export class CamundaClient {
    *
     *
    * @example Search process instance incidents
+   * ```ts
    * async function searchProcessInstanceIncidentsExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -12434,6 +12723,7 @@ export class CamundaClient {
    *     console.log(`Incident: ${incident.errorType} - ${incident.errorMessage}`);
    *   }
    * }
+   * ```
    * @operationId searchProcessInstanceIncidents
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12502,6 +12792,7 @@ export class CamundaClient {
    * Search for process instances based on given criteria.
     *
    * @example Search process instances
+   * ```ts
    * async function searchProcessInstancesExample(processDefinitionId: ProcessDefinitionId) {
    *   const camunda = createCamundaClient();
    * 
@@ -12519,6 +12810,7 @@ export class CamundaClient {
    *   }
    *   console.log(`Total: ${result.page.totalItems}`);
    * }
+   * ```
    * @operationId searchProcessInstances
    * @tags Process instance
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12585,6 +12877,7 @@ export class CamundaClient {
    * Search for roles based on given criteria.
     *
    * @example Search roles
+   * ```ts
    * async function searchRolesExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12599,6 +12892,7 @@ export class CamundaClient {
    *     console.log(`${role.roleId}: ${role.name}`);
    *   }
    * }
+   * ```
    * @operationId searchRoles
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12665,6 +12959,7 @@ export class CamundaClient {
    * Search roles assigned to a group.
     *
    * @example Search roles for a group
+   * ```ts
    * async function searchRolesForGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12677,6 +12972,7 @@ export class CamundaClient {
    *     console.log(`Role: ${role.name}`);
    *   }
    * }
+   * ```
    * @operationId searchRolesForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12745,6 +13041,7 @@ export class CamundaClient {
    * Retrieves a filtered and sorted list of roles for a specified tenant.
     *
    * @example Search roles for a tenant
+   * ```ts
    * async function searchRolesForTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -12757,6 +13054,7 @@ export class CamundaClient {
    *     console.log(`Role: ${role.name}`);
    *   }
    * }
+   * ```
    * @operationId searchRolesForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12825,6 +13123,7 @@ export class CamundaClient {
    * Retrieves a filtered and sorted list of tenants.
     *
    * @example Search tenants
+   * ```ts
    * async function searchTenantsExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12839,6 +13138,7 @@ export class CamundaClient {
    *     console.log(`${tenant.tenantId}: ${tenant.name}`);
    *   }
    * }
+   * ```
    * @operationId searchTenants
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12905,6 +13205,7 @@ export class CamundaClient {
    * Search for users based on given criteria.
     *
    * @example Search users
+   * ```ts
    * async function searchUsersExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12920,6 +13221,7 @@ export class CamundaClient {
    *     console.log(`${user.username}: ${user.name}`);
    *   }
    * }
+   * ```
    * @operationId searchUsers
    * @tags User
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12986,6 +13288,7 @@ export class CamundaClient {
    * Search users assigned to a group.
     *
    * @example Search users in a group
+   * ```ts
    * async function searchUsersForGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -12998,6 +13301,7 @@ export class CamundaClient {
    *     console.log(`Member: ${user.username}`);
    *   }
    * }
+   * ```
    * @operationId searchUsersForGroup
    * @tags Group
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13066,6 +13370,7 @@ export class CamundaClient {
    * Search users with assigned role.
     *
    * @example Search users for a role
+   * ```ts
    * async function searchUsersForRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -13078,6 +13383,7 @@ export class CamundaClient {
    *     console.log(`User: ${user.username}`);
    *   }
    * }
+   * ```
    * @operationId searchUsersForRole
    * @tags Role
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13146,6 +13452,7 @@ export class CamundaClient {
    * Retrieves a filtered and sorted list of users for a specified tenant.
     *
    * @example Search users for a tenant
+   * ```ts
    * async function searchUsersForTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -13158,6 +13465,7 @@ export class CamundaClient {
    *     console.log(`Tenant member: ${user.username}`);
    *   }
    * }
+   * ```
    * @operationId searchUsersForTenant
    * @tags Tenant
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13226,6 +13534,7 @@ export class CamundaClient {
    * Search for user task audit logs based on given criteria.
     *
    * @example Search user task audit logs
+   * ```ts
    * async function searchUserTaskAuditLogsExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -13238,6 +13547,7 @@ export class CamundaClient {
    *     console.log(`Audit: ${log.operationType} at ${log.timestamp}`);
    *   }
    * }
+   * ```
    * @operationId searchUserTaskAuditLogs
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13312,6 +13622,7 @@ export class CamundaClient {
    *
     *
    * @example Search user task effective variables
+   * ```ts
    * async function searchUserTaskEffectiveVariablesExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -13324,6 +13635,7 @@ export class CamundaClient {
    *     console.log(`${variable.name} = ${variable.value}`);
    *   }
    * }
+   * ```
    * @operationId searchUserTaskEffectiveVariables
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13394,6 +13706,7 @@ export class CamundaClient {
    * Search for user tasks based on given criteria.
     *
    * @example Search user tasks
+   * ```ts
    * async function searchUserTasksExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -13410,6 +13723,7 @@ export class CamundaClient {
    *     console.log(`${task.userTaskKey}: ${task.name} (${task.state})`);
    *   }
    * }
+   * ```
    * @operationId searchUserTasks
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13483,6 +13797,7 @@ export class CamundaClient {
    *
     *
    * @example Search user task variables
+   * ```ts
    * async function searchUserTaskVariablesExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -13495,6 +13810,7 @@ export class CamundaClient {
    *     console.log(`${variable.name} = ${variable.value}`);
    *   }
    * }
+   * ```
    * @operationId searchUserTaskVariables
    * @tags User task
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13573,6 +13889,7 @@ export class CamundaClient {
    * By default, long variable values in the response are truncated.
     *
    * @example Search variables
+   * ```ts
    * async function searchVariablesExample(processInstanceKey: ProcessInstanceKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -13590,6 +13907,7 @@ export class CamundaClient {
    *     console.log(`${variable.name} = ${variable.value}`);
    *   }
    * }
+   * ```
    * @operationId searchVariables
    * @tags Variable
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -13660,11 +13978,13 @@ export class CamundaClient {
    *
     *
    * @example Suspend a batch operation
+   * ```ts
    * async function suspendBatchOperationExample(batchOperationKey: BatchOperationKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.suspendBatchOperation({ batchOperationKey });
    * }
+   * ```
    * @operationId suspendBatchOperation
    * @tags Batch operation
    */
@@ -13729,6 +14049,7 @@ export class CamundaClient {
    *
     *
    * @example Throw a job error
+   * ```ts
    * async function throwJobErrorExample(jobKey: JobKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -13738,6 +14059,7 @@ export class CamundaClient {
    *     errorMessage: 'Payment provider returned error',
    *   });
    * }
+   * ```
    * @operationId throwJobError
    * @tags Job
    */
@@ -13803,6 +14125,7 @@ export class CamundaClient {
    *
     *
    * @example Unassign a client from a group
+   * ```ts
    * async function unassignClientFromGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -13811,6 +14134,7 @@ export class CamundaClient {
    *     clientId: 'my-service-account',
    *   });
    * }
+   * ```
    * @operationId unassignClientFromGroup
    * @tags Group
    */
@@ -13874,6 +14198,7 @@ export class CamundaClient {
    *
     *
    * @example Unassign a client from a tenant
+   * ```ts
    * async function unassignClientFromTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -13882,6 +14207,7 @@ export class CamundaClient {
    *     clientId: 'my-service-account',
    *   });
    * }
+   * ```
    * @operationId unassignClientFromTenant
    * @tags Tenant
    */
@@ -13945,6 +14271,7 @@ export class CamundaClient {
    *
     *
    * @example Unassign a group from a tenant
+   * ```ts
    * async function unassignGroupFromTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -13953,6 +14280,7 @@ export class CamundaClient {
    *     groupId: 'engineering-team',
    *   });
    * }
+   * ```
    * @operationId unassignGroupFromTenant
    * @tags Tenant
    */
@@ -14014,6 +14342,7 @@ export class CamundaClient {
    * Unassigns a mapping rule from a group.
     *
    * @example Unassign a mapping rule from a group
+   * ```ts
    * async function unassignMappingRuleFromGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -14022,6 +14351,7 @@ export class CamundaClient {
    *     mappingRuleId: 'rule-123',
    *   });
    * }
+   * ```
    * @operationId unassignMappingRuleFromGroup
    * @tags Group
    */
@@ -14083,6 +14413,7 @@ export class CamundaClient {
    * Unassigns a single mapping rule from a specified tenant without deleting the rule.
     *
    * @example Unassign a mapping rule from a tenant
+   * ```ts
    * async function unassignMappingRuleFromTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -14091,6 +14422,7 @@ export class CamundaClient {
    *     mappingRuleId: 'rule-123',
    *   });
    * }
+   * ```
    * @operationId unassignMappingRuleFromTenant
    * @tags Tenant
    */
@@ -14152,6 +14484,7 @@ export class CamundaClient {
    * Unassigns the specified role from the client. The client will no longer inherit the authorizations associated with this role.
     *
    * @example Unassign a role from a client
+   * ```ts
    * async function unassignRoleFromClientExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -14160,6 +14493,7 @@ export class CamundaClient {
    *     clientId: 'my-service-account',
    *   });
    * }
+   * ```
    * @operationId unassignRoleFromClient
    * @tags Role
    */
@@ -14221,6 +14555,7 @@ export class CamundaClient {
    * Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
     *
    * @example Unassign a role from a group
+   * ```ts
    * async function unassignRoleFromGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -14229,6 +14564,7 @@ export class CamundaClient {
    *     groupId: 'engineering-team',
    *   });
    * }
+   * ```
    * @operationId unassignRoleFromGroup
    * @tags Role
    */
@@ -14290,6 +14626,7 @@ export class CamundaClient {
    * Unassigns a role from a mapping rule.
     *
    * @example Unassign a role from a mapping rule
+   * ```ts
    * async function unassignRoleFromMappingRuleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -14298,6 +14635,7 @@ export class CamundaClient {
    *     mappingRuleId: 'rule-123',
    *   });
    * }
+   * ```
    * @operationId unassignRoleFromMappingRule
    * @tags Role
    */
@@ -14362,6 +14700,7 @@ export class CamundaClient {
    *
     *
    * @example Unassign a role from a tenant
+   * ```ts
    * async function unassignRoleFromTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -14370,6 +14709,7 @@ export class CamundaClient {
    *     roleId: 'process-admin',
    *   });
    * }
+   * ```
    * @operationId unassignRoleFromTenant
    * @tags Tenant
    */
@@ -14431,6 +14771,7 @@ export class CamundaClient {
    * Unassigns a role from a user. The user will no longer inherit the authorizations associated with this role.
     *
    * @example Unassign a role from a user
+   * ```ts
    * async function unassignRoleFromUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -14439,6 +14780,7 @@ export class CamundaClient {
    *     username,
    *   });
    * }
+   * ```
    * @operationId unassignRoleFromUser
    * @tags Role
    */
@@ -14502,6 +14844,7 @@ export class CamundaClient {
    *
     *
    * @example Unassign a user from a group
+   * ```ts
    * async function unassignUserFromGroupExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -14510,6 +14853,7 @@ export class CamundaClient {
    *     username,
    *   });
    * }
+   * ```
    * @operationId unassignUserFromGroup
    * @tags Group
    */
@@ -14573,6 +14917,7 @@ export class CamundaClient {
    *
     *
    * @example Unassign a user from a tenant
+   * ```ts
    * async function unassignUserFromTenantExample(tenantId: TenantId, username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -14581,6 +14926,7 @@ export class CamundaClient {
    *     username,
    *   });
    * }
+   * ```
    * @operationId unassignUserFromTenant
    * @tags Tenant
    */
@@ -14643,11 +14989,13 @@ export class CamundaClient {
    *
     *
    * @example Unassign a user task
+   * ```ts
    * async function unassignUserTaskExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignUserTask({ userTaskKey });
    * }
+   * ```
    * @operationId unassignUserTask
    * @tags User task
    */
@@ -14709,6 +15057,7 @@ export class CamundaClient {
    * Update the authorization with the given key.
     *
    * @example Update an authorization
+   * ```ts
    * async function updateAuthorizationExample(authorizationKey: AuthorizationKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -14725,6 +15074,7 @@ export class CamundaClient {
    *     ],
    *   });
    * }
+   * ```
    * @operationId updateAuthorization
    * @tags Authorization
    */
@@ -14790,6 +15140,7 @@ export class CamundaClient {
    *
     *
    * @example Update a global cluster variable
+   * ```ts
    * async function updateGlobalClusterVariableExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -14798,6 +15149,7 @@ export class CamundaClient {
    *     value: { darkMode: false },
    *   });
    * }
+   * ```
    * @operationId updateGlobalClusterVariable
    * @tags Cluster Variable
    */
@@ -14861,6 +15213,7 @@ export class CamundaClient {
    * Updates a global user task listener.
     *
    * @example Update a global task listener
+   * ```ts
    * async function updateGlobalTaskListenerExample(id: GlobalListenerId) {
    *   const camunda = createCamundaClient();
    * 
@@ -14870,6 +15223,7 @@ export class CamundaClient {
    *     type: 'updated-audit-listener',
    *   });
    * }
+   * ```
    * @operationId updateGlobalTaskListener
    * @tags Global listener
    */
@@ -14933,6 +15287,7 @@ export class CamundaClient {
    * Update a group with the given ID.
     *
    * @example Update a group
+   * ```ts
    * async function updateGroupExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -14941,6 +15296,7 @@ export class CamundaClient {
    *     name: 'Engineering Team',
    *   });
    * }
+   * ```
    * @operationId updateGroup
    * @tags Group
    */
@@ -15004,6 +15360,7 @@ export class CamundaClient {
    * Update a job with the given key.
     *
    * @example Update a job
+   * ```ts
    * async function updateJobExample(jobKey: JobKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -15012,6 +15369,7 @@ export class CamundaClient {
    *     changeset: { retries: 5, timeout: 60000 },
    *   });
    * }
+   * ```
    * @operationId updateJob
    * @tags Job
    */
@@ -15076,6 +15434,7 @@ export class CamundaClient {
    *
     *
    * @example Update a mapping rule
+   * ```ts
    * async function updateMappingRuleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -15086,6 +15445,7 @@ export class CamundaClient {
    *     claimValue: 'engineering-team',
    *   });
    * }
+   * ```
    * @operationId updateMappingRule
    * @tags Mapping rule
    */
@@ -15149,6 +15509,7 @@ export class CamundaClient {
    * Update a role with the given ID.
     *
    * @example Update a role
+   * ```ts
    * async function updateRoleExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -15157,6 +15518,7 @@ export class CamundaClient {
    *     name: 'Process Administrator',
    *   });
    * }
+   * ```
    * @operationId updateRole
    * @tags Role
    */
@@ -15220,6 +15582,7 @@ export class CamundaClient {
    * Updates an existing tenant.
     *
    * @example Update a tenant
+   * ```ts
    * async function updateTenantExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -15228,6 +15591,7 @@ export class CamundaClient {
    *     name: 'Customer Service Team',
    *   });
    * }
+   * ```
    * @operationId updateTenant
    * @tags Tenant
    */
@@ -15293,6 +15657,7 @@ export class CamundaClient {
    *
     *
    * @example Update a tenant cluster variable
+   * ```ts
    * async function updateTenantClusterVariableExample(tenantId: TenantId) {
    *   const camunda = createCamundaClient();
    * 
@@ -15302,6 +15667,7 @@ export class CamundaClient {
    *     value: { region: 'eu-west-1' },
    *   });
    * }
+   * ```
    * @operationId updateTenantClusterVariable
    * @tags Cluster Variable
    */
@@ -15365,6 +15731,7 @@ export class CamundaClient {
    * Updates a user.
     *
    * @example Update a user
+   * ```ts
    * async function updateUserExample(username: Username) {
    *   const camunda = createCamundaClient();
    * 
@@ -15374,6 +15741,7 @@ export class CamundaClient {
    *     email: 'alice.jones@example.com',
    *   });
    * }
+   * ```
    * @operationId updateUser
    * @tags User
    */
@@ -15438,6 +15806,7 @@ export class CamundaClient {
    *
     *
    * @example Update a user task
+   * ```ts
    * async function updateUserTaskExample(userTaskKey: UserTaskKey) {
    *   const camunda = createCamundaClient();
    * 
@@ -15450,6 +15819,7 @@ export class CamundaClient {
    *     },
    *   });
    * }
+   * ```
    * @operationId updateUserTask
    * @tags User task
    */
