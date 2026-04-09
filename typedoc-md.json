@@ -8,5 +8,6 @@
   "flattenOutputFiles": false,
   "hidePageHeader": true,
   "hideBreadcrumbs": true,
-  "useCodeBlocks": true
+  "useCodeBlocks": true,
+  "disableSources": true
 }
