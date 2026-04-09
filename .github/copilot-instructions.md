@@ -161,11 +161,11 @@ If the build modifies any files (e.g. README snippet drift, generated code chang
 
 ### API spec examples: prefer ergonomic helpers
 
-The `examples/operation-map.json` file maps OpenAPI `operationId`s to example regions that are displayed in the Camunda docs API reference (via `docusaurus-plugin-openapi-docs`).
+The `examples/operation-map.json` file maps OpenAPI `operationId`s to example regions consumed by `hooks/post/450-inject-examples.ts`. That hook injects `@example` JSDoc blocks into generated sources, which are then rendered by TypeDoc (`npm run docs:api`) and surfaced in IntelliSense. See `MAINTAINER.md` ("API Docs Example Injection (Hook 450)") for the maintainer workflow.
 
-When an ergonomic helper method exists for a generated operation, the operation-map entry **must** point to the helper — not to the raw generated method. Users should see the best developer experience by default.
+When an ergonomic helper method exists for a generated operation, the operation-map entry **must** point to the helper — not to the raw generated method. Users should see the best developer experience by default in the generated API docs and editor hints.
 
-Example: `createDeployment` maps to `DeployResourcesFromFiles` (file-path helper) instead of the raw `createDeployment` (requires manual `File` objects). This preference is consistent across all three SDK repos (C#, TypeScript, Python).
+Example: `createDeployment` maps to `DeployResourcesFromFiles` (file-path helper) instead of the raw `createDeployment` (requires manual `File` objects), so the injected `@example` shown in TypeDoc/IntelliSense demonstrates the ergonomic path. This preference is consistent across all three SDK repos (C#, TypeScript, Python).
 
 Code blocks in `README.md` are **injected from compilable example files** — do not edit them inline.
 
