@@ -17,10 +17,7 @@ import { resolve } from 'node:path';
 export type ExampleRef = { file: string; region: string; label: string };
 
 /** Extract the code between //#region Name and //#endregion Name from content */
-export function extractRegionFromContent(
-  content: string,
-  region: string
-): string | null {
+export function extractRegionFromContent(content: string, region: string): string | null {
   // Use line-anchored regex to avoid prefix matches (e.g. CreateDocument vs CreateDocumentLink)
   const escapedRegion = region.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const startRe = new RegExp(`^\\s*//#region\\s+${escapedRegion}\\s*$`, 'm');
@@ -42,9 +39,7 @@ export function extractRegionFromContent(
   // Find minimum indentation
   const nonEmptyLines = lines.filter((l) => l.trim().length > 0);
   if (nonEmptyLines.length === 0) return null;
-  const minIndent = Math.min(
-    ...nonEmptyLines.map((l) => l.match(/^(\s*)/)![1].length)
-  );
+  const minIndent = Math.min(...nonEmptyLines.map((l) => l.match(/^(\s*)/)![1].length));
   return lines.map((l) => l.slice(minIndent)).join('\n');
 }
 
@@ -137,15 +132,11 @@ if (isDirectRun) {
   const mapPath = resolve(root, 'examples/operation-map.json');
 
   if (!existsSync(mapPath)) {
-    console.log(
-      '[inject-examples] examples/operation-map.json not found — skipping'
-    );
+    console.log('[inject-examples] examples/operation-map.json not found — skipping');
     process.exit(0);
   }
 
-  const operationMap: Record<string, ExampleRef[]> = JSON.parse(
-    readFileSync(mapPath, 'utf8')
-  );
+  const operationMap: Record<string, ExampleRef[]> = JSON.parse(readFileSync(mapPath, 'utf8'));
 
   /** Cache of already-read example files */
   const fileCache = new Map<string, string>();
@@ -170,11 +161,7 @@ if (isDirectRun) {
   for (const filePath of targets) {
     if (!existsSync(filePath)) continue;
     const src = readFileSync(filePath, 'utf8');
-    const { output, injectedCount } = injectExamples(
-      src,
-      operationMap,
-      resolveRegion
-    );
+    const { output, injectedCount } = injectExamples(src, operationMap, resolveRegion);
     if (injectedCount > 0) {
       writeFileSync(filePath, output, 'utf8');
       totalInjected += injectedCount;

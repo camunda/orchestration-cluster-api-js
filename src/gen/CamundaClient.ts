@@ -15888,6 +15888,7 @@ export class CamundaClient {
    * config object.
    * @param cfg Worker configuration
    * @example Create a job worker
+   * ```ts
    * async function createJobWorkerExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -15904,7 +15905,9 @@ export class CamundaClient {
    *   // Workers run continuously until closed
    *   // worker.close();
    * }
+   * ```
    * @example Job worker with error handling
+   * ```ts
    * async function jobWorkerWithErrorHandlingExample() {
    *   const camunda = createCamundaClient();
    * 
@@ -15928,6 +15931,7 @@ export class CamundaClient {
    * 
    *   void worker;
    * }
+   * ```
    */
   createJobWorker<
     In extends import('zod').ZodTypeAny = any,
