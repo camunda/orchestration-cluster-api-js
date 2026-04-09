@@ -1,3 +1,11 @@
+# [8.9.0-alpha.35](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.34...v8.9.0-alpha.35) (2026-04-09)
+
+
+### Bug Fixes
+
+* address review comments on PR [#125](https://github.com/camunda/orchestration-cluster-api-js/issues/125) ([6e82793](https://github.com/camunda/orchestration-cluster-api-js/commit/6e82793e4d80a72cd7e7ea168299dcda7268673f))
+* replace z.coerce.bigint() with z.coerce.number() for int64 fields ([b0b592a](https://github.com/camunda/orchestration-cluster-api-js/commit/b0b592ad57b3d3cdd9a6976c01107b922c4deeef)), closes [#124](https://github.com/camunda/orchestration-cluster-api-js/issues/124)
+
 # [8.9.0-alpha.34](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.33...v8.9.0-alpha.34) (2026-04-09)
 
 
