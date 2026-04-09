@@ -176,6 +176,9 @@
 <li><code>strict</code> - fail on type mismatch or missing required fields</li>
 <li><code>fanatical</code> - fail on type mismatch, missing required fields, or unknown additional fields</li>
 </ul>
+<blockquote>
+<p><strong>Note on <code>int64</code> fields</strong>: The upstream OpenAPI spec declares some fields (e.g. <code>totalItems</code>, <code>timeout</code>, <code>timestamp</code>) as <code>integer</code> with <code>format: int64</code>. The TypeScript types map these to <code>number</code>. JSON responses also deserialize as <code>number</code> (with precision loss beyond <code>Number.MAX_SAFE_INTEGER</code>). The Zod schemas use <code>z.coerce.number().int()</code> for these fields, preserving the integer constraint while keeping the runtime type aligned with TypeScript. All validation modes (<code>none</code>, <code>warn</code>, <code>strict</code>, <code>fanatical</code>) return <code>number</code>.</p>
+</blockquote>
 <h2 id="per-method-retry-override" class="tsd-anchor-link">Per-Method Retry Override<a href="#per-method-retry-override" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Every API method accepts an optional trailing <code>options</code> parameter that lets you override or disable the global retry policy for that single call.</p>
 <h3 id="disable-retry-for-a-single-call" class="tsd-anchor-link">Disable Retry for a Single Call<a href="#disable-retry-for-a-single-call" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
