@@ -20,21 +20,15 @@ describe('VOID_RESPONSES correctness', () => {
     const clientSrc = readFileSync(CLIENT_GEN_PATH, 'utf8');
 
     // Extract the VOID_RESPONSES set entries from CamundaClient.ts
-    const voidSetMatch = clientSrc.match(
-      /const VOID_RESPONSES\s*=\s*new Set\(\[([^\]]+)\]\)/
-    );
+    const voidSetMatch = clientSrc.match(/const VOID_RESPONSES\s*=\s*new Set\(\[([^\]]+)\]\)/);
     expect(voidSetMatch).toBeTruthy();
-    const voidNames = voidSetMatch![1]
-      .split(',')
-      .map((s) => s.trim().replace(/'/g, ''));
+    const voidNames = voidSetMatch![1].split(',').map((s) => s.trim().replace(/'/g, ''));
 
     // For each entry, verify the zod schema is pure z.void(), not a union
     const unionFalsePositives: string[] = [];
     for (const name of voidNames) {
       // Find the export for this schema in zod.gen.ts
-      const re = new RegExp(
-        `export const ${name}\\s*=\\s*([^;]+);`
-      );
+      const re = new RegExp(`export const ${name}\\s*=\\s*([^;]+);`);
       const m = zodSrc.match(re);
       if (!m) continue; // schema not found — separate concern
       const rhs = m[1];
@@ -55,13 +49,9 @@ describe('VOID_RESPONSES correctness', () => {
     const clientSrc = readFileSync(CLIENT_GEN_PATH, 'utf8');
 
     // Extract VOID_RESPONSES entries
-    const voidSetMatch = clientSrc.match(
-      /const VOID_RESPONSES\s*=\s*new Set\(\[([^\]]+)\]\)/
-    );
+    const voidSetMatch = clientSrc.match(/const VOID_RESPONSES\s*=\s*new Set\(\[([^\]]+)\]\)/);
     expect(voidSetMatch).toBeTruthy();
-    const voidNames = new Set(
-      voidSetMatch![1].split(',').map((s) => s.trim().replace(/'/g, ''))
-    );
+    const voidNames = new Set(voidSetMatch![1].split(',').map((s) => s.trim().replace(/'/g, '')));
 
     // Find all exported response schemas that are pure z.void()
     const rResp = /export const (z[A-Z][A-Za-z0-9_]*Response)\s*=\s*([^;]+);/g;
