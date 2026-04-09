@@ -14,27 +14,13 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const root = process.cwd();
-const mapPath = resolve(root, 'examples/operation-map.json');
+export type ExampleRef = { file: string; region: string; label: string };
 
-if (!existsSync(mapPath)) {
-  console.log('[inject-examples] examples/operation-map.json not found — skipping');
-  process.exit(0);
-}
-
-type ExampleRef = { file: string; region: string; label: string };
-const operationMap: Record<string, ExampleRef[]> = JSON.parse(readFileSync(mapPath, 'utf8'));
-
-/** Cache of already-read example files */
-const fileCache = new Map<string, string>();
-
-/** Extract the code between //#region Name and //#endregion Name from a file */
-function extractRegion(filePath: string, region: string): string | null {
-  if (!fileCache.has(filePath)) {
-    if (!existsSync(filePath)) return null;
-    fileCache.set(filePath, readFileSync(filePath, 'utf8'));
-  }
-  const content = fileCache.get(filePath)!;
+/** Extract the code between //#region Name and //#endregion Name from content */
+export function extractRegionFromContent(
+  content: string,
+  region: string
+): string | null {
   // Use line-anchored regex to avoid prefix matches (e.g. CreateDocument vs CreateDocumentLink)
   const escapedRegion = region.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const startRe = new RegExp(`^\\s*//#region\\s+${escapedRegion}\\s*$`, 'm');
@@ -56,23 +42,22 @@ function extractRegion(filePath: string, region: string): string | null {
   // Find minimum indentation
   const nonEmptyLines = lines.filter((l) => l.trim().length > 0);
   if (nonEmptyLines.length === 0) return null;
-  const minIndent = Math.min(...nonEmptyLines.map((l) => l.match(/^(\s*)/)![1].length));
+  const minIndent = Math.min(
+    ...nonEmptyLines.map((l) => l.match(/^(\s*)/)![1].length)
+  );
   return lines.map((l) => l.slice(minIndent)).join('\n');
 }
 
-const examplesDir = resolve(root, 'examples');
-
-const targets = [
-  resolve(root, 'src/gen/CamundaClient.ts'),
-  resolve(root, 'src/facade/operations.gen.ts'),
-];
-
-let totalInjected = 0;
-
-for (const filePath of targets) {
-  if (!existsSync(filePath)) continue;
-  let src = readFileSync(filePath, 'utf8');
-  let fileInjections = 0;
+/**
+ * Inject @example JSDoc tags into source code, resolving examples from a
+ * region-content resolver function. Returns the transformed source.
+ */
+export function injectExamples(
+  src: string,
+  operationMap: Record<string, ExampleRef[]>,
+  resolveRegion: (file: string, region: string) => string | null
+): { output: string; injectedCount: number } {
+  let injectedCount = 0;
 
   // Detect line ending style (CRLF or LF)
   const eol = src.includes('\r\n') ? '\r\n' : '\n';
@@ -80,39 +65,34 @@ for (const filePath of targets) {
 
   // Strip previously injected @example blocks only before @operationId markers
   // (preserves manual @example blocks elsewhere, e.g. createJobWorker).
-  // An injected block is: one or more @example lines (with continuation code lines)
-  // immediately preceding an @operationId line.
   src = src.replace(
     new RegExp(
       `(?:` +
-        `(?:[ \\t]*\\*[ \\t]*)@example [^\\r\\n]*${eolRe}` + // @example line
-        `(?:[ \\t]*\\*(?:[ \\t][^@\\r\\n][^\\r\\n]*|[ \\t]*)${eolRe})*` + // continuation lines
-        `)+` + // one or more @example blocks
-        `(?=[ \\t]*\\*[ \\t]*@operationId )`, // only if followed by @operationId
+        `(?:[ \\t]*\\*[ \\t]*)@example [^\\r\\n]*${eolRe}` +
+        `(?:[ \\t]*\\*(?:[ \\t][^@\\r\\n][^\\r\\n]*|[ \\t]*)${eolRe})*` +
+        `)+` +
+        `(?=[ \\t]*\\*[ \\t]*@operationId )`,
       'g'
     ),
     ''
   );
 
   for (const [opId, examples] of Object.entries(operationMap)) {
-    // Match the @operationId tag line and inject @example blocks before it
     const marker = `@operationId ${opId}${eol}`;
     const idx = src.indexOf(marker);
     if (idx === -1) continue;
 
-    // Detect the indentation prefix (e.g. "   * " or " * ")
     const lineStart = src.lastIndexOf(eol, idx) + eol.length;
-    const prefix = src.slice(lineStart, idx); // e.g. "   * "
+    const prefix = src.slice(lineStart, idx);
 
     const exampleLines: string[] = [];
-    let injectedCount = 0;
+    let opInjected = 0;
     for (const ex of examples) {
-      const code = extractRegion(resolve(examplesDir, ex.file), ex.region);
+      const code = resolveRegion(ex.file, ex.region);
       if (!code) continue;
 
-      injectedCount++;
+      opInjected++;
       exampleLines.push(`${prefix}@example ${ex.label}`);
-      // Wrap code in fenced code block so TypeDoc renders it as code in markdown
       exampleLines.push(`${prefix}\`\`\`ts`);
       for (const codeLine of code.split('\n')) {
         exampleLines.push(`${prefix}${codeLine}`);
@@ -122,35 +102,86 @@ for (const filePath of targets) {
 
     if (exampleLines.length === 0) continue;
 
-    // Insert example lines before the @operationId line
     const injection = `${exampleLines.join(eol)}${eol}`;
     src = src.slice(0, lineStart) + injection + src.slice(lineStart);
-    fileInjections += injectedCount;
+    injectedCount += opInjected;
   }
 
   // Second pass: resolve any remaining {@includeCode} references from other hooks
-  // (e.g. createJobWorker examples injected by class-methods hook)
   const includeCodeRe =
     /([ \t]*\*[ \t]*)(\{@includeCode\s+(?:\.\.\/)*examples\/([^#}]+)#([^}]+)\})/g;
   src = src.replace(
     includeCodeRe,
     (_match, prefix: string, _directive: string, file: string, region: string) => {
-      const code = extractRegion(resolve(examplesDir, file), region);
-      if (!code) return `${prefix}${_directive}`; // leave as-is if region not found
-      fileInjections++;
-      const codeLines = code
-        .split('\n')
-        .map((line) => `${prefix}${line}`);
+      const code = resolveRegion(file, region);
+      if (!code) return `${prefix}${_directive}`;
+      injectedCount++;
+      const codeLines = code.split('\n').map((line) => `${prefix}${line}`);
       return [`${prefix}\`\`\`ts`, ...codeLines, `${prefix}\`\`\``].join(eol);
     }
   );
 
-  if (fileInjections > 0) {
-    writeFileSync(filePath, src, 'utf8');
-    totalInjected += fileInjections;
-  }
+  return { output: src, injectedCount };
 }
 
-console.log(
-  `[inject-examples] Injected ${totalInjected} @example tags across ${targets.length} files`
-);
+// ── CLI entry point ─────────────────────────────────────────────────────
+// Only run when executed directly (not when imported for testing)
+const isDirectRun =
+  typeof process !== 'undefined' &&
+  process.argv[1] &&
+  (process.argv[1].endsWith('450-inject-examples.ts') ||
+    process.argv[1].endsWith('450-inject-examples'));
+
+if (isDirectRun) {
+  const root = process.cwd();
+  const mapPath = resolve(root, 'examples/operation-map.json');
+
+  if (!existsSync(mapPath)) {
+    console.log(
+      '[inject-examples] examples/operation-map.json not found — skipping'
+    );
+    process.exit(0);
+  }
+
+  const operationMap: Record<string, ExampleRef[]> = JSON.parse(
+    readFileSync(mapPath, 'utf8')
+  );
+
+  /** Cache of already-read example files */
+  const fileCache = new Map<string, string>();
+  const examplesDir = resolve(root, 'examples');
+
+  function resolveRegion(file: string, region: string): string | null {
+    const filePath = resolve(examplesDir, file);
+    if (!fileCache.has(filePath)) {
+      if (!existsSync(filePath)) return null;
+      fileCache.set(filePath, readFileSync(filePath, 'utf8'));
+    }
+    return extractRegionFromContent(fileCache.get(filePath)!, region);
+  }
+
+  const targets = [
+    resolve(root, 'src/gen/CamundaClient.ts'),
+    resolve(root, 'src/facade/operations.gen.ts'),
+  ];
+
+  let totalInjected = 0;
+
+  for (const filePath of targets) {
+    if (!existsSync(filePath)) continue;
+    const src = readFileSync(filePath, 'utf8');
+    const { output, injectedCount } = injectExamples(
+      src,
+      operationMap,
+      resolveRegion
+    );
+    if (injectedCount > 0) {
+      writeFileSync(filePath, output, 'utf8');
+      totalInjected += injectedCount;
+    }
+  }
+
+  console.log(
+    `[inject-examples] Injected ${totalInjected} @example tags across ${targets.length} files`
+  );
+}
