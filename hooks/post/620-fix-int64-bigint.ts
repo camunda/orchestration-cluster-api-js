@@ -47,5 +47,7 @@ if (didPatch) {
   if (bigIntLiteralCount > 0) parts.push(`${bigIntLiteralCount} BigInt() literal(s)`);
   console.log(`[fix-int64-bigint] Replaced ${parts.join(' and ')} in zod.gen.ts`);
 } else {
-  console.log('[fix-int64-bigint] No z.coerce.bigint() or BigInt() literals found — nothing to patch');
+  console.log(
+    '[fix-int64-bigint] No z.coerce.bigint() or BigInt() literals found — nothing to patch'
+  );
 }
