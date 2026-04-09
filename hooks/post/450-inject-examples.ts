@@ -85,10 +85,10 @@ for (const filePath of targets) {
   src = src.replace(
     new RegExp(
       `(?:` +
-        `(?:[ \\t]*\\*[ \\t]*)@example [^\\n]*${eolRe}` + // @example line
-        `(?:[ \\t]*\\*(?:[ \\t][^@\\n][^\\n]*|[ \\t]*)${eolRe})*` + // continuation lines
-      `)+` + // one or more @example blocks
-      `(?=[ \\t]*\\*[ \\t]*@operationId )`, // only if followed by @operationId
+        `(?:[ \\t]*\\*[ \\t]*)@example [^\\r\\n]*${eolRe}` + // @example line
+        `(?:[ \\t]*\\*(?:[ \\t][^@\\r\\n][^\\r\\n]*|[ \\t]*)${eolRe})*` + // continuation lines
+        `)+` + // one or more @example blocks
+        `(?=[ \\t]*\\*[ \\t]*@operationId )`, // only if followed by @operationId
       'g'
     ),
     ''
@@ -128,19 +128,20 @@ for (const filePath of targets) {
 
   // Second pass: resolve any remaining {@includeCode} references from other hooks
   // (e.g. createJobWorker examples injected by class-methods hook)
-  const includeCodeRe = new RegExp(
-    `([ \\t]*\\*[ \\t]*)(\\{@includeCode\\s+(?:\\.\\./)*examples/([^#}]+)#([^}]+)\\})`,
-    'g'
+  const includeCodeRe =
+    /([ \t]*\*[ \t]*)(\{@includeCode\s+(?:\.\.\/)*examples\/([^#}]+)#([^}]+)\})/g;
+  src = src.replace(
+    includeCodeRe,
+    (_match, prefix: string, _directive: string, file: string, region: string) => {
+      const code = extractRegion(resolve(examplesDir, file), region);
+      if (!code) return `${prefix}${_directive}`; // leave as-is if region not found
+      fileInjections++;
+      return code
+        .split('\n')
+        .map((line) => `${prefix}${line}`)
+        .join(eol);
+    }
   );
-  src = src.replace(includeCodeRe, (_match, prefix: string, _directive: string, file: string, region: string) => {
-    const code = extractRegion(resolve(examplesDir, file), region);
-    if (!code) return `${prefix}${_directive}`; // leave as-is if region not found
-    fileInjections++;
-    return code
-      .split('\n')
-      .map((line) => `${prefix}${line}`)
-      .join(eol);
-  });
 
   if (fileInjections > 0) {
     writeFileSync(filePath, src, 'utf8');
