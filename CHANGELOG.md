@@ -1,3 +1,15 @@
+# [8.9.0-alpha.30](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.29...v8.9.0-alpha.30) (2026-04-09)
+
+
+### Bug Fixes
+
+* make strip regex CRLF-safe for idempotent injection ([4bab8a4](https://github.com/camunda/orchestration-cluster-api-js/commit/4bab8a4d6fd5eaf19567a837c711fd8035604eb6))
+
+
+### Features
+
+* inline example code in JSDoc for IntelliSense ([26a51d0](https://github.com/camunda/orchestration-cluster-api-js/commit/26a51d0310b129b78b45e8636742dc32804967ad))
+
 # [8.9.0-alpha.29](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.28...v8.9.0-alpha.29) (2026-04-08)
 
 
