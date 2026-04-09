@@ -50,18 +50,15 @@ if (genStartIdx !== -1 && genEndIdx !== -1) {
 // Template methods live between the class body start and the AUTO-GENERATED marker.
 // We find the class declaration, then parse only within the class body.
 const classStartMatch = clientSource.match(/^export class CamundaClient\s*\{/m);
-const classBodyStart = classStartMatch
-  ? classStartMatch.index + classStartMatch[0].length
-  : 0;
+const classBodyStart = classStartMatch ? classStartMatch.index + classStartMatch[0].length : 0;
 
-const templateSection = genStartIdx !== -1
-  ? clientSource.slice(classBodyStart, genStartIdx)
-  : clientSource.slice(classBodyStart);
+const templateSection =
+  genStartIdx !== -1
+    ? clientSource.slice(classBodyStart, genStartIdx)
+    : clientSource.slice(classBodyStart);
 
 // Also include everything after END marker (e.g. createJobWorker, deployResourcesFromFiles)
-const afterGenSection = genEndIdx !== -1
-  ? clientSource.slice(genEndIdx + genEndMarker.length)
-  : '';
+const afterGenSection = genEndIdx !== -1 ? clientSource.slice(genEndIdx + genEndMarker.length) : '';
 
 // Find the closing brace of the class to avoid picking up file-level functions
 const classEndMatch = afterGenSection.match(/^}\s*$/m);
@@ -197,15 +194,11 @@ console.log(`Methods with example regions:  ${methodsWithExamples.size}`);
 let exitCode = 0;
 
 if (missingExamples.length > 0) {
-  console.error(
-    `\n✗ ${missingExamples.length} public method(s) missing example regions:`
-  );
+  console.error(`\n✗ ${missingExamples.length} public method(s) missing example regions:`);
   for (const m of missingExamples) {
     console.error(`  - ${m} (expected region: ${toPascalCase(m)})`);
   }
-  console.error(
-    `\nTo fix: add example regions in examples/*.ts for each missing method.`
-  );
+  console.error(`\nTo fix: add example regions in examples/*.ts for each missing method.`);
   exitCode = 1;
 }
 
