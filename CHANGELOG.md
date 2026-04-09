@@ -1,3 +1,10 @@
+# [8.9.0-alpha.36](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.35...v8.9.0-alpha.36) (2026-04-09)
+
+
+### Bug Fixes
+
+* address review comments on PR [#110](https://github.com/camunda/orchestration-cluster-api-js/issues/110) ([5a0eaf0](https://github.com/camunda/orchestration-cluster-api-js/commit/5a0eaf0dbd22437b9160f568f37a1215b0d0983d))
+
 # [8.9.0-alpha.35](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.34...v8.9.0-alpha.35) (2026-04-09)
 
 
