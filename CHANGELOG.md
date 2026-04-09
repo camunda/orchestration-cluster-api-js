@@ -1,3 +1,11 @@
+# [8.9.0-alpha.33](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.32...v8.9.0-alpha.33) (2026-04-09)
+
+
+### Bug Fixes
+
+* exclude union response schemas from VOID_RESPONSES set ([52c36ab](https://github.com/camunda/orchestration-cluster-api-js/commit/52c36abaacaf79398f47f35b4bbd28d25663ae17)), closes [#120](https://github.com/camunda/orchestration-cluster-api-js/issues/120)
+* remove accidentally committed .tmp-clone gitlink ([9301965](https://github.com/camunda/orchestration-cluster-api-js/commit/9301965ce991135bff9dcc4301cc026c8fc92d4c))
+
 # [8.9.0-alpha.32](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.31...v8.9.0-alpha.32) (2026-04-09)
 
 
