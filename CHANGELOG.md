@@ -1,3 +1,11 @@
+# [8.9.0-alpha.34](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.33...v8.9.0-alpha.34) (2026-04-09)
+
+
+### Bug Fixes
+
+* add missing examples for all template methods (green) ([6fabac5](https://github.com/camunda/orchestration-cluster-api-js/commit/6fabac5bf3423037d4d7d05d9c176d0a45422b5c)), closes [#122](https://github.com/camunda/orchestration-cluster-api-js/issues/122)
+* Update scripts/check-method-example-completeness.cjs ([8503c12](https://github.com/camunda/orchestration-cluster-api-js/commit/8503c120b65bf4002fbe153e1b790ed6e2342130))
+
 # [8.9.0-alpha.33](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.32...v8.9.0-alpha.33) (2026-04-09)
 
 
