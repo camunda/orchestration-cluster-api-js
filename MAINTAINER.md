@@ -188,36 +188,35 @@ There are two separate systems that consume these regions:
 **How it works:**
 
 - Scans all `examples/*.ts` and `examples/*.txt` files for `//#region Name` blocks
-- Finds matching `<!-- snippet:Name -->` markers in `README.md`
-- Replaces the content between marker pairs with the extracted code
+- Finds matching snippet markers in `README.md` (format: `<!-- snippet-source: examples/file.ts | regions: Name -->`)
+- Replaces the fenced code block following each marker with the extracted code
+- Auto-upgrades legacy `<!-- snippet:Name -->` markers to the new descriptive format
 
 **Marker format in README.md:**
 
-`````markdown
-<!-- snippet:ReadmeCreateClient -->
+````markdown
+<!-- snippet-source: examples/readme.ts | regions: ReadmeCreateClient -->
 
-````ts
+```ts
 // This content is auto-replaced by the region named ReadmeCreateClient
-```​
-<!-- /snippet:ReadmeCreateClient -->
-````
-`````
-
+```
 ````
 
-**Composite regions:** Use `+` to concatenate multiple regions:
+Multiple source files can be listed comma-separated when a composite region spans files:
 
 ```markdown
-<!-- snippet:ReadmeDefaultImport+ReadmeCreateClient -->
+<!-- snippet-source: examples/readme-imports.txt,examples/readme.ts | regions: ReadmeDefaultImport+ReadmeCreateClient -->
 ```
 
-This inserts `ReadmeDefaultImport` followed by `ReadmeCreateClient` into a single code block.
+**Composite regions:** Use `+` to concatenate multiple regions. This inserts `ReadmeDefaultImport` followed by `ReadmeCreateClient` into a single code block.
+
+**Exempt blocks:** Use `<!-- snippet-exempt: reason -->` above a code block to exclude it from injection enforcement (e.g. code using external dependencies or pseudo-code that can't be type-checked).
 
 **Import regions:** `examples/readme-imports.txt` contains import-only regions (e.g., `ReadmeDefaultImport`, `ReadmeJobWorkerImport`) using the same `//#region` syntax.
 
 **Naming convention:** Regions wired to the README use a `Readme` prefix (e.g., `ReadmeCreateClient`, `ReadmeActivateJobs`). Non-prefixed regions are used only for API docs injection and type-checking.
 
-**CI enforcement:** `npm run sync-readme:check` runs in CI and fails if the README is out of sync. The build runs `npm run sync-readme` automatically to keep it updated.
+**CI enforcement:** `npm run sync-readme:check` runs in CI and fails if the README is out of sync or contains un-injected TypeScript/JavaScript code blocks without a `<!-- snippet-exempt -->` marker. The build runs `npm run sync-readme` automatically to keep it updated.
 
 ### Type-Checking (Hook 950)
 
@@ -229,10 +228,25 @@ Examples are type-checked at build time via `tsc --noEmit -p examples/tsconfig.j
 
 ```json
 {
-  "activateJobs": ["examples/job.ts#ActivateJobs"],
-  "createProcessInstance": ["examples/process-instance.ts#CreateProcessInstance"]
+  "activateJobs": [
+    { "file": "job.ts", "region": "ActivateJobs", "label": "Activate and process jobs" }
+  ],
+  "createProcessInstance": [
+    {
+      "file": "process-instance.ts",
+      "region": "CreateProcessInstanceById",
+      "label": "Create by process definition ID"
+    },
+    {
+      "file": "process-instance.ts",
+      "region": "CreateProcessInstanceByKey",
+      "label": "Create by process definition key"
+    }
+  ]
 }
 ```
+
+Each entry is an array of `{ file, region, label }` objects. Multiple entries per operation are supported — each gets its own `@example` block with the label as its heading.
 
 Hook 450 reads this map and injects `@example` JSDoc tags with `{@includeCode}` inline tags into the generated source. These tags are rendered by TypeDoc when generating the API reference (`npm run docs:api`).
 
@@ -241,7 +255,7 @@ Hook 450 reads this map and injects `@example` JSDoc tags with `{@includeCode}` 
 **For the README:**
 
 1. Add a `//#region ReadmeMyExample` ... `//#endregion ReadmeMyExample` block to the appropriate example file (use the `Readme` prefix).
-2. Add a `<!-- snippet:ReadmeMyExample -->` ... `<!-- /snippet:ReadmeMyExample -->` marker pair in `README.md`.
+2. Add a `<!-- snippet-source: examples/file.ts | regions: ReadmeMyExample -->` marker in `README.md` followed by an empty fenced code block.
 3. Run `npm run sync-readme` (or `npm run build:local`) to populate the snippet.
 
 **For API docs:**
