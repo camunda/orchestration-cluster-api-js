@@ -1,3 +1,10 @@
+# [8.9.0-alpha.31](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.30...v8.9.0-alpha.31) (2026-04-09)
+
+
+### Bug Fixes
+
+* wrap [@example](https://github.com/example) code in fenced blocks for TypeDoc markdown rendering ([b1aaa63](https://github.com/camunda/orchestration-cluster-api-js/commit/b1aaa6318ef86d134bdef114af5504a0519937c0))
+
 # [8.9.0-alpha.30](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.29...v8.9.0-alpha.30) (2026-04-09)
 
 
