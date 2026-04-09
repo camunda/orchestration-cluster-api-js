@@ -46,8 +46,8 @@ function extractRegion(filePath: string, region: string): string | null {
   if (!endMatch) return null;
 
   const regionContent = content.slice(afterStart, afterStart + endMatch.index);
-  // Normalize to LF, then trim leading/trailing blank lines and remove common leading indentation
-  const lines = regionContent.replace(/\r\n/g, '\n').split('\n');
+  // Strip all CR so we work with pure LF, then split and trim
+  const lines = regionContent.replace(/\r/g, '').split('\n');
   // Drop first line if empty (newline after start tag)
   if (lines.length > 0 && lines[0].trim() === '') lines.shift();
   // Drop last line if empty (newline before end tag)
@@ -112,10 +112,12 @@ for (const filePath of targets) {
 
       injectedCount++;
       exampleLines.push(`${prefix}@example ${ex.label}`);
-      // Indent each line of code with the JSDoc prefix
+      // Wrap code in fenced code block so TypeDoc renders it as code in markdown
+      exampleLines.push(`${prefix}\`\`\`ts`);
       for (const codeLine of code.split('\n')) {
         exampleLines.push(`${prefix}${codeLine}`);
       }
+      exampleLines.push(`${prefix}\`\`\``);
     }
 
     if (exampleLines.length === 0) continue;
@@ -136,10 +138,10 @@ for (const filePath of targets) {
       const code = extractRegion(resolve(examplesDir, file), region);
       if (!code) return `${prefix}${_directive}`; // leave as-is if region not found
       fileInjections++;
-      return code
+      const codeLines = code
         .split('\n')
-        .map((line) => `${prefix}${line}`)
-        .join(eol);
+        .map((line) => `${prefix}${line}`);
+      return [`${prefix}\`\`\`ts`, ...codeLines, `${prefix}\`\`\``].join(eol);
     }
   );
 
