@@ -293,28 +293,71 @@ export type AuditLogEntityKey = CamundaKey<'AuditLogEntityKey'>;
 /**
  * The type of entity affected by the operation.
  */
-export type AuditLogEntityTypeEnum = 'AUTHORIZATION' | 'BATCH' | 'DECISION' | 'GROUP' | 'INCIDENT' | 'JOB' | 'MAPPING_RULE' | 'PROCESS_INSTANCE' | 'RESOURCE' | 'ROLE' | 'TENANT' | 'USER' | 'USER_TASK' | 'VARIABLE' | 'CLIENT';
-
+export const AuditLogEntityTypeEnum = {
+  AUTHORIZATION: 'AUTHORIZATION',
+  BATCH: 'BATCH',
+  DECISION: 'DECISION',
+  GROUP: 'GROUP',
+  INCIDENT: 'INCIDENT',
+  JOB: 'JOB',
+  MAPPING_RULE: 'MAPPING_RULE',
+  PROCESS_INSTANCE: 'PROCESS_INSTANCE',
+  RESOURCE: 'RESOURCE',
+  ROLE: 'ROLE',
+  TENANT: 'TENANT',
+  USER: 'USER',
+  USER_TASK: 'USER_TASK',
+  VARIABLE: 'VARIABLE',
+  CLIENT: 'CLIENT',
+} as const;
+export type AuditLogEntityTypeEnum = (typeof AuditLogEntityTypeEnum)[keyof typeof AuditLogEntityTypeEnum];
 /**
  * The type of operation performed.
  */
-export type AuditLogOperationTypeEnum = 'ASSIGN' | 'CANCEL' | 'COMPLETE' | 'CREATE' | 'DELETE' | 'EVALUATE' | 'MIGRATE' | 'MODIFY' | 'RESOLVE' | 'RESUME' | 'SUSPEND' | 'UNASSIGN' | 'UNKNOWN' | 'UPDATE';
-
+export const AuditLogOperationTypeEnum = {
+  ASSIGN: 'ASSIGN',
+  CANCEL: 'CANCEL',
+  COMPLETE: 'COMPLETE',
+  CREATE: 'CREATE',
+  DELETE: 'DELETE',
+  EVALUATE: 'EVALUATE',
+  MIGRATE: 'MIGRATE',
+  MODIFY: 'MODIFY',
+  RESOLVE: 'RESOLVE',
+  RESUME: 'RESUME',
+  SUSPEND: 'SUSPEND',
+  UNASSIGN: 'UNASSIGN',
+  UNKNOWN: 'UNKNOWN',
+  UPDATE: 'UPDATE',
+} as const;
+export type AuditLogOperationTypeEnum = (typeof AuditLogOperationTypeEnum)[keyof typeof AuditLogOperationTypeEnum];
 /**
  * The type of actor who performed the operation.
  */
-export type AuditLogActorTypeEnum = 'ANONYMOUS' | 'CLIENT' | 'UNKNOWN' | 'USER';
-
+export const AuditLogActorTypeEnum = {
+  ANONYMOUS: 'ANONYMOUS',
+  CLIENT: 'CLIENT',
+  UNKNOWN: 'UNKNOWN',
+  USER: 'USER',
+} as const;
+export type AuditLogActorTypeEnum = (typeof AuditLogActorTypeEnum)[keyof typeof AuditLogActorTypeEnum];
 /**
  * The result status of the operation.
  */
-export type AuditLogResultEnum = 'FAIL' | 'SUCCESS';
-
+export const AuditLogResultEnum = {
+  FAIL: 'FAIL',
+  SUCCESS: 'SUCCESS',
+} as const;
+export type AuditLogResultEnum = (typeof AuditLogResultEnum)[keyof typeof AuditLogResultEnum];
 /**
  * The category of the audit log operation.
  */
-export type AuditLogCategoryEnum = 'ADMIN' | 'DEPLOYED_RESOURCES' | 'USER_TASKS';
-
+export const AuditLogCategoryEnum = {
+  ADMIN: 'ADMIN',
+  DEPLOYED_RESOURCES: 'DEPLOYED_RESOURCES',
+  USER_TASKS: 'USER_TASKS',
+} as const;
+export type AuditLogCategoryEnum = (typeof AuditLogCategoryEnum)[keyof typeof AuditLogCategoryEnum];
 /**
  * EntityKey property with full advanced search capabilities.
  */
@@ -677,18 +720,88 @@ export type AuthorizationCreateResult = {
 /**
  * Specifies the type of permissions.
  */
-export type PermissionTypeEnum = 'ACCESS' | 'CANCEL_PROCESS_INSTANCE' | 'CLAIM' | 'CLAIM_USER_TASK' | 'COMPLETE' | 'COMPLETE_USER_TASK' | 'CREATE' | 'CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION' | 'CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE' | 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT' | 'CREATE_DECISION_INSTANCE' | 'CREATE_PROCESS_INSTANCE' | 'CREATE_TASK_LISTENER' | 'DELETE' | 'DELETE_DECISION_INSTANCE' | 'DELETE_DRD' | 'DELETE_FORM' | 'DELETE_PROCESS' | 'DELETE_PROCESS_INSTANCE' | 'DELETE_RESOURCE' | 'DELETE_TASK_LISTENER' | 'EVALUATE' | 'MODIFY_PROCESS_INSTANCE' | 'READ' | 'READ_DECISION_DEFINITION' | 'READ_DECISION_INSTANCE' | 'READ_JOB_METRIC' | 'READ_PROCESS_DEFINITION' | 'READ_PROCESS_INSTANCE' | 'READ_USAGE_METRIC' | 'READ_USER_TASK' | 'READ_TASK_LISTENER' | 'UPDATE' | 'UPDATE_PROCESS_INSTANCE' | 'UPDATE_USER_TASK' | 'UPDATE_TASK_LISTENER';
-
+export const PermissionTypeEnum = {
+  ACCESS: 'ACCESS',
+  CANCEL_PROCESS_INSTANCE: 'CANCEL_PROCESS_INSTANCE',
+  CLAIM: 'CLAIM',
+  CLAIM_USER_TASK: 'CLAIM_USER_TASK',
+  COMPLETE: 'COMPLETE',
+  COMPLETE_USER_TASK: 'COMPLETE_USER_TASK',
+  CREATE: 'CREATE',
+  CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_CANCEL_PROCESS_INSTANCE',
+  CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION: 'CREATE_BATCH_OPERATION_DELETE_DECISION_DEFINITION',
+  CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE: 'CREATE_BATCH_OPERATION_DELETE_DECISION_INSTANCE',
+  CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION: 'CREATE_BATCH_OPERATION_DELETE_PROCESS_DEFINITION',
+  CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_DELETE_PROCESS_INSTANCE',
+  CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE',
+  CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE',
+  CREATE_BATCH_OPERATION_RESOLVE_INCIDENT: 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
+  CREATE_DECISION_INSTANCE: 'CREATE_DECISION_INSTANCE',
+  CREATE_PROCESS_INSTANCE: 'CREATE_PROCESS_INSTANCE',
+  CREATE_TASK_LISTENER: 'CREATE_TASK_LISTENER',
+  DELETE: 'DELETE',
+  DELETE_DECISION_INSTANCE: 'DELETE_DECISION_INSTANCE',
+  DELETE_DRD: 'DELETE_DRD',
+  DELETE_FORM: 'DELETE_FORM',
+  DELETE_PROCESS: 'DELETE_PROCESS',
+  DELETE_PROCESS_INSTANCE: 'DELETE_PROCESS_INSTANCE',
+  DELETE_RESOURCE: 'DELETE_RESOURCE',
+  DELETE_TASK_LISTENER: 'DELETE_TASK_LISTENER',
+  EVALUATE: 'EVALUATE',
+  MODIFY_PROCESS_INSTANCE: 'MODIFY_PROCESS_INSTANCE',
+  READ: 'READ',
+  READ_DECISION_DEFINITION: 'READ_DECISION_DEFINITION',
+  READ_DECISION_INSTANCE: 'READ_DECISION_INSTANCE',
+  READ_JOB_METRIC: 'READ_JOB_METRIC',
+  READ_PROCESS_DEFINITION: 'READ_PROCESS_DEFINITION',
+  READ_PROCESS_INSTANCE: 'READ_PROCESS_INSTANCE',
+  READ_USAGE_METRIC: 'READ_USAGE_METRIC',
+  READ_USER_TASK: 'READ_USER_TASK',
+  READ_TASK_LISTENER: 'READ_TASK_LISTENER',
+  UPDATE: 'UPDATE',
+  UPDATE_PROCESS_INSTANCE: 'UPDATE_PROCESS_INSTANCE',
+  UPDATE_USER_TASK: 'UPDATE_USER_TASK',
+  UPDATE_TASK_LISTENER: 'UPDATE_TASK_LISTENER',
+} as const;
+export type PermissionTypeEnum = (typeof PermissionTypeEnum)[keyof typeof PermissionTypeEnum];
 /**
  * The type of resource to add/remove permissions to/from.
  */
-export type ResourceTypeEnum = 'AUDIT_LOG' | 'AUTHORIZATION' | 'BATCH' | 'CLUSTER_VARIABLE' | 'COMPONENT' | 'DECISION_DEFINITION' | 'DECISION_REQUIREMENTS_DEFINITION' | 'DOCUMENT' | 'EXPRESSION' | 'GLOBAL_LISTENER' | 'GROUP' | 'MAPPING_RULE' | 'MESSAGE' | 'PROCESS_DEFINITION' | 'RESOURCE' | 'ROLE' | 'SYSTEM' | 'TENANT' | 'USER' | 'USER_TASK';
-
+export const ResourceTypeEnum = {
+  AUDIT_LOG: 'AUDIT_LOG',
+  AUTHORIZATION: 'AUTHORIZATION',
+  BATCH: 'BATCH',
+  CLUSTER_VARIABLE: 'CLUSTER_VARIABLE',
+  COMPONENT: 'COMPONENT',
+  DECISION_DEFINITION: 'DECISION_DEFINITION',
+  DECISION_REQUIREMENTS_DEFINITION: 'DECISION_REQUIREMENTS_DEFINITION',
+  DOCUMENT: 'DOCUMENT',
+  EXPRESSION: 'EXPRESSION',
+  GLOBAL_LISTENER: 'GLOBAL_LISTENER',
+  GROUP: 'GROUP',
+  MAPPING_RULE: 'MAPPING_RULE',
+  MESSAGE: 'MESSAGE',
+  PROCESS_DEFINITION: 'PROCESS_DEFINITION',
+  RESOURCE: 'RESOURCE',
+  ROLE: 'ROLE',
+  SYSTEM: 'SYSTEM',
+  TENANT: 'TENANT',
+  USER: 'USER',
+  USER_TASK: 'USER_TASK',
+} as const;
+export type ResourceTypeEnum = (typeof ResourceTypeEnum)[keyof typeof ResourceTypeEnum];
 /**
  * The type of the owner of permissions.
  */
-export type OwnerTypeEnum = 'USER' | 'CLIENT' | 'ROLE' | 'GROUP' | 'MAPPING_RULE' | 'UNSPECIFIED';
-
+export const OwnerTypeEnum = {
+  USER: 'USER',
+  CLIENT: 'CLIENT',
+  ROLE: 'ROLE',
+  GROUP: 'GROUP',
+  MAPPING_RULE: 'MAPPING_RULE',
+  UNSPECIFIED: 'UNSPECIFIED',
+} as const;
+export type OwnerTypeEnum = (typeof OwnerTypeEnum)[keyof typeof OwnerTypeEnum];
 /**
  * System-generated key for an authorization.
  */
@@ -1027,18 +1140,42 @@ export type ProcessInstanceModificationMoveBatchOperationInstruction = {
 /**
  * The batch operation item state.
  */
-export type BatchOperationItemStateEnum = 'ACTIVE' | 'COMPLETED' | 'CANCELED' | 'FAILED';
-
+export const BatchOperationItemStateEnum = {
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  CANCELED: 'CANCELED',
+  FAILED: 'FAILED',
+} as const;
+export type BatchOperationItemStateEnum = (typeof BatchOperationItemStateEnum)[keyof typeof BatchOperationItemStateEnum];
 /**
  * The batch operation state.
  */
-export type BatchOperationStateEnum = 'ACTIVE' | 'CANCELED' | 'COMPLETED' | 'CREATED' | 'FAILED' | 'PARTIALLY_COMPLETED' | 'SUSPENDED';
-
+export const BatchOperationStateEnum = {
+  ACTIVE: 'ACTIVE',
+  CANCELED: 'CANCELED',
+  COMPLETED: 'COMPLETED',
+  CREATED: 'CREATED',
+  FAILED: 'FAILED',
+  PARTIALLY_COMPLETED: 'PARTIALLY_COMPLETED',
+  SUSPENDED: 'SUSPENDED',
+} as const;
+export type BatchOperationStateEnum = (typeof BatchOperationStateEnum)[keyof typeof BatchOperationStateEnum];
 /**
  * The type of the batch operation.
  */
-export type BatchOperationTypeEnum = 'ADD_VARIABLE' | 'CANCEL_PROCESS_INSTANCE' | 'DELETE_DECISION_DEFINITION' | 'DELETE_DECISION_INSTANCE' | 'DELETE_PROCESS_DEFINITION' | 'DELETE_PROCESS_INSTANCE' | 'MIGRATE_PROCESS_INSTANCE' | 'MODIFY_PROCESS_INSTANCE' | 'RESOLVE_INCIDENT' | 'UPDATE_VARIABLE';
-
+export const BatchOperationTypeEnum = {
+  ADD_VARIABLE: 'ADD_VARIABLE',
+  CANCEL_PROCESS_INSTANCE: 'CANCEL_PROCESS_INSTANCE',
+  DELETE_DECISION_DEFINITION: 'DELETE_DECISION_DEFINITION',
+  DELETE_DECISION_INSTANCE: 'DELETE_DECISION_INSTANCE',
+  DELETE_PROCESS_DEFINITION: 'DELETE_PROCESS_DEFINITION',
+  DELETE_PROCESS_INSTANCE: 'DELETE_PROCESS_INSTANCE',
+  MIGRATE_PROCESS_INSTANCE: 'MIGRATE_PROCESS_INSTANCE',
+  MODIFY_PROCESS_INSTANCE: 'MODIFY_PROCESS_INSTANCE',
+  RESOLVE_INCIDENT: 'RESOLVE_INCIDENT',
+  UPDATE_VARIABLE: 'UPDATE_VARIABLE',
+} as const;
+export type BatchOperationTypeEnum = (typeof BatchOperationTypeEnum)[keyof typeof BatchOperationTypeEnum];
 /**
  * BatchOperationTypeEnum property with full advanced search capabilities.
  */
@@ -1139,8 +1276,11 @@ export type ClockPinRequest = {
 /**
  * The scope of a cluster variable.
  */
-export type ClusterVariableScopeEnum = 'GLOBAL' | 'TENANT';
-
+export const ClusterVariableScopeEnum = {
+  GLOBAL: 'GLOBAL',
+  TENANT: 'TENANT',
+} as const;
+export type ClusterVariableScopeEnum = (typeof ClusterVariableScopeEnum)[keyof typeof ClusterVariableScopeEnum];
 export type CreateClusterVariableRequest = {
     /**
      * The name of the cluster variable. Must be unique within its scope (global or tenant-specific).
@@ -1930,13 +2070,26 @@ export type MatchedDecisionRuleItem = {
 /**
  * The type of the decision. UNSPECIFIED is deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionDefinitionTypeEnum = 'DECISION_TABLE' | 'LITERAL_EXPRESSION' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | 'UNKNOWN';
-
+export const DecisionDefinitionTypeEnum = {
+  DECISION_TABLE: 'DECISION_TABLE',
+  LITERAL_EXPRESSION: 'LITERAL_EXPRESSION',
+  /** @deprecated since 8.9.0 */
+  UNSPECIFIED: 'UNSPECIFIED',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type DecisionDefinitionTypeEnum = (typeof DecisionDefinitionTypeEnum)[keyof typeof DecisionDefinitionTypeEnum];
 /**
  * The state of the decision instance. UNSPECIFIED and UNKNOWN are deprecated and should not be used anymore, for removal in 8.10
  */
-export type DecisionInstanceStateEnum = 'EVALUATED' | 'FAILED' | /** @deprecated since 8.9.0 */ 'UNSPECIFIED' | /** @deprecated since 8.9.0 */ 'UNKNOWN';
-
+export const DecisionInstanceStateEnum = {
+  EVALUATED: 'EVALUATED',
+  FAILED: 'FAILED',
+  /** @deprecated since 8.9.0 */
+  UNSPECIFIED: 'UNSPECIFIED',
+  /** @deprecated since 8.9.0 */
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type DecisionInstanceStateEnum = (typeof DecisionInstanceStateEnum)[keyof typeof DecisionInstanceStateEnum];
 /**
  * Advanced filter
  *
@@ -2699,8 +2852,12 @@ export type ElementInstanceResult = {
 /**
  * Element states
  */
-export type ElementInstanceStateEnum = 'ACTIVE' | 'COMPLETED' | 'TERMINATED';
-
+export const ElementInstanceStateEnum = {
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  TERMINATED: 'TERMINATED',
+} as const;
+export type ElementInstanceStateEnum = (typeof ElementInstanceStateEnum)[keyof typeof ElementInstanceStateEnum];
 export type AdHocSubProcessActivateActivitiesInstruction = {
     /**
      * Activities to activate.
@@ -2940,13 +3097,23 @@ export type FormResult = {
 /**
  * How the global listener was defined.
  */
-export type GlobalListenerSourceEnum = 'CONFIGURATION' | 'API';
-
+export const GlobalListenerSourceEnum = {
+  CONFIGURATION: 'CONFIGURATION',
+  API: 'API',
+} as const;
+export type GlobalListenerSourceEnum = (typeof GlobalListenerSourceEnum)[keyof typeof GlobalListenerSourceEnum];
 /**
  * The event type that triggers the user task listener.
  */
-export type GlobalTaskListenerEventTypeEnum = 'all' | 'creating' | 'assigning' | 'updating' | 'completing' | 'canceling';
-
+export const GlobalTaskListenerEventTypeEnum = {
+  all: 'all',
+  creating: 'creating',
+  assigning: 'assigning',
+  updating: 'updating',
+  completing: 'completing',
+  canceling: 'canceling',
+} as const;
+export type GlobalTaskListenerEventTypeEnum = (typeof GlobalTaskListenerEventTypeEnum)[keyof typeof GlobalTaskListenerEventTypeEnum];
 export type GlobalListenerBase = {
     /**
      * The name of the job type, used as a reference to specify which job workers request the respective listener job.
@@ -3460,8 +3627,25 @@ export type AdvancedIncidentErrorTypeFilter = {
 /**
  * Incident error type with a defined set of values.
  */
-export type IncidentErrorTypeEnum = 'AD_HOC_SUB_PROCESS_NO_RETRIES' | 'CALLED_DECISION_ERROR' | 'CALLED_ELEMENT_ERROR' | 'CONDITION_ERROR' | 'DECISION_EVALUATION_ERROR' | 'EXECUTION_LISTENER_NO_RETRIES' | 'EXTRACT_VALUE_ERROR' | 'FORM_NOT_FOUND' | 'IO_MAPPING_ERROR' | 'JOB_NO_RETRIES' | 'MESSAGE_SIZE_EXCEEDED' | 'RESOURCE_NOT_FOUND' | 'TASK_LISTENER_NO_RETRIES' | 'UNHANDLED_ERROR_EVENT' | 'UNKNOWN' | 'UNSPECIFIED';
-
+export const IncidentErrorTypeEnum = {
+  AD_HOC_SUB_PROCESS_NO_RETRIES: 'AD_HOC_SUB_PROCESS_NO_RETRIES',
+  CALLED_DECISION_ERROR: 'CALLED_DECISION_ERROR',
+  CALLED_ELEMENT_ERROR: 'CALLED_ELEMENT_ERROR',
+  CONDITION_ERROR: 'CONDITION_ERROR',
+  DECISION_EVALUATION_ERROR: 'DECISION_EVALUATION_ERROR',
+  EXECUTION_LISTENER_NO_RETRIES: 'EXECUTION_LISTENER_NO_RETRIES',
+  EXTRACT_VALUE_ERROR: 'EXTRACT_VALUE_ERROR',
+  FORM_NOT_FOUND: 'FORM_NOT_FOUND',
+  IO_MAPPING_ERROR: 'IO_MAPPING_ERROR',
+  JOB_NO_RETRIES: 'JOB_NO_RETRIES',
+  MESSAGE_SIZE_EXCEEDED: 'MESSAGE_SIZE_EXCEEDED',
+  RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
+  TASK_LISTENER_NO_RETRIES: 'TASK_LISTENER_NO_RETRIES',
+  UNHANDLED_ERROR_EVENT: 'UNHANDLED_ERROR_EVENT',
+  UNKNOWN: 'UNKNOWN',
+  UNSPECIFIED: 'UNSPECIFIED',
+} as const;
+export type IncidentErrorTypeEnum = (typeof IncidentErrorTypeEnum)[keyof typeof IncidentErrorTypeEnum];
 /**
  * IncidentStateEnum with full advanced search capabilities.
  */
@@ -3499,8 +3683,14 @@ export type AdvancedIncidentStateFilter = {
 /**
  * Incident states with a defined set of values.
  */
-export type IncidentStateEnum = 'ACTIVE' | 'MIGRATED' | 'PENDING' | 'RESOLVED' | 'UNKNOWN';
-
+export const IncidentStateEnum = {
+  ACTIVE: 'ACTIVE',
+  MIGRATED: 'MIGRATED',
+  PENDING: 'PENDING',
+  RESOLVED: 'RESOLVED',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+export type IncidentStateEnum = (typeof IncidentStateEnum)[keyof typeof IncidentStateEnum];
 export type IncidentSearchQuerySortRequest = {
     /**
      * The field to sort by.
@@ -4538,23 +4728,49 @@ export type JobChangeset = {
  * The tenant filtering strategy for job activation. Determines whether to use tenant IDs provided in the request or tenant IDs assigned to the authenticated principal.
  *
  */
-export type TenantFilterEnum = 'PROVIDED' | 'ASSIGNED';
-
+export const TenantFilterEnum = {
+  PROVIDED: 'PROVIDED',
+  ASSIGNED: 'ASSIGNED',
+} as const;
+export type TenantFilterEnum = (typeof TenantFilterEnum)[keyof typeof TenantFilterEnum];
 /**
  * The state of the job.
  */
-export type JobStateEnum = 'CANCELED' | 'COMPLETED' | 'CREATED' | 'ERROR_THROWN' | 'FAILED' | 'MIGRATED' | 'RETRIES_UPDATED' | 'TIMED_OUT';
-
+export const JobStateEnum = {
+  CANCELED: 'CANCELED',
+  COMPLETED: 'COMPLETED',
+  CREATED: 'CREATED',
+  ERROR_THROWN: 'ERROR_THROWN',
+  FAILED: 'FAILED',
+  MIGRATED: 'MIGRATED',
+  RETRIES_UPDATED: 'RETRIES_UPDATED',
+  TIMED_OUT: 'TIMED_OUT',
+} as const;
+export type JobStateEnum = (typeof JobStateEnum)[keyof typeof JobStateEnum];
 /**
  * The job kind.
  */
-export type JobKindEnum = 'BPMN_ELEMENT' | 'EXECUTION_LISTENER' | 'TASK_LISTENER' | 'AD_HOC_SUB_PROCESS';
-
+export const JobKindEnum = {
+  BPMN_ELEMENT: 'BPMN_ELEMENT',
+  EXECUTION_LISTENER: 'EXECUTION_LISTENER',
+  TASK_LISTENER: 'TASK_LISTENER',
+  AD_HOC_SUB_PROCESS: 'AD_HOC_SUB_PROCESS',
+} as const;
+export type JobKindEnum = (typeof JobKindEnum)[keyof typeof JobKindEnum];
 /**
  * The listener event type of the job.
  */
-export type JobListenerEventTypeEnum = 'ASSIGNING' | 'CANCELING' | 'COMPLETING' | 'CREATING' | 'END' | 'START' | 'UNSPECIFIED' | 'UPDATING';
-
+export const JobListenerEventTypeEnum = {
+  ASSIGNING: 'ASSIGNING',
+  CANCELING: 'CANCELING',
+  COMPLETING: 'COMPLETING',
+  CREATING: 'CREATING',
+  END: 'END',
+  START: 'START',
+  UNSPECIFIED: 'UNSPECIFIED',
+  UPDATING: 'UPDATING',
+} as const;
+export type JobListenerEventTypeEnum = (typeof JobListenerEventTypeEnum)[keyof typeof JobListenerEventTypeEnum];
 /**
  * JobKindEnum property with full advanced search capabilities.
  */
@@ -5573,8 +5789,13 @@ export type CorrelatedMessageSubscriptionSearchQuerySortRequest = {
 /**
  * The state of message subscription.
  */
-export type MessageSubscriptionStateEnum = 'CORRELATED' | 'CREATED' | 'DELETED' | 'MIGRATED';
-
+export const MessageSubscriptionStateEnum = {
+  CORRELATED: 'CORRELATED',
+  CREATED: 'CREATED',
+  DELETED: 'DELETED',
+  MIGRATED: 'MIGRATED',
+} as const;
+export type MessageSubscriptionStateEnum = (typeof MessageSubscriptionStateEnum)[keyof typeof MessageSubscriptionStateEnum];
 /**
  * Correlated message subscriptions search filter.
  */
@@ -6868,8 +7089,12 @@ export type ProcessInstanceModificationTerminateByKeyInstruction = {
 /**
  * Process instance states
  */
-export type ProcessInstanceStateEnum = 'ACTIVE' | 'COMPLETED' | 'TERMINATED';
-
+export const ProcessInstanceStateEnum = {
+  ACTIVE: 'ACTIVE',
+  COMPLETED: 'COMPLETED',
+  TERMINATED: 'TERMINATED',
+} as const;
+export type ProcessInstanceStateEnum = (typeof ProcessInstanceStateEnum)[keyof typeof ProcessInstanceStateEnum];
 /**
  * Advanced filter
  *
@@ -7182,8 +7407,11 @@ export type SearchQueryResponse = {
 /**
  * The order in which to sort the related field.
  */
-export type SortOrderEnum = 'ASC' | 'DESC';
-
+export const SortOrderEnum = {
+  ASC: 'ASC',
+  DESC: 'DESC',
+} as const;
+export type SortOrderEnum = (typeof SortOrderEnum)[keyof typeof SortOrderEnum];
 /**
  * Pagination information about the search results.
  */
@@ -7866,8 +8094,18 @@ export type UserTaskAuditLogSearchQueryRequest = SearchQueryRequest & {
  * Note: FAILED state is only for legacy job-worker-based tasks.
  *
  */
-export type UserTaskStateEnum = 'CREATING' | 'CREATED' | 'ASSIGNING' | 'UPDATING' | 'COMPLETING' | 'COMPLETED' | 'CANCELING' | 'CANCELED' | 'FAILED';
-
+export const UserTaskStateEnum = {
+  CREATING: 'CREATING',
+  CREATED: 'CREATED',
+  ASSIGNING: 'ASSIGNING',
+  UPDATING: 'UPDATING',
+  COMPLETING: 'COMPLETING',
+  COMPLETED: 'COMPLETED',
+  CANCELING: 'CANCELING',
+  CANCELED: 'CANCELED',
+  FAILED: 'FAILED',
+} as const;
+export type UserTaskStateEnum = (typeof UserTaskStateEnum)[keyof typeof UserTaskStateEnum];
 /**
  * The user task variable search filters.
  */
