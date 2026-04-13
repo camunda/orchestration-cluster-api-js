@@ -24,7 +24,7 @@ describe('runtime enum objects', () => {
     expect(OwnerTypeEnum.USER).toBe('USER');
     expect(OwnerTypeEnum.CLIENT).toBe('CLIENT');
     expect(Object.values(OwnerTypeEnum)).toEqual(
-      expect.arrayContaining(['USER', 'CLIENT', 'ROLE', 'GROUP', 'MAPPING_RULE', 'UNSPECIFIED']),
+      expect.arrayContaining(['USER', 'CLIENT', 'ROLE', 'GROUP', 'MAPPING_RULE', 'UNSPECIFIED'])
     );
   });
 
