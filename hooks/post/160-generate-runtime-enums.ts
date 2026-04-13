@@ -27,7 +27,7 @@ const TYPES_GEN_PATH = path.join(ROOT, 'src/gen/types.gen.ts');
  *
  * Examples:
  *   `'ACCESS'`
- *   `/** @deprecated since 8.9.0 *​/ 'UNSPECIFIED'`
+ *   {@example `/** @deprecated since 8.9.0 *\/ 'UNSPECIFIED'`}
  */
 interface EnumMember {
   value: string;
