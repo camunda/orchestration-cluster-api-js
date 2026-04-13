@@ -43,9 +43,7 @@ function parseMembers(membersPart: string): EnumMember[] {
     if (!segment) continue;
 
     // Check for /** @deprecated ... */ prefix
-    const deprecatedMatch = segment.match(
-      /^(\/\*\*\s*@deprecated\s[^*]*\*\/)\s*'([^']+)'$/
-    );
+    const deprecatedMatch = segment.match(/^(\/\*\*\s*@deprecated\s[^*]*\*\/)\s*'([^']+)'$/);
     if (deprecatedMatch) {
       members.push({
         value: deprecatedMatch[2],
@@ -113,8 +111,7 @@ function main(): void {
     patchCount++;
   }
 
-  // Apply replacements (iterate in reverse to preserve offsets — not strictly
-  // needed with string replace, but safer)
+  // Apply replacements by exact matched text from the original source.
   for (const { original, replacement } of replacements) {
     source = source.replace(original, replacement);
   }
@@ -123,9 +120,7 @@ function main(): void {
     fs.writeFileSync(TYPES_GEN_PATH, source, 'utf8');
   }
 
-  console.log(
-    `[runtime-enums] Generated ${patchCount} runtime enum object(s) in types.gen.ts`
-  );
+  console.log(`[runtime-enums] Generated ${patchCount} runtime enum object(s) in types.gen.ts`);
 }
 
 try {
