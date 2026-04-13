@@ -1,3 +1,16 @@
+# [8.9.0-alpha.38](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.37...v8.9.0-alpha.38) (2026-04-13)
+
+
+### Bug Fixes
+
+* address PR review — fix misleading comment, add runtime enum tests ([83ca607](https://github.com/camunda/orchestration-cluster-api-js/commit/83ca607e22bc3383c3de603f2afa87b4a8fea1a1))
+* remove invisible character in JSDoc, add exhaustive enum test ([a27df8d](https://github.com/camunda/orchestration-cluster-api-js/commit/a27df8d7786fff9711be5c9d4bfeb43a9115c51b))
+
+
+### Features
+
+* generate runtime enum value objects for type-safe validation ([4df78de](https://github.com/camunda/orchestration-cluster-api-js/commit/4df78de569f6db1c3ccc2015bebe1b87d19425a1)), closes [#127](https://github.com/camunda/orchestration-cluster-api-js/issues/127)
+
 # [8.9.0-alpha.37](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.36...v8.9.0-alpha.37) (2026-04-09)
 
 
