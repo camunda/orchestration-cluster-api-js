@@ -1,3 +1,10 @@
+# [10.0.0-alpha.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.1...v10.0.0-alpha.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* update RELEASE.md with correct promotion procedure and troubleshooting ([10660be](https://github.com/camunda/orchestration-cluster-api-js/commit/10660be8743465c9cd5370af7eed3999972a0716))
+
 # [10.0.0-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.0-alpha.1...v10.0.0-alpha.1) (2026-04-14)
 
 
