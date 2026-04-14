@@ -1,3 +1,10 @@
+## [9.0.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.1...v9.0.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* **docs:** add npm badges to README ([8cf1f73](https://github.com/camunda/orchestration-cluster-api-js/commit/8cf1f738710c4831ea57a74e9a4e050a5b03e5bb))
+
 ## [9.0.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.0...v9.0.1) (2026-04-14)
 
 
