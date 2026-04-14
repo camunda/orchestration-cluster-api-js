@@ -268,3 +268,52 @@ jobs:
           name: release-analysis
           path: |
             next-version.out
+
+    outputs:
+      published_version: ${{ steps.next_version.outputs.version }}
+      publish_needed: ${{ steps.next_version.outputs.publish_needed }}
+
+  post-release-smoke:
+    name: Post-release smoke test
+    needs: publish
+    if: needs.publish.outputs.publish_needed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+
+      - name: Start Camunda
+        working-directory: docker
+        run: docker compose -f docker-compose.yaml up -d
+
+      - name: Wait for broker
+        run: |
+          set -e
+          attempts=0
+          max_attempts=60
+          while [ $attempts -lt $max_attempts ]; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9600/actuator/health/status || true)
+            [ "$code" = "200" ] && echo "Broker healthy" && break
+            sleep 5
+            attempts=$((attempts+1))
+          done
+          [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
+
+      - name: Install published SDK into example-app
+        working-directory: example-app
+        run: |
+          VER="${{ needs.publish.outputs.published_version }}"
+          echo "Installing @camunda8/orchestration-cluster-api@${VER}"
+          npm install "@camunda8/orchestration-cluster-api@${VER}"
+
+      - name: Run example-app
+        working-directory: example-app
+        run: npx tsx index.ts
+
+      - name: Shutdown (always)
+        if: always()
+        working-directory: docker
+        run: docker compose down -v || true
