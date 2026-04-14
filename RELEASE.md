@@ -4,25 +4,39 @@ This repository publishes an npm package using `semantic-release` in GitHub Acti
 
 The process is intentionally simple:
 
-- `main` publishes **alpha** prereleases for the next stable minor.
-- `stable/<major>.<minor>` publishes **stable** patch releases for that minor line.
-- A single stable line (configured via a GitHub repo variable) is treated as the “current stable” and publishes to npm dist-tag `latest`.
+- `main` publishes **alpha** prereleases for the next SDK major.
+- `stable/<major>` publishes **stable** releases for that SDK major.
+- A single stable line (configured via a GitHub repo variable) is treated as the "current stable" and publishes to npm dist-tag `latest`.
+
+### Version mapping
+
+The SDK major version tracks the Camunda server minor version:
+
+| Server version | SDK major | Stable branch |
+| -------------- | --------- | ------------- |
+| 8.8            | 8         | `stable/8`    |
+| 8.9            | 9         | `stable/9`    |
+| 8.10           | 10        | `stable/10`   |
+
+Within a stable line, standard semver applies: `fix:` → patch, `feat:` → minor, breaking → major.
 
 ### Branch model
 
 The publishing behavior is defined in `release.config.cjs` and wired to the GitHub repo variable:
 
-- `CAMUNDA_SDK_CURRENT_STABLE_MINOR` (example: `8.8`)
+- `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` (example: `9`)
 
-Semantic-release uses that value to treat `stable/<minor>` as the primary stable release branch.
+Semantic-release uses that value to treat `stable/<major>` as the primary stable release branch.
 
-| Branch                             | Type        | What it publishes   | npm dist-tag / channel                       |
-| ---------------------------------- | ----------- | ------------------- | -------------------------------------------- |
-| `main`                             | prerelease  | `8.(n+1).0-alpha.*` | `alpha`                                      |
-| `stable/<major>.<minor>` (current) | stable      | `<major>.<minor>.x` | `latest`                                     |
-| `stable/<major>.<minor>` (other)   | maintenance | `<major>.<minor>.x` | `<major>.<minor>-stable` (e.g. `8.7-stable`) |
+| Branch                     | Type        | What it publishes    | npm dist-tag / channel             |
+| -------------------------- | ----------- | -------------------- | ---------------------------------- |
+| `main`                     | prerelease  | `<next>.0.0-alpha.*` | `alpha`                            |
+| `stable/<major>` (current) | stable      | `<major>.x.y`        | `latest`                           |
+| `stable/<major>` (older)   | maintenance | `<major>.x.y`        | `<major>-stable` (e.g. `8-stable`) |
 
 Dist-tags are set at publish time via `npm publish --tag <tag>` (no separate `npm dist-tag` step in CI).
+
+Each stable branch pins `SPEC_REF` to the corresponding upstream server branch (e.g. `stable/9` builds from `SPEC_REF=stable/8.9`).
 
 ### Workflow
 
@@ -46,8 +60,8 @@ High level, the workflow does:
 
 **Repository variable**
 
-- Set `CAMUNDA_SDK_CURRENT_STABLE_MINOR` to the currently supported stable minor (e.g. `8.8`).
-- Ensure the corresponding branch (e.g. `stable/8.8`) exists on the remote repository.
+- Set `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` to the currently supported SDK major (e.g. `9`).
+- Ensure the corresponding branch (e.g. `stable/9`) exists on the remote repository.
 
 **GitHub permissions**
 
@@ -68,50 +82,53 @@ Publishing uses npm OIDC/provenance in CI. No long-lived `NPM_TOKEN` is required
 - A push to `main` triggers the release workflow.
 - If a release is required, semantic-release publishes to dist-tag `alpha`.
 
-**Stable patch releases (from `stable/<major>.<minor>`)**
+**Stable releases (from `stable/<major>`)**
 
-- Cherry-pick fixes into the target `stable/<major>.<minor>` branch.
+- Cherry-pick fixes into the target `stable/<major>` branch.
 - A push to that branch triggers the release workflow.
-- semantic-release publishes to dist-tag `latest` if that branch is the configured current stable line (`CAMUNDA_SDK_CURRENT_STABLE_MINOR`).
-- Otherwise it publishes to dist-tag `<major>.<minor>-stable` (e.g. `8.7-stable`).
+- semantic-release publishes to dist-tag `latest` if that branch is the configured current stable line (`CAMUNDA_SDK_CURRENT_STABLE_MAJOR`).
+- Otherwise it publishes to dist-tag `<major>-stable` (e.g. `8-stable`).
 
-### Promotion procedure (switch current stable line)
+### Promotion procedure (new server minor release)
 
-To promote a new stable line (e.g. `8.8` → `8.9`):
+To promote a new stable line when a new Camunda server minor is released (e.g. server 8.9 → 8.10, SDK 9 → 10):
 
 1. Create the new stable branch on the remote:
 
 ```sh
 git checkout main
 git pull
-git checkout -b stable/8.9
-git push -u origin stable/8.9
+git checkout -b stable/10
+git push -u origin stable/10
 ```
 
-2. Update the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` to `8.9`.
+2. Update the `SPEC_REF` in the `build` script in `package.json` to point to the new server branch (e.g. `SPEC_REF=stable/8.10`).
 
-3. Add a Dependabot entry for the new stable branch in [.github/dependabot.yml](.github/dependabot.yml). Dependabot does not support wildcard branch patterns, so each `stable/*` branch must be listed explicitly.
+3. Update the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` to `10`.
+
+4. Add a Dependabot entry for the new stable branch in [.github/dependabot.yml](.github/dependabot.yml). Dependabot does not support wildcard branch patterns, so each `stable/*` branch must be listed explicitly.
 
 After promotion:
 
-- Releases from `stable/8.9` will be the “current stable” and will publish to npm dist-tag `latest`.
-- Releases from older stable branches (e.g. `stable/8.7`) will publish to `8.7-stable`.
+- Releases from `stable/10` will be the "current stable" and will publish to npm dist-tag `latest`.
+- Releases from older stable branches (e.g. `stable/9`) will publish to `9-stable`.
 
-### Versioning rules (mutated semver)
+### Versioning rules (standard semver)
 
-This repo uses Conventional Commits for readability, but the release type mapping is customized:
+This repo uses standard Conventional Commits with standard semver:
 
-- `fix:` / `feat:` / `perf:` / `revert:` => patch bump
-- `server:` => minor bump (reserved for Camunda server minor line bumps, e.g. `8.8` → `8.9`)
-- `server-major:` => major bump (reserved for Camunda server major line bumps, e.g. `8.x` → `9.0`)
+- `fix:` / `perf:` / `revert:` → patch bump
+- `feat:` → minor bump
+- `BREAKING CHANGE` / `!` suffix → major bump
+- `chore:` / `docs:` / `ci:` → no release
 
-This is configured in `release.config.cjs` via `@semantic-release/commit-analyzer` `releaseRules`.
+This is the default `@semantic-release/commit-analyzer` behavior with no custom `releaseRules`.
 
 ### Troubleshooting
 
 **`ERELEASEBRANCHES`**
 
-- Usually means the configured `stable/<CAMUNDA_SDK_CURRENT_STABLE_MINOR>` branch does not exist on the remote, or the repo variable is unset/malformed.
+- Usually means the configured `stable/<CAMUNDA_SDK_CURRENT_STABLE_MAJOR>` branch does not exist on the remote, or the repo variable is unset/malformed.
 
 **`EINVALIDNEXTVERSION` (out of range)**
 
@@ -129,7 +146,3 @@ npm test
 ```
 
 Running `semantic-release` locally is generally not useful without CI credentials.
-
-```
-
-```

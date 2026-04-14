@@ -377,7 +377,8 @@ Uses [semantic-release](https://github.com/semantic-release/semantic-release) (c
 
 - `main` branch → alpha prereleases
 - `stable/*` branches → stable releases
-- Conventional Commits determine version bumps (`fix:` → patch, `feat:` → patch, `server:` → minor, `server-major:` → major)
+- Standard semver: `fix:` → patch, `feat:` → minor, breaking → major
+- SDK major version tracks Camunda server minor (server 8.9 → SDK 9.x)
 - `chore:`, `docs:`, `ci:` commits produce no release
 
 Commit messages are linted by commitlint (`commitlint.config.cjs`).
@@ -453,14 +454,14 @@ The SDK's API reference documentation is published on the [Camunda docs site](ht
 
 ### Updating a released version
 
-To backport docs to a released version (e.g. 8.8):
+To backport docs to a released version (e.g. SDK 9, server 8.9):
 
 1. Go to the **Actions** tab in `camunda/camunda-docs`.
 2. Select the **Sync TypeScript SDK API Reference** workflow.
-3. Click **Run workflow** and enter `8.8` in the `docs_version` field.
-4. The workflow checks out `stable/8.8` from this repo and copies docs into `versioned_docs/version-8.8/`.
+3. Click **Run workflow** and enter the version in the `docs_version` field.
+4. The workflow checks out the corresponding `stable/<major>` branch from this repo and copies docs into the versioned docs directory.
 
-The PR branch is version-scoped (e.g. `update-ts-sdk-docs/8.8`), so backport and next-version syncs can coexist.
+The PR branch is version-scoped, so backport and next-version syncs can coexist.
 
 ### What lives where
 

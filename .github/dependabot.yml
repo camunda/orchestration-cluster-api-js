@@ -11,7 +11,14 @@ updates:
     directory: '/'
     schedule:
       interval: 'weekly'
-    target-branch: 'stable/8.8'
+    target-branch: 'stable/8'
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    target-branch: 'stable/9'
     open-pull-requests-limit: 10
 
   - package-ecosystem: 'github-actions'
