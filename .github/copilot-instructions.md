@@ -190,3 +190,64 @@ Code blocks in `README.md` are **injected from compilable example files** — do
 3. Run `tsx scripts/sync-readme-snippets.ts` to sync.
 
 **Never edit a snippet-marked code block directly in README.md** — it will be overwritten on the next sync.
+
+## Type honesty: optional fields and runtime defaults
+
+### The invariant
+
+Every field marked `?` (optional) in a public config/options type **must** be genuinely optional at runtime — either because a built-in default exists in the constructor/factory, or because the code tolerates `undefined`.
+
+If the type says `maxParallelJobs?: number`, a caller can legally write `{ jobType: 'x', jobHandler: fn }` and omit it. The runtime must not throw.
+
+### Enforcement layers
+
+1. **Compiler (strongest)**: Use an input/resolved type split. The public-facing type has `?` fields; the internal resolved type has them as required. The constructor spread bridges them with defaults. Adding a required field to the resolved type without a default is a compile error.
+
+   ```ts
+   // Public: users can omit
+   export interface JobWorkerConfig {
+     maxParallelJobs?: number;
+     jobTimeoutMs?: number;
+     workerName?: string;        // genuinely optional — no default needed
+   }
+
+   // Internal: after defaults applied
+   interface ResolvedJobWorkerConfig {
+     maxParallelJobs: number;    // required — default applied
+     jobTimeoutMs: number;       // required — default applied
+     workerName?: string;        // still optional
+   }
+
+   // Constructor: compiler enforces defaults
+   const resolved: ResolvedJobWorkerConfig = {
+     maxParallelJobs: 10,
+     jobTimeoutMs: 60_000,
+     ...cfg,
+   };
+   ```
+
+2. **Type-honesty test (backstop)**: `tests/worker-type-honesty.test.ts` calls every public config-accepting entry point with only compile-required fields and no env vars. If it throws, the type is lying. When adding a new public API that accepts a config object, add a test case here.
+
+3. **Code review (conventional)**: The test header documents the pattern. Reviewers should check that new `create*` methods have a corresponding test case.
+
+### Default precedence
+
+For fields that can be supplied via env vars, the precedence is:
+
+```
+explicit config value > env var (CAMUNDA_WORKER_*) > constructor default
+```
+
+The constructor default is the safety net — it ensures the field is never `undefined` regardless of whether the env var is set.
+
+### Anti-patterns
+
+- **`if (x === undefined) throw`** on a `?` field: the type says it's optional, the runtime says it's required. This is the defect this pattern prevents.
+- **Non-null assertion (`!`)** on a field that depends on an external default (env var, schema): if someone removes the upstream default, the `!` becomes a silent crash. Prefer a fallback or the resolved type pattern.
+
+### Configuration schema (`src/runtime/configSchema.ts`)
+
+The schema is the canonical registry of env vars but the hydration in `unifiedConfiguration.ts` is currently hand-wired (see [#145](https://github.com/camunda/orchestration-cluster-api-js/issues/145)). Key hazards:
+- 8 keys have redundant inline `|| 'fallback'` that can diverge from the schema default
+- 6 keys use `!` (non-null assertion) relying on schema defaults existing
+- Schema defaults do NOT flow into `workerDefaults` — those constructors must provide their own defaults
