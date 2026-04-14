@@ -120,7 +120,14 @@ export class ThreadedJobWorker {
   constructor(client: CamundaClient, pool: ThreadPool, cfg: ThreadedJobWorkerConfig) {
     this._client = client;
     this._pool = pool;
-    this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, maxParallelJobs: 10, jobTimeoutMs: 60_000, ...cfg };
+    this._cfg = {
+      pollIntervalMs: 1,
+      autoStart: true,
+      validateSchemas: false,
+      maxParallelJobs: 10,
+      jobTimeoutMs: 60_000,
+      ...cfg,
+    };
     this._maxParallelJobs = this._cfg.maxParallelJobs!;
     this._jobTimeoutMs = this._cfg.jobTimeoutMs!;
     this._name = cfg.workerName || `threaded-worker-${cfg.jobType}-${++_workerCounter}`;
