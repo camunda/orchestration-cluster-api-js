@@ -1,3 +1,15 @@
+# [10.0.0-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.0-alpha.1...v10.0.0-alpha.1) (2026-04-14)
+
+
+* feat!: bootstrap SDK 10.x for Camunda server 8.10 ([92c590f](https://github.com/camunda/orchestration-cluster-api-js/commit/92c590f77ba80b5b199b187f64515acead91a16e))
+
+
+### BREAKING CHANGES
+
+* SDK major version 10 tracks Camunda server minor 8.10.
+This is a version-only breaking change to advance the alpha prerelease
+series from 9.x to 10.x on main.
+
 # [9.1.0-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.0...v9.1.0-alpha.1) (2026-04-14)
 
 
