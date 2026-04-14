@@ -1,3 +1,10 @@
+## [9.0.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.3...v9.0.4) (2026-04-14)
+
+
+### Bug Fixes
+
+* add range constraint for main branch alpha prereleases ([91ad247](https://github.com/camunda/orchestration-cluster-api-js/commit/91ad247c0fbc691269175a8c82e0bb1c70b25876))
+
 ## [9.0.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.2...v9.0.3) (2026-04-14)
 
 
