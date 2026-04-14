@@ -99,7 +99,7 @@
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@hey-api/client-fetch": "^0.13.1",
-    "@hey-api/openapi-ts": "^0.82.2",
+    "@hey-api/openapi-ts": "^0.96.0",
     "@types/node": "^20.14.9",
     "@types/single-line-log": "^1.1.2",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
