@@ -1,3 +1,10 @@
+# [8.9.0-alpha.40](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.39...v8.9.0-alpha.40) (2026-04-14)
+
+
+### Bug Fixes
+
+* branch-aware release config — constrain stable branches with range ([5d3e751](https://github.com/camunda/orchestration-cluster-api-js/commit/5d3e751687d7347bb37827ce6c575325c83b1d13))
+
 # [8.9.0-alpha.39](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.38...v8.9.0-alpha.39) (2026-04-14)
 
 
