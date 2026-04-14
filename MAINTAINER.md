@@ -383,6 +383,17 @@ Uses [semantic-release](https://github.com/semantic-release/semantic-release) (c
 
 Commit messages are linted by commitlint (`commitlint.config.cjs`).
 
+### Creating a new SDK major version
+
+When a new Camunda server minor is released (e.g. server 8.10 → SDK 10.x):
+
+1. **Tag on main first.** Create a breaking-change commit on `main` (e.g. `feat!: bootstrap SDK 10.0.0 for server 8.10`) so that semantic-release tags the commit with `v10.0.0-alpha.1` (or manually `git tag v10.0.0 <commit>`). The tag **must** be in main's history before branching.
+2. **Branch from the tagged commit.** Create `stable/10` from the commit that has the `v10.0.0` tag. This ensures the tag is reachable from both `main` and `stable/10`.
+3. **Update the repo variable.** Set `CAMUNDA_SDK_CURRENT_STABLE_MAJOR=10` in GitHub repo variables. This tells `release.config.cjs` which stable branch publishes to the `latest` npm dist-tag.
+4. **Update npm dist-tags.** Move the previous stable line's dist-tag: `npm dist-tag add @camunda8/orchestration-cluster-api@<last-9.x-version> 9-stable`.
+
+**Why order matters:** semantic-release determines the next version from git tags reachable in the current branch's history. If the `vN.0.0` tag is not in main's history, main will continue incrementing from the previous major's alpha series instead of starting the next major.
+
 ---
 
 ## 15. Customizing Generation
