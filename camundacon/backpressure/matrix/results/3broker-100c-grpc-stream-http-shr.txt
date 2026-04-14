@@ -1,0 +1,35 @@
+[multi-client] SDK=grpc-stream handler=http clients=100 isolation=shared
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] pre-create=50000
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[pre-create] Creating 50000 process instances (BALANCED, concurrency=50)...
+[pre-create] Done: 50000 created, 0 errors in 74.5s (671/s)
+[multi-client] Pre-creation complete: 50000 instances ready
+13:07:01.849 | zeebe |  INFO: Grpc channel closed
+{"timestamp":"2026-03-12T00:07:01.850Z","context":"[\"node:events:508 emit\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/GrpcClient.js:406 null\",\"null:null Promise\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/GrpcClient.js:390 close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/GrpcMiddleware.js:52 grpcClient.close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/ConnectionFactory.js:32 grpcClient.close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/ZBStreamWorker.js:111 close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/zb/ZeebeGrpcClient.js:474 null\",\"node:internal/process/task_queues:64 runNextTicks\",\"node:internal/timers:538 processTimers\"]","level":30,"message":"Grpc channel closed","time":"2026 Mar-12 13:07:01PM","component":"GRPCMIDDLEWARE","namespace":"ZBStreamWorker"}
+
+═══ Final Summary ═══
+  SDK Mode:              grpc-stream
+  Handler:               http
+  Clients:               100
+  Isolation:             shared
+  Total completed:       12452
+  Total errors:          15481043
+  Total queue-full:      15377398
+  Wall-clock duration:   300.0s
+  Aggregate throughput:  41.5 ops/s
+  Jain's fairness index: 1.000
+
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+13:03:33.176 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+13:04:03.307 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+13:04:33.317 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+13:05:33.666 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+13:06:03.698 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+13:06:33.717 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.

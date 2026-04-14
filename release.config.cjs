@@ -12,34 +12,34 @@ function currentBranchName() {
   }
 }
 
-function stableMinorFromBranch(branch) {
-  // stable/<major>.<minor> (e.g. stable/8.8)
-  const m = /^stable\/(\d+\.\d+)$/.exec(branch);
+function stableMajorFromBranch(branch) {
+  // stable/<major> (e.g. stable/9)
+  const m = /^stable\/(\d+)$/.exec(branch);
   return m ? m[1] : null;
 }
 
-function stableDistTagForMinor(minor) {
+function stableDistTagForMajor(major) {
   // npm dist-tags must NOT be a valid SemVer version or range.
-  // Tags like "8.8" are considered a SemVer range by npm and are rejected.
-  return `${minor}-stable`;
+  // "9" alone is a valid SemVer range, so append "-stable".
+  return `${major}-stable`;
 }
 
-function envCurrentStableMinor() {
-  // Expected format: <major>.<minor> (e.g. 8.8)
-  const v = (process.env.CAMUNDA_SDK_CURRENT_STABLE_MINOR || '').trim();
-  return /^\d+\.\d+$/.test(v) ? v : null;
+function envCurrentStableMajor() {
+  // Expected format: integer (e.g. 9)
+  const v = (process.env.CAMUNDA_SDK_CURRENT_STABLE_MAJOR || '').trim();
+  return /^\d+$/.test(v) ? v : null;
 }
 
 const branch = currentBranchName();
-const stableMinor = stableMinorFromBranch(branch);
-const currentStableMinor = envCurrentStableMinor();
+const stableMajor = stableMajorFromBranch(branch);
+const currentStableMajor = envCurrentStableMajor();
 
-function maintenanceBranchConfig(branchName, minor) {
+function maintenanceBranchConfig(branchName, major) {
   return {
     name: branchName,
-    range: `${minor}.x`,
-    // Publish maintenance line under a dedicated dist-tag (e.g. 8.8-stable)
-    channel: stableDistTagForMinor(minor),
+    range: `${major}.x`,
+    // Publish maintenance line under a dedicated dist-tag (e.g. 9-stable)
+    channel: stableDistTagForMajor(major),
   };
 }
 
@@ -58,16 +58,18 @@ function dedupeBranches(branches) {
 
 module.exports = {
   // Branch model:
-  // - main: alpha prereleases for the next stable line (npm dist-tag: alpha)
-  // - stable/<major>.<minor> (current): stable releases (npm dist-tag: latest)
-  // - stable/<major>.<minor> (other): maintenance stream for that minor (npm dist-tag: <major>.<minor>-stable)
+  // - main: alpha prereleases for the next SDK major (npm dist-tag: alpha)
+  // - stable/<major> (current): stable releases (npm dist-tag: latest)
+  // - stable/<major> (older): maintenance stream (npm dist-tag: <major>-stable)
+  //
+  // SDK major version tracks the Camunda server minor version:
+  //   server 8.9 → SDK 9.x, server 8.10 → SDK 10.x
   //
   // Stable-line selection:
-  // - The currently promoted stable minor is configured via `CAMUNDA_SDK_CURRENT_STABLE_MINOR`.
+  // - The currently promoted stable major is configured via `CAMUNDA_SDK_CURRENT_STABLE_MAJOR`.
   // - Publishing to npm dist-tag `latest` is done in a one-shot `npm publish --tag latest` (no separate `npm dist-tag` step).
   branches: dedupeBranches([
     // Alpha prereleases are published from `main`.
-    // Bootstrapping to a new major/minor (e.g. 8.9.0-alpha.1) is handled as a one-time procedure.
     {
       name: 'main',
       prerelease: 'alpha',
@@ -76,52 +78,25 @@ module.exports = {
 
     // The configured current stable line is the single semantic-release "release branch".
     // This must exist on the remote repository.
-    ...(currentStableMinor
+    ...(currentStableMajor
       ? [
           {
-            name: `stable/${currentStableMinor}`,
+            name: `stable/${currentStableMajor}`,
             // Publish the current stable line directly to npm dist-tag `latest`.
             channel: 'latest',
           },
         ]
       : []),
 
-    // Any other stable/* branch publishes as a maintenance line (range <minor>.x).
+    // Any other stable/* branch publishes as a maintenance line (range <major>.x).
     // IMPORTANT: Do not treat the current stable line as maintenance as well.
-    ...(stableMinor && stableMinor !== currentStableMinor
-      ? [maintenanceBranchConfig(branch, stableMinor)]
+    ...(stableMajor && stableMajor !== currentStableMajor
+      ? [maintenanceBranchConfig(branch, stableMajor)]
       : []),
   ]),
   plugins: [
-    [
-      '@semantic-release/commit-analyzer',
-      {
-        // This repo uses a "mutated semver" policy:
-        // - Patch: normal changes (including features)
-        // - Minor: reserved for Camunda server minor line bumps (e.g. 8.8 -> 8.9)
-        // - Major: reserved for Camunda server major line bumps (e.g. 8.x -> 9.x)
-        //
-        // Conventional commits still used for readability, but release type is controlled here.
-        releaseRules: [
-          // Default behavior in semantic-release would bump minor for `feat:`; override to patch.
-          { type: 'feat', release: 'patch' },
-          // Keep common patch-worthy types explicit.
-          { type: 'fix', release: 'patch' },
-          { type: 'perf', release: 'patch' },
-          { type: 'revert', release: 'patch' },
-
-          // Breaking changes should not automatically bump major/minor in this scheme.
-          // Use explicit `server:` commits below for line bumps.
-          { breaking: true, release: 'patch' },
-
-          // Explicit server-line bumps:
-          // - `server: ...` => minor bump (e.g. 8.8 -> 8.9)
-          // - `server-major: ...` => major bump (e.g. 8.x -> 9.0)
-          { type: 'server', release: 'minor' },
-          { type: 'server-major', release: 'major' },
-        ],
-      },
-    ],
+    // Standard semver: fix → patch, feat → minor, breaking → major.
+    '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
     ['@semantic-release/npm', { npmPublish: true }],
     [

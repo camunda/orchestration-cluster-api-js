@@ -1,0 +1,38 @@
+---
+title: "Type Alias: AdHocSubProcessActivateActivitiesInstruction"
+sidebar_label: "AdHocSubProcessActivateActivitiesInstruction"
+mdx:
+  format: md
+---
+
+# Type Alias: AdHocSubProcessActivateActivitiesInstruction
+
+```ts
+type AdHocSubProcessActivateActivitiesInstruction = object;
+```
+
+Defined in: [gen/types.gen.ts:2704](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L2704)
+
+## Properties
+
+### cancelRemainingInstances?
+
+```ts
+optional cancelRemainingInstances: boolean;
+```
+
+Defined in: [gen/types.gen.ts:2712](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L2712)
+
+Whether to cancel remaining instances of the ad-hoc sub-process.
+
+***
+
+### elements
+
+```ts
+elements: AdHocSubProcessActivateActivityReference[];
+```
+
+Defined in: [gen/types.gen.ts:2708](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L2708)
+
+Activities to activate.

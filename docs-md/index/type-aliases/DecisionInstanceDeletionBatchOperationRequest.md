@@ -1,0 +1,38 @@
+---
+title: "Type Alias: DecisionInstanceDeletionBatchOperationRequest"
+sidebar_label: "DecisionInstanceDeletionBatchOperationRequest"
+mdx:
+  format: md
+---
+
+# Type Alias: DecisionInstanceDeletionBatchOperationRequest
+
+```ts
+type DecisionInstanceDeletionBatchOperationRequest = object;
+```
+
+Defined in: [gen/types.gen.ts:924](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L924)
+
+The decision instance filter that defines which decision instances should be deleted.
+
+## Properties
+
+### filter
+
+```ts
+filter: DecisionInstanceFilter;
+```
+
+Defined in: [gen/types.gen.ts:928](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L928)
+
+The decision instance filter.
+
+***
+
+### operationReference?
+
+```ts
+optional operationReference: OperationReference;
+```
+
+Defined in: [gen/types.gen.ts:929](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L929)

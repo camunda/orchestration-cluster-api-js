@@ -1,0 +1,36 @@
+[multi-client] SDK=grpc-stream handler=cpu clients=100 isolation=shared
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] pre-create=50000
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[pre-create] Creating 50000 process instances (BALANCED, concurrency=50)...
+[pre-create] Done: 49995 created, 5 errors in 164.4s (304/s)
+[multi-client] Pre-creation complete: 49995 instances ready
+07:31:41.521 | zeebe |  INFO: Grpc channel closed
+{"timestamp":"2026-03-11T18:31:41.522Z","context":"[\"node:events:508 emit\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/GrpcClient.js:406 null\",\"null:null Promise\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/GrpcClient.js:390 close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/GrpcMiddleware.js:52 grpcClient.close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/ConnectionFactory.js:32 grpcClient.close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/lib/ZBStreamWorker.js:111 close\",\"/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/dist/zeebe/zb/ZeebeGrpcClient.js:474 null\",\"node:internal/process/task_queues:64 runNextTicks\",\"node:internal/timers:538 processTimers\"]","level":30,"message":"Grpc channel closed","time":"2026 Mar-12 07:31:41AM","component":"GRPCMIDDLEWARE","namespace":"ZBStreamWorker"}
+
+═══ Final Summary ═══
+  SDK Mode:              grpc-stream
+  Handler:               cpu
+  Clients:               100
+  Isolation:             shared
+  Total completed:       9167
+  Total errors:          8620200
+  Total queue-full:      8401514
+  Wall-clock duration:   300.0s
+  Aggregate throughput:  30.6 ops/s
+  Jain's fairness index: 1.000
+
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+07:27:42.146 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+07:28:42.362 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+07:29:12.365 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+07:29:42.370 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+07:30:12.392 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+07:30:42.403 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+07:31:12.419 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.

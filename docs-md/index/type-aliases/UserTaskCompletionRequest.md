@@ -1,0 +1,42 @@
+---
+title: "Type Alias: UserTaskCompletionRequest"
+sidebar_label: "UserTaskCompletionRequest"
+mdx:
+  format: md
+---
+
+# Type Alias: UserTaskCompletionRequest
+
+```ts
+type UserTaskCompletionRequest = object;
+```
+
+Defined in: [gen/types.gen.ts:7729](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7729)
+
+## Properties
+
+### action?
+
+```ts
+optional action: string | null;
+```
+
+Defined in: [gen/types.gen.ts:7740](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7740)
+
+A custom action value that will be accessible from user task events resulting from this endpoint invocation. If not provided, it will default to "complete".
+
+***
+
+### variables?
+
+```ts
+optional variables: 
+  | {
+[key: string]: unknown;
+}
+  | null;
+```
+
+Defined in: [gen/types.gen.ts:7733](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7733)
+
+The variables to complete the user task with.

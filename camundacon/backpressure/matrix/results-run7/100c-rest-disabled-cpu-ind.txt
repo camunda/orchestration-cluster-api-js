@@ -1,0 +1,18 @@
+[multi-client] SDK=rest-disabled handler=cpu clients=100 isolation=independent
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[multi-client] Producer: 21422 created, 169823 errors (0 queue-full)
+
+═══ Final Summary ═══
+  SDK Mode:              rest-disabled
+  Handler:               cpu
+  Clients:               100
+  Isolation:             independent
+  Total completed:       21422
+  Total errors:          0
+  Total queue-full:      0
+  Wall-clock duration:   300.1s
+  Aggregate throughput:  71.4 ops/s
+  Jain's fairness index: 0.975
+

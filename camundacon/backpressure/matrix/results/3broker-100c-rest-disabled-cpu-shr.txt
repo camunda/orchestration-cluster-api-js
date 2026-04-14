@@ -1,0 +1,1077 @@
+[multi-client] SDK=rest-disabled handler=cpu clients=100 isolation=shared
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] pre-create=50000
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[pre-create] Creating 50000 process instances (BALANCED, concurrency=50)...
+[pre-create] Done: 49867 created, 133 errors in 181.5s (275/s)
+[multi-client] Pre-creation complete: 49867 instances ready
+
+═══ Final Summary ═══
+  SDK Mode:              rest-disabled
+  Handler:               cpu
+  Clients:               100
+  Isolation:             shared
+  Total completed:       267
+  Total errors:          165255
+  Total queue-full:      0
+  Wall-clock duration:   300.0s
+  Aggregate throughput:  0.9 ops/s
+  Jain's fairness index: 0.089
+
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error TypeError: fetch failed
+    at node:internal/deps/undici/undici:15845:13
+    ... 6 lines matching cause stack trace ...
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  name: 'NetworkSdkError',
+  cause: TypeError: fetch failed
+      at node:internal/deps/undici/undici:15845:13
+      at processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at runNextTicks (node:internal/process/task_queues:68:3)
+      at process.processImmediate (node:internal/timers:472:9)
+      at async request (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/client/client.gen.ts:98:20)
+      at async call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1640:22)
+      at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+      at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+    [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: localhost:8080, timeout: 10000ms)
+        at onConnectTimeout (node:internal/deps/undici/undici:1690:23)
+        at Immediate._onImmediate (node:internal/deps/undici/undici:1671:11)
+        at process.processImmediate (node:internal/timers:504:21) {
+      code: 'UND_ERR_CONNECT_TIMEOUT'
+    }
+  }
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error TypeError: fetch failed
+    at node:internal/deps/undici/undici:15845:13
+    ... 6 lines matching cause stack trace ...
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  name: 'NetworkSdkError',
+  cause: TypeError: fetch failed
+      at node:internal/deps/undici/undici:15845:13
+      at processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at runNextTicks (node:internal/process/task_queues:68:3)
+      at process.processImmediate (node:internal/timers:472:9)
+      at async request (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/client/client.gen.ts:98:20)
+      at async call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5015:22)
+      at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+      at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+    [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: localhost:8080, timeout: 10000ms)
+        at onConnectTimeout (node:internal/deps/undici/undici:1690:23)
+        at Immediate._onImmediate (node:internal/deps/undici/undici:1671:11)
+        at process.processImmediate (node:internal/timers:504:21) {
+      code: 'UND_ERR_CONNECT_TIMEOUT'
+    }
+  }
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error TypeError: fetch failed
+    at node:internal/deps/undici/undici:15845:13
+    ... 6 lines matching cause stack trace ...
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  name: 'NetworkSdkError',
+  cause: TypeError: fetch failed
+      at node:internal/deps/undici/undici:15845:13
+      at processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at runNextTicks (node:internal/process/task_queues:68:3)
+      at process.processImmediate (node:internal/timers:472:9)
+      at async request (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/client/client.gen.ts:98:20)
+      at async call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1640:22)
+      at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+      at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+    [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: localhost:8080, timeout: 10000ms)
+        at onConnectTimeout (node:internal/deps/undici/undici:1690:23)
+        at Immediate._onImmediate (node:internal/deps/undici/undici:1671:11)
+        at process.processImmediate (node:internal/timers:504:21) {
+      code: 'UND_ERR_CONNECT_TIMEOUT'
+    }
+  }
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error TypeError: fetch failed
+    at node:internal/deps/undici/undici:15845:13
+    ... 6 lines matching cause stack trace ...
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  name: 'NetworkSdkError',
+  cause: TypeError: fetch failed
+      at node:internal/deps/undici/undici:15845:13
+      at processTicksAndRejections (node:internal/process/task_queues:103:5)
+      at runNextTicks (node:internal/process/task_queues:68:3)
+      at process.processImmediate (node:internal/timers:472:9)
+      at async request (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/client/client.gen.ts:98:20)
+      at async call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5015:22)
+      at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+      at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+    [cause]: ConnectTimeoutError: Connect Timeout Error (attempted address: localhost:8080, timeout: 10000ms)
+        at onConnectTimeout (node:internal/deps/undici/undici:1690:23)
+        at Immediate._onImmediate (node:internal/deps/undici/undici:1671:11)
+        at process.processImmediate (node:internal/timers:504:21) {
+      code: 'UND_ERR_CONNECT_TIMEOUT'
+    }
+  }
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371149/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627370967/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371072/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371023/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.fail.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371149/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371156/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371037/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371107/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371163/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371135/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371016/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371009/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627370988/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371114/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371128/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371058/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627370981/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371030/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371051/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371044/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627370995/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371093/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371086/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371121/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.handler.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371142/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.fail.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627370967/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.fail.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371072/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.fail.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371023/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.fail.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371156/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] job.fail.error Error [HttpSdkError]: UNAVAILABLE
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5023:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:5016:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'UNAVAILABLE',
+  detail: 'Expected to handle request, but there was a connection error with one of the brokers',
+  instance: '/v2/jobs/4503599627371037/failure',
+  nonRetryable: true
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}
+[camunda-sdk][error][worker:worker-test-job-1] activation.error Error [HttpSdkError]: RESOURCE_EXHAUSTED
+    at Object.buildBackpressureError (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1648:28)
+    at evaluateSdkResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/responseEvaluation.ts:20:22)
+    at CamundaClient._evaluateResponse (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1519:12)
+    at call (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1641:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async execute (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/runtime/retry.ts:60:16)
+    at async CamundaClient._invokeWithRetry (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/src/gen/CamundaClient.ts:1491:22) {
+  status: 503,
+  type: 'about:blank',
+  title: 'RESOURCE_EXHAUSTED',
+  detail: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  instance: '/v2/jobs/activation'
+}

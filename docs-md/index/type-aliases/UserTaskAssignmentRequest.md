@@ -1,0 +1,50 @@
+---
+title: "Type Alias: UserTaskAssignmentRequest"
+sidebar_label: "UserTaskAssignmentRequest"
+mdx:
+  format: md
+---
+
+# Type Alias: UserTaskAssignmentRequest
+
+```ts
+type UserTaskAssignmentRequest = object;
+```
+
+Defined in: [gen/types.gen.ts:7743](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7743)
+
+## Properties
+
+### action?
+
+```ts
+optional action: string | null;
+```
+
+Defined in: [gen/types.gen.ts:7757](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7757)
+
+A custom action value that will be accessible from user task events resulting from this endpoint invocation. If not provided, it will default to "assign".
+
+***
+
+### allowOverride?
+
+```ts
+optional allowOverride: boolean | null;
+```
+
+Defined in: [gen/types.gen.ts:7752](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7752)
+
+By default, the task is reassigned if it was already assigned. Set this to `false` to return an error in such cases. The task must then first be unassigned to be assigned again. Use this when you have users picking from group task queues to prevent race conditions.
+
+***
+
+### assignee?
+
+```ts
+optional assignee: string;
+```
+
+Defined in: [gen/types.gen.ts:7747](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7747)
+
+The assignee for the user task. The assignee must not be empty or `null`.

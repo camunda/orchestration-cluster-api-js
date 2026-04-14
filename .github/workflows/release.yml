@@ -37,7 +37,7 @@ jobs:
 
       - name: Export stable line config
         run: |
-          echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
+          echo "CAMUNDA_SDK_CURRENT_STABLE_MAJOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MAJOR'] }}" >> $GITHUB_ENV
 
       - uses: actions/setup-node@v6
         with:
@@ -198,7 +198,7 @@ jobs:
 
       - name: Export stable line config
         run: |
-          echo "CAMUNDA_SDK_CURRENT_STABLE_MINOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MINOR'] }}" >> $GITHUB_ENV
+          echo "CAMUNDA_SDK_CURRENT_STABLE_MAJOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MAJOR'] }}" >> $GITHUB_ENV
 
       - name: Debug release branch evaluation
         shell: bash

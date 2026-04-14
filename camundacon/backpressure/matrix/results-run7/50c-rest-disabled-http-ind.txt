@@ -1,0 +1,5 @@
+[multi-client] SDK=rest-disabled handler=http clients=50 isolation=independent
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+

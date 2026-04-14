@@ -1,0 +1,22 @@
+[multi-client] SDK=grpc-stream handler=cpu clients=100 isolation=independent
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] pre-create=50000
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[pre-create] Creating 50000 process instances (BALANCED, concurrency=50)...
+[pre-create] Done: 45425 created, 4575 errors in 426.6s (106/s)
+[multi-client] Pre-creation complete: 45425 instances ready
+[multi-client] Producer: 42543 created, 3991 errors (0 queue-full)
+
+═══ Final Summary ═══
+  SDK Mode:              grpc-stream
+  Handler:               cpu
+  Clients:               100
+  Isolation:             independent
+  Total completed:       7707
+  Total errors:          3991
+  Total queue-full:      0
+  Wall-clock duration:   324.5s
+  Aggregate throughput:  23.8 ops/s
+  Jain's fairness index: 0.089
+

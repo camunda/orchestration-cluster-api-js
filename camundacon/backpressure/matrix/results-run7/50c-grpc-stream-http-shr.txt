@@ -1,0 +1,56 @@
+[multi-client] SDK=grpc-stream handler=http clients=50 isolation=shared
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+⚠️  CAMUNDA_SECURE_CONNECTION is deprecated. Please use ZEEBE_GRPC_ADDRESS with grpc:// or grpcs:// protocol instead.
+⚠️  ZEEBE_GRPC_ADDRESS is set and takes precedence. The following settings will be ignored: CAMUNDA_SECURE_CONNECTION
+19:36:46.708 | zeebe |  ERROR: Grpc Stream Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+Error: 8 RESOURCE_EXHAUSTED: Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.
+    at callErrorFromStatus (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/call.ts:82:17)
+    at Object.onReceiveStatus (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/client.ts:612:51)
+    at <anonymous> (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/call-interface.ts:149:27)
+    at Object.onReceiveStatus (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/src/zeebe/lib/GrpcClient.ts:739:14)
+    at InterceptingListenerImpl.onReceiveStatus (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/call-interface.ts:145:19)
+    at Object.onReceiveStatus (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/client-interceptors.ts:419:48)
+    at <anonymous> (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/resolving-call.ts:163:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:84:11)
+for call at
+    at ServiceClientImpl.makeServerStreamRequest (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/client.ts:595:42)
+    at ServiceClientImpl.<anonymous> (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@grpc/grpc-js/src/make-client.ts:189:15)
+    at GrpcClient.GrpcClient.<computed> (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/src/zeebe/lib/GrpcClient.ts:342:39)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async <anonymous> (/Users/joshua.wulf/workspace/orchestration-cluster-api-js/node_modules/@camunda8/sdk/src/zeebe/zb/ZeebeGrpcClient.ts:375:20) {
+  code: 8,
+  details: "Expected to activate jobs of type 'test-job', but no jobs available and at least one broker returned 'RESOURCE_EXHAUSTED'. Please try again later.",
+  metadata: Metadata {
+    internalRepr: Map(2) {
+      'content-type' => [ 'application/grpc' ],
+      'grpc-status-details-bin' => [
+        Buffer(151) [Uint8Array] [
+            8,   8,  18, 146,   1,  69, 120, 112, 101,  99, 116, 101,
+          100,  32, 116, 111,  32,  97,  99, 116, 105, 118,  97, 116,
+          101,  32, 106, 111,  98, 115,  32, 111, 102,  32, 116, 121,
+          112, 101,  32,  39, 116, 101, 115, 116,  45, 106, 111,  98,
+           39,  44,  32,  98, 117, 116,  32, 110, 111,  32, 106, 111,
+           98, 115,  32,  97, 118,  97, 105, 108,  97,  98, 108, 101,
+           32,  97, 110, 100,  32,  97, 116,  32, 108, 101,  97, 115,
+          116,  32, 111, 110, 101,  32,  98, 114, 111, 107, 101, 114,
+           32, 114, 101, 116,
+          ... 51 more items
+        ]
+      ]
+    },
+    options: {}
+  }
+}
+
+Node.js v24.12.0

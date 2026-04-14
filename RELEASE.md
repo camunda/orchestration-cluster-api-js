@@ -1,163 +1,148 @@
-## Release workflows & procedures
+## Release process
 
-This repo publishes to npm using `semantic-release` plus GitHub Actions.
+This repository publishes an npm package using `semantic-release` in GitHub Actions.
 
-### Branch model (what publishes where)
+The process is intentionally simple:
 
-The publishing behavior is defined in `release.config.cjs`.
+- `main` publishes **alpha** prereleases for the next SDK major.
+- `stable/<major>` publishes **stable** releases for that SDK major.
+- A single stable line (configured via a GitHub repo variable) is treated as the "current stable" and publishes to npm dist-tag `latest`.
 
-| Branch                             | What it is                           | npm dist-tag / channel                       |
-| ---------------------------------- | ------------------------------------ | -------------------------------------------- |
-| `main`                             | next-minor development stream        | `alpha` (pre-releases)                       |
-| `stable/<major>.<minor>` (current) | current stable stream                | `latest`                                     |
-| `stable/<major>.<minor>` (other)   | maintenance stream for a stable line | `<major>.<minor>-stable` (e.g. `8.8-stable`) |
+### Version mapping
 
-The currently promoted stable line is configured via the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` (e.g. `8.8`).
+The SDK major version tracks the Camunda server minor version:
 
-- Releases from `main` publish prereleases to dist-tag `alpha`.
-- Releases from `stable/<major>.<minor>` publish:
-  - to dist-tag `latest` if that branch matches `CAMUNDA_SDK_CURRENT_STABLE_MINOR`
-  - otherwise to dist-tag `<major>.<minor>-stable` (e.g. `8.8-stable`)
+| Server version | SDK major | Stable branch |
+| -------------- | --------- | ------------- |
+| 8.8            | 8         | `stable/8`    |
+| 8.9            | 9         | `stable/9`    |
+| 8.10           | 10        | `stable/10`   |
 
-### Workflows (what runs)
+Within a stable line, standard semver applies: `fix:` → patch, `feat:` → minor, breaking → major.
 
-| Workflow file                   | Triggers                   | Purpose                                                                                                                   |
-| ------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `.github/workflows/release.yml` | push to `main`/`stable/**` | validate, regenerate (if needed), publish (alpha from `main`; stable tags from `stable/**`); deploy docs from `main` only |
+### Branch model
 
-The workflow has the same shape:
+The publishing behavior is defined in `release.config.cjs` and wired to the GitHub repo variable:
 
-1. **Generate & Test**: `npm ci` → `npm run build` → unit + integration tests → snapshot spec → detect drift → commit drift from the canonical Node 22.x leg.
-2. **Version & Publish**: dry-run semantic-release to compute next version → if needed, bump `package.json`, rebuild, smoke tests, push bump commit → run semantic-release to publish.
+- `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` (example: `9`)
 
-### Required secrets and permissions
+Semantic-release uses that value to treat `stable/<major>` as the primary stable release branch.
 
-- No long-lived `NPM_TOKEN` is required. Publishing uses npm OIDC Trusted Publishing.
-- `GITHUB_TOKEN` (provided by Actions): required for tags and pushing release commits.
-- Workflow permissions must include `contents: write` and `id-token: write` (already configured).
+| Branch                     | Type        | What it publishes    | npm dist-tag / channel             |
+| -------------------------- | ----------- | -------------------- | ---------------------------------- |
+| `main`                     | prerelease  | `<next>.0.0-alpha.*` | `alpha`                            |
+| `stable/<major>` (current) | stable      | `<major>.x.y`        | `latest`                           |
+| `stable/<major>` (older)   | maintenance | `<major>.x.y`        | `<major>-stable` (e.g. `8-stable`) |
 
-Note: We do not run `npm dist-tag` in CI. Dist-tags are set in one-shot at publish time via `npm publish --tag <tag>`.
+Dist-tags are set at publish time via `npm publish --tag <tag>` (no separate `npm dist-tag` step in CI).
+
+Each stable branch pins `SPEC_REF` to the corresponding upstream server branch (e.g. `stable/9` builds from `SPEC_REF=stable/8.9`).
+
+### Workflow
+
+Publishing is performed by a single workflow:
+
+- [.github/workflows/release.yml](.github/workflows/release.yml)
+
+It triggers on:
+
+- pushes to `main`
+- pushes to `stable/**`
+- manual runs via `workflow_dispatch`
+
+High level, the workflow does:
+
+1. **Generate & Test**: install deps, build (including code generation), run unit + integration tests.
+2. **Version determination**: run a semantic-release dry-run to compute `next_version`.
+3. **Publish** (only when a release is needed): bump `package.json`, rebuild, run smoke tests, commit/push the bump, then run semantic-release publish.
+
+### Authentication and required configuration
+
+**Repository variable**
+
+- Set `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` to the currently supported SDK major (e.g. `9`).
+- Ensure the corresponding branch (e.g. `stable/9`) exists on the remote repository.
+
+**GitHub permissions**
+
+The workflow needs:
+
+- `contents: write` (push version bump commits and tags)
+- `id-token: write` (OIDC exchange for npm publish)
+
+**npm authentication**
+
+Publishing uses npm OIDC/provenance in CI. No long-lived `NPM_TOKEN` is required.
 
 ### Day-to-day usage
 
 **Alpha releases (from `main`)**
 
-1. Merge conventional commits (e.g. `feat:`, `fix:`) into `main`.
-2. Push/merge triggers `.github/workflows/release.yml`.
-3. If a release is required, semantic-release publishes a prerelease to the `alpha` dist-tag.
+- Merge changes into `main`.
+- A push to `main` triggers the release workflow.
+- If a release is required, semantic-release publishes to dist-tag `alpha`.
 
-**Maintenance releases (from `stable/<major>.<minor>`)**
+**Stable releases (from `stable/<major>`)**
 
-1. Cherry-pick fixes into the relevant `stable/<major>.<minor>` branch.
-2. Push triggers `.github/workflows/release.yml`.
-3. semantic-release publishes to `latest` if it’s the current stable line; otherwise to `<major>.<minor>-stable`.
+- Cherry-pick fixes into the target `stable/<major>` branch.
+- A push to that branch triggers the release workflow.
+- semantic-release publishes to dist-tag `latest` if that branch is the configured current stable line (`CAMUNDA_SDK_CURRENT_STABLE_MAJOR`).
+- Otherwise it publishes to dist-tag `<major>-stable` (e.g. `8-stable`).
 
-### Versioning rules (mutated semver)
+### Promotion procedure (new server minor release)
 
-This repo uses Conventional Commits for readability, but the release type mapping is customized:
+To promote a new stable line when a new Camunda server minor is released (e.g. server 8.9 → 8.10, SDK 9 → 10):
 
-- `fix:` / `feat:` / `perf:` / `revert:` => patch bump
-- `server:` => minor bump (reserved for Camunda server minor line bumps, e.g. `8.8` → `8.9`)
-- `server-major:` => major bump (reserved for Camunda server major line bumps, e.g. `8.x` → `9.0`)
-
-This is configured in `release.config.cjs` via `@semantic-release/commit-analyzer` `releaseRules`.
-
-### Promotion procedure (switch current stable line)
-
-When a new stable line is ready (e.g. moving from `stable/8.8` to `stable/8.9`):
-
-1. Create the new stable branch from the desired commit:
-
-   ```sh
-   git checkout main
-   git pull
-   git checkout -b stable/8.9
-   git push -u origin stable/8.9
-   ```
-
-2. Update the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MINOR` to `8.9`.
-
-After promotion:
-
-- Releases from `stable/8.9` will publish to npm dist-tag `latest`.
-- Releases from `stable/8.8` will publish to npm dist-tag `8.8-stable`.
-
-#### Stable dist-tag behavior (day-to-day)
-
-- When you are staying on the same stable line (e.g. continuing to ship `stable/8.8`), as long as `CAMUNDA_SDK_CURRENT_STABLE_MINOR=8.8`, releases from `stable/8.8` will keep publishing to npm dist-tag `latest`.
-- When you are changing the current stable line (e.g. `stable/8.8` → `stable/8.9`), you update `CAMUNDA_SDK_CURRENT_STABLE_MINOR` once. After that:
-  - releases from the new line publish to npm dist-tag `latest`
-  - releases from the old line publish to `<major>.<minor>-stable`
-- Dev docs deployment (GitHub Pages) currently only runs from pushes to the `main` git branch via `.github/workflows/release.yml`.
-- Stable documentation is handled separately (out of scope for this workflow).
-
-### One-time bootstrap: switch to 8.x versioning
-
-The repo previously published `1.x` versions. semantic-release cannot automatically jump from `1.2.3` to `8.8.0` (it would normally go to `2.0.0`).
-
-To switch to server-line versioning, do a one-time bootstrap publish on each stream:
-
-1. Create (or confirm) the stable branch:
-
-```sh
-git checkout -b stable/8.8
-git push -u origin stable/8.8
-```
-
-2. Set `CAMUNDA_SDK_CURRENT_STABLE_MINOR=8.8` in GitHub repo variables.
-
-3. Bootstrap stable `8.8.0` on `stable/8.8` (one-time manual publish):
-
-```sh
-git checkout stable/8.8
-npm version 8.8.0 --no-git-tag-version
-npm run build
-git commit -am "chore(release): 8.8.0 (bootstrap)"
-git tag v8.8.0
-git push --follow-tags
-
-# Publish (requires npm auth)
-npm publish --tag latest
-```
-
-4. Bootstrap alpha `8.9.0-alpha.1` on `main` (one-time manual publish):
+1. Create the new stable branch on the remote:
 
 ```sh
 git checkout main
-npm version 8.9.0-alpha.1 --no-git-tag-version
-npm run build
-git commit -am "chore(release): 8.9.0-alpha.1 (bootstrap)"
-git tag v8.9.0-alpha.1
-git push --follow-tags
-
-# Publish (requires npm auth)
-npm publish --tag alpha
+git pull
+git checkout -b stable/10
+git push -u origin stable/10
 ```
 
-After that, semantic-release will continue within each line (e.g. `8.8.1`, `8.8.2`, `8.9.0-alpha.2`, ...).
+2. Update the `SPEC_REF` in the `build` script in `package.json` to point to the new server branch (e.g. `SPEC_REF=stable/8.10`).
+
+3. Update the GitHub repo variable `CAMUNDA_SDK_CURRENT_STABLE_MAJOR` to `10`.
+
+4. Add a Dependabot entry for the new stable branch in [.github/dependabot.yml](.github/dependabot.yml). Dependabot does not support wildcard branch patterns, so each `stable/*` branch must be listed explicitly.
+
+After promotion:
+
+- Releases from `stable/10` will be the "current stable" and will publish to npm dist-tag `latest`.
+- Releases from older stable branches (e.g. `stable/9`) will publish to `9-stable`.
+
+### Versioning rules (standard semver)
+
+This repo uses standard Conventional Commits with standard semver:
+
+- `fix:` / `perf:` / `revert:` → patch bump
+- `feat:` → minor bump
+- `BREAKING CHANGE` / `!` suffix → major bump
+- `chore:` / `docs:` / `ci:` → no release
+
+This is the default `@semantic-release/commit-analyzer` behavior with no custom `releaseRules`.
 
 ### Troubleshooting
 
-**`ERELEASEBRANCHES` (“problematic branches is []”)**
+**`ERELEASEBRANCHES`**
 
-This almost always means semantic-release can’t see the configured release branch(es) on the remote.
+- Usually means the configured `stable/<CAMUNDA_SDK_CURRENT_STABLE_MAJOR>` branch does not exist on the remote, or the repo variable is unset/malformed.
 
-- Ensure the target release branch exists on the remote (e.g. `main` or `stable/<major>.<minor>`).
-- Ensure `CAMUNDA_SDK_CURRENT_STABLE_MINOR` is set to a valid `<major>.<minor>` value (e.g. `8.8`) if you expect a stable line to publish to dist-tag `latest`.
+**`EINVALIDNEXTVERSION` (out of range)**
 
-**Re-run without publishing**
+- Usually means an unrelated release branch with a conflicting version line is included in the semantic-release branch model.
+- Ensure only `main` (alpha) and the stable branches are part of the semantic-release `branches` configuration.
 
-Use `scripts/next-version.mjs` (the workflows do this) or run locally:
+### Local notes
 
-```sh
-npm ci
-node scripts/next-version.mjs
-```
-
-### Local reproduction
+You can run build/tests locally:
 
 ```sh
 npm ci
 npm run build
-npx semantic-release --dry-run --no-ci
+npm test
 ```
+
+Running `semantic-release` locally is generally not useful without CI credentials.

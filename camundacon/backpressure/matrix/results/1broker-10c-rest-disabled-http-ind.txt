@@ -1,0 +1,22 @@
+[multi-client] SDK=rest-disabled handler=http clients=10 isolation=independent
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] pre-create=50000
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[pre-create] Creating 50000 process instances (BALANCED, concurrency=50)...
+[pre-create] Done: 45558 created, 4442 errors in 281.5s (162/s)
+[multi-client] Pre-creation complete: 45558 instances ready
+[multi-client] Producer: 14555 created, 67480 errors (0 queue-full)
+
+═══ Final Summary ═══
+  SDK Mode:              rest-disabled
+  Handler:               http
+  Clients:               10
+  Isolation:             independent
+  Total completed:       51812
+  Total errors:          67480
+  Total queue-full:      0
+  Wall-clock duration:   300.0s
+  Aggregate throughput:  172.7 ops/s
+  Jain's fairness index: 0.999
+

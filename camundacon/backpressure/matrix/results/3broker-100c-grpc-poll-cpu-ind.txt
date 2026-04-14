@@ -1,0 +1,22 @@
+[multi-client] SDK=grpc-poll handler=cpu clients=100 isolation=independent
+[multi-client] target=10000/client concurrency=32 batch=32
+[multi-client] pre-create=50000
+[multi-client] Deploying test process...
+[multi-client] Process deployed: 2251799813685316
+[pre-create] Creating 50000 process instances (BALANCED, concurrency=50)...
+[pre-create] Done: 50000 created, 0 errors in 101.7s (492/s)
+[multi-client] Pre-creation complete: 50000 instances ready
+[multi-client] Producer: 1466 created, 2451 errors (0 queue-full)
+
+═══ Final Summary ═══
+  SDK Mode:              grpc-poll
+  Handler:               cpu
+  Clients:               100
+  Isolation:             independent
+  Total completed:       28674
+  Total errors:          2451
+  Total queue-full:      0
+  Wall-clock duration:   303.6s
+  Aggregate throughput:  94.4 ops/s
+  Jain's fairness index: 0.821
+
