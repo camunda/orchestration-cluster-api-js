@@ -142,36 +142,38 @@ describe('worker defaults: createJobWorker merge', () => {
 });
 
 describe('worker defaults: validation', () => {
-  it('throws when maxParallelJobs is not set anywhere', () => {
+  it('uses built-in default when maxParallelJobs is not set anywhere', () => {
     const client = createCamundaClient({
       config: {
         CAMUNDA_WORKER_TIMEOUT: 30000,
       },
       fetch: noopFetch as any,
     });
-    expect(() =>
-      client.createJobWorker({
-        jobType: 'test-type',
-        jobHandler: noopHandler,
-        autoStart: false,
-      })
-    ).toThrow(/maxParallelJobs is required/);
+    // Should not throw — built-in default applies
+    const worker = client.createJobWorker({
+      jobType: 'test-type',
+      jobHandler: noopHandler,
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(JobWorker);
+    worker.stop();
   });
 
-  it('throws when jobTimeoutMs is not set anywhere', () => {
+  it('uses built-in default when jobTimeoutMs is not set anywhere', () => {
     const client = createCamundaClient({
       config: {
         CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4,
       },
       fetch: noopFetch as any,
     });
-    expect(() =>
-      client.createJobWorker({
-        jobType: 'test-type',
-        jobHandler: noopHandler,
-        autoStart: false,
-      })
-    ).toThrow(/jobTimeoutMs is required/);
+    // Should not throw — built-in default applies
+    const worker = client.createJobWorker({
+      jobType: 'test-type',
+      jobHandler: noopHandler,
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(JobWorker);
+    worker.stop();
   });
 
   it('succeeds when both required fields come from env defaults', () => {
@@ -225,32 +227,32 @@ describe('worker defaults: createThreadedJobWorker merge', () => {
     worker.stop();
   });
 
-  it('throws when maxParallelJobs is missing for threaded worker', () => {
+  it('uses built-in default when maxParallelJobs is missing for threaded worker', () => {
     const client = createCamundaClient({
       config: { CAMUNDA_WORKER_TIMEOUT: 30000 },
       fetch: noopFetch as any,
     });
-    expect(() =>
-      client.createThreadedJobWorker({
-        jobType: 'test-type',
-        handlerModule: './fake-handler.js',
-        autoStart: false,
-      })
-    ).toThrow(/maxParallelJobs is required/);
+    const worker = client.createThreadedJobWorker({
+      jobType: 'test-type',
+      handlerModule: './fake-handler.js',
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(ThreadedJobWorker);
+    worker.stop();
   });
 
-  it('throws when jobTimeoutMs is missing for threaded worker', () => {
+  it('uses built-in default when jobTimeoutMs is missing for threaded worker', () => {
     const client = createCamundaClient({
       config: { CAMUNDA_WORKER_MAX_CONCURRENT_JOBS: 4 },
       fetch: noopFetch as any,
     });
-    expect(() =>
-      client.createThreadedJobWorker({
-        jobType: 'test-type',
-        handlerModule: './fake-handler.js',
-        autoStart: false,
-      })
-    ).toThrow(/jobTimeoutMs is required/);
+    const worker = client.createThreadedJobWorker({
+      jobType: 'test-type',
+      handlerModule: './fake-handler.js',
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(ThreadedJobWorker);
+    worker.stop();
   });
 
   it('explicit threaded worker config overrides workerDefaults', () => {

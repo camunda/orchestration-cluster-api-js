@@ -55,7 +55,7 @@ export interface ThreadedJobWorkerConfig<
   pollIntervalMs?: number;
   /** Immediately start polling for work - default `true` */
   autoStart?: boolean;
-  /** concurrency limit */
+  /** Concurrency limit — default `10`. Overridden by CAMUNDA_WORKER_MAX_CONCURRENT_JOBS env var. */
   maxParallelJobs?: number;
   /**
    * The request will be completed when at least one job is activated or after the requestTimeout.
@@ -63,7 +63,7 @@ export interface ThreadedJobWorkerConfig<
    * To immediately complete the request when no job is activated set the requestTimeout to a negative value
    */
   pollTimeoutMs?: number;
-  /** Job activation timeout */
+  /** Job activation timeout in ms — default `60000`. Overridden by CAMUNDA_WORKER_TIMEOUT env var. */
   jobTimeoutMs?: number;
   /** Zeebe job type */
   jobType: string;
@@ -120,19 +120,9 @@ export class ThreadedJobWorker {
   constructor(client: CamundaClient, pool: ThreadPool, cfg: ThreadedJobWorkerConfig) {
     this._client = client;
     this._pool = pool;
-    this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, ...cfg };
-    if (this._cfg.maxParallelJobs === undefined) {
-      throw new Error(
-        'maxParallelJobs is required: set it on ThreadedJobWorkerConfig or via CAMUNDA_WORKER_MAX_CONCURRENT_JOBS (environment variable or CamundaOptions.config override).'
-      );
-    }
-    if (this._cfg.jobTimeoutMs === undefined) {
-      throw new Error(
-        'jobTimeoutMs is required: set it on ThreadedJobWorkerConfig or via CAMUNDA_WORKER_TIMEOUT (environment variable or CamundaOptions.config override).'
-      );
-    }
-    this._maxParallelJobs = this._cfg.maxParallelJobs;
-    this._jobTimeoutMs = this._cfg.jobTimeoutMs;
+    this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, maxParallelJobs: 10, jobTimeoutMs: 60_000, ...cfg };
+    this._maxParallelJobs = this._cfg.maxParallelJobs!;
+    this._jobTimeoutMs = this._cfg.jobTimeoutMs!;
     this._name = cfg.workerName || `threaded-worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
 
