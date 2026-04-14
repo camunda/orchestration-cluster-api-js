@@ -1,0 +1,15 @@
+{
+  "name": "example-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "@camunda8/orchestration-cluster-api": "^9.0.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  }
+}
