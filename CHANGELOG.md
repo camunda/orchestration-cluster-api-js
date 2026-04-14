@@ -1,3 +1,17 @@
+# [9.1.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.4...v9.1.0) (2026-04-14)
+
+
+### Bug Fixes
+
+* add range to stable branch config for semantic-release ordering ([5bd8efd](https://github.com/camunda/orchestration-cluster-api-js/commit/5bd8efda0eaf230698f71eb5d04847fd886fe50b))
+* remove range from current stable branch to fix ERELEASEBRANCHES ([6863f2c](https://github.com/camunda/orchestration-cluster-api-js/commit/6863f2c9d616b91e9c6ff3ea12cf82bc492d2317))
+* remove range from main prerelease branch config ([bcca3cf](https://github.com/camunda/orchestration-cluster-api-js/commit/bcca3cf2a819c475f938ae15f9175fe9550a925c))
+
+
+### Features
+
+* add example-app for SDK smoke testing ([a08e2ee](https://github.com/camunda/orchestration-cluster-api-js/commit/a08e2ee2864dc148e33e6df2261ad0d67dd9ec17))
+
 ## [9.0.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.3...v9.0.4) (2026-04-14)
 
 
