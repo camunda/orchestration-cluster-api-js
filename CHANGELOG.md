@@ -1,3 +1,22 @@
+# [9.1.0-alpha.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.0...v9.1.0-alpha.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* add built-in defaults for maxParallelJobs and jobTimeoutMs in worker constructors ([58250b3](https://github.com/camunda/orchestration-cluster-api-js/commit/58250b3d798ad00b10335d4617cd8119e2c220a2)), closes [#145](https://github.com/camunda/orchestration-cluster-api-js/issues/145)
+* add range constraint for main branch alpha prereleases ([7e35488](https://github.com/camunda/orchestration-cluster-api-js/commit/7e35488db4921ae10e883324c226665ecedd3af3))
+* add range to stable branch config for semantic-release ordering ([3087736](https://github.com/camunda/orchestration-cluster-api-js/commit/3087736b786b48fef62810da9c884305ce2d2788))
+* branch-aware release config — constrain stable branches with range ([5d3e751](https://github.com/camunda/orchestration-cluster-api-js/commit/5d3e751687d7347bb37827ce6c575325c83b1d13))
+* document SDK major version creation workflow in MAINTAINER.md ([2b89502](https://github.com/camunda/orchestration-cluster-api-js/commit/2b8950221568b26564c05287173be2cc44c1962d))
+* patch createWorker and createThreadedWorker to handle missing defaults ([5f9409c](https://github.com/camunda/orchestration-cluster-api-js/commit/5f9409ce9b3ee7051c08f8a72402ee278637ce2e))
+* remove range from current stable branch to fix ERELEASEBRANCHES ([3b99176](https://github.com/camunda/orchestration-cluster-api-js/commit/3b99176e3fca61dac333fae8d6509dca40202da6))
+* remove range from main prerelease branch config ([9e91aba](https://github.com/camunda/orchestration-cluster-api-js/commit/9e91aba7e425e6e2d7e48a25d4b5b8ec61cc479a))
+
+
+### Features
+
+* add example-app for SDK smoke testing ([b70cfda](https://github.com/camunda/orchestration-cluster-api-js/commit/b70cfda993101fb1578869f5622b0f8d8bf87a03))
+
 # [8.9.0-alpha.40](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.39...v8.9.0-alpha.40) (2026-04-14)
 
 
