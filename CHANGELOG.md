@@ -1,3 +1,10 @@
+## [9.0.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.2...v9.0.3) (2026-04-14)
+
+
+### Bug Fixes
+
+* add built-in defaults for maxParallelJobs and jobTimeoutMs in worker constructors ([23674c4](https://github.com/camunda/orchestration-cluster-api-js/commit/23674c4a853718b7546bd7b67184382823666f8f)), closes [#145](https://github.com/camunda/orchestration-cluster-api-js/issues/145)
+
 ## [9.0.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.1...v9.0.2) (2026-04-14)
 
 
