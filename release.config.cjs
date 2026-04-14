@@ -33,6 +33,8 @@ function envCurrentStableMajor() {
 const branch = currentBranchName();
 const stableMajor = stableMajorFromBranch(branch);
 const currentStableMajor = envCurrentStableMajor();
+const isOnMain = branch === 'main';
+const isOnCurrentStable = Boolean(stableMajor && stableMajor === currentStableMajor);
 
 function maintenanceBranchConfig(branchName, major) {
   return {
@@ -69,28 +71,37 @@ module.exports = {
   // - The currently promoted stable major is configured via `CAMUNDA_SDK_CURRENT_STABLE_MAJOR`.
   // - Publishing to npm dist-tag `latest` is done in a one-shot `npm publish --tag latest` (no separate `npm dist-tag` step).
   branches: dedupeBranches([
-    // Alpha prereleases are published from `main`.
-    // No `range` here: prerelease versions (e.g. 10.0.0-alpha.1) are not
-    // satisfied by semver ranges like '10.x', so adding one causes
-    // semantic-release to filter this branch out entirely.
-    // semantic-release infers main's version space from the other branches'
-    // ranges (stable/9 owns 9.x → main produces the next major).
-    {
-      name: 'main',
-      prerelease: 'alpha',
-      channel: 'alpha',
-    },
+    // semantic-release requires ≥1 "release branch" (no `range`, no `prerelease`).
+    // Branch type classification (lib/definitions/branches.js):
+    //   `range`      → maintenance
+    //   `prerelease` → pre-release
+    //   neither      → release
+    //
+    // The config is evaluated per-branch CI run, so each branch only needs
+    // to make sense for its own run. We use the current branch to decide
+    // which role each entry plays:
+    //
+    // On main:
+    //   main        → prerelease (alpha)
+    //   stable/N    → release branch (satisfies ≥1 constraint)
+    //
+    // On stable/N (current):
+    //   stable/N    → maintenance with range N.x (constrains versions)
+    //   main        → release branch (satisfies ≥1 constraint)
+    //
+    // On stable/N (older):
+    //   stable/N    → maintenance with range N.x
 
-    // The current stable line is the semantic-release "release branch".
-    // It must NOT have `range` — adding `range` makes it a maintenance branch,
-    // and semantic-release requires at least 1 release branch (no `range`, no
-    // `prerelease`). Only older stable lines get `range` (= maintenance).
-    // See: https://github.com/semantic-release/semantic-release/issues/2503
+    // main: prerelease when running on main, plain release branch otherwise.
+    isOnMain ? { name: 'main', prerelease: 'alpha', channel: 'alpha' } : { name: 'main' },
+
+    // Current stable line: constrained with range when running on it,
+    // plain release branch when running from main.
     ...(currentStableMajor
       ? [
           {
             name: `stable/${currentStableMajor}`,
-            // Publish the current stable line directly to npm dist-tag `latest`.
+            ...(isOnCurrentStable ? { range: `${currentStableMajor}.x` } : {}),
             channel: 'latest',
           },
         ]
