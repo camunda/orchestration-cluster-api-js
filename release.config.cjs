@@ -70,13 +70,15 @@ module.exports = {
   // - Publishing to npm dist-tag `latest` is done in a one-shot `npm publish --tag latest` (no separate `npm dist-tag` step).
   branches: dedupeBranches([
     // Alpha prereleases are published from `main`.
-    // When a stable major is known, constrain main to the next major so
-    // semantic-release doesn't collide with the existing stable line.
+    // No `range` here: prerelease versions (e.g. 10.0.0-alpha.1) are not
+    // satisfied by semver ranges like '10.x', so adding one causes
+    // semantic-release to filter this branch out entirely.
+    // semantic-release infers main's version space from the other branches'
+    // ranges (stable/9 owns 9.x → main produces the next major).
     {
       name: 'main',
       prerelease: 'alpha',
       channel: 'alpha',
-      ...(currentStableMajor ? { range: `${parseInt(currentStableMajor, 10) + 1}.x` } : {}),
     },
 
     // The configured current stable line is the single semantic-release "release branch".
