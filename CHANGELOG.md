@@ -1,3 +1,10 @@
+## [9.0.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.0...v9.0.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* release stable 9 SDK for Camunda server 8.9 ([671deb9](https://github.com/camunda/orchestration-cluster-api-js/commit/671deb9a1f67d665c1dfe0976c00656934d683d0))
+
 # [8.9.0-alpha.38](https://github.com/camunda/orchestration-cluster-api-js/compare/v8.9.0-alpha.37...v8.9.0-alpha.38) (2026-04-13)
 
 
