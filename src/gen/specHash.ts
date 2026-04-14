@@ -1,3 +1,3 @@
 // Auto-generated — do not edit.
 // SHA-256 digest of the OpenAPI spec this SDK was generated from.
-export const SPEC_HASH = "sha256:5de81e6b2d3f152265e6f6f042a776f0bc2ca73572e9f5a8c54eee460f5c6161" as const;
+export const SPEC_HASH = "sha256:23c77958ed5c8e6d5bec3a5368ea7cc9aef83d7a745bffdbf618c34ece760409" as const;

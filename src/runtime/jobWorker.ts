@@ -89,7 +89,14 @@ export class JobWorker {
 
   constructor(client: CamundaClient, cfg: JobWorkerConfig) {
     this._client = client;
-    this._cfg = { pollIntervalMs: 1, autoStart: true, validateSchemas: false, maxParallelJobs: 10, jobTimeoutMs: 60_000, ...cfg };
+    this._cfg = {
+      pollIntervalMs: 1,
+      autoStart: true,
+      validateSchemas: false,
+      maxParallelJobs: 10,
+      jobTimeoutMs: 60_000,
+      ...cfg,
+    };
     this._maxParallelJobs = this._cfg.maxParallelJobs!;
     this._jobTimeoutMs = this._cfg.jobTimeoutMs!;
     this._name = cfg.workerName || `worker-${cfg.jobType}-${++_workerCounter}`;

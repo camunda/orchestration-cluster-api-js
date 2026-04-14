@@ -2336,7 +2336,7 @@ export function completeUserTask(options?: Parameters<typeof _completeUserTask>[
  *
  * Upload a document to the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
   *
  * @example Upload a document
@@ -2366,7 +2366,7 @@ export function createDocument(options?: Parameters<typeof _createDocument>[0]):
  *
  * Create a link to a document in the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP
  *
   *
  * @example Create a document link
@@ -2406,7 +2406,7 @@ export function createDocumentLink(options?: Parameters<typeof _createDocumentLi
  * each of which contains the file name of the document that failed to upload and the reason for the failure.
  * The client can choose to retry the whole batch or individual documents based on the response.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
   *
  * @example Upload multiple documents
@@ -2534,7 +2534,7 @@ export function deleteDecisionInstance(options?: Parameters<typeof _deleteDecisi
  *
  * Delete a document from the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
   *
  * @example Delete a document
@@ -3062,7 +3062,7 @@ export const getDecisionRequirementsXML = getDecisionRequirementsXml;
  *
  * Download a document from the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
   *
  * @example Download a document
@@ -5391,4 +5391,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=824f57825b7b2cb9 totalWrappers=183 elements=1162 physicalLines=2845
+// SENTINEL_FACADE_PREWRITE hash=7859385dc415da57 totalWrappers=183 elements=1162 physicalLines=2845
