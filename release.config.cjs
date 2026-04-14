@@ -81,15 +81,15 @@ module.exports = {
       channel: 'alpha',
     },
 
-    // The configured current stable line is the single semantic-release "release branch".
-    // This must exist on the remote repository.
-    // Range is required so semantic-release can properly order branches and
-    // compute non-overlapping version ranges (e.g. stable/9 = 9.x, main = 10.x).
+    // The current stable line is the semantic-release "release branch".
+    // It must NOT have `range` — adding `range` makes it a maintenance branch,
+    // and semantic-release requires at least 1 release branch (no `range`, no
+    // `prerelease`). Only older stable lines get `range` (= maintenance).
+    // See: https://github.com/semantic-release/semantic-release/issues/2503
     ...(currentStableMajor
       ? [
           {
             name: `stable/${currentStableMajor}`,
-            range: `${currentStableMajor}.x`,
             // Publish the current stable line directly to npm dist-tag `latest`.
             channel: 'latest',
           },
