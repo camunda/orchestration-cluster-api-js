@@ -43,7 +43,7 @@ async function main() {
     while ((m = re.exec(sdk))) docs[m[2]] = `/**${m[1]}*/`;
   }
   // Collect available exported zod response schema names to avoid emitting invalid references
-  const availableResponses = new Set<string>();
+  const availableSchemas = new Set<string>();
   const voidResponses = new Set<string>();
   const ZOD_GEN_PATH = path.join(ROOT, 'src/gen/zod.gen.ts');
   if (fs.existsSync(ZOD_GEN_PATH)) {
@@ -53,7 +53,7 @@ async function main() {
     while ((mm = rResp.exec(zsrc))) {
       const name = mm[1];
       const rhs = mm[2];
-      availableResponses.add(name);
+      availableSchemas.add(name);
       // Only classify as void if the schema is pure z.void(), not a z.union
       // that happens to contain z.void() alongside data types (e.g. 200+204).
       if (/z\.void\s*\(\)/.test(rhs) && !/z\.union\s*\(/.test(rhs)) voidResponses.add(name);
@@ -276,8 +276,8 @@ export type ${o.opId}Consistency = {
       const opCap = o.opId.charAt(0).toUpperCase() + o.opId.slice(1);
       const dataName = `z${opCap}Data`;
       const bodyName = `z${opCap}Body`;
-      const useDataEnvelope = availableResponses.has(dataName);
-      const useBodyOnly = !useDataEnvelope && availableResponses.has(bodyName);
+      const useDataEnvelope = availableSchemas.has(dataName);
+      const useBodyOnly = !useDataEnvelope && availableSchemas.has(bodyName);
       methods.push(`      if (this._validation.settings.req !== 'none') {`);
       methods.push(`        const _schemas = await this._loadSchemas();`);
       if (useDataEnvelope) {
@@ -344,7 +344,7 @@ export type ${o.opId}Consistency = {
       methods.push('        }');
       // Response validation (guarded) occurs BEFORE any enrichment so fanatical mode sees raw spec shape
       const respName = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response`;
-      if (availableResponses.has(respName)) {
+      if (availableSchemas.has(respName)) {
         methods.push("        if (this._validation.settings.res !== 'none') {");
         methods.push(`          const _schemas = await this._loadSchemas();`);
         methods.push(`          const _schema = _schemas.${respName};`);
@@ -440,7 +440,7 @@ export type ${o.opId}Consistency = {
       methods.push('          data = undefined;');
       methods.push('        }');
       const respName2 = `z${o.opId.charAt(0).toUpperCase() + o.opId.slice(1)}Response`;
-      if (availableResponses.has(respName2)) {
+      if (availableSchemas.has(respName2)) {
         methods.push("        if (this._validation.settings.res !== 'none') {");
         methods.push(`          const _schemas = await this._loadSchemas();`);
         methods.push(`          const _schema = _schemas.${respName2};`);
