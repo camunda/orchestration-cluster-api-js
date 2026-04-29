@@ -3554,9 +3554,12 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
  * async function getResourceExample(resourceKey: ProcessDefinitionKey) {
  *   const camunda = createCamundaClient();
  * 
- *   const resource = await camunda.getResource({
- *     resourceKey,
- *   }, { consistency: { waitUpToMs: 0 } });
+ *   const resource = await camunda.getResource(
+ *     {
+ *       resourceKey,
+ *     },
+ *     { consistency: { waitUpToMs: 0 } }
+ *   );
  * 
  *   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
  * }
@@ -3586,9 +3589,12 @@ export function getResource(options: Parameters<typeof _getResource>[0] | undefi
  * async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
  *   const camunda = createCamundaClient();
  * 
- *   const content = await camunda.getResourceContent({
- *     resourceKey,
- *   }, {consistency: { waitUpToMs: 0 }});
+ *   const content = await camunda.getResourceContent(
+ *     {
+ *       resourceKey,
+ *     },
+ *     { consistency: { waitUpToMs: 0 } }
+ *   );
  * 
  *   console.log(`Content retrieved (type: ${typeof content})`);
  * }
