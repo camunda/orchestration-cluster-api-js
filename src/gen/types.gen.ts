@@ -1005,9 +1005,12 @@ export type BatchOperationItemResponse = {
      */
     itemKey: string;
     /**
-     * the process instance key of the processed item.
+     * The process instance key of the processed item. Null for batch-op types whose targets
+     * are not process instances (e.g. DELETE_DECISION_INSTANCE, DELETE_DECISION_DEFINITION,
+     * DELETE_PROCESS_DEFINITION).
+     *
      */
-    processInstanceKey: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -2708,12 +2711,12 @@ export type ElementInstanceFilter = {
     /**
      * The element ID for this element instance.
      */
-    elementId?: ElementId;
+    elementId?: ElementIdFilterProperty;
     /**
      * The element name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
      *
      */
-    elementName?: string;
+    elementName?: StringFilterProperty;
     /**
      * Shows whether this element instance has an incident related to.
      */
@@ -3524,6 +3527,74 @@ export type TagSet = Array<Tag> & { readonly length: 0 | 1 | 2 | 3 | 4 | 5 | 6 |
  *
  */
 export type BusinessId = CamundaKey<'BusinessId'>;
+
+/**
+ * ElementId property with full advanced search capabilities.
+ */
+export type ElementIdFilterProperty = ElementIdExactMatch | AdvancedElementIdFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ElementId filter.
+ */
+export type AdvancedElementIdFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: ElementId;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: ElementId;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<ElementId>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<ElementId>;
+    $like?: LikeFilter;
+};
+
+/**
+ * ProcessDefinitionId property with full advanced search capabilities.
+ */
+export type ProcessDefinitionIdFilterProperty = ProcessDefinitionIdExactMatch | AdvancedProcessDefinitionIdFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProcessDefinitionId filter.
+ */
+export type AdvancedProcessDefinitionIdFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: ProcessDefinitionId;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: ProcessDefinitionId;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<ProcessDefinitionId>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<ProcessDefinitionId>;
+    $like?: LikeFilter;
+};
 
 export type IncidentSearchQuery = SearchQueryRequest & {
     /**
@@ -4762,6 +4833,7 @@ export type JobKindEnum = (typeof JobKindEnum)[keyof typeof JobKindEnum];
  */
 export const JobListenerEventTypeEnum = {
   ASSIGNING: 'ASSIGNING',
+  BEFORE_ALL: 'BEFORE_ALL',
   CANCELING: 'CANCELING',
   COMPLETING: 'COMPLETING',
   CREATING: 'CREATING',
@@ -4919,7 +4991,10 @@ export type JobKey = CamundaKey<'JobKey'>;
 export type DecisionDefinitionKey = CamundaKey<'DecisionDefinitionKey'>;
 
 /**
- * System-generated key for a decision evaluation instance.
+ * System-generated identifier for a decision evaluation instance. It is composed of the
+ * parent decision evaluation key and the 1-based index of the evaluated decision within
+ * that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).
+ *
  */
 export type DecisionEvaluationInstanceKey = CamundaKey<'DecisionEvaluationInstanceKey'>;
 
@@ -5598,6 +5673,8 @@ export type MessageSubscriptionResult = {
     processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with this message subscription.
+     * Only populated for intermediate event entities.
+     *
      */
     processInstanceKey: ProcessInstanceKey | null;
     /**
@@ -5613,6 +5690,8 @@ export type MessageSubscriptionResult = {
     elementId: ElementId;
     /**
      * The element instance key associated with this message subscription.
+     * Only populated for intermediate event entities.
+     *
      */
     elementInstanceKey: ElementInstanceKey | null;
     messageSubscriptionState: MessageSubscriptionStateEnum;
@@ -5628,6 +5707,35 @@ export type MessageSubscriptionResult = {
      * The correlation key of the message subscription.
      */
     correlationKey: string | null;
+    messageSubscriptionType: MessageSubscriptionTypeEnum;
+    /**
+     * The `zeebe:properties` extension properties extracted from the BPMN element associated
+     * with this subscription. Empty object when no properties are defined.
+     *
+     */
+    extensionProperties: {
+        [key: string]: string;
+    };
+    /**
+     * The name of the process definition associated with this message subscription.
+     */
+    processDefinitionName: string | null;
+    /**
+     * The version of the process definition associated with this message subscription.
+     */
+    processDefinitionVersion: number | null;
+    /**
+     * Tool name extracted from the `io.camunda.tool:name` zeebe:property.
+     * Null when the property is absent.
+     *
+     */
+    toolName: string | null;
+    /**
+     * Inbound connector type extracted from the `inbound.type` zeebe:property.
+     * Null when the property is absent.
+     *
+     */
+    inboundConnectorType: string | null;
     tenantId: TenantId;
 };
 
@@ -5635,7 +5743,7 @@ export type MessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId';
+    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'messageSubscriptionType' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId' | 'toolName' | 'inboundConnectorType';
     order?: SortOrderEnum;
 };
 
@@ -5698,6 +5806,29 @@ export type MessageSubscriptionFilter = {
      * The unique external tenant ID.
      */
     tenantId?: StringFilterProperty;
+    /**
+     * The type of message subscription to filter by. When omitted, both
+     * `START_EVENT` and `PROCESS_EVENT` are returned. Only available for data
+     * created with Camunda 8.10 or later.
+     *
+     */
+    messageSubscriptionType?: MessageSubscriptionTypeFilterProperty;
+    /**
+     * The name of the process definition associated with this message subscription.
+     */
+    processDefinitionName?: StringFilterProperty;
+    /**
+     * The version of the process definition associated with this message subscription.
+     */
+    processDefinitionVersion?: IntegerFilterProperty;
+    /**
+     * Filter by tool name extracted from the `io.camunda.tool:name` zeebe:property.
+     */
+    toolName?: StringFilterProperty;
+    /**
+     * Filter by inbound connector type extracted from the `inbound.type` zeebe:property.
+     */
+    inboundConnectorType?: StringFilterProperty;
 };
 
 export type CorrelatedMessageSubscriptionSearchQueryResult = SearchQueryResponse & {
@@ -5797,6 +5928,19 @@ export const MessageSubscriptionStateEnum = {
 } as const;
 export type MessageSubscriptionStateEnum = (typeof MessageSubscriptionStateEnum)[keyof typeof MessageSubscriptionStateEnum];
 /**
+ * The type of message subscription.
+ * `START_EVENT` is definition-scoped (process start events). Always has a value; only
+ * captured from Camunda 8.10 onwards.
+ * `PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have
+ * no value stored; the API returns `PROCESS_EVENT` as a default for those entries.
+ *
+ */
+export const MessageSubscriptionTypeEnum = {
+  START_EVENT: 'START_EVENT',
+  PROCESS_EVENT: 'PROCESS_EVENT',
+} as const;
+export type MessageSubscriptionTypeEnum = (typeof MessageSubscriptionTypeEnum)[keyof typeof MessageSubscriptionTypeEnum];
+/**
  * Correlated message subscriptions search filter.
  */
 export type CorrelatedMessageSubscriptionFilter = {
@@ -5848,6 +5992,36 @@ export type CorrelatedMessageSubscriptionFilter = {
      * The tenant ID associated with this correlated message subscription.
      */
     tenantId?: StringFilterProperty;
+};
+
+/**
+ * MessageSubscriptionTypeEnum with full advanced search capabilities.
+ */
+export type MessageSubscriptionTypeFilterProperty = MessageSubscriptionTypeExactMatch | AdvancedMessageSubscriptionTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced MessageSubscriptionTypeEnum filter
+ */
+export type AdvancedMessageSubscriptionTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: MessageSubscriptionTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: MessageSubscriptionTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<MessageSubscriptionTypeEnum>;
+    $like?: LikeFilter;
 };
 
 /**
@@ -7803,7 +7977,7 @@ export type UserTaskFilter = {
     /**
      * The ID of the process definition.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
     /**
      * The user task creation date.
      */
@@ -7835,11 +8009,11 @@ export type UserTaskFilter = {
     /**
      * The key of the process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
     /**
      * The key of the process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The key of the element instance.
      */
@@ -8581,6 +8755,20 @@ export type GlobalTaskListenerEventTypeExactMatch = GlobalTaskListenerEventTypeE
  *
  * Matches the value exactly.
  */
+export type ElementIdExactMatch = ElementId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessDefinitionIdExactMatch = ProcessDefinitionId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type IncidentErrorTypeExactMatch = IncidentErrorTypeEnum;
 
 /**
@@ -8694,6 +8882,13 @@ export type DecisionEvaluationKeyExactMatch = DecisionEvaluationKey;
  * Matches the value exactly.
  */
 export type DecisionRequirementsKeyExactMatch = DecisionRequirementsKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type MessageSubscriptionTypeExactMatch = MessageSubscriptionTypeEnum;
 
 /**
  * Exact match
@@ -9584,6 +9779,10 @@ export type CreateTenantClusterVariableErrors = {
      * Forbidden. The request is not allowed.
      */
     403: ProblemDetail;
+    /**
+     * The tenant with the given ID was not found.
+     */
+    404: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -13987,7 +14186,7 @@ export type GetResourceContentResponses = {
     /**
      * The resource content is successfully returned.
      */
-    200: string;
+    200: Blob | File;
 };
 
 export type GetResourceContentResponse = GetResourceContentResponses[keyof GetResourceContentResponses];
@@ -16864,7 +17063,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:23c77958ed5c8e6d5bec3a5368ea7cc9aef83d7a745bffdbf618c34ece760409
+// specHash=sha256:6d0560fde009abd591d2bf84c727edc92340880af0b54a90093ed40ebb97f973
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -16976,16 +17175,16 @@ export namespace DecisionDefinitionKey {
     } catch { return false; }
   }
 }
-// System-generated key for a decision evaluation instance.
+// System-generated identifier for a decision evaluation instance. It is composed of the parent decision evaluation key and the 1-based index of the evaluated decision within that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`). 
 export namespace DecisionEvaluationInstanceKey {
   export function assumeExists(value: string): DecisionEvaluationInstanceKey {
-    assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
     return value as any;
   }
   export function getValue(key: DecisionEvaluationInstanceKey): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
       return true;
     } catch { return false; }
   }

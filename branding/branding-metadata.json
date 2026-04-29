@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:23c77958ed5c8e6d5bec3a5368ea7cc9aef83d7a745bffdbf618c34ece760409",
+  "specHash": "sha256:6d0560fde009abd591d2bf84c727edc92340880af0b54a90093ed40ebb97f973",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -338,28 +338,27 @@
       "name": "DecisionEvaluationInstanceKey",
       "semanticType": "DecisionEvaluationInstanceKey",
       "category": "system-key",
-      "description": "System-generated key for a decision evaluation instance.",
+      "description": "System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n",
       "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
+        "schemaKind": "inline",
+        "refs": [],
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
+        "pattern": "^[0-9]+-[0-9]+$",
+        "minLength": 3,
+        "maxLength": 30,
+        "format": "DecisionEvaluationInstanceKey"
       },
       "examples": [
-        "2251799813684367"
+        "2251799813684367-1"
       ],
       "extensions": {
         "x-semantic-type": "DecisionEvaluationInstanceKey"
       },
       "flags": {
         "semanticKey": true,
-        "includesLongKeyRef": true,
+        "includesLongKeyRef": false,
         "deprecated": false
       },
       "stableId": "decision-evaluation-instance-key",
@@ -1854,6 +1853,29 @@
       }
     },
     {
+      "name": "ElementIdFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ElementId property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ElementIdExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedElementIdFilter"
+        }
+      ],
+      "stableId": "element-id-filter-property",
+      "tsType": "ElementIdExactMatch | AdvancedElementIdFilter",
+      "zod": {
+        "schemaName": "zElementIdFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ElementIdFilterProperty"
+      }
+    },
+    {
       "name": "ElementInstanceKeyFilterProperty",
       "kind": "union-wrapper",
       "description": "ElementInstanceKey property with full advanced search capabilities.",
@@ -2221,6 +2243,29 @@
       }
     },
     {
+      "name": "MessageSubscriptionTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "MessageSubscriptionTypeEnum with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "MessageSubscriptionTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedMessageSubscriptionTypeFilter"
+        }
+      ],
+      "stableId": "message-subscription-type-filter-property",
+      "tsType": "MessageSubscriptionTypeExactMatch | AdvancedMessageSubscriptionTypeFilter",
+      "zod": {
+        "schemaName": "zMessageSubscriptionTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/MessageSubscriptionTypeFilterProperty"
+      }
+    },
+    {
       "name": "OperationTypeFilterProperty",
       "kind": "union-wrapper",
       "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
@@ -2241,6 +2286,29 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/OperationTypeFilterProperty"
+      }
+    },
+    {
+      "name": "ProcessDefinitionIdFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ProcessDefinitionId property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionIdExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedProcessDefinitionIdFilter"
+        }
+      ],
+      "stableId": "process-definition-id-filter-property",
+      "tsType": "ProcessDefinitionIdExactMatch | AdvancedProcessDefinitionIdFilter",
+      "zod": {
+        "schemaName": "zProcessDefinitionIdFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProcessDefinitionIdFilterProperty"
       }
     },
     {
@@ -2620,7 +2688,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 34,
-    "totalUnionWrappers": 52,
+    "totalUnionWrappers": 55,
     "implicitCamundaKeys": []
   }
 }

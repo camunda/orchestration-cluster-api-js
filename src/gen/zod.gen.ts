@@ -1313,6 +1313,50 @@ export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry,
 });
 
 /**
+ * Advanced filter
+ *
+ * Advanced ElementId filter.
+ */
+export const zAdvancedElementIdFilter = z.object({
+    '$eq': z.optional(zElementId),
+    '$neq': z.optional(zElementId),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zElementId).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zElementId).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced ElementId filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProcessDefinitionId filter.
+ */
+export const zAdvancedProcessDefinitionIdFilter = z.object({
+    '$eq': z.optional(zProcessDefinitionId),
+    '$neq': z.optional(zProcessDefinitionId),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zProcessDefinitionId).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zProcessDefinitionId).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced ProcessDefinitionId filter.'
+});
+
+/**
  * Incident error type with a defined set of values.
  */
 export const zIncidentErrorTypeEnum = z.enum([
@@ -1816,6 +1860,7 @@ export const zJobKindEnum = z.enum([
  */
 export const zJobListenerEventTypeEnum = z.enum([
     'ASSIGNING',
+    'BEFORE_ALL',
     'CANCELING',
     'COMPLETING',
     'CREATING',
@@ -2440,9 +2485,14 @@ export const zDecisionEvaluationInstruction = z.union([
 ]);
 
 /**
- * System-generated key for a decision evaluation instance.
+ * System-generated identifier for a decision evaluation instance. It is composed of the
+ * parent decision evaluation key and the 1-based index of the evaluated decision within
+ * that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).
+ *
  */
-export const zDecisionEvaluationInstanceKey = zLongKey;
+export const zDecisionEvaluationInstanceKey = z.string().min(3).max(30).regex(/^[0-9]+-[0-9]+$/).register(z.globalRegistry, {
+    description: 'System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n'
+});
 
 /**
  * A decision that was evaluated.
@@ -2863,7 +2913,10 @@ export const zBatchOperationItemResponse = z.object({
     itemKey: z.string().register(z.globalRegistry, {
         description: 'Key of the item, e.g. a process instance key.'
     }),
-    processInstanceKey: zProcessInstanceKey,
+    processInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
@@ -3440,6 +3493,40 @@ export const zMessageSubscriptionStateEnum = z.enum([
 });
 
 /**
+ * The type of message subscription.
+ * `START_EVENT` is definition-scoped (process start events). Always has a value; only
+ * captured from Camunda 8.10 onwards.
+ * `PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have
+ * no value stored; the API returns `PROCESS_EVENT` as a default for those entries.
+ *
+ */
+export const zMessageSubscriptionTypeEnum = z.enum([
+    'START_EVENT',
+    'PROCESS_EVENT'
+]).register(z.globalRegistry, {
+    description: 'The type of message subscription.\n`START_EVENT` is definition-scoped (process start events). Always has a value; only\ncaptured from Camunda 8.10 onwards.\n`PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have\nno value stored; the API returns `PROCESS_EVENT` as a default for those entries.\n'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced MessageSubscriptionTypeEnum filter
+ */
+export const zAdvancedMessageSubscriptionTypeFilter = z.object({
+    '$eq': z.optional(zMessageSubscriptionTypeEnum),
+    '$neq': z.optional(zMessageSubscriptionTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zMessageSubscriptionTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced MessageSubscriptionTypeEnum filter'
+});
+
+/**
  * Advanced filter
  *
  * Advanced MessageSubscriptionStateEnum filter
@@ -3491,6 +3578,26 @@ export const zMessageSubscriptionResult = z.object({
         description: 'The name of the message associated with the message subscription.'
     }),
     correlationKey: z.union([
+        z.string(),
+        z.null()
+    ]),
+    messageSubscriptionType: zMessageSubscriptionTypeEnum,
+    extensionProperties: z.record(z.string(), z.string()).register(z.globalRegistry, {
+        description: 'The `zeebe:properties` extension properties extracted from the BPMN element associated\nwith this subscription. Empty object when no properties are defined.\n'
+    }),
+    processDefinitionName: z.union([
+        z.string(),
+        z.null()
+    ]),
+    processDefinitionVersion: z.union([
+        z.int(),
+        z.null()
+    ]),
+    toolName: z.union([
+        z.string(),
+        z.null()
+    ]),
+    inboundConnectorType: z.union([
         z.string(),
         z.null()
     ]),
@@ -4780,14 +4887,19 @@ export const zMessageSubscriptionSearchQuerySortRequest = z.object({
     field: z.enum([
         'messageSubscriptionKey',
         'processDefinitionId',
+        'processDefinitionName',
+        'processDefinitionVersion',
         'processInstanceKey',
         'elementId',
         'elementInstanceKey',
         'messageSubscriptionState',
+        'messageSubscriptionType',
         'lastUpdatedDate',
         'messageName',
         'correlationKey',
-        'tenantId'
+        'tenantId',
+        'toolName',
+        'inboundConnectorType'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -6307,77 +6419,6 @@ export const zElementInstanceStateFilterProperty = z.union([
 ]);
 
 /**
- * Element instance filter.
- */
-export const zElementInstanceFilter = z.object({
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    state: z.optional(zElementInstanceStateFilterProperty),
-    type: z.optional(z.enum([
-        'UNSPECIFIED',
-        'PROCESS',
-        'SUB_PROCESS',
-        'EVENT_SUB_PROCESS',
-        'AD_HOC_SUB_PROCESS',
-        'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
-        'START_EVENT',
-        'INTERMEDIATE_CATCH_EVENT',
-        'INTERMEDIATE_THROW_EVENT',
-        'BOUNDARY_EVENT',
-        'END_EVENT',
-        'SERVICE_TASK',
-        'RECEIVE_TASK',
-        'USER_TASK',
-        'MANUAL_TASK',
-        'TASK',
-        'EXCLUSIVE_GATEWAY',
-        'INCLUSIVE_GATEWAY',
-        'PARALLEL_GATEWAY',
-        'EVENT_BASED_GATEWAY',
-        'SEQUENCE_FLOW',
-        'MULTI_INSTANCE_BODY',
-        'CALL_ACTIVITY',
-        'BUSINESS_RULE_TASK',
-        'SCRIPT_TASK',
-        'SEND_TASK',
-        'UNKNOWN'
-    ]).register(z.globalRegistry, {
-        description: 'Type of element as defined set of values.'
-    })),
-    elementId: z.optional(zElementId),
-    elementName: z.optional(z.string().register(z.globalRegistry, {
-        description: "The element name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.\n"
-    })),
-    hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
-        description: 'Shows whether this element instance has an incident related to.'
-    })),
-    tenantId: z.optional(zTenantId),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    incidentKey: z.optional(zIncidentKey),
-    startDate: z.optional(zDateTimeFilterProperty),
-    endDate: z.optional(zDateTimeFilterProperty),
-    elementInstanceScopeKey: z.optional(z.union([
-        zElementInstanceKey,
-        zProcessInstanceKey
-    ]))
-}).register(z.globalRegistry, {
-    description: 'Element instance filter.'
-});
-
-/**
- * Element instance search request.
- */
-export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
-    sort: z.optional(z.array(zElementInstanceSearchQuerySortRequest).register(z.globalRegistry, {
-        description: 'Sort field criteria.'
-    })),
-    filter: z.optional(zElementInstanceFilter)
-}).register(z.globalRegistry, {
-    description: 'Element instance search request.'
-}));
-
-/**
  * Exact match
  *
  * Matches the value exactly.
@@ -6437,6 +6478,105 @@ export const zGlobalTaskListenerSearchQueryRequest = zSearchQueryRequest.and(z.o
 }).register(z.globalRegistry, {
     description: 'Global listener search query request.'
 }));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zElementIdExactMatch = zElementId;
+
+/**
+ * ElementId property with full advanced search capabilities.
+ */
+export const zElementIdFilterProperty = z.union([
+    zElementIdExactMatch,
+    zAdvancedElementIdFilter
+]);
+
+/**
+ * Element instance filter.
+ */
+export const zElementInstanceFilter = z.object({
+    processDefinitionId: z.optional(zProcessDefinitionId),
+    state: z.optional(zElementInstanceStateFilterProperty),
+    type: z.optional(z.enum([
+        'UNSPECIFIED',
+        'PROCESS',
+        'SUB_PROCESS',
+        'EVENT_SUB_PROCESS',
+        'AD_HOC_SUB_PROCESS',
+        'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
+        'START_EVENT',
+        'INTERMEDIATE_CATCH_EVENT',
+        'INTERMEDIATE_THROW_EVENT',
+        'BOUNDARY_EVENT',
+        'END_EVENT',
+        'SERVICE_TASK',
+        'RECEIVE_TASK',
+        'USER_TASK',
+        'MANUAL_TASK',
+        'TASK',
+        'EXCLUSIVE_GATEWAY',
+        'INCLUSIVE_GATEWAY',
+        'PARALLEL_GATEWAY',
+        'EVENT_BASED_GATEWAY',
+        'SEQUENCE_FLOW',
+        'MULTI_INSTANCE_BODY',
+        'CALL_ACTIVITY',
+        'BUSINESS_RULE_TASK',
+        'SCRIPT_TASK',
+        'SEND_TASK',
+        'UNKNOWN'
+    ]).register(z.globalRegistry, {
+        description: 'Type of element as defined set of values.'
+    })),
+    elementId: z.optional(zElementIdFilterProperty),
+    elementName: z.optional(zStringFilterProperty),
+    hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Shows whether this element instance has an incident related to.'
+    })),
+    tenantId: z.optional(zTenantId),
+    elementInstanceKey: z.optional(zElementInstanceKey),
+    processInstanceKey: z.optional(zProcessInstanceKey),
+    processDefinitionKey: z.optional(zProcessDefinitionKey),
+    incidentKey: z.optional(zIncidentKey),
+    startDate: z.optional(zDateTimeFilterProperty),
+    endDate: z.optional(zDateTimeFilterProperty),
+    elementInstanceScopeKey: z.optional(z.union([
+        zElementInstanceKey,
+        zProcessInstanceKey
+    ]))
+}).register(z.globalRegistry, {
+    description: 'Element instance filter.'
+});
+
+/**
+ * Element instance search request.
+ */
+export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zElementInstanceSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zElementInstanceFilter)
+}).register(z.globalRegistry, {
+    description: 'Element instance search request.'
+}));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zProcessDefinitionIdExactMatch = zProcessDefinitionId;
+
+/**
+ * ProcessDefinitionId property with full advanced search capabilities.
+ */
+export const zProcessDefinitionIdFilterProperty = z.union([
+    zProcessDefinitionIdExactMatch,
+    zAdvancedProcessDefinitionIdFilter
+]);
 
 /**
  * Exact match
@@ -6927,6 +7067,21 @@ export const zDecisionInstanceSearchQuery = zSearchQueryRequest.and(z.object({
  *
  * Matches the value exactly.
  */
+export const zMessageSubscriptionTypeExactMatch = zMessageSubscriptionTypeEnum;
+
+/**
+ * MessageSubscriptionTypeEnum with full advanced search capabilities.
+ */
+export const zMessageSubscriptionTypeFilterProperty = z.union([
+    zMessageSubscriptionTypeExactMatch,
+    zAdvancedMessageSubscriptionTypeFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zMessageSubscriptionStateExactMatch = zMessageSubscriptionStateEnum;
 
 /**
@@ -6966,7 +7121,12 @@ export const zMessageSubscriptionFilter = z.object({
     lastUpdatedDate: z.optional(zDateTimeFilterProperty),
     messageName: z.optional(zStringFilterProperty),
     correlationKey: z.optional(zStringFilterProperty),
-    tenantId: z.optional(zStringFilterProperty)
+    tenantId: z.optional(zStringFilterProperty),
+    messageSubscriptionType: z.optional(zMessageSubscriptionTypeFilterProperty),
+    processDefinitionName: z.optional(zStringFilterProperty),
+    processDefinitionVersion: z.optional(zIntegerFilterProperty),
+    toolName: z.optional(zStringFilterProperty),
+    inboundConnectorType: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Message subscription search filter.'
 });
@@ -7190,7 +7350,7 @@ export const zUserTaskFilter = z.object({
     candidateGroup: z.optional(zStringFilterProperty),
     candidateUser: z.optional(zStringFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
-    processDefinitionId: z.optional(zProcessDefinitionId),
+    processDefinitionId: z.optional(zProcessDefinitionIdFilterProperty),
     creationDate: z.optional(zDateTimeFilterProperty),
     completionDate: z.optional(zDateTimeFilterProperty),
     followUpDate: z.optional(zDateTimeFilterProperty),
@@ -7202,8 +7362,8 @@ export const zUserTaskFilter = z.object({
         description: 'The local variables of the user task.'
     })),
     userTaskKey: z.optional(zUserTaskKey),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
+    processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
     elementInstanceKey: z.optional(zElementInstanceKey),
     tags: z.optional(zTagSet)
 }).register(z.globalRegistry, {

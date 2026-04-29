@@ -516,9 +516,19 @@ export type getProcessInstanceStatisticsByErrorConsistency = {
 type getResourceOptions = Parameters<typeof Sdk.getResource>[0];
 type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
 export type getResourceInput = { resourceKey: getResourcePathParam_resourceKey };
+/** Management of eventual consistency **/
+export type getResourceConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResource>> 
+};
 type getResourceContentOptions = Parameters<typeof Sdk.getResourceContent>[0];
 type getResourceContentPathParam_resourceKey = (NonNullable<getResourceContentOptions> extends { path: { resourceKey: infer P } } ? P : any);
 export type getResourceContentInput = { resourceKey: getResourceContentPathParam_resourceKey };
+/** Management of eventual consistency **/
+export type getResourceContentConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResourceContent>> 
+};
 type getRoleOptions = Parameters<typeof Sdk.getRole>[0];
 type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends { path: { roleId: infer P } } ? P : any);
 export type getRoleInput = { roleId: getRolePathParam_roleId };
@@ -8628,16 +8638,19 @@ export class CamundaClient {
    * 
    *   const resource = await camunda.getResource({
    *     resourceKey,
-   *   });
+   *   }, { consistency: { waitUpToMs: 0 } });
    * 
    *   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
    * }
    * ```
    * @operationId getResource
    * @tags Resource
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getResource(input: getResourceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResource>>;
-  getResource(arg: any, options?: OperationOptions): CancelablePromise<any> {
+  getResource(input: getResourceInput, /** Management of eventual consistency **/ consistencyManagement: getResourceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResource>>;
+  getResource(arg: any, /** Management of eventual consistency **/ consistencyManagement: getResourceConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
       const { resourceKey } = arg || {};
       let envelope: any = {};
@@ -8684,7 +8697,9 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getResource', exempt: false, retryOverride: options?.retry });
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getResource', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -8704,16 +8719,19 @@ export class CamundaClient {
    * 
    *   const content = await camunda.getResourceContent({
    *     resourceKey,
-   *   });
+   *   }, {consistency: { waitUpToMs: 0 }});
    * 
    *   console.log(`Content retrieved (type: ${typeof content})`);
    * }
    * ```
    * @operationId getResourceContent
    * @tags Resource
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  getResourceContent(input: getResourceContentInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResourceContent>>;
-  getResourceContent(arg: any, options?: OperationOptions): CancelablePromise<any> {
+  getResourceContent(input: getResourceContentInput, /** Management of eventual consistency **/ consistencyManagement: getResourceContentConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResourceContent>>;
+  getResourceContent(arg: any, /** Management of eventual consistency **/ consistencyManagement: getResourceContentConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
     return toCancelable(async signal => {
       const { resourceKey } = arg || {};
       let envelope: any = {};
@@ -8760,7 +8778,9 @@ export class CamundaClient {
           throw e;
         }
       };
-      return this._invokeWithRetry(() => call(), { opId: 'getResourceContent', exempt: false, retryOverride: options?.retry });
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getResourceContent', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -12530,6 +12550,19 @@ export class CamundaClient {
    * Search message subscriptions
    *
    * Search for message subscriptions based on given criteria.
+   *
+   * By default, both start and intermediate event subscriptions are returned. Use the
+   * `messageSubscriptionType` filter to restrict results to a single type.
+   *
+   * **Version notes:**
+   * - Start event subscriptions are only captured for deployments made with 8.10 or later.
+   * - The `messageSubscriptionType` field is only populated for data created
+   * with Camunda 8.10 or later. For pre-8.10 data, intermediate event entries have no
+   * `messageSubscriptionType` value stored. For convenience, the API returns `PROCESS_EVENT`
+   * as a default for such search results, though.
+   * - Searching for intermediate event subscriptions **including legacy data** can be achieved
+   * by filtering for `messageSubscriptionType` not matching `START_EVENT`.
+   *
     *
    * @example Search message subscriptions
    * ```ts

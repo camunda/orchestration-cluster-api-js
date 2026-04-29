@@ -283,9 +283,12 @@ async function evaluateExpressionExample() {
 async function getResourceExample(resourceKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
-  const resource = await camunda.getResource({
-    resourceKey,
-  });
+  const resource = await camunda.getResource(
+    {
+      resourceKey,
+    },
+    { consistency: { waitUpToMs: 0 } }
+  );
 
   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
 }
@@ -295,9 +298,12 @@ async function getResourceExample(resourceKey: ProcessDefinitionKey) {
 async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();
 
-  const content = await camunda.getResourceContent({
-    resourceKey,
-  });
+  const content = await camunda.getResourceContent(
+    {
+      resourceKey,
+    },
+    { consistency: { waitUpToMs: 0 } }
+  );
 
   console.log(`Content retrieved (type: ${typeof content})`);
 }

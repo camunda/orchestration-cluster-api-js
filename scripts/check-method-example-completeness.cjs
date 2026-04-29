@@ -72,7 +72,7 @@ const templateMethods = new Set();
 
 // Regex: match method declarations at 2-space indent (class body level).
 // Patterns:   async methodName(   |   methodName(   |   get propName()   |   methodName<T>(
-const methodDeclRe = /^  (?:async\s+)?(?:get\s+)?(\w+)\s*[<(]/gm;
+const methodDeclRe = /^ {2}(?:async\s+)?(?:get\s+)?(\w+)\s*[<(]/gm;
 let tm;
 while ((tm = methodDeclRe.exec(fullTemplateSection)) !== null) {
   const name = tm[1];
@@ -173,7 +173,6 @@ for (const method of allMethods) {
   }
   if (operationMap[method]) {
     methodsWithExamples.add(method);
-    continue;
   }
 }
 

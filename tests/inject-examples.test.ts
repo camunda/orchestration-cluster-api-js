@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  type ExampleRef,
   extractRegionFromContent,
   injectExamples,
-  type ExampleRef,
 } from '../hooks/post/450-inject-examples';
 
 // ── extractRegionFromContent ────────────────────────────────────────────
