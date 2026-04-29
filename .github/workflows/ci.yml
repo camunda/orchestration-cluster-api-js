@@ -90,7 +90,7 @@ jobs:
           if [ "${{ matrix.stack }}" == "full" ]; then
             COMPOSE_FILE="docker/docker-compose-full.yaml"
           fi
-          docker compose -f $COMPOSE_FILE logs > ../_logs/compose.log 2>&1 || true
+          docker compose -f $COMPOSE_FILE logs > _logs/compose.log 2>&1 || true
       - name: Shutdown Integration Stack (always)
         if: always()
         working-directory: docker
