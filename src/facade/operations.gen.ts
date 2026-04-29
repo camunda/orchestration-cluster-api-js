@@ -1647,6 +1647,19 @@ type _searchMessageSubscriptions_Body = SearchMessageSubscriptionsData extends {
  * Search message subscriptions
  *
  * Search for message subscriptions based on given criteria.
+ *
+ * By default, both start and intermediate event subscriptions are returned. Use the
+ * `messageSubscriptionType` filter to restrict results to a single type.
+ *
+ * **Version notes:**
+ * - Start event subscriptions are only captured for deployments made with 8.10 or later.
+ * - The `messageSubscriptionType` field is only populated for data created
+ * with Camunda 8.10 or later. For pre-8.10 data, intermediate event entries have no
+ * `messageSubscriptionType` value stored. For convenience, the API returns `PROCESS_EVENT`
+ * as a default for such search results, though.
+ * - Searching for intermediate event subscriptions **including legacy data** can be achieved
+ * by filtering for `messageSubscriptionType` not matching `START_EVENT`.
+ *
   *
  * @example Search message subscriptions
  * ```ts
@@ -3543,16 +3556,20 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
  * 
  *   const resource = await camunda.getResource({
  *     resourceKey,
- *   });
+ *   }, { consistency: { waitUpToMs: 0 } });
  * 
  *   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
  * }
  * ```
  * @operationId getResource
  * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function getResource(options?: Parameters<typeof _getResource>[0]): CancelablePromise<_DataOf<typeof _getResource>> {
-  return toCancelable(signal => _getResource({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+export function getResource(options: Parameters<typeof _getResource>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getResource>> }): CancelablePromise<_DataOf<typeof _getResource>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getResource({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getResource', true, invoke, ec.consistency);
 }
 
 /**
@@ -3571,16 +3588,20 @@ export function getResource(options?: Parameters<typeof _getResource>[0]): Cance
  * 
  *   const content = await camunda.getResourceContent({
  *     resourceKey,
- *   });
+ *   }, {consistency: { waitUpToMs: 0 }});
  * 
  *   console.log(`Content retrieved (type: ${typeof content})`);
  * }
  * ```
  * @operationId getResourceContent
  * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function getResourceContent(options?: Parameters<typeof _getResourceContent>[0]): CancelablePromise<_DataOf<typeof _getResourceContent>> {
-  return toCancelable(signal => _getResourceContent({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+export function getResourceContent(options: Parameters<typeof _getResourceContent>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getResourceContent>> }): CancelablePromise<_DataOf<typeof _getResourceContent>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getResourceContent({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getResourceContent', true, invoke, ec.consistency);
 }
 
 /**
@@ -5391,4 +5412,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=7859385dc415da57 totalWrappers=183 elements=1162 physicalLines=2845
+// SENTINEL_FACADE_PREWRITE hash=756e092b0203b457 totalWrappers=183 elements=1166 physicalLines=2866

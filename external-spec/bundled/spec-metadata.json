@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:23c77958ed5c8e6d5bec3a5368ea7cc9aef83d7a745bffdbf618c34ece760409",
+  "specHash": "sha256:6d0560fde009abd591d2bf84c727edc92340880af0b54a90093ed40ebb97f973",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -234,28 +234,27 @@
       "name": "DecisionEvaluationInstanceKey",
       "semanticType": "DecisionEvaluationInstanceKey",
       "category": "system-key",
-      "description": "System-generated key for a decision evaluation instance.",
+      "description": "System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n",
       "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
+        "schemaKind": "inline",
+        "refs": [],
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
+        "pattern": "^[0-9]+-[0-9]+$",
+        "minLength": 3,
+        "maxLength": 30,
+        "format": "DecisionEvaluationInstanceKey"
       },
       "examples": [
-        "2251799813684367"
+        "2251799813684367-1"
       ],
       "extensions": {
         "x-semantic-type": "DecisionEvaluationInstanceKey"
       },
       "flags": {
         "semanticKey": true,
-        "includesLongKeyRef": true,
+        "includesLongKeyRef": false,
         "deprecated": false
       },
       "stableId": "decision-evaluation-instance-key"
@@ -1298,6 +1297,22 @@
       "stableId": "deployment-key-filter-property"
     },
     {
+      "name": "ElementIdFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ElementId property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "ElementIdExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedElementIdFilter"
+        }
+      ],
+      "stableId": "element-id-filter-property"
+    },
+    {
       "name": "ElementInstanceKeyFilterProperty",
       "kind": "union-wrapper",
       "description": "ElementInstanceKey property with full advanced search capabilities.",
@@ -1553,6 +1568,22 @@
       "stableId": "message-subscription-state-filter-property"
     },
     {
+      "name": "MessageSubscriptionTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "MessageSubscriptionTypeEnum with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "MessageSubscriptionTypeExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedMessageSubscriptionTypeFilter"
+        }
+      ],
+      "stableId": "message-subscription-type-filter-property"
+    },
+    {
       "name": "OperationTypeFilterProperty",
       "kind": "union-wrapper",
       "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
@@ -1567,6 +1598,22 @@
         }
       ],
       "stableId": "operation-type-filter-property"
+    },
+    {
+      "name": "ProcessDefinitionIdFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ProcessDefinitionId property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "ProcessDefinitionIdExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedProcessDefinitionIdFilter"
+        }
+      ],
+      "stableId": "process-definition-id-filter-property"
     },
     {
       "name": "ProcessDefinitionKeyFilterProperty",
@@ -2287,6 +2334,22 @@
       "method": "get",
       "tags": [
         "Process instance"
+      ]
+    },
+    {
+      "operationId": "getResource",
+      "path": "/resources/{resourceKey}",
+      "method": "get",
+      "tags": [
+        "Resource"
+      ]
+    },
+    {
+      "operationId": "getResourceContent",
+      "path": "/resources/{resourceKey}/content",
+      "method": "get",
+      "tags": [
+        "Resource"
       ]
     },
     {
@@ -4325,7 +4388,7 @@
         "Message subscription"
       ],
       "summary": "Search message subscriptions",
-      "description": "Search for message subscriptions based on given criteria.",
+      "description": "Search for message subscriptions based on given criteria.\n\nBy default, both start and intermediate event subscriptions are returned. Use the\n`messageSubscriptionType` filter to restrict results to a single type.\n\n**Version notes:**\n- Start event subscriptions are only captured for deployments made with 8.10 or later.\n- The `messageSubscriptionType` field is only populated for data created\n  with Camunda 8.10 or later. For pre-8.10 data, intermediate event entries have no\n  `messageSubscriptionType` value stored. For convenience, the API returns `PROCESS_EVENT`\n  as a default for such search results, though.\n- Searching for intermediate event subscriptions **including legacy data** can be achieved\n  by filtering for `messageSubscriptionType` not matching `START_EVENT`.\n",
       "eventuallyConsistent": true,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -4861,7 +4924,7 @@
       ],
       "summary": "Get resource",
       "description": "Returns a deployed resource.\n:::info\nCurrently, this endpoint only supports RPA resources.\n:::\n",
-      "eventuallyConsistent": false,
+      "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
       "bodyOnly": false,
@@ -4881,7 +4944,7 @@
       ],
       "summary": "Get resource content",
       "description": "Returns the content of a deployed resource.\n:::info\nCurrently, this endpoint only supports RPA resources.\n:::\n",
-      "eventuallyConsistent": false,
+      "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
       "bodyOnly": false,
@@ -6288,9 +6351,9 @@
   ],
   "integrity": {
     "totalSemanticKeys": 34,
-    "totalUnions": 52,
+    "totalUnions": 55,
     "totalOperations": 183,
-    "totalEventuallyConsistent": 81,
+    "totalEventuallyConsistent": 83,
     "totalDeprecatedEnumSchemas": 2,
     "totalSemanticProviders": 15
   }
