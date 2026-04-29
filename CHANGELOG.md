@@ -1,3 +1,11 @@
+# [10.0.0-alpha.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.2...v10.0.0-alpha.3) (2026-04-29)
+
+
+### Bug Fixes
+
+* **docker:** resolve ambiguous numberOfReplicas config ([ab81098](https://github.com/camunda/orchestration-cluster-api-js/commit/ab810980e7dc3b820f6630ba36b1e191e1dd04ae))
+* getResource is now eventually consistent ([60d6c93](https://github.com/camunda/orchestration-cluster-api-js/commit/60d6c9398934cf5786d444d88472ec8198705ee5))
+
 # [10.0.0-alpha.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.1...v10.0.0-alpha.2) (2026-04-14)
 
 
