@@ -8,7 +8,7 @@
 #   Monitoring: http://localhost:9600/actuator
 
 x-common: &common
-  image: camunda/camunda:${CAMUNDA_VERSION:-8.9-SNAPSHOT}
+  image: camunda/camunda:${CAMUNDA_VERSION:-8.9.2}
   environment: &common-env
     SPRING_PROFILES_ACTIVE: 'broker,consolidated-auth'
     # Cluster topology — 3 brokers, 3 partitions, RF 3
