@@ -1,3 +1,10 @@
+## [9.1.1](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.0...v9.1.1) (2026-04-29)
+
+
+### Bug Fixes
+
+* **docker:** resolve ambiguous numberOfReplicas config ([78a64bc](https://github.com/camunda/orchestration-cluster-api-js/commit/78a64bc33e4f19d3df40a16161d7f6288a30a5d6))
+
 # [9.1.0](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.0.4...v9.1.0) (2026-04-14)
 
 
