@@ -4919,7 +4919,10 @@ export type JobKey = CamundaKey<'JobKey'>;
 export type DecisionDefinitionKey = CamundaKey<'DecisionDefinitionKey'>;
 
 /**
- * System-generated key for a decision evaluation instance.
+ * System-generated identifier for a decision evaluation instance. It is composed of the
+ * parent decision evaluation key and the 1-based index of the evaluated decision within
+ * that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).
+ *
  */
 export type DecisionEvaluationInstanceKey = CamundaKey<'DecisionEvaluationInstanceKey'>;
 
@@ -9584,6 +9587,10 @@ export type CreateTenantClusterVariableErrors = {
      * Forbidden. The request is not allowed.
      */
     403: ProblemDetail;
+    /**
+     * The tenant with the given ID was not found.
+     */
+    404: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -16864,7 +16871,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:5de81e6b2d3f152265e6f6f042a776f0bc2ca73572e9f5a8c54eee460f5c6161
+// specHash=sha256:fe524536c89d236f85a390f5877becc6d497fe83c039dcb2f58f8805269bcd44
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -16976,16 +16983,16 @@ export namespace DecisionDefinitionKey {
     } catch { return false; }
   }
 }
-// System-generated key for a decision evaluation instance.
+// System-generated identifier for a decision evaluation instance. It is composed of the parent decision evaluation key and the 1-based index of the evaluated decision within that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`). 
 export namespace DecisionEvaluationInstanceKey {
   export function assumeExists(value: string): DecisionEvaluationInstanceKey {
-    assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
     return value as any;
   }
   export function getValue(key: DecisionEvaluationInstanceKey): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
       return true;
     } catch { return false; }
   }

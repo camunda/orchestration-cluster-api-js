@@ -186,7 +186,8 @@
           "500": {
             "description": "An internal error occurred while processing the request."
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/audit-logs/{auditLogKey}": {
@@ -239,7 +240,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/authentication/me": {
@@ -276,7 +278,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/authorizations": {
@@ -334,7 +337,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/authorizations/search": {
@@ -378,7 +382,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/authorizations/{authorizationKey}": {
@@ -434,7 +439,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "get": {
         "x-eventually-consistent": true,
@@ -485,7 +491,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -529,7 +536,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/batch-operation-items/search": {
@@ -575,7 +583,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/batch-operations/search": {
@@ -621,7 +630,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/batch-operations/{batchOperationKey}": {
@@ -678,7 +688,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/batch-operations/{batchOperationKey}/cancellation": {
@@ -731,7 +742,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/batch-operations/{batchOperationKey}/resumption": {
@@ -787,7 +799,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/batch-operations/{batchOperationKey}/suspension": {
@@ -843,7 +856,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/clock": {
@@ -899,7 +913,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/clock/reset": {
@@ -921,7 +936,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/cluster-variables/global": {
@@ -966,7 +982,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/cluster-variables/global/{name}": {
@@ -1022,7 +1039,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       },
       "put": {
         "operationId": "updateGlobalClusterVariable",
@@ -1086,7 +1104,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       },
       "delete": {
         "operationId": "deleteGlobalClusterVariable",
@@ -1133,7 +1152,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/cluster-variables/search": {
@@ -1188,7 +1208,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/cluster-variables/tenants/{tenantId}": {
@@ -1241,10 +1262,21 @@
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
           },
+          "404": {
+            "description": "The tenant with the given ID was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/cluster-variables/tenants/{tenantId}/{name}": {
@@ -1309,7 +1341,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       },
       "put": {
         "operationId": "updateTenantClusterVariable",
@@ -1382,7 +1415,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       },
       "delete": {
         "operationId": "deleteTenantClusterVariable",
@@ -1438,7 +1472,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/conditionals/evaluation": {
@@ -1529,7 +1564,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/correlated-message-subscriptions/search": {
@@ -1574,7 +1610,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/decision-definitions/evaluation": {
@@ -1642,7 +1679,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/decision-definitions/search": {
@@ -1687,7 +1725,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/decision-definitions/{decisionDefinitionKey}": {
@@ -1743,7 +1782,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/decision-definitions/{decisionDefinitionKey}/xml": {
@@ -1799,7 +1839,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/decision-instances/search": {
@@ -1844,7 +1885,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/decision-instances/{decisionEvaluationInstanceKey}": {
@@ -1900,7 +1942,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/decision-instances/{decisionEvaluationKey}/deletion": {
@@ -1966,7 +2009,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/decision-instances/deletion": {
@@ -2018,7 +2062,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/decision-requirements/search": {
@@ -2063,7 +2108,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/decision-requirements/{decisionRequirementsKey}": {
@@ -2119,7 +2165,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/decision-requirements/{decisionRequirementsKey}/xml": {
@@ -2175,7 +2222,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/deployments": {
@@ -2231,7 +2279,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/documents": {
@@ -2315,7 +2364,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/documents/batch": {
@@ -2409,7 +2459,8 @@
           "415": {
             "$ref": "#/paths/~1documents/post/responses/415"
           }
-        }
+        },
+        "x-added-in-version": "8.7"
       }
     },
     "/documents/{documentId}": {
@@ -2475,7 +2526,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -2522,7 +2574,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/documents/{documentId}/links": {
@@ -2587,7 +2640,8 @@
           "400": {
             "$ref": "#/paths/~1clock/put/responses/400"
           }
-        }
+        },
+        "x-added-in-version": "8.7"
       }
     },
     "/element-instances/ad-hoc-activities/{adHocSubProcessInstanceKey}/activation": {
@@ -2649,7 +2703,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/element-instances/search": {
@@ -2694,7 +2749,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/element-instances/{elementInstanceKey}": {
@@ -2750,7 +2806,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/element-instances/{elementInstanceKey}/incidents/search": {
@@ -2816,7 +2873,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/element-instances/{elementInstanceKey}/variables": {
@@ -2865,7 +2923,8 @@
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/expression/evaluation": {
@@ -2910,7 +2969,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/global-task-listeners": {
@@ -2968,7 +3028,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/global-task-listeners/{id}": {
@@ -3021,7 +3082,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       },
       "put": {
         "x-eventually-consistent": false,
@@ -3088,7 +3150,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -3138,7 +3201,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/global-task-listeners/search": {
@@ -3182,7 +3246,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/groups": {
@@ -3229,7 +3294,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/search": {
@@ -3274,7 +3340,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}": {
@@ -3327,7 +3394,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "put": {
         "x-eventually-consistent": false,
@@ -3391,7 +3459,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -3435,7 +3504,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/clients/search": {
@@ -3556,7 +3626,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/clients/{clientId}": {
@@ -3624,7 +3695,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -3680,7 +3752,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/mapping-rules/search": {
@@ -3763,7 +3836,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/mapping-rules/{mappingRuleId}": {
@@ -3831,7 +3905,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -3887,7 +3962,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/roles/search": {
@@ -3970,7 +4046,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/users/search": {
@@ -4090,7 +4167,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/groups/{groupId}/users/{username}": {
@@ -4158,7 +4236,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -4214,7 +4293,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/incidents/search": {
@@ -4259,7 +4339,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/incidents/{incidentKey}": {
@@ -4315,7 +4396,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/incidents/{incidentKey}/resolution": {
@@ -4381,7 +4463,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/incidents/statistics/process-instances-by-definition": {
@@ -4426,7 +4509,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/incidents/statistics/process-instances-by-error": {
@@ -4471,7 +4555,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/jobs/activation": {
@@ -4516,7 +4601,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/jobs/search": {
@@ -4561,7 +4647,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/jobs/{jobKey}": {
@@ -4627,7 +4714,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/jobs/{jobKey}/completion": {
@@ -4693,7 +4781,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/jobs/{jobKey}/error": {
@@ -4759,7 +4848,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/jobs/{jobKey}/failure": {
@@ -4825,7 +4915,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/jobs/statistics/global": {
@@ -4894,7 +4985,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/jobs/statistics/by-types": {
@@ -4939,7 +5031,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/jobs/statistics/by-workers": {
@@ -4984,7 +5077,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/jobs/statistics/time-series": {
@@ -5029,7 +5123,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/jobs/statistics/errors": {
@@ -5074,7 +5169,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/license": {
@@ -5100,7 +5196,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/mapping-rules": {
@@ -5163,7 +5260,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/mapping-rules/search": {
@@ -5224,7 +5322,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/mapping-rules/{mappingRuleId}": {
@@ -5301,7 +5400,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -5345,7 +5445,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "get": {
         "x-eventually-consistent": true,
@@ -5393,7 +5494,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/message-subscriptions/search": {
@@ -5438,7 +5540,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/messages/correlation": {
@@ -5493,7 +5596,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/messages/publication": {
@@ -5535,7 +5639,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/process-definitions/search": {
@@ -5580,7 +5685,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-definitions/statistics/message-subscriptions": {
@@ -5625,7 +5731,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/process-definitions/statistics/process-instances": {
@@ -5670,7 +5777,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/process-definitions/{processDefinitionKey}": {
@@ -5726,7 +5834,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-definitions/{processDefinitionKey}/form": {
@@ -5785,7 +5894,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-definitions/{processDefinitionKey}/statistics/element-instances": {
@@ -5841,7 +5951,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-definitions/{processDefinitionKey}/xml": {
@@ -5907,7 +6018,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-definitions/statistics/process-instances-by-version": {
@@ -5952,7 +6064,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/process-instances": {
@@ -6031,7 +6144,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/process-instances/cancellation": {
@@ -6083,7 +6197,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/deletion": {
@@ -6135,7 +6250,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/process-instances/incident-resolution": {
@@ -6187,7 +6303,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/migration": {
@@ -6239,7 +6356,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/modification": {
@@ -6291,7 +6409,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/search": {
@@ -6336,7 +6455,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/process-instances/{processInstanceKey}": {
@@ -6392,7 +6512,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/{processInstanceKey}/call-hierarchy": {
@@ -6451,7 +6572,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/{processInstanceKey}/cancellation": {
@@ -6517,7 +6639,8 @@
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/process-instances/{processInstanceKey}/deletion": {
@@ -6593,7 +6716,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/process-instances/{processInstanceKey}/incident-resolution": {
@@ -6649,7 +6773,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/process-instances/{processInstanceKey}/incidents/search": {
@@ -6715,7 +6840,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/{processInstanceKey}/migration": {
@@ -6781,7 +6907,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/process-instances/{processInstanceKey}/modification": {
@@ -6837,7 +6964,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/process-instances/{processInstanceKey}/sequence-flows": {
@@ -6883,7 +7011,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/process-instances/{processInstanceKey}/statistics/element-instances": {
@@ -6929,7 +7058,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/resources/{resourceKey}": {
@@ -6976,7 +7106,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.7"
       }
     },
     "/resources/{resourceKey}/content": {
@@ -7023,7 +7154,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.7"
       }
     },
     "/resources/{resourceKey}/deletion": {
@@ -7086,7 +7218,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/roles": {
@@ -7154,7 +7287,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/search": {
@@ -7199,7 +7333,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}": {
@@ -7252,7 +7387,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "put": {
         "x-eventually-consistent": false,
@@ -7316,7 +7452,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -7360,7 +7497,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/clients/search": {
@@ -7481,7 +7619,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/clients/{clientId}": {
@@ -7549,7 +7688,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -7605,7 +7745,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/groups/search": {
@@ -7671,7 +7812,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/groups/{groupId}": {
@@ -7739,7 +7881,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -7795,7 +7938,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/mapping-rules/search": {
@@ -7878,7 +8022,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/mapping-rules/{mappingRuleId}": {
@@ -7946,7 +8091,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -8002,7 +8148,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/users/search": {
@@ -8122,7 +8269,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/roles/{roleId}/users/{username}": {
@@ -8190,7 +8338,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -8246,7 +8395,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/setup/user": {
@@ -8291,7 +8441,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/signals/broadcast": {
@@ -8343,7 +8494,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/status": {
@@ -8362,7 +8514,8 @@
           "503": {
             "description": "The cluster is DOWN and does not have any partition with a healthy leader."
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/system/usage-metrics": {
@@ -8471,7 +8624,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/system/configuration": {
@@ -8514,7 +8668,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/tenants": {
@@ -8572,7 +8727,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/search": {
@@ -8627,7 +8783,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}": {
@@ -8683,7 +8840,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "put": {
         "x-eventually-consistent": false,
@@ -8747,7 +8905,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -8794,7 +8953,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/clients/search": {
@@ -8894,7 +9054,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/clients/{clientId}": {
@@ -8952,7 +9113,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -9008,7 +9170,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/groups/search": {
@@ -9052,7 +9215,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/groups/{groupId}": {
@@ -9110,7 +9274,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -9166,7 +9331,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/mapping-rules/search": {
@@ -9227,7 +9393,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/mapping-rules/{mappingRuleId}": {
@@ -9285,7 +9452,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -9341,7 +9509,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/roles/search": {
@@ -9402,7 +9571,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/roles/{roleId}": {
@@ -9460,7 +9630,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -9516,7 +9687,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/users/search": {
@@ -9615,7 +9787,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/tenants/{tenantId}/users/{username}": {
@@ -9673,7 +9846,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -9729,7 +9903,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/topology": {
@@ -9758,7 +9933,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.5"
       }
     },
     "/users": {
@@ -9816,7 +9992,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/users/search": {
@@ -9877,7 +10054,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/users/{username}": {
@@ -9950,7 +10128,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "put": {
         "x-eventually-consistent": false,
@@ -10034,7 +10213,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "delete": {
         "x-eventually-consistent": false,
@@ -10078,7 +10258,8 @@
           "503": {
             "$ref": "#/paths/~1clock/put/responses/503"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/user-tasks/search": {
@@ -10123,7 +10304,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.6"
       }
     },
     "/user-tasks/{userTaskKey}": {
@@ -10179,7 +10361,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       },
       "patch": {
         "x-eventually-consistent": false,
@@ -10264,7 +10447,8 @@
               }
             }
           }
-        }
+        },
+        "x-added-in-version": "8.5"
       }
     },
     "/user-tasks/{userTaskKey}/assignee": {
@@ -10323,7 +10507,8 @@
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
-        }
+        },
+        "x-added-in-version": "8.5"
       }
     },
     "/user-tasks/{userTaskKey}/assignment": {
@@ -10392,7 +10577,8 @@
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
-        }
+        },
+        "x-added-in-version": "8.5"
       }
     },
     "/user-tasks/{userTaskKey}/audit-logs/search": {
@@ -10442,7 +10628,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.9"
       }
     },
     "/user-tasks/{userTaskKey}/completion": {
@@ -10511,7 +10698,8 @@
           "504": {
             "$ref": "#/paths/~1user-tasks~1{userTaskKey}/patch/responses/504"
           }
-        }
+        },
+        "x-added-in-version": "8.5"
       }
     },
     "/user-tasks/{userTaskKey}/effective-variables/search": {
@@ -10597,7 +10785,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/user-tasks/{userTaskKey}/form": {
@@ -10656,7 +10845,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/user-tasks/{userTaskKey}/variables/search": {
@@ -10759,7 +10949,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/variables/search": {
@@ -10859,7 +11050,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     },
     "/variables/{variableKey}": {
@@ -10915,7 +11107,8 @@
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
-        }
+        },
+        "x-added-in-version": "8.8"
       }
     }
   },
@@ -19649,16 +19842,14 @@
         ]
       },
       "DecisionEvaluationInstanceKey": {
-        "description": "System-generated key for a decision evaluation instance.",
+        "description": "System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n",
         "format": "DecisionEvaluationInstanceKey",
         "x-semantic-type": "DecisionEvaluationInstanceKey",
-        "example": "2251799813684367",
         "type": "string",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/LongKey"
-          }
-        ]
+        "pattern": "^[0-9]+-[0-9]+$",
+        "minLength": 3,
+        "maxLength": 30,
+        "example": "2251799813684367-1"
       },
       "DecisionEvaluationKey": {
         "allOf": [

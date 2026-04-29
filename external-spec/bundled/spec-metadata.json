@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:5de81e6b2d3f152265e6f6f042a776f0bc2ca73572e9f5a8c54eee460f5c6161",
+  "specHash": "sha256:fe524536c89d236f85a390f5877becc6d497fe83c039dcb2f58f8805269bcd44",
   "semanticKeys": [
     {
       "name": "AuditLogEntityKey",
@@ -234,28 +234,27 @@
       "name": "DecisionEvaluationInstanceKey",
       "semanticType": "DecisionEvaluationInstanceKey",
       "category": "system-key",
-      "description": "System-generated key for a decision evaluation instance.",
+      "description": "System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n",
       "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
+        "schemaKind": "inline",
+        "refs": [],
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
+        "pattern": "^[0-9]+-[0-9]+$",
+        "minLength": 3,
+        "maxLength": 30,
+        "format": "DecisionEvaluationInstanceKey"
       },
       "examples": [
-        "2251799813684367"
+        "2251799813684367-1"
       ],
       "extensions": {
         "x-semantic-type": "DecisionEvaluationInstanceKey"
       },
       "flags": {
         "semanticKey": true,
-        "includesLongKeyRef": true,
+        "includesLongKeyRef": false,
         "deprecated": false
       },
       "stableId": "decision-evaluation-instance-key"
