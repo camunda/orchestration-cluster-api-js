@@ -146,6 +146,51 @@ A test that only covers the exact instance provides weaker protection: the same 
 - The green step **proves** the fix resolves it.
 - A class-scoped test acts as a durable regression guard against future reintroduction of the same pattern.
 
+## Backporting generator fixes to `stable/*` branches
+
+Generator fixes (changes to `hooks/`, `plugins/`, `scripts/run-pipeline.ts`, `openapi-ts.config.ts`, the `camunda-schema-bundler` integration, or **runtime files in `src/runtime/` that are passed through unchanged by generation**) are **safe and expected to backport** to `stable/N` branches via cherry-pick.
+
+> **Definition (important):** "Generator code" includes everything that produces `src/gen/*` from the bundled spec **plus any hand-written runtime file under `src/runtime/` that is not modified by the generator**. Those runtime files are inputs to the build, on the same footing as hooks. A type annotation fix in `src/runtime/threadPool.ts` is a generator-class change for backport purposes.
+
+**What is NOT a generator fix** (do not auto-backport without discussion):
+
+- Changes under `src/gen/` directly (these are regenerated; never hand-edit them).
+- Changes to `src/facade/` or other generated/derived directories.
+- Changes to public-API surface, runtime behavior of generated clients, or anything that alters the published SDK semantics.
+
+### Why backporting generator fixes is safe
+
+Stable branches' release CI (`.github/workflows/release.yml`) regenerates `src/gen/*` on every run, auto-commits any drift as `fix(gen): regenerate artifacts`, and then publishes a patch via semantic-release. So a hooks-only or untouched-runtime change cherry-picked onto `stable/N`:
+
+1. Doesn't change `src/gen/*` under the **currently pinned** generator version (verify locally — see checklist below).
+2. Lets the next Dependabot bump of `@hey-api/openapi-ts` (or other generator deps) succeed where it would otherwise fail.
+3. Auto-publishes a clean N.x patch with no behavioral change to the SDK.
+
+### Backport workflow
+
+1. Land the fix on `main` first via a normal PR. Get it reviewed and merged.
+2. For each `stable/N` branch that needs the fix:
+   ```bash
+   git fetch origin stable/N
+   git checkout -b backport/stable-N/<short-name> origin/stable/N
+   git cherry-pick <commit-sha-from-main>
+   ```
+3. If the cherry-pick is clean (no conflicts), push and open a PR targeting `stable/N`. If conflicts arise, resolve them — but be conservative; if a conflict suggests the fix doesn't apply cleanly to that branch's generator pipeline, ask before forcing it.
+4. PR title convention: `<original-title> (backport #<main-pr> to stable/N)`.
+5. PR body: link the original PR, summarize the cherry-pick, and explicitly state the verification (see below).
+
+### Verification before opening the backport PR
+
+- Cherry-pick applied cleanly (or document any conflict resolution).
+- The change is generator-class (hooks, plugins, untouched runtime files, build scripts) — not generated output and not behavioral.
+- Where feasible, locally regenerate under that branch's pinned generator version and confirm `git diff --stat src/gen/` is empty (byte-identical output).
+
+### Anti-patterns
+
+- **Don't** cherry-pick changes that touch `src/gen/*` directly — those will be overwritten on the next regen.
+- **Don't** cherry-pick generator fixes alongside unrelated runtime/behavioral changes in the same commit. Split them on `main` first so the backport is surgical.
+- **Don't** backport without first landing on `main`, unless the `main` branch itself cannot reproduce the issue (rare; flag explicitly in the PR).
+
 ## Pre-push checklist
 
 Before pushing any commits, **always** run `npm run build`. This:
