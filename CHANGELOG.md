@@ -1,3 +1,10 @@
+# [10.0.0-alpha.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.3...v10.0.0-alpha.4) (2026-04-29)
+
+
+### Bug Fixes
+
+* **gen:** apply CAMUNDA_DEFAULT_TENANT_ID to activateJobs tenantIds ([fb7c661](https://github.com/camunda/orchestration-cluster-api-js/commit/fb7c661ba1f24dcfcfd738c6e344df09a2e2c52d))
+
 # [10.0.0-alpha.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.2...v10.0.0-alpha.3) (2026-04-29)
 
 
