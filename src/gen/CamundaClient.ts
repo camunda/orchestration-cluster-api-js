@@ -1716,6 +1716,10 @@ export class CamundaClient {
       const _body = arg;
       let envelope: any = {};
       envelope.body = _body;
+      if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {
+        envelope.body.tenantIds = [this._config.defaultTenantId];
+        this._log.trace(() => ['tenant.default.inject', { op: 'activateJobs', tenantIds: [this._config.defaultTenantId] }]);
+      }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
         const maybe = await this._validation.gateRequest('activateJobs', _schemas.zActivateJobsData, envelope);
