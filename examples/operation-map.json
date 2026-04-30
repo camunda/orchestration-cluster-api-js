@@ -1178,6 +1178,13 @@
       "label": "Get resource content"
     }
   ],
+  "searchResources": [
+    {
+      "file": "admin-operations.ts",
+      "region": "SearchResources",
+      "label": "Search resources"
+    }
+  ],
   "getUsageMetrics": [
     {
       "file": "admin-operations.ts",
