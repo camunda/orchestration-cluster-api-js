@@ -309,6 +309,21 @@ async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
 }
 //#endregion GetResourceContent
 
+//#region SearchResources
+async function searchResourcesExample() {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.searchResources(
+    { page: { limit: 10 } },
+    { consistency: { waitUpToMs: 5000 } }
+  );
+
+  for (const resource of result.items ?? []) {
+    console.log(`Resource: ${resource.resourceName}`);
+  }
+}
+//#endregion SearchResources
+
 //#region GetUsageMetrics
 async function getUsageMetricsExample() {
   const camunda = createCamundaClient();
@@ -538,6 +553,7 @@ void evaluateConditionalsExample;
 void evaluateExpressionExample;
 void getResourceExample;
 void getResourceContentExample;
+void searchResourcesExample;
 void getUsageMetricsExample;
 void searchMessageSubscriptionsExample;
 void searchCorrelatedMessageSubscriptionsExample;
