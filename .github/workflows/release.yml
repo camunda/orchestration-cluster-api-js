@@ -45,6 +45,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package.json
 
+      - name: Allow git deps over HTTPS
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+
       - name: Install deps
         run: npm ci
 
@@ -185,6 +188,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Allow git deps over HTTPS
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
 
       - name: Install deps
         run: npm ci --ignore-scripts

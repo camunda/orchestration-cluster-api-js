@@ -27,6 +27,8 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: 'npm'
           cache-dependency-path: package.json
+      - name: Allow git deps over HTTPS
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
       - name: Install deps
         run: npm ci
       - name: Generate & Build
