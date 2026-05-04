@@ -55,26 +55,10 @@ jobs:
         run: npm test
 
       - name: Start Integration Stack
-        working-directory: docker
-        run: |
-          if [ "${{ matrix.stack }}" == "full" ]; then
-            docker compose -f docker-compose-full.yaml up -d
-          else
-            docker compose -f docker-compose.yaml up -d
-          fi
-
-      - name: Wait for Services Healthy
-        run: |
-          set -e
-          attempts=0
-          max_attempts=60
-          while [ $attempts -lt $max_attempts ]; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9600/actuator/health/status || true)
-            [ "$code" = "200" ] && echo "Broker healthy" && break
-            sleep 5
-            attempts=$((attempts+1))
-          done
-          [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
+        uses: camunda/sdk-infra/actions/start-camunda@v1
+        with:
+          stack: ${{ matrix.stack }}
+          docker-dir: docker
 
       - name: Integration Tests
         run: npm run test:integration
@@ -124,15 +108,13 @@ jobs:
           git add -A
           git commit -m "fix(gen): regenerate artifacts"
 
-      - name: Upload logs (always)
+      - name: Stop Integration Stack
         if: always()
-        working-directory: docker
-        run: docker compose logs || true
-
-      - name: Shutdown Integration Stack (always)
-        if: always()
-        working-directory: docker
-        run: docker compose down -v || true
+        uses: camunda/sdk-infra/actions/stop-camunda@v1
+        with:
+          stack: ${{ matrix.stack }}
+          docker-dir: docker
+          artifact-name: release-docker-logs-${{ matrix.node }}-${{ matrix.stack }}
 
     outputs:
       changed: ${{ steps.detect.outputs.changed }}
