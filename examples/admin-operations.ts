@@ -4,6 +4,7 @@
 
 import {
   type AuditLogKey,
+  type ClusterVariableName,
   createCamundaClient,
   type GlobalListenerId,
   type ProcessDefinitionKey,
@@ -11,11 +12,11 @@ import {
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetGlobalClusterVariable
-async function getGlobalClusterVariableExample() {
+async function getGlobalClusterVariableExample(name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   const variable = await camunda.getGlobalClusterVariable(
-    { name: 'feature-flags' },
+    { name },
     { consistency: { waitUpToMs: 5000 } }
   );
 
@@ -24,11 +25,11 @@ async function getGlobalClusterVariableExample() {
 //#endregion GetGlobalClusterVariable
 
 //#region CreateGlobalClusterVariable
-async function createGlobalClusterVariableExample() {
+async function createGlobalClusterVariableExample(name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createGlobalClusterVariable({
-    name: 'feature-flags',
+    name,
     value: { darkMode: true },
   });
 
@@ -37,32 +38,32 @@ async function createGlobalClusterVariableExample() {
 //#endregion CreateGlobalClusterVariable
 
 //#region UpdateGlobalClusterVariable
-async function updateGlobalClusterVariableExample() {
+async function updateGlobalClusterVariableExample(name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   await camunda.updateGlobalClusterVariable({
-    name: 'feature-flags',
+    name,
     value: { darkMode: false },
   });
 }
 //#endregion UpdateGlobalClusterVariable
 
 //#region DeleteGlobalClusterVariable
-async function deleteGlobalClusterVariableExample() {
+async function deleteGlobalClusterVariableExample(name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
-  await camunda.deleteGlobalClusterVariable({ name: 'feature-flags' });
+  await camunda.deleteGlobalClusterVariable({ name });
 }
 //#endregion DeleteGlobalClusterVariable
 
 //#region GetTenantClusterVariable
-async function getTenantClusterVariableExample(tenantId: TenantId) {
+async function getTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   const variable = await camunda.getTenantClusterVariable(
     {
       tenantId,
-      name: 'config',
+      name,
     },
     { consistency: { waitUpToMs: 5000 } }
   );
@@ -72,12 +73,12 @@ async function getTenantClusterVariableExample(tenantId: TenantId) {
 //#endregion GetTenantClusterVariable
 
 //#region CreateTenantClusterVariable
-async function createTenantClusterVariableExample(tenantId: TenantId) {
+async function createTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   const result = await camunda.createTenantClusterVariable({
     tenantId,
-    name: 'config',
+    name,
     value: { region: 'us-east-1' },
   });
 
@@ -86,24 +87,24 @@ async function createTenantClusterVariableExample(tenantId: TenantId) {
 //#endregion CreateTenantClusterVariable
 
 //#region UpdateTenantClusterVariable
-async function updateTenantClusterVariableExample(tenantId: TenantId) {
+async function updateTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   await camunda.updateTenantClusterVariable({
     tenantId,
-    name: 'config',
+    name,
     value: { region: 'eu-west-1' },
   });
 }
 //#endregion UpdateTenantClusterVariable
 
 //#region DeleteTenantClusterVariable
-async function deleteTenantClusterVariableExample(tenantId: TenantId) {
+async function deleteTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
   const camunda = createCamundaClient();
 
   await camunda.deleteTenantClusterVariable({
     tenantId,
-    name: 'config',
+    name,
   });
 }
 //#endregion DeleteTenantClusterVariable
