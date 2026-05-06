@@ -289,3 +289,13 @@ jobs:
         with:
           docker-dir: docker
           artifact-name: post-release-smoke-docker-logs
+
+  notify-release-failure:
+    needs: [publish, post-release-smoke]
+    if: failure()
+    uses: camunda/sdk-infra/.github/workflows/sdk-slack-notify.yml@v1
+    with:
+      repo-name: orchestration-cluster-api-js
+      workflow-name: Release
+    secrets:
+      slack-webhook-url: ${{ secrets.SLACK_SDK_ALERTS }}
