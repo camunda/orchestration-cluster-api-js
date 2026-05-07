@@ -1,7 +1,37 @@
 {
   "schemaVersion": "1.0.0",
-  "specHash": "sha256:6d0560fde009abd591d2bf84c727edc92340880af0b54a90093ed40ebb97f973",
+  "specHash": "sha256:fa34084a0d14afbc3fa04f0d0100eda13fad3090871e84e4978dc7310d3383e8",
   "semanticKeys": [
+    {
+      "name": "AgentInstanceKey",
+      "semanticType": "AgentInstanceKey",
+      "category": "system-key",
+      "description": "System-generated key for an agent instance.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "4503599627370496"
+      ],
+      "extensions": {
+        "x-semantic-type": "AgentInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "agent-instance-key"
+    },
     {
       "name": "AuditLogEntityKey",
       "semanticType": "AuditLogEntityKey",
@@ -141,6 +171,64 @@
         "deprecated": false
       },
       "stableId": "business-id"
+    },
+    {
+      "name": "ClientId",
+      "semanticType": "ClientId",
+      "category": "model-id",
+      "description": "The unique identifier of an OAuth client.\nMinted outside the Camunda REST API: in SaaS by Console, in Self-Managed\nwith OIDC by the external identity provider (e.g. EntraID, Keycloak,\nOkta). In Self-Managed with Basic authentication, machine-to-machine\napplications are modelled as users instead — see the user identifier.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ClientId"
+      },
+      "examples": [
+        "my-application"
+      ],
+      "extensions": {
+        "x-semantic-type": "ClientId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "client-id"
+    },
+    {
+      "name": "ClusterVariableName",
+      "semanticType": "ClusterVariableName",
+      "category": "system-key",
+      "description": "The name of a cluster variable. Unique within its scope (global or tenant-specific).",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ClusterVariableName"
+      },
+      "examples": [
+        "feature-flag-checkout"
+      ],
+      "extensions": {
+        "x-semantic-type": "ClusterVariableName"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "cluster-variable-name"
     },
     {
       "name": "ConditionalEvaluationKey",
@@ -549,6 +637,9 @@
         "inlineFragments": 0
       },
       "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+\\-]+$",
+        "minLength": 1,
+        "maxLength": 256,
         "format": "GlobalListenerId"
       },
       "examples": [
@@ -563,6 +654,34 @@
         "deprecated": false
       },
       "stableId": "global-listener-id"
+    },
+    {
+      "name": "GroupId",
+      "semanticType": "GroupId",
+      "category": "model-id",
+      "description": "The unique identifier of a group.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "GroupId"
+      },
+      "examples": [
+        "engineering"
+      ],
+      "extensions": {
+        "x-semantic-type": "GroupId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "group-id"
     },
     {
       "name": "IncidentKey",
@@ -623,6 +742,35 @@
         "deprecated": false
       },
       "stableId": "job-key"
+    },
+    {
+      "name": "MappingRuleId",
+      "semanticType": "MappingRuleId",
+      "category": "model-id",
+      "description": "The unique identifier of a mapping rule.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "MappingRuleId"
+      },
+      "examples": [
+        "my-mapping-rule"
+      ],
+      "extensions": {
+        "x-semantic-type": "MappingRuleId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "mapping-rule-id"
     },
     {
       "name": "MessageKey",
@@ -773,6 +921,35 @@
       "stableId": "process-instance-key"
     },
     {
+      "name": "RoleId",
+      "semanticType": "RoleId",
+      "category": "model-id",
+      "description": "The unique identifier of a role.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "RoleId"
+      },
+      "examples": [
+        "admin"
+      ],
+      "extensions": {
+        "x-semantic-type": "RoleId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "role-id"
+    },
+    {
       "name": "SignalKey",
       "semanticType": "SignalKey",
       "category": "system-key",
@@ -869,9 +1046,9 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^(<default>|[A-Za-z0-9_@.+-]+)$",
+        "pattern": "^(<default>|[\\w\\.\\-]{1,31})$",
         "minLength": 1,
-        "maxLength": 256,
+        "maxLength": 31,
         "format": "TenantId"
       },
       "examples": [
@@ -898,7 +1075,7 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^(<default>|[A-Za-z0-9_@.+-]+)$",
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
         "minLength": 1,
         "maxLength": 256,
         "format": "Username"
@@ -975,6 +1152,38 @@
     }
   ],
   "unions": [
+    {
+      "name": "AgentInstanceKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "AgentInstanceKeyExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedAgentInstanceKeyFilter"
+        }
+      ],
+      "stableId": "agent-instance-key-filter-property"
+    },
+    {
+      "name": "AgentInstanceStatusFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceStatusEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "AgentInstanceStatusExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedAgentInstanceStatusFilter"
+        }
+      ],
+      "stableId": "agent-instance-status-filter-property"
+    },
     {
       "name": "AncestorScopeInstruction",
       "kind": "union-wrapper",
@@ -1881,6 +2090,22 @@
   ],
   "eventuallyConsistentOps": [
     {
+      "operationId": "getAgentInstance",
+      "path": "/agent-instances/{agentInstanceKey}",
+      "method": "get",
+      "tags": [
+        "Agent instance"
+      ]
+    },
+    {
+      "operationId": "searchAgentInstances",
+      "path": "/agent-instances/search",
+      "method": "post",
+      "tags": [
+        "Agent instance"
+      ]
+    },
+    {
       "operationId": "searchAuditLogs",
       "path": "/audit-logs/search",
       "method": "post",
@@ -2337,6 +2562,14 @@
       ]
     },
     {
+      "operationId": "searchResources",
+      "path": "/resources/search",
+      "method": "post",
+      "tags": [
+        "Resource"
+      ]
+    },
+    {
       "operationId": "getResource",
       "path": "/resources/{resourceKey}",
       "method": "get",
@@ -2546,6 +2779,44 @@
     }
   ],
   "operations": [
+    {
+      "operationId": "getAgentInstance",
+      "path": "/agent-instances/{agentInstanceKey}",
+      "method": "get",
+      "tags": [
+        "Agent instance"
+      ],
+      "summary": "Get agent instance",
+      "description": "Returns agent instance as JSON.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "agentInstanceKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
+      "operationId": "searchAgentInstances",
+      "path": "/agent-instances/search",
+      "method": "post",
+      "tags": [
+        "Agent instance"
+      ],
+      "summary": "Search agent instances",
+      "description": "Search for agent instances based on given criteria.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
     {
       "operationId": "searchAuditLogs",
       "path": "/audit-logs/search",
@@ -3659,7 +3930,7 @@
         "Group"
       ],
       "summary": "Create group",
-      "description": "Create a new group.",
+      "description": "Create a new group.\n\nThe supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`\n(max 256 characters) by `IdentifierValidator.validateId` in the\nruntime. This strict validation applies wherever the Groups API\nis available: in OIDC deployments that set\n`camunda.security.authentication.oidc.groupsClaim` the Groups\nAPI (including this endpoint) is disabled entirely, so group\nCRUD never sees externally-minted IdP IDs. The BYOG relaxation\nonly loosens validation when a group is referenced *as a member*\nof a role or tenant (`assignRoleToGroup`,\n`assignGroupToTenant`); group CRUD itself always uses the strict\ndefault-id regex. The constraint is not advertised on the\n`GroupId` schema so that the same schema can be reused at\nmember-reference sites without falsely rejecting\nexternally-minted IdP group IDs there.\n",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
@@ -4916,6 +5187,24 @@
       "optionalTenantIdInBody": false
     },
     {
+      "operationId": "searchResources",
+      "path": "/resources/search",
+      "method": "post",
+      "tags": [
+        "Resource"
+      ],
+      "summary": "Search resources",
+      "description": "Search for deployed resources based on given criteria.\n:::info\nThis endpoint does not return BPMN process definitions, DMN decision definitions, or form\nresources. To query BPMN process definitions or DMN decision definitions, use their\nrespective search APIs.\n:::\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false
+    },
+    {
       "operationId": "getResource",
       "path": "/resources/{resourceKey}",
       "method": "get",
@@ -4923,7 +5212,7 @@
         "Resource"
       ],
       "summary": "Get resource",
-      "description": "Returns a deployed resource.\n:::info\nCurrently, this endpoint only supports RPA resources.\n:::\n",
+      "description": "Returns a deployed resource.\n:::info\nThis endpoint does not return BPMN process definitions, DMN decision definitions, or form\nresources. To query BPMN process definitions or DMN decision definitions, use their\nrespective APIs.\n:::\n",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -6247,6 +6536,20 @@
       "stableId": "activated-job-result"
     },
     {
+      "schemaName": "AuthorizationCreateResult",
+      "providers": [
+        "authorizationKey"
+      ],
+      "stableId": "authorization-create-result"
+    },
+    {
+      "schemaName": "BatchOperationCreatedResult",
+      "providers": [
+        "batchOperationKey"
+      ],
+      "stableId": "batch-operation-created-result"
+    },
+    {
       "schemaName": "CreateProcessInstanceResult",
       "providers": [
         "processInstanceKey"
@@ -6264,7 +6567,11 @@
       "schemaName": "DeploymentDecisionResult",
       "providers": [
         "decisionDefinitionKey",
-        "decisionRequirementsKey"
+        "decisionRequirementsKey",
+        "decisionDefinitionId",
+        "decisionRequirementsId",
+        "name",
+        "version"
       ],
       "stableId": "deployment-decision-result"
     },
@@ -6289,6 +6596,13 @@
         "resourceKey"
       ],
       "stableId": "deployment-resource-result"
+    },
+    {
+      "schemaName": "DocumentReference",
+      "providers": [
+        "documentId"
+      ],
+      "stableId": "document-reference"
     },
     {
       "schemaName": "EvaluateConditionalResult",
@@ -6318,6 +6632,20 @@
         "formKey"
       ],
       "stableId": "form-result"
+    },
+    {
+      "schemaName": "MessageCorrelationResult",
+      "providers": [
+        "messageKey"
+      ],
+      "stableId": "message-correlation-result"
+    },
+    {
+      "schemaName": "MessagePublicationResult",
+      "providers": [
+        "messageKey"
+      ],
+      "stableId": "message-publication-result"
     },
     {
       "schemaName": "SearchQueryPageResponse",
@@ -6350,11 +6678,11 @@
     }
   ],
   "integrity": {
-    "totalSemanticKeys": 34,
-    "totalUnions": 55,
-    "totalOperations": 183,
-    "totalEventuallyConsistent": 83,
+    "totalSemanticKeys": 40,
+    "totalUnions": 57,
+    "totalOperations": 186,
+    "totalEventuallyConsistent": 86,
     "totalDeprecatedEnumSchemas": 2,
-    "totalSemanticProviders": 15
+    "totalSemanticProviders": 20
   }
 }

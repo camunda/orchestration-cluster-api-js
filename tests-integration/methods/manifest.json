@@ -1,6 +1,6 @@
 {
-  "operations": 183,
-  "tests": 185,
+  "operations": 186,
+  "tests": 188,
   "missing": [],
   "ignored": [],
   "files": [
@@ -61,6 +61,7 @@
     "evaluateDecision.test.ts",
     "evaluateExpression.test.ts",
     "failJob.test.ts",
+    "getAgentInstance.test.ts",
     "getAuditLog.test.ts",
     "getAuthentication.test.ts",
     "getAuthorization.test.ts",
@@ -121,6 +122,7 @@
     "resolveIncidentsBatchOperation.test.ts",
     "resolveProcessInstanceIncidents.test.ts",
     "resumeBatchOperation.test.ts",
+    "searchAgentInstances.test.ts",
     "searchAuditLogs.test.ts",
     "searchAuthorizations.test.ts",
     "searchBatchOperationItems.test.ts",
@@ -150,6 +152,7 @@
     "searchProcessDefinitions.test.ts",
     "searchProcessInstanceIncidents.test.ts",
     "searchProcessInstances.test.ts",
+    "searchResources.test.ts",
     "searchRoles.test.ts",
     "searchRolesForGroup.test.ts",
     "searchRolesForTenant.test.ts",

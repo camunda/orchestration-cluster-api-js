@@ -7,6 +7,228 @@ export type ClientOptions = {
     baseUrl: '{schema}://{host}:{port}/v2' | (string & {});
 };
 
+export type AgentInstanceSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'creationDate' | 'lastUpdatedDate' | 'completionDate' | 'status';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Agent instance search request.
+ */
+export type AgentInstanceSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<AgentInstanceSearchQuerySortRequest>;
+    /**
+     * The agent instance search filters.
+     */
+    filter?: AgentInstanceFilter;
+};
+
+/**
+ * Agent instance search filter.
+ */
+export type AgentInstanceFilter = {
+    /**
+     * The unique key of the agent instance.
+     */
+    agentInstanceKey?: AgentInstanceKeyFilterProperty;
+    /**
+     * The current status of the agent instance.
+     */
+    status?: AgentInstanceStatusFilterProperty;
+    /**
+     * The BPMN element ID of the agent task.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * The key of the process instance that owns this agent instance.
+     */
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The key of the process definition associated with this agent instance.
+     */
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    /**
+     * The tenant ID of the agent instance.
+     */
+    tenantId?: StringFilterProperty;
+    /**
+     * The creation date of the agent instance.
+     */
+    creationDate?: DateTimeFilterProperty;
+    /**
+     * The date the agent instance was last updated.
+     */
+    lastUpdatedDate?: DateTimeFilterProperty;
+    /**
+     * The completion date of the agent instance.
+     */
+    completionDate?: DateTimeFilterProperty;
+};
+
+/**
+ * Agent instance search response.
+ */
+export type AgentInstanceSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching agent instances.
+     */
+    items: Array<AgentInstanceResult>;
+};
+
+export type AgentInstanceResult = {
+    /**
+     * The unique key for this agent instance.
+     */
+    agentInstanceKey: AgentInstanceKey;
+    status: AgentInstanceStatusEnum;
+    /**
+     * The static definition of the agent, including model, provider, and system prompt.
+     */
+    definition: AgentInstanceDefinition;
+    /**
+     * Aggregated metrics across all iterations of this agent instance.
+     */
+    metrics: AgentInstanceMetrics;
+    /**
+     * The configured limits for this agent instance, set once at creation.
+     */
+    limits: AgentInstanceLimits;
+    /**
+     * The BPMN element ID of the ad-hoc sub-process or AI agent task that owns this agent instance.
+     */
+    elementId: ElementId;
+    /**
+     * The key of the process instance that owns this agent instance.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The key of the process definition associated with this agent instance.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The tenant ID of this agent instance.
+     */
+    tenantId: TenantId;
+    /**
+     * The date when this agent instance was created.
+     */
+    creationDate: string;
+    /**
+     * The date when this agent instance was last updated.
+     */
+    lastUpdatedDate: string;
+    /**
+     * The date when this agent instance completed. Null while the agent is still running.
+     */
+    completionDate: string | null;
+};
+
+/**
+ * The static definition of an agent instance, set once at creation.
+ */
+export type AgentInstanceDefinition = {
+    /**
+     * The LLM model identifier (for example, gpt-4o).
+     */
+    model: string;
+    /**
+     * The LLM provider (for example, openai or anthropic).
+     */
+    provider: string;
+    /**
+     * The system prompt configured for this agent instance.
+     */
+    systemPrompt: string;
+};
+
+/**
+ * Aggregated metrics for an agent instance across all model calls.
+ */
+export type AgentInstanceMetrics = {
+    /**
+     * Total input tokens consumed across all model calls.
+     */
+    inputTokens: number;
+    /**
+     * Total output tokens produced across all model calls.
+     */
+    outputTokens: number;
+    /**
+     * Total number of LLM calls made.
+     */
+    modelCalls: number;
+    /**
+     * Total number of tool calls made.
+     */
+    toolCalls: number;
+};
+
+/**
+ * The configured limits for an agent instance, set once at creation.
+ */
+export type AgentInstanceLimits = {
+    /**
+     * Maximum LLM calls allowed. -1 if no limit is configured.
+     */
+    maxModelCalls: number;
+    /**
+     * Maximum tool calls allowed. -1 if no limit is configured.
+     */
+    maxToolCalls: number;
+    /**
+     * Maximum total tokens allowed. -1 if no limit is configured.
+     */
+    maxTokens: number;
+};
+
+/**
+ * The current status of an agent instance.
+ */
+export const AgentInstanceStatusEnum = {
+  COMPLETED: 'COMPLETED',
+  IDLE: 'IDLE',
+  INITIALIZING: 'INITIALIZING',
+  THINKING: 'THINKING',
+  TOOL_CALLING: 'TOOL_CALLING',
+  TOOL_DISCOVERY: 'TOOL_DISCOVERY',
+} as const;
+export type AgentInstanceStatusEnum = (typeof AgentInstanceStatusEnum)[keyof typeof AgentInstanceStatusEnum];
+/**
+ * AgentInstanceStatusEnum property with full advanced search capabilities.
+ */
+export type AgentInstanceStatusFilterProperty = AgentInstanceStatusExactMatch | AdvancedAgentInstanceStatusFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceStatusEnum filter.
+ */
+export type AdvancedAgentInstanceStatusFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceStatusEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceStatusEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceStatusEnum>;
+    $like?: LikeFilter;
+};
+
 /**
  * Audit log item.
  */
@@ -1288,7 +1510,7 @@ export type CreateClusterVariableRequest = {
     /**
      * The name of the cluster variable. Must be unique within its scope (global or tenant-specific).
      */
-    name: string;
+    name: ClusterVariableName;
     /**
      * The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
      */
@@ -1334,7 +1556,7 @@ export type ClusterVariableResultBase = {
     /**
      * The name of the cluster variable. Unique within its scope (global or tenant-specific).
      */
-    name: string;
+    name: ClusterVariableName;
     scope: ClusterVariableScopeEnum;
     /**
      * Only provided if the cluster variable scope is TENANT. Null for global scope variables.
@@ -2525,6 +2747,66 @@ export type AdvancedResourceKeyFilter = {
     $notIn?: Array<ResourceKey>;
 };
 
+export type ResourceSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'resourceKey' | 'resourceName' | 'resourceId' | 'version' | 'versionTag' | 'deploymentKey' | 'tenantId';
+    order?: SortOrderEnum;
+};
+
+export type ResourceSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<ResourceSearchQuerySortRequest>;
+    /**
+     * The resource search filters.
+     */
+    filter?: ResourceFilter;
+};
+
+/**
+ * Resource search filter.
+ */
+export type ResourceFilter = {
+    /**
+     * The key for this resource.
+     */
+    resourceKey?: ResourceKeyFilterProperty;
+    /**
+     * Resource name of this resource.
+     */
+    resourceName?: StringFilterProperty;
+    /**
+     * Resource ID of this resource.
+     */
+    resourceId?: StringFilterProperty;
+    /**
+     * Version of this resource.
+     */
+    version?: IntegerFilterProperty;
+    /**
+     * Version tag of this resource.
+     */
+    versionTag?: StringFilterProperty;
+    /**
+     * Deployment key of this resource.
+     */
+    deploymentKey?: DeploymentKeyFilterProperty;
+    /**
+     * Tenant ID of this resource.
+     */
+    tenantId?: TenantId;
+};
+
+export type ResourceSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching resources.
+     */
+    items: Array<ResourceResult>;
+};
+
 export type DocumentReference = {
     /**
      * Document discriminator. Always set to "camunda".
@@ -3288,7 +3570,7 @@ export type GroupCreateRequest = {
     /**
      * The ID of the new group.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The display name of the new group.
      */
@@ -3303,7 +3585,7 @@ export type GroupCreateResult = {
     /**
      * The ID of the created group.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The display name of the created group.
      */
@@ -3327,9 +3609,9 @@ export type GroupUpdateRequest = {
 
 export type GroupUpdateResult = {
     /**
-     * The unique external group ID.
+     * The unique group ID.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The name of the group.
      */
@@ -3351,7 +3633,7 @@ export type GroupResult = {
     /**
      * The group ID.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The group description.
      */
@@ -3434,7 +3716,7 @@ export type GroupClientResult = {
     /**
      * The ID of the client.
      */
-    clientId: string;
+    clientId: ClientId;
 };
 
 export type GroupClientSearchResult = SearchQueryResponse & {
@@ -3507,6 +3789,36 @@ export type TenantId = CamundaKey<'TenantId'>;
  * The unique name of a user.
  */
 export type Username = CamundaKey<'Username'>;
+
+/**
+ * The unique identifier of a role.
+ */
+export type RoleId = CamundaKey<'RoleId'>;
+
+/**
+ * The unique identifier of a group.
+ */
+export type GroupId = CamundaKey<'GroupId'>;
+
+/**
+ * The unique identifier of a mapping rule.
+ */
+export type MappingRuleId = CamundaKey<'MappingRuleId'>;
+
+/**
+ * The unique identifier of an OAuth client.
+ * Minted outside the Camunda REST API: in SaaS by Console, in Self-Managed
+ * with OIDC by the external identity provider (e.g. EntraID, Keycloak,
+ * Okta). In Self-Managed with Basic authentication, machine-to-machine
+ * applications are modelled as users instead — see the user identifier.
+ *
+ */
+export type ClientId = CamundaKey<'ClientId'>;
+
+/**
+ * The name of a cluster variable. Unique within its scope (global or tenant-specific).
+ */
+export type ClusterVariableName = CamundaKey<'ClusterVariableName'>;
 
 /**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
@@ -5026,6 +5338,11 @@ export type BatchOperationKey = CamundaKey<'BatchOperationKey'>;
 export type OperationReference = number;
 
 /**
+ * System-generated key for an agent instance.
+ */
+export type AgentInstanceKey = CamundaKey<'AgentInstanceKey'>;
+
+/**
  * System-generated key for an audit log entry.
  */
 export type AuditLogKey = CamundaKey<'AuditLogKey'>;
@@ -5297,6 +5614,39 @@ export type AdvancedDecisionEvaluationInstanceKeyFilter = {
 };
 
 /**
+ * AgentInstanceKey property with full advanced search capabilities.
+ */
+export type AgentInstanceKeyFilterProperty = AgentInstanceKeyExactMatch | AdvancedAgentInstanceKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceKey filter.
+ */
+export type AdvancedAgentInstanceKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AgentInstanceKey>;
+};
+
+/**
  * AuditLogKey property with full advanced search capabilities.
  */
 export type AuditLogKeyFilterProperty = AuditLogKeyExactMatch | AdvancedAuditLogKeyFilter;
@@ -5469,7 +5819,7 @@ export type MappingRuleCreateRequest = MappingRuleCreateUpdateRequest & {
     /**
      * The unique ID of the mapping rule.
      */
-    mappingRuleId: string;
+    mappingRuleId: MappingRuleId;
 };
 
 export type MappingRuleUpdateRequest = MappingRuleCreateUpdateRequest;
@@ -5490,7 +5840,7 @@ export type MappingRuleCreateUpdateResult = {
     /**
      * The unique ID of the mapping rule.
      */
-    mappingRuleId: string;
+    mappingRuleId: MappingRuleId;
 };
 
 export type MappingRuleCreateResult = MappingRuleCreateUpdateResult;
@@ -5520,7 +5870,7 @@ export type MappingRuleResult = {
     /**
      * The ID of the mapping rule.
      */
-    mappingRuleId: string;
+    mappingRuleId: MappingRuleId;
 };
 
 export type MappingRuleSearchQuerySortRequest = {
@@ -5561,7 +5911,7 @@ export type MappingRuleFilter = {
     /**
      * The ID of the mapping rule.
      */
-    mappingRuleId?: string;
+    mappingRuleId?: MappingRuleId;
 };
 
 export type MessageCorrelationRequest = {
@@ -7303,7 +7653,7 @@ export type RoleCreateRequest = {
     /**
      * The ID of the new role.
      */
-    roleId: string;
+    roleId: RoleId;
     /**
      * The display name of the new role.
      */
@@ -7318,7 +7668,7 @@ export type RoleCreateResult = {
     /**
      * The ID of the created role.
      */
-    roleId: string;
+    roleId: RoleId;
     /**
      * The display name of the created role.
      */
@@ -7352,7 +7702,7 @@ export type RoleUpdateResult = {
     /**
      * The ID of the updated role.
      */
-    roleId: string;
+    roleId: RoleId;
 };
 
 /**
@@ -7366,7 +7716,7 @@ export type RoleResult = {
     /**
      * The role id.
      */
-    roleId: string;
+    roleId: RoleId;
     /**
      * The description of the role.
      */
@@ -7402,7 +7752,7 @@ export type RoleFilter = {
     /**
      * The role ID search filters.
      */
-    roleId?: string;
+    roleId?: RoleId;
     /**
      * The role name search filters.
      */
@@ -7449,7 +7799,7 @@ export type RoleClientResult = {
     /**
      * The ID of the client.
      */
-    clientId: string;
+    clientId: ClientId;
 };
 
 export type RoleClientSearchResult = SearchQueryResponse & {
@@ -7478,7 +7828,7 @@ export type RoleGroupResult = {
     /**
      * The id of the group.
      */
-    groupId: string;
+    groupId: GroupId;
 };
 
 export type RoleGroupSearchResult = SearchQueryResponse & {
@@ -7711,9 +8061,12 @@ export type JobMetricsConfigurationResponse = {
 
 export type TenantCreateRequest = {
     /**
-     * The unique ID for the tenant. Must be 255 characters or less. Can contain letters, numbers, [`_`, `-`, `+`, `.`, `@`].
+     * The unique ID for the tenant. Must be 31 characters or less and match
+     * `^[\w.-]{1,31}$` (word characters, `.`, `-`). The literal
+     * `<default>` is also accepted as the default-tenant alias.
+     *
      */
-    tenantId: string;
+    tenantId: TenantId;
     /**
      * The name of the tenant.
      */
@@ -7725,6 +8078,9 @@ export type TenantCreateRequest = {
 };
 
 export type TenantCreateResult = {
+    /**
+     * The unique identifier of the created tenant.
+     */
     tenantId: TenantId;
     /**
      * The name of the tenant.
@@ -7748,6 +8104,9 @@ export type TenantUpdateRequest = {
 };
 
 export type TenantUpdateResult = {
+    /**
+     * The unique identifier of the updated tenant.
+     */
     tenantId: TenantId;
     /**
      * The name of the tenant.
@@ -7767,6 +8126,9 @@ export type TenantResult = {
      * The tenant name.
      */
     name: string;
+    /**
+     * The unique identifier of the tenant.
+     */
     tenantId: TenantId;
     /**
      * The tenant description.
@@ -7800,6 +8162,9 @@ export type TenantSearchQueryRequest = SearchQueryRequest & {
  * Tenant filter request
  */
 export type TenantFilter = {
+    /**
+     * The unique identifier of the tenant.
+     */
     tenantId?: TenantId;
     /**
      * The name of the tenant.
@@ -7847,7 +8212,7 @@ export type TenantClientResult = {
     /**
      * The ID of the client.
      */
-    clientId: string;
+    clientId: ClientId;
 };
 
 export type TenantClientSearchResult = SearchQueryResponse & {
@@ -7874,9 +8239,9 @@ export type TenantClientSearchQuerySortRequest = {
 
 export type TenantGroupResult = {
     /**
-     * The groupId of the group.
+     * The group ID.
      */
-    groupId: string;
+    groupId: GroupId;
 };
 
 export type TenantGroupSearchResult = SearchQueryResponse & {
@@ -8352,9 +8717,9 @@ export type UserRequest = {
      */
     password: string;
     /**
-     * The username of the user.
+     * The username of the new user.
      */
-    username: string;
+    username: Username;
     /**
      * The name of the user.
      */
@@ -8366,6 +8731,9 @@ export type UserRequest = {
 };
 
 export type UserCreateResult = {
+    /**
+     * The username of the created user.
+     */
     username: Username;
     /**
      * The name of the user.
@@ -8393,6 +8761,9 @@ export type UserUpdateRequest = {
 };
 
 export type UserUpdateResult = {
+    /**
+     * The username of the updated user.
+     */
     username: Username;
     /**
      * The name of the user.
@@ -8405,6 +8776,9 @@ export type UserUpdateResult = {
 };
 
 export type UserResult = {
+    /**
+     * The username of the user.
+     */
     username: Username;
     /**
      * The name of the user.
@@ -8643,6 +9017,13 @@ export type SetVariableRequest = {
  *
  * Matches the value exactly.
  */
+export type AgentInstanceStatusExactMatch = AgentInstanceStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AuditLogEntityKeyExactMatch = AuditLogEntityKey;
 
 /**
@@ -8860,6 +9241,13 @@ export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstance
  *
  * Matches the value exactly.
  */
+export type AgentInstanceKeyExactMatch = AgentInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AuditLogKeyExactMatch = AuditLogKey;
 
 /**
@@ -8917,6 +9305,91 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+export type GetAgentInstanceData = {
+    body?: never;
+    path: {
+        /**
+         * The key of the agent instance to retrieve.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}';
+};
+
+export type GetAgentInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetAgentInstanceError = GetAgentInstanceErrors[keyof GetAgentInstanceErrors];
+
+export type GetAgentInstanceResponses = {
+    /**
+     * The agent instance is successfully returned.
+     */
+    200: AgentInstanceResult;
+};
+
+export type GetAgentInstanceResponse = GetAgentInstanceResponses[keyof GetAgentInstanceResponses];
+
+export type SearchAgentInstancesData = {
+    body?: AgentInstanceSearchQuery;
+    path?: never;
+    query?: never;
+    url: '/agent-instances/search';
+};
+
+export type SearchAgentInstancesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchAgentInstancesError = SearchAgentInstancesErrors[keyof SearchAgentInstancesErrors];
+
+export type SearchAgentInstancesResponses = {
+    /**
+     * The agent instance search result.
+     */
+    200: AgentInstanceSearchQueryResult;
+};
+
+export type SearchAgentInstancesResponse = SearchAgentInstancesResponses[keyof SearchAgentInstancesResponses];
 
 export type SearchAuditLogsData = {
     body?: AuditLogSearchQueryRequest;
@@ -9580,7 +10053,7 @@ export type DeleteGlobalClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/global/{name}';
@@ -9626,7 +10099,7 @@ export type GetGlobalClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/global/{name}';
@@ -9672,7 +10145,7 @@ export type UpdateGlobalClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/global/{name}';
@@ -9810,7 +10283,7 @@ export type DeleteTenantClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/tenants/{tenantId}/{name}';
@@ -9860,7 +10333,7 @@ export type GetTenantClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/tenants/{tenantId}/{name}';
@@ -9910,7 +10383,7 @@ export type UpdateTenantClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/tenants/{tenantId}/{name}';
@@ -11336,7 +11809,7 @@ export type DeleteGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}';
@@ -11379,7 +11852,7 @@ export type GetGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}';
@@ -11421,7 +11894,7 @@ export type UpdateGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}';
@@ -11479,7 +11952,7 @@ export type SearchClientsForGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/clients/search';
@@ -11522,7 +11995,7 @@ export type SearchClientsForGroupResponses = {
             /**
              * The ID of the client.
              */
-            clientId: string;
+            clientId: ClientId;
         }>;
     };
 };
@@ -11535,11 +12008,11 @@ export type UnassignClientFromGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/groups/{groupId}/clients/{clientId}';
@@ -11586,11 +12059,11 @@ export type AssignClientToGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/groups/{groupId}/clients/{clientId}';
@@ -11641,7 +12114,7 @@ export type SearchMappingRulesForGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/mapping-rules/search';
@@ -11692,11 +12165,11 @@ export type UnassignMappingRuleFromGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/groups/{groupId}/mapping-rules/{mappingRuleId}';
@@ -11743,11 +12216,11 @@ export type AssignMappingRuleToGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/groups/{groupId}/mapping-rules/{mappingRuleId}';
@@ -11798,7 +12271,7 @@ export type SearchRolesForGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/roles/search';
@@ -11860,7 +12333,7 @@ export type SearchUsersForGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/users/search';
@@ -11913,7 +12386,7 @@ export type UnassignUserFromGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The user username.
          */
@@ -11964,7 +12437,7 @@ export type AssignUserToGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The user username.
          */
@@ -12804,7 +13277,7 @@ export type DeleteMappingRuleData = {
         /**
          * The ID of the mapping rule to delete.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/mapping-rules/{mappingRuleId}';
@@ -12847,7 +13320,7 @@ export type GetMappingRuleData = {
         /**
          * The ID of the mapping rule to get.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/mapping-rules/{mappingRuleId}';
@@ -12885,7 +13358,7 @@ export type UpdateMappingRuleData = {
         /**
          * The ID of the mapping rule to update.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/mapping-rules/{mappingRuleId}';
@@ -14123,6 +14596,43 @@ export type GetProcessInstanceStatisticsResponses = {
 
 export type GetProcessInstanceStatisticsResponse = GetProcessInstanceStatisticsResponses[keyof GetProcessInstanceStatisticsResponses];
 
+export type SearchResourcesData = {
+    body?: ResourceSearchQuery;
+    path?: never;
+    query?: never;
+    url: '/resources/search';
+};
+
+export type SearchResourcesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchResourcesError = SearchResourcesErrors[keyof SearchResourcesErrors];
+
+export type SearchResourcesResponses = {
+    /**
+     * The resource search result.
+     */
+    200: ResourceSearchQueryResult;
+};
+
+export type SearchResourcesResponse = SearchResourcesResponses[keyof SearchResourcesResponses];
+
 export type GetResourceData = {
     body?: never;
     path: {
@@ -14322,7 +14832,7 @@ export type DeleteRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}';
@@ -14365,7 +14875,7 @@ export type GetRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}';
@@ -14407,7 +14917,7 @@ export type UpdateRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}';
@@ -14465,7 +14975,7 @@ export type SearchClientsForRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/clients/search';
@@ -14508,7 +15018,7 @@ export type SearchClientsForRoleResponses = {
             /**
              * The ID of the client.
              */
-            clientId: string;
+            clientId: ClientId;
         }>;
     };
 };
@@ -14521,11 +15031,11 @@ export type UnassignRoleFromClientData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/roles/{roleId}/clients/{clientId}';
@@ -14572,11 +15082,11 @@ export type AssignRoleToClientData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/roles/{roleId}/clients/{clientId}';
@@ -14627,7 +15137,7 @@ export type SearchGroupsForRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/groups/search';
@@ -14673,11 +15183,11 @@ export type UnassignRoleFromGroupData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/roles/{roleId}/groups/{groupId}';
@@ -14724,11 +15234,11 @@ export type AssignRoleToGroupData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/roles/{roleId}/groups/{groupId}';
@@ -14779,7 +15289,7 @@ export type SearchMappingRulesForRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/mapping-rules/search';
@@ -14830,11 +15340,11 @@ export type UnassignRoleFromMappingRuleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/roles/{roleId}/mapping-rules/{mappingRuleId}';
@@ -14881,11 +15391,11 @@ export type AssignRoleToMappingRuleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/roles/{roleId}/mapping-rules/{mappingRuleId}';
@@ -14947,7 +15457,7 @@ export type SearchUsersForRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/users/search';
@@ -15000,7 +15510,7 @@ export type UnassignRoleFromUserData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The user username.
          */
@@ -15051,7 +15561,7 @@ export type AssignRoleToUserData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The user username.
          */
@@ -15544,7 +16054,7 @@ export type SearchClientsForTenantResponses = {
             /**
              * The ID of the client.
              */
-            clientId: string;
+            clientId: ClientId;
         }>;
     };
 };
@@ -15561,7 +16071,7 @@ export type UnassignClientFromTenantData = {
         /**
          * The unique identifier of the application.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/tenants/{tenantId}/clients/{clientId}';
@@ -15612,7 +16122,7 @@ export type AssignClientToTenantData = {
         /**
          * The unique identifier of the application.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/tenants/{tenantId}/clients/{clientId}';
@@ -15684,7 +16194,7 @@ export type UnassignGroupFromTenantData = {
         /**
          * The unique identifier of the group.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/tenants/{tenantId}/groups/{groupId}';
@@ -15735,7 +16245,7 @@ export type AssignGroupToTenantData = {
         /**
          * The unique identifier of the group.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/tenants/{tenantId}/groups/{groupId}';
@@ -15812,7 +16322,7 @@ export type UnassignMappingRuleFromTenantData = {
         /**
          * The unique identifier of the mapping rule.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/mapping-rules/{mappingRuleId}';
@@ -15863,7 +16373,7 @@ export type AssignMappingRuleToTenantData = {
         /**
          * The unique identifier of the mapping rule.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/mapping-rules/{mappingRuleId}';
@@ -15940,7 +16450,7 @@ export type UnassignRoleFromTenantData = {
         /**
          * The unique identifier of the role.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/roles/{roleId}';
@@ -15991,7 +16501,7 @@ export type AssignRoleToTenantData = {
         /**
          * The unique identifier of the role.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/roles/{roleId}';
@@ -16280,22 +16790,7 @@ export type SearchUsersResponses = {
     /**
      * The user search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching users.
-         */
-        items: Array<{
-            username: Username;
-            /**
-             * The name of the user.
-             */
-            name: string | null;
-            /**
-             * The email of the user.
-             */
-            email: string | null;
-        }>;
-    };
+    200: UserSearchResult;
 };
 
 export type SearchUsersResponse = SearchUsersResponses[keyof SearchUsersResponses];
@@ -16380,17 +16875,7 @@ export type GetUserResponses = {
     /**
      * The user is successfully returned.
      */
-    200: {
-        username: Username;
-        /**
-         * The name of the user.
-         */
-        name: string | null;
-        /**
-         * The email of the user.
-         */
-        email: string | null;
-    };
+    200: UserResult;
 };
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
@@ -16437,17 +16922,7 @@ export type UpdateUserResponses = {
     /**
      * The user was updated successfully.
      */
-    200: {
-        username: Username;
-        /**
-         * The name of the user.
-         */
-        name: string | null;
-        /**
-         * The email of the user.
-         */
-        email: string | null;
-    };
+    200: UserUpdateResult;
 };
 
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
@@ -17063,13 +17538,27 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:6d0560fde009abd591d2bf84c727edc92340880af0b54a90093ed40ebb97f973
+// specHash=sha256:fa34084a0d14afbc3fa04f0d0100eda13fad3090871e84e4978dc7310d3383e8
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
 `);
   if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);
+}
+// System-generated key for an agent instance.
+export namespace AgentInstanceKey {
+  export function assumeExists(value: string): AgentInstanceKey {
+    assertConstraint(value, 'AgentInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  }
+  export function getValue(key: AgentInstanceKey): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'AgentInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
 }
 // System-generated entity key for an audit log entry.
 export namespace AuditLogEntityKey {
@@ -17129,6 +17618,34 @@ export namespace BusinessId {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'BusinessId', { minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The unique identifier of an OAuth client. Minted outside the Camunda REST API: in SaaS by Console, in Self-Managed with OIDC by the external identity provider (e.g. EntraID, Keycloak, Okta). In Self-Managed with Basic authentication, machine-to-machine applications are modelled as users instead — see the user identifier. 
+export namespace ClientId {
+  export function assumeExists(value: string): ClientId {
+    assertConstraint(value, 'ClientId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: ClientId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ClientId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The name of a cluster variable. Unique within its scope (global or tenant-specific).
+export namespace ClusterVariableName {
+  export function assumeExists(value: string): ClusterVariableName {
+    assertConstraint(value, 'ClusterVariableName', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: ClusterVariableName): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ClusterVariableName', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
   }
@@ -17320,11 +17837,29 @@ export namespace FormKey {
 // The user-defined id for the global listener
 export namespace GlobalListenerId {
   export function assumeExists(value: string): GlobalListenerId {
+    assertConstraint(value, 'GlobalListenerId', { pattern: "^[a-zA-Z0-9_~@.+\\-]+$", minLength: 1, maxLength: 256 });
     return value as any;
   }
   export function getValue(key: GlobalListenerId): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'GlobalListenerId', { pattern: "^[a-zA-Z0-9_~@.+\\-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The unique identifier of a group.
+export namespace GroupId {
+  export function assumeExists(value: string): GroupId {
+    assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: GroupId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
   }
 }
 // System-generated key for a incident.
@@ -17351,6 +17886,20 @@ export namespace JobKey {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The unique identifier of a mapping rule.
+export namespace MappingRuleId {
+  export function assumeExists(value: string): MappingRuleId {
+    assertConstraint(value, 'MappingRuleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: MappingRuleId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'MappingRuleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
   }
@@ -17425,6 +17974,20 @@ export namespace ProcessInstanceKey {
     } catch { return false; }
   }
 }
+// The unique identifier of a role.
+export namespace RoleId {
+  export function assumeExists(value: string): RoleId {
+    assertConstraint(value, 'RoleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: RoleId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'RoleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
 // System-generated key for an signal.
 export namespace SignalKey {
   export function assumeExists(value: string): SignalKey {
@@ -17470,13 +18033,13 @@ export namespace Tag {
 // The unique identifier of the tenant.
 export namespace TenantId {
   export function assumeExists(value: string): TenantId {
-    assertConstraint(value, 'TenantId', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+    assertConstraint(value, 'TenantId', { pattern: "^(<default>|[\\w\\.\\-]{1,31})$", minLength: 1, maxLength: 31 });
     return value as any;
   }
   export function getValue(key: TenantId): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'TenantId', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+      assertConstraint(value, 'TenantId', { pattern: "^(<default>|[\\w\\.\\-]{1,31})$", minLength: 1, maxLength: 31 });
       return true;
     } catch { return false; }
   }
@@ -17484,13 +18047,13 @@ export namespace TenantId {
 // The unique name of a user.
 export namespace Username {
   export function assumeExists(value: string): Username {
-    assertConstraint(value, 'Username', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+    assertConstraint(value, 'Username', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
   }
   export function getValue(key: Username): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'Username', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+      assertConstraint(value, 'Username', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
   }

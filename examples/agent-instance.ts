@@ -1,7 +1,7 @@
 // Compilable usage examples for agent instance operations.
 // These examples are type-checked during build to guard against API regressions.
 
-import { createCamundaClient, type AgentInstanceKey } from '@camunda8/orchestration-cluster-api';
+import { type AgentInstanceKey, createCamundaClient } from '@camunda8/orchestration-cluster-api';
 
 //#region GetAgentInstance
 async function getAgentInstanceExample(agentInstanceKey: AgentInstanceKey) {
