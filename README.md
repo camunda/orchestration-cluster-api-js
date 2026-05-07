@@ -149,13 +149,13 @@ await camunda.createDeployment({
 });
 ```
 
-`TenantId.assumeExists()` validates the string against the tenant ID pattern and brands it at zero runtime cost. See [Branded Keys](#branded-keys) for more on this pattern.
+`TenantId.assumeExists()` validates the string against the tenant ID pattern and returns a branded value. The branded value is just a string at runtime, but `assumeExists()` performs validation and can throw if the input is malformed. See [Branded Keys](#branded-keys) for more on this pattern.
 
 > **Tip**: If your tenant ID comes from a validated source (environment variable, config file), call `TenantId.assumeExists()` once at startup and pass the branded value throughout your application.
 
 ## Migrating from 8.9
 
-SDK 10.x (for Camunda 8.10) promotes several identifier and name fields from plain `string` to **branded types** via `CamundaKey<T>`. This is a compile-time-only change — the wire format is unchanged and branded values are still assignable anywhere a `string` is expected (template literals, logging, JSON serialization).
+SDK 10.x (for Camunda 8.10) promotes several identifier and name fields from plain `string` to **branded types** via `CamundaKey<T>`. The wire format and runtime API are unchanged — branded values are still plain strings at runtime and are assignable anywhere a `string` is expected (template literals, logging, JSON serialization). Callers need to brand values using `.assumeExists()` (which performs validation) to satisfy the new types.
 
 ### New branded types
 
@@ -186,7 +186,7 @@ await camunda.assignRoleToGroup({
 });
 ```
 
-Each branded type has an `.assumeExists()` method that validates the string and returns the branded value at zero runtime cost. Call it once at the boundary (startup, config parsing, API response) and pass the branded value through your application. See [Branded Keys](#branded-keys) for more on this pattern.
+Each branded type has an `.assumeExists()` method that validates the string and returns the branded value. Validation runs at call time and can throw if the input is malformed, so call it once at the boundary (startup, config parsing, API response) and pass the branded value through your application. See [Branded Keys](#branded-keys) for more on this pattern.
 
 ### What does NOT change
 
