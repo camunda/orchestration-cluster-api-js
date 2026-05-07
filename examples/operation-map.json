@@ -1,4 +1,18 @@
 {
+  "getAgentInstance": [
+    {
+      "file": "agent-instance.ts",
+      "region": "GetAgentInstance",
+      "label": "Get an agent instance"
+    }
+  ],
+  "searchAgentInstances": [
+    {
+      "file": "agent-instance.ts",
+      "region": "SearchAgentInstances",
+      "label": "Search agent instances"
+    }
+  ],
   "getTopology": [
     {
       "file": "client.ts",
