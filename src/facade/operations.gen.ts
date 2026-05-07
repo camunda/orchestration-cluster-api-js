@@ -1,7 +1,7 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resumeBatchOperation as _resumeBatchOperation, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
-import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData } from '../gen/types.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAgentInstance as _getAgentInstance, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resumeBatchOperation as _resumeBatchOperation, searchAgentInstances as _searchAgentInstances, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchResources as _searchResources, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, SearchAgentInstancesData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchResourcesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData } from '../gen/types.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
 // Lightweight CancelablePromise implementation (local to facade)
@@ -241,11 +241,11 @@ type _createGlobalClusterVariable_Body = CreateGlobalClusterVariableData extends
   *
  * @example Create a global cluster variable
  * ```ts
- * async function createGlobalClusterVariableExample() {
+ * async function createGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createGlobalClusterVariable({
- *     name: 'feature-flags',
+ *     name,
  *     value: { darkMode: true },
  *   });
  * 
@@ -291,14 +291,30 @@ type _createGroup_Body = CreateGroupData extends { body?: infer B } ? B : never;
  * Create group
  *
  * Create a new group.
+ *
+ * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * (max 256 characters) by `IdentifierValidator.validateId` in the
+ * runtime. This strict validation applies wherever the Groups API
+ * is available: in OIDC deployments that set
+ * `camunda.security.authentication.oidc.groupsClaim` the Groups
+ * API (including this endpoint) is disabled entirely, so group
+ * CRUD never sees externally-minted IdP IDs. The BYOG relaxation
+ * only loosens validation when a group is referenced *as a member*
+ * of a role or tenant (`assignRoleToGroup`,
+ * `assignGroupToTenant`); group CRUD itself always uses the strict
+ * default-id regex. The constraint is not advertised on the
+ * `GroupId` schema so that the same schema can be reused at
+ * member-reference sites without falsely rejecting
+ * externally-minted IdP group IDs there.
+ *
   *
  * @example Create a group
  * ```ts
- * async function createGroupExample() {
+ * async function createGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     name: 'Engineering Team',
  *   });
  * 
@@ -321,11 +337,11 @@ type _createMappingRule_Body = CreateMappingRuleData extends { body?: infer B } 
   *
  * @example Create a mapping rule
  * ```ts
- * async function createMappingRuleExample() {
+ * async function createMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createMappingRule({
- *     mappingRuleId: 'ldap-group-mapping',
+ *     mappingRuleId,
  *     name: 'LDAP Group Mapping',
  *     claimName: 'groups',
  *     claimValue: 'engineering',
@@ -401,11 +417,11 @@ type _createRole_Body = CreateRoleData extends { body?: infer B } ? B : never;
   *
  * @example Create a role
  * ```ts
- * async function createRoleExample() {
+ * async function createRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createRole({
- *     roleId: 'process-admin',
+ *     roleId,
  *     name: 'Process Admin',
  *   });
  * 
@@ -1156,6 +1172,23 @@ export function resolveIncidentsBatchOperation(body: _resolveIncidentsBatchOpera
   return toCancelable(signal => _resolveIncidentsBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
+type _searchAgentInstances_Body = SearchAgentInstancesData extends { body?: infer B } ? B : never;
+/**
+ * Search agent instances
+ *
+ * Search for agent instances based on given criteria.
+  *
+ * @operationId searchAgentInstances
+ * @tags Agent instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchAgentInstances(body: _searchAgentInstances_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchAgentInstances>> }): CancelablePromise<_DataOf<typeof _searchAgentInstances>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchAgentInstances({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('searchAgentInstances', false, invoke, ec.consistency);
+}
+
 type _searchAuditLogs_Body = SearchAuditLogsData extends { body?: infer B } ? B : never;
 /**
  * Search audit logs
@@ -1760,6 +1793,44 @@ export function searchProcessInstances(body: _searchProcessInstances_Body, ec: {
   return eventualPoll('searchProcessInstances', false, invoke, ec.consistency);
 }
 
+type _searchResources_Body = SearchResourcesData extends { body?: infer B } ? B : never;
+/**
+ * Search resources
+ *
+ * Search for deployed resources based on given criteria.
+ * :::info
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective search APIs.
+ * :::
+ *
+  *
+ * @example Search resources
+ * ```ts
+ * async function searchResourcesExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchResources(
+ *     { page: { limit: 10 } },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const resource of result.items ?? []) {
+ *     console.log(`Resource: ${resource.resourceName}`);
+ *   }
+ * }
+ * ```
+ * @operationId searchResources
+ * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchResources(body: _searchResources_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchResources>> }): CancelablePromise<_DataOf<typeof _searchResources>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchResources({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('searchResources', false, invoke, ec.consistency);
+}
+
 type _searchRoles_Body = SearchRolesData extends { body?: infer B } ? B : never;
 /**
  * Search roles
@@ -1937,12 +2008,12 @@ export function activateAdHocSubProcessActivities(options?: Parameters<typeof _a
   *
  * @example Assign a client to a group
  * ```ts
- * async function assignClientToGroupExample() {
+ * async function assignClientToGroupExample(groupId: GroupId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignClientToGroup({
- *     groupId: 'engineering-team',
- *     clientId: 'my-service-account',
+ *     groupId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -1962,12 +2033,12 @@ export function assignClientToGroup(options?: Parameters<typeof _assignClientToG
   *
  * @example Assign a client to a tenant
  * ```ts
- * async function assignClientToTenantExample(tenantId: TenantId) {
+ * async function assignClientToTenantExample(tenantId: TenantId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignClientToTenant({
  *     tenantId,
- *     clientId: 'my-service-account',
+ *     clientId,
  *   });
  * }
  * ```
@@ -1987,12 +2058,12 @@ export function assignClientToTenant(options?: Parameters<typeof _assignClientTo
   *
  * @example Assign a group to a tenant
  * ```ts
- * async function assignGroupToTenantExample(tenantId: TenantId) {
+ * async function assignGroupToTenantExample(tenantId: TenantId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignGroupToTenant({
  *     tenantId,
- *     groupId: 'engineering-team',
+ *     groupId,
  *   });
  * }
  * ```
@@ -2010,12 +2081,12 @@ export function assignGroupToTenant(options?: Parameters<typeof _assignGroupToTe
   *
  * @example Assign a mapping rule to a group
  * ```ts
- * async function assignMappingRuleToGroupExample() {
+ * async function assignMappingRuleToGroupExample(groupId: GroupId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignMappingRuleToGroup({
- *     groupId: 'engineering-team',
- *     mappingRuleId: 'rule-123',
+ *     groupId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -2033,12 +2104,12 @@ export function assignMappingRuleToGroup(options?: Parameters<typeof _assignMapp
   *
  * @example Assign a mapping rule to a tenant
  * ```ts
- * async function assignMappingRuleToTenantExample(tenantId: TenantId) {
+ * async function assignMappingRuleToTenantExample(tenantId: TenantId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignMappingRuleToTenant({
  *     tenantId,
- *     mappingRuleId: 'rule-123',
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -2056,12 +2127,12 @@ export function assignMappingRuleToTenant(options?: Parameters<typeof _assignMap
   *
  * @example Assign a role to a client
  * ```ts
- * async function assignRoleToClientExample() {
+ * async function assignRoleToClientExample(roleId: RoleId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToClient({
- *     roleId: 'process-admin',
- *     clientId: 'my-service-account',
+ *     roleId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -2079,12 +2150,12 @@ export function assignRoleToClient(options?: Parameters<typeof _assignRoleToClie
   *
  * @example Assign a role to a group
  * ```ts
- * async function assignRoleToGroupExample() {
+ * async function assignRoleToGroupExample(roleId: RoleId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToGroup({
- *     roleId: 'process-admin',
- *     groupId: 'engineering-team',
+ *     roleId,
+ *     groupId,
  *   });
  * }
  * ```
@@ -2102,12 +2173,12 @@ export function assignRoleToGroup(options?: Parameters<typeof _assignRoleToGroup
   *
  * @example Assign a role to a mapping rule
  * ```ts
- * async function assignRoleToMappingRuleExample() {
+ * async function assignRoleToMappingRuleExample(roleId: RoleId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToMappingRule({
- *     roleId: 'process-admin',
- *     mappingRuleId: 'rule-123',
+ *     roleId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -2127,12 +2198,12 @@ export function assignRoleToMappingRule(options?: Parameters<typeof _assignRoleT
   *
  * @example Assign a role to a tenant
  * ```ts
- * async function assignRoleToTenantExample(tenantId: TenantId) {
+ * async function assignRoleToTenantExample(tenantId: TenantId, roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToTenant({
  *     tenantId,
- *     roleId: 'process-admin',
+ *     roleId,
  *   });
  * }
  * ```
@@ -2150,11 +2221,11 @@ export function assignRoleToTenant(options?: Parameters<typeof _assignRoleToTena
   *
  * @example Assign a role to a user
  * ```ts
- * async function assignRoleToUserExample(username: Username) {
+ * async function assignRoleToUserExample(roleId: RoleId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToUser({
- *     roleId: 'process-admin',
+ *     roleId,
  *     username,
  *   });
  * }
@@ -2200,11 +2271,11 @@ export function assignUserTask(options?: Parameters<typeof _assignUserTask>[0]):
   *
  * @example Assign a user to a group
  * ```ts
- * async function assignUserToGroupExample(username: Username) {
+ * async function assignUserToGroupExample(groupId: GroupId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignUserToGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     username,
  *   });
  * }
@@ -2483,12 +2554,12 @@ export function createElementInstanceVariables(options?: Parameters<typeof _crea
   *
  * @example Create a tenant cluster variable
  * ```ts
- * async function createTenantClusterVariableExample(tenantId: TenantId) {
+ * async function createTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createTenantClusterVariable({
  *     tenantId,
- *     name: 'config',
+ *     name,
  *     value: { region: 'us-east-1' },
  *   });
  * 
@@ -2572,10 +2643,10 @@ export function deleteDocument(options?: Parameters<typeof _deleteDocument>[0]):
   *
  * @example Delete a global cluster variable
  * ```ts
- * async function deleteGlobalClusterVariableExample() {
+ * async function deleteGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteGlobalClusterVariable({ name: 'feature-flags' });
+ *   await camunda.deleteGlobalClusterVariable({ name });
  * }
  * ```
  * @operationId deleteGlobalClusterVariable
@@ -2614,10 +2685,10 @@ export function deleteGlobalTaskListener(options?: Parameters<typeof _deleteGlob
   *
  * @example Delete a group
  * ```ts
- * async function deleteGroupExample() {
+ * async function deleteGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteGroup({ groupId: 'engineering-team' });
+ *   await camunda.deleteGroup({ groupId });
  * }
  * ```
  * @operationId deleteGroup
@@ -2635,10 +2706,10 @@ export function deleteGroup(options?: Parameters<typeof _deleteGroup>[0]): Cance
   *
  * @example Delete a mapping rule
  * ```ts
- * async function deleteMappingRuleExample() {
+ * async function deleteMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteMappingRule({ mappingRuleId: 'ldap-group-mapping' });
+ *   await camunda.deleteMappingRule({ mappingRuleId });
  * }
  * ```
  * @operationId deleteMappingRule
@@ -2710,10 +2781,10 @@ export function deleteResource(options?: Parameters<typeof _deleteResource>[0]):
   *
  * @example Delete a role
  * ```ts
- * async function deleteRoleExample() {
+ * async function deleteRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteRole({ roleId: 'process-admin' });
+ *   await camunda.deleteRole({ roleId });
  * }
  * ```
  * @operationId deleteRole
@@ -2750,12 +2821,12 @@ export function deleteTenant(options?: Parameters<typeof _deleteTenant>[0]): Can
   *
  * @example Delete a tenant cluster variable
  * ```ts
- * async function deleteTenantClusterVariableExample(tenantId: TenantId) {
+ * async function deleteTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.deleteTenantClusterVariable({
  *     tenantId,
- *     name: 'config',
+ *     name,
  *   });
  * }
  * ```
@@ -2810,6 +2881,22 @@ export function deleteUser(options?: Parameters<typeof _deleteUser>[0]): Cancela
  */
 export function failJob(options?: Parameters<typeof _failJob>[0]): CancelablePromise<_DataOf<typeof _failJob>> {
   return toCancelable(signal => _failJob({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Get agent instance
+ *
+ * Returns agent instance as JSON.
+  *
+ * @operationId getAgentInstance
+ * @tags Agent instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getAgentInstance(options: Parameters<typeof _getAgentInstance>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getAgentInstance>> }): CancelablePromise<_DataOf<typeof _getAgentInstance>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getAgentInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getAgentInstance', true, invoke, ec.consistency);
 }
 
 /**
@@ -3131,11 +3218,11 @@ export function getElementInstance(options: Parameters<typeof _getElementInstanc
   *
  * @example Get a global cluster variable
  * ```ts
- * async function getGlobalClusterVariableExample() {
+ * async function getGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const variable = await camunda.getGlobalClusterVariable(
- *     { name: 'feature-flags' },
+ *     { name },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -3222,11 +3309,11 @@ export function getGlobalTaskListener(options: Parameters<typeof _getGlobalTaskL
   *
  * @example Get a group
  * ```ts
- * async function getGroupExample() {
+ * async function getGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const group = await camunda.getGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -3306,11 +3393,11 @@ export function getLicense(options?: Parameters<typeof _getLicense>[0]): Cancela
   *
  * @example Get a mapping rule
  * ```ts
- * async function getMappingRuleExample() {
+ * async function getMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const rule = await camunda.getMappingRule(
- *     { mappingRuleId: 'ldap-group-mapping' },
+ *     { mappingRuleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -3545,7 +3632,9 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
  *
  * Returns a deployed resource.
  * :::info
- * Currently, this endpoint only supports RPA resources.
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective APIs.
  * :::
  *
   *
@@ -3617,11 +3706,11 @@ export function getResourceContent(options: Parameters<typeof _getResourceConten
   *
  * @example Get a role
  * ```ts
- * async function getRoleExample() {
+ * async function getRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const role = await camunda.getRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -3754,13 +3843,13 @@ export function getTenant(options: Parameters<typeof _getTenant>[0] | undefined,
   *
  * @example Get a tenant cluster variable
  * ```ts
- * async function getTenantClusterVariableExample(tenantId: TenantId) {
+ * async function getTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const variable = await camunda.getTenantClusterVariable(
  *     {
  *       tenantId,
- *       name: 'config',
+ *       name,
  *     },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
@@ -4131,11 +4220,11 @@ export function resumeBatchOperation(options?: Parameters<typeof _resumeBatchOpe
   *
  * @example Search clients in a group
  * ```ts
- * async function searchClientsForGroupExample() {
+ * async function searchClientsForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchClientsForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4162,11 +4251,11 @@ export function searchClientsForGroup(options: Parameters<typeof _searchClientsF
   *
  * @example Search clients for a role
  * ```ts
- * async function searchClientsForRoleExample() {
+ * async function searchClientsForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchClientsForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4324,11 +4413,11 @@ export function searchGroupIdsForTenant(options: Parameters<typeof _searchGroupI
   *
  * @example Search groups for a role
  * ```ts
- * async function searchGroupsForRoleExample() {
+ * async function searchGroupsForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchGroupsForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4355,11 +4444,11 @@ export function searchGroupsForRole(options: Parameters<typeof _searchGroupsForR
   *
  * @example Search mapping rules for a group
  * ```ts
- * async function searchMappingRulesForGroupExample() {
+ * async function searchMappingRulesForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchMappingRulesForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4386,11 +4475,11 @@ export function searchMappingRulesForGroup(options: Parameters<typeof _searchMap
   *
  * @example Search mapping rules for a role
  * ```ts
- * async function searchMappingRulesForRoleExample() {
+ * async function searchMappingRulesForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchMappingRulesForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4487,11 +4576,11 @@ export function searchProcessInstanceIncidents(options: Parameters<typeof _searc
   *
  * @example Search roles for a group
  * ```ts
- * async function searchRolesForGroupExample() {
+ * async function searchRolesForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchRolesForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4549,11 +4638,11 @@ export function searchRolesForTenant(options: Parameters<typeof _searchRolesForT
   *
  * @example Search users in a group
  * ```ts
- * async function searchUsersForGroupExample() {
+ * async function searchUsersForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchUsersForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4580,11 +4669,11 @@ export function searchUsersForGroup(options: Parameters<typeof _searchUsersForGr
   *
  * @example Search users for a role
  * ```ts
- * async function searchUsersForRoleExample() {
+ * async function searchUsersForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchUsersForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4841,12 +4930,12 @@ export function throwJobError(options?: Parameters<typeof _throwJobError>[0]): C
   *
  * @example Unassign a client from a group
  * ```ts
- * async function unassignClientFromGroupExample() {
+ * async function unassignClientFromGroupExample(groupId: GroupId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignClientFromGroup({
- *     groupId: 'engineering-team',
- *     clientId: 'my-service-account',
+ *     groupId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -4866,12 +4955,12 @@ export function unassignClientFromGroup(options?: Parameters<typeof _unassignCli
   *
  * @example Unassign a client from a tenant
  * ```ts
- * async function unassignClientFromTenantExample(tenantId: TenantId) {
+ * async function unassignClientFromTenantExample(tenantId: TenantId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignClientFromTenant({
  *     tenantId,
- *     clientId: 'my-service-account',
+ *     clientId,
  *   });
  * }
  * ```
@@ -4891,12 +4980,12 @@ export function unassignClientFromTenant(options?: Parameters<typeof _unassignCl
   *
  * @example Unassign a group from a tenant
  * ```ts
- * async function unassignGroupFromTenantExample(tenantId: TenantId) {
+ * async function unassignGroupFromTenantExample(tenantId: TenantId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignGroupFromTenant({
  *     tenantId,
- *     groupId: 'engineering-team',
+ *     groupId,
  *   });
  * }
  * ```
@@ -4914,12 +5003,12 @@ export function unassignGroupFromTenant(options?: Parameters<typeof _unassignGro
   *
  * @example Unassign a mapping rule from a group
  * ```ts
- * async function unassignMappingRuleFromGroupExample() {
+ * async function unassignMappingRuleFromGroupExample(groupId: GroupId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignMappingRuleFromGroup({
- *     groupId: 'engineering-team',
- *     mappingRuleId: 'rule-123',
+ *     groupId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -4937,12 +5026,12 @@ export function unassignMappingRuleFromGroup(options?: Parameters<typeof _unassi
   *
  * @example Unassign a mapping rule from a tenant
  * ```ts
- * async function unassignMappingRuleFromTenantExample(tenantId: TenantId) {
+ * async function unassignMappingRuleFromTenantExample(tenantId: TenantId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignMappingRuleFromTenant({
  *     tenantId,
- *     mappingRuleId: 'rule-123',
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -4960,12 +5049,12 @@ export function unassignMappingRuleFromTenant(options?: Parameters<typeof _unass
   *
  * @example Unassign a role from a client
  * ```ts
- * async function unassignRoleFromClientExample() {
+ * async function unassignRoleFromClientExample(roleId: RoleId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromClient({
- *     roleId: 'process-admin',
- *     clientId: 'my-service-account',
+ *     roleId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -4983,12 +5072,12 @@ export function unassignRoleFromClient(options?: Parameters<typeof _unassignRole
   *
  * @example Unassign a role from a group
  * ```ts
- * async function unassignRoleFromGroupExample() {
+ * async function unassignRoleFromGroupExample(roleId: RoleId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromGroup({
- *     roleId: 'process-admin',
- *     groupId: 'engineering-team',
+ *     roleId,
+ *     groupId,
  *   });
  * }
  * ```
@@ -5006,12 +5095,12 @@ export function unassignRoleFromGroup(options?: Parameters<typeof _unassignRoleF
   *
  * @example Unassign a role from a mapping rule
  * ```ts
- * async function unassignRoleFromMappingRuleExample() {
+ * async function unassignRoleFromMappingRuleExample(roleId: RoleId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromMappingRule({
- *     roleId: 'process-admin',
- *     mappingRuleId: 'rule-123',
+ *     roleId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -5032,12 +5121,12 @@ export function unassignRoleFromMappingRule(options?: Parameters<typeof _unassig
   *
  * @example Unassign a role from a tenant
  * ```ts
- * async function unassignRoleFromTenantExample(tenantId: TenantId) {
+ * async function unassignRoleFromTenantExample(tenantId: TenantId, roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromTenant({
  *     tenantId,
- *     roleId: 'process-admin',
+ *     roleId,
  *   });
  * }
  * ```
@@ -5055,11 +5144,11 @@ export function unassignRoleFromTenant(options?: Parameters<typeof _unassignRole
   *
  * @example Unassign a role from a user
  * ```ts
- * async function unassignRoleFromUserExample(username: Username) {
+ * async function unassignRoleFromUserExample(roleId: RoleId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromUser({
- *     roleId: 'process-admin',
+ *     roleId,
  *     username,
  *   });
  * }
@@ -5080,11 +5169,11 @@ export function unassignRoleFromUser(options?: Parameters<typeof _unassignRoleFr
   *
  * @example Unassign a user from a group
  * ```ts
- * async function unassignUserFromGroupExample(username: Username) {
+ * async function unassignUserFromGroupExample(groupId: GroupId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignUserFromGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     username,
  *   });
  * }
@@ -5182,11 +5271,11 @@ export function updateAuthorization(options?: Parameters<typeof _updateAuthoriza
   *
  * @example Update a global cluster variable
  * ```ts
- * async function updateGlobalClusterVariableExample() {
+ * async function updateGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateGlobalClusterVariable({
- *     name: 'feature-flags',
+ *     name,
  *     value: { darkMode: false },
  *   });
  * }
@@ -5229,11 +5318,11 @@ export function updateGlobalTaskListener(options?: Parameters<typeof _updateGlob
   *
  * @example Update a group
  * ```ts
- * async function updateGroupExample() {
+ * async function updateGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     name: 'Engineering Team',
  *   });
  * }
@@ -5276,11 +5365,11 @@ export function updateJob(options?: Parameters<typeof _updateJob>[0]): Cancelabl
   *
  * @example Update a mapping rule
  * ```ts
- * async function updateMappingRuleExample() {
+ * async function updateMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateMappingRule({
- *     mappingRuleId: 'ldap-group-mapping',
+ *     mappingRuleId,
  *     name: 'LDAP Group Mapping',
  *     claimName: 'groups',
  *     claimValue: 'engineering-team',
@@ -5301,11 +5390,11 @@ export function updateMappingRule(options?: Parameters<typeof _updateMappingRule
   *
  * @example Update a role
  * ```ts
- * async function updateRoleExample() {
+ * async function updateRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateRole({
- *     roleId: 'process-admin',
+ *     roleId,
  *     name: 'Process Administrator',
  *   });
  * }
@@ -5349,12 +5438,12 @@ export function updateTenant(options?: Parameters<typeof _updateTenant>[0]): Can
   *
  * @example Update a tenant cluster variable
  * ```ts
- * async function updateTenantClusterVariableExample(tenantId: TenantId) {
+ * async function updateTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateTenantClusterVariable({
  *     tenantId,
- *     name: 'config',
+ *     name,
  *     value: { region: 'eu-west-1' },
  *   });
  * }
@@ -5418,4 +5507,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=756e092b0203b457 totalWrappers=183 elements=1166 physicalLines=2866
+// SENTINEL_FACADE_PREWRITE hash=90701d06e634a0ae totalWrappers=186 elements=1189 physicalLines=2940
