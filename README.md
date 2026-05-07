@@ -153,6 +153,47 @@ await camunda.createDeployment({
 
 > **Tip**: If your tenant ID comes from a validated source (environment variable, config file), call `TenantId.assumeExists()` once at startup and pass the branded value throughout your application.
 
+## Migrating from 8.9
+
+SDK 10.x (for Camunda 8.10) promotes several identifier and name fields from plain `string` to **branded types** via `CamundaKey<T>`. This is a compile-time-only change — the wire format is unchanged and branded values are still assignable anywhere a `string` is expected (template literals, logging, JSON serialization).
+
+### New branded types
+
+| Brand | Used for |
+|-------|----------|
+| `RoleId` | Role identifiers |
+| `GroupId` | Group identifiers |
+| `ClientId` | OAuth client identifiers |
+| `MappingRuleId` | Mapping-rule identifiers |
+| `ClusterVariableName` | Cluster variable names |
+| `AgentInstanceKey` | Agent-instance system keys |
+
+### Migration
+
+<!-- snippet-source: examples/readme.ts | regions: V9ToV10Migration -->
+
+```ts
+// v9 — plain strings were accepted
+// await camunda.assignRoleToGroup({
+//   roleId: 'developer',
+//   groupId: 'engineering',
+// });
+
+// v10 — use the branded type helpers at the boundary
+await camunda.assignRoleToGroup({
+  roleId: RoleId.assumeExists('developer'),
+  groupId: GroupId.assumeExists('engineering'),
+});
+```
+
+Each branded type has an `.assumeExists()` method that validates the string and returns the branded value at zero runtime cost. Call it once at the boundary (startup, config parsing, API response) and pass the branded value through your application. See [Branded Keys](#branded-keys) for more on this pattern.
+
+### What does NOT change
+
+- The wire format is unchanged — all values are still strings on the wire.
+- No method signatures changed name or arity.
+- Branded values are assignable anywhere a `string` is expected (template literals, logging, JSON serialization), so existing string-handling code continues to work.
+
 ## Quick Start (Zero‑Config – Recommended)
 
 Keep configuration out of application code. Let the factory read `CAMUNDA_*` variables from the environment (12‑factor style). This makes rotation, secret management, and environment promotion safer & simpler.
