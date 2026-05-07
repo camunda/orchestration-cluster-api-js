@@ -722,6 +722,7 @@ Example patterns:
 return job.complete({ variables: { processed: true } });
 
 // GOOD: No-arg completion example, sentinel stored for ultimate return
+// biome-ignore lint/correctness/noUnreachable: intentional — showing multiple completion patterns
 const ack = await job.complete();
 // ...
 return ack;
