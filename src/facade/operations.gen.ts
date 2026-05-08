@@ -1178,6 +1178,26 @@ type _searchAgentInstances_Body = SearchAgentInstancesData extends { body?: infe
  *
  * Search for agent instances based on given criteria.
   *
+ * @example Search agent instances
+ * ```ts
+ * async function searchAgentInstancesExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchAgentInstances(
+ *     {
+ *       filter: { status: { $eq: 'IDLE' } },
+ *       sort: [{ field: 'creationDate', order: 'DESC' }],
+ *       page: { limit: 10 },
+ *     },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const instance of result.items ?? []) {
+ *     console.log(`${instance.agentInstanceKey}: ${instance.status}`);
+ *   }
+ *   console.log(`Total: ${result.page.totalItems}`);
+ * }
+ * ```
  * @operationId searchAgentInstances
  * @tags Agent instance
   *
@@ -2888,6 +2908,20 @@ export function failJob(options?: Parameters<typeof _failJob>[0]): CancelablePro
  *
  * Returns agent instance as JSON.
   *
+ * @example Get an agent instance
+ * ```ts
+ * async function getAgentInstanceExample(agentInstanceKey: AgentInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const instance = await camunda.getAgentInstance(
+ *     { agentInstanceKey },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   console.log(`Status: ${instance.status}`);
+ *   console.log(`Element: ${instance.elementId}`);
+ * }
+ * ```
  * @operationId getAgentInstance
  * @tags Agent instance
   *
@@ -3312,10 +3346,7 @@ export function getGlobalTaskListener(options: Parameters<typeof _getGlobalTaskL
  * async function getGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
- *   const group = await camunda.getGroup(
- *     { groupId },
- *     { consistency: { waitUpToMs: 5000 } }
- *   );
+ *   const group = await camunda.getGroup({ groupId }, { consistency: { waitUpToMs: 5000 } });
  * 
  *   console.log(`Group: ${group.name}`);
  * }
@@ -3709,10 +3740,7 @@ export function getResourceContent(options: Parameters<typeof _getResourceConten
  * async function getRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
- *   const role = await camunda.getRole(
- *     { roleId },
- *     { consistency: { waitUpToMs: 5000 } }
- *   );
+ *   const role = await camunda.getRole({ roleId }, { consistency: { waitUpToMs: 5000 } });
  * 
  *   console.log(`Role: ${role.name}`);
  * }
@@ -5026,7 +5054,10 @@ export function unassignMappingRuleFromGroup(options?: Parameters<typeof _unassi
   *
  * @example Unassign a mapping rule from a tenant
  * ```ts
- * async function unassignMappingRuleFromTenantExample(tenantId: TenantId, mappingRuleId: MappingRuleId) {
+ * async function unassignMappingRuleFromTenantExample(
+ *   tenantId: TenantId,
+ *   mappingRuleId: MappingRuleId
+ * ) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignMappingRuleFromTenant({
