@@ -1,3 +1,11 @@
+# [10.0.0-alpha.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.4...v10.0.0-alpha.5) (2026-05-08)
+
+
+### Features
+
+* add agent instance example coverage ([8a0072d](https://github.com/camunda/orchestration-cluster-api-js/commit/8a0072d03cf426ea895863d7cbdd87178c2e7e2f))
+* v10 migration — bundler 2.4.1, branded type examples, README ([dd4a714](https://github.com/camunda/orchestration-cluster-api-js/commit/dd4a7149682b89d1f8f9c0f627dfef5645b10ea7)), closes [#203](https://github.com/camunda/orchestration-cluster-api-js/issues/203) [#204](https://github.com/camunda/orchestration-cluster-api-js/issues/204)
+
 # [10.0.0-alpha.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.3...v10.0.0-alpha.4) (2026-04-29)
 
 

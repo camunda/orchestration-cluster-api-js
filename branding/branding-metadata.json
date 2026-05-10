@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0.0",
-  "specHash": "sha256:6d0560fde009abd591d2bf84c727edc92340880af0b54a90093ed40ebb97f973",
+  "schemaVersion": "2.0.0",
+  "specHash": "sha256:4a17a26d4a0129c6bbcf4e9e207902cefc08f33f1a040d01ab9a3cb18781e9ff",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -10,6 +10,48 @@
     "namespaceFactories": true
   },
   "keys": [
+    {
+      "name": "AgentInstanceKey",
+      "semanticType": "AgentInstanceKey",
+      "category": "system-key",
+      "description": "System-generated key for an agent instance.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "4503599627370496"
+      ],
+      "extensions": {
+        "x-semantic-type": "AgentInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "agent-instance-key",
+      "brand": {
+        "tsType": "CamundaKey<'AgentInstanceKey'>"
+      },
+      "zod": {
+        "schemaName": "zAgentInstanceKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceKey"
+      }
+    },
     {
       "name": "AuditLogEntityKey",
       "semanticType": "AuditLogEntityKey",
@@ -208,6 +250,88 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/BusinessId"
+      }
+    },
+    {
+      "name": "ClientId",
+      "semanticType": "ClientId",
+      "category": "model-id",
+      "description": "The unique identifier of an OAuth client.\nMinted outside the Camunda REST API: in SaaS by Console, in Self-Managed\nwith OIDC by the external identity provider (e.g. EntraID, Keycloak,\nOkta). In Self-Managed with Basic authentication, machine-to-machine\napplications are modelled as users instead — see the user identifier.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ClientId"
+      },
+      "examples": [
+        "my-application"
+      ],
+      "extensions": {
+        "x-semantic-type": "ClientId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "client-id",
+      "brand": {
+        "tsType": "CamundaKey<'ClientId'>"
+      },
+      "zod": {
+        "schemaName": "zClientId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClientId"
+      }
+    },
+    {
+      "name": "ClusterVariableName",
+      "semanticType": "ClusterVariableName",
+      "category": "system-key",
+      "description": "The name of a cluster variable. Unique within its scope (global or tenant-specific).",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ClusterVariableName"
+      },
+      "examples": [
+        "feature-flag-checkout"
+      ],
+      "extensions": {
+        "x-semantic-type": "ClusterVariableName"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "cluster-variable-name",
+      "brand": {
+        "tsType": "CamundaKey<'ClusterVariableName'>"
+      },
+      "zod": {
+        "schemaName": "zClusterVariableName",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClusterVariableName"
       }
     },
     {
@@ -785,6 +909,9 @@
         "inlineFragments": 0
       },
       "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+\\-]+$",
+        "minLength": 1,
+        "maxLength": 256,
         "format": "GlobalListenerId"
       },
       "examples": [
@@ -810,6 +937,46 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/GlobalListenerId"
+      }
+    },
+    {
+      "name": "GroupId",
+      "semanticType": "GroupId",
+      "category": "model-id",
+      "description": "The unique identifier of a group.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "GroupId"
+      },
+      "examples": [
+        "engineering"
+      ],
+      "extensions": {
+        "x-semantic-type": "GroupId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "group-id",
+      "brand": {
+        "tsType": "CamundaKey<'GroupId'>"
+      },
+      "zod": {
+        "schemaName": "zGroupId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/GroupId"
       }
     },
     {
@@ -894,6 +1061,47 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKey"
+      }
+    },
+    {
+      "name": "MappingRuleId",
+      "semanticType": "MappingRuleId",
+      "category": "model-id",
+      "description": "The unique identifier of a mapping rule.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "MappingRuleId"
+      },
+      "examples": [
+        "my-mapping-rule"
+      ],
+      "extensions": {
+        "x-semantic-type": "MappingRuleId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "mapping-rule-id",
+      "brand": {
+        "tsType": "CamundaKey<'MappingRuleId'>"
+      },
+      "zod": {
+        "schemaName": "zMappingRuleId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/MappingRuleId"
       }
     },
     {
@@ -1105,6 +1313,47 @@
       }
     },
     {
+      "name": "RoleId",
+      "semanticType": "RoleId",
+      "category": "model-id",
+      "description": "The unique identifier of a role.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "RoleId"
+      },
+      "examples": [
+        "admin"
+      ],
+      "extensions": {
+        "x-semantic-type": "RoleId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "role-id",
+      "brand": {
+        "tsType": "CamundaKey<'RoleId'>"
+      },
+      "zod": {
+        "schemaName": "zRoleId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/RoleId"
+      }
+    },
+    {
       "name": "SignalKey",
       "semanticType": "SignalKey",
       "category": "system-key",
@@ -1237,9 +1486,9 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^(<default>|[A-Za-z0-9_@.+-]+)$",
+        "pattern": "^(<default>|[\\w\\.\\-]{1,31})$",
         "minLength": 1,
-        "maxLength": 256,
+        "maxLength": 31,
         "format": "TenantId"
       },
       "examples": [
@@ -1278,7 +1527,7 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^(<default>|[A-Za-z0-9_@.+-]+)$",
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
         "minLength": 1,
         "maxLength": 256,
         "format": "Username"
@@ -1391,6 +1640,52 @@
     }
   ],
   "unions": [
+    {
+      "name": "AgentInstanceKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceKeyExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceKeyFilter"
+        }
+      ],
+      "stableId": "agent-instance-key-filter-property",
+      "tsType": "AgentInstanceKeyExactMatch | AdvancedAgentInstanceKeyFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceKeyFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceStatusFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceStatusEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceStatusExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceStatusFilter"
+        }
+      ],
+      "stableId": "agent-instance-status-filter-property",
+      "tsType": "AgentInstanceStatusExactMatch | AdvancedAgentInstanceStatusFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceStatusFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceStatusFilterProperty"
+      }
+    },
     {
       "name": "AncestorScopeInstruction",
       "kind": "union-wrapper",
@@ -2687,8 +2982,8 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 34,
-    "totalUnionWrappers": 55,
+    "totalPrimaryKeys": 40,
+    "totalUnionWrappers": 57,
     "implicitCamundaKeys": []
   }
 }

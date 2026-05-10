@@ -47,7 +47,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 183
+// Operations: 186
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -253,6 +253,14 @@ type failJobOptions = Parameters<typeof Sdk.failJob>[0];
 type failJobBody = (NonNullable<failJobOptions> extends { body?: infer B } ? B : never);
 type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends { path: { jobKey: infer P } } ? P : any);
 export type failJobInput = failJobBody & { jobKey: failJobPathParam_jobKey };
+type getAgentInstanceOptions = Parameters<typeof Sdk.getAgentInstance>[0];
+type getAgentInstancePathParam_agentInstanceKey = (NonNullable<getAgentInstanceOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
+export type getAgentInstanceInput = { agentInstanceKey: getAgentInstancePathParam_agentInstanceKey };
+/** Management of eventual consistency **/
+export type getAgentInstanceConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAgentInstance>> 
+};
 type getAuditLogOptions = Parameters<typeof Sdk.getAuditLog>[0];
 type getAuditLogPathParam_auditLogKey = (NonNullable<getAuditLogOptions> extends { path: { auditLogKey: infer P } } ? P : any);
 export type getAuditLogInput = { auditLogKey: getAuditLogPathParam_auditLogKey };
@@ -647,6 +655,14 @@ type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 export type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
+type searchAgentInstancesOptions = Parameters<typeof Sdk.searchAgentInstances>[0];
+type searchAgentInstancesBody = (NonNullable<searchAgentInstancesOptions> extends { body?: infer B } ? B : never);
+export type searchAgentInstancesInput = searchAgentInstancesBody;
+/** Management of eventual consistency **/
+export type searchAgentInstancesConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAgentInstances>> 
+};
 type searchAuditLogsOptions = Parameters<typeof Sdk.searchAuditLogs>[0];
 type searchAuditLogsBody = (NonNullable<searchAuditLogsOptions> extends { body?: infer B } ? B : never);
 export type searchAuditLogsInput = searchAuditLogsBody;
@@ -881,6 +897,14 @@ export type searchProcessInstancesInput = searchProcessInstancesBody;
 export type searchProcessInstancesConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchProcessInstances>> 
+};
+type searchResourcesOptions = Parameters<typeof Sdk.searchResources>[0];
+type searchResourcesBody = (NonNullable<searchResourcesOptions> extends { body?: infer B } ? B : never);
+export type searchResourcesInput = searchResourcesBody;
+/** Management of eventual consistency **/
+export type searchResourcesConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchResources>> 
 };
 type searchRolesOptions = Parameters<typeof Sdk.searchRoles>[0];
 type searchRolesBody = (NonNullable<searchRolesOptions> extends { body?: infer B } ? B : never);
@@ -1776,12 +1800,12 @@ export class CamundaClient {
     *
    * @example Assign a client to a group
    * ```ts
-   * async function assignClientToGroupExample() {
+   * async function assignClientToGroupExample(groupId: GroupId, clientId: ClientId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignClientToGroup({
-   *     groupId: 'engineering-team',
-   *     clientId: 'my-service-account',
+   *     groupId,
+   *     clientId,
    *   });
    * }
    * ```
@@ -1849,12 +1873,12 @@ export class CamundaClient {
     *
    * @example Assign a client to a tenant
    * ```ts
-   * async function assignClientToTenantExample(tenantId: TenantId) {
+   * async function assignClientToTenantExample(tenantId: TenantId, clientId: ClientId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignClientToTenant({
    *     tenantId,
-   *     clientId: 'my-service-account',
+   *     clientId,
    *   });
    * }
    * ```
@@ -1922,12 +1946,12 @@ export class CamundaClient {
     *
    * @example Assign a group to a tenant
    * ```ts
-   * async function assignGroupToTenantExample(tenantId: TenantId) {
+   * async function assignGroupToTenantExample(tenantId: TenantId, groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignGroupToTenant({
    *     tenantId,
-   *     groupId: 'engineering-team',
+   *     groupId,
    *   });
    * }
    * ```
@@ -1993,12 +2017,12 @@ export class CamundaClient {
     *
    * @example Assign a mapping rule to a group
    * ```ts
-   * async function assignMappingRuleToGroupExample() {
+   * async function assignMappingRuleToGroupExample(groupId: GroupId, mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignMappingRuleToGroup({
-   *     groupId: 'engineering-team',
-   *     mappingRuleId: 'rule-123',
+   *     groupId,
+   *     mappingRuleId,
    *   });
    * }
    * ```
@@ -2064,12 +2088,12 @@ export class CamundaClient {
     *
    * @example Assign a mapping rule to a tenant
    * ```ts
-   * async function assignMappingRuleToTenantExample(tenantId: TenantId) {
+   * async function assignMappingRuleToTenantExample(tenantId: TenantId, mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignMappingRuleToTenant({
    *     tenantId,
-   *     mappingRuleId: 'rule-123',
+   *     mappingRuleId,
    *   });
    * }
    * ```
@@ -2135,12 +2159,12 @@ export class CamundaClient {
     *
    * @example Assign a role to a client
    * ```ts
-   * async function assignRoleToClientExample() {
+   * async function assignRoleToClientExample(roleId: RoleId, clientId: ClientId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignRoleToClient({
-   *     roleId: 'process-admin',
-   *     clientId: 'my-service-account',
+   *     roleId,
+   *     clientId,
    *   });
    * }
    * ```
@@ -2206,12 +2230,12 @@ export class CamundaClient {
     *
    * @example Assign a role to a group
    * ```ts
-   * async function assignRoleToGroupExample() {
+   * async function assignRoleToGroupExample(roleId: RoleId, groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignRoleToGroup({
-   *     roleId: 'process-admin',
-   *     groupId: 'engineering-team',
+   *     roleId,
+   *     groupId,
    *   });
    * }
    * ```
@@ -2277,12 +2301,12 @@ export class CamundaClient {
     *
    * @example Assign a role to a mapping rule
    * ```ts
-   * async function assignRoleToMappingRuleExample() {
+   * async function assignRoleToMappingRuleExample(roleId: RoleId, mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignRoleToMappingRule({
-   *     roleId: 'process-admin',
-   *     mappingRuleId: 'rule-123',
+   *     roleId,
+   *     mappingRuleId,
    *   });
    * }
    * ```
@@ -2350,12 +2374,12 @@ export class CamundaClient {
     *
    * @example Assign a role to a tenant
    * ```ts
-   * async function assignRoleToTenantExample(tenantId: TenantId) {
+   * async function assignRoleToTenantExample(tenantId: TenantId, roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignRoleToTenant({
    *     tenantId,
-   *     roleId: 'process-admin',
+   *     roleId,
    *   });
    * }
    * ```
@@ -2421,11 +2445,11 @@ export class CamundaClient {
     *
    * @example Assign a role to a user
    * ```ts
-   * async function assignRoleToUserExample(username: Username) {
+   * async function assignRoleToUserExample(roleId: RoleId, username: Username) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignRoleToUser({
-   *     roleId: 'process-admin',
+   *     roleId,
    *     username,
    *   });
    * }
@@ -2569,11 +2593,11 @@ export class CamundaClient {
     *
    * @example Assign a user to a group
    * ```ts
-   * async function assignUserToGroupExample(username: Username) {
+   * async function assignUserToGroupExample(groupId: GroupId, username: Username) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.assignUserToGroup({
-   *     groupId: 'engineering-team',
+   *     groupId,
    *     username,
    *   });
    * }
@@ -3838,11 +3862,11 @@ export class CamundaClient {
     *
    * @example Create a global cluster variable
    * ```ts
-   * async function createGlobalClusterVariableExample() {
+   * async function createGlobalClusterVariableExample(name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.createGlobalClusterVariable({
-   *     name: 'feature-flags',
+   *     name,
    *     value: { darkMode: true },
    *   });
    * 
@@ -3982,14 +4006,30 @@ export class CamundaClient {
    * Create group
    *
    * Create a new group.
+   *
+   * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+   * (max 256 characters) by `IdentifierValidator.validateId` in the
+   * runtime. This strict validation applies wherever the Groups API
+   * is available: in OIDC deployments that set
+   * `camunda.security.authentication.oidc.groupsClaim` the Groups
+   * API (including this endpoint) is disabled entirely, so group
+   * CRUD never sees externally-minted IdP IDs. The BYOG relaxation
+   * only loosens validation when a group is referenced *as a member*
+   * of a role or tenant (`assignRoleToGroup`,
+   * `assignGroupToTenant`); group CRUD itself always uses the strict
+   * default-id regex. The constraint is not advertised on the
+   * `GroupId` schema so that the same schema can be reused at
+   * member-reference sites without falsely rejecting
+   * externally-minted IdP group IDs there.
+   *
     *
    * @example Create a group
    * ```ts
-   * async function createGroupExample() {
+   * async function createGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.createGroup({
-   *     groupId: 'engineering-team',
+   *     groupId,
    *     name: 'Engineering Team',
    *   });
    * 
@@ -4059,11 +4099,11 @@ export class CamundaClient {
     *
    * @example Create a mapping rule
    * ```ts
-   * async function createMappingRuleExample() {
+   * async function createMappingRuleExample(mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.createMappingRule({
-   *     mappingRuleId: 'ldap-group-mapping',
+   *     mappingRuleId,
    *     name: 'LDAP Group Mapping',
    *     claimName: 'groups',
    *     claimValue: 'engineering',
@@ -4237,11 +4277,11 @@ export class CamundaClient {
     *
    * @example Create a role
    * ```ts
-   * async function createRoleExample() {
+   * async function createRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.createRole({
-   *     roleId: 'process-admin',
+   *     roleId,
    *     name: 'Process Admin',
    *   });
    * 
@@ -4383,12 +4423,12 @@ export class CamundaClient {
     *
    * @example Create a tenant cluster variable
    * ```ts
-   * async function createTenantClusterVariableExample(tenantId: TenantId) {
+   * async function createTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.createTenantClusterVariable({
    *     tenantId,
-   *     name: 'config',
+   *     name,
    *     value: { region: 'us-east-1' },
    *   });
    * 
@@ -4819,10 +4859,10 @@ export class CamundaClient {
     *
    * @example Delete a global cluster variable
    * ```ts
-   * async function deleteGlobalClusterVariableExample() {
+   * async function deleteGlobalClusterVariableExample(name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
-   *   await camunda.deleteGlobalClusterVariable({ name: 'feature-flags' });
+   *   await camunda.deleteGlobalClusterVariable({ name });
    * }
    * ```
    * @operationId deleteGlobalClusterVariable
@@ -4957,10 +4997,10 @@ export class CamundaClient {
     *
    * @example Delete a group
    * ```ts
-   * async function deleteGroupExample() {
+   * async function deleteGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
-   *   await camunda.deleteGroup({ groupId: 'engineering-team' });
+   *   await camunda.deleteGroup({ groupId });
    * }
    * ```
    * @operationId deleteGroup
@@ -5026,10 +5066,10 @@ export class CamundaClient {
     *
    * @example Delete a mapping rule
    * ```ts
-   * async function deleteMappingRuleExample() {
+   * async function deleteMappingRuleExample(mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
-   *   await camunda.deleteMappingRule({ mappingRuleId: 'ldap-group-mapping' });
+   *   await camunda.deleteMappingRule({ mappingRuleId });
    * }
    * ```
    * @operationId deleteMappingRule
@@ -5328,10 +5368,10 @@ export class CamundaClient {
     *
    * @example Delete a role
    * ```ts
-   * async function deleteRoleExample() {
+   * async function deleteRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
-   *   await camunda.deleteRole({ roleId: 'process-admin' });
+   *   await camunda.deleteRole({ roleId });
    * }
    * ```
    * @operationId deleteRole
@@ -5464,12 +5504,12 @@ export class CamundaClient {
     *
    * @example Delete a tenant cluster variable
    * ```ts
-   * async function deleteTenantClusterVariableExample(tenantId: TenantId) {
+   * async function deleteTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.deleteTenantClusterVariable({
    *     tenantId,
-   *     name: 'config',
+   *     name,
    *   });
    * }
    * ```
@@ -5927,6 +5967,85 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Get agent instance
+   *
+   * Returns agent instance as JSON.
+    *
+   * @example Get an agent instance
+   * ```ts
+   * async function getAgentInstanceExample(agentInstanceKey: AgentInstanceKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const instance = await camunda.getAgentInstance(
+   *     { agentInstanceKey },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   console.log(`Status: ${instance.status}`);
+   *   console.log(`Element: ${instance.elementId}`);
+   * }
+   * ```
+   * @operationId getAgentInstance
+   * @tags Agent instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getAgentInstance(input: getAgentInstanceInput, /** Management of eventual consistency **/ consistencyManagement: getAgentInstanceConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAgentInstance>>;
+  getAgentInstance(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAgentInstanceConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { agentInstanceKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { agentInstanceKey };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('getAgentInstance', _schemas.zGetAgentInstanceData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getAgentInstance(opts);
+        let data = this._evaluateResponse(_raw, 'getAgentInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetAgentInstanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetAgentInstanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getAgentInstance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getAgentInstance', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -6774,11 +6893,11 @@ export class CamundaClient {
     *
    * @example Get a global cluster variable
    * ```ts
-   * async function getGlobalClusterVariableExample() {
+   * async function getGlobalClusterVariableExample(name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   const variable = await camunda.getGlobalClusterVariable(
-   *     { name: 'feature-flags' },
+   *     { name },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -7012,13 +7131,10 @@ export class CamundaClient {
     *
    * @example Get a group
    * ```ts
-   * async function getGroupExample() {
+   * async function getGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
-   *   const group = await camunda.getGroup(
-   *     { groupId: 'engineering-team' },
-   *     { consistency: { waitUpToMs: 5000 } }
-   *   );
+   *   const group = await camunda.getGroup({ groupId }, { consistency: { waitUpToMs: 5000 } });
    * 
    *   console.log(`Group: ${group.name}`);
    * }
@@ -7573,11 +7689,11 @@ export class CamundaClient {
     *
    * @example Get a mapping rule
    * ```ts
-   * async function getMappingRuleExample() {
+   * async function getMappingRuleExample(mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const rule = await camunda.getMappingRule(
-   *     { mappingRuleId: 'ldap-group-mapping' },
+   *     { mappingRuleId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -8631,7 +8747,9 @@ export class CamundaClient {
    *
    * Returns a deployed resource.
    * :::info
-   * Currently, this endpoint only supports RPA resources.
+   * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+   * resources. To query BPMN process definitions or DMN decision definitions, use their
+   * respective APIs.
    * :::
    *
     *
@@ -8801,13 +8919,10 @@ export class CamundaClient {
     *
    * @example Get a role
    * ```ts
-   * async function getRoleExample() {
+   * async function getRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
-   *   const role = await camunda.getRole(
-   *     { roleId: 'process-admin' },
-   *     { consistency: { waitUpToMs: 5000 } }
-   *   );
+   *   const role = await camunda.getRole({ roleId }, { consistency: { waitUpToMs: 5000 } });
    * 
    *   console.log(`Role: ${role.name}`);
    * }
@@ -9161,13 +9276,13 @@ export class CamundaClient {
     *
    * @example Get a tenant cluster variable
    * ```ts
-   * async function getTenantClusterVariableExample(tenantId: TenantId) {
+   * async function getTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   const variable = await camunda.getTenantClusterVariable(
    *     {
    *       tenantId,
-   *       name: 'config',
+   *       name,
    *     },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
@@ -10572,6 +10687,91 @@ export class CamundaClient {
   }
 
   /**
+   * Search agent instances
+   *
+   * Search for agent instances based on given criteria.
+    *
+   * @example Search agent instances
+   * ```ts
+   * async function searchAgentInstancesExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.searchAgentInstances(
+   *     {
+   *       filter: { status: { $eq: 'IDLE' } },
+   *       sort: [{ field: 'creationDate', order: 'DESC' }],
+   *       page: { limit: 10 },
+   *     },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const instance of result.items ?? []) {
+   *     console.log(`${instance.agentInstanceKey}: ${instance.status}`);
+   *   }
+   *   console.log(`Total: ${result.page.totalItems}`);
+   * }
+   * ```
+   * @operationId searchAgentInstances
+   * @tags Agent instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchAgentInstances(input: searchAgentInstancesInput, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstancesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAgentInstances>>;
+  searchAgentInstances(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstancesConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('searchAgentInstances', _schemas.zSearchAgentInstancesData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchAgentInstances(opts);
+        let data = this._evaluateResponse(_raw, 'searchAgentInstances', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchAgentInstancesResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSearchAgentInstancesResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchAgentInstances', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchAgentInstances', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Search audit logs
    *
    * Search for audit logs based on given criteria.
@@ -10907,11 +11107,11 @@ export class CamundaClient {
     *
    * @example Search clients in a group
    * ```ts
-   * async function searchClientsForGroupExample() {
+   * async function searchClientsForGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchClientsForGroup(
-   *     { groupId: 'engineering-team' },
+   *     { groupId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -10989,11 +11189,11 @@ export class CamundaClient {
     *
    * @example Search clients for a role
    * ```ts
-   * async function searchClientsForRoleExample() {
+   * async function searchClientsForRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchClientsForRole(
-   *     { roleId: 'process-admin' },
+   *     { roleId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -11983,11 +12183,11 @@ export class CamundaClient {
     *
    * @example Search groups for a role
    * ```ts
-   * async function searchGroupsForRoleExample() {
+   * async function searchGroupsForRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchGroupsForRole(
-   *     { roleId: 'process-admin' },
+   *     { roleId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -12317,11 +12517,11 @@ export class CamundaClient {
     *
    * @example Search mapping rules for a group
    * ```ts
-   * async function searchMappingRulesForGroupExample() {
+   * async function searchMappingRulesForGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchMappingRulesForGroup(
-   *     { groupId: 'engineering-team' },
+   *     { groupId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -12399,11 +12599,11 @@ export class CamundaClient {
     *
    * @example Search mapping rules for a role
    * ```ts
-   * async function searchMappingRulesForRoleExample() {
+   * async function searchMappingRulesForRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchMappingRulesForRole(
-   *     { roleId: 'process-admin' },
+   *     { roleId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -12909,6 +13109,92 @@ export class CamundaClient {
   }
 
   /**
+   * Search resources
+   *
+   * Search for deployed resources based on given criteria.
+   * :::info
+   * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+   * resources. To query BPMN process definitions or DMN decision definitions, use their
+   * respective search APIs.
+   * :::
+   *
+    *
+   * @example Search resources
+   * ```ts
+   * async function searchResourcesExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.searchResources(
+   *     { page: { limit: 10 } },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const resource of result.items ?? []) {
+   *     console.log(`Resource: ${resource.resourceName}`);
+   *   }
+   * }
+   * ```
+   * @operationId searchResources
+   * @tags Resource
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchResources(input: searchResourcesInput, /** Management of eventual consistency **/ consistencyManagement: searchResourcesConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchResources>>;
+  searchResources(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchResourcesConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('searchResources', _schemas.zSearchResourcesData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchResources(opts);
+        let data = this._evaluateResponse(_raw, 'searchResources', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchResourcesResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSearchResourcesResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchResources', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchResources', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Search roles
    *
    * Search for roles based on given criteria.
@@ -12997,11 +13283,11 @@ export class CamundaClient {
     *
    * @example Search roles for a group
    * ```ts
-   * async function searchRolesForGroupExample() {
+   * async function searchRolesForGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchRolesForGroup(
-   *     { groupId: 'engineering-team' },
+   *     { groupId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -13326,11 +13612,11 @@ export class CamundaClient {
     *
    * @example Search users in a group
    * ```ts
-   * async function searchUsersForGroupExample() {
+   * async function searchUsersForGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchUsersForGroup(
-   *     { groupId: 'engineering-team' },
+   *     { groupId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -13408,11 +13694,11 @@ export class CamundaClient {
     *
    * @example Search users for a role
    * ```ts
-   * async function searchUsersForRoleExample() {
+   * async function searchUsersForRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   const result = await camunda.searchUsersForRole(
-   *     { roleId: 'process-admin' },
+   *     { roleId },
    *     { consistency: { waitUpToMs: 5000 } }
    *   );
    * 
@@ -14163,12 +14449,12 @@ export class CamundaClient {
     *
    * @example Unassign a client from a group
    * ```ts
-   * async function unassignClientFromGroupExample() {
+   * async function unassignClientFromGroupExample(groupId: GroupId, clientId: ClientId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignClientFromGroup({
-   *     groupId: 'engineering-team',
-   *     clientId: 'my-service-account',
+   *     groupId,
+   *     clientId,
    *   });
    * }
    * ```
@@ -14236,12 +14522,12 @@ export class CamundaClient {
     *
    * @example Unassign a client from a tenant
    * ```ts
-   * async function unassignClientFromTenantExample(tenantId: TenantId) {
+   * async function unassignClientFromTenantExample(tenantId: TenantId, clientId: ClientId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignClientFromTenant({
    *     tenantId,
-   *     clientId: 'my-service-account',
+   *     clientId,
    *   });
    * }
    * ```
@@ -14309,12 +14595,12 @@ export class CamundaClient {
     *
    * @example Unassign a group from a tenant
    * ```ts
-   * async function unassignGroupFromTenantExample(tenantId: TenantId) {
+   * async function unassignGroupFromTenantExample(tenantId: TenantId, groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignGroupFromTenant({
    *     tenantId,
-   *     groupId: 'engineering-team',
+   *     groupId,
    *   });
    * }
    * ```
@@ -14380,12 +14666,12 @@ export class CamundaClient {
     *
    * @example Unassign a mapping rule from a group
    * ```ts
-   * async function unassignMappingRuleFromGroupExample() {
+   * async function unassignMappingRuleFromGroupExample(groupId: GroupId, mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignMappingRuleFromGroup({
-   *     groupId: 'engineering-team',
-   *     mappingRuleId: 'rule-123',
+   *     groupId,
+   *     mappingRuleId,
    *   });
    * }
    * ```
@@ -14451,12 +14737,15 @@ export class CamundaClient {
     *
    * @example Unassign a mapping rule from a tenant
    * ```ts
-   * async function unassignMappingRuleFromTenantExample(tenantId: TenantId) {
+   * async function unassignMappingRuleFromTenantExample(
+   *   tenantId: TenantId,
+   *   mappingRuleId: MappingRuleId
+   * ) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignMappingRuleFromTenant({
    *     tenantId,
-   *     mappingRuleId: 'rule-123',
+   *     mappingRuleId,
    *   });
    * }
    * ```
@@ -14522,12 +14811,12 @@ export class CamundaClient {
     *
    * @example Unassign a role from a client
    * ```ts
-   * async function unassignRoleFromClientExample() {
+   * async function unassignRoleFromClientExample(roleId: RoleId, clientId: ClientId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignRoleFromClient({
-   *     roleId: 'process-admin',
-   *     clientId: 'my-service-account',
+   *     roleId,
+   *     clientId,
    *   });
    * }
    * ```
@@ -14593,12 +14882,12 @@ export class CamundaClient {
     *
    * @example Unassign a role from a group
    * ```ts
-   * async function unassignRoleFromGroupExample() {
+   * async function unassignRoleFromGroupExample(roleId: RoleId, groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignRoleFromGroup({
-   *     roleId: 'process-admin',
-   *     groupId: 'engineering-team',
+   *     roleId,
+   *     groupId,
    *   });
    * }
    * ```
@@ -14664,12 +14953,12 @@ export class CamundaClient {
     *
    * @example Unassign a role from a mapping rule
    * ```ts
-   * async function unassignRoleFromMappingRuleExample() {
+   * async function unassignRoleFromMappingRuleExample(roleId: RoleId, mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignRoleFromMappingRule({
-   *     roleId: 'process-admin',
-   *     mappingRuleId: 'rule-123',
+   *     roleId,
+   *     mappingRuleId,
    *   });
    * }
    * ```
@@ -14738,12 +15027,12 @@ export class CamundaClient {
     *
    * @example Unassign a role from a tenant
    * ```ts
-   * async function unassignRoleFromTenantExample(tenantId: TenantId) {
+   * async function unassignRoleFromTenantExample(tenantId: TenantId, roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignRoleFromTenant({
    *     tenantId,
-   *     roleId: 'process-admin',
+   *     roleId,
    *   });
    * }
    * ```
@@ -14809,11 +15098,11 @@ export class CamundaClient {
     *
    * @example Unassign a role from a user
    * ```ts
-   * async function unassignRoleFromUserExample(username: Username) {
+   * async function unassignRoleFromUserExample(roleId: RoleId, username: Username) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignRoleFromUser({
-   *     roleId: 'process-admin',
+   *     roleId,
    *     username,
    *   });
    * }
@@ -14882,11 +15171,11 @@ export class CamundaClient {
     *
    * @example Unassign a user from a group
    * ```ts
-   * async function unassignUserFromGroupExample(username: Username) {
+   * async function unassignUserFromGroupExample(groupId: GroupId, username: Username) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.unassignUserFromGroup({
-   *     groupId: 'engineering-team',
+   *     groupId,
    *     username,
    *   });
    * }
@@ -15178,11 +15467,11 @@ export class CamundaClient {
     *
    * @example Update a global cluster variable
    * ```ts
-   * async function updateGlobalClusterVariableExample() {
+   * async function updateGlobalClusterVariableExample(name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.updateGlobalClusterVariable({
-   *     name: 'feature-flags',
+   *     name,
    *     value: { darkMode: false },
    *   });
    * }
@@ -15325,11 +15614,11 @@ export class CamundaClient {
     *
    * @example Update a group
    * ```ts
-   * async function updateGroupExample() {
+   * async function updateGroupExample(groupId: GroupId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.updateGroup({
-   *     groupId: 'engineering-team',
+   *     groupId,
    *     name: 'Engineering Team',
    *   });
    * }
@@ -15472,11 +15761,11 @@ export class CamundaClient {
     *
    * @example Update a mapping rule
    * ```ts
-   * async function updateMappingRuleExample() {
+   * async function updateMappingRuleExample(mappingRuleId: MappingRuleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.updateMappingRule({
-   *     mappingRuleId: 'ldap-group-mapping',
+   *     mappingRuleId,
    *     name: 'LDAP Group Mapping',
    *     claimName: 'groups',
    *     claimValue: 'engineering-team',
@@ -15547,11 +15836,11 @@ export class CamundaClient {
     *
    * @example Update a role
    * ```ts
-   * async function updateRoleExample() {
+   * async function updateRoleExample(roleId: RoleId) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.updateRole({
-   *     roleId: 'process-admin',
+   *     roleId,
    *     name: 'Process Administrator',
    *   });
    * }
@@ -15695,12 +15984,12 @@ export class CamundaClient {
     *
    * @example Update a tenant cluster variable
    * ```ts
-   * async function updateTenantClusterVariableExample(tenantId: TenantId) {
+   * async function updateTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
    *   const camunda = createCamundaClient();
    * 
    *   await camunda.updateTenantClusterVariable({
    *     tenantId,
-   *     name: 'config',
+   *     name,
    *     value: { region: 'eu-west-1' },
    *   });
    * }
