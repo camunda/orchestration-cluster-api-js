@@ -292,7 +292,7 @@ jobs:
 
   notify-release-failure:
     needs: [publish, post-release-smoke]
-    if: failure()
+    if: ${{ always() && (needs.publish.result == 'failure' || needs.post-release-smoke.result == 'failure') && secrets.SLACK_SDK_ALERTS != '' }}
     uses: camunda/sdk-infra/.github/workflows/sdk-slack-notify.yml@v1
     with:
       repo-name: orchestration-cluster-api-js
