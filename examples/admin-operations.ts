@@ -6,6 +6,7 @@ import {
   type AuditLogKey,
   type ClusterVariableName,
   createCamundaClient,
+  type FormKey,
   type GlobalListenerId,
   type ProcessDefinitionKey,
   type TenantId,
@@ -310,6 +311,36 @@ async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
 }
 //#endregion GetResourceContent
 
+//#region GetResourceContentBinary
+async function getResourceContentBinaryExample(resourceKey: ProcessDefinitionKey) {
+  const camunda = createCamundaClient();
+
+  const content = await camunda.getResourceContentBinary(
+    {
+      resourceKey,
+    },
+    { consistency: { waitUpToMs: 0 } }
+  );
+
+  console.log(`Binary content retrieved (type: ${typeof content})`);
+}
+//#endregion GetResourceContentBinary
+
+//#region GetFormByKey
+async function getFormByKeyExample(formKey: FormKey) {
+  const camunda = createCamundaClient();
+
+  const form = await camunda.getFormByKey(
+    {
+      formKey,
+    },
+    { consistency: { waitUpToMs: 5000 } }
+  );
+
+  console.log(`Form: ${form.formId}, version: ${form.version}`);
+}
+//#endregion GetFormByKey
+
 //#region SearchResources
 async function searchResourcesExample() {
   const camunda = createCamundaClient();
@@ -554,6 +585,8 @@ void evaluateConditionalsExample;
 void evaluateExpressionExample;
 void getResourceExample;
 void getResourceContentExample;
+void getResourceContentBinaryExample;
+void getFormByKeyExample;
 void searchResourcesExample;
 void getUsageMetricsExample;
 void searchMessageSubscriptionsExample;
