@@ -22,6 +22,25 @@ export const zAgentInstanceDefinition = z.object({
 });
 
 /**
+ * A tool available to the agent.
+ */
+export const zAgentTool = z.object({
+    name: z.string().register(z.globalRegistry, {
+        description: 'The tool name as visible to the LLM.'
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    elementId: z.union([
+        z.string(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'A tool available to the agent.'
+});
+
+/**
  * Aggregated metrics for an agent instance across all model calls.
  */
 export const zAgentInstanceMetrics = z.object({
@@ -70,6 +89,44 @@ export const zAgentInstanceStatusEnum = z.enum([
     'TOOL_DISCOVERY'
 ]).register(z.globalRegistry, {
     description: 'The current status of an agent instance.'
+});
+
+/**
+ * Metric increments to apply to the agent instance aggregate counters. The engine
+ * accumulates these deltas into running totals on each UPDATED event. All fields
+ * are optional; omit a field to leave the corresponding counter unchanged.
+ *
+ */
+export const zAgentInstanceMetricsDelta = z.object({
+    inputTokens: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total input token counter.'
+    })),
+    outputTokens: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total output token counter.'
+    })),
+    modelCalls: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total model call counter.'
+    })),
+    toolCalls: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total tool call counter.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Metric increments to apply to the agent instance aggregate counters. The engine\naccumulates these deltas into running totals on each UPDATED event. All fields\nare optional; omit a field to leave the corresponding counter unchanged.\n'
+});
+
+/**
+ * Request to update the mutable state of an agent instance. At least one of
+ * status, metrics, or tools must be provided.
+ *
+ */
+export const zAgentInstanceUpdateRequest = z.object({
+    status: z.optional(zAgentInstanceStatusEnum),
+    metrics: z.optional(zAgentInstanceMetricsDelta),
+    tools: z.optional(z.array(zAgentTool).register(z.globalRegistry, {
+        description: 'The complete list of tools available to the agent, replacing any previously\nstored tools. When provided, the engine replaces the existing tool list with\nthis value.\n'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Request to update the mutable state of an agent instance. At least one of\nstatus, metrics, or tools must be provided.\n'
 });
 
 /**
@@ -2261,6 +2318,17 @@ export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
 export const zElementInstanceKey = zLongKey;
 
 /**
+ * Request to create a new agent instance.
+ */
+export const zAgentInstanceCreationRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    definition: zAgentInstanceDefinition,
+    limits: z.optional(zAgentInstanceLimits)
+}).register(z.globalRegistry, {
+    description: 'Request to create a new agent instance.'
+});
+
+/**
  * System-generated key for a user task.
  */
 export const zUserTaskKey = zLongKey;
@@ -3107,6 +3175,9 @@ export const zAgentInstanceResult = z.object({
     definition: zAgentInstanceDefinition,
     metrics: zAgentInstanceMetrics,
     limits: zAgentInstanceLimits,
+    tools: z.array(zAgentTool).register(z.globalRegistry, {
+        description: 'The tools available to the agent.'
+    }),
     elementId: zElementId,
     processInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
@@ -3120,7 +3191,19 @@ export const zAgentInstanceResult = z.object({
     completionDate: z.union([
         z.iso.datetime(),
         z.null()
-    ])
+    ]),
+    elementInstanceKeys: z.array(zElementInstanceKey).register(z.globalRegistry, {
+        description: 'The keys of all element instances associated with this agent instance.'
+    })
+});
+
+/**
+ * Response returned after successfully creating an agent instance.
+ */
+export const zAgentInstanceCreationResult = z.object({
+    agentInstanceKey: zAgentInstanceKey
+}).register(z.globalRegistry, {
+    description: 'Response returned after successfully creating an agent instance.'
 });
 
 /**
@@ -3735,8 +3818,8 @@ export const zMessageSubscriptionResult = z.object({
         z.null()
     ]),
     messageSubscriptionType: zMessageSubscriptionTypeEnum,
-    extensionProperties: z.record(z.string(), z.string()).register(z.globalRegistry, {
-        description: 'The `zeebe:properties` extension properties extracted from the BPMN element associated\nwith this subscription. Empty object when no properties are defined.\n'
+    toolProperties: z.record(z.string(), z.string()).register(z.globalRegistry, {
+        description: 'The subset of `zeebe:properties` extension properties whose keys start with the\n`io.camunda.tool:` prefix, extracted from the BPMN element associated with this\nsubscription. Empty object when no matching properties are defined.\n'
     }),
     processDefinitionName: z.union([
         z.string(),
@@ -5634,12 +5717,111 @@ export const zJobMetricsConfigurationResponse = z.object({
 });
 
 /**
+ * Configuration for deployment characteristics.
+ */
+export const zDeploymentConfigurationResponse = z.object({
+    isEnterprise: z.boolean().register(z.globalRegistry, {
+        description: 'Whether this is an enterprise deployment.'
+    }),
+    isMultiTenancyEnabled: z.boolean().register(z.globalRegistry, {
+        description: 'Whether multi-tenancy is enabled.'
+    }),
+    contextPath: z.string().register(z.globalRegistry, {
+        description: 'The servlet context path for the deployment.'
+    }),
+    maxRequestSize: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'The maximum HTTP request size in bytes.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for deployment characteristics.'
+});
+
+/**
+ * Configuration for authentication and session management.
+ */
+export const zAuthenticationConfigurationResponse = z.object({
+    canLogout: z.boolean().register(z.globalRegistry, {
+        description: 'Whether users can log out (false for SaaS deployments).'
+    }),
+    isLoginDelegated: z.boolean().register(z.globalRegistry, {
+        description: 'Whether login is delegated to an external identity provider.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for authentication and session management.'
+});
+
+/**
+ * A Camunda webapp component name.
+ */
+export const zWebappComponent = z.enum([
+    'operate',
+    'tasklist',
+    'admin'
+]).register(z.globalRegistry, {
+    description: 'A Camunda webapp component name.'
+});
+
+/**
+ * Configuration for active Camunda components in the deployment.
+ */
+export const zComponentsConfigurationResponse = z.object({
+    active: z.array(zWebappComponent).register(z.globalRegistry, {
+        description: 'List of webapp components whose UI is enabled in this deployment.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for active Camunda components in the deployment.'
+});
+
+/**
+ * The cloud deployment stage.
+ */
+export const zCloudStage = z.enum([
+    'dev',
+    'int',
+    'prod'
+]).register(z.globalRegistry, {
+    description: 'The cloud deployment stage.'
+});
+
+/**
+ * Configuration for SaaS/cloud-specific settings.
+ */
+export const zCloudConfigurationResponse = z.object({
+    organizationId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    clusterId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    stage: z.union([
+        zCloudStage,
+        z.null()
+    ]),
+    mixpanelToken: z.union([
+        z.string(),
+        z.null()
+    ]),
+    mixpanelAPIHost: z.union([
+        z.string(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'Configuration for SaaS/cloud-specific settings.'
+});
+
+/**
  * Envelope for all system configuration sections. Each property
  * represents a feature area.
  *
  */
 export const zSystemConfigurationResponse = z.object({
-    jobMetrics: zJobMetricsConfigurationResponse
+    jobMetrics: zJobMetricsConfigurationResponse,
+    components: zComponentsConfigurationResponse,
+    deployment: zDeploymentConfigurationResponse,
+    authentication: zAuthenticationConfigurationResponse,
+    cloud: zCloudConfigurationResponse
 }).register(z.globalRegistry, {
     description: 'Envelope for all system configuration sections. Each property\nrepresents a feature area.\n'
 });
@@ -7145,7 +7327,10 @@ export const zAgentInstanceFilter = z.object({
     tenantId: z.optional(zStringFilterProperty),
     creationDate: z.optional(zDateTimeFilterProperty),
     lastUpdatedDate: z.optional(zDateTimeFilterProperty),
-    completionDate: z.optional(zDateTimeFilterProperty)
+    completionDate: z.optional(zDateTimeFilterProperty),
+    elementInstanceKeys: z.optional(z.array(zElementInstanceKeyFilterProperty).register(z.globalRegistry, {
+        description: 'The keys of element instances associated with this agent instance.\nIf multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.'
+    }))
 }).register(z.globalRegistry, {
     description: 'Agent instance search filter.'
 });
@@ -7638,6 +7823,17 @@ export const zUserTaskSearchQuery = zSearchQueryRequest.and(z.object({
     description: 'User task search query request.'
 }));
 
+export const zCreateAgentInstanceData = z.object({
+    body: zAgentInstanceCreationRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance was created.
+ */
+export const zCreateAgentInstanceResponse = zAgentInstanceCreationResult;
+
 export const zGetAgentInstanceData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -7650,6 +7846,21 @@ export const zGetAgentInstanceData = z.object({
  * The agent instance is successfully returned.
  */
 export const zGetAgentInstanceResponse = zAgentInstanceResult;
+
+export const zUpdateAgentInstanceData = z.object({
+    body: zAgentInstanceUpdateRequest,
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance was updated successfully.
+ */
+export const zUpdateAgentInstanceResponse = z.void().register(z.globalRegistry, {
+    description: 'The agent instance was updated successfully.'
+});
 
 export const zSearchAgentInstancesData = z.object({
     body: z.optional(zAgentInstanceSearchQuery),
@@ -8351,6 +8562,19 @@ export const zEvaluateExpressionData = z.object({
  * Expression evaluated successfully
  */
 export const zEvaluateExpressionResponse = zExpressionEvaluationResult;
+
+export const zGetFormByKeyData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        formKey: zFormKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The form is successfully returned.
+ */
+export const zGetFormByKeyResponse = zFormResult;
 
 export const zCreateGlobalTaskListenerData = z.object({
     body: zCreateGlobalTaskListenerRequest,
@@ -9297,7 +9521,22 @@ export const zGetResourceContentData = z.object({
 /**
  * The resource content is successfully returned.
  */
-export const zGetResourceContentResponse = z.string().register(z.globalRegistry, {
+export const zGetResourceContentResponse = z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    description: 'The resource content is successfully returned.'
+});
+
+export const zGetResourceContentBinaryData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        resourceKey: zResourceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The resource content is successfully returned.
+ */
+export const zGetResourceContentBinaryResponse = z.string().register(z.globalRegistry, {
     description: 'The resource content is successfully returned.'
 });
 

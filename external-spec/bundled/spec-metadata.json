@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:4a17a26d4a0129c6bbcf4e9e207902cefc08f33f1a040d01ab9a3cb18781e9ff",
+  "specHash": "sha256:8c16696ba1ce554b13171dde4a1c0abb5f08d2c30f5a90c1c1f9a6078dac2274",
   "semanticKeys": [
     {
       "name": "AgentInstanceKey",
@@ -2282,6 +2282,14 @@
       ]
     },
     {
+      "operationId": "getFormByKey",
+      "path": "/forms/{formKey}",
+      "method": "get",
+      "tags": [
+        "Form"
+      ]
+    },
+    {
       "operationId": "getGlobalTaskListener",
       "path": "/global-task-listeners/{id}",
       "method": "get",
@@ -2586,6 +2594,14 @@
       ]
     },
     {
+      "operationId": "getResourceContentBinary",
+      "path": "/resources/{resourceKey}/content/binary",
+      "method": "get",
+      "tags": [
+        "Resource"
+      ]
+    },
+    {
       "operationId": "searchRoles",
       "path": "/roles/search",
       "method": "post",
@@ -2780,6 +2796,35 @@
   ],
   "operations": [
     {
+      "operationId": "createAgentInstance",
+      "path": "/agent-instances",
+      "method": "post",
+      "tags": [
+        "Agent instance"
+      ],
+      "summary": "Create agent instance",
+      "description": "Creates a new agent instance. The returned key identifies the instance and must\nbe used in subsequent update and query calls.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "agent-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "AgentInstanceCreationRequest",
+      "successResponseSchemaRef": "AgentInstanceCreationResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "getAgentInstance",
       "path": "/agent-instances/{agentInstanceKey}",
       "method": "get",
@@ -2804,6 +2849,36 @@
       "successStatus": 200,
       "vendorExtensions": {
         "x-eventually-consistent": true,
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
+      "operationId": "updateAgentInstance",
+      "path": "/agent-instances/{agentInstanceKey}",
+      "method": "patch",
+      "tags": [
+        "Agent instance"
+      ],
+      "summary": "Update agent instance",
+      "description": "Updates the mutable fields of an agent instance: status, metric counters, and\ntools. Metric values are treated as deltas and applied immediately to the\naggregate counters. Tool updates replace the existing tool list. At least one of\nstatus, metrics, or tools must be provided.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "agentInstanceKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "agent-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "AgentInstanceUpdateRequest",
+      "successStatus": 204,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
         "x-added-in-version": "8.10"
       }
     },
@@ -4417,6 +4492,34 @@
       "vendorExtensions": {
         "x-eventually-consistent": false,
         "x-added-in-version": "8.9"
+      }
+    },
+    {
+      "operationId": "getFormByKey",
+      "path": "/forms/{formKey}",
+      "method": "get",
+      "tags": [
+        "Form"
+      ],
+      "summary": "Get form by key",
+      "description": "Get a form by its unique form key.\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "formKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "forms.yaml",
+      "requestBodyContentTypes": [],
+      "successResponseSchemaRef": "FormResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": true,
+        "x-added-in-version": "8.10"
       }
     },
     {
@@ -6758,8 +6861,8 @@
       "tags": [
         "Resource"
       ],
-      "summary": "Get resource content",
-      "description": "Returns the content of a deployed resource.\n:::info\nCurrently, this endpoint only supports RPA resources.\n:::\n",
+      "summary": "Get RPA resource content (deprecated)",
+      "description": "**Deprecated** — use `/resources/{resourceKey}/content/binary` instead, which supports all\nresource types and returns content as binary (octet-stream).\n\nReturns the content of a deployed RPA resource as JSON.\n:::info\nThis endpoint only supports RPA resources. For generic resource content in binary format,\nuse the `/resources/{resourceKey}/content/binary` endpoint.\n:::\n",
       "eventuallyConsistent": true,
       "hasRequestBody": false,
       "requestBodyUnion": false,
@@ -6776,6 +6879,33 @@
       "vendorExtensions": {
         "x-eventually-consistent": true,
         "x-added-in-version": "8.7"
+      }
+    },
+    {
+      "operationId": "getResourceContentBinary",
+      "path": "/resources/{resourceKey}/content/binary",
+      "method": "get",
+      "tags": [
+        "Resource"
+      ],
+      "summary": "Get resource content as binary",
+      "description": "Returns the content of a deployed resource in binary format (octet-stream).\n:::info\nThis endpoint does not return BPMN process definitions, DMN decision definitions, or form\nresources. To query BPMN process definitions or DMN decision definitions, use their\nrespective APIs.\n:::\n",
+      "eventuallyConsistent": true,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "resourceKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "deployments.yaml",
+      "requestBodyContentTypes": [],
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": true,
+        "x-added-in-version": "8.10"
       }
     },
     {
@@ -9073,6 +9203,13 @@
       "stableId": "activated-job-result"
     },
     {
+      "schemaName": "AgentInstanceCreationResult",
+      "providers": [
+        "agentInstanceKey"
+      ],
+      "stableId": "agent-instance-creation-result"
+    },
+    {
       "schemaName": "AuthorizationCreateResult",
       "providers": [
         "authorizationKey"
@@ -9217,9 +9354,9 @@
   "integrity": {
     "totalSemanticKeys": 40,
     "totalUnions": 57,
-    "totalOperations": 186,
-    "totalEventuallyConsistent": 86,
+    "totalOperations": 190,
+    "totalEventuallyConsistent": 88,
     "totalDeprecatedEnumSchemas": 2,
-    "totalSemanticProviders": 20
+    "totalSemanticProviders": 21
   }
 }

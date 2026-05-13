@@ -47,7 +47,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 186
+// Operations: 190
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -137,6 +137,9 @@ export type correlateMessageInput = correlateMessageBody;
 type createAdminUserOptions = Parameters<typeof Sdk.createAdminUser>[0];
 type createAdminUserBody = (NonNullable<createAdminUserOptions> extends { body?: infer B } ? B : never);
 export type createAdminUserInput = createAdminUserBody;
+type createAgentInstanceOptions = Parameters<typeof Sdk.createAgentInstance>[0];
+type createAgentInstanceBody = (NonNullable<createAgentInstanceOptions> extends { body?: infer B } ? B : never);
+export type createAgentInstanceInput = createAgentInstanceBody;
 type createAuthorizationOptions = Parameters<typeof Sdk.createAuthorization>[0];
 type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
 export type createAuthorizationInput = createAuthorizationBody;
@@ -340,6 +343,14 @@ export type getElementInstanceConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getElementInstance>> 
 };
+type getFormByKeyOptions = Parameters<typeof Sdk.getFormByKey>[0];
+type getFormByKeyPathParam_formKey = (NonNullable<getFormByKeyOptions> extends { path: { formKey: infer P } } ? P : any);
+export type getFormByKeyInput = { formKey: getFormByKeyPathParam_formKey };
+/** Management of eventual consistency **/
+export type getFormByKeyConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getFormByKey>> 
+};
 type getGlobalClusterVariableOptions = Parameters<typeof Sdk.getGlobalClusterVariable>[0];
 type getGlobalClusterVariablePathParam_name = (NonNullable<getGlobalClusterVariableOptions> extends { path: { name: infer P } } ? P : any);
 export type getGlobalClusterVariableInput = { name: getGlobalClusterVariablePathParam_name };
@@ -536,6 +547,14 @@ export type getResourceContentInput = { resourceKey: getResourceContentPathParam
 export type getResourceContentConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResourceContent>> 
+};
+type getResourceContentBinaryOptions = Parameters<typeof Sdk.getResourceContentBinary>[0];
+type getResourceContentBinaryPathParam_resourceKey = (NonNullable<getResourceContentBinaryOptions> extends { path: { resourceKey: infer P } } ? P : any);
+export type getResourceContentBinaryInput = { resourceKey: getResourceContentBinaryPathParam_resourceKey };
+/** Management of eventual consistency **/
+export type getResourceContentBinaryConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResourceContentBinary>> 
 };
 type getRoleOptions = Parameters<typeof Sdk.getRole>[0];
 type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends { path: { roleId: infer P } } ? P : any);
@@ -1080,6 +1099,10 @@ export type unassignUserFromTenantInput = { tenantId: unassignUserFromTenantPath
 type unassignUserTaskOptions = Parameters<typeof Sdk.unassignUserTask>[0];
 type unassignUserTaskPathParam_userTaskKey = (NonNullable<unassignUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type unassignUserTaskInput = { userTaskKey: unassignUserTaskPathParam_userTaskKey };
+type updateAgentInstanceOptions = Parameters<typeof Sdk.updateAgentInstance>[0];
+type updateAgentInstanceBody = (NonNullable<updateAgentInstanceOptions> extends { body?: infer B } ? B : never);
+type updateAgentInstancePathParam_agentInstanceKey = (NonNullable<updateAgentInstanceOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
+export type updateAgentInstanceInput = updateAgentInstanceBody & { agentInstanceKey: updateAgentInstancePathParam_agentInstanceKey };
 type updateAuthorizationOptions = Parameters<typeof Sdk.updateAuthorization>[0];
 type updateAuthorizationBody = (NonNullable<updateAuthorizationOptions> extends { body?: infer B } ? B : never);
 type updateAuthorizationPathParam_authorizationKey = (NonNullable<updateAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
@@ -1125,7 +1148,7 @@ type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
-const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
+const VOID_RESPONSES = new Set(['zUpdateAgentInstanceResponse', 'zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
@@ -3349,6 +3372,85 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Create agent instance
+   *
+   * Creates a new agent instance. The returned key identifies the instance and must
+   * be used in subsequent update and query calls.
+   *
+    *
+   * @example Create an agent instance
+   * ```ts
+   * async function createAgentInstanceExample(elementInstanceKey: ElementInstanceKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.createAgentInstance({
+   *     elementInstanceKey,
+   *     definition: {
+   *       model: 'gpt-4o',
+   *       provider: 'openai',
+   *       systemPrompt: 'You are a helpful assistant.',
+   *     },
+   *   });
+   * 
+   *   console.log(`Created agent instance: ${result.agentInstanceKey}`);
+   * }
+   * ```
+   * @operationId createAgentInstance
+   * @tags Agent instance
+   */
+  createAgentInstance(input: createAgentInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAgentInstance>>;
+  createAgentInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('createAgentInstance', _schemas.zCreateAgentInstanceData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.createAgentInstance(opts);
+        let data = this._evaluateResponse(_raw, 'createAgentInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zCreateAgentInstanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zCreateAgentInstanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createAgentInstance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'createAgentInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -6887,6 +6989,87 @@ export class CamundaClient {
   }
 
   /**
+   * Get form by key
+   *
+   * Get a form by its unique form key.
+   *
+    *
+   * @example Get a form by key
+   * ```ts
+   * async function getFormByKeyExample(formKey: FormKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const form = await camunda.getFormByKey(
+   *     {
+   *       formKey,
+   *     },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   console.log(`Form: ${form.formId}, version: ${form.version}`);
+   * }
+   * ```
+   * @operationId getFormByKey
+   * @tags Form
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getFormByKey(input: getFormByKeyInput, /** Management of eventual consistency **/ consistencyManagement: getFormByKeyConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getFormByKey>>;
+  getFormByKey(arg: any, /** Management of eventual consistency **/ consistencyManagement: getFormByKeyConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { formKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { formKey };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('getFormByKey', _schemas.zGetFormByKeyData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getFormByKey(opts);
+        let data = this._evaluateResponse(_raw, 'getFormByKey', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetFormByKeyResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetFormByKeyResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getFormByKey', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getFormByKey', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Get a global-scoped cluster variable
    *
    * Get a global-scoped cluster variable.
@@ -8829,13 +9012,19 @@ export class CamundaClient {
   }
 
   /**
-   * Get resource content
+   * Get RPA resource content (deprecated)
    *
-   * Returns the content of a deployed resource.
+   * **Deprecated** — use `/resources/{resourceKey}/content/binary` instead, which supports all
+   * resource types and returns content as binary (octet-stream).
+   *
+   * Returns the content of a deployed RPA resource as JSON.
    * :::info
-   * Currently, this endpoint only supports RPA resources.
+   * This endpoint only supports RPA resources. For generic resource content in binary format,
+   * use the `/resources/{resourceKey}/content/binary` endpoint.
    * :::
    *
+   *
+   * @deprecated
     *
    * @example Get resource content
    * ```ts
@@ -8908,6 +9097,92 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getResourceContent', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get resource content as binary
+   *
+   * Returns the content of a deployed resource in binary format (octet-stream).
+   * :::info
+   * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+   * resources. To query BPMN process definitions or DMN decision definitions, use their
+   * respective APIs.
+   * :::
+   *
+    *
+   * @example Get resource content as binary
+   * ```ts
+   * async function getResourceContentBinaryExample(resourceKey: ProcessDefinitionKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const content = await camunda.getResourceContentBinary(
+   *     {
+   *       resourceKey,
+   *     },
+   *     { consistency: { waitUpToMs: 0 } }
+   *   );
+   * 
+   *   console.log(`Binary content retrieved (type: ${typeof content})`);
+   * }
+   * ```
+   * @operationId getResourceContentBinary
+   * @tags Resource
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getResourceContentBinary(input: getResourceContentBinaryInput, /** Management of eventual consistency **/ consistencyManagement: getResourceContentBinaryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getResourceContentBinary>>;
+  getResourceContentBinary(arg: any, /** Management of eventual consistency **/ consistencyManagement: getResourceContentBinaryConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { resourceKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { resourceKey };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('getResourceContentBinary', _schemas.zGetResourceContentBinaryData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getResourceContentBinary(opts);
+        let data = this._evaluateResponse(_raw, 'getResourceContentBinary', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetResourceContentBinaryResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetResourceContentBinaryResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getResourceContentBinary', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getResourceContentBinary', true, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }
@@ -15374,6 +15649,90 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'unassignUserTask', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Update agent instance
+   *
+   * Updates the mutable fields of an agent instance: status, metric counters, and
+   * tools. Metric values are treated as deltas and applied immediately to the
+   * aggregate counters. Tool updates replace the existing tool list. At least one of
+   * status, metrics, or tools must be provided.
+   *
+    *
+   * @example Update an agent instance
+   * ```ts
+   * async function updateAgentInstanceExample(agentInstanceKey: AgentInstanceKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   await camunda.updateAgentInstance({
+   *     agentInstanceKey,
+   *     status: 'THINKING',
+   *     metrics: {
+   *       inputTokens: 150,
+   *       outputTokens: 50,
+   *       modelCalls: 1,
+   *     },
+   *   });
+   * 
+   *   console.log(`Updated agent instance: ${agentInstanceKey}`);
+   * }
+   * ```
+   * @operationId updateAgentInstance
+   * @tags Agent instance
+   */
+  updateAgentInstance(input: updateAgentInstanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateAgentInstance>>;
+  updateAgentInstance(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { agentInstanceKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { agentInstanceKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('updateAgentInstance', _schemas.zUpdateAgentInstanceData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.updateAgentInstance(opts);
+        let data = this._evaluateResponse(_raw, 'updateAgentInstance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zUpdateAgentInstanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zUpdateAgentInstanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('updateAgentInstance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'updateAgentInstance', exempt: false, retryOverride: options?.retry });
     });
   }
 

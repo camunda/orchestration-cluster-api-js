@@ -7,7 +7,7 @@
       "name": "Camunda Engineering",
       "url": "https://github.com/camunda/camunda/issues"
     },
-    "description": "API for communicating with a Camunda 8 cluster.",
+    "description": "API for communicating with a Camunda 8 cluster.\n\n## Conventions\n\n### Enum value casing\n\nServer-side, enum-typed request fields accept any casing of a\ndocumented value (for example `ACTIVE`, `active`, and `Active` are\nall accepted on input). Responses always use the canonical casing\nshown in this specification.\n\nThis permissive request behavior is a server-side convenience and\nis **not** part of the OpenAPI enum contract — SDKs generated from\nthis specification by strict generators may reject non-canonical\ncasing on the client side. For portability across SDKs, always\nsend the canonical casing shown in this document.\n",
     "license": {
       "name": "Camunda License Version 1.0",
       "url": "https://github.com/camunda/camunda/blob/main/licenses/CAMUNDA-LICENSE-1.0.txt"
@@ -86,6 +86,9 @@
       "name": "Expression"
     },
     {
+      "name": "Form"
+    },
+    {
       "name": "Global listener"
     },
     {
@@ -147,6 +150,65 @@
     }
   ],
   "paths": {
+    "/agent-instances": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Agent instance"
+        ],
+        "operationId": "createAgentInstance",
+        "summary": "Create agent instance",
+        "description": "Creates a new agent instance. The returned key identifies the instance and must\nbe used in subsequent update and query calls.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentInstanceCreationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The agent instance was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentInstanceCreationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The elementInstanceKey does not correspond to an active element instance.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
     "/agent-instances/{agentInstanceKey}": {
       "get": {
         "x-eventually-consistent": true,
@@ -177,6 +239,67 @@
                 }
               }
             }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The agent instance with the given key was not found.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
+      },
+      "patch": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Agent instance"
+        ],
+        "operationId": "updateAgentInstance",
+        "summary": "Update agent instance",
+        "description": "Updates the mutable fields of an agent instance: status, metric counters, and\ntools. Metric values are treated as deltas and applied immediately to the\naggregate counters. Tool updates replace the existing tool list. At least one of\nstatus, metrics, or tools must be provided.\n",
+        "parameters": [
+          {
+            "name": "agentInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the agent instance to update.",
+            "schema": {
+              "$ref": "#/components/schemas/AgentInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentInstanceUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The agent instance was updated successfully."
           },
           "400": {
             "$ref": "#/paths/~1clock/put/responses/400"
@@ -3170,6 +3293,63 @@
           }
         },
         "x-added-in-version": "8.9"
+      }
+    },
+    "/forms/{formKey}": {
+      "get": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Form"
+        ],
+        "operationId": "getFormByKey",
+        "summary": "Get form by key",
+        "description": "Get a form by its unique form key.\n",
+        "parameters": [
+          {
+            "name": "formKey",
+            "in": "path",
+            "required": true,
+            "description": "The form key.",
+            "schema": {
+              "$ref": "#/components/schemas/FormKey"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The form is successfully returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The form with the given key was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/global-task-listeners": {
@@ -7407,13 +7587,73 @@
     },
     "/resources/{resourceKey}/content": {
       "get": {
+        "deprecated": true,
         "x-eventually-consistent": true,
         "tags": [
           "Resource"
         ],
         "operationId": "getResourceContent",
-        "summary": "Get resource content",
-        "description": "Returns the content of a deployed resource.\n:::info\nCurrently, this endpoint only supports RPA resources.\n:::\n",
+        "summary": "Get RPA resource content (deprecated)",
+        "description": "**Deprecated** — use `/resources/{resourceKey}/content/binary` instead, which supports all\nresource types and returns content as binary (octet-stream).\n\nReturns the content of a deployed RPA resource as JSON.\n:::info\nThis endpoint only supports RPA resources. For generic resource content in binary format,\nuse the `/resources/{resourceKey}/content/binary` endpoint.\n:::\n",
+        "parameters": [
+          {
+            "name": "resourceKey",
+            "in": "path",
+            "required": true,
+            "description": "The unique key identifying the RPA resource.",
+            "schema": {
+              "$ref": "#/components/schemas/ResourceKey"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource content is successfully returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A resource with the given key was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "The resource exists but is not an RPA resource.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.7"
+      }
+    },
+    "/resources/{resourceKey}/content/binary": {
+      "get": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Resource"
+        ],
+        "operationId": "getResourceContentBinary",
+        "summary": "Get resource content as binary",
+        "description": "Returns the content of a deployed resource in binary format (octet-stream).\n:::info\nThis endpoint does not return BPMN process definitions, DMN decision definitions, or form\nresources. To query BPMN process definitions or DMN decision definitions, use their\nrespective APIs.\n:::\n",
         "parameters": [
           {
             "name": "resourceKey",
@@ -7451,7 +7691,7 @@
             "$ref": "#/paths/~1clock/put/responses/500"
           }
         },
-        "x-added-in-version": "8.7"
+        "x-added-in-version": "8.10"
       }
     },
     "/resources/{resourceKey}/deletion": {
@@ -9015,6 +9255,29 @@
                         "maxJobTypeLength": 100,
                         "maxTenantIdLength": 30,
                         "maxUniqueKeys": 9500
+                      },
+                      "components": {
+                        "active": [
+                          "operate",
+                          "tasklist"
+                        ]
+                      },
+                      "deployment": {
+                        "isEnterprise": false,
+                        "isMultiTenancyEnabled": false,
+                        "contextPath": "",
+                        "maxRequestSize": 4194304
+                      },
+                      "authentication": {
+                        "canLogout": true,
+                        "isLoginDelegated": false
+                      },
+                      "cloud": {
+                        "organizationId": null,
+                        "clusterId": null,
+                        "stage": null,
+                        "mixpanelToken": null,
+                        "mixpanelAPIHost": null
                       }
                     }
                   }
@@ -11583,6 +11846,17 @@
                 "$ref": "#/components/schemas/DateTimeFilterProperty"
               }
             ]
+          },
+          "elementInstanceKeys": {
+            "description": "The keys of element instances associated with this agent instance.\nIf multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
+                }
+              ]
+            }
           }
         }
       },
@@ -11615,13 +11889,15 @@
           "definition",
           "metrics",
           "limits",
+          "tools",
           "elementId",
           "processInstanceKey",
           "processDefinitionKey",
           "tenantId",
           "creationDate",
           "lastUpdatedDate",
-          "completionDate"
+          "completionDate",
+          "elementInstanceKeys"
         ],
         "properties": {
           "agentInstanceKey": {
@@ -11658,6 +11934,13 @@
                 "$ref": "#/components/schemas/AgentInstanceLimits"
               }
             ]
+          },
+          "tools": {
+            "description": "The tools available to the agent.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentTool"
+            }
           },
           "elementId": {
             "description": "The BPMN element ID of the ad-hoc sub-process or AI agent task that owns this agent instance.",
@@ -11706,6 +11989,17 @@
             "format": "date-time",
             "nullable": true,
             "description": "The date when this agent instance completed. Null while the agent is still running."
+          },
+          "elementInstanceKeys": {
+            "description": "The keys of all element instances associated with this agent instance.",
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ElementInstanceKey"
+                }
+              ]
+            }
           }
         }
       },
@@ -11729,6 +12023,31 @@
           "systemPrompt": {
             "type": "string",
             "description": "The system prompt configured for this agent instance."
+          }
+        }
+      },
+      "AgentTool": {
+        "description": "A tool available to the agent.",
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "elementId"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The tool name as visible to the LLM."
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "A human-readable description of the tool."
+          },
+          "elementId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The BPMN element ID of the tool element within the ad-hoc sub-process."
           }
         }
       },
@@ -11801,6 +12120,119 @@
           "TOOL_CALLING",
           "TOOL_DISCOVERY"
         ]
+      },
+      "AgentInstanceCreationRequest": {
+        "description": "Request to create a new agent instance.",
+        "type": "object",
+        "required": [
+          "elementInstanceKey",
+          "definition"
+        ],
+        "properties": {
+          "elementInstanceKey": {
+            "description": "The key of the AHSP or AI Agent Task element instance.\nThe engine uses this key to infer processInstanceKey, elementId,\nprocessDefinitionKey, and tenantId.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementInstanceKey"
+              }
+            ]
+          },
+          "definition": {
+            "description": "Static definition set once at creation.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceDefinition"
+              }
+            ]
+          },
+          "limits": {
+            "description": "Limits for the agent execution. When omitted, all limits default to -1\n(no limit).\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceLimits"
+              }
+            ]
+          }
+        }
+      },
+      "AgentInstanceCreationResult": {
+        "description": "Response returned after successfully creating an agent instance.",
+        "type": "object",
+        "x-semantic-provider": [
+          "agentInstanceKey"
+        ],
+        "required": [
+          "agentInstanceKey"
+        ],
+        "properties": {
+          "agentInstanceKey": {
+            "description": "The system-generated key for the created agent instance.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceKey"
+              }
+            ]
+          }
+        }
+      },
+      "AgentInstanceMetricsDelta": {
+        "description": "Metric increments to apply to the agent instance aggregate counters. The engine\naccumulates these deltas into running totals on each UPDATED event. All fields\nare optional; omit a field to leave the corresponding counter unchanged.\n",
+        "type": "object",
+        "properties": {
+          "inputTokens": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Increment to apply to the total input token counter."
+          },
+          "outputTokens": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Increment to apply to the total output token counter."
+          },
+          "modelCalls": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Increment to apply to the total model call counter."
+          },
+          "toolCalls": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "Increment to apply to the total tool call counter."
+          }
+        }
+      },
+      "AgentInstanceUpdateRequest": {
+        "description": "Request to update the mutable state of an agent instance. At least one of\nstatus, metrics, or tools must be provided.\n",
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "The new status of the agent instance.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceStatusEnum"
+              }
+            ]
+          },
+          "metrics": {
+            "description": "Metric increments to apply to the aggregate counters.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceMetricsDelta"
+              }
+            ]
+          },
+          "tools": {
+            "description": "The complete list of tools available to the agent, replacing any previously\nstored tools. When provided, the engine replaces the existing tool list with\nthis value.\n",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentTool"
+            }
+          }
+        }
       },
       "AgentInstanceStatusFilterProperty": {
         "description": "AgentInstanceStatusEnum property with full advanced search capabilities.",
@@ -19239,8 +19671,8 @@
         "description": "Job type statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "page",
+          "items"
         ],
         "allOf": [
           {
@@ -19342,8 +19774,8 @@
         "description": "Job worker statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "page",
+          "items"
         ],
         "allOf": [
           {
@@ -19443,8 +19875,8 @@
         "description": "Job time-series statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "page",
+          "items"
         ],
         "allOf": [
           {
@@ -19556,8 +19988,8 @@
         "description": "Job error statistics query result.",
         "type": "object",
         "required": [
-          "items",
-          "page"
+          "page",
+          "items"
         ],
         "allOf": [
           {
@@ -19664,8 +20096,8 @@
         },
         "required": [
           "type",
-          "timeout",
-          "maxJobsToActivate"
+          "maxJobsToActivate",
+          "timeout"
         ]
       },
       "JobActivationResult": {
@@ -22096,7 +22528,7 @@
           "correlationKey",
           "elementId",
           "elementInstanceKey",
-          "extensionProperties",
+          "toolProperties",
           "inboundConnectorType",
           "lastUpdatedDate",
           "messageName",
@@ -22192,12 +22624,12 @@
           "messageSubscriptionType": {
             "$ref": "#/components/schemas/MessageSubscriptionTypeEnum"
           },
-          "extensionProperties": {
+          "toolProperties": {
             "type": "object",
             "additionalProperties": {
               "type": "string"
             },
-            "description": "The `zeebe:properties` extension properties extracted from the BPMN element associated\nwith this subscription. Empty object when no properties are defined.\n"
+            "description": "The subset of `zeebe:properties` extension properties whose keys start with the\n`io.camunda.tool:` prefix, extracted from the BPMN element associated with this\nsubscription. Empty object when no matching properties are defined.\n"
           },
           "processDefinitionName": {
             "type": "string",
@@ -25567,11 +25999,27 @@
         "description": "Envelope for all system configuration sections. Each property\nrepresents a feature area.\n",
         "type": "object",
         "required": [
-          "jobMetrics"
+          "jobMetrics",
+          "components",
+          "deployment",
+          "authentication",
+          "cloud"
         ],
         "properties": {
           "jobMetrics": {
             "$ref": "#/components/schemas/JobMetricsConfigurationResponse"
+          },
+          "components": {
+            "$ref": "#/components/schemas/ComponentsConfigurationResponse"
+          },
+          "deployment": {
+            "$ref": "#/components/schemas/DeploymentConfigurationResponse"
+          },
+          "authentication": {
+            "$ref": "#/components/schemas/AuthenticationConfigurationResponse"
+          },
+          "cloud": {
+            "$ref": "#/components/schemas/CloudConfigurationResponse"
           }
         }
       },
@@ -25622,6 +26070,144 @@
             "example": 9500
           }
         }
+      },
+      "ComponentsConfigurationResponse": {
+        "description": "Configuration for active Camunda components in the deployment.",
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "properties": {
+          "active": {
+            "description": "List of webapp components whose UI is enabled in this deployment.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebappComponent"
+            },
+            "example": [
+              "operate",
+              "tasklist"
+            ]
+          }
+        }
+      },
+      "DeploymentConfigurationResponse": {
+        "description": "Configuration for deployment characteristics.",
+        "type": "object",
+        "required": [
+          "isEnterprise",
+          "isMultiTenancyEnabled",
+          "contextPath",
+          "maxRequestSize"
+        ],
+        "properties": {
+          "isEnterprise": {
+            "description": "Whether this is an enterprise deployment.",
+            "type": "boolean",
+            "example": false
+          },
+          "isMultiTenancyEnabled": {
+            "description": "Whether multi-tenancy is enabled.",
+            "type": "boolean",
+            "example": false
+          },
+          "contextPath": {
+            "description": "The servlet context path for the deployment.",
+            "type": "string",
+            "example": ""
+          },
+          "maxRequestSize": {
+            "description": "The maximum HTTP request size in bytes.",
+            "type": "integer",
+            "format": "int64",
+            "example": 4194304
+          }
+        }
+      },
+      "AuthenticationConfigurationResponse": {
+        "description": "Configuration for authentication and session management.",
+        "type": "object",
+        "required": [
+          "canLogout",
+          "isLoginDelegated"
+        ],
+        "properties": {
+          "canLogout": {
+            "description": "Whether users can log out (false for SaaS deployments).",
+            "type": "boolean",
+            "example": true
+          },
+          "isLoginDelegated": {
+            "description": "Whether login is delegated to an external identity provider.",
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "CloudConfigurationResponse": {
+        "description": "Configuration for SaaS/cloud-specific settings.",
+        "type": "object",
+        "required": [
+          "organizationId",
+          "clusterId",
+          "stage",
+          "mixpanelToken",
+          "mixpanelAPIHost"
+        ],
+        "properties": {
+          "organizationId": {
+            "description": "The SaaS organization ID, if applicable.",
+            "type": "string",
+            "nullable": true,
+            "example": "org-123456"
+          },
+          "clusterId": {
+            "description": "The SaaS cluster ID, if applicable.",
+            "type": "string",
+            "nullable": true,
+            "example": "cluster-abc"
+          },
+          "stage": {
+            "description": "The cloud deployment stage.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CloudStage"
+              }
+            ],
+            "example": "prod"
+          },
+          "mixpanelToken": {
+            "description": "The Mixpanel analytics token for the cloud UI.",
+            "type": "string",
+            "nullable": true,
+            "example": "abc123token"
+          },
+          "mixpanelAPIHost": {
+            "description": "The Mixpanel API host URL.",
+            "type": "string",
+            "nullable": true,
+            "example": "https://api.mixpanel.com"
+          }
+        }
+      },
+      "WebappComponent": {
+        "description": "A Camunda webapp component name.",
+        "type": "string",
+        "enum": [
+          "operate",
+          "tasklist",
+          "admin"
+        ]
+      },
+      "CloudStage": {
+        "description": "The cloud deployment stage.",
+        "type": "string",
+        "enum": [
+          "dev",
+          "int",
+          "prod"
+        ]
       },
       "TenantCreateRequest": {
         "type": "object",

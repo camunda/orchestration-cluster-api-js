@@ -69,6 +69,11 @@ export type AgentInstanceFilter = {
      * The completion date of the agent instance.
      */
     completionDate?: DateTimeFilterProperty;
+    /**
+     * The keys of element instances associated with this agent instance.
+     * If multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.
+     */
+    elementInstanceKeys?: Array<ElementInstanceKeyFilterProperty>;
 };
 
 /**
@@ -100,6 +105,10 @@ export type AgentInstanceResult = {
      */
     limits: AgentInstanceLimits;
     /**
+     * The tools available to the agent.
+     */
+    tools: Array<AgentTool>;
+    /**
      * The BPMN element ID of the ad-hoc sub-process or AI agent task that owns this agent instance.
      */
     elementId: ElementId;
@@ -127,6 +136,10 @@ export type AgentInstanceResult = {
      * The date when this agent instance completed. Null while the agent is still running.
      */
     completionDate: string | null;
+    /**
+     * The keys of all element instances associated with this agent instance.
+     */
+    elementInstanceKeys: Array<ElementInstanceKey>;
 };
 
 /**
@@ -145,6 +158,24 @@ export type AgentInstanceDefinition = {
      * The system prompt configured for this agent instance.
      */
     systemPrompt: string;
+};
+
+/**
+ * A tool available to the agent.
+ */
+export type AgentTool = {
+    /**
+     * The tool name as visible to the LLM.
+     */
+    name: string;
+    /**
+     * A human-readable description of the tool.
+     */
+    description: string | null;
+    /**
+     * The BPMN element ID of the tool element within the ad-hoc sub-process.
+     */
+    elementId: string | null;
 };
 
 /**
@@ -199,6 +230,87 @@ export const AgentInstanceStatusEnum = {
   TOOL_DISCOVERY: 'TOOL_DISCOVERY',
 } as const;
 export type AgentInstanceStatusEnum = (typeof AgentInstanceStatusEnum)[keyof typeof AgentInstanceStatusEnum];
+/**
+ * Request to create a new agent instance.
+ */
+export type AgentInstanceCreationRequest = {
+    /**
+     * The key of the AHSP or AI Agent Task element instance.
+     * The engine uses this key to infer processInstanceKey, elementId,
+     * processDefinitionKey, and tenantId.
+     *
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * Static definition set once at creation.
+     */
+    definition: AgentInstanceDefinition;
+    /**
+     * Limits for the agent execution. When omitted, all limits default to -1
+     * (no limit).
+     *
+     */
+    limits?: AgentInstanceLimits;
+};
+
+/**
+ * Response returned after successfully creating an agent instance.
+ */
+export type AgentInstanceCreationResult = {
+    /**
+     * The system-generated key for the created agent instance.
+     */
+    agentInstanceKey: AgentInstanceKey;
+};
+
+/**
+ * Metric increments to apply to the agent instance aggregate counters. The engine
+ * accumulates these deltas into running totals on each UPDATED event. All fields
+ * are optional; omit a field to leave the corresponding counter unchanged.
+ *
+ */
+export type AgentInstanceMetricsDelta = {
+    /**
+     * Increment to apply to the total input token counter.
+     */
+    inputTokens?: number;
+    /**
+     * Increment to apply to the total output token counter.
+     */
+    outputTokens?: number;
+    /**
+     * Increment to apply to the total model call counter.
+     */
+    modelCalls?: number;
+    /**
+     * Increment to apply to the total tool call counter.
+     */
+    toolCalls?: number;
+};
+
+/**
+ * Request to update the mutable state of an agent instance. At least one of
+ * status, metrics, or tools must be provided.
+ *
+ */
+export type AgentInstanceUpdateRequest = {
+    /**
+     * The new status of the agent instance.
+     */
+    status?: AgentInstanceStatusEnum;
+    /**
+     * Metric increments to apply to the aggregate counters.
+     */
+    metrics?: AgentInstanceMetricsDelta;
+    /**
+     * The complete list of tools available to the agent, replacing any previously
+     * stored tools. When provided, the engine replaces the existing tool list with
+     * this value.
+     *
+     */
+    tools?: Array<AgentTool>;
+};
+
 /**
  * AgentInstanceStatusEnum property with full advanced search capabilities.
  */
@@ -6059,11 +6171,12 @@ export type MessageSubscriptionResult = {
     correlationKey: string | null;
     messageSubscriptionType: MessageSubscriptionTypeEnum;
     /**
-     * The `zeebe:properties` extension properties extracted from the BPMN element associated
-     * with this subscription. Empty object when no properties are defined.
+     * The subset of `zeebe:properties` extension properties whose keys start with the
+     * `io.camunda.tool:` prefix, extracted from the BPMN element associated with this
+     * subscription. Empty object when no matching properties are defined.
      *
      */
-    extensionProperties: {
+    toolProperties: {
         [key: string]: string;
     };
     /**
@@ -8027,6 +8140,10 @@ export type UsageMetricsResponseItem = {
  */
 export type SystemConfigurationResponse = {
     jobMetrics: JobMetricsConfigurationResponse;
+    components: ComponentsConfigurationResponse;
+    deployment: DeploymentConfigurationResponse;
+    authentication: AuthenticationConfigurationResponse;
+    cloud: CloudConfigurationResponse;
 };
 
 /**
@@ -8058,6 +8175,88 @@ export type JobMetricsConfigurationResponse = {
      */
     maxUniqueKeys: number;
 };
+
+/**
+ * Configuration for active Camunda components in the deployment.
+ */
+export type ComponentsConfigurationResponse = {
+    /**
+     * List of webapp components whose UI is enabled in this deployment.
+     */
+    active: Array<WebappComponent>;
+};
+
+/**
+ * Configuration for deployment characteristics.
+ */
+export type DeploymentConfigurationResponse = {
+    /**
+     * Whether this is an enterprise deployment.
+     */
+    isEnterprise: boolean;
+    /**
+     * Whether multi-tenancy is enabled.
+     */
+    isMultiTenancyEnabled: boolean;
+    /**
+     * The servlet context path for the deployment.
+     */
+    contextPath: string;
+    /**
+     * The maximum HTTP request size in bytes.
+     */
+    maxRequestSize: number;
+};
+
+/**
+ * Configuration for authentication and session management.
+ */
+export type AuthenticationConfigurationResponse = {
+    /**
+     * Whether users can log out (false for SaaS deployments).
+     */
+    canLogout: boolean;
+    /**
+     * Whether login is delegated to an external identity provider.
+     */
+    isLoginDelegated: boolean;
+};
+
+/**
+ * Configuration for SaaS/cloud-specific settings.
+ */
+export type CloudConfigurationResponse = {
+    /**
+     * The SaaS organization ID, if applicable.
+     */
+    organizationId: string | null;
+    /**
+     * The SaaS cluster ID, if applicable.
+     */
+    clusterId: string | null;
+    /**
+     * The cloud deployment stage.
+     */
+    stage: CloudStage | null;
+    /**
+     * The Mixpanel analytics token for the cloud UI.
+     */
+    mixpanelToken: string | null;
+    /**
+     * The Mixpanel API host URL.
+     */
+    mixpanelAPIHost: string | null;
+};
+
+/**
+ * A Camunda webapp component name.
+ */
+export type WebappComponent = 'operate' | 'tasklist' | 'admin';
+
+/**
+ * The cloud deployment stage.
+ */
+export type CloudStage = 'dev' | 'int' | 'prod';
 
 export type TenantCreateRequest = {
     /**
@@ -9306,6 +9505,54 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
 
+export type CreateAgentInstanceData = {
+    body: AgentInstanceCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/agent-instances';
+};
+
+export type CreateAgentInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The elementInstanceKey does not correspond to an active element instance.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type CreateAgentInstanceError = CreateAgentInstanceErrors[keyof CreateAgentInstanceErrors];
+
+export type CreateAgentInstanceResponses = {
+    /**
+     * The agent instance was created.
+     */
+    200: AgentInstanceCreationResult;
+};
+
+export type CreateAgentInstanceResponse = CreateAgentInstanceResponses[keyof CreateAgentInstanceResponses];
+
 export type GetAgentInstanceData = {
     body?: never;
     path: {
@@ -9341,6 +9588,11 @@ export type GetAgentInstanceErrors = {
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
 };
 
 export type GetAgentInstanceError = GetAgentInstanceErrors[keyof GetAgentInstanceErrors];
@@ -9353,6 +9605,54 @@ export type GetAgentInstanceResponses = {
 };
 
 export type GetAgentInstanceResponse = GetAgentInstanceResponses[keyof GetAgentInstanceResponses];
+
+export type UpdateAgentInstanceData = {
+    body: AgentInstanceUpdateRequest;
+    path: {
+        /**
+         * The key of the agent instance to update.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}';
+};
+
+export type UpdateAgentInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type UpdateAgentInstanceError = UpdateAgentInstanceErrors[keyof UpdateAgentInstanceErrors];
+
+export type UpdateAgentInstanceResponses = {
+    /**
+     * The agent instance was updated successfully.
+     */
+    204: void;
+};
+
+export type UpdateAgentInstanceResponse = UpdateAgentInstanceResponses[keyof UpdateAgentInstanceResponses];
 
 export type SearchAgentInstancesData = {
     body?: AgentInstanceSearchQuery;
@@ -11494,6 +11794,52 @@ export type EvaluateExpressionResponses = {
 };
 
 export type EvaluateExpressionResponse = EvaluateExpressionResponses[keyof EvaluateExpressionResponses];
+
+export type GetFormByKeyData = {
+    body?: never;
+    path: {
+        /**
+         * The form key.
+         */
+        formKey: FormKey;
+    };
+    query?: never;
+    url: '/forms/{formKey}';
+};
+
+export type GetFormByKeyErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The form with the given key was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetFormByKeyError = GetFormByKeyErrors[keyof GetFormByKeyErrors];
+
+export type GetFormByKeyResponses = {
+    /**
+     * The form is successfully returned.
+     */
+    200: FormResult;
+};
+
+export type GetFormByKeyResponse = GetFormByKeyResponses[keyof GetFormByKeyResponses];
 
 export type CreateGlobalTaskListenerData = {
     body: CreateGlobalTaskListenerRequest;
@@ -14611,7 +14957,7 @@ export type GetResourceContentData = {
     body?: never;
     path: {
         /**
-         * The unique key identifying the resource.
+         * The unique key identifying the RPA resource.
          */
         resourceKey: ResourceKey;
     };
@@ -14625,6 +14971,10 @@ export type GetResourceContentErrors = {
      */
     404: ProblemDetail;
     /**
+     * The resource exists but is not an RPA resource.
+     */
+    406: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -14636,10 +14986,46 @@ export type GetResourceContentResponses = {
     /**
      * The resource content is successfully returned.
      */
-    200: Blob | File;
+    200: {
+        [key: string]: unknown;
+    };
 };
 
 export type GetResourceContentResponse = GetResourceContentResponses[keyof GetResourceContentResponses];
+
+export type GetResourceContentBinaryData = {
+    body?: never;
+    path: {
+        /**
+         * The unique key identifying the resource.
+         */
+        resourceKey: ResourceKey;
+    };
+    query?: never;
+    url: '/resources/{resourceKey}/content/binary';
+};
+
+export type GetResourceContentBinaryErrors = {
+    /**
+     * A resource with the given key was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetResourceContentBinaryError = GetResourceContentBinaryErrors[keyof GetResourceContentBinaryErrors];
+
+export type GetResourceContentBinaryResponses = {
+    /**
+     * The resource content is successfully returned.
+     */
+    200: Blob | File;
+};
+
+export type GetResourceContentBinaryResponse = GetResourceContentBinaryResponses[keyof GetResourceContentBinaryResponses];
 
 export type DeleteResourceData = {
     body?: DeleteResourceRequest;
@@ -17343,7 +17729,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:4a17a26d4a0129c6bbcf4e9e207902cefc08f33f1a040d01ab9a3cb18781e9ff
+// specHash=sha256:8c16696ba1ce554b13171dde4a1c0abb5f08d2c30f5a90c1c1f9a6078dac2274
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
