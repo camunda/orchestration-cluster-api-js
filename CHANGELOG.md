@@ -1,3 +1,11 @@
+# [10.0.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.5...v10.0.0-alpha.6) (2026-05-13)
+
+
+### Features
+
+* add example coverage for 4 new operations ([3a2c875](https://github.com/camunda/orchestration-cluster-api-js/commit/3a2c87577bcca87996cc77546216c68fb5124ec5))
+* add example coverage for 4 new operations ([6d757a4](https://github.com/camunda/orchestration-cluster-api-js/commit/6d757a4be85ba733f07bcd08c1b6ae33aacd6c15))
+
 # [10.0.0-alpha.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.4...v10.0.0-alpha.5) (2026-05-08)
 
 
