@@ -119,7 +119,7 @@
     "semantic-release": "^25.0.2",
     "single-line-log": "^1.1.2",
     "tsup": "^8.5.1",
-    "tsx": "^4.7.0",
+    "tsx": "^4.20.6",
     "typedoc": "^0.28.0",
     "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^5.4.5",
