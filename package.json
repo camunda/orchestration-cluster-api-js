@@ -107,7 +107,7 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.10",
+    "@biomejs/biome": "^2.4.15",
     "@camunda8/sdk-infra": "^1.4.1",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
