@@ -120,7 +120,7 @@
     "single-line-log": "^1.1.2",
     "tsup": "^8.5.1",
     "tsx": "^4.20.6",
-    "typedoc": "^0.28.0",
+    "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4",
