@@ -1,0 +1,121 @@
+name: PR & Branch CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - 'stable/**'
+  pull_request:
+    branches:
+      - main
+      - 'stable/**'
+
+jobs:
+  commitlint:
+    if: github.event_name == 'pull_request'
+    uses: camunda/sdk-infra/.github/workflows/sdk-commitlint.yml@v1
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20.x, 22.x, 24.x]
+        stack: [simple]
+        include:
+          - node: 22.x
+            stack: full
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Generate & Build
+        run: npm run build
+      - name: Detect Generation Drift (non-blocking)
+        id: drift
+        run: |
+          STATUS=$(git status --porcelain)
+          if [ -n "$STATUS" ]; then
+            echo 'drift=true' >> $GITHUB_OUTPUT
+            echo 'Generation produced changes (reporting only).' >&2
+            echo "$STATUS" | sed 's/^/CHANGED: /'
+            git add -A
+            git diff --cached > _gen-drift.patch || true
+            git reset HEAD
+          else
+            echo 'drift=false' >> $GITHUB_OUTPUT
+          fi
+      - name: Upload Drift Patch
+        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x' && matrix.stack == 'simple'
+        uses: actions/upload-artifact@v4
+        with:
+          name: generation-drift
+          path: _gen-drift.patch
+      - name: Unit Tests
+        run: npm test
+
+      - name: Start Integration Stack
+        working-directory: docker
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            docker compose -f docker-compose-full.yaml up -d
+          else
+            docker compose -f docker-compose.yaml up -d
+          fi
+      - name: Wait for Services Healthy
+        run: |
+          set -e
+          attempts=0
+          max_attempts=60
+          while [ $attempts -lt $max_attempts ]; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9600/actuator/health/status || true)
+            [ "$code" = "200" ] && echo "Broker healthy" && break
+            sleep 5
+            attempts=$((attempts+1))
+          done
+          [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
+      - name: Integration Tests
+        run: npm run test:integration
+      - name: Dump Docker Logs
+        if: always()
+        working-directory: docker
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            docker compose -f docker-compose-full.yaml logs || true
+          else
+            docker compose -f docker-compose.yaml logs || true
+          fi
+      - name: Shutdown Integration Stack
+        if: always()
+        working-directory: docker
+        run: |
+          if [ "${{ matrix.stack }}" == "full" ]; then
+            docker compose -f docker-compose-full.yaml down -v || true
+          else
+            docker compose -f docker-compose.yaml down -v || true
+          fi
+
+      - name: Append Job Summary
+        if: always()
+        run: |
+          status="${{ job.status }}"
+          driftFlag="${{ steps.drift.outputs.drift }}"
+          {
+            echo "### Node ${{ matrix.node }} (${{ matrix.stack }}) Summary";
+            echo "- Status: ${status}";
+            if [ "${driftFlag}" = "true" ]; then
+              echo "- Generation Drift: detected";
+            else
+              echo "- Generation Drift: none";
+            fi
+            echo "";
+          } >> $GITHUB_STEP_SUMMARY
