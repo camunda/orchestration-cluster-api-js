@@ -1,3 +1,10 @@
+# [10.0.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.6...v10.0.0-alpha.7) (2026-05-18)
+
+
+### Bug Fixes
+
+* update docker-compose env vars for 8.10 config schema ([d343d56](https://github.com/camunda/orchestration-cluster-api-js/commit/d343d56a54d6b83246e3a2b26b6ce2469c2de77c))
+
 # [10.0.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.5...v10.0.0-alpha.6) (2026-05-13)
 
 
