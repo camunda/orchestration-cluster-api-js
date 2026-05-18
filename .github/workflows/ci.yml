@@ -73,6 +73,7 @@ jobs:
         with:
           stack: ${{ matrix.stack }}
           docker-dir: docker
+          max-attempts: '90'
       - name: Integration Tests
         run: npm run test:integration
       - name: Stop Integration Stack
