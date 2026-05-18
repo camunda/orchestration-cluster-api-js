@@ -17729,7 +17729,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:8c16696ba1ce554b13171dde4a1c0abb5f08d2c30f5a90c1c1f9a6078dac2274
+// specHash=sha256:f85a4345e56552ece2e63ba93164e70abb16973b17a4256803dc5d64346869c6
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
