@@ -15,6 +15,10 @@ jobs:
     if: github.event_name == 'pull_request'
     uses: camunda/sdk-infra/.github/workflows/sdk-commitlint.yml@v1
 
+  breaking-change-guard:
+    if: github.event_name == 'pull_request'
+    uses: camunda/sdk-infra/.github/workflows/sdk-breaking-change-guard.yml@v1
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -65,10 +69,19 @@ jobs:
         run: npm test
 
       - name: Start Integration Stack
+        id: start-camunda
         uses: camunda/sdk-infra/actions/start-camunda@v1
         with:
           stack: ${{ matrix.stack }}
           docker-dir: docker
+          max-attempts: '90'
+      - name: Dump container logs on startup failure
+        if: failure() && steps.start-camunda.outcome == 'failure'
+        run: |
+          echo "=== Container status ==="
+          docker ps -a
+          echo "=== Container logs ==="
+          docker logs camunda-engine 2>&1 | tail -200
       - name: Integration Tests
         run: npm run test:integration
       - name: Stop Integration Stack
