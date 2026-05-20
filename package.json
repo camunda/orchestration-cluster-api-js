@@ -108,7 +108,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
-    "@camunda8/sdk-infra": "^1.4.1",
+    "@camunda8/sdk-infra": "^1.5.1",
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
     "@hey-api/openapi-ts": "^0.86.12",
