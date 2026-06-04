@@ -59,11 +59,12 @@ async function createAgentInstanceExample(elementInstanceKey: ElementInstanceKey
 //#endregion CreateAgentInstance
 
 //#region UpdateAgentInstance
-async function updateAgentInstanceExample(agentInstanceKey: AgentInstanceKey) {
+async function updateAgentInstanceExample(agentInstanceKey: AgentInstanceKey, elementInstanceKey: ElementInstanceKey) {
   const camunda = createCamundaClient();
 
   await camunda.updateAgentInstance({
     agentInstanceKey,
+    elementInstanceKey,
     status: 'THINKING',
     metrics: {
       inputTokens: 150,
