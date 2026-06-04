@@ -1,3 +1,11 @@
+# [10.0.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.7...v10.0.0-alpha.8) (2026-06-04)
+
+
+### Features
+
+* add Slack notifications for release failures and community events ([051e782](https://github.com/camunda/orchestration-cluster-api-js/commit/051e78230ce2a2eeda53bdc604a99a783e4b5caa))
+* add Slack notifications for release failures and community events ([2981264](https://github.com/camunda/orchestration-cluster-api-js/commit/29812649034d2e961d65a7a80bd8bb2590e77dc1))
+
 # [10.0.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.6...v10.0.0-alpha.7) (2026-05-18)
 
 
