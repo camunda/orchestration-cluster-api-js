@@ -50,10 +50,10 @@ export const zAgentInstanceMetrics = z.object({
     outputTokens: z.coerce.number().int().register(z.globalRegistry, {
         description: 'Total output tokens produced across all model calls.'
     }),
-    modelCalls: z.coerce.number().int().register(z.globalRegistry, {
+    modelCalls: z.int().register(z.globalRegistry, {
         description: 'Total number of LLM calls made.'
     }),
-    toolCalls: z.coerce.number().int().register(z.globalRegistry, {
+    toolCalls: z.int().register(z.globalRegistry, {
         description: 'Total number of tool calls made.'
     })
 }).register(z.globalRegistry, {
@@ -64,10 +64,10 @@ export const zAgentInstanceMetrics = z.object({
  * The configured limits for an agent instance, set once at creation.
  */
 export const zAgentInstanceLimits = z.object({
-    maxModelCalls: z.coerce.number().int().register(z.globalRegistry, {
+    maxModelCalls: z.int().register(z.globalRegistry, {
         description: 'Maximum LLM calls allowed. -1 if no limit is configured.'
     }),
-    maxToolCalls: z.coerce.number().int().register(z.globalRegistry, {
+    maxToolCalls: z.int().register(z.globalRegistry, {
         description: 'Maximum tool calls allowed. -1 if no limit is configured.'
     }),
     maxTokens: z.coerce.number().int().register(z.globalRegistry, {
@@ -81,6 +81,7 @@ export const zAgentInstanceLimits = z.object({
  * The current status of an agent instance.
  */
 export const zAgentInstanceStatusEnum = z.enum([
+    'UNKNOWN',
     'COMPLETED',
     'IDLE',
     'INITIALIZING',
@@ -89,6 +90,19 @@ export const zAgentInstanceStatusEnum = z.enum([
     'TOOL_DISCOVERY'
 ]).register(z.globalRegistry, {
     description: 'The current status of an agent instance.'
+});
+
+/**
+ * The status values that can be set on an agent instance via an update request.
+ *
+ */
+export const zAgentInstanceUpdateStatusEnum = z.enum([
+    'IDLE',
+    'THINKING',
+    'TOOL_CALLING',
+    'TOOL_DISCOVERY'
+]).register(z.globalRegistry, {
+    description: 'The status values that can be set on an agent instance via an update request.\n'
 });
 
 /**
@@ -104,29 +118,14 @@ export const zAgentInstanceMetricsDelta = z.object({
     outputTokens: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
         description: 'Increment to apply to the total output token counter.'
     })),
-    modelCalls: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+    modelCalls: z.optional(z.int().gte(0).register(z.globalRegistry, {
         description: 'Increment to apply to the total model call counter.'
     })),
-    toolCalls: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+    toolCalls: z.optional(z.int().gte(0).register(z.globalRegistry, {
         description: 'Increment to apply to the total tool call counter.'
     }))
 }).register(z.globalRegistry, {
     description: 'Metric increments to apply to the agent instance aggregate counters. The engine\naccumulates these deltas into running totals on each UPDATED event. All fields\nare optional; omit a field to leave the corresponding counter unchanged.\n'
-});
-
-/**
- * Request to update the mutable state of an agent instance. At least one of
- * status, metrics, or tools must be provided.
- *
- */
-export const zAgentInstanceUpdateRequest = z.object({
-    status: z.optional(zAgentInstanceStatusEnum),
-    metrics: z.optional(zAgentInstanceMetricsDelta),
-    tools: z.optional(z.array(zAgentTool).register(z.globalRegistry, {
-        description: 'The complete list of tools available to the agent, replacing any previously\nstored tools. When provided, the engine replaces the existing tool list with\nthis value.\n'
-    }))
-}).register(z.globalRegistry, {
-    description: 'Request to update the mutable state of an agent instance. At least one of\nstatus, metrics, or tools must be provided.\n'
 });
 
 /**
@@ -688,17 +687,59 @@ export const zElementInstanceStateEnum = z.enum([
     description: 'Element states'
 });
 
-export const zExpressionEvaluationRequest = z.object({
-    expression: z.string().register(z.globalRegistry, {
-        description: 'The expression to evaluate (e.g., "=x + y")'
+/**
+ * The BPMN element type of a waiting element instance.
+ */
+export const zWaitStateElementTypeEnum = z.enum([
+    'AD_HOC_SUB_PROCESS',
+    'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
+    'BOUNDARY_EVENT',
+    'BUSINESS_RULE_TASK',
+    'CALL_ACTIVITY',
+    'END_EVENT',
+    'EVENT_BASED_GATEWAY',
+    'EVENT_SUB_PROCESS',
+    'EXCLUSIVE_GATEWAY',
+    'INCLUSIVE_GATEWAY',
+    'INTERMEDIATE_CATCH_EVENT',
+    'INTERMEDIATE_THROW_EVENT',
+    'MANUAL_TASK',
+    'MULTI_INSTANCE_BODY',
+    'PARALLEL_GATEWAY',
+    'PROCESS',
+    'RECEIVE_TASK',
+    'SCRIPT_TASK',
+    'SEND_TASK',
+    'SEQUENCE_FLOW',
+    'SERVICE_TASK',
+    'START_EVENT',
+    'SUB_PROCESS',
+    'TASK',
+    'UNKNOWN',
+    'UNSPECIFIED',
+    'USER_TASK'
+]).register(z.globalRegistry, {
+    description: 'The BPMN element type of a waiting element instance.'
+});
+
+/**
+ * The type of waiting state an element instance is in.
+ */
+export const zWaitStateTypeEnum = z.enum([
+    'JOB',
+    'MESSAGE'
+]).register(z.globalRegistry, {
+    description: 'The type of waiting state an element instance is in.'
+});
+
+export const zMessageWaitStateDetails = z.object({
+    messageName: z.string().register(z.globalRegistry, {
+        description: 'The name of the message being awaited.'
     }),
-    tenantId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'Required when the expression references tenant-scoped cluster variables'
-    })),
-    variables: z.optional(z.union([
-        z.record(z.string(), z.unknown()),
+    correlationKey: z.union([
+        z.string(),
         z.null()
-    ]))
+    ])
 });
 
 export const zExpressionEvaluationWarningItem = z.object({
@@ -963,6 +1004,44 @@ export const zAdvancedElementInstanceStateFilter = z.object({
     '$like': z.optional(zLikeFilter)
 }).register(z.globalRegistry, {
     description: 'Advanced ElementInstanceStateEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced element type filter.
+ */
+export const zAdvancedWaitStateElementTypeFilter = z.object({
+    '$eq': z.optional(zWaitStateElementTypeEnum),
+    '$neq': z.optional(zWaitStateElementTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zWaitStateElementTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced element type filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced wait state type filter.
+ */
+export const zAdvancedWaitStateTypeFilter = z.object({
+    '$eq': z.optional(zWaitStateTypeEnum),
+    '$neq': z.optional(zWaitStateTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zWaitStateTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced wait state type filter.'
 });
 
 /**
@@ -2031,6 +2110,7 @@ export const zJobKindEnum = z.enum([
 export const zJobListenerEventTypeEnum = z.enum([
     'ASSIGNING',
     'BEFORE_ALL',
+    'CANCEL',
     'CANCELING',
     'COMPLETING',
     'CREATING',
@@ -2329,6 +2409,22 @@ export const zAgentInstanceCreationRequest = z.object({
 });
 
 /**
+ * Request to update the mutable state of an agent instance.
+ *
+ */
+export const zAgentInstanceUpdateRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    status: z.optional(zAgentInstanceUpdateStatusEnum),
+    metrics: z.optional(zAgentInstanceMetricsDelta),
+    tools: z.optional(z.union([
+        z.array(zAgentTool),
+        z.null()
+    ]))
+}).register(z.globalRegistry, {
+    description: 'Request to update the mutable state of an agent instance.\n'
+});
+
+/**
  * System-generated key for a user task.
  */
 export const zUserTaskKey = zLongKey;
@@ -2426,6 +2522,20 @@ export const zScopeKey = z.union([
     zElementInstanceKey
 ]);
 
+export const zExpressionEvaluationRequest = z.object({
+    expression: z.string().register(z.globalRegistry, {
+        description: 'The expression to evaluate (e.g., "=x + y")'
+    }),
+    tenantId: z.optional(z.string().register(z.globalRegistry, {
+        description: 'Required when the expression references tenant-scoped cluster variables'
+    })),
+    scopeKey: z.optional(zScopeKey),
+    variables: z.optional(z.union([
+        z.record(z.string(), z.unknown()),
+        z.null()
+    ]))
+});
+
 /**
  * System-generated key for a incident.
  */
@@ -2498,6 +2608,48 @@ export const zElementInstanceResult = z.object({
  */
 export const zJobKey = zLongKey;
 
+export const zJobWaitStateDetails = z.object({
+    jobKey: zJobKey,
+    jobType: z.string().register(z.globalRegistry, {
+        description: 'The job type (worker subscription identifier).'
+    }),
+    jobKind: zJobKindEnum,
+    listenerEventType: z.union([
+        zJobListenerEventTypeEnum,
+        z.null()
+    ]),
+    retries: z.union([
+        z.int(),
+        z.null()
+    ])
+});
+
+/**
+ * An element instance waiting state.
+ */
+export const zElementInstanceWaitStateResult = z.object({
+    waitStateType: zWaitStateTypeEnum,
+    rootProcessInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
+    processInstanceKey: zProcessInstanceKey,
+    elementInstanceKey: zElementInstanceKey,
+    elementId: zElementId,
+    elementType: zWaitStateElementTypeEnum,
+    tenantId: zTenantId,
+    jobDetails: z.union([
+        zJobWaitStateDetails,
+        z.null()
+    ]),
+    messageDetails: z.union([
+        zMessageWaitStateDetails,
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'An element instance waiting state.'
+});
+
 export const zIncidentResult = z.object({
     processDefinitionId: zProcessDefinitionId,
     errorType: zIncidentErrorTypeEnum,
@@ -2563,7 +2715,10 @@ export const zActivatedJobResult = z.object({
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
-    ])
+    ]),
+    priority: z.int().register(z.globalRegistry, {
+        description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
+    })
 });
 
 /**
@@ -2641,7 +2796,10 @@ export const zJobSearchResult = z.object({
     lastUpdateTime: z.union([
         z.iso.datetime(),
         z.null()
-    ])
+    ]),
+    priority: z.int().register(z.globalRegistry, {
+        description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; they appear last when sorting by this field and are excluded when filtering by this field. The API returns 0 for such jobs.\n'
+    })
 });
 
 /**
@@ -3180,7 +3338,16 @@ export const zAgentInstanceResult = z.object({
     }),
     elementId: zElementId,
     processInstanceKey: zProcessInstanceKey,
+    rootProcessInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersion: z.int().register(z.globalRegistry, {
+        description: 'The version of the process definition associated with this agent instance.'
+    }),
+    processDefinitionVersionTag: z.union([
+        z.string(),
+        z.null()
+    ]),
     tenantId: zTenantId,
     creationDate: z.iso.datetime().register(z.globalRegistry, {
         description: 'The date when this agent instance was created.'
@@ -5099,6 +5266,7 @@ export const zJobSearchQuerySortRequest = z.object({
         'jobKey',
         'kind',
         'listenerEventType',
+        'priority',
         'processDefinitionId',
         'processDefinitionKey',
         'processInstanceKey',
@@ -5438,6 +5606,12 @@ export const zElementInstanceSearchQueryResult = zSearchQueryResponse.and(z.obje
     })
 }));
 
+export const zElementInstanceWaitStateQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zElementInstanceWaitStateResult).register(z.globalRegistry, {
+        description: 'The matching waiting states.'
+    })
+}));
+
 /**
  * Global listener search query response.
  */
@@ -5720,14 +5894,8 @@ export const zJobMetricsConfigurationResponse = z.object({
  * Configuration for deployment characteristics.
  */
 export const zDeploymentConfigurationResponse = z.object({
-    isEnterprise: z.boolean().register(z.globalRegistry, {
-        description: 'Whether this is an enterprise deployment.'
-    }),
     isMultiTenancyEnabled: z.boolean().register(z.globalRegistry, {
         description: 'Whether multi-tenancy is enabled.'
-    }),
-    contextPath: z.string().register(z.globalRegistry, {
-        description: 'The servlet context path for the deployment.'
     }),
     maxRequestSize: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The maximum HTTP request size in bytes.'
@@ -5787,24 +5955,8 @@ export const zCloudStage = z.enum([
  * Configuration for SaaS/cloud-specific settings.
  */
 export const zCloudConfigurationResponse = z.object({
-    organizationId: z.union([
-        z.string(),
-        z.null()
-    ]),
-    clusterId: z.union([
-        z.string(),
-        z.null()
-    ]),
     stage: z.union([
         zCloudStage,
-        z.null()
-    ]),
-    mixpanelToken: z.union([
-        z.string(),
-        z.null()
-    ]),
-    mixpanelAPIHost: z.union([
-        z.string(),
         z.null()
     ])
 }).register(z.globalRegistry, {
@@ -6817,6 +6969,36 @@ export const zElementInstanceStateFilterProperty = z.union([
  *
  * Matches the value exactly.
  */
+export const zWaitStateElementTypeExactMatch = zWaitStateElementTypeEnum;
+
+/**
+ * Element type property with full advanced search capabilities.
+ */
+export const zWaitStateElementTypeFilterProperty = z.union([
+    zWaitStateElementTypeExactMatch,
+    zAdvancedWaitStateElementTypeFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zWaitStateTypeExactMatch = zWaitStateTypeEnum;
+
+/**
+ * Wait state type property with full advanced search capabilities.
+ */
+export const zWaitStateTypeFilterProperty = z.union([
+    zWaitStateTypeExactMatch,
+    zAdvancedWaitStateTypeFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zGlobalListenerSourceExactMatch = zGlobalListenerSourceEnum;
 
 /**
@@ -6889,9 +7071,9 @@ export const zElementIdFilterProperty = z.union([
 ]);
 
 /**
- * Element instance filter.
+ * Element instance filter fields.
  */
-export const zElementInstanceFilter = z.object({
+export const zElementInstanceFilterFields = z.object({
     processDefinitionId: z.optional(zProcessDefinitionId),
     state: z.optional(zElementInstanceStateFilterProperty),
     type: z.optional(z.enum([
@@ -6942,8 +7124,17 @@ export const zElementInstanceFilter = z.object({
         zProcessInstanceKey
     ]))
 }).register(z.globalRegistry, {
-    description: 'Element instance filter.'
+    description: 'Element instance filter fields.'
 });
+
+/**
+ * Element instance search filter.
+ */
+export const zElementInstanceFilter = zElementInstanceFilterFields.and(z.object({
+    '$or': z.optional(z.array(zElementInstanceFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "processInstanceKey": "2251799813685323",\n  "$or": [\n    { "elementName": { "$like": "*Order*" } },\n    { "elementId":   { "$like": "*Order*" } }\n  ]\n}\n```\nThis matches element instances scoped to the given process instance whose:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;"><code>elementName</code> contains <em>Order</em>, or</li>\n  <li style="list-style-type: disc;"><code>elementId</code> contains <em>Order</em></li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }))
+}));
 
 /**
  * Element instance search request.
@@ -7118,6 +7309,29 @@ export const zElementInstanceKeyFilterProperty = z.union([
 ]);
 
 /**
+ * Filters for the element instance inspection.
+ */
+export const zElementInstanceWaitStateFilter = z.object({
+    elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
+    processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    rootProcessInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    elementId: z.optional(zElementIdFilterProperty),
+    elementType: z.optional(zWaitStateElementTypeFilterProperty),
+    waitStateType: z.optional(zWaitStateTypeFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Filters for the element instance inspection.'
+});
+
+/**
+ * Element instance inspection request.
+ */
+export const zElementInstanceWaitStateQuery = zSearchQueryRequest.and(z.object({
+    filter: z.optional(zElementInstanceWaitStateFilter)
+}).register(z.globalRegistry, {
+    description: 'Element instance inspection request.'
+}));
+
+/**
  * Exact match
  *
  * Matches the value exactly.
@@ -7183,6 +7397,7 @@ export const zJobFilter = z.object({
     jobKey: z.optional(zJobKeyFilterProperty),
     kind: z.optional(zJobKindFilterProperty),
     listenerEventType: z.optional(zJobListenerEventTypeFilterProperty),
+    priority: z.optional(zIntegerFilterProperty),
     processDefinitionId: z.optional(zStringFilterProperty),
     processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
     processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
@@ -7330,7 +7545,10 @@ export const zAgentInstanceFilter = z.object({
     completionDate: z.optional(zDateTimeFilterProperty),
     elementInstanceKeys: z.optional(z.array(zElementInstanceKeyFilterProperty).register(z.globalRegistry, {
         description: 'The keys of element instances associated with this agent instance.\nIf multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.'
-    }))
+    })),
+    processDefinitionId: z.optional(zStringFilterProperty),
+    processDefinitionVersion: z.optional(zIntegerFilterProperty),
+    processDefinitionVersionTag: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Agent instance search filter.'
 });
@@ -8499,6 +8717,17 @@ export const zActivateAdHocSubProcessActivitiesData = z.object({
 export const zActivateAdHocSubProcessActivitiesResponse = z.void().register(z.globalRegistry, {
     description: 'The ad-hoc sub-process instance is modified.'
 });
+
+export const zSearchElementInstanceWaitStatesData = z.object({
+    body: z.optional(zElementInstanceWaitStateQuery),
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The element instance wait state search result.
+ */
+export const zSearchElementInstanceWaitStatesResponse = zElementInstanceWaitStateQueryResult;
 
 export const zSearchElementInstancesData = z.object({
     body: z.optional(zElementInstanceSearchQuery),
