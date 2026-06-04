@@ -1,3 +1,10 @@
+# [10.0.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.8...v10.0.0-alpha.9) (2026-06-04)
+
+
+### Bug Fixes
+
+* pass author-association to community notification workflow ([82e7f6e](https://github.com/camunda/orchestration-cluster-api-js/commit/82e7f6e5b34c60d122b93a302c84dda1fc28f6f9))
+
 # [10.0.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.7...v10.0.0-alpha.8) (2026-06-04)
 
 
