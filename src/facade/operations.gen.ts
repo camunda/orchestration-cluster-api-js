@@ -1562,6 +1562,26 @@ type _searchElementInstanceWaitStates_Body = SearchElementInstanceWaitStatesData
  * Returns the wait states for element instances matching the given filter.
  *
   *
+ * @example Search element instance wait states
+ * ```ts
+ * async function searchElementInstanceWaitStatesExample(processInstanceKey: ProcessInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchElementInstanceWaitStates(
+ *     {
+ *       filter: {
+ *         processInstanceKey,
+ *       },
+ *       page: { limit: 10 },
+ *     },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const waitState of result.items ?? []) {
+ *     console.log(`${waitState.elementId}: ${waitState.waitStateType}`);
+ *   }
+ * }
+ * ```
  * @operationId searchElementInstanceWaitStates
  * @tags Element instance
   *
@@ -5401,7 +5421,10 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
   *
  * @example Update an agent instance
  * ```ts
- * async function updateAgentInstanceExample(agentInstanceKey: AgentInstanceKey, elementInstanceKey: ElementInstanceKey) {
+ * async function updateAgentInstanceExample(
+ *   agentInstanceKey: AgentInstanceKey,
+ *   elementInstanceKey: ElementInstanceKey
+ * ) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateAgentInstance({

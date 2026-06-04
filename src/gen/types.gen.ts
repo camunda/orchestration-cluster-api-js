@@ -8348,7 +8348,7 @@ export type CursorForwardPagination = {
     /**
      * Use the `endCursor` value from the previous response to fetch the next page of results.
      */
-    after: EndCursor;
+    after?: EndCursor;
     /**
      * The maximum number of items to return in one request.
      */
@@ -8362,7 +8362,7 @@ export type CursorBackwardPagination = {
     /**
      * Use the `startCursor` value from the previous response to fetch the previous page of results.
      */
-    before: StartCursor;
+    before?: StartCursor;
     /**
      * The maximum number of items to return in one request.
      */
@@ -18112,7 +18112,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:cb633855979423c3641876a384ff83d246452b2d34b631b83fb349a82bd425f7
+// specHash=sha256:b7867e21d395ab0be549e976bf90398c181e9b72c0206c6fcb73463ce23cd84c
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

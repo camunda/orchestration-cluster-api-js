@@ -4847,7 +4847,7 @@ export const zOffsetPagination = z.object({
  * Cursor-based forward pagination
  */
 export const zCursorForwardPagination = z.object({
-    after: zEndCursor,
+    after: z.optional(zEndCursor),
     limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
@@ -4897,7 +4897,7 @@ export const zJobErrorStatisticsQuery = z.object({
  * Cursor-based backward pagination
  */
 export const zCursorBackwardPagination = z.object({
-    before: zStartCursor,
+    before: z.optional(zStartCursor),
     limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
