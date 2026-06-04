@@ -74,6 +74,18 @@ export type AgentInstanceFilter = {
      * If multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.
      */
     elementInstanceKeys?: Array<ElementInstanceKeyFilterProperty>;
+    /**
+     * The BPMN process ID of the process definition associated with this agent instance.
+     */
+    processDefinitionId?: StringFilterProperty;
+    /**
+     * The version of the process definition associated with this agent instance.
+     */
+    processDefinitionVersion?: IntegerFilterProperty;
+    /**
+     * The version tag of the process definition associated with this agent instance.
+     */
+    processDefinitionVersionTag?: StringFilterProperty;
 };
 
 /**
@@ -117,9 +129,27 @@ export type AgentInstanceResult = {
      */
     processInstanceKey: ProcessInstanceKey;
     /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey;
+    /**
      * The key of the process definition associated with this agent instance.
      */
     processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The BPMN process ID of the process definition associated with this agent instance.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process definition associated with this agent instance.
+     */
+    processDefinitionVersion: number;
+    /**
+     * The version tag of the process definition associated with this agent instance.
+     */
+    processDefinitionVersionTag: string | null;
     /**
      * The tenant ID of this agent instance.
      */
@@ -222,6 +252,7 @@ export type AgentInstanceLimits = {
  * The current status of an agent instance.
  */
 export const AgentInstanceStatusEnum = {
+  UNKNOWN: 'UNKNOWN',
   COMPLETED: 'COMPLETED',
   IDLE: 'IDLE',
   INITIALIZING: 'INITIALIZING',
@@ -230,6 +261,17 @@ export const AgentInstanceStatusEnum = {
   TOOL_DISCOVERY: 'TOOL_DISCOVERY',
 } as const;
 export type AgentInstanceStatusEnum = (typeof AgentInstanceStatusEnum)[keyof typeof AgentInstanceStatusEnum];
+/**
+ * The status values that can be set on an agent instance via an update request.
+ *
+ */
+export const AgentInstanceUpdateStatusEnum = {
+  IDLE: 'IDLE',
+  THINKING: 'THINKING',
+  TOOL_CALLING: 'TOOL_CALLING',
+  TOOL_DISCOVERY: 'TOOL_DISCOVERY',
+} as const;
+export type AgentInstanceUpdateStatusEnum = (typeof AgentInstanceUpdateStatusEnum)[keyof typeof AgentInstanceUpdateStatusEnum];
 /**
  * Request to create a new agent instance.
  */
@@ -289,15 +331,23 @@ export type AgentInstanceMetricsDelta = {
 };
 
 /**
- * Request to update the mutable state of an agent instance. At least one of
- * status, metrics, or tools must be provided.
+ * Request to update the mutable state of an agent instance.
  *
  */
 export type AgentInstanceUpdateRequest = {
     /**
+     * The key of the currently-active element instance for this agent instance.
+     * Used for ownership/equality validation against the stored agent instance
+     * and, when the supplied key differs from the previous association (re-entry
+     * of an ad-hoc sub-process or AI Agent task), appended to elementInstanceKeys
+     * with the reverse link updated on the supplied element instance.
+     *
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
      * The new status of the agent instance.
      */
-    status?: AgentInstanceStatusEnum;
+    status?: AgentInstanceUpdateStatusEnum;
     /**
      * Metric increments to apply to the aggregate counters.
      */
@@ -308,7 +358,7 @@ export type AgentInstanceUpdateRequest = {
      * this value.
      *
      */
-    tools?: Array<AgentTool>;
+    tools?: Array<AgentTool> | null;
 };
 
 /**
@@ -3087,9 +3137,42 @@ export type ElementInstanceSearchQuery = SearchQueryRequest & {
 };
 
 /**
- * Element instance filter.
+ * Element instance search filter.
  */
-export type ElementInstanceFilter = {
+export type ElementInstanceFilter = ElementInstanceFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "processInstanceKey": "2251799813685323",
+     * "$or": [
+     * { "elementName": { "$like": "*Order*" } },
+     * { "elementId":   { "$like": "*Order*" } }
+     * ]
+     * }
+     * ```
+     * This matches element instances scoped to the given process instance whose:
+     *
+     * <ul style="padding-left: 20px; margin-left: 20px;">
+     * <li style="list-style-type: disc;"><code>elementName</code> contains <em>Order</em>, or</li>
+     * <li style="list-style-type: disc;"><code>elementId</code> contains <em>Order</em></li>
+     * </ul>
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<ElementInstanceFilterFields>;
+};
+
+/**
+ * Element instance filter fields.
+ */
+export type ElementInstanceFilterFields = {
     /**
      * The process definition ID associated to this element instance.
      */
@@ -3266,6 +3349,230 @@ export type AdHocSubProcessActivateActivitiesInstruction = {
     cancelRemainingInstances?: boolean;
 };
 
+/**
+ * Element instance inspection request.
+ */
+export type ElementInstanceWaitStateQuery = SearchQueryRequest & {
+    /**
+     * Filter criteria for the inspection.
+     */
+    filter?: ElementInstanceWaitStateFilter;
+};
+
+/**
+ * Filters for the element instance inspection.
+ */
+export type ElementInstanceWaitStateFilter = {
+    /**
+     * Filter by element instance key.
+     */
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    /**
+     * Filter by process instance key.
+     */
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * Filter by root process instance key.
+     */
+    rootProcessInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * Filter by element ID.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * Filter by element type.
+     */
+    elementType?: WaitStateElementTypeFilterProperty;
+    /**
+     * Filter by wait state type.
+     */
+    waitStateType?: WaitStateTypeFilterProperty;
+};
+
+/**
+ * Element type property with full advanced search capabilities.
+ */
+export type WaitStateElementTypeFilterProperty = WaitStateElementTypeExactMatch | AdvancedWaitStateElementTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced element type filter.
+ */
+export type AdvancedWaitStateElementTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: WaitStateElementTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: WaitStateElementTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<WaitStateElementTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * The BPMN element type of a waiting element instance.
+ */
+export const WaitStateElementTypeEnum = {
+  AD_HOC_SUB_PROCESS: 'AD_HOC_SUB_PROCESS',
+  AD_HOC_SUB_PROCESS_INNER_INSTANCE: 'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
+  BOUNDARY_EVENT: 'BOUNDARY_EVENT',
+  BUSINESS_RULE_TASK: 'BUSINESS_RULE_TASK',
+  CALL_ACTIVITY: 'CALL_ACTIVITY',
+  END_EVENT: 'END_EVENT',
+  EVENT_BASED_GATEWAY: 'EVENT_BASED_GATEWAY',
+  EVENT_SUB_PROCESS: 'EVENT_SUB_PROCESS',
+  EXCLUSIVE_GATEWAY: 'EXCLUSIVE_GATEWAY',
+  INCLUSIVE_GATEWAY: 'INCLUSIVE_GATEWAY',
+  INTERMEDIATE_CATCH_EVENT: 'INTERMEDIATE_CATCH_EVENT',
+  INTERMEDIATE_THROW_EVENT: 'INTERMEDIATE_THROW_EVENT',
+  MANUAL_TASK: 'MANUAL_TASK',
+  MULTI_INSTANCE_BODY: 'MULTI_INSTANCE_BODY',
+  PARALLEL_GATEWAY: 'PARALLEL_GATEWAY',
+  PROCESS: 'PROCESS',
+  RECEIVE_TASK: 'RECEIVE_TASK',
+  SCRIPT_TASK: 'SCRIPT_TASK',
+  SEND_TASK: 'SEND_TASK',
+  SEQUENCE_FLOW: 'SEQUENCE_FLOW',
+  SERVICE_TASK: 'SERVICE_TASK',
+  START_EVENT: 'START_EVENT',
+  SUB_PROCESS: 'SUB_PROCESS',
+  TASK: 'TASK',
+  UNKNOWN: 'UNKNOWN',
+  UNSPECIFIED: 'UNSPECIFIED',
+  USER_TASK: 'USER_TASK',
+} as const;
+export type WaitStateElementTypeEnum = (typeof WaitStateElementTypeEnum)[keyof typeof WaitStateElementTypeEnum];
+/**
+ * Wait state type property with full advanced search capabilities.
+ */
+export type WaitStateTypeFilterProperty = WaitStateTypeExactMatch | AdvancedWaitStateTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced wait state type filter.
+ */
+export type AdvancedWaitStateTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: WaitStateTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: WaitStateTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<WaitStateTypeEnum>;
+    $like?: LikeFilter;
+};
+
+export type ElementInstanceWaitStateQueryResult = SearchQueryResponse & {
+    /**
+     * The matching waiting states.
+     */
+    items: Array<ElementInstanceWaitStateResult>;
+};
+
+/**
+ * An element instance waiting state.
+ */
+export type ElementInstanceWaitStateResult = {
+    /**
+     * The type of waiting state an element instance is in.
+     */
+    waitStateType: WaitStateTypeEnum;
+    /**
+     * Key of the root process instance.
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The process instance key associated to this element instance.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The element instance key associated to this element instance.
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The element ID for this element instance.
+     */
+    elementId: ElementId;
+    /**
+     * The BPMN element type of this element instance.
+     */
+    elementType: WaitStateElementTypeEnum;
+    /**
+     * The tenant ID of the element instance.
+     */
+    tenantId: TenantId;
+    /**
+     * Job details, present when waitStateType is JOB.
+     */
+    jobDetails: JobWaitStateDetails | null;
+    /**
+     * Message details, present when waitStateType is MESSAGE.
+     */
+    messageDetails: MessageWaitStateDetails | null;
+};
+
+/**
+ * The type of waiting state an element instance is in.
+ */
+export const WaitStateTypeEnum = {
+  JOB: 'JOB',
+  MESSAGE: 'MESSAGE',
+} as const;
+export type WaitStateTypeEnum = (typeof WaitStateTypeEnum)[keyof typeof WaitStateTypeEnum];
+export type JobWaitStateDetails = {
+    /**
+     * The key of the job.
+     */
+    jobKey: JobKey;
+    /**
+     * The job type (worker subscription identifier).
+     */
+    jobType: string;
+    /**
+     * The kind of job.
+     */
+    jobKind: JobKindEnum;
+    /**
+     * The listener event type of the job (only set for execution listener and task listener jobs).
+     */
+    listenerEventType: JobListenerEventTypeEnum | null;
+    /**
+     * The number of retries remaining for the job.
+     */
+    retries: number | null;
+};
+
+export type MessageWaitStateDetails = {
+    /**
+     * The name of the message being awaited.
+     */
+    messageName: string;
+    /**
+     * The correlation key for the message subscription (null for start events).
+     */
+    correlationKey: string | null;
+};
+
 export type AdHocSubProcessActivateActivityReference = {
     /**
      * The ID of the element that should be activated.
@@ -3288,6 +3595,15 @@ export type ExpressionEvaluationRequest = {
      * Required when the expression references tenant-scoped cluster variables
      */
     tenantId?: string;
+    /**
+     * Key of the process instance or element instance whose variables should be made visible
+     * to the expression. Use a process instance key to evaluate against the process instance
+     * scope, or an element instance key to evaluate against that element instance scope. If
+     * omitted, the expression is evaluated unscoped, using only cluster variables
+     * and request-body variables.
+     *
+     */
+    scopeKey?: ScopeKey;
     /**
      * Optional variables for expression evaluation. These variables are only used for the current evaluation and do not persist beyond it.
      */
@@ -4767,6 +5083,11 @@ export type ActivatedJobResult = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.
+     *
+     */
+    priority: number;
 };
 
 /**
@@ -4833,7 +5154,7 @@ export type JobSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
+    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'priority' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
     order?: SortOrderEnum;
 };
 
@@ -4889,6 +5210,11 @@ export type JobFilter = {
      * The listener event type of the job.
      */
     listenerEventType?: JobListenerEventTypeFilterProperty;
+    /**
+     * The priority of the job. Jobs created before 8.10 have no stored priority and are excluded from results when this filter is applied.
+     *
+     */
+    priority?: IntegerFilterProperty;
     /**
      * The process definition ID associated with the job.
      */
@@ -5033,6 +5359,11 @@ export type JobSearchResult = {
      * When the job was last updated. Field is present for jobs created after 8.9.
      */
     lastUpdateTime: string | null;
+    /**
+     * The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; they appear last when sorting by this field and are excluded when filtering by this field. The API returns 0 for such jobs.
+     *
+     */
+    priority: number;
 };
 
 export type JobFailRequest = {
@@ -5258,6 +5589,7 @@ export type JobKindEnum = (typeof JobKindEnum)[keyof typeof JobKindEnum];
 export const JobListenerEventTypeEnum = {
   ASSIGNING: 'ASSIGNING',
   BEFORE_ALL: 'BEFORE_ALL',
+  CANCEL: 'CANCEL',
   CANCELING: 'CANCELING',
   COMPLETING: 'COMPLETING',
   CREATING: 'CREATING',
@@ -8016,7 +8348,7 @@ export type CursorForwardPagination = {
     /**
      * Use the `endCursor` value from the previous response to fetch the next page of results.
      */
-    after: EndCursor;
+    after?: EndCursor;
     /**
      * The maximum number of items to return in one request.
      */
@@ -8030,7 +8362,7 @@ export type CursorBackwardPagination = {
     /**
      * Use the `startCursor` value from the previous response to fetch the previous page of results.
      */
-    before: StartCursor;
+    before?: StartCursor;
     /**
      * The maximum number of items to return in one request.
      */
@@ -8191,17 +8523,9 @@ export type ComponentsConfigurationResponse = {
  */
 export type DeploymentConfigurationResponse = {
     /**
-     * Whether this is an enterprise deployment.
-     */
-    isEnterprise: boolean;
-    /**
      * Whether multi-tenancy is enabled.
      */
     isMultiTenancyEnabled: boolean;
-    /**
-     * The servlet context path for the deployment.
-     */
-    contextPath: string;
     /**
      * The maximum HTTP request size in bytes.
      */
@@ -8227,25 +8551,9 @@ export type AuthenticationConfigurationResponse = {
  */
 export type CloudConfigurationResponse = {
     /**
-     * The SaaS organization ID, if applicable.
-     */
-    organizationId: string | null;
-    /**
-     * The SaaS cluster ID, if applicable.
-     */
-    clusterId: string | null;
-    /**
      * The cloud deployment stage.
      */
     stage: CloudStage | null;
-    /**
-     * The Mixpanel analytics token for the cloud UI.
-     */
-    mixpanelToken: string | null;
-    /**
-     * The Mixpanel API host URL.
-     */
-    mixpanelAPIHost: string | null;
 };
 
 /**
@@ -9321,6 +9629,20 @@ export type ElementInstanceStateExactMatch = ElementInstanceStateEnum;
  *
  * Matches the value exactly.
  */
+export type WaitStateElementTypeExactMatch = WaitStateElementTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type WaitStateTypeExactMatch = WaitStateTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type GlobalListenerSourceExactMatch = GlobalListenerSourceEnum;
 
 /**
@@ -10331,6 +10653,10 @@ export type CreateGlobalClusterVariableErrors = {
      */
     403: ProblemDetail;
     /**
+     * A cluster variable with this name already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -10556,6 +10882,10 @@ export type CreateTenantClusterVariableErrors = {
      * The tenant with the given ID was not found.
      */
     404: ProblemDetail;
+    /**
+     * A cluster variable with this name already exists for the given tenant.
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -11579,6 +11909,43 @@ export type ActivateAdHocSubProcessActivitiesResponses = {
 
 export type ActivateAdHocSubProcessActivitiesResponse = ActivateAdHocSubProcessActivitiesResponses[keyof ActivateAdHocSubProcessActivitiesResponses];
 
+export type SearchElementInstanceWaitStatesData = {
+    body?: ElementInstanceWaitStateQuery;
+    path?: never;
+    query?: never;
+    url: '/element-instances/wait-states/search';
+};
+
+export type SearchElementInstanceWaitStatesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchElementInstanceWaitStatesError = SearchElementInstanceWaitStatesErrors[keyof SearchElementInstanceWaitStatesErrors];
+
+export type SearchElementInstanceWaitStatesResponses = {
+    /**
+     * The element instance wait state search result.
+     */
+    200: ElementInstanceWaitStateQueryResult;
+};
+
+export type SearchElementInstanceWaitStatesResponse = SearchElementInstanceWaitStatesResponses[keyof SearchElementInstanceWaitStatesResponses];
+
 export type SearchElementInstancesData = {
     body?: ElementInstanceSearchQuery;
     path?: never;
@@ -12088,6 +12455,10 @@ export type CreateGroupErrors = {
      * Forbidden. The request is not allowed.
      */
     403: ProblemDetail;
+    /**
+     * Group with this id already exists.
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -13507,6 +13878,10 @@ export type CreateMappingRuleErrors = {
      * The request to create a mapping rule was denied.
      */
     404: ProblemDetail;
+    /**
+     * Mapping rule with this id already exists.
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -15094,6 +15469,10 @@ export type CreateRoleErrors = {
      */
     403: ProblemDetail;
     /**
+     * Role with this id already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -15909,6 +16288,10 @@ export type CreateAdminUserErrors = {
      */
     403: ProblemDetail;
     /**
+     * A user with this username already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -16097,7 +16480,7 @@ export type CreateTenantErrors = {
     /**
      * Tenant with this id already exists.
      */
-    409: unknown;
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -17729,7 +18112,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:f85a4345e56552ece2e63ba93164e70abb16973b17a4256803dc5d64346869c6
+// specHash=sha256:b7867e21d395ab0be549e976bf90398c181e9b72c0206c6fcb73463ce23cd84c
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

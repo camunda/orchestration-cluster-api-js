@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:f85a4345e56552ece2e63ba93164e70abb16973b17a4256803dc5d64346869c6",
+  "specHash": "sha256:b7867e21d395ab0be549e976bf90398c181e9b72c0206c6fcb73463ce23cd84c",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -2960,6 +2960,52 @@
       "source": {
         "schemaPointer": "#/components/schemas/VariableKeyFilterProperty"
       }
+    },
+    {
+      "name": "WaitStateElementTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Element type property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "WaitStateElementTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedWaitStateElementTypeFilter"
+        }
+      ],
+      "stableId": "wait-state-element-type-filter-property",
+      "tsType": "WaitStateElementTypeExactMatch | AdvancedWaitStateElementTypeFilter",
+      "zod": {
+        "schemaName": "zWaitStateElementTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/WaitStateElementTypeFilterProperty"
+      }
+    },
+    {
+      "name": "WaitStateTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Wait state type property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "WaitStateTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedWaitStateTypeFilter"
+        }
+      ],
+      "stableId": "wait-state-type-filter-property",
+      "tsType": "WaitStateTypeExactMatch | AdvancedWaitStateTypeFilter",
+      "zod": {
+        "schemaName": "zWaitStateTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/WaitStateTypeFilterProperty"
+      }
     }
   ],
   "arrays": [
@@ -2983,7 +3029,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 40,
-    "totalUnionWrappers": 57,
+    "totalUnionWrappers": 59,
     "implicitCamundaKeys": []
   }
 }

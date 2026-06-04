@@ -1,6 +1,6 @@
 {
-  "operations": 190,
-  "tests": 192,
+  "operations": 191,
+  "tests": 193,
   "missing": [],
   "ignored": [],
   "files": [
@@ -139,6 +139,7 @@
     "searchDecisionInstances.test.ts",
     "searchDecisionRequirements.test.ts",
     "searchElementInstanceIncidents.test.ts",
+    "searchElementInstanceWaitStates.test.ts",
     "searchElementInstances.test.ts",
     "searchGlobalTaskListeners.test.ts",
     "searchGroupIdsForTenant.test.ts",
