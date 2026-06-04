@@ -338,6 +338,26 @@ async function searchElementInstanceIncidentsExample(elementInstanceKey: Element
 }
 //#endregion SearchElementInstanceIncidents
 
+//#region SearchElementInstanceWaitStates
+async function searchElementInstanceWaitStatesExample(processInstanceKey: ProcessInstanceKey) {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.searchElementInstanceWaitStates(
+    {
+      filter: {
+        processInstanceKey,
+      },
+      page: { limit: 10 },
+    },
+    { consistency: { waitUpToMs: 5000 } }
+  );
+
+  for (const waitState of result.items ?? []) {
+    console.log(`${waitState.elementId}: ${waitState.waitStateType}`);
+  }
+}
+//#endregion SearchElementInstanceWaitStates
+
 //#region CreateElementInstanceVariables
 async function createElementInstanceVariablesExample(elementInstanceKey: ElementInstanceKey) {
   const camunda = createCamundaClient();
@@ -385,5 +405,6 @@ void searchVariablesExample;
 void getElementInstanceExample;
 void searchElementInstancesExample;
 void searchElementInstanceIncidentsExample;
+void searchElementInstanceWaitStatesExample;
 void createElementInstanceVariablesExample;
 void activateAdHocSubProcessActivitiesExample;

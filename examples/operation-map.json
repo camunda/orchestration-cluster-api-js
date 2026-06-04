@@ -912,6 +912,13 @@
       "label": "Search element instance incidents"
     }
   ],
+  "searchElementInstanceWaitStates": [
+    {
+      "file": "extended-operations.ts",
+      "region": "SearchElementInstanceWaitStates",
+      "label": "Search element instance wait states"
+    }
+  ],
   "createElementInstanceVariables": [
     {
       "file": "extended-operations.ts",
