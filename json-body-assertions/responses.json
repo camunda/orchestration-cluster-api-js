@@ -1,12 +1,396 @@
 {
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
-    "commit": "c1795241da56bc2488e79909f8acbf4c1fd93ab5",
-    "generatedAt": "2026-03-18T19:26:05.035Z",
+    "commit": "73f51909c46db3ca58ebfe38038a53ccf0ae2d54",
+    "generatedAt": "2026-06-04T02:28:46.481Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "ff696885520308483d98c0d71f76b959f5a6bf4ed5ebddf96e18f7544f014875"
+    "specSha256": "993c5f0583b61f0d486171aaebc45db58771759734629e2a3f810aa822d0fecf"
   },
   "responses": [
+    {
+      "path": "/agent-instances",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "agentInstanceKey",
+            "type": "string"
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/agent-instances/{agentInstanceKey}",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "agentInstanceKey",
+            "type": "string"
+          },
+          {
+            "name": "completionDate",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "creationDate",
+            "type": "string"
+          },
+          {
+            "name": "definition",
+            "type": "0",
+            "children": {
+              "required": [
+                {
+                  "name": "model",
+                  "type": "string"
+                },
+                {
+                  "name": "provider",
+                  "type": "string"
+                },
+                {
+                  "name": "systemPrompt",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "elementId",
+            "type": "string"
+          },
+          {
+            "name": "elementInstanceKeys",
+            "type": "array<string>"
+          },
+          {
+            "name": "lastUpdatedDate",
+            "type": "string"
+          },
+          {
+            "name": "limits",
+            "type": "0",
+            "children": {
+              "required": [
+                {
+                  "name": "maxModelCalls",
+                  "type": "number"
+                },
+                {
+                  "name": "maxTokens",
+                  "type": "number"
+                },
+                {
+                  "name": "maxToolCalls",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "metrics",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "inputTokens",
+                  "type": "number"
+                },
+                {
+                  "name": "modelCalls",
+                  "type": "number"
+                },
+                {
+                  "name": "outputTokens",
+                  "type": "number"
+                },
+                {
+                  "name": "toolCalls",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "processDefinitionId",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionKey",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionVersion",
+            "type": "number"
+          },
+          {
+            "name": "processDefinitionVersionTag",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "processInstanceKey",
+            "type": "string"
+          },
+          {
+            "name": "rootProcessInstanceKey",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "enumValues": [
+              "UNKNOWN",
+              "COMPLETED",
+              "IDLE",
+              "INITIALIZING",
+              "THINKING",
+              "TOOL_CALLING",
+              "TOOL_DISCOVERY"
+            ]
+          },
+          {
+            "name": "tenantId",
+            "type": "string"
+          },
+          {
+            "name": "tools",
+            "type": "array<items>",
+            "children": {
+              "required": [
+                {
+                  "name": "description",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "elementId",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "name",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/agent-instances/search",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<schema>",
+            "children": {
+              "required": [
+                {
+                  "name": "agentInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "completionDate",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "creationDate",
+                  "type": "string"
+                },
+                {
+                  "name": "definition",
+                  "type": "0",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "model",
+                        "type": "string"
+                      },
+                      {
+                        "name": "provider",
+                        "type": "string"
+                      },
+                      {
+                        "name": "systemPrompt",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "elementId",
+                  "type": "string"
+                },
+                {
+                  "name": "elementInstanceKeys",
+                  "type": "array<string>"
+                },
+                {
+                  "name": "lastUpdatedDate",
+                  "type": "string"
+                },
+                {
+                  "name": "limits",
+                  "type": "0",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "maxModelCalls",
+                        "type": "number"
+                      },
+                      {
+                        "name": "maxTokens",
+                        "type": "number"
+                      },
+                      {
+                        "name": "maxToolCalls",
+                        "type": "number"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "metrics",
+                  "type": "object",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "inputTokens",
+                        "type": "number"
+                      },
+                      {
+                        "name": "modelCalls",
+                        "type": "number"
+                      },
+                      {
+                        "name": "outputTokens",
+                        "type": "number"
+                      },
+                      {
+                        "name": "toolCalls",
+                        "type": "number"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "processDefinitionId",
+                  "type": "string"
+                },
+                {
+                  "name": "processDefinitionKey",
+                  "type": "string"
+                },
+                {
+                  "name": "processDefinitionVersion",
+                  "type": "number"
+                },
+                {
+                  "name": "processDefinitionVersionTag",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "processInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "rootProcessInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "status",
+                  "type": "string",
+                  "enumValues": [
+                    "UNKNOWN",
+                    "COMPLETED",
+                    "IDLE",
+                    "INITIALIZING",
+                    "THINKING",
+                    "TOOL_CALLING",
+                    "TOOL_DISCOVERY"
+                  ]
+                },
+                {
+                  "name": "tenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "tools",
+                  "type": "array<items>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "description",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "elementId",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "name",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "endCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "hasMoreTotalItems",
+                  "type": "boolean"
+                },
+                {
+                  "name": "startCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "totalItems",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
     {
       "path": "/audit-logs/search",
       "method": "POST",
@@ -26,7 +410,12 @@
                 {
                   "name": "actorType",
                   "type": "string",
-                  "enumValues": ["ANONYMOUS", "CLIENT", "UNKNOWN", "USER"],
+                  "enumValues": [
+                    "ANONYMOUS",
+                    "CLIENT",
+                    "UNKNOWN",
+                    "USER"
+                  ],
                   "nullable": true
                 },
                 {
@@ -51,7 +440,11 @@
                 {
                   "name": "category",
                   "type": "string",
-                  "enumValues": ["ADMIN", "DEPLOYED_RESOURCES", "USER_TASKS"]
+                  "enumValues": [
+                    "ADMIN",
+                    "DEPLOYED_RESOURCES",
+                    "USER_TASKS"
+                  ]
                 },
                 {
                   "name": "decisionDefinitionId",
@@ -181,7 +574,10 @@
                 {
                   "name": "result",
                   "type": "string",
-                  "enumValues": ["FAIL", "SUCCESS"]
+                  "enumValues": [
+                    "FAIL",
+                    "SUCCESS"
+                  ]
                 },
                 {
                   "name": "rootProcessInstanceKey",
@@ -251,7 +647,12 @@
           {
             "name": "actorType",
             "type": "string",
-            "enumValues": ["ANONYMOUS", "CLIENT", "UNKNOWN", "USER"],
+            "enumValues": [
+              "ANONYMOUS",
+              "CLIENT",
+              "UNKNOWN",
+              "USER"
+            ],
             "nullable": true
           },
           {
@@ -276,7 +677,11 @@
           {
             "name": "category",
             "type": "string",
-            "enumValues": ["ADMIN", "DEPLOYED_RESOURCES", "USER_TASKS"]
+            "enumValues": [
+              "ADMIN",
+              "DEPLOYED_RESOURCES",
+              "USER_TASKS"
+            ]
           },
           {
             "name": "decisionDefinitionId",
@@ -406,7 +811,10 @@
           {
             "name": "result",
             "type": "string",
-            "enumValues": ["FAIL", "SUCCESS"]
+            "enumValues": [
+              "FAIL",
+              "SUCCESS"
+            ]
           },
           {
             "name": "rootProcessInstanceKey",
@@ -488,10 +896,7 @@
                 },
                 {
                   "name": "tenantId",
-                  "type": "string",
-                  "underlyingPrimitive": "string",
-                  "rawRefName": "schema",
-                  "wrapper": true
+                  "type": "string"
                 }
               ],
               "optional": []
@@ -499,8 +904,7 @@
           },
           {
             "name": "username",
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -542,7 +946,14 @@
                 {
                   "name": "ownerType",
                   "type": "string",
-                  "enumValues": ["USER", "CLIENT", "ROLE", "GROUP", "MAPPING_RULE", "UNSPECIFIED"]
+                  "enumValues": [
+                    "USER",
+                    "CLIENT",
+                    "ROLE",
+                    "GROUP",
+                    "MAPPING_RULE",
+                    "UNSPECIFIED"
+                  ]
                 },
                 {
                   "name": "permissionTypes",
@@ -636,7 +1047,14 @@
           {
             "name": "ownerType",
             "type": "string",
-            "enumValues": ["USER", "CLIENT", "ROLE", "GROUP", "MAPPING_RULE", "UNSPECIFIED"]
+            "enumValues": [
+              "USER",
+              "CLIENT",
+              "ROLE",
+              "GROUP",
+              "MAPPING_RULE",
+              "UNSPECIFIED"
+            ]
           },
           {
             "name": "permissionTypes",
@@ -732,7 +1150,8 @@
                 },
                 {
                   "name": "processInstanceKey",
-                  "type": "string"
+                  "type": "string",
+                  "nullable": true
                 },
                 {
                   "name": "rootProcessInstanceKey",
@@ -742,7 +1161,13 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["ACTIVE", "COMPLETED", "SKIPPED", "CANCELED", "FAILED"]
+                  "enumValues": [
+                    "ACTIVE",
+                    "COMPLETED",
+                    "SKIPPED",
+                    "CANCELED",
+                    "FAILED"
+                  ]
                 }
               ],
               "optional": []
@@ -844,7 +1269,10 @@
                       {
                         "name": "type",
                         "type": "string",
-                        "enumValues": ["QUERY_FAILED", "RESULT_BUFFER_SIZE_EXCEEDED"]
+                        "enumValues": [
+                          "QUERY_FAILED",
+                          "RESULT_BUFFER_SIZE_EXCEEDED"
+                        ]
                       }
                     ],
                     "optional": []
@@ -975,7 +1403,10 @@
                 {
                   "name": "type",
                   "type": "string",
-                  "enumValues": ["QUERY_FAILED", "RESULT_BUFFER_SIZE_EXCEEDED"]
+                  "enumValues": [
+                    "QUERY_FAILED",
+                    "RESULT_BUFFER_SIZE_EXCEEDED"
+                  ]
                 }
               ],
               "optional": []
@@ -1028,7 +1459,10 @@
           {
             "name": "scope",
             "type": "string",
-            "enumValues": ["GLOBAL", "TENANT"]
+            "enumValues": [
+              "GLOBAL",
+              "TENANT"
+            ]
           },
           {
             "name": "tenantId",
@@ -1056,7 +1490,10 @@
           {
             "name": "scope",
             "type": "string",
-            "enumValues": ["GLOBAL", "TENANT"]
+            "enumValues": [
+              "GLOBAL",
+              "TENANT"
+            ]
           },
           {
             "name": "tenantId",
@@ -1084,7 +1521,10 @@
           {
             "name": "scope",
             "type": "string",
-            "enumValues": ["GLOBAL", "TENANT"]
+            "enumValues": [
+              "GLOBAL",
+              "TENANT"
+            ]
           },
           {
             "name": "tenantId",
@@ -1121,7 +1561,10 @@
                 {
                   "name": "scope",
                   "type": "string",
-                  "enumValues": ["GLOBAL", "TENANT"]
+                  "enumValues": [
+                    "GLOBAL",
+                    "TENANT"
+                  ]
                 },
                 {
                   "name": "tenantId",
@@ -1180,7 +1623,10 @@
           {
             "name": "scope",
             "type": "string",
-            "enumValues": ["GLOBAL", "TENANT"]
+            "enumValues": [
+              "GLOBAL",
+              "TENANT"
+            ]
           },
           {
             "name": "tenantId",
@@ -1208,7 +1654,10 @@
           {
             "name": "scope",
             "type": "string",
-            "enumValues": ["GLOBAL", "TENANT"]
+            "enumValues": [
+              "GLOBAL",
+              "TENANT"
+            ]
           },
           {
             "name": "tenantId",
@@ -1236,7 +1685,10 @@
           {
             "name": "scope",
             "type": "string",
-            "enumValues": ["GLOBAL", "TENANT"]
+            "enumValues": [
+              "GLOBAL",
+              "TENANT"
+            ]
           },
           {
             "name": "tenantId",
@@ -1711,7 +2163,12 @@
                 {
                   "name": "decisionDefinitionType",
                   "type": "string",
-                  "enumValues": ["DECISION_TABLE", "LITERAL_EXPRESSION", "UNSPECIFIED", "UNKNOWN"]
+                  "enumValues": [
+                    "DECISION_TABLE",
+                    "LITERAL_EXPRESSION",
+                    "UNSPECIFIED",
+                    "UNKNOWN"
+                  ]
                 },
                 {
                   "name": "decisionDefinitionVersion",
@@ -1768,7 +2225,12 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["EVALUATED", "FAILED", "UNSPECIFIED", "UNKNOWN"]
+                  "enumValues": [
+                    "EVALUATED",
+                    "FAILED",
+                    "UNSPECIFIED",
+                    "UNKNOWN"
+                  ]
                 },
                 {
                   "name": "tenantId",
@@ -1830,7 +2292,12 @@
           {
             "name": "decisionDefinitionType",
             "type": "string",
-            "enumValues": ["DECISION_TABLE", "LITERAL_EXPRESSION", "UNSPECIFIED", "UNKNOWN"]
+            "enumValues": [
+              "DECISION_TABLE",
+              "LITERAL_EXPRESSION",
+              "UNSPECIFIED",
+              "UNKNOWN"
+            ]
           },
           {
             "name": "decisionDefinitionVersion",
@@ -1956,7 +2423,12 @@
           {
             "name": "state",
             "type": "string",
-            "enumValues": ["EVALUATED", "FAILED", "UNSPECIFIED", "UNKNOWN"]
+            "enumValues": [
+              "EVALUATED",
+              "FAILED",
+              "UNSPECIFIED",
+              "UNKNOWN"
+            ]
           },
           {
             "name": "tenantId",
@@ -2304,7 +2776,9 @@
           {
             "name": "camunda.document.type",
             "type": "string",
-            "enumValues": ["camunda"]
+            "enumValues": [
+              "camunda"
+            ]
           },
           {
             "name": "contentHash",
@@ -2377,7 +2851,9 @@
                 {
                   "name": "camunda.document.type",
                   "type": "string",
-                  "enumValues": ["camunda"]
+                  "enumValues": [
+                    "camunda"
+                  ]
                 },
                 {
                   "name": "contentHash",
@@ -2479,7 +2955,9 @@
                 {
                   "name": "camunda.document.type",
                   "type": "string",
-                  "enumValues": ["camunda"]
+                  "enumValues": [
+                    "camunda"
+                  ]
                 },
                 {
                   "name": "contentHash",
@@ -2586,6 +3064,165 @@
       }
     },
     {
+      "path": "/element-instances/wait-states/search",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "elementId",
+                  "type": "string"
+                },
+                {
+                  "name": "elementInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "elementType",
+                  "type": "string",
+                  "enumValues": [
+                    "AD_HOC_SUB_PROCESS",
+                    "AD_HOC_SUB_PROCESS_INNER_INSTANCE",
+                    "BOUNDARY_EVENT",
+                    "BUSINESS_RULE_TASK",
+                    "CALL_ACTIVITY",
+                    "END_EVENT",
+                    "EVENT_BASED_GATEWAY",
+                    "EVENT_SUB_PROCESS",
+                    "EXCLUSIVE_GATEWAY",
+                    "INCLUSIVE_GATEWAY",
+                    "INTERMEDIATE_CATCH_EVENT",
+                    "INTERMEDIATE_THROW_EVENT",
+                    "MANUAL_TASK",
+                    "MULTI_INSTANCE_BODY",
+                    "PARALLEL_GATEWAY",
+                    "PROCESS",
+                    "RECEIVE_TASK",
+                    "SCRIPT_TASK",
+                    "SEND_TASK",
+                    "SEQUENCE_FLOW",
+                    "SERVICE_TASK",
+                    "START_EVENT",
+                    "SUB_PROCESS",
+                    "TASK",
+                    "UNKNOWN",
+                    "UNSPECIFIED",
+                    "USER_TASK"
+                  ]
+                },
+                {
+                  "name": "jobDetails",
+                  "type": "object",
+                  "nullable": true,
+                  "children": {
+                    "required": [
+                      {
+                        "name": "jobKey",
+                        "type": "string"
+                      },
+                      {
+                        "name": "jobKind",
+                        "type": "string"
+                      },
+                      {
+                        "name": "jobType",
+                        "type": "string"
+                      },
+                      {
+                        "name": "listenerEventType",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "retries",
+                        "type": "number",
+                        "nullable": true
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "messageDetails",
+                  "type": "object",
+                  "nullable": true,
+                  "children": {
+                    "required": [
+                      {
+                        "name": "correlationKey",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "messageName",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "processInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "rootProcessInstanceKey",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "tenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "waitStateType",
+                  "type": "string",
+                  "enumValues": [
+                    "JOB",
+                    "MESSAGE"
+                  ]
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "endCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "hasMoreTotalItems",
+                  "type": "boolean"
+                },
+                {
+                  "name": "startCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "totalItems",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
       "path": "/element-instances/search",
       "method": "POST",
       "status": "200",
@@ -2646,7 +3283,11 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["ACTIVE", "COMPLETED", "TERMINATED"]
+                  "enumValues": [
+                    "ACTIVE",
+                    "COMPLETED",
+                    "TERMINATED"
+                  ]
                 },
                 {
                   "name": "tenantId",
@@ -2776,7 +3417,11 @@
           {
             "name": "state",
             "type": "string",
-            "enumValues": ["ACTIVE", "COMPLETED", "TERMINATED"]
+            "enumValues": [
+              "ACTIVE",
+              "COMPLETED",
+              "TERMINATED"
+            ]
           },
           {
             "name": "tenantId",
@@ -2897,7 +3542,13 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["ACTIVE", "MIGRATED", "PENDING", "RESOLVED", "UNKNOWN"]
+                  "enumValues": [
+                    "ACTIVE",
+                    "MIGRATED",
+                    "PENDING",
+                    "RESOLVED",
+                    "UNKNOWN"
+                  ]
                 },
                 {
                   "name": "tenantId",
@@ -2950,7 +3601,8 @@
           },
           {
             "name": "result",
-            "type": "unknown"
+            "type": "unknown",
+            "nullable": true
           },
           {
             "name": "warnings",
@@ -2964,6 +3616,36 @@
               ],
               "optional": []
             }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/forms/{formKey}",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "formId",
+            "type": "string"
+          },
+          {
+            "name": "formKey",
+            "type": "string"
+          },
+          {
+            "name": "schema",
+            "type": "string"
+          },
+          {
+            "name": "tenantId",
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "type": "number"
           }
         ],
         "optional": []
@@ -3001,7 +3683,10 @@
           {
             "name": "source",
             "type": "string",
-            "enumValues": ["CONFIGURATION", "API"]
+            "enumValues": [
+              "CONFIGURATION",
+              "API"
+            ]
           },
           {
             "name": "type",
@@ -3043,7 +3728,10 @@
           {
             "name": "source",
             "type": "string",
-            "enumValues": ["CONFIGURATION", "API"]
+            "enumValues": [
+              "CONFIGURATION",
+              "API"
+            ]
           },
           {
             "name": "type",
@@ -3085,7 +3773,10 @@
           {
             "name": "source",
             "type": "string",
-            "enumValues": ["CONFIGURATION", "API"]
+            "enumValues": [
+              "CONFIGURATION",
+              "API"
+            ]
           },
           {
             "name": "type",
@@ -3132,7 +3823,10 @@
                 {
                   "name": "source",
                   "type": "string",
-                  "enumValues": ["CONFIGURATION", "API"]
+                  "enumValues": [
+                    "CONFIGURATION",
+                    "API"
+                  ]
                 },
                 {
                   "name": "type",
@@ -3603,7 +4297,13 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["ACTIVE", "MIGRATED", "PENDING", "RESOLVED", "UNKNOWN"]
+                  "enumValues": [
+                    "ACTIVE",
+                    "MIGRATED",
+                    "PENDING",
+                    "RESOLVED",
+                    "UNKNOWN"
+                  ]
                 },
                 {
                   "name": "tenantId",
@@ -3717,7 +4417,13 @@
           {
             "name": "state",
             "type": "string",
-            "enumValues": ["ACTIVE", "MIGRATED", "PENDING", "RESOLVED", "UNKNOWN"]
+            "enumValues": [
+              "ACTIVE",
+              "MIGRATED",
+              "PENDING",
+              "RESOLVED",
+              "UNKNOWN"
+            ]
           },
           {
             "name": "tenantId",
@@ -3913,6 +4619,8 @@
                   "type": "string",
                   "enumValues": [
                     "ASSIGNING",
+                    "BEFORE_ALL",
+                    "CANCEL",
                     "CANCELING",
                     "COMPLETING",
                     "CREATING",
@@ -3924,6 +4632,10 @@
                   "underlyingPrimitive": "string",
                   "rawRefName": "listenerEventType",
                   "wrapper": true
+                },
+                {
+                  "name": "priority",
+                  "type": "number"
                 },
                 {
                   "name": "processDefinitionId",
@@ -4122,6 +4834,8 @@
                   "type": "string",
                   "enumValues": [
                     "ASSIGNING",
+                    "BEFORE_ALL",
+                    "CANCEL",
                     "CANCELING",
                     "COMPLETING",
                     "CREATING",
@@ -4130,6 +4844,10 @@
                     "UNSPECIFIED",
                     "UPDATING"
                   ]
+                },
+                {
+                  "name": "priority",
+                  "type": "number"
                 },
                 {
                   "name": "processDefinitionId",
@@ -4862,6 +5580,11 @@
                   "nullable": true
                 },
                 {
+                  "name": "inboundConnectorType",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
                   "name": "lastUpdatedDate",
                   "type": "string"
                 },
@@ -4876,7 +5599,20 @@
                 {
                   "name": "messageSubscriptionState",
                   "type": "string",
-                  "enumValues": ["CORRELATED", "CREATED", "DELETED", "MIGRATED"]
+                  "enumValues": [
+                    "CORRELATED",
+                    "CREATED",
+                    "DELETED",
+                    "MIGRATED"
+                  ]
+                },
+                {
+                  "name": "messageSubscriptionType",
+                  "type": "string",
+                  "enumValues": [
+                    "START_EVENT",
+                    "PROCESS_EVENT"
+                  ]
                 },
                 {
                   "name": "processDefinitionId",
@@ -4885,6 +5621,16 @@
                 {
                   "name": "processDefinitionKey",
                   "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "processDefinitionName",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "processDefinitionVersion",
+                  "type": "number",
                   "nullable": true
                 },
                 {
@@ -4903,6 +5649,15 @@
                   "underlyingPrimitive": "string",
                   "rawRefName": "schema",
                   "wrapper": true
+                },
+                {
+                  "name": "toolName",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "toolProperties",
+                  "type": "object"
                 }
               ],
               "optional": []
@@ -5656,7 +6411,11 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["ACTIVE", "COMPLETED", "TERMINATED"]
+                  "enumValues": [
+                    "ACTIVE",
+                    "COMPLETED",
+                    "TERMINATED"
+                  ]
                 },
                 {
                   "name": "tags",
@@ -5773,7 +6532,11 @@
           {
             "name": "state",
             "type": "string",
-            "enumValues": ["ACTIVE", "COMPLETED", "TERMINATED"]
+            "enumValues": [
+              "ACTIVE",
+              "COMPLETED",
+              "TERMINATED"
+            ]
           },
           {
             "name": "tags",
@@ -5908,7 +6671,13 @@
                 {
                   "name": "state",
                   "type": "string",
-                  "enumValues": ["ACTIVE", "MIGRATED", "PENDING", "RESOLVED", "UNKNOWN"]
+                  "enumValues": [
+                    "ACTIVE",
+                    "MIGRATED",
+                    "PENDING",
+                    "RESOLVED",
+                    "UNKNOWN"
+                  ]
                 },
                 {
                   "name": "tenantId",
@@ -6029,6 +6798,77 @@
                 },
                 {
                   "name": "incidents",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/resources/search",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<schema>",
+            "children": {
+              "required": [
+                {
+                  "name": "resourceId",
+                  "type": "string"
+                },
+                {
+                  "name": "resourceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "resourceName",
+                  "type": "string"
+                },
+                {
+                  "name": "tenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "version",
+                  "type": "number"
+                },
+                {
+                  "name": "versionTag",
+                  "type": "string",
+                  "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "endCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "hasMoreTotalItems",
+                  "type": "boolean"
+                },
+                {
+                  "name": "startCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "totalItems",
                   "type": "number"
                 }
               ],
@@ -6488,10 +7328,7 @@
           },
           {
             "name": "username",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -6552,6 +7389,72 @@
       "schema": {
         "required": [
           {
+            "name": "authentication",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "canLogout",
+                  "type": "boolean"
+                },
+                {
+                  "name": "isLoginDelegated",
+                  "type": "boolean"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "cloud",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "stage",
+                  "type": "string",
+                  "enumValues": [
+                    "dev",
+                    "int",
+                    "prod"
+                  ],
+                  "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "components",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "active",
+                  "type": "array<string>"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "deployment",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "isMultiTenancyEnabled",
+                  "type": "boolean"
+                },
+                {
+                  "name": "maxRequestSize",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
             "name": "jobMetrics",
             "type": "object",
             "children": {
@@ -6605,10 +7508,7 @@
           },
           {
             "name": "tenantId",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -6636,10 +7536,7 @@
                 },
                 {
                   "name": "tenantId",
-                  "type": "string",
-                  "underlyingPrimitive": "string",
-                  "rawRefName": "schema",
-                  "wrapper": true
+                  "type": "string"
                 }
               ],
               "optional": []
@@ -6693,10 +7590,7 @@
           },
           {
             "name": "tenantId",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -6719,10 +7613,7 @@
           },
           {
             "name": "tenantId",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -7029,7 +7920,11 @@
                       {
                         "name": "health",
                         "type": "string",
-                        "enumValues": ["healthy", "unhealthy", "dead"]
+                        "enumValues": [
+                          "healthy",
+                          "unhealthy",
+                          "dead"
+                        ]
                       },
                       {
                         "name": "partitionId",
@@ -7038,7 +7933,11 @@
                       {
                         "name": "role",
                         "type": "string",
-                        "enumValues": ["leader", "follower", "inactive"]
+                        "enumValues": [
+                          "leader",
+                          "follower",
+                          "inactive"
+                        ]
                       }
                     ],
                     "optional": []
@@ -7103,10 +8002,7 @@
           },
           {
             "name": "username",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -7135,10 +8031,7 @@
                 },
                 {
                   "name": "username",
-                  "type": "string",
-                  "underlyingPrimitive": "string",
-                  "rawRefName": "schema",
-                  "wrapper": true
+                  "type": "string"
                 }
               ],
               "optional": []
@@ -7193,10 +8086,7 @@
           },
           {
             "name": "username",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -7220,10 +8110,7 @@
           },
           {
             "name": "username",
-            "type": "string",
-            "underlyingPrimitive": "string",
-            "rawRefName": "schema",
-            "wrapper": true
+            "type": "string"
           }
         ],
         "optional": []
@@ -7544,7 +8431,12 @@
                 {
                   "name": "actorType",
                   "type": "string",
-                  "enumValues": ["ANONYMOUS", "CLIENT", "UNKNOWN", "USER"],
+                  "enumValues": [
+                    "ANONYMOUS",
+                    "CLIENT",
+                    "UNKNOWN",
+                    "USER"
+                  ],
                   "nullable": true
                 },
                 {
@@ -7569,7 +8461,11 @@
                 {
                   "name": "category",
                   "type": "string",
-                  "enumValues": ["ADMIN", "DEPLOYED_RESOURCES", "USER_TASKS"]
+                  "enumValues": [
+                    "ADMIN",
+                    "DEPLOYED_RESOURCES",
+                    "USER_TASKS"
+                  ]
                 },
                 {
                   "name": "decisionDefinitionId",
@@ -7699,7 +8595,10 @@
                 {
                   "name": "result",
                   "type": "string",
-                  "enumValues": ["FAIL", "SUCCESS"]
+                  "enumValues": [
+                    "FAIL",
+                    "SUCCESS"
+                  ]
                 },
                 {
                   "name": "rootProcessInstanceKey",
@@ -7719,6 +8618,85 @@
                   "name": "userTaskKey",
                   "type": "string",
                   "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "endCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "hasMoreTotalItems",
+                  "type": "boolean"
+                },
+                {
+                  "name": "startCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "totalItems",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/user-tasks/{userTaskKey}/effective-variables/search",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<0>",
+            "children": {
+              "required": [
+                {
+                  "name": "isTruncated",
+                  "type": "boolean"
+                },
+                {
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "name": "processInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "rootProcessInstanceKey",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "scopeKey",
+                  "type": "string"
+                },
+                {
+                  "name": "tenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "value",
+                  "type": "string"
+                },
+                {
+                  "name": "variableKey",
+                  "type": "string"
                 }
               ],
               "optional": []
