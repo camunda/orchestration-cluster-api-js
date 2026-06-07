@@ -67,9 +67,20 @@ export interface TypedVariablePage {
 /** Any Zod object schema; used as the DTO that declares the variables to fetch. */
 export type AnyVariableSchema = z.ZodObject<any>;
 
-/** The declared variable names, in declaration order. These key the `name $in [...]` filter. */
+/**
+ * The declared variable names, in declaration order. These key the `name $in [...]` filter.
+ *
+ * Guards against non-schema inputs (e.g. a JS caller, or an `any` cast) so the failure is a clear,
+ * actionable error rather than an opaque `Cannot read properties of undefined` deep in paging.
+ */
 export function variableNamesFromSchema(schema: AnyVariableSchema): string[] {
-  return Object.keys(schema.shape);
+  const shape = schema == null ? undefined : schema.shape;
+  if (shape == null || typeof shape !== 'object') {
+    throw new TypedVariablesError(
+      'A Zod object schema is required: its keys declare the variable names to fetch.'
+    );
+  }
+  return Object.keys(shape);
 }
 
 /**
@@ -235,4 +246,68 @@ export async function collectTypedVariables<TSchema extends AnyVariableSchema>(p
   }
 
   return new VariableMap(collector.build(), params.schema);
+}
+
+/**
+ * A cancelable in-flight request, mirroring the generated `CancelablePromise` (a `Promise` with an
+ * extra `cancel()`). Kept structural here so the runtime core stays free of generated-type imports.
+ */
+export interface CancelableRequest<T> extends PromiseLike<T> {
+  cancel(): void;
+}
+
+/** The subset of the variable search response the page fetcher reads. */
+export interface VariableSearchPageResponse {
+  items?: ReadonlyArray<{ name: string; value: string; scopeKey: unknown }> | null;
+  page?: { endCursor?: string | null } | null;
+}
+
+/** The request input the page fetcher builds for each page. */
+export interface VariableSearchPageInput<TFilter> {
+  filter: TFilter;
+  page: { after?: string; limit: number };
+  truncateValues: boolean;
+}
+
+/**
+ * Build the `fetchPage` callback for {@link collectTypedVariables} that drives the variable search
+ * API. For each page it: aborts early if the outer signal is already aborted, issues the request
+ * with the declared-name filter and `truncateValues: false` (full values are required to bind the
+ * DTO), forwards outer cancellation to the in-flight request via its `cancel()`, and maps the raw
+ * items into {@link TypedVariableItem}s.
+ *
+ * Transport is injected as `search`, so the input construction and cancellation propagation are
+ * unit-testable without a live client.
+ */
+export function createVariableSearchFetchPage<TFilter>(params: {
+  filter: TFilter;
+  limit: number;
+  signal: AbortSignal;
+  search: (
+    input: VariableSearchPageInput<TFilter>
+  ) => CancelableRequest<VariableSearchPageResponse>;
+}): (after: string | undefined) => Promise<TypedVariablePage> {
+  const { filter, limit, signal, search } = params;
+  return async (after) => {
+    // Honour cancellation of the returned CancelablePromise between pages.
+    signal.throwIfAborted();
+    const input: VariableSearchPageInput<TFilter> = {
+      filter,
+      page: after ? { after, limit } : { limit },
+      truncateValues: false,
+    };
+    const pending = search(input);
+    // Propagate outer cancellation to the in-flight paging request so it aborts too.
+    const onAbort = () => pending.cancel();
+    signal.addEventListener('abort', onAbort, { once: true });
+    const result = await Promise.resolve(pending).finally(() =>
+      signal.removeEventListener('abort', onAbort)
+    );
+    const items = (result?.items ?? []).map((item) => ({
+      name: item.name,
+      value: item.value,
+      scopeKey: String(item.scopeKey),
+    }));
+    return { items, endCursor: result?.page?.endCursor ?? null };
+  };
 }

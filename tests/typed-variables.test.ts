@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { ZodError, z } from 'zod';
 import {
+  type CancelableRequest,
   collectTypedVariables,
+  createVariableSearchFetchPage,
   type TypedVariableItem,
   type TypedVariablePage,
+  TypedVariablesError,
   VariableCollector,
   VariableDeserializationError,
   VariableMap,
   VariableScopeCollisionError,
+  type VariableSearchPageResponse,
   variableNamesFromSchema,
 } from '../src/runtime/typedVariables';
 
@@ -31,6 +35,14 @@ describe('variableNamesFromSchema', () => {
 
   it('returns an empty list for an empty schema', () => {
     expect(variableNamesFromSchema(z.object({}))).toEqual([]);
+  });
+
+  it('throws a clear TypedVariablesError when passed a non-schema value', () => {
+    // Simulates a JS caller (or an `any` cast) passing something that is not a Zod object.
+    // @ts-expect-error - intentionally invalid input
+    expect(() => variableNamesFromSchema(null)).toThrow(TypedVariablesError);
+    // @ts-expect-error - intentionally invalid input
+    expect(() => variableNamesFromSchema({ notAShape: true })).toThrow(TypedVariablesError);
   });
 });
 
@@ -216,5 +228,111 @@ describe('collectTypedVariables paging', () => {
     });
     expect(calls).toBe(0);
     expect(map.raw).toEqual({});
+  });
+});
+
+describe('createVariableSearchFetchPage', () => {
+  type Filter = { name: { $in: string[] }; processInstanceKey?: string };
+
+  /** A resolved cancelable request whose cancel() records invocation. */
+  function request(response: VariableSearchPageResponse): {
+    req: CancelableRequest<VariableSearchPageResponse>;
+    cancelled: () => boolean;
+  } {
+    let cancelled = false;
+    const req: CancelableRequest<VariableSearchPageResponse> = Object.assign(
+      Promise.resolve(response),
+      {
+        cancel: () => {
+          cancelled = true;
+        },
+      }
+    );
+    return { req, cancelled: () => cancelled };
+  }
+
+  it('builds the request input with the name filter, page cursor, and truncateValues=false', async () => {
+    const inputs: unknown[] = [];
+    const filter: Filter = { name: { $in: ['orderId', 'amount'] }, processInstanceKey: 'pi-1' };
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter,
+      limit: 25,
+      signal: new AbortController().signal,
+      search: (input) => {
+        inputs.push(input);
+        return request({
+          items: [{ name: 'orderId', value: '"A-1"', scopeKey: 'scope-1' }],
+          page: { endCursor: 'c1' },
+        }).req;
+      },
+    });
+
+    const first = await fetchPage(undefined);
+    expect(inputs[0]).toEqual({ filter, page: { limit: 25 }, truncateValues: false });
+    expect(first).toEqual({
+      items: [{ name: 'orderId', value: '"A-1"', scopeKey: 'scope-1' }],
+      endCursor: 'c1',
+    });
+
+    await fetchPage('c1');
+    expect(inputs[1]).toEqual({ filter, page: { after: 'c1', limit: 25 }, truncateValues: false });
+  });
+
+  it('stringifies non-string scopeKey values in mapped items', async () => {
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter: { name: { $in: ['a'] } },
+      limit: 10,
+      signal: new AbortController().signal,
+      search: () =>
+        request({ items: [{ name: 'a', value: '1', scopeKey: 12345 }], page: { endCursor: null } })
+          .req,
+    });
+    const result = await fetchPage(undefined);
+    expect(result.items[0]?.scopeKey).toBe('12345');
+  });
+
+  it('forwards outer cancellation to the in-flight page request', async () => {
+    const controller = new AbortController();
+    let cancelled = false;
+    let resolvePending: (v: VariableSearchPageResponse) => void = () => {};
+    const pending: CancelableRequest<VariableSearchPageResponse> = Object.assign(
+      new Promise<VariableSearchPageResponse>((resolve) => {
+        resolvePending = resolve;
+      }),
+      {
+        cancel: () => {
+          cancelled = true;
+          resolvePending({ items: [], page: { endCursor: null } });
+        },
+      }
+    );
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter: { name: { $in: ['a'] } },
+      limit: 10,
+      signal: controller.signal,
+      search: () => pending,
+    });
+
+    const inFlight = fetchPage(undefined);
+    controller.abort();
+    await inFlight;
+    expect(cancelled).toBe(true);
+  });
+
+  it('aborts before issuing a request when the signal is already aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+    let called = false;
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter: { name: { $in: ['a'] } },
+      limit: 10,
+      signal: controller.signal,
+      search: () => {
+        called = true;
+        return request({ items: [], page: { endCursor: null } }).req;
+      },
+    });
+    await expect(fetchPage(undefined)).rejects.toThrow();
+    expect(called).toBe(false);
   });
 });
