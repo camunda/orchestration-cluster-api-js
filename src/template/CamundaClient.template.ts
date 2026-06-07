@@ -705,6 +705,10 @@ export class CamundaClient {
    * @param schema A Zod object schema declaring the variables to fetch.
    * @param options Query scope. `processInstanceKey` is required; `scopeKey` narrows to a single
    *   element-instance scope, `tenantId` filters by tenant, and `pageSize` tunes the page limit.
+   *   `consistency` controls eventual-consistency tolerance for the underlying `searchVariables`
+   *   calls: it defaults to `{ waitUpToMs: 0 }` (no waiting), but a non-zero `waitUpToMs` makes the
+   *   paging calls poll until the data is consistent, avoiding intermittent missing variables /
+   *   `ZodError` on a freshly-updated instance.
    * @throws {VariableScopeCollisionError} when a declared variable is found at more than one
    *   scope and no `scopeKey` was provided to disambiguate.
    * @throws {VariableDeserializationError} when a variable's value is not valid JSON.
@@ -725,6 +729,7 @@ export class CamundaClient {
       scopeKey?: ScopeKey;
       tenantId?: TenantId;
       pageSize?: number;
+      consistency?: { waitUpToMs: number; pollIntervalMs?: number };
     }
   ): CancelablePromise<VariableMap<TSchema>> {
     return toCancelable(async (signal) => {
@@ -740,6 +745,10 @@ export class CamundaClient {
       if (options.scopeKey) filter.scopeKey = options.scopeKey;
       if (options.tenantId) filter.tenantId = options.tenantId;
 
+      // Default to no eventual-consistency wait, but let callers opt into polling for a stable
+      // snapshot when querying a freshly-updated instance.
+      const consistency = options.consistency ?? { waitUpToMs: 0 };
+
       return collectTypedVariables({
         schema,
         // A single scopeKey restricts results to one scope, so each declared name appears at most
@@ -751,7 +760,7 @@ export class CamundaClient {
           limit,
           signal,
           // @ts-ignore - searchVariables method & input type injected by generator
-          search: (input) => this.searchVariables(input, { consistency: { waitUpToMs: 0 } }),
+          search: (input) => this.searchVariables(input, { consistency }),
         }),
       });
     });
