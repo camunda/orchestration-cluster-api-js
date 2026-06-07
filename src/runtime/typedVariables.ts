@@ -92,11 +92,21 @@ export class VariableMap<TSchema extends AnyVariableSchema> {
   }
 
   /** Whether a variable with the given name is present in the result. */
+  has<K extends keyof z.infer<TSchema> & string>(variableName: K): boolean;
+  has(variableName: string): boolean;
   has(variableName: string): boolean {
     return Object.hasOwn(this._raw, variableName);
   }
 
-  /** Lenient access. Returns the parsed value, or `undefined` when the variable is absent. */
+  /**
+   * Lenient access. Returns the parsed value, or `undefined` when the variable is absent.
+   *
+   * For a declared schema key the return type is narrowed to that field's type (still unioned
+   * with `undefined`, since the variable may be absent at runtime); arbitrary string keys return
+   * `unknown`.
+   */
+  get<K extends keyof z.infer<TSchema> & string>(variableName: K): z.infer<TSchema>[K] | undefined;
+  get(variableName: string): unknown;
   get(variableName: string): unknown {
     return this.has(variableName) ? this._raw[variableName] : undefined;
   }
@@ -175,13 +185,20 @@ export class VariableCollector {
  * Page through variable search results until every declared variable is found or the result set
  * is exhausted, then collapse them into a {@link VariableMap}.
  *
- * Paging terminates when: all declared names have been seen, the server reports no next cursor,
- * a page comes back empty, or a cursor repeats (a defensive guard against a server that never
- * advances). The `fetchPage` callback isolates the HTTP call so the paging and collapse logic is
+ * Paging terminates when: the server reports no next cursor, a page comes back empty, or a cursor
+ * repeats (a defensive guard against a server that never advances). The "all declared names seen"
+ * early-stop is only applied when `singleScope` is true — i.e. the query is already scoped to a
+ * single scope, where each name can appear at most once. When the query spans multiple scopes,
+ * stopping early on "all found" could miss the same name reappearing at a second scope on a later
+ * page, silently hiding a {@link VariableScopeCollisionError}; so paging continues to exhaustion.
+ *
+ * The `fetchPage` callback isolates the HTTP call so the paging and collapse logic is
  * unit-testable in isolation.
  */
 export async function collectTypedVariables<TSchema extends AnyVariableSchema>(params: {
   schema: TSchema;
+  /** Whether the query is scoped to a single scope (collisions impossible, early-stop safe). */
+  singleScope: boolean;
   fetchPage: (after: string | undefined) => Promise<TypedVariablePage>;
 }): Promise<VariableMap<TSchema>> {
   const names = variableNamesFromSchema(params.schema);
@@ -201,7 +218,10 @@ export async function collectTypedVariables<TSchema extends AnyVariableSchema>(p
       remaining.delete(item.name);
     }
 
-    if (remaining.size === 0) {
+    // Only safe to stop on "all found" when collisions are impossible (single scope). Otherwise
+    // a later page could reveal a second scope for an already-seen name — keep paging so build()
+    // can raise the collision rather than silently returning an ambiguous value.
+    if (params.singleScope && remaining.size === 0) {
       break;
     }
     if (page.endCursor === null || page.items.length === 0) {

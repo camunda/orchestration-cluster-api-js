@@ -115,7 +115,7 @@ describe('VariableCollector', () => {
 });
 
 describe('collectTypedVariables paging', () => {
-  it('pages until every declared variable is found, then stops early', async () => {
+  it('pages until every declared variable is found, then stops early when scoped to one scope', async () => {
     const pages: TypedVariablePage[] = [
       page([item('orderId', 'A-1')], 'cursor-1'),
       page([item('amount', 9.99)], 'cursor-2'),
@@ -124,6 +124,8 @@ describe('collectTypedVariables paging', () => {
     let calls = 0;
     const map = await collectTypedVariables({
       schema: OrderSchema,
+      // Scoped to a single scope -> each name appears at most once -> early-stop is safe.
+      singleScope: true,
       fetchPage: async () => {
         const next = pages[calls];
         calls += 1;
@@ -135,10 +137,34 @@ describe('collectTypedVariables paging', () => {
     expect(map.validate()).toEqual({ orderId: 'A-1', amount: 9.99 });
   });
 
+  it('does not stop early when unscoped, surfacing a collision that only appears on a later page', async () => {
+    const pages: TypedVariablePage[] = [
+      // Page 1 already contains every declared name -> the old early-stop would terminate here.
+      page([item('orderId', 'A-1', 'scope-a'), item('amount', 9.99, 'scope-a')], 'cursor-1'),
+      // Page 2 reveals the same name at a second scope -> a collision the early-stop would miss.
+      page([item('orderId', 'A-2', 'scope-b')], null),
+    ];
+    let calls = 0;
+    await expect(
+      collectTypedVariables({
+        schema: OrderSchema,
+        singleScope: false,
+        fetchPage: async () => {
+          const next = pages[calls];
+          calls += 1;
+          return next;
+        },
+      })
+    ).rejects.toBeInstanceOf(VariableScopeCollisionError);
+    // Proves paging continued past page 1 despite all names being found on it.
+    expect(calls).toBe(2);
+  });
+
   it('stops when the server reports no next cursor', async () => {
     let calls = 0;
     const map = await collectTypedVariables({
       schema: OrderSchema,
+      singleScope: false,
       fetchPage: async () => {
         calls += 1;
         return page([item('orderId', 'A-1')], null);
@@ -153,6 +179,7 @@ describe('collectTypedVariables paging', () => {
     let calls = 0;
     const map = await collectTypedVariables({
       schema: OrderSchema,
+      singleScope: false,
       fetchPage: async () => {
         calls += 1;
         return page([], 'cursor-loops');
@@ -166,6 +193,7 @@ describe('collectTypedVariables paging', () => {
     let calls = 0;
     const map = await collectTypedVariables({
       schema: OrderSchema,
+      singleScope: false,
       fetchPage: async () => {
         calls += 1;
         return page([item('orderId', 'A-1')], 'stuck');
@@ -180,6 +208,7 @@ describe('collectTypedVariables paging', () => {
     let calls = 0;
     const map = await collectTypedVariables({
       schema: z.object({}),
+      singleScope: false,
       fetchPage: async () => {
         calls += 1;
         return page([]);
