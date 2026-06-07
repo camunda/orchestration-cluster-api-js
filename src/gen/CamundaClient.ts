@@ -31,6 +31,7 @@ import { BackpressureManager } from '../runtime/backpressure';
 import {
   type AnyVariableSchema,
   collectTypedVariables,
+  createVariableSearchFetchPage,
   type VariableMap,
   variableNamesFromSchema,
 } from '../runtime/typedVariables';
@@ -39,7 +40,6 @@ import type {
   ScopeKey,
   TenantId,
   VariableFilter,
-  VariableSearchResult,
 } from '../gen/types.gen';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
@@ -16913,29 +16913,12 @@ export class CamundaClient {
         // once and paging can stop as soon as all are found. Otherwise we page to exhaustion so a
         // same-name/different-scope collision on a later page surfaces as a VariableScopeCollisionError.
         singleScope: Boolean(options.scopeKey),
-        fetchPage: async (after) => {
-          // Honour cancellation of the returned CancelablePromise between pages.
-          signal.throwIfAborted();
-          const input = {
-            filter,
-            page: after ? { after, limit } : { limit },
-            // Full values are required to bind the DTO; never truncate.
-            truncateValues: false,
-          };
-          const pending = this.searchVariables(input, { consistency: { waitUpToMs: 0 } });
-          // Propagate outer cancellation to the in-flight paging request so it aborts too.
-          const onAbort = () => pending.cancel();
-          signal.addEventListener('abort', onAbort, { once: true });
-          const result = await pending.finally(() =>
-            signal.removeEventListener('abort', onAbort)
-          );
-          const items = (result?.items ?? []).map((item: VariableSearchResult) => ({
-            name: item.name,
-            value: item.value,
-            scopeKey: String(item.scopeKey),
-          }));
-          return { items, endCursor: result?.page?.endCursor ?? null };
-        },
+        fetchPage: createVariableSearchFetchPage({
+          filter,
+          limit,
+          signal,
+          search: (input) => this.searchVariables(input, { consistency: { waitUpToMs: 0 } }),
+        }),
       });
     });
   }
