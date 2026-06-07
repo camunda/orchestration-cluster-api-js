@@ -34,6 +34,12 @@ import {
   type VariableMap,
   variableNamesFromSchema,
 } from '../runtime/typedVariables';
+import type {
+  ProcessInstanceKey,
+  ScopeKey,
+  TenantId,
+  VariableSearchResult,
+} from '../gen/types.gen';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
@@ -16881,9 +16887,9 @@ export class CamundaClient {
   searchVariablesAsDto<TSchema extends AnyVariableSchema>(
     schema: TSchema,
     options: {
-      processInstanceKey: string;
-      scopeKey?: string;
-      tenantId?: string;
+      processInstanceKey: ProcessInstanceKey;
+      scopeKey?: ScopeKey;
+      tenantId?: TenantId;
       pageSize?: number;
     }
   ): CancelablePromise<VariableMap<TSchema>> {
@@ -16902,6 +16908,10 @@ export class CamundaClient {
 
       return collectTypedVariables({
         schema,
+        // A single scopeKey restricts results to one scope, so each declared name appears at most
+        // once and paging can stop as soon as all are found. Otherwise we page to exhaustion so a
+        // same-name/different-scope collision on a later page surfaces as a VariableScopeCollisionError.
+        singleScope: Boolean(options.scopeKey),
         fetchPage: async (after) => {
           const input = {
             filter,
@@ -16910,7 +16920,7 @@ export class CamundaClient {
             truncateValues: false,
           };
           const result = await this.searchVariables(input, { consistency: { waitUpToMs: 0 } });
-          const items = (result?.items ?? []).map((item: any) => ({
+          const items = (result?.items ?? []).map((item: VariableSearchResult) => ({
             name: item.name,
             value: item.value,
             scopeKey: String(item.scopeKey),
