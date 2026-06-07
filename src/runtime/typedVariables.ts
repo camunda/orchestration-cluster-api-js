@@ -103,22 +103,24 @@ export class VariableMap<TSchema extends AnyVariableSchema> {
   }
 
   /** Whether a variable with the given name is present in the result. */
-  has(variableName: keyof z.infer<TSchema> & string): boolean;
+  has(variableName: keyof z.input<TSchema> & string): boolean;
   has(variableName: string): boolean;
   has(variableName: string): boolean {
     return Object.hasOwn(this._raw, variableName);
   }
 
   /**
-   * Lenient access. Returns the parsed value, or `undefined` when the variable is absent.
+   * Lenient access. Returns the JSON-parsed wire value, or `undefined` when the variable is absent.
    *
-   * A declared schema key is narrowed to that field's type unioned with `undefined` (the variable
-   * may be absent at runtime). Any other key resolves to `undefined`: the result only ever holds
-   * the declared variable names, so an undeclared key can never carry a value.
+   * The value is *not* run through the schema, so a declared key is narrowed to that field's schema
+   * *input* type (`z.input`) unioned with `undefined` — not the post-validation output type. This
+   * keeps the type honest for schemas with transforms or effects, where the parsed wire value can
+   * differ from `validate()`'s output. Any other key resolves to `undefined`: the result only ever
+   * holds the declared variable names, so an undeclared key can never carry a value.
    */
   get<K extends string>(
     variableName: K
-  ): K extends keyof z.infer<TSchema> ? z.infer<TSchema>[K] | undefined : undefined;
+  ): K extends keyof z.input<TSchema> ? z.input<TSchema>[K] | undefined : undefined;
   get(variableName: string): unknown {
     return this.has(variableName) ? this._raw[variableName] : undefined;
   }

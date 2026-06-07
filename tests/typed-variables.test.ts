@@ -69,6 +69,22 @@ describe('VariableMap lenient access', () => {
     expect([orderId, amount, missing]).toBeDefined();
   });
 
+  it('types get() against the schema INPUT, not the transformed output', () => {
+    // get() returns the JSON-parsed wire value without running the schema, so for a schema with a
+    // transform the lenient type must follow `z.input` (pre-transform), while validate() follows
+    // `z.infer` (post-transform). Guards the whole class of transform/effect schemas, not just one.
+    const TransformSchema = z.object({
+      count: z.string().transform((s) => Number.parseInt(s, 10)),
+    });
+    const transformed = new VariableMap({ count: '42' }, TransformSchema);
+    // Compile-time: get() yields the input type (string | undefined), not number.
+    const count: string | undefined = transformed.get('count');
+    // Compile-time: validate() yields the output type (number).
+    const validated: { count: number } = transformed.validate();
+    expect(count).toBe('42');
+    expect(validated.count).toBe(42);
+  });
+
   it('exposes the raw record', () => {
     expect(map.raw).toEqual({ orderId: 'A-1', amount: 9.99 });
   });
