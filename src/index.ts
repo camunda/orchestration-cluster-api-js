@@ -39,6 +39,7 @@ export type { ThreadPool } from './runtime/threadPool';
 // Typed variable map (DTO-driven variable search)
 export {
   type AnyVariableSchema,
+  collectTypedVariables,
   type TypedVariableItem,
   type TypedVariablePage,
   TypedVariablesError,

@@ -93,7 +93,7 @@ describe('VariableCollector', () => {
     collector.ingest([item('orderId', 'A-1', 'scope-b'), item('orderId', 'A-2', 'scope-a')]);
     try {
       collector.build();
-      expect.unreachable('expected a scope collision');
+      throw new Error('expected a scope collision');
     } catch (error) {
       expect(error).toBeInstanceOf(VariableScopeCollisionError);
       expect((error as VariableScopeCollisionError).variableName).toBe('orderId');
@@ -106,7 +106,7 @@ describe('VariableCollector', () => {
     collector.ingest([{ name: 'orderId', value: 'not json', scopeKey: 'scope-1' }]);
     try {
       collector.build();
-      expect.unreachable('expected a deserialization error');
+      throw new Error('expected a deserialization error');
     } catch (error) {
       expect(error).toBeInstanceOf(VariableDeserializationError);
       expect((error as VariableDeserializationError).variableName).toBe('orderId');
