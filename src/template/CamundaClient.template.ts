@@ -25,6 +25,7 @@ import type {
   ProcessInstanceKey,
   ScopeKey,
   TenantId,
+  VariableFilter,
   VariableSearchResult,
 } from '../gen/types.gen';
 import {
@@ -731,13 +732,13 @@ export class CamundaClient {
       pageSize?: number;
     }
   ): CancelablePromise<VariableMap<TSchema>> {
-    return toCancelable(async (_signal) => {
+    return toCancelable(async (signal) => {
       if (!options?.processInstanceKey) {
         throw new Error('searchVariablesAsDto requires options.processInstanceKey');
       }
       const names = variableNamesFromSchema(schema);
       const limit = options.pageSize && options.pageSize > 0 ? options.pageSize : 100;
-      const filter: Record<string, unknown> = {
+      const filter: VariableFilter = {
         name: { $in: names },
         processInstanceKey: options.processInstanceKey,
       };
@@ -751,6 +752,8 @@ export class CamundaClient {
         // same-name/different-scope collision on a later page surfaces as a VariableScopeCollisionError.
         singleScope: Boolean(options.scopeKey),
         fetchPage: async (after) => {
+          // Honour cancellation of the returned CancelablePromise between pages.
+          signal.throwIfAborted();
           const input = {
             filter,
             page: after ? { after, limit } : { limit },
@@ -758,7 +761,11 @@ export class CamundaClient {
             truncateValues: false,
           };
           // @ts-ignore - searchVariables method & input type injected by generator
-          const result = await this.searchVariables(input, { consistency: { waitUpToMs: 0 } });
+          const pending = this.searchVariables(input, { consistency: { waitUpToMs: 0 } });
+          // Propagate outer cancellation to the in-flight paging request so it aborts too.
+          const onAbort = () => pending.cancel();
+          signal.addEventListener('abort', onAbort, { once: true });
+          const result = await pending.finally(() => signal.removeEventListener('abort', onAbort));
           const items = (result?.items ?? []).map((item: VariableSearchResult) => ({
             name: item.name,
             value: item.value,
