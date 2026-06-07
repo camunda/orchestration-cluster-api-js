@@ -278,6 +278,23 @@ describe('createVariableSearchFetchPage', () => {
     expect(inputs[1]).toEqual({ filter, page: { after: 'c1', limit: 25 }, truncateValues: false });
   });
 
+  it('forwards an empty-string cursor as page.after (cursors are opaque)', async () => {
+    const inputs: unknown[] = [];
+    const filter: Filter = { name: { $in: ['a'] } };
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter,
+      limit: 10,
+      signal: new AbortController().signal,
+      search: (input) => {
+        inputs.push(input);
+        return request({ items: [], page: { endCursor: null } }).req;
+      },
+    });
+
+    await fetchPage('');
+    expect(inputs[0]).toEqual({ filter, page: { after: '', limit: 10 }, truncateValues: false });
+  });
+
   it('stringifies non-string scopeKey values in mapped items', async () => {
     const fetchPage = createVariableSearchFetchPage<Filter>({
       filter: { name: { $in: ['a'] } },
@@ -316,6 +333,43 @@ describe('createVariableSearchFetchPage', () => {
     const inFlight = fetchPage(undefined);
     controller.abort();
     await inFlight;
+    expect(cancelled).toBe(true);
+  });
+
+  it('cancels the in-flight request when the signal aborts before the listener is registered', async () => {
+    // Reproduce the race: throwIfAborted() does not throw, but the signal is already aborted by
+    // the time the abort listener would be attached (addEventListener never fires its callback).
+    // The explicit `signal.aborted` guard must still cancel the in-flight request.
+    const fakeSignal = {
+      aborted: true,
+      throwIfAborted() {
+        // no-op: simulates the window where abort happened *after* this check
+      },
+      addEventListener() {
+        // no-op: the abort event already fired, so the listener is never invoked
+      },
+      removeEventListener() {},
+    } as unknown as AbortSignal;
+
+    let cancelled = false;
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter: { name: { $in: ['a'] } },
+      limit: 10,
+      signal: fakeSignal,
+      search: () => {
+        const req: CancelableRequest<VariableSearchPageResponse> = Object.assign(
+          Promise.resolve<VariableSearchPageResponse>({ items: [], page: { endCursor: null } }),
+          {
+            cancel: () => {
+              cancelled = true;
+            },
+          }
+        );
+        return req;
+      },
+    });
+
+    await fetchPage(undefined);
     expect(cancelled).toBe(true);
   });
 

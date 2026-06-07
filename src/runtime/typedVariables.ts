@@ -293,13 +293,18 @@ export function createVariableSearchFetchPage<TFilter>(params: {
     signal.throwIfAborted();
     const input: VariableSearchPageInput<TFilter> = {
       filter,
-      page: after ? { after, limit } : { limit },
+      // Cursors are opaque; only an explicit `undefined` means "no cursor". An empty-string
+      // cursor is a valid value and must be forwarded as `page.after`.
+      page: after !== undefined ? { after, limit } : { limit },
       truncateValues: false,
     };
     const pending = search(input);
     // Propagate outer cancellation to the in-flight paging request so it aborts too.
     const onAbort = () => pending.cancel();
     signal.addEventListener('abort', onAbort, { once: true });
+    // Guard the race where the signal aborted between throwIfAborted() and addEventListener():
+    // the abort event already fired, so cancel the in-flight request explicitly.
+    if (signal.aborted) onAbort();
     const result = await Promise.resolve(pending).finally(() =>
       signal.removeEventListener('abort', onAbort)
     );
