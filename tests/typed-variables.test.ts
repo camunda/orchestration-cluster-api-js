@@ -59,6 +59,16 @@ describe('VariableMap lenient access', () => {
     expect(map.get('missing')).toBeUndefined();
   });
 
+  it('types get() per key: schema keys narrow, non-schema keys are undefined', () => {
+    // Compile-time assertions (no runtime effect): a declared key narrows to its field type
+    // unioned with undefined; an undeclared key resolves to undefined since the map only ever
+    // holds declared variable names.
+    const orderId: string | undefined = map.get('orderId');
+    const amount: number | undefined = map.get('amount');
+    const missing: undefined = map.get('missing');
+    expect([orderId, amount, missing]).toBeDefined();
+  });
+
   it('exposes the raw record', () => {
     expect(map.raw).toEqual({ orderId: 'A-1', amount: 9.99 });
   });

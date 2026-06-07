@@ -103,7 +103,7 @@ export class VariableMap<TSchema extends AnyVariableSchema> {
   }
 
   /** Whether a variable with the given name is present in the result. */
-  has<K extends keyof z.infer<TSchema> & string>(variableName: K): boolean;
+  has(variableName: keyof z.infer<TSchema> & string): boolean;
   has(variableName: string): boolean;
   has(variableName: string): boolean {
     return Object.hasOwn(this._raw, variableName);
@@ -112,12 +112,13 @@ export class VariableMap<TSchema extends AnyVariableSchema> {
   /**
    * Lenient access. Returns the parsed value, or `undefined` when the variable is absent.
    *
-   * For a declared schema key the return type is narrowed to that field's type (still unioned
-   * with `undefined`, since the variable may be absent at runtime); arbitrary string keys return
-   * `unknown`.
+   * A declared schema key is narrowed to that field's type unioned with `undefined` (the variable
+   * may be absent at runtime). Any other key resolves to `undefined`: the result only ever holds
+   * the declared variable names, so an undeclared key can never carry a value.
    */
-  get<K extends keyof z.infer<TSchema> & string>(variableName: K): z.infer<TSchema>[K] | undefined;
-  get(variableName: string): unknown;
+  get<K extends string>(
+    variableName: K
+  ): K extends keyof z.infer<TSchema> ? z.infer<TSchema>[K] | undefined : undefined;
   get(variableName: string): unknown {
     return this.has(variableName) ? this._raw[variableName] : undefined;
   }
