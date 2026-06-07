@@ -29,6 +29,12 @@ import {
 } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
+import {
+  type AnyVariableSchema,
+  collectTypedVariables,
+  type VariableMap,
+  variableNamesFromSchema,
+} from '../runtime/typedVariables';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
 import { ThreadPool } from '../runtime/threadPool';
@@ -679,6 +685,78 @@ export class CamundaClient {
       } as any;
       // @ts-ignore - createDeployment method injected by generator
       return this.createDeployment(payload);
+    });
+  }
+
+  /**
+   * Search for process variables and bind them to a Zod schema (the DTO).
+   *
+   * The schema's keys are the exact variable names to fetch; its shape drives validation. Only
+   * those declared variables are queried (via a `name $in [...]` filter), so memory stays bound
+   * by the DTO shape rather than the total number of variables on the instance. Results are
+   * paged internally until every declared variable is found or the result set is exhausted.
+   *
+   * Returns a {@link VariableMap} offering lenient access (`has` / `get`) and a strict
+   * `validate()` that parses the collected values against the schema — returning a fully-typed
+   * object or throwing a `ZodError` when a required variable is missing or malformed.
+   *
+   * @param schema A Zod object schema declaring the variables to fetch.
+   * @param options Query scope. `processInstanceKey` is required; `scopeKey` narrows to a single
+   *   element-instance scope, `tenantId` filters by tenant, and `pageSize` tunes the page limit.
+   * @throws {VariableScopeCollisionError} when a declared variable is found at more than one
+   *   scope and no `scopeKey` was provided to disambiguate.
+   * @throws {VariableDeserializationError} when a variable's value is not valid JSON.
+   *
+   * @example
+   * ```ts
+   * import { z } from 'zod';
+   * const OrderVariables = z.object({ orderId: z.string(), amount: z.number().optional() });
+   * const map = await client.searchVariablesAsDto(OrderVariables, { processInstanceKey });
+   * if (map.has('amount')) console.log(map.get('amount'));
+   * const order = map.validate(); // { orderId: string; amount?: number }
+   * ```
+   */
+  searchVariablesAsDto<TSchema extends AnyVariableSchema>(
+    schema: TSchema,
+    options: {
+      processInstanceKey: string;
+      scopeKey?: string;
+      tenantId?: string;
+      pageSize?: number;
+    }
+  ): CancelablePromise<VariableMap<TSchema>> {
+    return toCancelable(async (_signal) => {
+      if (!options?.processInstanceKey) {
+        throw new Error('searchVariablesAsDto requires options.processInstanceKey');
+      }
+      const names = variableNamesFromSchema(schema);
+      const limit = options.pageSize && options.pageSize > 0 ? options.pageSize : 100;
+      const filter: Record<string, unknown> = {
+        name: { $in: names },
+        processInstanceKey: options.processInstanceKey,
+      };
+      if (options.scopeKey) filter.scopeKey = options.scopeKey;
+      if (options.tenantId) filter.tenantId = options.tenantId;
+
+      return collectTypedVariables({
+        schema,
+        fetchPage: async (after) => {
+          const input = {
+            filter,
+            page: after ? { after, limit } : { limit },
+            // Full values are required to bind the DTO; never truncate.
+            truncateValues: false,
+          };
+          // @ts-ignore - searchVariables method & input type injected by generator
+          const result = await this.searchVariables(input, { consistency: { waitUpToMs: 0 } });
+          const items = (result?.items ?? []).map((item: any) => ({
+            name: item.name,
+            value: item.value,
+            scopeKey: String(item.scopeKey),
+          }));
+          return { items, endCursor: result?.page?.endCursor ?? null };
+        },
+      });
     });
   }
 }

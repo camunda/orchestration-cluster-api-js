@@ -36,6 +36,18 @@ export type {
   ThreadedJobWorkerConfig,
 } from './runtime/threadedJobWorker';
 export type { ThreadPool } from './runtime/threadPool';
+// Typed variable map (DTO-driven variable search)
+export {
+  type AnyVariableSchema,
+  type TypedVariableItem,
+  type TypedVariablePage,
+  TypedVariablesError,
+  VariableCollector,
+  VariableDeserializationError,
+  VariableMap,
+  VariableScopeCollisionError,
+  variableNamesFromSchema,
+} from './runtime/typedVariables';
 // Runtime types used in public signatures
 export type { AuthStrategy, CamundaConfig, ValidationMode } from './runtime/unifiedConfiguration';
 // eventualPoll unified with result mode; no separate export
