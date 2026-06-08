@@ -273,6 +273,34 @@ export interface VariableSearchPageInput<TFilter> {
 }
 
 /**
+ * Cross-runtime equivalent of `AbortSignal.prototype.throwIfAborted()`.
+ *
+ * `throwIfAborted` is a relatively recent addition and is not implemented in every browser the SDK
+ * claims to support; calling it where absent throws a `TypeError` before any request is issued. We
+ * feature-detect it and otherwise replicate its contract: throw the signal's `reason` when present,
+ * or a synthesized `AbortError` when already aborted, so cancellation behaves consistently across
+ * Node and browsers.
+ */
+function throwIfAborted(signal: AbortSignal): void {
+  if (typeof signal.throwIfAborted === 'function') {
+    signal.throwIfAborted();
+    return;
+  }
+  if (signal.aborted) {
+    throw signal.reason ?? createAbortError();
+  }
+}
+
+function createAbortError(): Error {
+  if (typeof DOMException === 'function') {
+    return new DOMException('This operation was aborted', 'AbortError');
+  }
+  const error = new Error('This operation was aborted');
+  error.name = 'AbortError';
+  return error;
+}
+
+/**
  * Build the `fetchPage` callback for {@link collectTypedVariables} that drives the variable search
  * API. For each page it: aborts early if the outer signal is already aborted, issues the request
  * with the declared-name filter and `truncateValues: false` (full values are required to bind the
@@ -293,7 +321,7 @@ export function createVariableSearchFetchPage<TFilter>(params: {
   const { filter, limit, signal, search } = params;
   return async (after) => {
     // Honour cancellation of the returned CancelablePromise between pages.
-    signal.throwIfAborted();
+    throwIfAborted(signal);
     const input: VariableSearchPageInput<TFilter> = {
       filter,
       // Cursors are opaque; only an explicit `undefined` means "no cursor". An empty-string

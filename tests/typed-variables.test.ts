@@ -415,4 +415,60 @@ describe('createVariableSearchFetchPage', () => {
     await expect(fetchPage(undefined)).rejects.toThrow();
     expect(called).toBe(false);
   });
+
+  it('throws an AbortError (not a TypeError) on runtimes lacking throwIfAborted, already aborted', async () => {
+    // Guards the whole class of runtimes (older browsers) where AbortSignal has no throwIfAborted
+    // method. Calling the missing method would throw a TypeError before any request; the fallback
+    // must instead throw an AbortError-shaped error and issue no request.
+    const fakeSignal = {
+      aborted: true,
+      reason: undefined,
+      addEventListener() {},
+      removeEventListener() {},
+      // intentionally NO throwIfAborted method
+    } as unknown as AbortSignal;
+
+    let called = false;
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter: { name: { $in: ['a'] } },
+      limit: 10,
+      signal: fakeSignal,
+      search: () => {
+        called = true;
+        return request({ items: [], page: { endCursor: null } }).req;
+      },
+    });
+
+    await expect(fetchPage(undefined)).rejects.toMatchObject({ name: 'AbortError' });
+    expect(called).toBe(false);
+  });
+
+  it('proceeds normally on runtimes lacking throwIfAborted when not aborted', async () => {
+    // Same missing-method runtime, but the signal is not aborted: the fallback must be a no-op and
+    // the request must be issued as usual.
+    const fakeSignal = {
+      aborted: false,
+      addEventListener() {},
+      removeEventListener() {},
+      // intentionally NO throwIfAborted method
+    } as unknown as AbortSignal;
+
+    let called = false;
+    const fetchPage = createVariableSearchFetchPage<Filter>({
+      filter: { name: { $in: ['a'] } },
+      limit: 10,
+      signal: fakeSignal,
+      search: () => {
+        called = true;
+        return request({
+          items: [{ name: 'a', value: '1', scopeKey: 's' }],
+          page: { endCursor: null },
+        }).req;
+      },
+    });
+
+    const result = await fetchPage(undefined);
+    expect(called).toBe(true);
+    expect(result.items[0]?.name).toBe('a');
+  });
 });
