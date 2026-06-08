@@ -20,6 +20,7 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
+import type { ProcessInstanceKey, ScopeKey, TenantId, VariableFilter } from '../gen/types.gen';
 import {
   executeWithHttpRetry,
   defaultHttpClassifier,
@@ -28,6 +29,13 @@ import {
 } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
+import {
+  type AnyVariableSchema,
+  collectTypedVariables,
+  createVariableSearchFetchPage,
+  type VariableMap,
+  variableNamesFromSchema,
+} from '../runtime/typedVariables';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
@@ -16841,6 +16849,82 @@ export class CamundaClient {
         ...(options?.tenantId ? { tenantId: options.tenantId } : {}),
       } as any;
       return this.createDeployment(payload);
+    });
+  }
+
+  /**
+   * Search for process variables and bind them to a Zod schema (the DTO).
+   *
+   * The schema's keys are the exact variable names to fetch; its shape drives validation. Only
+   * those declared variables are queried (via a `name $in [...]` filter), so memory stays bound
+   * by the DTO shape rather than the total number of variables on the instance. Results are
+   * paged internally until every declared variable is found or the result set is exhausted.
+   *
+   * Returns a {@link VariableMap} offering lenient access (`has` / `get`) and a strict
+   * `validate()` that parses the collected values against the schema — returning a fully-typed
+   * object or throwing a `ZodError` when a required variable is missing or malformed.
+   *
+   * @param schema A Zod object schema declaring the variables to fetch.
+   * @param options Query scope. `processInstanceKey` is required; `scopeKey` narrows to a single
+   *   element-instance scope, `tenantId` filters by tenant, and `pageSize` tunes the page limit.
+   *   `consistency` controls eventual-consistency tolerance for the underlying `searchVariables`
+   *   calls: it defaults to `{ waitUpToMs: 0 }` (no waiting), but a non-zero `waitUpToMs` makes the
+   *   paging calls poll until the data is consistent, avoiding intermittent missing variables /
+   *   `ZodError` on a freshly-updated instance.
+   * @throws {VariableScopeCollisionError} when a declared variable is found at more than one
+   *   scope and no `scopeKey` was provided to disambiguate.
+   * @throws {VariableDeserializationError} when a variable's value is not valid JSON.
+   *
+   * @example
+   * ```ts
+   * import { z } from 'zod';
+   * const OrderVariables = z.object({ orderId: z.string(), amount: z.number().optional() });
+   * const map = await client.searchVariablesAsDto(OrderVariables, { processInstanceKey });
+   * if (map.has('amount')) console.log(map.get('amount'));
+   * const order = map.validate(); // { orderId: string; amount?: number }
+   * ```
+   */
+  searchVariablesAsDto<TSchema extends AnyVariableSchema>(
+    schema: TSchema,
+    options: {
+      processInstanceKey: ProcessInstanceKey;
+      scopeKey?: ScopeKey;
+      tenantId?: TenantId;
+      pageSize?: number;
+      consistency?: { waitUpToMs: number; pollIntervalMs?: number };
+    }
+  ): CancelablePromise<VariableMap<TSchema>> {
+    return toCancelable(async (signal) => {
+      if (!options?.processInstanceKey) {
+        throw new Error('searchVariablesAsDto requires options.processInstanceKey');
+      }
+      const names = variableNamesFromSchema(schema);
+      const limit = options.pageSize && options.pageSize > 0 ? options.pageSize : 100;
+      const filter: VariableFilter = {
+        name: { $in: names },
+        processInstanceKey: options.processInstanceKey,
+      };
+      if (options.scopeKey) filter.scopeKey = options.scopeKey;
+      if (options.tenantId) filter.tenantId = options.tenantId;
+
+      return collectTypedVariables({
+        schema,
+        // A single scopeKey restricts results to one scope, so each declared name appears at most
+        // once and paging can stop as soon as all are found. Otherwise we page to exhaustion so a
+        // same-name/different-scope collision on a later page surfaces as a VariableScopeCollisionError.
+        singleScope: Boolean(options.scopeKey),
+        // Eventual-consistency waiting happens at the collection level: re-read until every declared
+        // variable is visible or the budget expires. The per-page search never waits — a paging read
+        // that legitimately returns 0 items must not block, and waiting on the first search alone
+        // settles on a partial result (its success condition is merely "any matching variable").
+        consistency: options.consistency,
+        fetchPage: createVariableSearchFetchPage({
+          filter,
+          limit,
+          signal,
+          search: (input) => this.searchVariables(input, { consistency: { waitUpToMs: 0 } }),
+        }),
+      });
     });
   }
 }
