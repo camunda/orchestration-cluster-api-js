@@ -745,28 +745,23 @@ export class CamundaClient {
       if (options.scopeKey) filter.scopeKey = options.scopeKey;
       if (options.tenantId) filter.tenantId = options.tenantId;
 
-      // Default to no eventual-consistency wait, but let callers opt into polling for a stable
-      // snapshot when querying a freshly-updated instance.
-      const consistency = options.consistency ?? { waitUpToMs: 0 };
-
       return collectTypedVariables({
         schema,
         // A single scopeKey restricts results to one scope, so each declared name appears at most
         // once and paging can stop as soon as all are found. Otherwise we page to exhaustion so a
         // same-name/different-scope collision on a later page surfaces as a VariableScopeCollisionError.
         singleScope: Boolean(options.scopeKey),
+        // Eventual-consistency waiting happens at the collection level: re-read until every declared
+        // variable is visible or the budget expires. The per-page search never waits — a paging read
+        // that legitimately returns 0 items must not block, and waiting on the first search alone
+        // settles on a partial result (its success condition is merely "any matching variable").
+        consistency: options.consistency,
         fetchPage: createVariableSearchFetchPage({
           filter,
           limit,
           signal,
           // @ts-ignore - searchVariables method & input type injected by generator
-          search: (input) => {
-            // Only apply eventual consistency polling to the first search (no cursor).
-            // Pagination searches should return immediately with whatever results are available,
-            // including empty results, which are valid when there are no more pages.
-            const useConsistency = input.page.after === undefined ? consistency : { waitUpToMs: 0 };
-            return this.searchVariables(input, { consistency: useConsistency });
-          },
+          search: (input) => this.searchVariables(input, { consistency: { waitUpToMs: 0 } }),
         }),
       });
     });

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ZodError, z } from 'zod';
 import {
   type CancelableRequest,
+  type CollectClock,
   collectTypedVariables,
   createVariableSearchFetchPage,
   type TypedVariableItem,
@@ -254,6 +255,77 @@ describe('collectTypedVariables paging', () => {
     });
     expect(calls).toBe(0);
     expect(map.raw).toEqual({});
+  });
+});
+
+describe('collectTypedVariables eventual consistency', () => {
+  // A deterministic clock: advances by exactly the requested sleep, so the loop is driven by the
+  // sequence of fetchPage results rather than wall-clock time.
+  function fakeClock(): CollectClock {
+    let t = 0;
+    return {
+      now: () => t,
+      sleep: async (ms) => {
+        t += ms;
+      },
+    };
+  }
+
+  it('re-reads until every declared variable becomes visible (not just the first one)', async () => {
+    // Guards the defect class: declared variables index independently, so an early read can return
+    // a strict subset. A first-read-only wait settles on { orderId } and never sees `amount`.
+    const snapshots: TypedVariablePage[] = [
+      page([item('orderId', 'A-1')]), // amount not indexed yet
+      page([item('orderId', 'A-1')]), // still lagging
+      page([item('orderId', 'A-1'), item('amount', 42)]), // both visible now
+    ];
+    let calls = 0;
+    const map = await collectTypedVariables({
+      schema: OrderSchema,
+      singleScope: true,
+      consistency: { waitUpToMs: 10_000, pollIntervalMs: 100 },
+      clock: fakeClock(),
+      fetchPage: async () => snapshots[Math.min(calls++, snapshots.length - 1)],
+    });
+    expect(calls).toBe(3);
+    expect(map.has('orderId')).toBe(true);
+    expect(map.has('amount')).toBe(true);
+    expect(map.validate()).toEqual({ orderId: 'A-1', amount: 42 });
+  });
+
+  it('returns the partial snapshot when the budget expires (never hangs on an absent variable)', async () => {
+    // A genuinely-absent declared variable is indistinguishable from a late one: we must stop at
+    // the budget and return what we have, letting validate() surface the omission — not time out.
+    let calls = 0;
+    const map = await collectTypedVariables({
+      schema: OrderSchema,
+      singleScope: true,
+      consistency: { waitUpToMs: 250, pollIntervalMs: 100 },
+      clock: fakeClock(),
+      fetchPage: async () => {
+        calls += 1;
+        return page([item('orderId', 'A-1')]); // amount never appears
+      },
+    });
+    // First read at t=0, then sleeps of 100, 100, 50 -> next read at t=250 hits the deadline.
+    expect(calls).toBeGreaterThanOrEqual(2);
+    expect(map.has('orderId')).toBe(true);
+    expect(map.has('amount')).toBe(false);
+  });
+
+  it('reads exactly once when no consistency wait is requested', async () => {
+    let calls = 0;
+    const map = await collectTypedVariables({
+      schema: OrderSchema,
+      singleScope: true,
+      clock: fakeClock(),
+      fetchPage: async () => {
+        calls += 1;
+        return page([item('orderId', 'A-1')]);
+      },
+    });
+    expect(calls).toBe(1);
+    expect(map.has('amount')).toBe(false);
   });
 });
 

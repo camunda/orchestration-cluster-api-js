@@ -195,9 +195,33 @@ export class VariableCollector {
   }
 }
 
+/** Eventual-consistency tolerance for a DTO-driven variable search. */
+export interface VariableConsistencyOptions {
+  /** How long to keep re-reading for the declared variables to become visible, in ms. `0` (the
+   * default) reads once and returns whatever is currently indexed. */
+  waitUpToMs: number;
+  /** How often to re-read while waiting, in ms. Defaults to 500ms (floored at 10ms). */
+  pollIntervalMs?: number;
+}
+
 /**
- * Page through variable search results until every declared variable is found or the result set
- * is exhausted, then collapse them into a {@link VariableMap}.
+ * Injectable time source for {@link collectTypedVariables}'s consistency loop. Defaults to real
+ * wall-clock time; tests supply a deterministic fake so polling behaviour is exercised without
+ * real delays.
+ */
+export interface CollectClock {
+  now: () => number;
+  sleep: (ms: number) => Promise<void>;
+}
+
+const realClock: CollectClock = {
+  now: () => Date.now(),
+  sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+};
+
+/**
+ * Page through one full pass of the variable search, folding every page into `collector` and
+ * returning the declared names still missing afterwards.
  *
  * Paging terminates when: the server reports no next cursor, a page comes back empty, or a cursor
  * repeats (a defensive guard against a server that never advances). The "all declared names seen"
@@ -205,29 +229,20 @@ export class VariableCollector {
  * single scope, where each name can appear at most once. When the query spans multiple scopes,
  * stopping early on "all found" could miss the same name reappearing at a second scope on a later
  * page, silently hiding a {@link VariableScopeCollisionError}; so paging continues to exhaustion.
- *
- * The `fetchPage` callback isolates the HTTP call so the paging and collapse logic is
- * unit-testable in isolation.
  */
-export async function collectTypedVariables<TSchema extends AnyVariableSchema>(params: {
-  schema: TSchema;
-  /** Whether the query is scoped to a single scope (collisions impossible, early-stop safe). */
+async function collectAllPages(params: {
+  names: readonly string[];
   singleScope: boolean;
+  collector: VariableCollector;
   fetchPage: (after: string | undefined) => Promise<TypedVariablePage>;
-}): Promise<VariableMap<TSchema>> {
-  const names = variableNamesFromSchema(params.schema);
-  if (names.length === 0) {
-    return new VariableMap({}, params.schema);
-  }
-
-  const collector = new VariableCollector(names);
-  const remaining = new Set(names);
+}): Promise<Set<string>> {
+  const remaining = new Set(params.names);
   const seenCursors = new Set<string>();
   let after: string | undefined;
 
   while (true) {
     const page = await params.fetchPage(after);
-    collector.ingest(page.items);
+    params.collector.ingest(page.items);
     for (const item of page.items) {
       remaining.delete(item.name);
     }
@@ -248,7 +263,66 @@ export async function collectTypedVariables<TSchema extends AnyVariableSchema>(p
     after = page.endCursor;
   }
 
-  return new VariableMap(collector.build(), params.schema);
+  return remaining;
+}
+
+/**
+ * Page through variable search results until every declared variable is found or the result set
+ * is exhausted, then collapse them into a {@link VariableMap}.
+ *
+ * Eventual-consistency waiting (when `consistency.waitUpToMs > 0`) is applied here, at the
+ * collection level — not on the underlying search calls. A freshly-written instance indexes its
+ * declared variables independently, so an early read can return only a subset (e.g. `orderId`
+ * before `amount`). Waiting on the first *search* alone is too weak: that search's success
+ * condition is "at least one matching variable", so it settles on a partial result. Instead we
+ * re-run the whole collection until every declared name is visible or the budget expires. On
+ * expiry we return the best snapshot gathered so far rather than throwing: a genuinely-absent
+ * variable is indistinguishable from a late one, and {@link VariableMap.validate} is the right
+ * place to surface a missing required variable. This also keeps pagination correct — a paging
+ * read that legitimately returns zero items never blocks, because the inner search never waits.
+ *
+ * The `fetchPage` callback isolates the HTTP call so the paging and collapse logic is
+ * unit-testable in isolation; `clock` isolates time so the consistency loop is too.
+ */
+export async function collectTypedVariables<TSchema extends AnyVariableSchema>(params: {
+  schema: TSchema;
+  /** Whether the query is scoped to a single scope (collisions impossible, early-stop safe). */
+  singleScope: boolean;
+  fetchPage: (after: string | undefined) => Promise<TypedVariablePage>;
+  /** Eventual-consistency tolerance. Omitted or `waitUpToMs: 0` reads exactly once. */
+  consistency?: VariableConsistencyOptions;
+  /** Injectable clock for deterministic tests; defaults to real time. */
+  clock?: CollectClock;
+}): Promise<VariableMap<TSchema>> {
+  const names = variableNamesFromSchema(params.schema);
+  if (names.length === 0) {
+    return new VariableMap({}, params.schema);
+  }
+
+  const clock = params.clock ?? realClock;
+  const waitUpToMs = params.consistency?.waitUpToMs ?? 0;
+  const pollIntervalMs = Math.max(10, params.consistency?.pollIntervalMs ?? 500);
+  const deadline = clock.now() + waitUpToMs;
+
+  while (true) {
+    // A fresh collector each pass: re-reads must reflect the latest snapshot, not accumulate
+    // stale per-name state across attempts.
+    const collector = new VariableCollector(names);
+    const remaining = await collectAllPages({
+      names,
+      singleScope: params.singleScope,
+      collector,
+      fetchPage: params.fetchPage,
+    });
+
+    // All declared variables are visible, or we are out of budget: return the best snapshot.
+    if (remaining.size === 0 || waitUpToMs === 0 || clock.now() >= deadline) {
+      return new VariableMap(collector.build(), params.schema);
+    }
+
+    // Cap the wait so we never sleep past the deadline.
+    await clock.sleep(Math.min(pollIntervalMs, deadline - clock.now()));
+  }
 }
 
 /**
