@@ -20,6 +20,7 @@ import {
 } from '../runtime/telemetry';
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
+import type { ProcessInstanceKey, ScopeKey, TenantId, VariableFilter } from '../gen/types.gen';
 import {
   executeWithHttpRetry,
   defaultHttpClassifier,
@@ -35,12 +36,6 @@ import {
   type VariableMap,
   variableNamesFromSchema,
 } from '../runtime/typedVariables';
-import type {
-  ProcessInstanceKey,
-  ScopeKey,
-  TenantId,
-  VariableFilter,
-} from '../gen/types.gen';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
@@ -16926,7 +16921,13 @@ export class CamundaClient {
           filter,
           limit,
           signal,
-          search: (input) => this.searchVariables(input, { consistency }),
+          search: (input) => {
+            // Only apply eventual consistency polling to the first search (no cursor).
+            // Pagination searches should return immediately with whatever results are available,
+            // including empty results, which are valid when there are no more pages.
+            const useConsistency = input.page.after === undefined ? consistency : { waitUpToMs: 0 };
+            return this.searchVariables(input, { consistency: useConsistency });
+          },
         }),
       });
     });

@@ -760,7 +760,13 @@ export class CamundaClient {
           limit,
           signal,
           // @ts-ignore - searchVariables method & input type injected by generator
-          search: (input) => this.searchVariables(input, { consistency }),
+          search: (input) => {
+            // Only apply eventual consistency polling to the first search (no cursor).
+            // Pagination searches should return immediately with whatever results are available,
+            // including empty results, which are valid when there are no more pages.
+            const useConsistency = input.page.after === undefined ? consistency : { waitUpToMs: 0 };
+            return this.searchVariables(input, { consistency: useConsistency });
+          },
         }),
       });
     });
