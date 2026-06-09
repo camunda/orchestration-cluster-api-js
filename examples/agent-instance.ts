@@ -5,6 +5,7 @@ import {
   type AgentInstanceKey,
   createCamundaClient,
   type ElementInstanceKey,
+  type JobKey,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetAgentInstance
@@ -80,8 +81,54 @@ async function updateAgentInstanceExample(
 }
 //#endregion UpdateAgentInstance
 
+//#region CreateAgentInstanceHistoryItem
+async function createAgentInstanceHistoryItemExample(
+  agentInstanceKey: AgentInstanceKey,
+  elementInstanceKey: ElementInstanceKey,
+  jobKey: JobKey,
+  jobLease: string
+) {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.createAgentInstanceHistoryItem({
+    agentInstanceKey,
+    elementInstanceKey,
+    jobKey,
+    jobLease,
+    role: 'ASSISTANT',
+    content: [{ contentType: 'TEXT', text: 'How can I help you today?' }],
+    producedAt: new Date().toISOString(),
+  });
+
+  console.log(`Created history item: ${result.historyItemKey}`);
+}
+//#endregion CreateAgentInstanceHistoryItem
+
+//#region SearchAgentInstanceHistory
+async function searchAgentInstanceHistoryExample(agentInstanceKey: AgentInstanceKey) {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.searchAgentInstanceHistory(
+    {
+      agentInstanceKey,
+      filter: { role: { $eq: 'ASSISTANT' } },
+      sort: [{ field: 'producedAt', order: 'ASC' }],
+      page: { limit: 20 },
+    },
+    { consistency: { waitUpToMs: 5000 } }
+  );
+
+  for (const item of result.items ?? []) {
+    console.log(`${item.historyItemKey} (${item.role})`);
+  }
+  console.log(`Total: ${result.page.totalItems}`);
+}
+//#endregion SearchAgentInstanceHistory
+
 // Suppress "declared but never read"
 void getAgentInstanceExample;
 void searchAgentInstancesExample;
 void createAgentInstanceExample;
 void updateAgentInstanceExample;
+void createAgentInstanceHistoryItemExample;
+void searchAgentInstanceHistoryExample;
