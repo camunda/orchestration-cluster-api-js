@@ -1,3 +1,19 @@
+# [10.0.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.9...v10.0.0-alpha.10) (2026-06-09)
+
+
+### Bug Fixes
+
+* apply eventual consistency only to first searchVariablesAsDto search ([29387b0](https://github.com/camunda/orchestration-cluster-api-js/commit/29387b0b478e0c9a4d1dd0eaaf82c0481be5ddd8))
+* **deps:** bump camunda-schema-bundler to 2.4.3 for IterationId generation ([16a7c5d](https://github.com/camunda/orchestration-cluster-api-js/commit/16a7c5ddccc52b60b0dab3efc6048daaba687013))
+* **deps:** bump camunda-schema-bundler to 2.4.3 for IterationId generation ([8a8cdae](https://github.com/camunda/orchestration-cluster-api-js/commit/8a8cdae5fe9327a991e9670e4aeb50c6d8591356))
+* wait for all declared variables at the collection level for searchVariablesAsDto ([ba2f911](https://github.com/camunda/orchestration-cluster-api-js/commit/ba2f911e1d6254d25ac68c3ebfaa690ef0d9067a))
+
+
+### Features
+
+* add searchVariablesAsDto for DTO-driven typed variable maps ([52a544f](https://github.com/camunda/orchestration-cluster-api-js/commit/52a544fcc37f7ecc86fcfa153859baf6cf653b9b))
+* add searchVariablesAsDto for DTO-driven typed variable maps ([67418f2](https://github.com/camunda/orchestration-cluster-api-js/commit/67418f2f9ccbdc8b535b82cb8a66ec77b66143e0))
+
 # [10.0.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.8...v10.0.0-alpha.9) (2026-06-04)
 
 
