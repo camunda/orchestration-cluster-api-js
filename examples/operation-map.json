@@ -20,6 +20,20 @@
       "label": "Create an agent instance"
     }
   ],
+  "createAgentInstanceHistoryItem": [
+    {
+      "file": "agent-instance.ts",
+      "region": "CreateAgentInstanceHistoryItem",
+      "label": "Append an agent instance history item"
+    }
+  ],
+  "searchAgentInstanceHistory": [
+    {
+      "file": "agent-instance.ts",
+      "region": "SearchAgentInstanceHistory",
+      "label": "Search agent instance history"
+    }
+  ],
   "updateAgentInstance": [
     {
       "file": "agent-instance.ts",
