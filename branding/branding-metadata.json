@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:b2ba0d0bc85430aa0146f7430dad7a5e9de916e833676bb97cafd4357f93e8b9",
+  "specHash": "sha256:61f14b16b2e19192bcdb9b0748d03729298cdfad7fdf9c72fd177ffa82d57a56",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -10,6 +10,48 @@
     "namespaceFactories": true
   },
   "keys": [
+    {
+      "name": "AgentHistoryItemKey",
+      "semanticType": "AgentHistoryItemKey",
+      "category": "system-key",
+      "description": "System-generated key for an agent history item.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "6755399441055744"
+      ],
+      "extensions": {
+        "x-semantic-type": "AgentHistoryItemKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "agent-history-item-key",
+      "brand": {
+        "tsType": "CamundaKey<'AgentHistoryItemKey'>"
+      },
+      "zod": {
+        "schemaName": "zAgentHistoryItemKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentHistoryItemKey"
+      }
+    },
     {
       "name": "AgentInstanceKey",
       "semanticType": "AgentInstanceKey",
@@ -1641,6 +1683,75 @@
   ],
   "unions": [
     {
+      "name": "AgentHistoryItemKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentHistoryItemKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentHistoryItemKeyExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentHistoryItemKeyFilter"
+        }
+      ],
+      "stableId": "agent-history-item-key-filter-property",
+      "tsType": "AgentHistoryItemKeyExactMatch | AdvancedAgentHistoryItemKeyFilter",
+      "zod": {
+        "schemaName": "zAgentHistoryItemKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentHistoryItemKeyFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceHistoryCommitStatusFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceHistoryCommitStatusExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceHistoryCommitStatusFilter"
+        }
+      ],
+      "stableId": "agent-instance-history-commit-status-filter-property",
+      "tsType": "AgentInstanceHistoryCommitStatusExactMatch | AdvancedAgentInstanceHistoryCommitStatusFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceHistoryCommitStatusFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceHistoryCommitStatusFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceHistoryRoleFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceHistoryRoleEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceHistoryRoleExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceHistoryRoleFilter"
+        }
+      ],
+      "stableId": "agent-instance-history-role-filter-property",
+      "tsType": "AgentInstanceHistoryRoleExactMatch | AdvancedAgentInstanceHistoryRoleFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceHistoryRoleFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceHistoryRoleFilterProperty"
+      }
+    },
+    {
       "name": "AgentInstanceKeyFilterProperty",
       "kind": "union-wrapper",
       "description": "AgentInstanceKey property with full advanced search capabilities.",
@@ -1661,6 +1772,33 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/AgentInstanceKeyFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceMessageContent",
+      "kind": "union-wrapper",
+      "description": "A single content block within a history item. Discriminated by `contentType`.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceTextContent"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceDocumentContent"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceObjectContent"
+        }
+      ],
+      "stableId": "agent-instance-message-content",
+      "tsType": "AgentInstanceTextContent | AgentInstanceDocumentContent | AgentInstanceObjectContent",
+      "zod": {
+        "schemaName": "zAgentInstanceMessageContent"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceMessageContent"
       }
     },
     {
@@ -3028,8 +3166,8 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 40,
-    "totalUnionWrappers": 59,
+    "totalPrimaryKeys": 41,
+    "totalUnionWrappers": 63,
     "implicitCamundaKeys": []
   }
 }

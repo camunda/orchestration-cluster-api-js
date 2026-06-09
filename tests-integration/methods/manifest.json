@@ -1,6 +1,6 @@
 {
-  "operations": 191,
-  "tests": 193,
+  "operations": 193,
+  "tests": 195,
   "missing": [],
   "ignored": [],
   "files": [
@@ -28,6 +28,7 @@
     "correlateMessage.test.ts",
     "createAdminUser.test.ts",
     "createAgentInstance.test.ts",
+    "createAgentInstanceHistoryItem.test.ts",
     "createAuthorization.test.ts",
     "createDeployment.test.ts",
     "createDocument.test.ts",
@@ -125,6 +126,7 @@
     "resolveIncidentsBatchOperation.test.ts",
     "resolveProcessInstanceIncidents.test.ts",
     "resumeBatchOperation.test.ts",
+    "searchAgentInstanceHistory.test.ts",
     "searchAgentInstances.test.ts",
     "searchAuditLogs.test.ts",
     "searchAuthorizations.test.ts",

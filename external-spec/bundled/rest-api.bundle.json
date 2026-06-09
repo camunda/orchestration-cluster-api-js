@@ -405,6 +405,169 @@
         "x-added-in-version": "8.10"
       }
     },
+    "/agent-instances/{agentInstanceKey}/history": {
+      "post": {
+        "x-eventually-consistent": false,
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "tags": [
+          "Agent instance"
+        ],
+        "operationId": "createAgentInstanceHistoryItem",
+        "summary": "Create agent instance history item",
+        "description": "Appends a single history item to an agent instance's conversation history.\nThe created item has commitStatus PENDING until the job identified by jobLease\ncompletes successfully, at which point it transitions to COMMITTED. If the job\nfails or is superseded by a retry, the item is marked DISCARDED.\n",
+        "x-semantic-establishes": {
+          "kind": "AgentInstanceIteration",
+          "identifiedBy": [
+            {
+              "in": "body",
+              "name": "iteration",
+              "semanticType": "IterationId"
+            }
+          ]
+        },
+        "parameters": [
+          {
+            "name": "agentInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the agent instance to append the history item to.",
+            "schema": {
+              "$ref": "#/components/schemas/AgentInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentInstanceHistoryItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The history item was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentInstanceHistoryItemCreationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The agent instance with the given key was not found, or the specified\njobKey does not correspond to an active job.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
+    "/agent-instances/{agentInstanceKey}/history/search": {
+      "post": {
+        "x-eventually-consistent": true,
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "tags": [
+          "Agent instance"
+        ],
+        "operationId": "searchAgentInstanceHistory",
+        "summary": "Search agent instance history",
+        "description": "Searches the conversation history of an agent instance. Committed items\nare returned by default.\n",
+        "parameters": [
+          {
+            "name": "agentInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the agent instance whose history to search.",
+            "schema": {
+              "$ref": "#/components/schemas/AgentInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentInstanceHistorySearchQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The agent instance history search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentInstanceHistorySearchQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "404": {
+            "description": "The agent instance with the given key was not found.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
     "/audit-logs/search": {
       "post": {
         "x-eventually-consistent": true,
@@ -13357,10 +13520,16 @@
             "description": "The field to sort by.",
             "type": "string",
             "enum": [
+              "agentInstanceKey",
+              "status",
+              "elementId",
+              "processInstanceKey",
+              "rootProcessInstanceKey",
+              "processDefinitionKey",
+              "tenantId",
               "creationDate",
               "lastUpdatedDate",
-              "completionDate",
-              "status"
+              "completionDate"
             ]
           },
           "order": {
@@ -13425,6 +13594,14 @@
           },
           "processInstanceKey": {
             "description": "The key of the process instance that owns this agent instance.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
+              }
+            ]
+          },
+          "rootProcessInstanceKey": {
+            "description": "The key of the root process instance. Filters agent instances belonging to a specific\ncall hierarchy. The root process instance is the top-level ancestor in the process\ninstance hierarchy.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ProcessInstanceKeyFilterProperty"
@@ -13981,6 +14158,610 @@
           },
           "$like": {
             "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "AgentInstanceHistoryItemRequest": {
+        "description": "Request to append a single history item to an agent instance's conversation history.",
+        "type": "object",
+        "required": [
+          "content",
+          "elementInstanceKey",
+          "jobKey",
+          "jobLease",
+          "producedAt",
+          "role"
+        ],
+        "properties": {
+          "elementInstanceKey": {
+            "description": "The key of the currently-active element instance.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementInstanceKey"
+              }
+            ]
+          },
+          "jobKey": {
+            "description": "The key of the current job activation during which this history item was produced.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobKey"
+              }
+            ]
+          },
+          "jobLease": {
+            "description": "Opaque lease token received from the job activation response.",
+            "type": "string"
+          },
+          "iteration": {
+            "description": "Sequential iteration number this item belongs to. Omit if not grouping items into iterations.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IterationId"
+              }
+            ]
+          },
+          "role": {
+            "description": "The role of this history item in the conversation.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryRoleEnum"
+              }
+            ]
+          },
+          "content": {
+            "description": "The content blocks of this history item.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceMessageContent"
+            }
+          },
+          "toolCalls": {
+            "description": "Tool calls associated with this history item.\nFor ASSISTANT items: tool calls dispatched by this LLM response, with arguments populated.\nFor TOOL_RESULT items: single-entry array referencing the originating tool call, with arguments null.\nOmit for USER items.\n",
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceToolCall"
+            }
+          },
+          "metrics": {
+            "description": "Per-call token and latency metrics. Present on ASSISTANT items only.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryItemMetrics"
+              }
+            ]
+          },
+          "producedAt": {
+            "description": "The connector-side timestamp of when this message was produced.",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AgentInstanceHistoryItemCreationResult": {
+        "description": "Response returned after successfully appending a history item.",
+        "type": "object",
+        "x-semantic-provider": [
+          "historyItemKey"
+        ],
+        "required": [
+          "historyItemKey"
+        ],
+        "properties": {
+          "historyItemKey": {
+            "description": "The system-generated key for the created history item.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentHistoryItemKey"
+              }
+            ]
+          }
+        }
+      },
+      "AgentInstanceHistorySearchQuerySortRequest": {
+        "type": "object",
+        "required": [
+          "field"
+        ],
+        "properties": {
+          "field": {
+            "description": "The field to sort by.",
+            "type": "string",
+            "enum": [
+              "producedAt",
+              "historyItemKey",
+              "iteration"
+            ]
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrderEnum"
+          }
+        }
+      },
+      "AgentInstanceHistorySearchQuery": {
+        "description": "Agent instance history search request.",
+        "type": "object",
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryRequest"
+          }
+        ],
+        "properties": {
+          "sort": {
+            "description": "Sort field criteria.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceHistorySearchQuerySortRequest"
+            }
+          },
+          "filter": {
+            "description": "The history item search filters.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryFilter"
+              }
+            ]
+          }
+        }
+      },
+      "AgentInstanceHistoryFilter": {
+        "description": "Agent instance history item search filter.",
+        "type": "object",
+        "properties": {
+          "historyItemKey": {
+            "description": "The unique key of the history item.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentHistoryItemKeyFilterProperty"
+              }
+            ]
+          },
+          "role": {
+            "description": "The role of the history item.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryRoleFilterProperty"
+              }
+            ]
+          },
+          "elementInstanceKey": {
+            "description": "The key of the element instance under which the history item was produced.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementInstanceKeyFilterProperty"
+              }
+            ]
+          },
+          "jobKey": {
+            "description": "The key of the job activation that produced the history item.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobKeyFilterProperty"
+              }
+            ]
+          },
+          "iteration": {
+            "description": "The iteration number.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IntegerFilterProperty"
+              }
+            ]
+          },
+          "commitStatus": {
+            "description": "The commit status of the history item. Defaults to COMMITTED only.\nInclude PENDING or DISCARDED explicitly to debug in-flight or failed activations.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusFilterProperty"
+              }
+            ]
+          },
+          "producedAt": {
+            "description": "The timestamp when the history item was produced.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DateTimeFilterProperty"
+              }
+            ]
+          }
+        }
+      },
+      "AgentInstanceHistorySearchQueryResult": {
+        "description": "Agent instance history search response.",
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching history items.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceHistoryItemResult"
+            }
+          }
+        }
+      },
+      "AgentInstanceHistoryItemResult": {
+        "description": "A single conversation history item belonging to an agent instance.",
+        "type": "object",
+        "required": [
+          "agentInstanceKey",
+          "commitStatus",
+          "content",
+          "elementInstanceKey",
+          "historyItemKey",
+          "iteration",
+          "jobKey",
+          "jobLease",
+          "metrics",
+          "producedAt",
+          "role",
+          "toolCalls"
+        ],
+        "properties": {
+          "historyItemKey": {
+            "description": "The unique key for this history item. Stable and sortable by creation order.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentHistoryItemKey"
+              }
+            ]
+          },
+          "agentInstanceKey": {
+            "description": "The key of the agent instance this item belongs to.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceKey"
+              }
+            ]
+          },
+          "elementInstanceKey": {
+            "description": "The key of the AI Agent Task or ad-hoc sub-process element instance under which this item was produced.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementInstanceKey"
+              }
+            ]
+          },
+          "jobKey": {
+            "description": "The key of the job activation during which this item was produced.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobKey"
+              }
+            ]
+          },
+          "jobLease": {
+            "description": "The lease token of the activation that produced this item.",
+            "type": "string"
+          },
+          "iteration": {
+            "description": "The sequential iteration number this item belongs to. Null if not provided by the connector.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/IterationId"
+              }
+            ]
+          },
+          "role": {
+            "description": "The role of this history item in the conversation.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryRoleEnum"
+              }
+            ]
+          },
+          "content": {
+            "description": "The content blocks of this history item.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceMessageContent"
+            }
+          },
+          "toolCalls": {
+            "description": "Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls with arguments populated.\nTOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).\n",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceToolCall"
+            }
+          },
+          "metrics": {
+            "description": "Per-call token and latency metrics. Present on ASSISTANT items only.",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryItemMetrics"
+              }
+            ]
+          },
+          "commitStatus": {
+            "description": "The commit status of this history item.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusEnum"
+              }
+            ]
+          },
+          "producedAt": {
+            "description": "The connector-side timestamp of when this message was produced.",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AgentInstanceHistoryRoleEnum": {
+        "description": "The role of a history item in the agent conversation.",
+        "type": "string",
+        "enum": [
+          "USER",
+          "ASSISTANT",
+          "TOOL_RESULT"
+        ]
+      },
+      "AgentInstanceHistoryCommitStatusEnum": {
+        "description": "The commit status of a history item.\nCOMMITTED: the producing job completed successfully.\nPENDING: the producing job is still active (in-flight).\nDISCARDED: the producing job failed; this item was superseded by a later activation.\n",
+        "type": "string",
+        "enum": [
+          "COMMITTED",
+          "PENDING",
+          "DISCARDED"
+        ]
+      },
+      "AgentInstanceMessageContent": {
+        "x-polymorphic-schema": true,
+        "description": "A single content block within a history item. Discriminated by `contentType`.",
+        "discriminator": {
+          "propertyName": "contentType",
+          "mapping": {
+            "TEXT": "#/components/schemas/AgentInstanceTextContent",
+            "DOCUMENT": "#/components/schemas/AgentInstanceDocumentContent",
+            "OBJECT": "#/components/schemas/AgentInstanceObjectContent"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentInstanceTextContent"
+          },
+          {
+            "$ref": "#/components/schemas/AgentInstanceDocumentContent"
+          },
+          {
+            "$ref": "#/components/schemas/AgentInstanceObjectContent"
+          }
+        ]
+      },
+      "AgentInstanceTextContent": {
+        "type": "object",
+        "title": "Text content",
+        "description": "A plain-text content block.",
+        "additionalProperties": false,
+        "required": [
+          "contentType",
+          "text"
+        ],
+        "properties": {
+          "contentType": {
+            "description": "The content type discriminator.",
+            "type": "string",
+            "example": "TEXT"
+          },
+          "text": {
+            "description": "The text content.",
+            "type": "string"
+          }
+        }
+      },
+      "AgentInstanceDocumentContent": {
+        "type": "object",
+        "title": "Document content",
+        "description": "A Camunda Document Store reference content block.",
+        "additionalProperties": false,
+        "required": [
+          "contentType",
+          "documentReference"
+        ],
+        "properties": {
+          "contentType": {
+            "description": "The content type discriminator.",
+            "type": "string",
+            "example": "DOCUMENT"
+          },
+          "documentReference": {
+            "description": "A reference to a document stored in the Camunda Document Store.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DocumentReference"
+              }
+            ]
+          }
+        }
+      },
+      "AgentInstanceObjectContent": {
+        "type": "object",
+        "title": "Object content",
+        "description": "An arbitrary structured content block.",
+        "additionalProperties": false,
+        "required": [
+          "contentType",
+          "object"
+        ],
+        "properties": {
+          "contentType": {
+            "description": "The content type discriminator.",
+            "type": "string",
+            "example": "OBJECT"
+          },
+          "object": {
+            "description": "Arbitrary structured content.",
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "AgentInstanceMessageContentTypeEnum": {
+        "description": "The content type discriminator for a history item content block.",
+        "type": "string",
+        "enum": [
+          "TEXT",
+          "DOCUMENT",
+          "OBJECT"
+        ]
+      },
+      "AgentInstanceToolCall": {
+        "description": "A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\nASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.\n",
+        "type": "object",
+        "required": [
+          "arguments",
+          "elementId",
+          "toolCallId",
+          "toolName"
+        ],
+        "properties": {
+          "toolCallId": {
+            "description": "The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.",
+            "type": "string"
+          },
+          "toolName": {
+            "description": "The LLM-visible tool name.",
+            "type": "string"
+          },
+          "elementId": {
+            "description": "The BPMN element ID handling this tool.",
+            "type": "string",
+            "nullable": true
+          },
+          "arguments": {
+            "description": "The tool call arguments as provided by the LLM. Null on TOOL_RESULT items.",
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          }
+        }
+      },
+      "AgentInstanceHistoryItemMetrics": {
+        "description": "Per-call token and latency metrics for an ASSISTANT history item.",
+        "type": "object",
+        "required": [
+          "durationMs",
+          "inputTokens",
+          "outputTokens"
+        ],
+        "properties": {
+          "inputTokens": {
+            "description": "Input tokens consumed by this LLM call.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "outputTokens": {
+            "description": "Output tokens produced by this LLM call.",
+            "type": "integer",
+            "format": "int64"
+          },
+          "durationMs": {
+            "description": "Wall-clock duration of the LLM call in milliseconds.",
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "AgentInstanceHistoryRoleFilterProperty": {
+        "description": "AgentInstanceHistoryRoleEnum property with full advanced search capabilities.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentInstanceHistoryRoleExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedAgentInstanceHistoryRoleFilter"
+          }
+        ]
+      },
+      "AdvancedAgentInstanceHistoryRoleFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced AgentInstanceHistoryRoleEnum filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryRoleEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryRoleEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceHistoryRoleEnum"
+            }
+          }
+        }
+      },
+      "AgentInstanceHistoryCommitStatusFilterProperty": {
+        "description": "AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedAgentInstanceHistoryCommitStatusFilter"
+          }
+        ]
+      },
+      "AdvancedAgentInstanceHistoryCommitStatusFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced AgentInstanceHistoryCommitStatusEnum filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusEnum"
+            }
           }
         }
       },
@@ -19483,6 +20264,27 @@
           "field"
         ]
       },
+      "ElementInstanceWaitStateQuerySortRequest": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "description": "The field to sort by.",
+            "type": "string",
+            "enum": [
+              "elementInstanceKey",
+              "processInstanceKey",
+              "rootProcessInstanceKey",
+              "elementId"
+            ]
+          },
+          "order": {
+            "$ref": "#/components/schemas/SortOrderEnum"
+          }
+        },
+        "required": [
+          "field"
+        ]
+      },
       "ElementInstanceSearchQuery": {
         "description": "Element instance search request.",
         "type": "object",
@@ -19934,6 +20736,13 @@
           }
         ],
         "properties": {
+          "sort": {
+            "description": "Sort field criteria.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ElementInstanceWaitStateQuerySortRequest"
+            }
+          },
           "filter": {
             "description": "Filter criteria for the inspection.",
             "allOf": [
@@ -21670,6 +22479,15 @@
         "minLength": 1,
         "maxLength": 256,
         "example": "order-12345"
+      },
+      "IterationId": {
+        "description": "A client-provided sequential integer identifying a logical iteration: one LLM\ncall, its tool dispatches, and their results. Must be a positive integer,\nincreasing with each iteration. Established by the\nconnector when appending the first history item of an iteration.\n",
+        "type": "integer",
+        "format": "int32",
+        "minimum": 1,
+        "x-semantic-type": "IterationId",
+        "x-semantic-client-minted": true,
+        "example": 1
       },
       "ElementIdFilterProperty": {
         "description": "ElementId property with full advanced search capabilities.",
@@ -24569,6 +25387,18 @@
           }
         ]
       },
+      "AgentHistoryItemKey": {
+        "description": "System-generated key for an agent history item.",
+        "format": "AgentHistoryItemKey",
+        "x-semantic-type": "AgentHistoryItemKey",
+        "example": "6755399441055744",
+        "type": "string",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/LongKey"
+          }
+        ]
+      },
       "AuditLogKey": {
         "allOf": [
           {
@@ -25177,6 +26007,58 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AgentInstanceKey"
+            }
+          }
+        }
+      },
+      "AgentHistoryItemKeyFilterProperty": {
+        "description": "AgentHistoryItemKey property with full advanced search capabilities.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentHistoryItemKeyExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedAgentHistoryItemKeyFilter"
+          }
+        ]
+      },
+      "AdvancedAgentHistoryItemKeyFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced AgentHistoryItemKey filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentHistoryItemKey"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgentHistoryItemKey"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentHistoryItemKey"
+            }
+          },
+          "$notIn": {
+            "description": "Checks if the property matches none of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentHistoryItemKey"
             }
           }
         }
@@ -31772,6 +32654,26 @@
           }
         ]
       },
+      "AgentInstanceHistoryRoleExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AgentInstanceHistoryRoleEnum"
+          }
+        ]
+      },
+      "AgentInstanceHistoryCommitStatusExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AgentInstanceHistoryCommitStatusEnum"
+          }
+        ]
+      },
       "AuditLogEntityKeyExactMatch": {
         "type": "string",
         "title": "Exact match",
@@ -32110,6 +33012,16 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/AgentInstanceKey"
+          }
+        ]
+      },
+      "AgentHistoryItemKeyExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AgentHistoryItemKey"
           }
         ]
       },

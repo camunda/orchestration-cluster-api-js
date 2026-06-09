@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 191
+// Operations: 193
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -148,6 +148,10 @@ export type createAdminUserInput = createAdminUserBody;
 type createAgentInstanceOptions = Parameters<typeof Sdk.createAgentInstance>[0];
 type createAgentInstanceBody = (NonNullable<createAgentInstanceOptions> extends { body?: infer B } ? B : never);
 export type createAgentInstanceInput = createAgentInstanceBody;
+type createAgentInstanceHistoryItemOptions = Parameters<typeof Sdk.createAgentInstanceHistoryItem>[0];
+type createAgentInstanceHistoryItemBody = (NonNullable<createAgentInstanceHistoryItemOptions> extends { body?: infer B } ? B : never);
+type createAgentInstanceHistoryItemPathParam_agentInstanceKey = (NonNullable<createAgentInstanceHistoryItemOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
+export type createAgentInstanceHistoryItemInput = createAgentInstanceHistoryItemBody & { agentInstanceKey: createAgentInstanceHistoryItemPathParam_agentInstanceKey };
 type createAuthorizationOptions = Parameters<typeof Sdk.createAuthorization>[0];
 type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
 export type createAuthorizationInput = createAuthorizationBody;
@@ -682,6 +686,15 @@ type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 export type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
+type searchAgentInstanceHistoryOptions = Parameters<typeof Sdk.searchAgentInstanceHistory>[0];
+type searchAgentInstanceHistoryBody = (NonNullable<searchAgentInstanceHistoryOptions> extends { body?: infer B } ? B : never);
+type searchAgentInstanceHistoryPathParam_agentInstanceKey = (NonNullable<searchAgentInstanceHistoryOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
+export type searchAgentInstanceHistoryInput = searchAgentInstanceHistoryBody & { agentInstanceKey: searchAgentInstanceHistoryPathParam_agentInstanceKey };
+/** Management of eventual consistency **/
+export type searchAgentInstanceHistoryConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAgentInstanceHistory>> 
+};
 type searchAgentInstancesOptions = Parameters<typeof Sdk.searchAgentInstances>[0];
 type searchAgentInstancesBody = (NonNullable<searchAgentInstancesOptions> extends { body?: infer B } ? B : never);
 export type searchAgentInstancesInput = searchAgentInstancesBody;
@@ -3467,6 +3480,95 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'createAgentInstance', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Create agent instance history item
+   *
+   * Appends a single history item to an agent instance's conversation history.
+   * The created item has commitStatus PENDING until the job identified by jobLease
+   * completes successfully, at which point it transitions to COMMITTED. If the job
+   * fails or is superseded by a retry, the item is marked DISCARDED.
+   *
+    *
+   * @example Append an agent instance history item
+   * ```ts
+   * async function createAgentInstanceHistoryItemExample(
+   *   agentInstanceKey: AgentInstanceKey,
+   *   elementInstanceKey: ElementInstanceKey,
+   *   jobKey: JobKey,
+   *   jobLease: string
+   * ) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.createAgentInstanceHistoryItem({
+   *     agentInstanceKey,
+   *     elementInstanceKey,
+   *     jobKey,
+   *     jobLease,
+   *     role: 'ASSISTANT',
+   *     content: [{ contentType: 'TEXT', text: 'How can I help you today?' }],
+   *     producedAt: new Date().toISOString(),
+   *   });
+   * 
+   *   console.log(`Created history item: ${result.historyItemKey}`);
+   * }
+   * ```
+   * @operationId createAgentInstanceHistoryItem
+   * @tags Agent instance
+   */
+  createAgentInstanceHistoryItem(input: createAgentInstanceHistoryItemInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAgentInstanceHistoryItem>>;
+  createAgentInstanceHistoryItem(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { agentInstanceKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { agentInstanceKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('createAgentInstanceHistoryItem', _schemas.zCreateAgentInstanceHistoryItemData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.createAgentInstanceHistoryItem(opts);
+        let data = this._evaluateResponse(_raw, 'createAgentInstanceHistoryItem', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zCreateAgentInstanceHistoryItemResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zCreateAgentInstanceHistoryItemResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('createAgentInstanceHistoryItem', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'createAgentInstanceHistoryItem', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -10978,6 +11080,96 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Search agent instance history
+   *
+   * Searches the conversation history of an agent instance. Committed items
+   * are returned by default.
+   *
+    *
+   * @example Search agent instance history
+   * ```ts
+   * async function searchAgentInstanceHistoryExample(agentInstanceKey: AgentInstanceKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.searchAgentInstanceHistory(
+   *     {
+   *       agentInstanceKey,
+   *       filter: { role: { $eq: 'ASSISTANT' } },
+   *       sort: [{ field: 'producedAt', order: 'ASC' }],
+   *       page: { limit: 20 },
+   *     },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const item of result.items ?? []) {
+   *     console.log(`${item.historyItemKey} (${item.role})`);
+   *   }
+   *   console.log(`Total: ${result.page.totalItems}`);
+   * }
+   * ```
+   * @operationId searchAgentInstanceHistory
+   * @tags Agent instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchAgentInstanceHistory(input: searchAgentInstanceHistoryInput, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstanceHistoryConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAgentInstanceHistory>>;
+  searchAgentInstanceHistory(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAgentInstanceHistoryConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { agentInstanceKey, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { agentInstanceKey };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('searchAgentInstanceHistory', _schemas.zSearchAgentInstanceHistoryData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchAgentInstanceHistory(opts);
+        let data = this._evaluateResponse(_raw, 'searchAgentInstanceHistory', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchAgentInstanceHistoryResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSearchAgentInstanceHistoryResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchAgentInstanceHistory', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchAgentInstanceHistory', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 

@@ -11,7 +11,7 @@ export type AgentInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'creationDate' | 'lastUpdatedDate' | 'completionDate' | 'status';
+    field: 'agentInstanceKey' | 'status' | 'elementId' | 'processInstanceKey' | 'rootProcessInstanceKey' | 'processDefinitionKey' | 'tenantId' | 'creationDate' | 'lastUpdatedDate' | 'completionDate';
     order?: SortOrderEnum;
 };
 
@@ -49,6 +49,13 @@ export type AgentInstanceFilter = {
      * The key of the process instance that owns this agent instance.
      */
     processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The key of the root process instance. Filters agent instances belonging to a specific
+     * call hierarchy. The root process instance is the top-level ancestor in the process
+     * instance hierarchy.
+     *
+     */
+    rootProcessInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The key of the process definition associated with this agent instance.
      */
@@ -389,6 +396,382 @@ export type AdvancedAgentInstanceStatusFilter = {
      */
     $in?: Array<AgentInstanceStatusEnum>;
     $like?: LikeFilter;
+};
+
+/**
+ * Request to append a single history item to an agent instance's conversation history.
+ */
+export type AgentInstanceHistoryItemRequest = {
+    /**
+     * The key of the currently-active element instance.
+     *
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The key of the current job activation during which this history item was produced.
+     */
+    jobKey: JobKey;
+    /**
+     * Opaque lease token received from the job activation response.
+     */
+    jobLease: string;
+    /**
+     * Sequential iteration number this item belongs to. Omit if not grouping items into iterations.
+     */
+    iteration?: IterationId | null;
+    /**
+     * The role of this history item in the conversation.
+     */
+    role: AgentInstanceHistoryRoleEnum;
+    /**
+     * The content blocks of this history item.
+     */
+    content: Array<AgentInstanceMessageContent>;
+    /**
+     * Tool calls associated with this history item.
+     * For ASSISTANT items: tool calls dispatched by this LLM response, with arguments populated.
+     * For TOOL_RESULT items: single-entry array referencing the originating tool call, with arguments null.
+     * Omit for USER items.
+     *
+     */
+    toolCalls?: Array<AgentInstanceToolCall> | null;
+    /**
+     * Per-call token and latency metrics. Present on ASSISTANT items only.
+     */
+    metrics?: AgentInstanceHistoryItemMetrics | null;
+    /**
+     * The connector-side timestamp of when this message was produced.
+     */
+    producedAt: string;
+};
+
+/**
+ * Response returned after successfully appending a history item.
+ */
+export type AgentInstanceHistoryItemCreationResult = {
+    /**
+     * The system-generated key for the created history item.
+     */
+    historyItemKey: AgentHistoryItemKey;
+};
+
+export type AgentInstanceHistorySearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'producedAt' | 'historyItemKey' | 'iteration';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Agent instance history search request.
+ */
+export type AgentInstanceHistorySearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<AgentInstanceHistorySearchQuerySortRequest>;
+    /**
+     * The history item search filters.
+     */
+    filter?: AgentInstanceHistoryFilter;
+};
+
+/**
+ * Agent instance history item search filter.
+ */
+export type AgentInstanceHistoryFilter = {
+    /**
+     * The unique key of the history item.
+     */
+    historyItemKey?: AgentHistoryItemKeyFilterProperty;
+    /**
+     * The role of the history item.
+     */
+    role?: AgentInstanceHistoryRoleFilterProperty;
+    /**
+     * The key of the element instance under which the history item was produced.
+     */
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    /**
+     * The key of the job activation that produced the history item.
+     */
+    jobKey?: JobKeyFilterProperty;
+    /**
+     * The iteration number.
+     */
+    iteration?: IntegerFilterProperty;
+    /**
+     * The commit status of the history item. Defaults to COMMITTED only.
+     * Include PENDING or DISCARDED explicitly to debug in-flight or failed activations.
+     *
+     */
+    commitStatus?: AgentInstanceHistoryCommitStatusFilterProperty;
+    /**
+     * The timestamp when the history item was produced.
+     */
+    producedAt?: DateTimeFilterProperty;
+};
+
+/**
+ * Agent instance history search response.
+ */
+export type AgentInstanceHistorySearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching history items.
+     */
+    items: Array<AgentInstanceHistoryItemResult>;
+};
+
+/**
+ * A single conversation history item belonging to an agent instance.
+ */
+export type AgentInstanceHistoryItemResult = {
+    /**
+     * The unique key for this history item. Stable and sortable by creation order.
+     */
+    historyItemKey: AgentHistoryItemKey;
+    /**
+     * The key of the agent instance this item belongs to.
+     */
+    agentInstanceKey: AgentInstanceKey;
+    /**
+     * The key of the AI Agent Task or ad-hoc sub-process element instance under which this item was produced.
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The key of the job activation during which this item was produced.
+     */
+    jobKey: JobKey;
+    /**
+     * The lease token of the activation that produced this item.
+     */
+    jobLease: string;
+    /**
+     * The sequential iteration number this item belongs to. Null if not provided by the connector.
+     */
+    iteration: IterationId | null;
+    /**
+     * The role of this history item in the conversation.
+     */
+    role: AgentInstanceHistoryRoleEnum;
+    /**
+     * The content blocks of this history item.
+     */
+    content: Array<AgentInstanceMessageContent>;
+    /**
+     * Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.
+     * ASSISTANT items: dispatched tool calls with arguments populated.
+     * TOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).
+     *
+     */
+    toolCalls: Array<AgentInstanceToolCall>;
+    /**
+     * Per-call token and latency metrics. Present on ASSISTANT items only.
+     */
+    metrics: AgentInstanceHistoryItemMetrics | null;
+    /**
+     * The commit status of this history item.
+     */
+    commitStatus: AgentInstanceHistoryCommitStatusEnum;
+    /**
+     * The connector-side timestamp of when this message was produced.
+     */
+    producedAt: string;
+};
+
+/**
+ * The role of a history item in the agent conversation.
+ */
+export const AgentInstanceHistoryRoleEnum = {
+  USER: 'USER',
+  ASSISTANT: 'ASSISTANT',
+  TOOL_RESULT: 'TOOL_RESULT',
+} as const;
+export type AgentInstanceHistoryRoleEnum = (typeof AgentInstanceHistoryRoleEnum)[keyof typeof AgentInstanceHistoryRoleEnum];
+/**
+ * The commit status of a history item.
+ * COMMITTED: the producing job completed successfully.
+ * PENDING: the producing job is still active (in-flight).
+ * DISCARDED: the producing job failed; this item was superseded by a later activation.
+ *
+ */
+export const AgentInstanceHistoryCommitStatusEnum = {
+  COMMITTED: 'COMMITTED',
+  PENDING: 'PENDING',
+  DISCARDED: 'DISCARDED',
+} as const;
+export type AgentInstanceHistoryCommitStatusEnum = (typeof AgentInstanceHistoryCommitStatusEnum)[keyof typeof AgentInstanceHistoryCommitStatusEnum];
+/**
+ * A single content block within a history item. Discriminated by `contentType`.
+ */
+export type AgentInstanceMessageContent = ({
+    contentType: 'TEXT';
+} & AgentInstanceTextContent) | ({
+    contentType: 'DOCUMENT';
+} & AgentInstanceDocumentContent) | ({
+    contentType: 'OBJECT';
+} & AgentInstanceObjectContent);
+
+/**
+ * Text content
+ *
+ * A plain-text content block.
+ */
+export type AgentInstanceTextContent = {
+    /**
+     * The content type discriminator.
+     */
+    contentType: string;
+    /**
+     * The text content.
+     */
+    text: string;
+};
+
+/**
+ * Document content
+ *
+ * A Camunda Document Store reference content block.
+ */
+export type AgentInstanceDocumentContent = {
+    /**
+     * The content type discriminator.
+     */
+    contentType: string;
+    /**
+     * A reference to a document stored in the Camunda Document Store.
+     */
+    documentReference: DocumentReference;
+};
+
+/**
+ * Object content
+ *
+ * An arbitrary structured content block.
+ */
+export type AgentInstanceObjectContent = {
+    /**
+     * The content type discriminator.
+     */
+    contentType: string;
+    /**
+     * Arbitrary structured content.
+     */
+    object: {
+        [key: string]: unknown;
+    };
+};
+
+/**
+ * The content type discriminator for a history item content block.
+ */
+export const AgentInstanceMessageContentTypeEnum = {
+  TEXT: 'TEXT',
+  DOCUMENT: 'DOCUMENT',
+  OBJECT: 'OBJECT',
+} as const;
+export type AgentInstanceMessageContentTypeEnum = (typeof AgentInstanceMessageContentTypeEnum)[keyof typeof AgentInstanceMessageContentTypeEnum];
+/**
+ * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
+ * ASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.
+ *
+ */
+export type AgentInstanceToolCall = {
+    /**
+     * The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.
+     */
+    toolCallId: string;
+    /**
+     * The LLM-visible tool name.
+     */
+    toolName: string;
+    /**
+     * The BPMN element ID handling this tool.
+     */
+    elementId: string | null;
+    /**
+     * The tool call arguments as provided by the LLM. Null on TOOL_RESULT items.
+     */
+    arguments: {
+        [key: string]: unknown;
+    } | null;
+};
+
+/**
+ * Per-call token and latency metrics for an ASSISTANT history item.
+ */
+export type AgentInstanceHistoryItemMetrics = {
+    /**
+     * Input tokens consumed by this LLM call.
+     */
+    inputTokens: number;
+    /**
+     * Output tokens produced by this LLM call.
+     */
+    outputTokens: number;
+    /**
+     * Wall-clock duration of the LLM call in milliseconds.
+     */
+    durationMs: number;
+};
+
+/**
+ * AgentInstanceHistoryRoleEnum property with full advanced search capabilities.
+ */
+export type AgentInstanceHistoryRoleFilterProperty = AgentInstanceHistoryRoleExactMatch | AdvancedAgentInstanceHistoryRoleFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryRoleEnum filter.
+ */
+export type AdvancedAgentInstanceHistoryRoleFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceHistoryRoleEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceHistoryRoleEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceHistoryRoleEnum>;
+};
+
+/**
+ * AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.
+ */
+export type AgentInstanceHistoryCommitStatusFilterProperty = AgentInstanceHistoryCommitStatusExactMatch | AdvancedAgentInstanceHistoryCommitStatusFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryCommitStatusEnum filter.
+ */
+export type AdvancedAgentInstanceHistoryCommitStatusFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceHistoryCommitStatusEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceHistoryCommitStatusEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceHistoryCommitStatusEnum>;
 };
 
 /**
@@ -3122,6 +3505,14 @@ export type ElementInstanceSearchQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
+export type ElementInstanceWaitStateQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'elementInstanceKey' | 'processInstanceKey' | 'rootProcessInstanceKey' | 'elementId';
+    order?: SortOrderEnum;
+};
+
 /**
  * Element instance search request.
  */
@@ -3353,6 +3744,10 @@ export type AdHocSubProcessActivateActivitiesInstruction = {
  * Element instance inspection request.
  */
 export type ElementInstanceWaitStateQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<ElementInstanceWaitStateQuerySortRequest>;
     /**
      * Filter criteria for the inspection.
      */
@@ -4267,6 +4662,15 @@ export type TagSet = Array<Tag> & { readonly length: 0 | 1 | 2 | 3 | 4 | 5 | 6 |
  *
  */
 export type BusinessId = CamundaKey<'BusinessId'>;
+
+/**
+ * A client-provided sequential integer identifying a logical iteration: one LLM
+ * call, its tool dispatches, and their results. Must be a positive integer,
+ * increasing with each iteration. Established by the
+ * connector when appending the first history item of an iteration.
+ *
+ */
+export type IterationId = number;
 
 /**
  * ElementId property with full advanced search capabilities.
@@ -5787,6 +6191,11 @@ export type OperationReference = number;
 export type AgentInstanceKey = CamundaKey<'AgentInstanceKey'>;
 
 /**
+ * System-generated key for an agent history item.
+ */
+export type AgentHistoryItemKey = CamundaKey<'AgentHistoryItemKey'>;
+
+/**
  * System-generated key for an audit log entry.
  */
 export type AuditLogKey = CamundaKey<'AuditLogKey'>;
@@ -6088,6 +6497,39 @@ export type AdvancedAgentInstanceKeyFilter = {
      * Checks if the property matches none of the provided values.
      */
     $notIn?: Array<AgentInstanceKey>;
+};
+
+/**
+ * AgentHistoryItemKey property with full advanced search capabilities.
+ */
+export type AgentHistoryItemKeyFilterProperty = AgentHistoryItemKeyExactMatch | AdvancedAgentHistoryItemKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentHistoryItemKey filter.
+ */
+export type AdvancedAgentHistoryItemKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentHistoryItemKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentHistoryItemKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentHistoryItemKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AgentHistoryItemKey>;
 };
 
 /**
@@ -9531,6 +9973,20 @@ export type AgentInstanceStatusExactMatch = AgentInstanceStatusEnum;
  *
  * Matches the value exactly.
  */
+export type AgentInstanceHistoryRoleExactMatch = AgentInstanceHistoryRoleEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceHistoryCommitStatusExactMatch = AgentInstanceHistoryCommitStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AuditLogEntityKeyExactMatch = AuditLogEntityKey;
 
 /**
@@ -9763,6 +10219,13 @@ export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstance
  * Matches the value exactly.
  */
 export type AgentInstanceKeyExactMatch = AgentInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentHistoryItemKeyExactMatch = AgentHistoryItemKey;
 
 /**
  * Exact match
@@ -10012,6 +10475,108 @@ export type SearchAgentInstancesResponses = {
 };
 
 export type SearchAgentInstancesResponse = SearchAgentInstancesResponses[keyof SearchAgentInstancesResponses];
+
+export type CreateAgentInstanceHistoryItemData = {
+    body: AgentInstanceHistoryItemRequest;
+    path: {
+        /**
+         * The key of the agent instance to append the history item to.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}/history';
+};
+
+export type CreateAgentInstanceHistoryItemErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found, or the specified
+     * jobKey does not correspond to an active job.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type CreateAgentInstanceHistoryItemError = CreateAgentInstanceHistoryItemErrors[keyof CreateAgentInstanceHistoryItemErrors];
+
+export type CreateAgentInstanceHistoryItemResponses = {
+    /**
+     * The history item was created.
+     */
+    201: AgentInstanceHistoryItemCreationResult;
+};
+
+export type CreateAgentInstanceHistoryItemResponse = CreateAgentInstanceHistoryItemResponses[keyof CreateAgentInstanceHistoryItemResponses];
+
+export type SearchAgentInstanceHistoryData = {
+    body?: AgentInstanceHistorySearchQuery;
+    path: {
+        /**
+         * The key of the agent instance whose history to search.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}/history/search';
+};
+
+export type SearchAgentInstanceHistoryErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchAgentInstanceHistoryError = SearchAgentInstanceHistoryErrors[keyof SearchAgentInstanceHistoryErrors];
+
+export type SearchAgentInstanceHistoryResponses = {
+    /**
+     * The agent instance history search result.
+     */
+    200: AgentInstanceHistorySearchQueryResult;
+};
+
+export type SearchAgentInstanceHistoryResponse = SearchAgentInstanceHistoryResponses[keyof SearchAgentInstanceHistoryResponses];
 
 export type SearchAuditLogsData = {
     body?: AuditLogSearchQueryRequest;
@@ -18112,13 +18677,27 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:b2ba0d0bc85430aa0146f7430dad7a5e9de916e833676bb97cafd4357f93e8b9
+// specHash=sha256:61f14b16b2e19192bcdb9b0748d03729298cdfad7fdf9c72fd177ffa82d57a56
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
 `);
   if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);
+}
+// System-generated key for an agent history item.
+export namespace AgentHistoryItemKey {
+  export function assumeExists(value: string): AgentHistoryItemKey {
+    assertConstraint(value, 'AgentHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  }
+  export function getValue(key: AgentHistoryItemKey): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'AgentHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
 }
 // System-generated key for an agent instance.
 export namespace AgentInstanceKey {

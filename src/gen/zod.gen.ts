@@ -129,6 +129,152 @@ export const zAgentInstanceMetricsDelta = z.object({
 });
 
 /**
+ * The role of a history item in the agent conversation.
+ */
+export const zAgentInstanceHistoryRoleEnum = z.enum([
+    'USER',
+    'ASSISTANT',
+    'TOOL_RESULT'
+]).register(z.globalRegistry, {
+    description: 'The role of a history item in the agent conversation.'
+});
+
+/**
+ * The commit status of a history item.
+ * COMMITTED: the producing job completed successfully.
+ * PENDING: the producing job is still active (in-flight).
+ * DISCARDED: the producing job failed; this item was superseded by a later activation.
+ *
+ */
+export const zAgentInstanceHistoryCommitStatusEnum = z.enum([
+    'COMMITTED',
+    'PENDING',
+    'DISCARDED'
+]).register(z.globalRegistry, {
+    description: 'The commit status of a history item.\nCOMMITTED: the producing job completed successfully.\nPENDING: the producing job is still active (in-flight).\nDISCARDED: the producing job failed; this item was superseded by a later activation.\n'
+});
+
+/**
+ * Text content
+ *
+ * A plain-text content block.
+ */
+export const zAgentInstanceTextContent = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type discriminator.'
+    }),
+    text: z.string().register(z.globalRegistry, {
+        description: 'The text content.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A plain-text content block.'
+});
+
+/**
+ * Object content
+ *
+ * An arbitrary structured content block.
+ */
+export const zAgentInstanceObjectContent = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type discriminator.'
+    }),
+    object: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'Arbitrary structured content.'
+    })
+}).register(z.globalRegistry, {
+    description: 'An arbitrary structured content block.'
+});
+
+/**
+ * The content type discriminator for a history item content block.
+ */
+export const zAgentInstanceMessageContentTypeEnum = z.enum([
+    'TEXT',
+    'DOCUMENT',
+    'OBJECT'
+]).register(z.globalRegistry, {
+    description: 'The content type discriminator for a history item content block.'
+});
+
+/**
+ * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
+ * ASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.
+ *
+ */
+export const zAgentInstanceToolCall = z.object({
+    toolCallId: z.string().register(z.globalRegistry, {
+        description: 'The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.'
+    }),
+    toolName: z.string().register(z.globalRegistry, {
+        description: 'The LLM-visible tool name.'
+    }),
+    elementId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    arguments: z.union([
+        z.record(z.string(), z.unknown()),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\nASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.\n'
+});
+
+/**
+ * Per-call token and latency metrics for an ASSISTANT history item.
+ */
+export const zAgentInstanceHistoryItemMetrics = z.object({
+    inputTokens: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'Input tokens consumed by this LLM call.'
+    }),
+    outputTokens: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'Output tokens produced by this LLM call.'
+    }),
+    durationMs: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'Wall-clock duration of the LLM call in milliseconds.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Per-call token and latency metrics for an ASSISTANT history item.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryRoleEnum filter.
+ */
+export const zAdvancedAgentInstanceHistoryRoleFilter = z.object({
+    '$eq': z.optional(zAgentInstanceHistoryRoleEnum),
+    '$neq': z.optional(zAgentInstanceHistoryRoleEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentInstanceHistoryRoleEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentInstanceHistoryRoleEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryCommitStatusEnum filter.
+ */
+export const zAdvancedAgentInstanceHistoryCommitStatusFilter = z.object({
+    '$eq': z.optional(zAgentInstanceHistoryCommitStatusEnum),
+    '$neq': z.optional(zAgentInstanceHistoryCommitStatusEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentInstanceHistoryCommitStatusEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentInstanceHistoryCommitStatusEnum filter.'
+});
+
+/**
  * System-generated entity key for an audit log entry.
  */
 export const zAuditLogEntityKey = z.string().register(z.globalRegistry, {
@@ -1562,6 +1708,17 @@ export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry,
 });
 
 /**
+ * A client-provided sequential integer identifying a logical iteration: one LLM
+ * call, its tool dispatches, and their results. Must be a positive integer,
+ * increasing with each iteration. Established by the
+ * connector when appending the first history item of an iteration.
+ *
+ */
+export const zIterationId = z.int().gte(1).register(z.globalRegistry, {
+    description: 'A client-provided sequential integer identifying a logical iteration: one LLM\ncall, its tool dispatches, and their results. Must be a positive integer,\nincreasing with each iteration. Established by the\nconnector when appending the first history item of an iteration.\n'
+});
+
+/**
  * Advanced filter
  *
  * Advanced ElementId filter.
@@ -2325,6 +2482,35 @@ export const zDocumentReference = z.object({
     metadata: zDocumentMetadataResponse
 });
 
+/**
+ * Document content
+ *
+ * A Camunda Document Store reference content block.
+ */
+export const zAgentInstanceDocumentContent = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type discriminator.'
+    }),
+    documentReference: zDocumentReference
+}).register(z.globalRegistry, {
+    description: 'A Camunda Document Store reference content block.'
+});
+
+/**
+ * A single content block within a history item. Discriminated by `contentType`.
+ */
+export const zAgentInstanceMessageContent = z.union([
+    z.object({
+        contentType: z.literal('TEXT')
+    }).and(zAgentInstanceTextContent),
+    z.object({
+        contentType: z.literal('DOCUMENT')
+    }).and(zAgentInstanceDocumentContent),
+    z.object({
+        contentType: z.literal('OBJECT')
+    }).and(zAgentInstanceObjectContent)
+]);
+
 export const zDocumentCreationBatchResponse = z.object({
     failedDocuments: z.array(zDocumentCreationFailureDetail).register(z.globalRegistry, {
         description: 'Documents that were successfully created.'
@@ -2607,6 +2793,38 @@ export const zElementInstanceResult = z.object({
  * System-generated key for a job.
  */
 export const zJobKey = zLongKey;
+
+/**
+ * Request to append a single history item to an agent instance's conversation history.
+ */
+export const zAgentInstanceHistoryItemRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    jobKey: zJobKey,
+    jobLease: z.string().register(z.globalRegistry, {
+        description: 'Opaque lease token received from the job activation response.'
+    }),
+    iteration: z.optional(z.union([
+        zIterationId,
+        z.null()
+    ])),
+    role: zAgentInstanceHistoryRoleEnum,
+    content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The content blocks of this history item.'
+    }),
+    toolCalls: z.optional(z.union([
+        z.array(zAgentInstanceToolCall),
+        z.null()
+    ])),
+    metrics: z.optional(z.union([
+        zAgentInstanceHistoryItemMetrics,
+        z.null()
+    ])),
+    producedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The connector-side timestamp of when this message was produced.'
+    })
+}).register(z.globalRegistry, {
+    description: "Request to append a single history item to an agent instance's conversation history."
+});
 
 export const zJobWaitStateDetails = z.object({
     jobKey: zJobKey,
@@ -3374,6 +3592,54 @@ export const zAgentInstanceCreationResult = z.object({
 });
 
 /**
+ * System-generated key for an agent history item.
+ */
+export const zAgentHistoryItemKey = zLongKey;
+
+/**
+ * Response returned after successfully appending a history item.
+ */
+export const zAgentInstanceHistoryItemCreationResult = z.object({
+    historyItemKey: zAgentHistoryItemKey
+}).register(z.globalRegistry, {
+    description: 'Response returned after successfully appending a history item.'
+});
+
+/**
+ * A single conversation history item belonging to an agent instance.
+ */
+export const zAgentInstanceHistoryItemResult = z.object({
+    historyItemKey: zAgentHistoryItemKey,
+    agentInstanceKey: zAgentInstanceKey,
+    elementInstanceKey: zElementInstanceKey,
+    jobKey: zJobKey,
+    jobLease: z.string().register(z.globalRegistry, {
+        description: 'The lease token of the activation that produced this item.'
+    }),
+    iteration: z.union([
+        zIterationId,
+        z.null()
+    ]),
+    role: zAgentInstanceHistoryRoleEnum,
+    content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The content blocks of this history item.'
+    }),
+    toolCalls: z.array(zAgentInstanceToolCall).register(z.globalRegistry, {
+        description: 'Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls with arguments populated.\nTOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).\n'
+    }),
+    metrics: z.union([
+        zAgentInstanceHistoryItemMetrics,
+        z.null()
+    ]),
+    commitStatus: zAgentInstanceHistoryCommitStatusEnum,
+    producedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The connector-side timestamp of when this message was produced.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A single conversation history item belonging to an agent instance.'
+});
+
+/**
  * System-generated key for an audit log entry.
  */
 export const zAuditLogKey = zLongKey;
@@ -3678,6 +3944,27 @@ export const zAdvancedAgentInstanceKeyFilter = z.object({
     }))
 }).register(z.globalRegistry, {
     description: 'Advanced AgentInstanceKey filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentHistoryItemKey filter.
+ */
+export const zAdvancedAgentHistoryItemKeyFilter = z.object({
+    '$eq': z.optional(zAgentHistoryItemKey),
+    '$neq': z.optional(zAgentHistoryItemKey),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentHistoryItemKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zAgentHistoryItemKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentHistoryItemKey filter.'
 });
 
 /**
@@ -4929,10 +5216,27 @@ export const zSortOrderEnum = z.enum([
 
 export const zAgentInstanceSearchQuerySortRequest = z.object({
     field: z.enum([
+        'agentInstanceKey',
+        'status',
+        'elementId',
+        'processInstanceKey',
+        'rootProcessInstanceKey',
+        'processDefinitionKey',
+        'tenantId',
         'creationDate',
         'lastUpdatedDate',
-        'completionDate',
-        'status'
+        'completionDate'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: z.optional(zSortOrderEnum)
+});
+
+export const zAgentInstanceHistorySearchQuerySortRequest = z.object({
+    field: z.enum([
+        'producedAt',
+        'historyItemKey',
+        'iteration'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -5126,6 +5430,18 @@ export const zElementInstanceSearchQuerySortRequest = z.object({
         'state',
         'incidentKey',
         'tenantId'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: z.optional(zSortOrderEnum)
+});
+
+export const zElementInstanceWaitStateQuerySortRequest = z.object({
+    field: z.enum([
+        'elementInstanceKey',
+        'processInstanceKey',
+        'rootProcessInstanceKey',
+        'elementId'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -5529,6 +5845,17 @@ export const zAgentInstanceSearchQueryResult = zSearchQueryResponse.and(z.object
     })
 }).register(z.globalRegistry, {
     description: 'Agent instance search response.'
+}));
+
+/**
+ * Agent instance history search response.
+ */
+export const zAgentInstanceHistorySearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zAgentInstanceHistoryItemResult).register(z.globalRegistry, {
+        description: 'The matching history items.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Agent instance history search response.'
 }));
 
 /**
@@ -6660,6 +6987,36 @@ export const zAgentInstanceStatusFilterProperty = z.union([
  *
  * Matches the value exactly.
  */
+export const zAgentInstanceHistoryRoleExactMatch = zAgentInstanceHistoryRoleEnum;
+
+/**
+ * AgentInstanceHistoryRoleEnum property with full advanced search capabilities.
+ */
+export const zAgentInstanceHistoryRoleFilterProperty = z.union([
+    zAgentInstanceHistoryRoleExactMatch,
+    zAdvancedAgentInstanceHistoryRoleFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceHistoryCommitStatusExactMatch = zAgentInstanceHistoryCommitStatusEnum;
+
+/**
+ * AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.
+ */
+export const zAgentInstanceHistoryCommitStatusFilterProperty = z.union([
+    zAgentInstanceHistoryCommitStatusExactMatch,
+    zAdvancedAgentInstanceHistoryCommitStatusFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zAuditLogEntityKeyExactMatch = zAuditLogEntityKey;
 
 /**
@@ -7326,6 +7683,9 @@ export const zElementInstanceWaitStateFilter = z.object({
  * Element instance inspection request.
  */
 export const zElementInstanceWaitStateQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zElementInstanceWaitStateQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
     filter: z.optional(zElementInstanceWaitStateFilter)
 }).register(z.globalRegistry, {
     description: 'Element instance inspection request.'
@@ -7538,6 +7898,7 @@ export const zAgentInstanceFilter = z.object({
     status: z.optional(zAgentInstanceStatusFilterProperty),
     elementId: z.optional(zElementIdFilterProperty),
     processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    rootProcessInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
     processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
     creationDate: z.optional(zDateTimeFilterProperty),
@@ -7563,6 +7924,48 @@ export const zAgentInstanceSearchQuery = zSearchQueryRequest.and(z.object({
     filter: z.optional(zAgentInstanceFilter)
 }).register(z.globalRegistry, {
     description: 'Agent instance search request.'
+}));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentHistoryItemKeyExactMatch = zAgentHistoryItemKey;
+
+/**
+ * AgentHistoryItemKey property with full advanced search capabilities.
+ */
+export const zAgentHistoryItemKeyFilterProperty = z.union([
+    zAgentHistoryItemKeyExactMatch,
+    zAdvancedAgentHistoryItemKeyFilter
+]);
+
+/**
+ * Agent instance history item search filter.
+ */
+export const zAgentInstanceHistoryFilter = z.object({
+    historyItemKey: z.optional(zAgentHistoryItemKeyFilterProperty),
+    role: z.optional(zAgentInstanceHistoryRoleFilterProperty),
+    elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
+    jobKey: z.optional(zJobKeyFilterProperty),
+    iteration: z.optional(zIntegerFilterProperty),
+    commitStatus: z.optional(zAgentInstanceHistoryCommitStatusFilterProperty),
+    producedAt: z.optional(zDateTimeFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Agent instance history item search filter.'
+});
+
+/**
+ * Agent instance history search request.
+ */
+export const zAgentInstanceHistorySearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zAgentInstanceHistorySearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zAgentInstanceHistoryFilter)
+}).register(z.globalRegistry, {
+    description: 'Agent instance history search request.'
 }));
 
 /**
@@ -8090,6 +8493,32 @@ export const zSearchAgentInstancesData = z.object({
  * The agent instance search result.
  */
 export const zSearchAgentInstancesResponse = zAgentInstanceSearchQueryResult;
+
+export const zCreateAgentInstanceHistoryItemData = z.object({
+    body: zAgentInstanceHistoryItemRequest,
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The history item was created.
+ */
+export const zCreateAgentInstanceHistoryItemResponse = zAgentInstanceHistoryItemCreationResult;
+
+export const zSearchAgentInstanceHistoryData = z.object({
+    body: z.optional(zAgentInstanceHistorySearchQuery),
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance history search result.
+ */
+export const zSearchAgentInstanceHistoryResponse = zAgentInstanceHistorySearchQueryResult;
 
 export const zSearchAuditLogsData = z.object({
     body: z.optional(zAuditLogSearchQueryRequest),
