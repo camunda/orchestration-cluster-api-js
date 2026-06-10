@@ -86,7 +86,12 @@ describe('eventual consistency', () => {
       },
       { consistency: { waitUpToMs: 0 } }
     );
-    await expect(res).rejects.toThrowError('NOT_FOUND');
+    try {
+      await res;
+    } catch (e) {
+      console.error(e)
+    }
+    await expect(res).rejects.toMatchObject({ status: 404 });
   });
 
   it('throws EventualConsistencyTimeoutError when nothing is found and waitUpToMs is 1_000', {
