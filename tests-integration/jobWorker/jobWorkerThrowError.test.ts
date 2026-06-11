@@ -69,14 +69,19 @@ test(
       maxParallelJobs: 1,
       jobTimeoutMs: 10_000,
     });
-    const result = await camunda.createProcessInstance({
-      processDefinitionKey,
-      requestTimeout: 20_000,
-      variables: {},
-      awaitCompletion: true,
-    });
-    expect(result.variables.bpmnErrorCaught).toBe(true);
-    camunda.stopAllWorkers();
+    try {
+      const result = await camunda.createProcessInstance({
+        processDefinitionKey,
+        requestTimeout: 20_000,
+        variables: {},
+        awaitCompletion: true,
+      });
+      expect(result.variables.bpmnErrorCaught).toBe(true);
+    } finally {
+      // Always stop workers, even if awaitCompletion throws (timeout/transient
+      // cluster error), so leftover workers cannot interfere with later tests.
+      camunda.stopAllWorkers();
+    }
   },
   { timeout: 60_000 }
 );
