@@ -11,29 +11,44 @@ test(
     ]);
     const { processDefinitionKey } = res.processes[0];
 
-    // Cancel any leftover instances of this definition from prior runs, then wait
-    // for the batch operation to reach a terminal state BEFORE creating the new
-    // instance. cancelProcessInstancesBatchOperation is asynchronous: it returns a
-    // batchOperationKey immediately and cancels matching instances over a
-    // server-side window. Because the filter matches on processDefinitionKey alone,
-    // an in-flight batch can cancel the instance we create below, removing its
-    // sad-flow job so awaitCompletion never resolves. Waiting for a terminal state
-    // is the deterministic signal that cancellation can no longer affect the new
-    // instance.
-    const { batchOperationKey } = await camunda.cancelProcessInstancesBatchOperation(
-      { filter: { processDefinitionKey } },
-      { consistency: { waitUpToMs: 0 } }
-    );
-    const TERMINAL_BATCH_STATES = ['COMPLETED', 'PARTIALLY_COMPLETED', 'CANCELED', 'FAILED'];
-    await camunda.getBatchOperation(
-      { batchOperationKey },
-      {
-        consistency: {
-          waitUpToMs: 15_000,
-          pollIntervalMs: 200,
-          predicate: (batch) => TERMINAL_BATCH_STATES.includes(batch.state),
+    // Test- and test-run isolation: deterministically cancel any leftover ACTIVE
+    // instances of this definition from prior runs BEFORE creating the new instance.
+    //
+    // We snapshot the currently-active instances and cancel each one explicitly by
+    // key, rather than firing cancelProcessInstancesBatchOperation. A batch operation
+    // is asynchronous and matches on processDefinitionKey over a server-side execution
+    // window; when a backlog of active instances widens that window, the batch can
+    // cancel the instance we create below — removing its sad-flow job so
+    // awaitCompletion never resolves (a 20s timeout). Per-key cancellation targets
+    // only instances that existed at snapshot time, never the one created afterwards,
+    // so it isolates the run deterministically regardless of backlog size.
+    //
+    // The search uses waitUpToMs: 0 (a single read, no eventual-consistency wait):
+    // the default search predicate blocks until items are non-empty, which would time
+    // out on a clean run or on the final empty page. Snapshot all keys read-only
+    // first (cursors stay valid because reads don't mutate), then cancel.
+    type InstanceSearch = Awaited<ReturnType<typeof camunda.searchProcessInstances>>;
+    const leftover: InstanceSearch['items'] = [];
+    let after: InstanceSearch['page']['endCursor'] | undefined;
+    do {
+      const existing = await camunda.searchProcessInstances(
+        {
+          filter: { processDefinitionKey, state: 'ACTIVE' },
+          page: after ? { after, limit: 100 } : { limit: 100 },
         },
-      }
+        { consistency: { waitUpToMs: 0 } }
+      );
+      leftover.push(...existing.items);
+      after = existing.page.endCursor ?? undefined;
+    } while (after);
+    await Promise.all(
+      leftover.map((instance) =>
+        // Tolerate instances that reached a terminal state between snapshot and
+        // cancel — they are no longer a concern for isolation.
+        camunda
+          .cancelProcessInstance({ processInstanceKey: instance.processInstanceKey })
+          .catch(() => undefined)
+      )
     );
 
     camunda.createJobWorker({
