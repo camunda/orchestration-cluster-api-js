@@ -1,3 +1,11 @@
+# [10.0.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.10...v10.0.0-alpha.11) (2026-06-11)
+
+
+### Bug Fixes
+
+* adopt upstream wait-state details union in example ([8f8603c](https://github.com/camunda/orchestration-cluster-api-js/commit/8f8603cd1ed445ab8062c15d525598a5c36084d4))
+* adopt upstream wait-state details union in example ([07ed89c](https://github.com/camunda/orchestration-cluster-api-js/commit/07ed89c0eb2db17f7979ebd57c88983f8561a137))
+
 # [10.0.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.9...v10.0.0-alpha.10) (2026-06-09)
 
 
