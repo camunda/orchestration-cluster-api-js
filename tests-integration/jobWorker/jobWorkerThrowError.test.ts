@@ -10,9 +10,30 @@ test(
       './tests-integration/fixtures/Client-ThrowError.bpmn',
     ]);
     const { processDefinitionKey } = res.processes[0];
-    await camunda.cancelProcessInstancesBatchOperation(
+
+    // Cancel any leftover instances of this definition from prior runs, then wait
+    // for the batch operation to reach a terminal state BEFORE creating the new
+    // instance. cancelProcessInstancesBatchOperation is asynchronous: it returns a
+    // batchOperationKey immediately and cancels matching instances over a
+    // server-side window. Because the filter matches on processDefinitionKey alone,
+    // an in-flight batch can cancel the instance we create below, removing its
+    // sad-flow job so awaitCompletion never resolves. Waiting for a terminal state
+    // is the deterministic signal that cancellation can no longer affect the new
+    // instance.
+    const { batchOperationKey } = await camunda.cancelProcessInstancesBatchOperation(
       { filter: { processDefinitionKey } },
       { consistency: { waitUpToMs: 0 } }
+    );
+    const TERMINAL_BATCH_STATES = ['COMPLETED', 'PARTIALLY_COMPLETED', 'CANCELED', 'FAILED'];
+    await camunda.getBatchOperation(
+      { batchOperationKey },
+      {
+        consistency: {
+          waitUpToMs: 15_000,
+          pollIntervalMs: 200,
+          predicate: (batch) => TERMINAL_BATCH_STATES.includes(batch.state),
+        },
+      }
     );
 
     camunda.createJobWorker({
@@ -42,7 +63,7 @@ test(
     expect(result.variables.bpmnErrorCaught).toBe(true);
     camunda.stopAllWorkers();
   },
-  { timeout: 20_000 }
+  { timeout: 60_000 }
 );
 
 // test.runIf(allowAny([{ deployment: 'saas' }, { deployment: 'self-managed' }]))(
