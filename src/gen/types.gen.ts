@@ -896,13 +896,21 @@ export type AuditLogResult = {
      *
      */
     entityDescription: string | null;
+    /**
+     * The type of the inbound channel that triggered the operation (e.g. MCP).
+     */
+    inboundChannelType: string | null;
+    /**
+     * The tool name of the inbound channel (e.g. the MCP tool that triggered the operation).
+     */
+    inboundChannelToolName: string | null;
 };
 
 export type AuditLogSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'actorId' | 'actorType' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
+    field: 'actorId' | 'actorType' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'inboundChannelType' | 'inboundChannelToolName' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
     order?: SortOrderEnum;
 };
 
@@ -1040,6 +1048,14 @@ export type AuditLogFilter = {
      * The entity description filter.
      */
     entityDescription?: StringFilterProperty;
+    /**
+     * The inbound channel type search filter (e.g. MCP).
+     */
+    inboundChannelType?: StringFilterProperty;
+    /**
+     * The inbound channel tool name search filter.
+     */
+    inboundChannelToolName?: StringFilterProperty;
 };
 
 /**
@@ -3889,10 +3905,6 @@ export type ElementInstanceWaitStateQueryResult = SearchQueryResponse & {
  */
 export type ElementInstanceWaitStateResult = {
     /**
-     * The type of waiting state an element instance is in.
-     */
-    waitStateType: WaitStateTypeEnum;
-    /**
      * Key of the root process instance.
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
@@ -3917,14 +3929,19 @@ export type ElementInstanceWaitStateResult = {
      */
     tenantId: TenantId;
     /**
-     * Job details, present when waitStateType is JOB.
+     * Wait-state-specific details, resolved by waitStateType.
      */
-    jobDetails: JobWaitStateDetails | null;
-    /**
-     * Message details, present when waitStateType is MESSAGE.
-     */
-    messageDetails: MessageWaitStateDetails | null;
+    details: WaitStateDetails;
 };
+
+/**
+ * Wait-state-specific details of an element instance.
+ */
+export type WaitStateDetails = ({
+    waitStateType: 'JOB';
+} & JobWaitStateDetails) | ({
+    waitStateType: 'MESSAGE';
+} & MessageWaitStateDetails);
 
 /**
  * The type of waiting state an element instance is in.
@@ -3934,7 +3951,17 @@ export const WaitStateTypeEnum = {
   MESSAGE: 'MESSAGE',
 } as const;
 export type WaitStateTypeEnum = (typeof WaitStateTypeEnum)[keyof typeof WaitStateTypeEnum];
-export type JobWaitStateDetails = {
+/**
+ * Common fields shared by all wait-state details variants.
+ */
+export type BaseWaitStateDetails = {
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type JobWaitStateDetails = BaseWaitStateDetails & {
     /**
      * The key of the job.
      */
@@ -3955,9 +3982,13 @@ export type JobWaitStateDetails = {
      * The number of retries remaining for the job.
      */
     retries: number | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
 };
 
-export type MessageWaitStateDetails = {
+export type MessageWaitStateDetails = BaseWaitStateDetails & {
     /**
      * The name of the message being awaited.
      */
@@ -3966,6 +3997,10 @@ export type MessageWaitStateDetails = {
      * The correlation key for the message subscription (null for start events).
      */
     correlationKey: string | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
 };
 
 export type AdHocSubProcessActivateActivityReference = {
@@ -18677,7 +18712,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:61f14b16b2e19192bcdb9b0748d03729298cdfad7fdf9c72fd177ffa82d57a56
+// specHash=sha256:770d623d4c5488aa1faedcad52f8e04711ee1ccfa3db6bd85a4d15b1a3ddc4d0
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

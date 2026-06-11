@@ -878,15 +878,29 @@ export const zWaitStateTypeEnum = z.enum([
     description: 'The type of waiting state an element instance is in.'
 });
 
-export const zMessageWaitStateDetails = z.object({
+/**
+ * Common fields shared by all wait-state details variants.
+ */
+export const zBaseWaitStateDetails = z.object({
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Common fields shared by all wait-state details variants.'
+});
+
+export const zMessageWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     messageName: z.string().register(z.globalRegistry, {
         description: 'The name of the message being awaited.'
     }),
     correlationKey: z.union([
         z.string(),
         z.null()
-    ])
-});
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
 
 export const zExpressionEvaluationWarningItem = z.object({
     message: z.string().register(z.globalRegistry, {
@@ -2826,7 +2840,7 @@ export const zAgentInstanceHistoryItemRequest = z.object({
     description: "Request to append a single history item to an agent instance's conversation history."
 });
 
-export const zJobWaitStateDetails = z.object({
+export const zJobWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     jobKey: zJobKey,
     jobType: z.string().register(z.globalRegistry, {
         description: 'The job type (worker subscription identifier).'
@@ -2839,14 +2853,28 @@ export const zJobWaitStateDetails = z.object({
     retries: z.union([
         z.int(),
         z.null()
-    ])
-});
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+/**
+ * Wait-state-specific details of an element instance.
+ */
+export const zWaitStateDetails = z.union([
+    z.object({
+        waitStateType: z.literal('JOB')
+    }).and(zJobWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('MESSAGE')
+    }).and(zMessageWaitStateDetails)
+]);
 
 /**
  * An element instance waiting state.
  */
 export const zElementInstanceWaitStateResult = z.object({
-    waitStateType: zWaitStateTypeEnum,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
@@ -2856,14 +2884,7 @@ export const zElementInstanceWaitStateResult = z.object({
     elementId: zElementId,
     elementType: zWaitStateElementTypeEnum,
     tenantId: zTenantId,
-    jobDetails: z.union([
-        zJobWaitStateDetails,
-        z.null()
-    ]),
-    messageDetails: z.union([
-        zMessageWaitStateDetails,
-        z.null()
-    ])
+    details: zWaitStateDetails
 }).register(z.globalRegistry, {
     description: 'An element instance waiting state.'
 });
@@ -3750,6 +3771,14 @@ export const zAuditLogResult = z.object({
         z.null()
     ]),
     entityDescription: z.union([
+        z.string(),
+        z.null()
+    ]),
+    inboundChannelType: z.union([
+        z.string(),
+        z.null()
+    ]),
+    inboundChannelToolName: z.union([
         z.string(),
         z.null()
     ])
@@ -5264,6 +5293,8 @@ export const zAuditLogSearchQuerySortRequest = z.object({
         'processDefinitionId',
         'processDefinitionKey',
         'processInstanceKey',
+        'inboundChannelType',
+        'inboundChannelToolName',
         'result',
         'tenantId',
         'timestamp',
@@ -8060,7 +8091,9 @@ export const zAuditLogFilter = z.object({
     decisionEvaluationKey: z.optional(zDecisionEvaluationKeyFilterProperty),
     relatedEntityKey: z.optional(zAuditLogEntityKeyFilterProperty),
     relatedEntityType: z.optional(zEntityTypeFilterProperty),
-    entityDescription: z.optional(zStringFilterProperty)
+    entityDescription: z.optional(zStringFilterProperty),
+    inboundChannelType: z.optional(zStringFilterProperty),
+    inboundChannelToolName: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Audit log filter request'
 });

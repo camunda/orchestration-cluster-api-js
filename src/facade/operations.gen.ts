@@ -1578,7 +1578,12 @@ type _searchElementInstanceWaitStates_Body = SearchElementInstanceWaitStatesData
  *   );
  * 
  *   for (const waitState of result.items ?? []) {
- *     console.log(`${waitState.elementId}: ${waitState.waitStateType}`);
+ *     const { details } = waitState;
+ *     const description =
+ *       details.waitStateType === 'JOB'
+ *         ? `waiting on job '${details.jobType}'`
+ *         : `waiting for message '${details.messageName}'`;
+ *     console.log(`${waitState.elementId}: ${description}`);
  *   }
  * }
  * ```
