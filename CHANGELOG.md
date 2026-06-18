@@ -1,3 +1,11 @@
+# [10.0.0-alpha.12](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.11...v10.0.0-alpha.12) (2026-06-18)
+
+
+### Features
+
+* regenerate src/gen for wait-state details union and job priority-updated state ([e0e8c8c](https://github.com/camunda/orchestration-cluster-api-js/commit/e0e8c8c7e30b88799ec17f1c061a21241648ee7d))
+* regenerate src/gen for wait-state details union and job priority-updated state ([76c5f82](https://github.com/camunda/orchestration-cluster-api-js/commit/76c5f829efcf826ff180e3116c4bbf303254c2b6))
+
 # [10.0.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.10...v10.0.0-alpha.11) (2026-06-11)
 
 
