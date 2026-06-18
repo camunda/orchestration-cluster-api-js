@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:770d623d4c5488aa1faedcad52f8e04711ee1ccfa3db6bd85a4d15b1a3ddc4d0",
+  "specHash": "sha256:49625da077b57255a2b40d23f9df017147d77cd72a4b4f59b2dcb60b52f81934",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -3111,10 +3111,22 @@
         {
           "branchType": "branded-ref",
           "ref": "MessageWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "UserTaskWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "TimerWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "SignalWaitStateDetails"
         }
       ],
       "stableId": "wait-state-details",
-      "tsType": "JobWaitStateDetails | MessageWaitStateDetails",
+      "tsType": "JobWaitStateDetails | MessageWaitStateDetails | UserTaskWaitStateDetails | TimerWaitStateDetails | SignalWaitStateDetails",
       "zod": {
         "schemaName": "zWaitStateDetails"
       },

@@ -243,7 +243,8 @@ type _createDeployment_Body = CreateDeploymentData extends { body?: infer B } ? 
 /**
  * Deploy resources
  *
- * Deploys one or more resources (e.g. processes, decision models, or forms).
+ * Deploys one or more resources, including BPMN processes, DMN decision models, forms, RPA resources, and generic files.
+ * A deployment can contain any file type. Files that are not interpreted as BPMN, DMN, form, or RPA resources are stored as deployable generic resources in the engine.
  * This is an atomic call, i.e. either all resources are deployed or none of them are.
  *
   *
@@ -1579,10 +1580,14 @@ type _searchElementInstanceWaitStates_Body = SearchElementInstanceWaitStatesData
  * 
  *   for (const waitState of result.items ?? []) {
  *     const { details } = waitState;
- *     const description =
- *       details.waitStateType === 'JOB'
- *         ? `waiting on job '${details.jobType}'`
- *         : `waiting for message '${details.messageName}'`;
+ *     let description: string;
+ *     if (details.waitStateType === 'JOB') {
+ *       description = `waiting on job '${details.jobType}'`;
+ *     } else if (details.waitStateType === 'MESSAGE') {
+ *       description = `waiting for message '${details.messageName}'`;
+ *     } else {
+ *       description = `waiting (${details.waitStateType})`;
+ *     }
  *     console.log(`${waitState.elementId}: ${description}`);
  *   }
  * }
@@ -5807,4 +5812,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=74b9f191d46ba3ef totalWrappers=193 elements=1234 physicalLines=3071
+// SENTINEL_FACADE_PREWRITE hash=80f213be1c780654 totalWrappers=193 elements=1234 physicalLines=3072

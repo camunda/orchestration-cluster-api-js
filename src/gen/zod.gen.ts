@@ -873,7 +873,10 @@ export const zWaitStateElementTypeEnum = z.enum([
  */
 export const zWaitStateTypeEnum = z.enum([
     'JOB',
-    'MESSAGE'
+    'MESSAGE',
+    'USER_TASK',
+    'TIMER',
+    'SIGNAL'
 ]).register(z.globalRegistry, {
     description: 'The type of waiting state an element instance is in.'
 });
@@ -897,6 +900,29 @@ export const zMessageWaitStateDetails = zBaseWaitStateDetails.and(z.object({
         z.string(),
         z.null()
     ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+export const zTimerWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    dueDate: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ]),
+    repetitions: z.union([
+        z.int(),
+        z.null()
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+export const zSignalWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    signalName: z.string().register(z.globalRegistry, {
+        description: 'The name of the signal being awaited.'
+    }),
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
     })
@@ -2257,6 +2283,7 @@ export const zJobStateEnum = z.enum([
     'ERROR_THROWN',
     'FAILED',
     'MIGRATED',
+    'PRIORITY_UPDATED',
     'RETRIES_UPDATED',
     'TIMED_OUT'
 ]).register(z.globalRegistry, {
@@ -2629,6 +2656,17 @@ export const zAgentInstanceUpdateRequest = z.object({
  */
 export const zUserTaskKey = zLongKey;
 
+export const zUserTaskWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    taskKey: zUserTaskKey,
+    dueDate: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
 /**
  * System-generated key for a deployed form.
  */
@@ -2868,7 +2906,16 @@ export const zWaitStateDetails = z.union([
     }).and(zJobWaitStateDetails),
     z.object({
         waitStateType: z.literal('MESSAGE')
-    }).and(zMessageWaitStateDetails)
+    }).and(zMessageWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('USER_TASK')
+    }).and(zUserTaskWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('TIMER')
+    }).and(zTimerWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('SIGNAL')
+    }).and(zSignalWaitStateDetails)
 ]);
 
 /**
@@ -2884,6 +2931,9 @@ export const zElementInstanceWaitStateResult = z.object({
     elementId: zElementId,
     elementType: zWaitStateElementTypeEnum,
     tenantId: zTenantId,
+    bpmnProcessId: z.string().register(z.globalRegistry, {
+        description: 'The BPMN process ID of the process definition associated to this element instance.'
+    }),
     details: zWaitStateDetails
 }).register(z.globalRegistry, {
     description: 'An element instance waiting state.'
@@ -3648,10 +3698,7 @@ export const zAgentInstanceHistoryItemResult = z.object({
     toolCalls: z.array(zAgentInstanceToolCall).register(z.globalRegistry, {
         description: 'Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls with arguments populated.\nTOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).\n'
     }),
-    metrics: z.union([
-        zAgentInstanceHistoryItemMetrics,
-        z.null()
-    ]),
+    metrics: zAgentInstanceHistoryItemMetrics,
     commitStatus: zAgentInstanceHistoryCommitStatusEnum,
     producedAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'The connector-side timestamp of when this message was produced.'
@@ -4201,6 +4248,11 @@ export const zMessagePublicationRequest = z.object({
 
 /**
  * The state of message subscription.
+ *
+ * **Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not
+ * tracked for these subscriptions. To query correlation history for process start events,
+ * use the `/correlated-message-subscriptions/search` endpoint.
+ *
  */
 export const zMessageSubscriptionStateEnum = z.enum([
     'CORRELATED',
@@ -4208,7 +4260,7 @@ export const zMessageSubscriptionStateEnum = z.enum([
     'DELETED',
     'MIGRATED'
 ]).register(z.globalRegistry, {
-    description: 'The state of message subscription.'
+    description: 'The state of message subscription.\n\n**Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not\ntracked for these subscriptions. To query correlation history for process start events,\nuse the `/correlated-message-subscriptions/search` endpoint.\n'
 });
 
 /**
