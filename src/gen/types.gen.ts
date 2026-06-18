@@ -567,9 +567,9 @@ export type AgentInstanceHistoryItemResult = {
      */
     toolCalls: Array<AgentInstanceToolCall>;
     /**
-     * Per-call token and latency metrics. Present on ASSISTANT items only.
+     * Per-call token and latency metrics. Zero-valued when not available.
      */
-    metrics: AgentInstanceHistoryItemMetrics | null;
+    metrics: AgentInstanceHistoryItemMetrics;
     /**
      * The commit status of this history item.
      */
@@ -3929,6 +3929,10 @@ export type ElementInstanceWaitStateResult = {
      */
     tenantId: TenantId;
     /**
+     * The BPMN process ID of the process definition associated to this element instance.
+     */
+    bpmnProcessId: string;
+    /**
      * Wait-state-specific details, resolved by waitStateType.
      */
     details: WaitStateDetails;
@@ -3941,7 +3945,13 @@ export type WaitStateDetails = ({
     waitStateType: 'JOB';
 } & JobWaitStateDetails) | ({
     waitStateType: 'MESSAGE';
-} & MessageWaitStateDetails);
+} & MessageWaitStateDetails) | ({
+    waitStateType: 'USER_TASK';
+} & UserTaskWaitStateDetails) | ({
+    waitStateType: 'TIMER';
+} & TimerWaitStateDetails) | ({
+    waitStateType: 'SIGNAL';
+} & SignalWaitStateDetails);
 
 /**
  * The type of waiting state an element instance is in.
@@ -3949,6 +3959,9 @@ export type WaitStateDetails = ({
 export const WaitStateTypeEnum = {
   JOB: 'JOB',
   MESSAGE: 'MESSAGE',
+  USER_TASK: 'USER_TASK',
+  TIMER: 'TIMER',
+  SIGNAL: 'SIGNAL',
 } as const;
 export type WaitStateTypeEnum = (typeof WaitStateTypeEnum)[keyof typeof WaitStateTypeEnum];
 /**
@@ -3997,6 +4010,47 @@ export type MessageWaitStateDetails = BaseWaitStateDetails & {
      * The correlation key for the message subscription (null for start events).
      */
     correlationKey: string | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type UserTaskWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The key of the user task.
+     */
+    taskKey: UserTaskKey;
+    /**
+     * The due date of the user task, if set.
+     */
+    dueDate: string | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type TimerWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * When the timer is due, as a UNIX epoch timestamp in milliseconds.
+     */
+    dueDate: number | null;
+    /**
+     * The number of remaining timer repetitions (-1 for infinite, 0 for non-repeating).
+     */
+    repetitions: number | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type SignalWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The name of the signal being awaited.
+     */
+    signalName: string;
     /**
      * The wait state type discriminator.
      */
@@ -6008,6 +6062,7 @@ export const JobStateEnum = {
   ERROR_THROWN: 'ERROR_THROWN',
   FAILED: 'FAILED',
   MIGRATED: 'MIGRATED',
+  PRIORITY_UPDATED: 'PRIORITY_UPDATED',
   RETRIES_UPDATED: 'RETRIES_UPDATED',
   TIMED_OUT: 'TIMED_OUT',
 } as const;
@@ -7191,6 +7246,11 @@ export type CorrelatedMessageSubscriptionSearchQuerySortRequest = {
 
 /**
  * The state of message subscription.
+ *
+ * **Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not
+ * tracked for these subscriptions. To query correlation history for process start events,
+ * use the `/correlated-message-subscriptions/search` endpoint.
+ *
  */
 export const MessageSubscriptionStateEnum = {
   CORRELATED: 'CORRELATED',
@@ -18712,7 +18772,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:770d623d4c5488aa1faedcad52f8e04711ee1ccfa3db6bd85a4d15b1a3ddc4d0
+// specHash=sha256:49625da077b57255a2b40d23f9df017147d77cd72a4b4f59b2dcb60b52f81934
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

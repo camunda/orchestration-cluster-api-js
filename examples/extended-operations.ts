@@ -381,10 +381,14 @@ async function searchElementInstanceWaitStatesExample(processInstanceKey: Proces
 
   for (const waitState of result.items ?? []) {
     const { details } = waitState;
-    const description =
-      details.waitStateType === 'JOB'
-        ? `waiting on job '${details.jobType}'`
-        : `waiting for message '${details.messageName}'`;
+    let description: string;
+    if (details.waitStateType === 'JOB') {
+      description = `waiting on job '${details.jobType}'`;
+    } else if (details.waitStateType === 'MESSAGE') {
+      description = `waiting for message '${details.messageName}'`;
+    } else {
+      description = `waiting (${details.waitStateType})`;
+    }
     console.log(`${waitState.elementId}: ${description}`);
   }
 }

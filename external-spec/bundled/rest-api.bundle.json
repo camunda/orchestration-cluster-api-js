@@ -3075,7 +3075,7 @@
           }
         ],
         "summary": "Deploy resources",
-        "description": "Deploys one or more resources (e.g. processes, decision models, or forms).\nThis is an atomic call, i.e. either all resources are deployed or none of them are.\n",
+        "description": "Deploys one or more resources, including BPMN processes, DMN decision models, forms, RPA resources, and generic files.\nA deployment can contain any file type. Files that are not interpreted as BPMN, DMN, form, or RPA resources are stored as deployable generic resources in the engine.\nThis is an atomic call, i.e. either all resources are deployed or none of them are.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -14477,8 +14477,7 @@
             }
           },
           "metrics": {
-            "description": "Per-call token and latency metrics. Present on ASSISTANT items only.",
-            "nullable": true,
+            "description": "Per-call token and latency metrics. Zero-valued when not available.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AgentInstanceHistoryItemMetrics"
@@ -21010,6 +21009,7 @@
         "description": "An element instance waiting state.",
         "type": "object",
         "required": [
+          "bpmnProcessId",
           "details",
           "elementId",
           "elementInstanceKey",
@@ -21068,6 +21068,10 @@
               }
             ]
           },
+          "bpmnProcessId": {
+            "description": "The BPMN process ID of the process definition associated to this element instance.",
+            "type": "string"
+          },
           "details": {
             "description": "Wait-state-specific details, resolved by waitStateType.",
             "allOf": [
@@ -21085,7 +21089,10 @@
           "propertyName": "waitStateType",
           "mapping": {
             "JOB": "#/components/schemas/JobWaitStateDetails",
-            "MESSAGE": "#/components/schemas/MessageWaitStateDetails"
+            "MESSAGE": "#/components/schemas/MessageWaitStateDetails",
+            "USER_TASK": "#/components/schemas/UserTaskWaitStateDetails",
+            "TIMER": "#/components/schemas/TimerWaitStateDetails",
+            "SIGNAL": "#/components/schemas/SignalWaitStateDetails"
           }
         },
         "oneOf": [
@@ -21094,6 +21101,15 @@
           },
           {
             "$ref": "#/components/schemas/MessageWaitStateDetails"
+          },
+          {
+            "$ref": "#/components/schemas/UserTaskWaitStateDetails"
+          },
+          {
+            "$ref": "#/components/schemas/TimerWaitStateDetails"
+          },
+          {
+            "$ref": "#/components/schemas/SignalWaitStateDetails"
           }
         ]
       },
@@ -21102,7 +21118,10 @@
         "type": "string",
         "enum": [
           "JOB",
-          "MESSAGE"
+          "MESSAGE",
+          "USER_TASK",
+          "TIMER",
+          "SIGNAL"
         ]
       },
       "BaseWaitStateDetails": {
@@ -21194,6 +21213,81 @@
             "type": "string"
           }
         }
+      },
+      "UserTaskWaitStateDetails": {
+        "type": "object",
+        "required": [
+          "dueDate",
+          "taskKey",
+          "waitStateType"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseWaitStateDetails"
+          }
+        ],
+        "properties": {
+          "taskKey": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserTaskKey"
+              }
+            ],
+            "description": "The key of the user task."
+          },
+          "dueDate": {
+            "description": "The due date of the user task, if set.",
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TimerWaitStateDetails": {
+        "type": "object",
+        "required": [
+          "dueDate",
+          "repetitions",
+          "waitStateType"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseWaitStateDetails"
+          }
+        ],
+        "properties": {
+          "dueDate": {
+            "description": "When the timer is due, as a UNIX epoch timestamp in milliseconds.",
+            "nullable": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          "repetitions": {
+            "description": "The number of remaining timer repetitions (-1 for infinite, 0 for non-repeating).",
+            "nullable": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SignalWaitStateDetails": {
+        "type": "object",
+        "required": [
+          "signalName",
+          "waitStateType"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseWaitStateDetails"
+          }
+        ],
+        "properties": {
+          "signalName": {
+            "description": "The name of the signal being awaited.",
+            "type": "string"
+          }
+        },
+        "x-added-in-version": "8.10"
       },
       "AdHocSubProcessActivateActivityReference": {
         "type": "object",
@@ -25086,6 +25180,7 @@
           "ERROR_THROWN",
           "FAILED",
           "MIGRATED",
+          "PRIORITY_UPDATED",
           "RETRIES_UPDATED",
           "TIMED_OUT"
         ]
@@ -27386,7 +27481,7 @@
         ]
       },
       "MessageSubscriptionStateEnum": {
-        "description": "The state of message subscription.",
+        "description": "The state of message subscription.\n\n**Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not\ntracked for these subscriptions. To query correlation history for process start events,\nuse the `/correlated-message-subscriptions/search` endpoint.\n",
         "type": "string",
         "enum": [
           "CORRELATED",

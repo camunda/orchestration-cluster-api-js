@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:770d623d4c5488aa1faedcad52f8e04711ee1ccfa3db6bd85a4d15b1a3ddc4d0",
+  "specHash": "sha256:49625da077b57255a2b40d23f9df017147d77cd72a4b4f59b2dcb60b52f81934",
   "semanticKeys": [
     {
       "name": "AgentHistoryItemKey",
@@ -2184,6 +2184,18 @@
         {
           "branchType": "ref",
           "ref": "MessageWaitStateDetails"
+        },
+        {
+          "branchType": "ref",
+          "ref": "UserTaskWaitStateDetails"
+        },
+        {
+          "branchType": "ref",
+          "ref": "TimerWaitStateDetails"
+        },
+        {
+          "branchType": "ref",
+          "ref": "SignalWaitStateDetails"
         }
       ],
       "stableId": "wait-state-details"
@@ -4353,7 +4365,7 @@
         "Resource"
       ],
       "summary": "Deploy resources",
-      "description": "Deploys one or more resources (e.g. processes, decision models, or forms).\nThis is an atomic call, i.e. either all resources are deployed or none of them are.\n",
+      "description": "Deploys one or more resources, including BPMN processes, DMN decision models, forms, RPA resources, and generic files.\nA deployment can contain any file type. Files that are not interpreted as BPMN, DMN, form, or RPA resources are stored as deployable generic resources in the engine.\nThis is an atomic call, i.e. either all resources are deployed or none of them are.\n",
       "eventuallyConsistent": false,
       "hasRequestBody": true,
       "requestBodyUnion": false,
