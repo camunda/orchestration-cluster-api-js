@@ -3,6 +3,7 @@ import { createCamundaClient } from '../../dist';
 
 test(
   'Throws a business error that is caught in the process',
+  { timeout: 60_000 },
   async () => {
     const camunda = createCamundaClient();
 
@@ -82,8 +83,7 @@ test(
       // cluster error), so leftover workers cannot interfere with later tests.
       camunda.stopAllWorkers();
     }
-  },
-  { timeout: 60_000 }
+  }
 );
 
 // test.runIf(allowAny([{ deployment: 'saas' }, { deployment: 'self-managed' }]))(
