@@ -30,7 +30,7 @@ jobs:
           - node: 22.x
             stack: full
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Use Node.js ${{ matrix.node }}
