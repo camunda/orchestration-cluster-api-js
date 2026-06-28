@@ -80,13 +80,37 @@ describe('runtime compat: Request init is spec-strict (Deno/Bun)', () => {
     for (const rel of files) {
       const source = readFileSync(path.join(process.cwd(), rel), 'utf8');
       expect(source, `${rel}: missing sanitizeRequestInit helper`).toContain(
-        'const sanitizeRequestInit'
+        'const sanitizeRequestInit ='
       );
-      const sites = [...source.matchAll(/new Request\(/g)];
-      expect(sites.length, `${rel}: expected at least one new Request() site`).toBeGreaterThan(0);
-      // No `new Request(url, <bareIdentifier>)` may remain — all must be wrapped.
-      const unsanitized = [...source.matchAll(/new Request\([^,]+,\s*[A-Za-z_$][\w$]*\)/g)];
-      expect(unsanitized, `${rel}: found unsanitized new Request() init`).toHaveLength(0);
+      const allSites = [...source.matchAll(/new Request\(/g)];
+      expect(allSites.length, `${rel}: expected at least one new Request() site`).toBeGreaterThan(
+        0
+      );
+      // Every `new Request(url, <init>)` must pass `sanitizeRequestInit(<init>)`
+      // as its second argument — regardless of whether the init is a bare
+      // identifier, an object literal, or any other expression.
+      const sanitizedSites = [...source.matchAll(/new Request\([^,]+,\s*sanitizeRequestInit\(/g)];
+      expect(
+        sanitizedSites.length,
+        `${rel}: every new Request() init must be wrapped in sanitizeRequestInit()`
+      ).toBe(allSites.length);
+    }
+  });
+
+  it('passes a sanitized init to the public onRequest hook in the SSE client', () => {
+    // The SSE client also hands the init to a user-supplied onRequest(url, init)
+    // hook; a strict-runtime onRequest implementation that calls
+    // `new Request(url, init)` would still throw if that init were unsanitized.
+    const rel = 'src/gen/core/serverSentEvents.gen.ts';
+    const source = readFileSync(path.join(process.cwd(), rel), 'utf8');
+    const onRequestCalls = [...source.matchAll(/\bonRequest\([^,)]+,\s*([^)]+)\)/g)];
+    expect(onRequestCalls.length, `${rel}: expected an onRequest(url, init) call`).toBeGreaterThan(
+      0
+    );
+    for (const match of onRequestCalls) {
+      expect(match[1].trim(), `${rel}: onRequest() must receive a sanitized init`).toMatch(
+        /^sanitizeRequestInit\(/
+      );
     }
   });
 });

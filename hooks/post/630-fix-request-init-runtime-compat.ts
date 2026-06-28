@@ -29,7 +29,11 @@ const root = process.cwd();
 // Files emitted by the @hey-api/client-fetch plugin that construct a Request.
 const TARGETS = ['src/gen/client/client.gen.ts', 'src/gen/core/serverSentEvents.gen.ts'];
 
-const HELPER_MARKER = 'sanitizeRequestInit';
+const HELPER_FN = 'sanitizeRequestInit';
+// Detect the *declaration* of the helper, not just any mention of its name, so
+// the idempotency check can't be fooled by the identifier appearing elsewhere
+// (e.g. in a comment or an unrelated upstream template change).
+const HELPER_DECL_MARKER = `const ${HELPER_FN} =`;
 
 const HELPER = `
 // --- Spec-strict runtime compatibility (Deno, Bun) -------------------------
@@ -75,10 +79,14 @@ function injectHelper(source: string): string {
   return lines.join('\n');
 }
 
-// Wrap `new Request(<url>, <identifier>)` → `new Request(<url>, sanitizeRequestInit(<identifier>))`.
-// Only bare-identifier inits are matched, so the transform is idempotent: an
-// already-wrapped `sanitizeRequestInit(init)` is not a bare identifier.
+// Sanitize the init at every site that hands it to a `Request` constructor —
+// both the internal `new Request(url, init)` and the public
+// `onRequest(url, init)` hook (whose user implementation may itself call
+// `new Request(url, init)` on a spec-strict runtime). Only bare-identifier
+// inits are matched, so the transforms are idempotent: an already-wrapped
+// `sanitizeRequestInit(init)` is not a bare identifier (it is followed by `(`).
 const REQUEST_RE = /new Request\(([^,]+),\s*([A-Za-z_$][\w$]*)\)/g;
+const ON_REQUEST_RE = /(\bonRequest\()([^,]+),\s*([A-Za-z_$][\w$]*)\)/g;
 
 let totalWrapped = 0;
 let patchedFiles = 0;
@@ -92,7 +100,7 @@ for (const rel of TARGETS) {
 
   let source = fs.readFileSync(file, 'utf8');
 
-  if (source.includes(HELPER_MARKER)) {
+  if (source.includes(HELPER_DECL_MARKER)) {
     console.log(`[fix-request-init] ${rel} already patched — skipping`);
     continue;
   }
@@ -100,7 +108,11 @@ for (const rel of TARGETS) {
   let wrapped = 0;
   source = source.replace(REQUEST_RE, (_m, url: string, init: string) => {
     wrapped++;
-    return `new Request(${url}, ${HELPER_MARKER}(${init}))`;
+    return `new Request(${url}, ${HELPER_FN}(${init}))`;
+  });
+  source = source.replace(ON_REQUEST_RE, (_m, head: string, url: string, init: string) => {
+    wrapped++;
+    return `${head}${url}, ${HELPER_FN}(${init}))`;
   });
 
   if (wrapped === 0) {

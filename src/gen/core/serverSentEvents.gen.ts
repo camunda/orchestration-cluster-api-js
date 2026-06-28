@@ -157,7 +157,7 @@ export const createSseClient = <TData = unknown>({
         };
         let request = new Request(url, sanitizeRequestInit(requestInit));
         if (onRequest) {
-          request = await onRequest(url, requestInit);
+          request = await onRequest(url, sanitizeRequestInit(requestInit));
         }
         // fetch must be assigned here, otherwise it would throw the error:
         // TypeError: Failed to execute 'fetch' on 'Window': Illegal invocation
