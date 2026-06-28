@@ -189,6 +189,24 @@ async function deleteDecisionInstancesBatchOperationExample() {
 }
 //#endregion DeleteDecisionInstancesBatchOperation
 
+//#region UpdateJobsBatchOperation
+async function updateJobsBatchOperationExample() {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.updateJobsBatchOperation({
+    filter: {
+      type: 'payment-processing',
+      hasFailedWithRetriesLeft: false,
+    },
+    changeset: {
+      retries: 3,
+    },
+  });
+
+  console.log(`Batch operation key: ${result.batchOperationKey}`);
+}
+//#endregion UpdateJobsBatchOperation
+
 // Suppress "declared but never read"
 void getBatchOperationExample;
 void searchBatchOperationsExample;
@@ -216,3 +234,4 @@ void migrateProcessInstancesBatchOperationExample;
 void modifyProcessInstancesBatchOperationExample;
 void resolveIncidentsBatchOperationExample;
 void deleteDecisionInstancesBatchOperationExample;
+void updateJobsBatchOperationExample;
