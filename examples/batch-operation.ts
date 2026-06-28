@@ -220,18 +220,4 @@ void migrateProcessInstancesBatchOperationExample;
 void modifyProcessInstancesBatchOperationExample;
 void resolveIncidentsBatchOperationExample;
 void deleteDecisionInstancesBatchOperationExample;
-
-// Suppress "declared but never read"
-void getBatchOperationExample;
-void searchBatchOperationsExample;
-void searchBatchOperationItemsExample;
-void cancelBatchOperationExample;
-void suspendBatchOperationExample;
-void resumeBatchOperationExample;
-void cancelProcessInstancesBatchOperationExample;
-void deleteProcessInstancesBatchOperationExample;
-void migrateProcessInstancesBatchOperationExample;
-void modifyProcessInstancesBatchOperationExample;
-void resolveIncidentsBatchOperationExample;
-void deleteDecisionInstancesBatchOperationExample;
 void updateJobsBatchOperationExample;

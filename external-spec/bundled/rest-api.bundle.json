@@ -6285,6 +6285,67 @@
         "x-added-in-version": "8.6"
       }
     },
+    "/jobs/batch-update": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Job"
+        ],
+        "operationId": "updateJobsBatchOperation",
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Update jobs (batch)",
+        "description": "Creates a batch operation to update jobs matching the given filter. At least one changeset field must be non-null. This is done asynchronously; the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JobBatchUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch operation was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchOperationCreatedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The job batch update operation failed. More details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1roles/post/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
     "/jobs/statistics/global": {
       "get": {
         "x-eventually-consistent": true,
@@ -16179,6 +16240,7 @@
           "CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE",
           "CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE",
           "CREATE_BATCH_OPERATION_RESOLVE_INCIDENT",
+          "CREATE_BATCH_OPERATION_UPDATE_JOB",
           "CREATE_DECISION_INSTANCE",
           "CREATE_PROCESS_INSTANCE",
           "CREATE_TASK_LISTENER",
@@ -16987,6 +17049,7 @@
           "MIGRATE_PROCESS_INSTANCE",
           "MODIFY_PROCESS_INSTANCE",
           "RESOLVE_INCIDENT",
+          "UPDATE_JOB",
           "UPDATE_VARIABLE"
         ]
       },
@@ -18264,6 +18327,7 @@
             "description": "The field to sort by.",
             "type": "string",
             "enum": [
+              "businessId",
               "decisionDefinitionId",
               "decisionDefinitionKey",
               "decisionDefinitionName",
@@ -18399,6 +18463,14 @@
             ],
             "description": "The key of the process instance."
           },
+          "businessId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
+            "description": "The business ID of the owning process instance the decision instance belongs to. This only works for decision instances created with 8.10 and onwards. Decision instances from prior versions and standalone evaluations don't contain this data and cannot be found.\n"
+          },
           "decisionDefinitionKey": {
             "description": "The key of the decision.",
             "allOf": [
@@ -18496,6 +18568,10 @@
           {
             "propertyName": "decisionRequirementsKey",
             "addedInVersion": "8.9"
+          },
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
           }
         ]
       },
@@ -18532,6 +18608,7 @@
       "DecisionInstanceResult": {
         "type": "object",
         "required": [
+          "businessId",
           "decisionDefinitionId",
           "decisionDefinitionKey",
           "decisionDefinitionName",
@@ -18551,6 +18628,15 @@
           "tenantId"
         ],
         "properties": {
+          "businessId": {
+            "description": "The business ID of the owning process instance, inherited when the decision instance was\nevaluated. This is `null` for decision instances created before version 8.10, for\nstandalone decision evaluations, and for decision instances whose owning process instance\nhas no business ID.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
+          },
           "decisionDefinitionId": {
             "allOf": [
               {
@@ -18661,6 +18747,10 @@
           }
         },
         "x-properties-added-in-version": [
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
+          },
           {
             "propertyName": "decisionDefinitionId",
             "addedInVersion": "8.6"
@@ -21092,7 +21182,8 @@
             "MESSAGE": "#/components/schemas/MessageWaitStateDetails",
             "USER_TASK": "#/components/schemas/UserTaskWaitStateDetails",
             "TIMER": "#/components/schemas/TimerWaitStateDetails",
-            "SIGNAL": "#/components/schemas/SignalWaitStateDetails"
+            "SIGNAL": "#/components/schemas/SignalWaitStateDetails",
+            "CONDITION": "#/components/schemas/ConditionWaitStateDetails"
           }
         },
         "oneOf": [
@@ -21110,6 +21201,9 @@
           },
           {
             "$ref": "#/components/schemas/SignalWaitStateDetails"
+          },
+          {
+            "$ref": "#/components/schemas/ConditionWaitStateDetails"
           }
         ]
       },
@@ -21121,7 +21215,8 @@
           "MESSAGE",
           "USER_TASK",
           "TIMER",
-          "SIGNAL"
+          "SIGNAL",
+          "CONDITION"
         ]
       },
       "BaseWaitStateDetails": {
@@ -21288,6 +21383,36 @@
           }
         },
         "x-added-in-version": "8.10"
+      },
+      "ConditionWaitStateDetails": {
+        "type": "object",
+        "required": [
+          "events",
+          "expression",
+          "waitStateType"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BaseWaitStateDetails"
+          }
+        ],
+        "properties": {
+          "expression": {
+            "description": "The condition expression that must evaluate to true to proceed.",
+            "type": "string"
+          },
+          "events": {
+            "description": "The variable events that trigger condition re-evaluation. Empty means all events.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "create",
+                "update"
+              ]
+            }
+          }
+        }
       },
       "AdHocSubProcessActivateActivityReference": {
         "type": "object",
@@ -24682,6 +24807,86 @@
         },
         "x-properties-added-in-version": [
           {
+            "propertyName": "deadline",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "deniedReason",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "elementId",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "elementInstanceKey",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "endTime",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "errorCode",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "errorMessage",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "hasFailedWithRetriesLeft",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "isDenied",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "jobKey",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "kind",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "listenerEventType",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "processDefinitionId",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "processDefinitionKey",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "processInstanceKey",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "retries",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "state",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "tenantId",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "type",
+            "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "worker",
+            "addedInVersion": "8.8"
+          },
+          {
             "propertyName": "creationTime",
             "addedInVersion": "8.9"
           },
@@ -25159,8 +25364,59 @@
             "format": "int64",
             "description": "The new timeout for the job in milliseconds.",
             "nullable": true
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The new priority for the job. Higher values indicate higher priority.",
+            "nullable": true
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "retries",
+            "addedInVersion": "8.6"
+          },
+          {
+            "propertyName": "timeout",
+            "addedInVersion": "8.6"
+          },
+          {
+            "propertyName": "priority",
+            "addedInVersion": "8.10"
+          }
+        ]
+      },
+      "JobBatchUpdateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.\n",
+        "properties": {
+          "filter": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobFilter"
+              }
+            ],
+            "description": "The job filter. At least one dimension must be set."
+          },
+          "changeset": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobChangeset"
+              }
+            ],
+            "description": "The fields to update. At least one field must be non-null."
+          },
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
+          }
+        },
+        "required": [
+          "changeset",
+          "filter"
+        ],
+        "x-added-in-version": "8.10"
       },
       "TenantFilterEnum": {
         "description": "The tenant filtering strategy for job activation. Determines whether to use tenant IDs provided in the request or tenant IDs assigned to the authenticated principal.\n",
@@ -26734,8 +26990,22 @@
                 "$ref": "#/components/schemas/TenantId"
               }
             ]
+          },
+          "businessId": {
+            "description": "An optional business id used to enforce uniqueness of the process instance that a\nmessage start event would create. If provided and uniqueness enforcement is enabled,\nthe engine rejects starting a new process instance when another root process instance\nwith the same business id is already active for the same process definition. It has no\neffect when the message correlates to a catch, boundary, or intermediate event.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "MessageCorrelationResult": {
         "description": "The message key of the correlated message, as well as the first process instance key it\ncorrelated with.\n",
@@ -26811,10 +27081,24 @@
                 "$ref": "#/components/schemas/TenantId"
               }
             ]
+          },
+          "businessId": {
+            "description": "An optional business id used to enforce uniqueness of the process instance that a\nmessage start event would create. If provided and uniqueness enforcement is enabled,\nthe engine rejects starting a new process instance when another root process instance\nwith the same business id is already active for the same process definition. It has no\neffect when the message correlates to a catch, boundary, or intermediate event.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
           }
         },
         "required": [
           "name"
+        ],
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
+          }
         ]
       },
       "MessagePublicationResult": {
@@ -27313,6 +27597,7 @@
       "CorrelatedMessageSubscriptionResult": {
         "type": "object",
         "required": [
+          "businessId",
           "correlationKey",
           "correlationTime",
           "elementId",
@@ -27328,6 +27613,15 @@
           "tenantId"
         ],
         "properties": {
+          "businessId": {
+            "description": "The business id associated with this correlated message subscription. For a message\nstart event correlation, it is the business id carried by the correlating message that\nwas stamped on the started process instance to enforce its uniqueness. For a catch,\nboundary, or intermediate event correlation, it is the business id of the subscribing\nprocess instance, captured when the subscription was opened. It is `null` when the\nrelevant process instance has no business id.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
+          },
           "correlationKey": {
             "description": "The correlation key of the message.",
             "nullable": true,
@@ -27422,6 +27716,10 @@
           {
             "propertyName": "rootProcessInstanceKey",
             "addedInVersion": "8.9"
+          },
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
           }
         ]
       },
@@ -27458,6 +27756,7 @@
             "description": "The field to sort by.",
             "type": "string",
             "enum": [
+              "businessId",
               "correlationKey",
               "correlationTime",
               "elementId",
@@ -27502,6 +27801,14 @@
         "description": "Correlated message subscriptions search filter.",
         "type": "object",
         "properties": {
+          "businessId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
+            "description": "Filter by the business id stored on the correlated message subscription — for message\nstart event correlations the correlating message's business id, and for catch, boundary,\nor intermediate event correlations the subscribing process instance's business id.\nSupports advanced string filtering, including `$like` with `*`/`?` wildcards.\n"
+          },
           "correlationKey": {
             "allOf": [
               {
@@ -27598,7 +27905,13 @@
             ],
             "description": "The tenant ID associated with this correlated message subscription."
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "MessageSubscriptionTypeFilterProperty": {
         "description": "MessageSubscriptionTypeEnum with full advanced search capabilities.",
@@ -31407,7 +31720,8 @@
               "followUpDate",
               "dueDate",
               "priority",
-              "name"
+              "name",
+              "businessId"
             ]
           },
           "order": {
@@ -31464,6 +31778,14 @@
               }
             ],
             "description": "The assignee of the user task."
+          },
+          "businessId": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ],
+            "description": "The business ID of the owning process instance the user task belongs to. This only works for user tasks created with 8.10 and onwards. Tasks from prior versions don't contain this data and cannot be found.\n"
           },
           "priority": {
             "allOf": [
@@ -31651,6 +31973,10 @@
           {
             "propertyName": "tags",
             "addedInVersion": "8.9"
+          },
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
           }
         ]
       },
@@ -31679,6 +32005,7 @@
         "type": "object",
         "required": [
           "assignee",
+          "businessId",
           "candidateGroups",
           "candidateUsers",
           "completionDate",
@@ -31843,6 +32170,15 @@
               }
             ]
           },
+          "businessId": {
+            "description": "The business ID of the owning process instance, inherited when the user task was\ncreated. This is `null` for user tasks created before version 8.10, and for user tasks\nwhose owning process instance has no business ID.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
+          },
           "formKey": {
             "description": "The key of the form.",
             "nullable": true,
@@ -31944,6 +32280,10 @@
           {
             "propertyName": "rootProcessInstanceKey",
             "addedInVersion": "8.9"
+          },
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
           },
           {
             "propertyName": "formKey",

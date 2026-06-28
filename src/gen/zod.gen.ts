@@ -399,6 +399,7 @@ export const zPermissionTypeEnum = z.enum([
     'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
+    'CREATE_BATCH_OPERATION_UPDATE_JOB',
     'CREATE_DECISION_INSTANCE',
     'CREATE_PROCESS_INSTANCE',
     'CREATE_TASK_LISTENER',
@@ -583,6 +584,7 @@ export const zBatchOperationTypeEnum = z.enum([
     'MIGRATE_PROCESS_INSTANCE',
     'MODIFY_PROCESS_INSTANCE',
     'RESOLVE_INCIDENT',
+    'UPDATE_JOB',
     'UPDATE_VARIABLE'
 ]).register(z.globalRegistry, {
     description: 'The type of the batch operation.'
@@ -876,7 +878,8 @@ export const zWaitStateTypeEnum = z.enum([
     'MESSAGE',
     'USER_TASK',
     'TIMER',
-    'SIGNAL'
+    'SIGNAL',
+    'CONDITION'
 ]).register(z.globalRegistry, {
     description: 'The type of waiting state an element instance is in.'
 });
@@ -922,6 +925,21 @@ export const zTimerWaitStateDetails = zBaseWaitStateDetails.and(z.object({
 export const zSignalWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     signalName: z.string().register(z.globalRegistry, {
         description: 'The name of the signal being awaited.'
+    }),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+export const zConditionWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    expression: z.string().register(z.globalRegistry, {
+        description: 'The condition expression that must evaluate to true to proceed.'
+    }),
+    events: z.array(z.enum([
+        'create',
+        'update'
+    ])).register(z.globalRegistry, {
+        description: 'The variable events that trigger condition re-evaluation. Empty means all events.'
     }),
     waitStateType: z.string().register(z.globalRegistry, {
         description: 'The wait state type discriminator.'
@@ -2232,6 +2250,10 @@ export const zJobChangeset = z.object({
     timeout: z.optional(z.union([
         z.coerce.number().int(),
         z.null()
+    ])),
+    priority: z.optional(z.union([
+        z.int(),
+        z.null()
     ]))
 }).register(z.globalRegistry, {
     description: 'JSON object with changed job attribute values. The job cannot be completed or failed with this endpoint, use the complete job or fail job endpoints instead.'
@@ -2915,7 +2937,10 @@ export const zWaitStateDetails = z.union([
     }).and(zTimerWaitStateDetails),
     z.object({
         waitStateType: z.literal('SIGNAL')
-    }).and(zSignalWaitStateDetails)
+    }).and(zSignalWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('CONDITION')
+    }).and(zConditionWaitStateDetails)
 ]);
 
 /**
@@ -3158,6 +3183,10 @@ export const zEvaluatedDecisionResult = z.object({
 export const zDecisionEvaluationKey = zLongKey;
 
 export const zDecisionInstanceResult = z.object({
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     decisionDefinitionId: zDecisionDefinitionId,
     decisionDefinitionKey: zDecisionDefinitionKey,
     decisionDefinitionName: z.string().register(z.globalRegistry, {
@@ -4224,7 +4253,8 @@ export const zMessageCorrelationRequest = z.object({
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The message variables as JSON document'
     })),
-    tenantId: z.optional(zTenantId)
+    tenantId: z.optional(zTenantId),
+    businessId: z.optional(zBusinessId)
 });
 
 export const zMessagePublicationRequest = z.object({
@@ -4243,7 +4273,8 @@ export const zMessagePublicationRequest = z.object({
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The message variables as JSON document.'
     })),
-    tenantId: z.optional(zTenantId)
+    tenantId: z.optional(zTenantId),
+    businessId: z.optional(zBusinessId)
 });
 
 /**
@@ -4425,6 +4456,10 @@ export const zMessagePublicationResult = z.object({
 });
 
 export const zCorrelatedMessageSubscriptionResult = z.object({
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     correlationKey: z.union([
         z.string(),
         z.null()
@@ -5443,6 +5478,7 @@ export const zDecisionDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
 
 export const zDecisionInstanceSearchQuerySortRequest = z.object({
     field: z.enum([
+        'businessId',
         'decisionDefinitionId',
         'decisionDefinitionKey',
         'decisionDefinitionName',
@@ -5724,6 +5760,7 @@ export const zMessageSubscriptionSearchQuerySortRequest = z.object({
 
 export const zCorrelatedMessageSubscriptionSearchQuerySortRequest = z.object({
     field: z.enum([
+        'businessId',
         'correlationKey',
         'correlationTime',
         'elementId',
@@ -6619,7 +6656,8 @@ export const zUserTaskSearchQuerySortRequest = z.object({
         'followUpDate',
         'dueDate',
         'priority',
-        'name'
+        'name',
+        'businessId'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -6794,6 +6832,10 @@ export const zUserTaskResult = z.object({
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
+        z.null()
+    ]),
+    businessId: z.union([
+        zBusinessId,
         z.null()
     ]),
     formKey: z.union([
@@ -7868,6 +7910,18 @@ export const zJobSearchQuery = zSearchQueryRequest.and(z.object({
 }));
 
 /**
+ * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
+ *
+ */
+export const zJobBatchUpdateRequest = z.object({
+    filter: zJobFilter,
+    changeset: zJobChangeset,
+    operationReference: z.optional(zOperationReference)
+}).register(z.globalRegistry, {
+    description: 'The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.\n'
+});
+
+/**
  * Exact match
  *
  * Matches the value exactly.
@@ -8184,6 +8238,7 @@ export const zDecisionInstanceFilter = z.object({
     decisionEvaluationKey: z.optional(zDecisionEvaluationKey),
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     processInstanceKey: z.optional(zProcessInstanceKey),
+    businessId: z.optional(zStringFilterProperty),
     decisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty),
     elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
     rootDecisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty),
@@ -8289,6 +8344,7 @@ export const zMessageSubscriptionSearchQuery = zSearchQueryRequest.and(z.object(
  * Correlated message subscriptions search filter.
  */
 export const zCorrelatedMessageSubscriptionFilter = z.object({
+    businessId: z.optional(zStringFilterProperty),
     correlationKey: z.optional(zStringFilterProperty),
     correlationTime: z.optional(zDateTimeFilterProperty),
     elementId: z.optional(zStringFilterProperty),
@@ -8491,6 +8547,7 @@ export const zUserTaskStateFilterProperty = z.union([
 export const zUserTaskFilter = z.object({
     state: z.optional(zUserTaskStateFilterProperty),
     assignee: z.optional(zStringFilterProperty),
+    businessId: z.optional(zStringFilterProperty),
     priority: z.optional(zIntegerFilterProperty),
     elementId: z.optional(zElementId),
     name: z.optional(zStringFilterProperty),
@@ -9739,6 +9796,17 @@ export const zFailJobData = z.object({
 export const zFailJobResponse = z.void().register(z.globalRegistry, {
     description: 'The job is failed.'
 });
+
+export const zUpdateJobsBatchOperationData = z.object({
+    body: zJobBatchUpdateRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch operation was created.
+ */
+export const zUpdateJobsBatchOperationResponse = zBatchOperationCreatedResult;
 
 export const zGetGlobalJobStatisticsData = z.object({
     body: z.optional(z.never()),

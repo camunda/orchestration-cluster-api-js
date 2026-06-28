@@ -1,6 +1,6 @@
 {
-  "operations": 193,
-  "tests": 195,
+  "operations": 194,
+  "tests": 196,
   "missing": [],
   "ignored": [],
   "files": [
@@ -193,6 +193,7 @@
     "updateGlobalTaskListener.test.ts",
     "updateGroup.test.ts",
     "updateJob.test.ts",
+    "updateJobsBatchOperation.test.ts",
     "updateMappingRule.test.ts",
     "updateRole.test.ts",
     "updateTenant.test.ts",

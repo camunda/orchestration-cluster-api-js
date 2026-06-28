@@ -1519,6 +1519,7 @@ export const PermissionTypeEnum = {
   CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE',
   CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE',
   CREATE_BATCH_OPERATION_RESOLVE_INCIDENT: 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
+  CREATE_BATCH_OPERATION_UPDATE_JOB: 'CREATE_BATCH_OPERATION_UPDATE_JOB',
   CREATE_DECISION_INSTANCE: 'CREATE_DECISION_INSTANCE',
   CREATE_PROCESS_INSTANCE: 'CREATE_PROCESS_INSTANCE',
   CREATE_TASK_LISTENER: 'CREATE_TASK_LISTENER',
@@ -1959,6 +1960,7 @@ export const BatchOperationTypeEnum = {
   MIGRATE_PROCESS_INSTANCE: 'MIGRATE_PROCESS_INSTANCE',
   MODIFY_PROCESS_INSTANCE: 'MODIFY_PROCESS_INSTANCE',
   RESOLVE_INCIDENT: 'RESOLVE_INCIDENT',
+  UPDATE_JOB: 'UPDATE_JOB',
   UPDATE_VARIABLE: 'UPDATE_VARIABLE',
 } as const;
 export type BatchOperationTypeEnum = (typeof BatchOperationTypeEnum)[keyof typeof BatchOperationTypeEnum];
@@ -2619,7 +2621,7 @@ export type DecisionInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionDefinitionName' | 'decisionDefinitionType' | 'decisionDefinitionVersion' | 'decisionEvaluationInstanceKey' | 'decisionEvaluationKey' | 'elementInstanceKey' | 'evaluationDate' | 'evaluationFailure' | 'processDefinitionKey' | 'processInstanceKey' | 'rootDecisionDefinitionKey' | 'state' | 'tenantId';
+    field: 'businessId' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionDefinitionName' | 'decisionDefinitionType' | 'decisionDefinitionVersion' | 'decisionEvaluationInstanceKey' | 'decisionEvaluationKey' | 'elementInstanceKey' | 'evaluationDate' | 'evaluationFailure' | 'processDefinitionKey' | 'processInstanceKey' | 'rootDecisionDefinitionKey' | 'state' | 'tenantId';
     order?: SortOrderEnum;
 };
 
@@ -2685,6 +2687,11 @@ export type DecisionInstanceFilter = {
      */
     processInstanceKey?: ProcessInstanceKey;
     /**
+     * The business ID of the owning process instance the decision instance belongs to. This only works for decision instances created with 8.10 and onwards. Decision instances from prior versions and standalone evaluations don't contain this data and cannot be found.
+     *
+     */
+    businessId?: StringFilterProperty;
+    /**
      * The key of the decision.
      */
     decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
@@ -2714,6 +2721,14 @@ export type DecisionInstanceSearchQueryResult = SearchQueryResponse & {
 };
 
 export type DecisionInstanceResult = {
+    /**
+     * The business ID of the owning process instance, inherited when the decision instance was
+     * evaluated. This is `null` for decision instances created before version 8.10, for
+     * standalone decision evaluations, and for decision instances whose owning process instance
+     * has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
     /**
      * The ID of the DMN decision.
      */
@@ -3951,7 +3966,9 @@ export type WaitStateDetails = ({
     waitStateType: 'TIMER';
 } & TimerWaitStateDetails) | ({
     waitStateType: 'SIGNAL';
-} & SignalWaitStateDetails);
+} & SignalWaitStateDetails) | ({
+    waitStateType: 'CONDITION';
+} & ConditionWaitStateDetails);
 
 /**
  * The type of waiting state an element instance is in.
@@ -3962,6 +3979,7 @@ export const WaitStateTypeEnum = {
   USER_TASK: 'USER_TASK',
   TIMER: 'TIMER',
   SIGNAL: 'SIGNAL',
+  CONDITION: 'CONDITION',
 } as const;
 export type WaitStateTypeEnum = (typeof WaitStateTypeEnum)[keyof typeof WaitStateTypeEnum];
 /**
@@ -4051,6 +4069,21 @@ export type SignalWaitStateDetails = BaseWaitStateDetails & {
      * The name of the signal being awaited.
      */
     signalName: string;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type ConditionWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The condition expression that must evaluate to true to proceed.
+     */
+    expression: string;
+    /**
+     * The variable events that trigger condition re-evaluation. Empty means all events.
+     */
+    events: Array<'create' | 'update'>;
     /**
      * The wait state type discriminator.
      */
@@ -6041,6 +6074,26 @@ export type JobChangeset = {
      * The new timeout for the job in milliseconds.
      */
     timeout?: number | null;
+    /**
+     * The new priority for the job. Higher values indicate higher priority.
+     */
+    priority?: number | null;
+};
+
+/**
+ * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
+ *
+ */
+export type JobBatchUpdateRequest = {
+    /**
+     * The job filter. At least one dimension must be set.
+     */
+    filter: JobFilter;
+    /**
+     * The fields to update. At least one field must be non-null.
+     */
+    changeset: JobChangeset;
+    operationReference?: OperationReference;
 };
 
 /**
@@ -6910,6 +6963,15 @@ export type MessageCorrelationRequest = {
      * the tenant for which the message is published
      */
     tenantId?: TenantId;
+    /**
+     * An optional business id used to enforce uniqueness of the process instance that a
+     * message start event would create. If provided and uniqueness enforcement is enabled,
+     * the engine rejects starting a new process instance when another root process instance
+     * with the same business id is already active for the same process definition. It has no
+     * effect when the message correlates to a catch, boundary, or intermediate event.
+     *
+     */
+    businessId?: BusinessId;
 };
 
 /**
@@ -6961,6 +7023,15 @@ export type MessagePublicationRequest = {
      * The tenant of the message sender.
      */
     tenantId?: TenantId;
+    /**
+     * An optional business id used to enforce uniqueness of the process instance that a
+     * message start event would create. If provided and uniqueness enforcement is enabled,
+     * the engine rejects starting a new process instance when another root process instance
+     * with the same business id is already active for the same process definition. It has no
+     * effect when the message correlates to a catch, boundary, or intermediate event.
+     *
+     */
+    businessId?: BusinessId;
 };
 
 /**
@@ -7167,6 +7238,16 @@ export type CorrelatedMessageSubscriptionSearchQueryResult = SearchQueryResponse
 
 export type CorrelatedMessageSubscriptionResult = {
     /**
+     * The business id associated with this correlated message subscription. For a message
+     * start event correlation, it is the business id carried by the correlating message that
+     * was stamped on the started process instance to enforce its uniqueness. For a catch,
+     * boundary, or intermediate event correlation, it is the business id of the subscribing
+     * process instance, captured when the subscription was opened. It is `null` when the
+     * relevant process instance has no business id.
+     *
+     */
+    businessId: BusinessId | null;
+    /**
      * The correlation key of the message.
      */
     correlationKey: string | null;
@@ -7240,7 +7321,7 @@ export type CorrelatedMessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'correlationKey' | 'correlationTime' | 'elementId' | 'elementInstanceKey' | 'messageKey' | 'messageName' | 'partitionId' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'subscriptionKey' | 'tenantId';
+    field: 'businessId' | 'correlationKey' | 'correlationTime' | 'elementId' | 'elementInstanceKey' | 'messageKey' | 'messageName' | 'partitionId' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'subscriptionKey' | 'tenantId';
     order?: SortOrderEnum;
 };
 
@@ -7276,6 +7357,14 @@ export type MessageSubscriptionTypeEnum = (typeof MessageSubscriptionTypeEnum)[k
  * Correlated message subscriptions search filter.
  */
 export type CorrelatedMessageSubscriptionFilter = {
+    /**
+     * Filter by the business id stored on the correlated message subscription — for message
+     * start event correlations the correlating message's business id, and for catch, boundary,
+     * or intermediate event correlations the subscribing process instance's business id.
+     * Supports advanced string filtering, including `$like` with `*`/`?` wildcards.
+     *
+     */
+    businessId?: StringFilterProperty;
     /**
      * The correlation key of the message.
      */
@@ -9328,7 +9417,7 @@ export type UserTaskSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'creationDate' | 'completionDate' | 'followUpDate' | 'dueDate' | 'priority' | 'name';
+    field: 'creationDate' | 'completionDate' | 'followUpDate' | 'dueDate' | 'priority' | 'name' | 'businessId';
     order?: SortOrderEnum;
 };
 
@@ -9358,6 +9447,11 @@ export type UserTaskFilter = {
      * The assignee of the user task.
      */
     assignee?: StringFilterProperty;
+    /**
+     * The business ID of the owning process instance the user task belongs to. This only works for user tasks created with 8.10 and onwards. Tasks from prior versions don't contain this data and cannot be found.
+     *
+     */
+    businessId?: StringFilterProperty;
     /**
      * The priority of the user task.
      */
@@ -9530,6 +9624,13 @@ export type UserTaskResult = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The business ID of the owning process instance, inherited when the user task was
+     * created. This is `null` for user tasks created before version 8.10, and for user tasks
+     * whose owning process instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
     /**
      * The key of the form.
      */
@@ -14291,6 +14392,44 @@ export type FailJobResponses = {
 
 export type FailJobResponse = FailJobResponses[keyof FailJobResponses];
 
+export type UpdateJobsBatchOperationData = {
+    body: JobBatchUpdateRequest;
+    path?: never;
+    query?: never;
+    url: '/jobs/batch-update';
+};
+
+export type UpdateJobsBatchOperationErrors = {
+    /**
+     * The job batch update operation failed. More details are provided in the response body.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type UpdateJobsBatchOperationError = UpdateJobsBatchOperationErrors[keyof UpdateJobsBatchOperationErrors];
+
+export type UpdateJobsBatchOperationResponses = {
+    /**
+     * The batch operation was created.
+     */
+    200: BatchOperationCreatedResult;
+};
+
+export type UpdateJobsBatchOperationResponse = UpdateJobsBatchOperationResponses[keyof UpdateJobsBatchOperationResponses];
+
 export type GetGlobalJobStatisticsData = {
     body?: never;
     path?: never;
@@ -18772,7 +18911,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:49625da077b57255a2b40d23f9df017147d77cd72a4b4f59b2dcb60b52f81934
+// specHash=sha256:9d03097114dc146e0d6358fa42ec4032548cf62b4b4af3e8bebc558c9188894e
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
