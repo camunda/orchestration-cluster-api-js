@@ -1,3 +1,11 @@
+# [10.0.0-alpha.13](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.12...v10.0.0-alpha.13) (2026-06-28)
+
+
+### Bug Fixes
+
+* **client:** make generated fetch client work on Deno and Bun ([9260000](https://github.com/camunda/orchestration-cluster-api-js/commit/92600004f344a41d7ea5a5158484a98a440c2be3))
+* **client:** sanitize SSE onRequest init and harden the compat hook ([12eff25](https://github.com/camunda/orchestration-cluster-api-js/commit/12eff25fadac6ce45ca28f2c469ccdeb878bf98d))
+
 # [10.0.0-alpha.12](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.11...v10.0.0-alpha.12) (2026-06-18)
 
 
