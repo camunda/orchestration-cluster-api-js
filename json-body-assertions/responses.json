@@ -1,10 +1,10 @@
 {
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
-    "commit": "73f51909c46db3ca58ebfe38038a53ccf0ae2d54",
-    "generatedAt": "2026-06-04T02:28:46.481Z",
+    "commit": "local",
+    "generatedAt": "2026-06-28T21:28:44.826Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "993c5f0583b61f0d486171aaebc45db58771759734629e2a3f810aa822d0fecf"
+    "specSha256": "28d509e1ed725540cbd22690efd0e87a7f668e0e69c5bfef59c2f67aa426ec02"
   },
   "responses": [
     {
@@ -392,6 +392,156 @@
       }
     },
     {
+      "path": "/agent-instances/{agentInstanceKey}/history",
+      "method": "POST",
+      "status": "201",
+      "schema": {
+        "required": [
+          {
+            "name": "historyItemKey",
+            "type": "string"
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/agent-instances/{agentInstanceKey}/history/search",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "agentInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "commitStatus",
+                  "type": "string",
+                  "enumValues": ["COMMITTED", "PENDING", "DISCARDED"]
+                },
+                {
+                  "name": "content",
+                  "type": "array<object|object|object>"
+                },
+                {
+                  "name": "elementInstanceKey",
+                  "type": "string"
+                },
+                {
+                  "name": "historyItemKey",
+                  "type": "string"
+                },
+                {
+                  "name": "iteration",
+                  "type": "number",
+                  "nullable": true
+                },
+                {
+                  "name": "jobKey",
+                  "type": "string"
+                },
+                {
+                  "name": "jobLease",
+                  "type": "string"
+                },
+                {
+                  "name": "metrics",
+                  "type": "0",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "durationMs",
+                        "type": "number"
+                      },
+                      {
+                        "name": "inputTokens",
+                        "type": "number"
+                      },
+                      {
+                        "name": "outputTokens",
+                        "type": "number"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "producedAt",
+                  "type": "string"
+                },
+                {
+                  "name": "role",
+                  "type": "string"
+                },
+                {
+                  "name": "toolCalls",
+                  "type": "array<items>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "arguments",
+                        "type": "object",
+                        "nullable": true
+                      },
+                      {
+                        "name": "elementId",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "toolCallId",
+                        "type": "string"
+                      },
+                      {
+                        "name": "toolName",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "endCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "hasMoreTotalItems",
+                  "type": "boolean"
+                },
+                {
+                  "name": "startCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "totalItems",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
       "path": "/audit-logs/search",
       "method": "POST",
       "status": "200",
@@ -504,6 +654,16 @@
                 },
                 {
                   "name": "formKey",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "inboundChannelToolName",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "inboundChannelType",
                   "type": "string",
                   "nullable": true
                 },
@@ -729,6 +889,16 @@
           },
           {
             "name": "formKey",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "inboundChannelToolName",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "inboundChannelType",
             "type": "string",
             "nullable": true
           },
@@ -1099,6 +1269,7 @@
                     "MIGRATE_PROCESS_INSTANCE",
                     "MODIFY_PROCESS_INSTANCE",
                     "RESOLVE_INCIDENT",
+                    "UPDATE_JOB",
                     "UPDATE_VARIABLE"
                   ],
                   "underlyingPrimitive": "string",
@@ -1198,6 +1369,7 @@
                     "MIGRATE_PROCESS_INSTANCE",
                     "MODIFY_PROCESS_INSTANCE",
                     "RESOLVE_INCIDENT",
+                    "UPDATE_JOB",
                     "UPDATE_VARIABLE"
                   ],
                   "underlyingPrimitive": "string",
@@ -1329,6 +1501,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ],
             "underlyingPrimitive": "string",
@@ -1678,6 +1851,11 @@
             "type": "array<object>",
             "children": {
               "required": [
+                {
+                  "name": "businessId",
+                  "type": "string",
+                  "nullable": true
+                },
                 {
                   "name": "correlationKey",
                   "type": "string",
@@ -2078,6 +2256,11 @@
             "children": {
               "required": [
                 {
+                  "name": "businessId",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
                   "name": "decisionDefinitionId",
                   "type": "string"
                 },
@@ -2196,6 +2379,11 @@
       "status": "200",
       "schema": {
         "required": [
+          {
+            "name": "businessId",
+            "type": "string",
+            "nullable": true
+          },
           {
             "name": "decisionDefinitionId",
             "type": "string"
@@ -2370,6 +2558,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -2978,6 +3167,14 @@
             "children": {
               "required": [
                 {
+                  "name": "bpmnProcessId",
+                  "type": "string"
+                },
+                {
+                  "name": "details",
+                  "type": "unknown"
+                },
+                {
                   "name": "elementId",
                   "type": "string"
                 },
@@ -3019,57 +3216,6 @@
                   ]
                 },
                 {
-                  "name": "jobDetails",
-                  "type": "object",
-                  "nullable": true,
-                  "children": {
-                    "required": [
-                      {
-                        "name": "jobKey",
-                        "type": "string"
-                      },
-                      {
-                        "name": "jobKind",
-                        "type": "string"
-                      },
-                      {
-                        "name": "jobType",
-                        "type": "string"
-                      },
-                      {
-                        "name": "listenerEventType",
-                        "type": "string",
-                        "nullable": true
-                      },
-                      {
-                        "name": "retries",
-                        "type": "number",
-                        "nullable": true
-                      }
-                    ],
-                    "optional": []
-                  }
-                },
-                {
-                  "name": "messageDetails",
-                  "type": "object",
-                  "nullable": true,
-                  "children": {
-                    "required": [
-                      {
-                        "name": "correlationKey",
-                        "type": "string",
-                        "nullable": true
-                      },
-                      {
-                        "name": "messageName",
-                        "type": "string"
-                      }
-                    ],
-                    "optional": []
-                  }
-                },
-                {
                   "name": "processInstanceKey",
                   "type": "string"
                 },
@@ -3081,11 +3227,6 @@
                 {
                   "name": "tenantId",
                   "type": "string"
-                },
-                {
-                  "name": "waitStateType",
-                  "type": "string",
-                  "enumValues": ["JOB", "MESSAGE"]
                 }
               ],
               "optional": []
@@ -4742,6 +4883,7 @@
                     "ERROR_THROWN",
                     "FAILED",
                     "MIGRATED",
+                    "PRIORITY_UPDATED",
                     "RETRIES_UPDATED",
                     "TIMED_OUT"
                   ]
@@ -4791,6 +4933,37 @@
               ],
               "optional": []
             }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/jobs/batch-update",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "batchOperationKey",
+            "type": "string"
+          },
+          {
+            "name": "batchOperationType",
+            "type": "string",
+            "enumValues": [
+              "ADD_VARIABLE",
+              "CANCEL_PROCESS_INSTANCE",
+              "DELETE_DECISION_DEFINITION",
+              "DELETE_DECISION_INSTANCE",
+              "DELETE_PROCESS_DEFINITION",
+              "DELETE_PROCESS_INSTANCE",
+              "MIGRATE_PROCESS_INSTANCE",
+              "MODIFY_PROCESS_INSTANCE",
+              "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
+              "UPDATE_VARIABLE"
+            ]
           }
         ],
         "optional": []
@@ -6065,6 +6238,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -6095,6 +6269,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -6125,6 +6300,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -6155,6 +6331,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -6185,6 +6362,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -6432,6 +6610,7 @@
               "MIGRATE_PROCESS_INSTANCE",
               "MODIFY_PROCESS_INSTANCE",
               "RESOLVE_INCIDENT",
+              "UPDATE_JOB",
               "UPDATE_VARIABLE"
             ]
           }
@@ -6792,6 +6971,7 @@
                     "MIGRATE_PROCESS_INSTANCE",
                     "MODIFY_PROCESS_INSTANCE",
                     "RESOLVE_INCIDENT",
+                    "UPDATE_JOB",
                     "UPDATE_VARIABLE"
                   ]
                 }
@@ -7961,6 +8141,11 @@
                   "nullable": true
                 },
                 {
+                  "name": "businessId",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
                   "name": "candidateGroups",
                   "type": "array<string>"
                 },
@@ -8118,6 +8303,11 @@
         "required": [
           {
             "name": "assignee",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "businessId",
             "type": "string",
             "nullable": true
           },
@@ -8353,6 +8543,16 @@
                 },
                 {
                   "name": "formKey",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "inboundChannelToolName",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "inboundChannelType",
                   "type": "string",
                   "nullable": true
                 },

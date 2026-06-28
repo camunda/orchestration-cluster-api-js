@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 193
+// Operations: 194
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -1152,6 +1152,9 @@ type updateJobOptions = Parameters<typeof Sdk.updateJob>[0];
 type updateJobBody = (NonNullable<updateJobOptions> extends { body?: infer B } ? B : never);
 type updateJobPathParam_jobKey = (NonNullable<updateJobOptions> extends { path: { jobKey: infer P } } ? P : any);
 export type updateJobInput = updateJobBody & { jobKey: updateJobPathParam_jobKey };
+type updateJobsBatchOperationOptions = Parameters<typeof Sdk.updateJobsBatchOperation>[0];
+type updateJobsBatchOperationBody = (NonNullable<updateJobsBatchOperationOptions> extends { body?: infer B } ? B : never);
+export type updateJobsBatchOperationInput = updateJobsBatchOperationBody;
 type updateMappingRuleOptions = Parameters<typeof Sdk.updateMappingRule>[0];
 type updateMappingRuleBody = (NonNullable<updateMappingRuleOptions> extends { body?: infer B } ? B : never);
 type updateMappingRulePathParam_mappingRuleId = (NonNullable<updateMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
@@ -16420,6 +16423,85 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'updateJob', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Update jobs (batch)
+   *
+   * Creates a batch operation to update jobs matching the given filter. At least one changeset field must be non-null. This is done asynchronously; the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+   *
+    *
+   * @example Update jobs in batch
+   * ```ts
+   * async function updateJobsBatchOperationExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.updateJobsBatchOperation({
+   *     filter: {
+   *       type: 'payment-processing',
+   *       hasFailedWithRetriesLeft: false,
+   *     },
+   *     changeset: {
+   *       retries: 3,
+   *     },
+   *   });
+   * 
+   *   console.log(`Batch operation key: ${result.batchOperationKey}`);
+   * }
+   * ```
+   * @operationId updateJobsBatchOperation
+   * @tags Job
+   */
+  updateJobsBatchOperation(input: updateJobsBatchOperationInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.updateJobsBatchOperation>>;
+  updateJobsBatchOperation(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('updateJobsBatchOperation', _schemas.zUpdateJobsBatchOperationData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.updateJobsBatchOperation(opts);
+        let data = this._evaluateResponse(_raw, 'updateJobsBatchOperation', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zUpdateJobsBatchOperationResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zUpdateJobsBatchOperationResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('updateJobsBatchOperation', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'updateJobsBatchOperation', exempt: false, retryOverride: options?.retry });
     });
   }
 
