@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitTypeAll(chore)"
+  ],
+  "semanticCommits": "enabled",
+  "baseBranchPatterns": ["main", "stable/8", "stable/9"],
+  "rebaseWhen": "behind-base-branch",
+  "packageRules": [
+    {
+      "description": "stable branches are maintenance branches: patch updates only.",
+      "matchBaseBranches": ["stable/8", "stable/9"],
+      "matchUpdateTypes": ["major", "minor", "pin", "digest", "pinDigest", "rollback", "replacement"],
+      "enabled": false
+    },
+    {
+      "description": "Dependabot only updated GitHub Actions on main; keep that behavior on stable branches.",
+      "matchManagers": ["github-actions"],
+      "matchBaseBranches": ["stable/8", "stable/9"],
+      "enabled": false
+    },
+    {
+      "description": "Auto-merge minor updates once CI is green.",
+      "matchUpdateTypes": ["minor"],
+      "automerge": true
+    }
+  ],
+  "vulnerabilityAlerts": { "enabled": false }
+}
