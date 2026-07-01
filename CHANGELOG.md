@@ -1,3 +1,10 @@
+# [10.0.0-alpha.14](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.13...v10.0.0-alpha.14) (2026-07-01)
+
+
+### Features
+
+* add example coverage for getProcessInstanceWaitStateStatistics ([9fa53ca](https://github.com/camunda/orchestration-cluster-api-js/commit/9fa53ca512a266ed29b23ceec6ccc9199240e4c8)), closes [camunda/orchestration-cluster-api-js#300](https://github.com/camunda/orchestration-cluster-api-js/issues/300)
+
 # [10.0.0-alpha.13](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.12...v10.0.0-alpha.13) (2026-06-28)
 
 
