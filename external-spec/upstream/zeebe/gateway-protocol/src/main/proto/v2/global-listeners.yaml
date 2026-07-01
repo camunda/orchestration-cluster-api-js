@@ -7,8 +7,6 @@ paths:
       tags:
         - Global listener
       operationId: createGlobalTaskListener
-      x-required-permissions:
-        - { resourceType: GLOBAL_LISTENER, permissionType: CREATE_TASK_LISTENER }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -55,8 +53,6 @@ paths:
       tags:
         - Global listener
       operationId: getGlobalTaskListener
-      x-required-permissions:
-        - { resourceType: GLOBAL_LISTENER, permissionType: READ_TASK_LISTENER }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -99,8 +95,6 @@ paths:
       tags:
         - Global listener
       operationId: updateGlobalTaskListener
-      x-required-permissions:
-        - { resourceType: GLOBAL_LISTENER, permissionType: UPDATE_TASK_LISTENER }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -153,8 +147,6 @@ paths:
       tags:
         - Global listener
       operationId: deleteGlobalTaskListener
-      x-required-permissions:
-        - { resourceType: GLOBAL_LISTENER, permissionType: DELETE_TASK_LISTENER }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -198,9 +190,6 @@ paths:
       tags:
         - Global listener
       operationId: searchGlobalTaskListeners
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: GLOBAL_LISTENER, permissionType: READ_TASK_LISTENER }
       security:
         - bearerAuth: []
         - basicAuth: []

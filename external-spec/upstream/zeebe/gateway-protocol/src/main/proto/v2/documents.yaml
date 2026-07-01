@@ -7,8 +7,6 @@ paths:
       tags:
         - Document
       operationId: createDocument
-      x-required-permissions:
-        - { resourceType: DOCUMENT, permissionType: CREATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -69,8 +67,6 @@ paths:
       tags:
         - Document
       operationId: createDocuments
-      x-required-permissions:
-        - { resourceType: DOCUMENT, permissionType: CREATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -157,8 +153,6 @@ paths:
       tags:
         - Document
       operationId: getDocument
-      x-required-permissions:
-        - { resourceType: DOCUMENT, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -212,8 +206,6 @@ paths:
       tags:
         - Document
       operationId: deleteDocument
-      x-required-permissions:
-        - { resourceType: DOCUMENT, permissionType: DELETE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -254,8 +246,6 @@ paths:
       tags:
         - Document
       operationId: createDocumentLink
-      x-required-permissions:
-        - { resourceType: DOCUMENT, permissionType: CREATE }
       security:
         - bearerAuth: []
         - basicAuth: []

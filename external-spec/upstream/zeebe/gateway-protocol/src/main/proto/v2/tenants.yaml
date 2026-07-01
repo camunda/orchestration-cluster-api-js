@@ -7,8 +7,6 @@ paths:
       tags:
         - Tenant
       operationId: createTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: CREATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -59,9 +57,6 @@ paths:
       tags:
         - Tenant
       operationId: searchTenants
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -102,8 +97,6 @@ paths:
       tags:
         - Tenant
       operationId: getTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -148,8 +141,6 @@ paths:
       tags:
         - Tenant
       operationId: updateTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -200,8 +191,6 @@ paths:
       tags:
         - Tenant
       operationId: deleteTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: DELETE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -243,8 +232,6 @@ paths:
       tags:
         - Tenant
       operationId: assignUserToTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -293,8 +280,6 @@ paths:
       tags:
         - Tenant
       operationId: unassignUserFromTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -345,9 +330,6 @@ paths:
       tags:
         - Tenant
       operationId: searchUsersForTenant
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -385,8 +367,6 @@ paths:
       tags:
         - Tenant
       operationId: assignClientToTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -437,8 +417,6 @@ paths:
       tags:
         - Tenant
       operationId: unassignClientFromTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -489,9 +467,6 @@ paths:
       tags:
         - Tenant
       operationId: searchClientsForTenant
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -529,8 +504,6 @@ paths:
       tags:
         - Tenant
       operationId: assignGroupToTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -587,8 +560,6 @@ paths:
       tags:
         - Tenant
       operationId: unassignGroupFromTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -639,9 +610,6 @@ paths:
       tags:
         - Tenant
       operationId: searchGroupIdsForTenant
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -679,9 +647,6 @@ paths:
       tags:
         - Tenant
       operationId: searchRolesForTenant
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -719,8 +684,6 @@ paths:
       tags:
         - Tenant
       operationId: assignRoleToTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -771,8 +734,6 @@ paths:
       tags:
         - Tenant
       operationId: unassignRoleFromTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -824,8 +785,6 @@ paths:
       tags:
         - Tenant
       operationId: assignMappingRuleToTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -874,8 +833,6 @@ paths:
       tags:
         - Tenant
       operationId: unassignMappingRuleFromTenant
-      x-required-permissions:
-        - { resourceType: TENANT, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -924,9 +881,6 @@ paths:
       tags:
         - Tenant
       operationId: searchMappingRulesForTenant
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: MAPPING_RULE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []

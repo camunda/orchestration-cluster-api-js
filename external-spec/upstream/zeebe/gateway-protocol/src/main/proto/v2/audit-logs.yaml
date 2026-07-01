@@ -6,9 +6,6 @@ paths:
       tags:
         - Audit Log
       operationId: searchAuditLogs
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: AUDIT_LOG, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -43,8 +40,6 @@ paths:
       tags:
         - Audit Log
       operationId: getAuditLog
-      x-required-permissions:
-        - { resourceType: AUDIT_LOG, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []

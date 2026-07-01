@@ -7,9 +7,6 @@ paths:
       tags:
         - Decision requirements
       operationId: searchDecisionRequirements
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: DECISION_REQUIREMENTS_DEFINITION, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -44,8 +41,6 @@ paths:
       tags:
         - Decision requirements
       operationId: getDecisionRequirements
-      x-required-permissions:
-        - { resourceType: DECISION_REQUIREMENTS_DEFINITION, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -89,8 +84,6 @@ paths:
       tags:
         - Decision requirements
       operationId: getDecisionRequirementsXML
-      x-required-permissions:
-        - { resourceType: DECISION_REQUIREMENTS_DEFINITION, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []

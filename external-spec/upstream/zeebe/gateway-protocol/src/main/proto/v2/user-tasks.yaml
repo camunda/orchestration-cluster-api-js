@@ -7,12 +7,6 @@ paths:
       tags:
         - User task
       operationId: completeUserTask
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
-            - { resourceType: PROCESS_DEFINITION, permissionType: COMPLETE_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: UPDATE }
-            - { resourceType: USER_TASK, permissionType: COMPLETE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -68,10 +62,6 @@ paths:
       tags:
         - User task
       operationId: assignUserTask
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -128,10 +118,6 @@ paths:
       tags:
         - User task
       operationId: getUserTask
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -172,10 +158,6 @@ paths:
       tags:
         - User task
       operationId: updateUserTask
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -231,10 +213,6 @@ paths:
       tags:
         - User task
       operationId: getUserTaskForm
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -280,10 +258,6 @@ paths:
       tags:
         - User task
       operationId: unassignUserTask
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -334,11 +308,6 @@ paths:
       tags:
         - User task
       operationId: searchUserTasks
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -373,8 +342,6 @@ paths:
       tags:
         - User task
       operationId: searchUserTaskVariables
-      x-required-permissions:
-        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -425,8 +392,6 @@ paths:
       tags:
         - User task
       operationId: searchUserTaskEffectiveVariables
-      x-required-permissions:
-        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -476,10 +441,6 @@ paths:
       tags:
         - User task
       operationId: searchUserTaskAuditLogs
-      x-required-permissions:
-        - anyOf:
-            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
-            - { resourceType: USER_TASK, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []

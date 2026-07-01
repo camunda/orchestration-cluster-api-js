@@ -7,8 +7,6 @@ paths:
       tags:
         - Role
       operationId: createRole
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: CREATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -54,9 +52,6 @@ paths:
       tags:
         - Role
       operationId: searchRoles
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -91,8 +86,6 @@ paths:
       tags:
         - Role
       operationId: getRole
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -135,8 +128,6 @@ paths:
       tags:
         - Role
       operationId: updateRole
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -187,8 +178,6 @@ paths:
       tags:
         - Role
       operationId: deleteRole
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: DELETE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -228,8 +217,6 @@ paths:
       tags:
         - Role
       operationId: assignRoleToUser
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -284,8 +271,6 @@ paths:
       tags:
         - Role
       operationId: unassignRoleFromUser
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -334,9 +319,6 @@ paths:
       tags:
         - Role
       operationId: searchUsersForRole
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -388,8 +370,6 @@ paths:
       tags:
         - Role
       operationId: assignRoleToClient
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -444,8 +424,6 @@ paths:
       tags:
         - Role
       operationId: unassignRoleFromClient
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -494,9 +472,6 @@ paths:
       tags:
         - Role
       operationId: searchClientsForRole
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -548,8 +523,6 @@ paths:
       tags:
         - Role
       operationId: assignRoleToGroup
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -610,8 +583,6 @@ paths:
       tags:
         - Role
       operationId: unassignRoleFromGroup
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -660,9 +631,6 @@ paths:
       tags:
         - Role
       operationId: searchGroupsForRole
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -714,8 +682,6 @@ paths:
       tags:
         - Role
       operationId: assignRoleToMappingRule
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -770,8 +736,6 @@ paths:
       tags:
         - Role
       operationId: unassignRoleFromMappingRule
-      x-required-permissions:
-        - { resourceType: ROLE, permissionType: UPDATE }
       security:
         - bearerAuth: []
         - basicAuth: []
@@ -820,9 +784,6 @@ paths:
       tags:
         - Role
       operationId: searchMappingRulesForRole
-      x-permission-enforcement: filter
-      x-required-permissions:
-        - { resourceType: MAPPING_RULE, permissionType: READ }
       security:
         - bearerAuth: []
         - basicAuth: []

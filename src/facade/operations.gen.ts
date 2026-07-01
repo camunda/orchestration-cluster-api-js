@@ -3852,7 +3852,9 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
   *
  * @example Get process instance wait state statistics
  * ```ts
- * async function getProcessInstanceWaitStateStatisticsExample(processInstanceKey: ProcessInstanceKey) {
+ * async function getProcessInstanceWaitStateStatisticsExample(
+ *   processInstanceKey: ProcessInstanceKey
+ * ) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.getProcessInstanceWaitStateStatistics(
