@@ -3030,6 +3030,10 @@ export const zActivatedJobResult = z.object({
         zProcessInstanceKey,
         z.null()
     ]),
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     priority: z.int().register(z.globalRegistry, {
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
     })
@@ -3090,6 +3094,10 @@ export const zJobSearchResult = z.object({
     processInstanceKey: zProcessInstanceKey,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
+        z.null()
+    ]),
+    businessId: z.union([
+        zBusinessId,
         z.null()
     ]),
     retries: z.int().register(z.globalRegistry, {
@@ -4842,6 +4850,29 @@ export const zProcessInstanceElementStatisticsQueryResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Process instance element statistics query response.'
+});
+
+/**
+ * Process instance wait state statistics response item.
+ */
+export const zProcessInstanceWaitStateStatisticsResult = z.object({
+    elementId: zElementId,
+    waitingCount: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'The total number of waiting instances of the element.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process instance wait state statistics response item.'
+});
+
+/**
+ * Process instance wait state statistics query response.
+ */
+export const zProcessInstanceWaitStateStatisticsQueryResult = z.object({
+    items: z.array(zProcessInstanceWaitStateStatisticsResult).register(z.globalRegistry, {
+        description: 'The wait state statistics.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process instance wait state statistics query response.'
 });
 
 /**
@@ -10296,6 +10327,19 @@ export const zGetProcessInstanceStatisticsData = z.object({
  * The process instance statistics result.
  */
 export const zGetProcessInstanceStatisticsResponse = zProcessInstanceElementStatisticsQueryResult;
+
+export const zGetProcessInstanceWaitStateStatisticsData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance wait state statistics result.
+ */
+export const zGetProcessInstanceWaitStateStatisticsResponse = zProcessInstanceWaitStateStatisticsQueryResult;
 
 export const zSearchResourcesData = z.object({
     body: z.optional(zResourceSearchQuery),

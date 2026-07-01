@@ -5610,6 +5610,13 @@ export type ActivatedJobResult = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
+     * The business ID of the owning process instance, inherited when the job was created.
+     * This is `null` for jobs created before version 8.10 and for jobs whose owning process
+     * instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
+    /**
      * The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.
      *
      */
@@ -5863,6 +5870,13 @@ export type JobSearchResult = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The business ID of the owning process instance, inherited when the job was created.
+     * This is `null` for jobs created before version 8.10 and for jobs whose owning process
+     * instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
     /**
      * The amount of retries left to this job.
      */
@@ -8445,6 +8459,30 @@ export type ProcessInstanceElementStatisticsQueryResult = {
      * The element statistics.
      */
     items: Array<ProcessElementStatisticsResult>;
+};
+
+/**
+ * Process instance wait state statistics query response.
+ */
+export type ProcessInstanceWaitStateStatisticsQueryResult = {
+    /**
+     * The wait state statistics.
+     */
+    items: Array<ProcessInstanceWaitStateStatisticsResult>;
+};
+
+/**
+ * Process instance wait state statistics response item.
+ */
+export type ProcessInstanceWaitStateStatisticsResult = {
+    /**
+     * The element id for which the wait states are aggregated.
+     */
+    elementId: ElementId;
+    /**
+     * The total number of waiting instances of the element.
+     */
+    waitingCount: number;
 };
 
 /**
@@ -16056,6 +16094,48 @@ export type GetProcessInstanceStatisticsResponses = {
 
 export type GetProcessInstanceStatisticsResponse = GetProcessInstanceStatisticsResponses[keyof GetProcessInstanceStatisticsResponses];
 
+export type GetProcessInstanceWaitStateStatisticsData = {
+    body?: never;
+    path: {
+        /**
+         * The assigned key of the process instance, which acts as a unique identifier for this process instance.
+         */
+        processInstanceKey: ProcessInstanceKey;
+    };
+    query?: never;
+    url: '/process-instances/{processInstanceKey}/statistics/wait-states';
+};
+
+export type GetProcessInstanceWaitStateStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetProcessInstanceWaitStateStatisticsError = GetProcessInstanceWaitStateStatisticsErrors[keyof GetProcessInstanceWaitStateStatisticsErrors];
+
+export type GetProcessInstanceWaitStateStatisticsResponses = {
+    /**
+     * The process instance wait state statistics result.
+     */
+    200: ProcessInstanceWaitStateStatisticsQueryResult;
+};
+
+export type GetProcessInstanceWaitStateStatisticsResponse = GetProcessInstanceWaitStateStatisticsResponses[keyof GetProcessInstanceWaitStateStatisticsResponses];
+
 export type SearchResourcesData = {
     body?: ResourceSearchQuery;
     path?: never;
@@ -18911,7 +18991,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:9d03097114dc146e0d6358fa42ec4032548cf62b4b4af3e8bebc558c9188894e
+// specHash=sha256:73ad42fb782f5c72dd84bdc40ef81313976c3f4083436c18c7019e7e0a3295cc
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
