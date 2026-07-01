@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 194
+// Operations: 195
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -543,6 +543,14 @@ export type getProcessInstanceStatisticsByErrorInput = getProcessInstanceStatist
 export type getProcessInstanceStatisticsByErrorConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceStatisticsByError>> 
+};
+type getProcessInstanceWaitStateStatisticsOptions = Parameters<typeof Sdk.getProcessInstanceWaitStateStatistics>[0];
+type getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey = (NonNullable<getProcessInstanceWaitStateStatisticsOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
+export type getProcessInstanceWaitStateStatisticsInput = { processInstanceKey: getProcessInstanceWaitStateStatisticsPathParam_processInstanceKey };
+/** Management of eventual consistency **/
+export type getProcessInstanceWaitStateStatisticsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getProcessInstanceWaitStateStatistics>> 
 };
 type getResourceOptions = Parameters<typeof Sdk.getResource>[0];
 type getResourcePathParam_resourceKey = (NonNullable<getResourceOptions> extends { path: { resourceKey: infer P } } ? P : any);
@@ -9047,6 +9055,86 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Get wait state statistics
+   *
+   * Get statistics about waiting element instances by the process instance key, grouped by element id.
+    *
+   * @example Get process instance wait state statistics
+   * ```ts
+   * async function getProcessInstanceWaitStateStatisticsExample(processInstanceKey: ProcessInstanceKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.getProcessInstanceWaitStateStatistics(
+   *     { processInstanceKey },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const stat of result.items ?? []) {
+   *     console.log(`Element ${stat.elementId}: waiting=${stat.waitingCount}`);
+   *   }
+   * }
+   * ```
+   * @operationId getProcessInstanceWaitStateStatistics
+   * @tags Process instance
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getProcessInstanceWaitStateStatistics(input: getProcessInstanceWaitStateStatisticsInput, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceWaitStateStatisticsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getProcessInstanceWaitStateStatistics>>;
+  getProcessInstanceWaitStateStatistics(arg: any, /** Management of eventual consistency **/ consistencyManagement: getProcessInstanceWaitStateStatisticsConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { processInstanceKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { processInstanceKey };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        const maybe = await this._validation.gateRequest('getProcessInstanceWaitStateStatistics', _schemas.zGetProcessInstanceWaitStateStatisticsData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getProcessInstanceWaitStateStatistics(opts);
+        let data = this._evaluateResponse(_raw, 'getProcessInstanceWaitStateStatistics', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetProcessInstanceWaitStateStatisticsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetProcessInstanceWaitStateStatisticsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getProcessInstanceWaitStateStatistics', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getProcessInstanceWaitStateStatistics', true, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }

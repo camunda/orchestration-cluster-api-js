@@ -1,6 +1,6 @@
 {
-  "operations": 194,
-  "tests": 196,
+  "operations": 195,
+  "tests": 197,
   "missing": [],
   "ignored": [],
   "files": [
@@ -100,6 +100,7 @@
     "getProcessInstanceStatistics.test.ts",
     "getProcessInstanceStatisticsByDefinition.test.ts",
     "getProcessInstanceStatisticsByError.test.ts",
+    "getProcessInstanceWaitStateStatistics.test.ts",
     "getResource.test.ts",
     "getResourceContent.test.ts",
     "getResourceContentBinary.test.ts",

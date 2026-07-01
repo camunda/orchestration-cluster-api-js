@@ -2,9 +2,9 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-06-28T21:50:06.253Z",
+    "generatedAt": "2026-07-01T21:49:54.787Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "28d509e1ed725540cbd22690efd0e87a7f668e0e69c5bfef59c2f67aa426ec02"
+    "specSha256": "3c5e0f1a8a89c7ffdd945528b1fee43a8c4d124747ecd32ac99aadd3fb34cd5a"
   },
   "responses": [
     {
@@ -4585,6 +4585,11 @@
             "children": {
               "required": [
                 {
+                  "name": "businessId",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
                   "name": "customHeaders",
                   "type": "object"
                 },
@@ -4761,6 +4766,11 @@
             "type": "array<object>",
             "children": {
               "required": [
+                {
+                  "name": "businessId",
+                  "type": "string",
+                  "nullable": true
+                },
                 {
                   "name": "creationTime",
                   "type": "string",
@@ -6817,6 +6827,33 @@
                 },
                 {
                   "name": "incidents",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/process-instances/{processInstanceKey}/statistics/wait-states",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "elementId",
+                  "type": "string"
+                },
+                {
+                  "name": "waitingCount",
                   "type": "number"
                 }
               ],
