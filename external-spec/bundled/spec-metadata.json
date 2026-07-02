@@ -10654,6 +10654,7 @@
       "requestBodyContentTypes": [
         "application/json"
       ],
+      "requestBodySchemaRef": "UserTaskEffectiveVariableSearchQueryRequest",
       "successResponseSchemaRef": "VariableSearchQueryResult",
       "successStatus": 200,
       "vendorExtensions": {

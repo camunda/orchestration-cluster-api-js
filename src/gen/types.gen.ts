@@ -18756,24 +18756,7 @@ export type CompleteUserTaskResponses = {
 export type CompleteUserTaskResponse = CompleteUserTaskResponses[keyof CompleteUserTaskResponses];
 
 export type SearchUserTaskEffectiveVariablesData = {
-    /**
-     * User task effective variable search query request. Uses offset-based pagination only.
-     *
-     */
-    body?: {
-        /**
-         * Pagination parameters.
-         */
-        page?: OffsetPagination;
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<UserTaskVariableSearchQuerySortRequest>;
-        /**
-         * The user task variable search filters.
-         */
-        filter?: UserTaskVariableFilter;
-    };
+    body?: UserTaskEffectiveVariableSearchQueryRequest;
     path: {
         /**
          * The key of the user task.

@@ -11179,15 +11179,7 @@ export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
 });
 
 export const zSearchUserTaskEffectiveVariablesData = z.object({
-    body: z.optional(z.object({
-        page: z.optional(zOffsetPagination),
-        sort: z.optional(z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        })),
-        filter: z.optional(zUserTaskVariableFilter)
-    }).register(z.globalRegistry, {
-        description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
-    })),
+    body: z.optional(zUserTaskEffectiveVariableSearchQueryRequest),
     path: z.object({
         userTaskKey: zUserTaskKey
     }),

@@ -14577,34 +14577,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "description": "User task effective variable search query request. Uses offset-based pagination only.\n",
-                "additionalProperties": false,
-                "type": "object",
-                "properties": {
-                  "page": {
-                    "description": "Pagination parameters.",
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/OffsetPagination"
-                      }
-                    ]
-                  },
-                  "sort": {
-                    "description": "Sort field criteria.",
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1variables~1search/post/requestBody/content/application~1json/schema/properties/sort/items"
-                    }
-                  },
-                  "filter": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/UserTaskVariableFilter"
-                      }
-                    ],
-                    "description": "The user task variable search filters."
-                  }
-                }
+                "$ref": "#/components/schemas/UserTaskEffectiveVariableSearchQueryRequest"
               }
             }
           }

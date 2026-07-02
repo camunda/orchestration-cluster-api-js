@@ -1,9 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":semanticCommitTypeAll(chore)"
-  ],
+  "extends": ["config:recommended", ":semanticCommitTypeAll(chore)"],
   "semanticCommits": "enabled",
   "baseBranchPatterns": ["main", "stable/8", "stable/9"],
   "rebaseWhen": "behind-base-branch",
@@ -11,7 +8,15 @@
     {
       "description": "stable branches are maintenance branches: patch updates only.",
       "matchBaseBranches": ["stable/8", "stable/9"],
-      "matchUpdateTypes": ["major", "minor", "pin", "digest", "pinDigest", "rollback", "replacement"],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "pin",
+        "digest",
+        "pinDigest",
+        "rollback",
+        "replacement"
+      ],
       "enabled": false
     },
     {
