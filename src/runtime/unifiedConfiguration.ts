@@ -702,7 +702,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
           : undefined,
     },
     validation: { req: validation.req, res: validation.res, raw: validation.raw },
-    logLevel: (rawMap.CAMUNDA_SDK_LOG_LEVEL as CamundaConfig['logLevel']) || 'error',
+    logLevel: (rawMap.CAMUNDA_SDK_LOG_LEVEL as CamundaConfig['logLevel']) || 'info',
     eventual: {
       pollDefaultMs: parseInt(rawMap.CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS || '500', 10),
     },
