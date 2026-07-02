@@ -1,3 +1,10 @@
+# [10.0.0-alpha.15](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.14...v10.0.0-alpha.15) (2026-07-02)
+
+
+### Bug Fixes
+
+* change default CAMUNDA_SDK_LOG_LEVEL from 'error' to 'info' ([839b7ab](https://github.com/camunda/orchestration-cluster-api-js/commit/839b7abb95fee0e7802980802aa1117b2473486c)), closes [#274](https://github.com/camunda/orchestration-cluster-api-js/issues/274)
+
 # [10.0.0-alpha.14](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.13...v10.0.0-alpha.14) (2026-07-01)
 
 
