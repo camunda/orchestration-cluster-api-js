@@ -20,7 +20,7 @@ and threads cache loaded handlers by module path.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">ThreadedJobWorker</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-signature-keyword">get</span> <a class="tsd-kind-get-signature" href="#activejobsactivejobs">activeJobs</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-keyword">get</span> <a class="tsd-kind-get-signature" href="#busythreadsbusythreads">busyThreads</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-keyword">get</span> <a class="tsd-kind-get-signature" href="#namename">name</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-keyword">get</span> <a class="tsd-kind-get-signature" href="#poolsizepoolsize">poolSize</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-keyword">get</span> <a class="tsd-kind-get-signature" href="#readyready">ready</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-signature-keyword">get</span> <a class="tsd-kind-get-signature" href="#stoppedstopped">stopped</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#start-1">start</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#stop-1">stop</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#stopgracefully-1">stopGracefully</a><span class="tsd-signature-symbol">(</span><br/>        <span class="tsd-kind-parameter">opts</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">checkIntervalMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">waitUpToMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">remainingJobs</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">timedOut</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L106">runtime/threadedJobWorker.ts:106</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L106">runtime/threadedJobWorker.ts:106</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -52,7 +52,7 @@ and threads cache loaded handlers by module path.</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L145">runtime/threadedJobWorker.ts:145</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L145">runtime/threadedJobWorker.ts:145</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="busythreads"><span>busy<wbr/>Threads</span><a href="#busythreads" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -63,7 +63,7 @@ and threads cache loaded handlers by module path.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L156">runtime/threadedJobWorker.ts:156</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L156">runtime/threadedJobWorker.ts:156</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="name"><span>name</span><a href="#name" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -72,7 +72,7 @@ and threads cache loaded handlers by module path.</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L142">runtime/threadedJobWorker.ts:142</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L142">runtime/threadedJobWorker.ts:142</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="poolsize"><span>pool<wbr/>Size</span><a href="#poolsize" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -83,7 +83,7 @@ and threads cache loaded handlers by module path.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L152">runtime/threadedJobWorker.ts:152</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L152">runtime/threadedJobWorker.ts:152</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="ready"><span>ready</span><a href="#ready" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -94,7 +94,7 @@ and threads cache loaded handlers by module path.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L160">runtime/threadedJobWorker.ts:160</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L160">runtime/threadedJobWorker.ts:160</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="stopped"><span>stopped</span><a href="#stopped" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -103,7 +103,7 @@ and threads cache loaded handlers by module path.</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L148">runtime/threadedJobWorker.ts:148</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L148">runtime/threadedJobWorker.ts:148</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -115,7 +115,7 @@ and threads cache loaded handlers by module path.</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L164">runtime/threadedJobWorker.ts:164</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L164">runtime/threadedJobWorker.ts:164</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="stop"><span>stop</span><a href="#stop" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -124,7 +124,7 @@ and threads cache loaded handlers by module path.</p>
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L178">runtime/threadedJobWorker.ts:178</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L178">runtime/threadedJobWorker.ts:178</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="stopgracefully"><span>stop<wbr/>Gracefully</span><a href="#stopgracefully" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -137,7 +137,7 @@ and threads cache loaded handlers by module path.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">opts</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">checkIntervalMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">waitUpToMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">remainingJobs</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">timedOut</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/runtime/threadedJobWorker.ts#L192">runtime/threadedJobWorker.ts:192</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/runtime/threadedJobWorker.ts#L192">runtime/threadedJobWorker.ts:192</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

@@ -13,7 +13,7 @@
 <h1>Type Alias JobActivationRequest</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">JobActivationRequest</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#fetchvariable">fetchVariable</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#maxjobstoactivate">maxJobsToActivate</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#requesttimeout">requestTimeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#tenantfilter">tenantFilter</a><span class="tsd-signature-symbol">?:</span> <a href="index.TenantFilterEnum.html" class="tsd-signature-type tsd-kind-type-alias">TenantFilterEnum</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#tenantids">tenantIds</a><span class="tsd-signature-symbol">?:</span> <a href="index.TenantId.html" class="tsd-signature-type tsd-kind-type-alias">TenantId</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#timeout">timeout</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#type">type</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#worker">worker</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5487">gen/types.gen.ts:5487</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5487">gen/types.gen.ts:5487</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -39,56 +39,56 @@
 <div class="tsd-comment tsd-typography"><p>A list of variables to fetch as the job variables; if empty, all visible variables at the time of activation for the scope of the job will be returned.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5508">gen/types.gen.ts:5508</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5508">gen/types.gen.ts:5508</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="maxjobstoactivate"><span>max<wbr/>Jobs<wbr/>To<wbr/>Activate</span><a href="#maxjobstoactivate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">maxJobsToActivate</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The maximum jobs to activate by this request.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5504">gen/types.gen.ts:5504</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5504">gen/types.gen.ts:5504</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="requesttimeout"><code class="tsd-tag">Optional</code><span>request<wbr/>Timeout</span><a href="#requesttimeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">requestTimeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The request will be completed when at least one job is activated or after the requestTimeout (in ms). If the requestTimeout = 0, a default timeout is used. If the requestTimeout &lt; 0, long polling is disabled and the request is completed immediately, even when no job is activated.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5513">gen/types.gen.ts:5513</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5513">gen/types.gen.ts:5513</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tenantfilter"><code class="tsd-tag">Optional</code><span>tenant<wbr/>Filter</span><a href="#tenantfilter" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tenantFilter</span><span class="tsd-signature-symbol">?:</span> <a href="index.TenantFilterEnum.html" class="tsd-signature-type tsd-kind-type-alias">TenantFilterEnum</a></div>
 <div class="tsd-comment tsd-typography"><p>The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5522">gen/types.gen.ts:5522</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5522">gen/types.gen.ts:5522</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tenantids"><code class="tsd-tag">Optional</code><span>tenant<wbr/>Ids</span><a href="#tenantids" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tenantIds</span><span class="tsd-signature-symbol">?:</span> <a href="index.TenantId.html" class="tsd-signature-type tsd-kind-type-alias">TenantId</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>A list of IDs of tenants for which to activate jobs.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5517">gen/types.gen.ts:5517</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5517">gen/types.gen.ts:5517</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="timeout"><span>timeout</span><a href="#timeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">timeout</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>A job returned after this call will not be activated by another call until the timeout (in ms) has been reached.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5500">gen/types.gen.ts:5500</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5500">gen/types.gen.ts:5500</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="type"><span>type</span><a href="#type" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">type</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The job type, as defined in the BPMN process (e.g. &lt;zeebe:taskDefinition type=&quot;payment-service&quot; /&gt;)</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5491">gen/types.gen.ts:5491</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5491">gen/types.gen.ts:5491</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="worker"><code class="tsd-tag">Optional</code><span>worker</span><a href="#worker" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">worker</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The name of the worker activating the jobs, mostly used for logging purposes.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/edf4da49f1c3994f65e1e22da5404119888523b9/src/gen/types.gen.ts#L5495">gen/types.gen.ts:5495</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f286f715940b60c2b8d9fa9cb8e450d976b9e504/src/gen/types.gen.ts#L5495">gen/types.gen.ts:5495</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
