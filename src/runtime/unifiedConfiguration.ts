@@ -7,6 +7,7 @@
 import path from 'node:path';
 import { createEnv } from 'typed-env';
 import {
+  aliases as aliasesMeta,
   allKeys,
   defaultValue,
   type EnvOverrides,
@@ -384,13 +385,17 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     envInput.CAMUNDA_SUPPORT_LOG_ENABLED = envInput.CAMUNDA_SUPPORT_LOGGER;
   }
 
-  // Alias: accept ZEEBE_REST_ADDRESS as CAMUNDA_REST_ADDRESS (if primary unset)
-  if (
-    envInput.CAMUNDA_REST_ADDRESS === undefined &&
-    baseEnv.ZEEBE_REST_ADDRESS !== undefined &&
-    baseEnv.ZEEBE_REST_ADDRESS!.trim() !== ''
-  ) {
-    envInput.CAMUNDA_REST_ADDRESS = baseEnv.ZEEBE_REST_ADDRESS!.trim();
+  // Aliases: accept schema-declared legacy env var names as fallbacks when the
+  // canonical key is unset (e.g. ZEEBE_REST_ADDRESS -> CAMUNDA_REST_ADDRESS).
+  for (const k of allKeys()) {
+    if (envInput[k] !== undefined) continue;
+    for (const alias of aliasesMeta(k)) {
+      const aliasVal = baseEnv[alias];
+      if (aliasVal !== undefined && aliasVal.trim() !== '') {
+        envInput[k] = aliasVal.trim();
+        break;
+      }
+    }
   }
 
   // Implicit auth strategy inference: if OAUTH URL provided and no explicit strategy, default to OAUTH
@@ -454,7 +459,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
 
   // Parse primitives (int, boolean, enum normalization) replicating original semantics
   const authStrategyRaw = reqStr('CAMUNDA_AUTH_STRATEGY');
-  const authStrategy = authStrategyRaw.trim().toUpperCase();
+  // The enum parser already canonicalizes to the schema casing (uppercase), so no
+  // re-normalization is needed here.
+  const authStrategy = authStrategyRaw;
   if (!['NONE', 'OAUTH', 'BASIC'].includes(authStrategy)) {
     errors.push({
       code: ConfigErrorCode.CONFIG_INVALID_ENUM,
@@ -555,7 +562,8 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     }
   }
   // Apply backpressure profile defaults if individual vars not explicitly provided.
-  const profile = reqStr('CAMUNDA_SDK_BACKPRESSURE_PROFILE').toUpperCase();
+  // The enum parser already canonicalizes to schema casing (uppercase).
+  const profile = reqStr('CAMUNDA_SDK_BACKPRESSURE_PROFILE');
   interface BpPreset {
     initialMax: number;
     soft: number;
