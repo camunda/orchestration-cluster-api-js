@@ -571,23 +571,20 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
   // BALANCED (and observe-only LEGACY) are exactly the SCHEMA defaults, derived here
   // so the values are declared once in configSchema.ts (#145). CONSERVATIVE and
-  // AGGRESSIVE are intentional deltas and remain explicit.
+  // AGGRESSIVE are intentional deltas and remain explicit. reqInt() fails fast if a
+  // backpressure key ever loses its schema default (rather than silently yielding NaN).
   const schemaBpDefaults: BpPreset = {
-    initialMax: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX')),
-    soft: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR')),
-    severe: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR')),
-    recoveryInterval: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS')),
-    recoveryStep: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP')),
-    quietMs: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS')),
-    floor: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_FLOOR')),
-    severeThreshold: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD')),
-    maxWaiters: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS')),
-    healthyRecoveryMultiplier: Number(
-      defaultValue('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER')
-    ),
-    unlimitedAfterHealthyMs: Number(
-      defaultValue('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS')
-    ),
+    initialMax: reqInt('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX'),
+    soft: reqInt('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR'),
+    severe: reqInt('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR'),
+    recoveryInterval: reqInt('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS'),
+    recoveryStep: reqInt('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP'),
+    quietMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS'),
+    floor: reqInt('CAMUNDA_SDK_BACKPRESSURE_FLOOR'),
+    severeThreshold: reqInt('CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD'),
+    maxWaiters: reqInt('CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS'),
+    healthyRecoveryMultiplier: reqInt('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER'),
+    unlimitedAfterHealthyMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS'),
   };
   const PRESETS: Record<string, BpPreset> = {
     BALANCED: schemaBpDefaults,

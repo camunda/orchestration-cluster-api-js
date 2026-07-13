@@ -70,8 +70,10 @@ describe('configuration single source of truth (#145)', () => {
       'utf8'
     );
 
-    // `rawMap.CAMUNDA_X!` — non-null assertion on a rawMap read.
-    const nonNull = src.match(/rawMap\.[A-Z_]+\s*!/g) ?? [];
+    // `rawMap.CAMUNDA_X!` — non-null assertion on a rawMap read. The negative
+    // lookahead `(?!=)` excludes comparison operators (`!=` / `!==`) so a future
+    // `rawMap.KEY !== ...` is not a false positive.
+    const nonNull = src.match(/rawMap\.[A-Z_]+!(?!=)/g) ?? [];
     // `rawMap.CAMUNDA_X || 'literal'` or `|| 3` — inline literal default fallback.
     // `|| undefined` is allowed (genuinely optional field, not a duplicated default).
     const inlineDefault = src.match(/rawMap\.[A-Z_]+(?:\?\.\w+\(\))?\s*\|\|\s*['"\d]/g) ?? [];
