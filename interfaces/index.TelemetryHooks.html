@@ -13,7 +13,7 @@
 <h1>Interface TelemetryHooks</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">TelemetryHooks</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-call-signature" href="#afterresponse-1">afterResponse</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryHttpEndEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#autherror-1">authError</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryAuthErrorEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#authstart-1">authStart</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryAuthStartEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#authsuccess-1">authSuccess</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryAuthSuccessEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#beforerequest-1">beforeRequest</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryHttpStartEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#requesterror-1">requestError</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryHttpErrorEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#retry-1">retry</a><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">e</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TelemetryRetryEvent</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L5">runtime/telemetry.ts:5</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L5">runtime/telemetry.ts:5</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -44,7 +44,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryHttpEndEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L7">runtime/telemetry.ts:7</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L7">runtime/telemetry.ts:7</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="autherror"><code class="tsd-tag">Optional</code><span>auth<wbr/>Error</span><a href="#autherror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -57,7 +57,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryAuthErrorEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L11">runtime/telemetry.ts:11</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L11">runtime/telemetry.ts:11</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="authstart"><code class="tsd-tag">Optional</code><span>auth<wbr/>Start</span><a href="#authstart" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -70,7 +70,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryAuthStartEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L9">runtime/telemetry.ts:9</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L9">runtime/telemetry.ts:9</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="authsuccess"><code class="tsd-tag">Optional</code><span>auth<wbr/>Success</span><a href="#authsuccess" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -83,7 +83,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryAuthSuccessEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L10">runtime/telemetry.ts:10</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L10">runtime/telemetry.ts:10</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="beforerequest"><code class="tsd-tag">Optional</code><span>before<wbr/>Request</span><a href="#beforerequest" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -96,7 +96,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryHttpStartEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L6">runtime/telemetry.ts:6</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L6">runtime/telemetry.ts:6</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="requesterror"><code class="tsd-tag">Optional</code><span>request<wbr/>Error</span><a href="#requesterror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -109,7 +109,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryHttpErrorEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L8">runtime/telemetry.ts:8</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L8">runtime/telemetry.ts:8</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="retry"><code class="tsd-tag">Optional</code><span>retry</span><a href="#retry" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -122,7 +122,7 @@
 <li><span><span class="tsd-kind-parameter">e</span>: <span class="tsd-signature-type">TelemetryRetryEvent</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/runtime/telemetry.ts#L12">runtime/telemetry.ts:12</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/runtime/telemetry.ts#L12">runtime/telemetry.ts:12</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

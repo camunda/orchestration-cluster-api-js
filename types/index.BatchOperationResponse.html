@@ -13,7 +13,7 @@
 <h1>Type Alias BatchOperationResponse</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">BatchOperationResponse</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#actorid">actorId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#actortype">actorType</a><span class="tsd-signature-symbol">:</span> <a href="index.AuditLogActorTypeEnum.html" class="tsd-signature-type tsd-kind-type-alias">AuditLogActorTypeEnum</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#batchoperationkey">batchOperationKey</a><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationKey.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationKey</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#batchoperationtype">batchOperationType</a><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationTypeEnum.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationTypeEnum</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#enddate">endDate</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#errors">errors</a><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationError.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationError</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#operationscompletedcount">operationsCompletedCount</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#operationsfailedcount">operationsFailedCount</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#operationstotalcount">operationsTotalCount</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#startdate">startDate</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state">state</a><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationStateEnum.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationStateEnum</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1663">gen/types.gen.ts:1663</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1663">gen/types.gen.ts:1663</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -42,7 +42,7 @@
 <div class="tsd-comment tsd-typography"><p>The ID of the actor who performed the operation. Available for batch operations created since 8.9.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1692">gen/types.gen.ts:1692</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1692">gen/types.gen.ts:1692</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="actortype"><span>actor<wbr/>Type</span><a href="#actortype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">actorType</span><span class="tsd-signature-symbol">:</span> <a href="index.AuditLogActorTypeEnum.html" class="tsd-signature-type tsd-kind-type-alias">AuditLogActorTypeEnum</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -51,19 +51,19 @@ This is <code>null</code> if the batch operation was created before 8.9,
 or if the actor information is not available.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1688">gen/types.gen.ts:1688</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1688">gen/types.gen.ts:1688</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="batchoperationkey"><span>batch<wbr/>Operation<wbr/>Key</span><a href="#batchoperationkey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">batchOperationKey</span><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationKey.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationKey</a></div>
 <div class="tsd-comment tsd-typography"><p>Key or (Operate Legacy ID = UUID) of the batch operation.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1667">gen/types.gen.ts:1667</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1667">gen/types.gen.ts:1667</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="batchoperationtype"><span>batch<wbr/>Operation<wbr/>Type</span><a href="#batchoperationtype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">batchOperationType</span><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationTypeEnum.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationTypeEnum</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1669">gen/types.gen.ts:1669</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1669">gen/types.gen.ts:1669</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="enddate"><span>end<wbr/>Date</span><a href="#enddate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">endDate</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -71,35 +71,35 @@ or if the actor information is not available.</p>
 This is <code>null</code> if the batch operation is still running.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1681">gen/types.gen.ts:1681</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1681">gen/types.gen.ts:1681</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="errors"><span>errors</span><a href="#errors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">errors</span><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationError.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationError</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>The errors that occurred per partition during the batch operation.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1708">gen/types.gen.ts:1708</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1708">gen/types.gen.ts:1708</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="operationscompletedcount"><span>operations<wbr/>Completed<wbr/>Count</span><a href="#operationscompletedcount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">operationsCompletedCount</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The number of successfully completed tasks.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1704">gen/types.gen.ts:1704</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1704">gen/types.gen.ts:1704</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="operationsfailedcount"><span>operations<wbr/>Failed<wbr/>Count</span><a href="#operationsfailedcount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">operationsFailedCount</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The number of items which failed during execution of the batch operation. (e.g. because they are rejected by the Zeebe engine).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1700">gen/types.gen.ts:1700</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1700">gen/types.gen.ts:1700</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="operationstotalcount"><span>operations<wbr/>Total<wbr/>Count</span><a href="#operationstotalcount" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">operationsTotalCount</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The total number of items contained in this batch operation.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1696">gen/types.gen.ts:1696</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1696">gen/types.gen.ts:1696</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="startdate"><span>start<wbr/>Date</span><a href="#startdate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">startDate</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -107,12 +107,12 @@ This is <code>null</code> if the batch operation is still running.</p>
 This is <code>null</code> if the batch operation has not yet started.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1675">gen/types.gen.ts:1675</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1675">gen/types.gen.ts:1675</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state"><span>state</span><a href="#state" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state</span><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationStateEnum.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationStateEnum</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/cc16877dc5c58ffcf9edcb4d4330588dc9867e5b/src/gen/types.gen.ts#L1668">gen/types.gen.ts:1668</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/07a624b0f47edbe2d919bddf799b54bc5a920cbf/src/gen/types.gen.ts#L1668">gen/types.gen.ts:1668</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
