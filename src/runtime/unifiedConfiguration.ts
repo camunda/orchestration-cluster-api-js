@@ -8,6 +8,7 @@ import path from 'node:path';
 import { createEnv } from 'typed-env';
 import {
   allKeys,
+  defaultValue,
   type EnvOverrides,
   type EnvVarKey,
   isSecret,
@@ -431,18 +432,28 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   if (
     !userSetStrategy &&
     rawMap.CAMUNDA_AUTH_STRATEGY === 'NONE' &&
-    rawMap.CAMUNDA_OAUTH_URL &&
-    rawMap.CAMUNDA_OAUTH_URL!.trim() !== '' &&
-    rawMap.CAMUNDA_CLIENT_ID &&
-    rawMap.CAMUNDA_CLIENT_ID!.trim() !== '' &&
-    rawMap.CAMUNDA_CLIENT_SECRET &&
-    rawMap.CAMUNDA_CLIENT_SECRET!.trim() !== ''
+    rawMap.CAMUNDA_OAUTH_URL?.trim() &&
+    rawMap.CAMUNDA_CLIENT_ID?.trim() &&
+    rawMap.CAMUNDA_CLIENT_SECRET?.trim()
   ) {
     rawMap.CAMUNDA_AUTH_STRATEGY = 'OAUTH';
   }
 
+  // Schema-backed accessors. `rawMap` is already fully defaulted from SCHEMA above,
+  // so these surface the effective value without re-declaring literals here — keeping
+  // configSchema.ts the single source of truth for defaults (#145).
+  const reqStr = (k: EnvVarKey): string => {
+    const v = rawMap[k];
+    if (v !== undefined) return v;
+    const d = defaultValue(k);
+    if (d !== undefined) return String(d);
+    throw new Error(`Internal configuration error: no value or schema default for ${k}`);
+  };
+  const reqInt = (k: EnvVarKey): number => parseInt(reqStr(k), 10);
+  const reqBool = (k: EnvVarKey): boolean => reqStr(k).trim().toLowerCase() === 'true';
+
   // Parse primitives (int, boolean, enum normalization) replicating original semantics
-  const authStrategyRaw = (rawMap.CAMUNDA_AUTH_STRATEGY || 'NONE').toString();
+  const authStrategyRaw = reqStr('CAMUNDA_AUTH_STRATEGY');
   const authStrategy = authStrategyRaw.trim().toUpperCase();
   if (!['NONE', 'OAUTH', 'BASIC'].includes(authStrategy)) {
     errors.push({
@@ -510,7 +521,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
 
   // Parse validation config after potential errors so we gather full set
-  const validationRaw = rawMap.CAMUNDA_SDK_VALIDATION || 'req:none,res:none';
+  const validationRaw = reqStr('CAMUNDA_SDK_VALIDATION');
   const validation = parseValidation(validationRaw, errors);
 
   // If any errors, throw aggregated (sorted by key then code for determinism)
@@ -532,7 +543,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   }
 
   // Normalize restAddress to ensure it ends with /v2 (idempotent)
-  let _restAddress = rawMap.CAMUNDA_REST_ADDRESS!;
+  let _restAddress = reqStr('CAMUNDA_REST_ADDRESS');
   if (_restAddress) {
     // Trim whitespace and trailing slashes first
     _restAddress = _restAddress.trim();
@@ -544,7 +555,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     }
   }
   // Apply backpressure profile defaults if individual vars not explicitly provided.
-  const profile = (rawMap.CAMUNDA_SDK_BACKPRESSURE_PROFILE || 'BALANCED').toString().toUpperCase();
+  const profile = reqStr('CAMUNDA_SDK_BACKPRESSURE_PROFILE').toUpperCase();
   interface BpPreset {
     initialMax: number;
     soft: number;
@@ -558,20 +569,28 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     healthyRecoveryMultiplier: number;
     unlimitedAfterHealthyMs: number;
   }
+  // BALANCED (and observe-only LEGACY) are exactly the SCHEMA defaults, derived here
+  // so the values are declared once in configSchema.ts (#145). CONSERVATIVE and
+  // AGGRESSIVE are intentional deltas and remain explicit.
+  const schemaBpDefaults: BpPreset = {
+    initialMax: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX')),
+    soft: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR')),
+    severe: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR')),
+    recoveryInterval: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS')),
+    recoveryStep: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP')),
+    quietMs: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS')),
+    floor: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_FLOOR')),
+    severeThreshold: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD')),
+    maxWaiters: Number(defaultValue('CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS')),
+    healthyRecoveryMultiplier: Number(
+      defaultValue('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER')
+    ),
+    unlimitedAfterHealthyMs: Number(
+      defaultValue('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS')
+    ),
+  };
   const PRESETS: Record<string, BpPreset> = {
-    BALANCED: {
-      initialMax: 16,
-      soft: 70,
-      severe: 50,
-      recoveryInterval: 1000,
-      recoveryStep: 1,
-      quietMs: 2000,
-      floor: 1,
-      severeThreshold: 3,
-      maxWaiters: 1000,
-      healthyRecoveryMultiplier: 150,
-      unlimitedAfterHealthyMs: 30_000,
-    },
+    BALANCED: schemaBpDefaults,
     CONSERVATIVE: {
       initialMax: 12,
       soft: 60,
@@ -598,20 +617,8 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       healthyRecoveryMultiplier: 200,
       unlimitedAfterHealthyMs: 15_000,
     },
-    LEGACY: {
-      // observe-only: we still need plausible defaults if user overrides individual knobs
-      initialMax: 16,
-      soft: 70,
-      severe: 50,
-      recoveryInterval: 1000,
-      recoveryStep: 1,
-      quietMs: 2000,
-      floor: 1,
-      severeThreshold: 3,
-      maxWaiters: 1000,
-      healthyRecoveryMultiplier: 150,
-      unlimitedAfterHealthyMs: 30_000,
-    },
+    // observe-only: still needs plausible defaults if the user overrides individual knobs
+    LEGACY: schemaBpDefaults,
   };
   const preset = PRESETS[profile] || PRESETS.BALANCED;
   // Only override when user did NOT explicitly provide a value (env or override). We rely on the
@@ -633,61 +640,48 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   ensure('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS', preset.unlimitedAfterHealthyMs);
   const config: CamundaConfig = {
     restAddress: _restAddress,
-    tokenAudience: rawMap.CAMUNDA_TOKEN_AUDIENCE!,
-    defaultTenantId: rawMap.CAMUNDA_DEFAULT_TENANT_ID || '<default>',
+    tokenAudience: reqStr('CAMUNDA_TOKEN_AUDIENCE'),
+    defaultTenantId: reqStr('CAMUNDA_DEFAULT_TENANT_ID'),
     httpRetry: {
-      maxAttempts: parseInt(rawMap.CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS || '3', 10),
-      baseDelayMs: parseInt(rawMap.CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS || '100', 10),
-      maxDelayMs: parseInt(rawMap.CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS || '2000', 10),
+      maxAttempts: reqInt('CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS'),
+      baseDelayMs: reqInt('CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS'),
+      maxDelayMs: reqInt('CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS'),
     },
     backpressure: {
       enabled: profile !== 'LEGACY',
       profile,
       observeOnly: profile === 'LEGACY',
-      initialMax: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX || '16', 10),
+      initialMax: reqInt('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX'),
       softFactor: Math.min(
         1,
-        Math.max(
-          0.01,
-          (parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR || '70', 10) || 70) / 100
-        )
+        Math.max(0.01, (reqInt('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR') || 70) / 100)
       ),
       severeFactor: Math.min(
         1,
-        Math.max(
-          0.01,
-          (parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR || '50', 10) || 50) / 100
-        )
+        Math.max(0.01, (reqInt('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR') || 50) / 100)
       ),
-      recoveryIntervalMs: parseInt(
-        rawMap.CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS || '1000',
-        10
-      ),
-      recoveryStep: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP || '1', 10),
-      decayQuietMs: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS || '2000', 10),
-      floor: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_FLOOR || '1', 10),
-      severeThreshold: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD || '3', 10),
-      maxWaiters: parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS || '1000', 10),
+      recoveryIntervalMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS'),
+      recoveryStep: reqInt('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP'),
+      decayQuietMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_DECAY_QUIET_MS'),
+      floor: reqInt('CAMUNDA_SDK_BACKPRESSURE_FLOOR'),
+      severeThreshold: reqInt('CAMUNDA_SDK_BACKPRESSURE_SEVERE_THRESHOLD'),
+      maxWaiters: reqInt('CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS'),
       healthyRecoveryMultiplier: Math.max(
         1,
-        (parseInt(rawMap.CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER || '150', 10) ||
-          150) / 100
+        (reqInt('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER') || 150) / 100
       ),
-      unlimitedAfterHealthyMs: parseInt(
-        rawMap.CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS || '30000',
-        10
-      ),
+      unlimitedAfterHealthyMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS'),
     },
     oauth: {
       clientId: rawMap.CAMUNDA_CLIENT_ID?.trim() || undefined,
       clientSecret: rawMap.CAMUNDA_CLIENT_SECRET?.trim() || undefined,
-      oauthUrl: rawMap.CAMUNDA_OAUTH_URL!,
-      grantType: rawMap.CAMUNDA_OAUTH_GRANT_TYPE!,
+      oauthUrl: reqStr('CAMUNDA_OAUTH_URL'),
+      grantType: reqStr('CAMUNDA_OAUTH_GRANT_TYPE'),
       scope: rawMap.CAMUNDA_OAUTH_SCOPE?.trim() || undefined,
-      timeoutMs: parseInt(rawMap.CAMUNDA_OAUTH_TIMEOUT_MS!, 10),
+      timeoutMs: reqInt('CAMUNDA_OAUTH_TIMEOUT_MS'),
       retry: {
-        max: parseInt(rawMap.CAMUNDA_OAUTH_RETRY_MAX!, 10),
-        baseDelayMs: parseInt(rawMap.CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS!, 10),
+        max: reqInt('CAMUNDA_OAUTH_RETRY_MAX'),
+        baseDelayMs: reqInt('CAMUNDA_OAUTH_RETRY_BASE_DELAY_MS'),
       },
       cacheDir: rawMap.CAMUNDA_OAUTH_CACHE_DIR?.trim() || undefined,
     },
@@ -702,9 +696,9 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
           : undefined,
     },
     validation: { req: validation.req, res: validation.res, raw: validation.raw },
-    logLevel: (rawMap.CAMUNDA_SDK_LOG_LEVEL as CamundaConfig['logLevel']) || 'info',
+    logLevel: reqStr('CAMUNDA_SDK_LOG_LEVEL') as CamundaConfig['logLevel'],
     eventual: {
-      pollDefaultMs: parseInt(rawMap.CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS || '500', 10),
+      pollDefaultMs: reqInt('CAMUNDA_SDK_EVENTUAL_POLL_DEFAULT_MS'),
     },
     mtls:
       rawMap.CAMUNDA_MTLS_CERT_PATH ||
@@ -725,12 +719,11 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
           }
         : undefined,
     telemetry: {
-      log: (rawMap.CAMUNDA_SDK_TELEMETRY_LOG || 'false').toString().toLowerCase() === 'true',
-      correlation:
-        (rawMap.CAMUNDA_SDK_TELEMETRY_CORRELATION || 'false').toString().toLowerCase() === 'true',
+      log: reqBool('CAMUNDA_SDK_TELEMETRY_LOG'),
+      correlation: reqBool('CAMUNDA_SDK_TELEMETRY_CORRELATION'),
     },
     supportLog: {
-      enabled: (rawMap.CAMUNDA_SUPPORT_LOG_ENABLED || 'false').toString().toLowerCase() === 'true',
+      enabled: reqBool('CAMUNDA_SUPPORT_LOG_ENABLED'),
       filePath:
         rawMap.CAMUNDA_SUPPORT_LOG_FILE_PATH ||
         (typeof process !== 'undefined' && typeof process.cwd === 'function'
