@@ -189,7 +189,9 @@ async function searchProcessDefinitionsExample() {
 //#endregion SearchProcessDefinitions
 
 //#region SearchProcessDefinitionVariableNames
-async function searchProcessDefinitionVariableNamesExample(processDefinitionKey: ProcessDefinitionKey) {
+async function searchProcessDefinitionVariableNamesExample(
+  processDefinitionKey: ProcessDefinitionKey
+) {
   const camunda = createCamundaClient();
 
   const result = await camunda.searchProcessDefinitionVariableNames(
@@ -464,6 +466,7 @@ void resolveProcessInstanceIncidentsExample;
 void getProcessDefinitionExample;
 void getProcessDefinitionXmlExample;
 void searchProcessDefinitionsExample;
+void searchProcessDefinitionVariableNamesExample;
 void getProcessDefinitionStatisticsExample;
 void getProcessDefinitionInstanceStatisticsExample;
 void getProcessDefinitionInstanceVersionStatisticsExample;
