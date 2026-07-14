@@ -77,11 +77,18 @@ describe('configuration single source of truth (#145)', () => {
     // `rawMap.CAMUNDA_X || 'literal'` or `|| 3` — inline literal default fallback.
     // `|| undefined` is allowed (genuinely optional field, not a duplicated default).
     const inlineDefault = src.match(/rawMap\.[A-Z_]+(?:\?\.\w+\(\))?\s*\|\|\s*['"\d]/g) ?? [];
+    // `reqInt(...) || 70` etc. — an accessor result with an inline literal fallback,
+    // which both duplicates the SCHEMA default and masks a NaN from a failed parse.
+    const accessorDefault = src.match(/req(?:Int|Str|Bool)\([^)]*\)\s*\|\|\s*['"\d]/g) ?? [];
 
     expect(nonNull, `Found rawMap non-null assertions: ${nonNull.join(', ')}`).toEqual([]);
     expect(
       inlineDefault,
       `Found inline default fallbacks duplicating SCHEMA: ${inlineDefault.join(', ')}`
+    ).toEqual([]);
+    expect(
+      accessorDefault,
+      `Found accessor default fallbacks duplicating SCHEMA: ${accessorDefault.join(', ')}`
     ).toEqual([]);
   });
 

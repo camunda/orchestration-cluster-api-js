@@ -441,7 +441,13 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     if (d !== undefined) return String(d);
     throw new Error(`Internal configuration error: no value or schema default for ${k}`);
   };
-  const reqInt = (k: EnvVarKey): number => parseInt(reqStr(k), 10);
+  const reqInt = (k: EnvVarKey): number => {
+    const n = parseInt(reqStr(k), 10);
+    if (Number.isNaN(n)) {
+      throw new Error(`Internal configuration error: ${k} is not a valid integer`);
+    }
+    return n;
+  };
   const reqBool = (k: EnvVarKey): boolean => {
     // Prefer the already-typed value from typed-env; only fall back to parsing the
     // canonical string if a typed boolean is not available (avoids a redundant
@@ -651,13 +657,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       profile,
       observeOnly: profile === 'LEGACY',
       initialMax: reqInt('CAMUNDA_SDK_BACKPRESSURE_INITIAL_MAX'),
-      softFactor: Math.min(
-        1,
-        Math.max(0.01, (reqInt('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR') || 70) / 100)
-      ),
+      softFactor: Math.min(1, Math.max(0.01, reqInt('CAMUNDA_SDK_BACKPRESSURE_SOFT_FACTOR') / 100)),
       severeFactor: Math.min(
         1,
-        Math.max(0.01, (reqInt('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR') || 50) / 100)
+        Math.max(0.01, reqInt('CAMUNDA_SDK_BACKPRESSURE_SEVERE_FACTOR') / 100)
       ),
       recoveryIntervalMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_INTERVAL_MS'),
       recoveryStep: reqInt('CAMUNDA_SDK_BACKPRESSURE_RECOVERY_STEP'),
@@ -667,7 +670,7 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
       maxWaiters: reqInt('CAMUNDA_SDK_BACKPRESSURE_MAX_WAITERS'),
       healthyRecoveryMultiplier: Math.max(
         1,
-        (reqInt('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER') || 150) / 100
+        reqInt('CAMUNDA_SDK_BACKPRESSURE_HEALTHY_RECOVERY_MULTIPLIER') / 100
       ),
       unlimitedAfterHealthyMs: reqInt('CAMUNDA_SDK_BACKPRESSURE_UNLIMITED_AFTER_HEALTHY_MS'),
     },
