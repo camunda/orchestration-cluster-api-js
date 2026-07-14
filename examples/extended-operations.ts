@@ -188,6 +188,21 @@ async function searchProcessDefinitionsExample() {
 }
 //#endregion SearchProcessDefinitions
 
+//#region SearchProcessDefinitionVariableNames
+async function searchProcessDefinitionVariableNamesExample(processDefinitionKey: ProcessDefinitionKey) {
+  const camunda = createCamundaClient();
+
+  const result = await camunda.searchProcessDefinitionVariableNames(
+    { processDefinitionKey },
+    { consistency: { waitUpToMs: 5000 } }
+  );
+
+  for (const variable of result.items ?? []) {
+    console.log(`Variable name: ${variable.name}`);
+  }
+}
+//#endregion SearchProcessDefinitionVariableNames
+
 //#region GetProcessDefinitionStatistics
 async function getProcessDefinitionStatisticsExample(processDefinitionKey: ProcessDefinitionKey) {
   const camunda = createCamundaClient();

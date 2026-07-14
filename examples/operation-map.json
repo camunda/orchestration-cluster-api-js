@@ -877,6 +877,13 @@
       "label": "Search process definitions"
     }
   ],
+  "searchProcessDefinitionVariableNames": [
+    {
+      "file": "extended-operations.ts",
+      "region": "SearchProcessDefinitionVariableNames",
+      "label": "Search process definition variable names"
+    }
+  ],
   "getProcessDefinitionStatistics": [
     {
       "file": "extended-operations.ts",
