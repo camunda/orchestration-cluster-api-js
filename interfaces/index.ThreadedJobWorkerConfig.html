@@ -23,7 +23,7 @@ Same as JobWorkerConfig but replaces <code>jobHandler</code> with <code>handlerM
 <li><span id="out"><span class="tsd-kind-type-parameter">Out</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">z.ZodTypeAny</span> = <span class="tsd-signature-type">any</span></span></li>
 <li><span id="headers"><span class="tsd-kind-type-parameter">Headers</span> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">z.ZodTypeAny</span> = <span class="tsd-signature-type">any</span></span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L40">runtime/threadedJobWorker.ts:40</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L40">runtime/threadedJobWorker.ts:40</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -56,21 +56,21 @@ Same as JobWorkerConfig but replaces <code>jobHandler</code> with <code>handlerM
 <div class="tsd-comment tsd-typography"><p>Immediately start polling for work - default <code>true</code></p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L57">runtime/threadedJobWorker.ts:57</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L57">runtime/threadedJobWorker.ts:57</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="customheadersschema"><code class="tsd-tag">Optional</code><span>custom<wbr/>Headers<wbr/>Schema</span><a href="#customheadersschema" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">customHeadersSchema</span><span class="tsd-signature-symbol">?:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#headers">Headers</a></div>
 <div class="tsd-comment tsd-typography"><p>Zod schema for custom headers in the activated job</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L53">runtime/threadedJobWorker.ts:53</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L53">runtime/threadedJobWorker.ts:53</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="fetchvariables"><code class="tsd-tag">Optional</code><span>fetch<wbr/>Variables</span><a href="#fetchvariables" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">fetchVariables</span><span class="tsd-signature-symbol">?:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#in">In</a> <span class="tsd-signature-keyword">extends</span> <span class="tsd-signature-type">ZodType</span><span class="tsd-signature-symbol">&lt;</span><br/>    <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-type">$ZodTypeInternals</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">&gt;</span><br/>    <span class="tsd-signature-symbol">?</span> <span class="tsd-signature-type">Extract</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-keyword">keyof</span> <span class="tsd-signature-type">output</span><span class="tsd-signature-symbol">&lt;</span><a class="tsd-signature-type tsd-kind-type-parameter" href="#in">In</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><br/>    <span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>Optional list of variable names to fetch during activation</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L71">runtime/threadedJobWorker.ts:71</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L71">runtime/threadedJobWorker.ts:71</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="handlermodule"><span>handler<wbr/>Module</span><a href="#handlermodule" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">handlerModule</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -78,49 +78,49 @@ Same as JobWorkerConfig but replaces <code>jobHandler</code> with <code>handlerM
 The function signature must be: <code>(job, client) =&gt; Promise&lt;JobActionReceipt&gt;</code></p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L47">runtime/threadedJobWorker.ts:47</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L47">runtime/threadedJobWorker.ts:47</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="inputschema"><code class="tsd-tag">Optional</code><span>input<wbr/>Schema</span><a href="#inputschema" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">inputSchema</span><span class="tsd-signature-symbol">?:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#in">In</a></div>
 <div class="tsd-comment tsd-typography"><p>Zod schema for variables in the activated job</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L49">runtime/threadedJobWorker.ts:49</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L49">runtime/threadedJobWorker.ts:49</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="jobtimeoutms"><code class="tsd-tag">Optional</code><span>job<wbr/>Timeout<wbr/>Ms</span><a href="#jobtimeoutms" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">jobTimeoutMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Job activation timeout in ms — default <code>60000</code>. Overridden by CAMUNDA_WORKER_TIMEOUT env var.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L67">runtime/threadedJobWorker.ts:67</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L67">runtime/threadedJobWorker.ts:67</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="jobtype"><span>job<wbr/>Type</span><a href="#jobtype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">jobType</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>Zeebe job type</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L69">runtime/threadedJobWorker.ts:69</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L69">runtime/threadedJobWorker.ts:69</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="maxparalleljobs"><code class="tsd-tag">Optional</code><span>max<wbr/>Parallel<wbr/>Jobs</span><a href="#maxparalleljobs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">maxParallelJobs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Concurrency limit — default <code>10</code>. Overridden by CAMUNDA_WORKER_MAX_CONCURRENT_JOBS env var.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L59">runtime/threadedJobWorker.ts:59</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L59">runtime/threadedJobWorker.ts:59</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="outputschema"><code class="tsd-tag">Optional</code><span>output<wbr/>Schema</span><a href="#outputschema" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">outputSchema</span><span class="tsd-signature-symbol">?:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#out">Out</a></div>
 <div class="tsd-comment tsd-typography"><p>Zod schema for variables in the complete command</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L51">runtime/threadedJobWorker.ts:51</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L51">runtime/threadedJobWorker.ts:51</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pollintervalms"><code class="tsd-tag">Optional</code><span>poll<wbr/>Interval<wbr/>Ms</span><a href="#pollintervalms" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pollIntervalMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Backoff between polls - default 1ms</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L55">runtime/threadedJobWorker.ts:55</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L55">runtime/threadedJobWorker.ts:55</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="polltimeoutms"><code class="tsd-tag">Optional</code><span>poll<wbr/>Timeout<wbr/>Ms</span><a href="#polltimeoutms" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pollTimeoutMs</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -129,7 +129,7 @@ If the requestTimeout = 0, the request will be completed after a default configu
 To immediately complete the request when no job is activated set the requestTimeout to a negative value</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L65">runtime/threadedJobWorker.ts:65</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L65">runtime/threadedJobWorker.ts:65</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="startupjittermaxseconds"><code class="tsd-tag">Optional</code><span>startup<wbr/>Jitter<wbr/>Max<wbr/>Seconds</span><a href="#startupjittermaxseconds" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">startupJitterMaxSeconds</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -139,7 +139,7 @@ initial activation requests to avoid saturating the server.
 <code>0</code> (the default) means no delay.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L80">runtime/threadedJobWorker.ts:80</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L80">runtime/threadedJobWorker.ts:80</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="threadpoolsize"><code class="tsd-tag">Optional</code><span>thread<wbr/>Pool<wbr/>Size</span><a href="#threadpoolsize" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">threadPoolSize</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
@@ -148,7 +148,7 @@ subsequent workers share the existing pool).
 Default: number of CPU cores available to the process.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L91">runtime/threadedJobWorker.ts:91</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L91">runtime/threadedJobWorker.ts:91</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="validateschemas"><code class="tsd-tag">Optional</code><span>validate<wbr/>Schemas</span><a href="#validateschemas" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">validateSchemas</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -156,14 +156,14 @@ Default: number of CPU cores available to the process.</p>
 default: false</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L85">runtime/threadedJobWorker.ts:85</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L85">runtime/threadedJobWorker.ts:85</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="workername"><code class="tsd-tag">Optional</code><span>worker<wbr/>Name</span><a href="#workername" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">workerName</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>Optional explicit name</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/37b24b9d11d3e854ce79f888a2bac511321964ef/src/runtime/threadedJobWorker.ts#L73">runtime/threadedJobWorker.ts:73</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e8c1dd2d06d5e750091cdd05fef2464de273b4e2/src/runtime/threadedJobWorker.ts#L73">runtime/threadedJobWorker.ts:73</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
