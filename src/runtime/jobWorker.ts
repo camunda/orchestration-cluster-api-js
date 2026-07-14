@@ -59,6 +59,20 @@ export interface JobWorkerConfig<
   validateSchemas?: boolean;
 }
 
+/**
+ * Internal shape after constructor defaults are applied: the defaulted fields
+ * become required so the class body needs no non-null assertions on them. The
+ * constructor's spread literal is checked against this type, so adding a new
+ * defaulted field here without a matching default in the spread is a compile error.
+ */
+type ResolvedJobWorkerConfig = JobWorkerConfig & {
+  pollIntervalMs: number;
+  autoStart: boolean;
+  validateSchemas: boolean;
+  maxParallelJobs: number;
+  jobTimeoutMs: number;
+};
+
 type InferOrUnknown<T extends z.ZodTypeAny | undefined> = T extends z.ZodTypeAny
   ? z.infer<T>
   : Record<string, unknown>;
@@ -77,7 +91,7 @@ const DEFAULT_LONGPOLL_TIMEOUT = 0;
 
 export class JobWorker {
   private _client: CamundaClient;
-  private _cfg: JobWorkerConfig;
+  private _cfg: ResolvedJobWorkerConfig;
   private _maxParallelJobs: number;
   private _jobTimeoutMs: number;
   private _name: string;
@@ -97,8 +111,8 @@ export class JobWorker {
       jobTimeoutMs: 60_000,
       ...cfg,
     };
-    this._maxParallelJobs = this._cfg.maxParallelJobs!;
-    this._jobTimeoutMs = this._cfg.jobTimeoutMs!;
+    this._maxParallelJobs = this._cfg.maxParallelJobs;
+    this._jobTimeoutMs = this._cfg.jobTimeoutMs;
     this._name = cfg.workerName || `worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
     if (cfg.maxBackoffTimeMs !== undefined) {
@@ -207,12 +221,12 @@ export class JobWorker {
     if (this._stopped) return;
     // If at capacity, defer
     if (this._activeJobs >= this._maxParallelJobs) {
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     const batchSize = this._maxParallelJobs - this._activeJobs;
     if (batchSize <= 0) {
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     // Activation body shape inferred – using common fields
@@ -244,12 +258,12 @@ export class JobWorker {
       } else {
         this._log.error('activation.error', e);
       }
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     if (!result || result.length === 0) {
       // No jobs – simply schedule next poll
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     this._activeJobs += result.length;

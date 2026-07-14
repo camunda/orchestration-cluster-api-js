@@ -91,6 +91,20 @@ export interface ThreadedJobWorkerConfig<
   threadPoolSize?: number;
 }
 
+/**
+ * Internal shape after constructor defaults are applied: the defaulted fields
+ * become required so the class body needs no non-null assertions on them. The
+ * constructor's spread literal is checked against this type, so adding a new
+ * defaulted field here without a matching default in the spread is a compile error.
+ */
+type ResolvedThreadedJobWorkerConfig = ThreadedJobWorkerConfig & {
+  pollIntervalMs: number;
+  autoStart: boolean;
+  validateSchemas: boolean;
+  maxParallelJobs: number;
+  jobTimeoutMs: number;
+};
+
 let _workerCounter = 0;
 
 const DEFAULT_LONGPOLL_TIMEOUT = 0;
@@ -106,7 +120,7 @@ const DEFAULT_LONGPOLL_TIMEOUT = 0;
 export class ThreadedJobWorker {
   private _client: CamundaClient;
   private _pool: ThreadPool;
-  private _cfg: ThreadedJobWorkerConfig;
+  private _cfg: ResolvedThreadedJobWorkerConfig;
   private _maxParallelJobs: number;
   private _jobTimeoutMs: number;
   private _name: string;
@@ -128,8 +142,8 @@ export class ThreadedJobWorker {
       jobTimeoutMs: 60_000,
       ...cfg,
     };
-    this._maxParallelJobs = this._cfg.maxParallelJobs!;
-    this._jobTimeoutMs = this._cfg.jobTimeoutMs!;
+    this._maxParallelJobs = this._cfg.maxParallelJobs;
+    this._jobTimeoutMs = this._cfg.jobTimeoutMs;
     this._name = cfg.workerName || `threaded-worker-${cfg.jobType}-${++_workerCounter}`;
     this._log = this._client.logger().scope(`worker:${this._name}`);
 
@@ -344,7 +358,7 @@ export class ThreadedJobWorker {
     // Ensure shared thread pool is ready before polling
     await this._pool.ready;
     if (this._activeJobs >= this._maxParallelJobs) {
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     // Activate up to the concurrency headroom. Jobs that arrive when all
@@ -352,7 +366,7 @@ export class ThreadedJobWorker {
     // as threads become idle, keeping the pipeline full.
     const batchSize = this._maxParallelJobs - this._activeJobs;
     if (batchSize <= 0) {
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     const body = {
@@ -381,11 +395,11 @@ export class ThreadedJobWorker {
       } else {
         this._log.error('activation.error', e);
       }
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     if (!result || result.length === 0) {
-      this._scheduleNext(this._cfg.pollIntervalMs!);
+      this._scheduleNext(this._cfg.pollIntervalMs);
       return;
     }
     this._activeJobs += result.length;

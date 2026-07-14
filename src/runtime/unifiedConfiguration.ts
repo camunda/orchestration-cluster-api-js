@@ -398,20 +398,6 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     }
   }
 
-  // Implicit auth strategy inference: if OAUTH URL provided and no explicit strategy, default to OAUTH
-  if (
-    (envInput.CAMUNDA_AUTH_STRATEGY === undefined ||
-      envInput.CAMUNDA_AUTH_STRATEGY.trim() === '') &&
-    envInput.CAMUNDA_OAUTH_URL !== undefined &&
-    envInput.CAMUNDA_OAUTH_URL.trim() !== '' &&
-    envInput.CAMUNDA_CLIENT_ID !== undefined &&
-    envInput.CAMUNDA_CLIENT_ID.trim() !== '' &&
-    envInput.CAMUNDA_CLIENT_SECRET !== undefined &&
-    envInput.CAMUNDA_CLIENT_SECRET.trim() !== ''
-  ) {
-    envInput.CAMUNDA_AUTH_STRATEGY = 'OAUTH';
-  }
-
   // Run typed-env (will not throw for our parser-based validation; parseErrors collects issues)
   let envTyped: Record<string, any> = {};
   envTyped = createEnv(typedEnvSchema, { env: envInput });
@@ -431,9 +417,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     }
   }
 
-  // Post-default inference safeguard: if auth strategy still NONE (default applied) but OAuth URL provided
-  // and user did not explicitly set a strategy, infer OAUTH. This covers cases where earlier inference
-  // might be overridden by schema default application.
+  // Auth strategy inference (single post-hydration transform): if the user did not
+  // explicitly set a strategy and OAuth URL + client id + secret are all present,
+  // infer OAUTH. Consolidated here so there is exactly one place that decides the
+  // strategy (previously duplicated as a pre-typed-env pass over envInput).
   if (
     !userSetStrategy &&
     rawMap.CAMUNDA_AUTH_STRATEGY === 'NONE' &&
@@ -455,7 +442,14 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     throw new Error(`Internal configuration error: no value or schema default for ${k}`);
   };
   const reqInt = (k: EnvVarKey): number => parseInt(reqStr(k), 10);
-  const reqBool = (k: EnvVarKey): boolean => reqStr(k).trim().toLowerCase() === 'true';
+  const reqBool = (k: EnvVarKey): boolean => {
+    // Prefer the already-typed value from typed-env; only fall back to parsing the
+    // canonical string if a typed boolean is not available (avoids a redundant
+    // boolean -> string -> boolean round-trip).
+    const typed = envTyped[k];
+    if (typeof typed === 'boolean') return typed;
+    return reqStr(k).trim().toLowerCase() === 'true';
+  };
 
   // Parse primitives (int, boolean, enum normalization) replicating original semantics
   const authStrategyRaw = reqStr('CAMUNDA_AUTH_STRATEGY');
