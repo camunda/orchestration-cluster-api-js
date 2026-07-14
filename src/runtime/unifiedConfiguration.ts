@@ -402,17 +402,23 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   let envTyped: Record<string, any> = {};
   envTyped = createEnv(typedEnvSchema, { env: envInput });
 
-  // Build rawMap from typed values (string representation); fill in defaults for unset keys if defined
+  // Build rawMap from typed values (string representation); fill in schema defaults
+  // for unset keys. An explicitly empty / whitespace-only value is treated as unset, so
+  // defaulted keys always surface their schema default in rawMap (and therefore in
+  // `effective` / `__raw` and post-hydration inference) rather than an empty value.
   for (const k of allKeys()) {
     const entry = schemaEntry(k);
     const rawProvided = envInput[k];
+    const providedIsEmpty = rawProvided !== undefined && rawProvided.trim() === '';
     const val = envTyped[k];
-    if (val !== undefined && val !== null) {
+    const valIsEmptyString = typeof val === 'string' && val.trim() === '';
+    if (val !== undefined && val !== null && !valIsEmptyString) {
       rawMap[k] = typeof val === 'string' ? val : String(val);
-    } else if (rawProvided !== undefined) {
-      // A provided value failed to parse; parseErrors already collected.
+    } else if (rawProvided !== undefined && !providedIsEmpty && val === undefined) {
+      // A non-empty provided value failed to parse; parseErrors already collected.
       // Leave rawMap unset so conditional logic can still detect missing requiredWhen.
     } else if (entry.default !== undefined) {
+      // Unset or explicitly empty: fall back to the schema default.
       rawMap[k] = String(entry.default);
     }
   }
