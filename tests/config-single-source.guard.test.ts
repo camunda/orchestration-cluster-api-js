@@ -104,7 +104,12 @@ describe('configuration single source of truth (#145)', () => {
       fileURLToPath(new URL('../src/runtime/unifiedConfiguration.ts', import.meta.url)),
       'utf8'
     );
-    const missing = allKeys().filter((k) => !ALLOW_UNREFERENCED.has(k) && !src.includes(k));
+    const missing = allKeys().filter((k) => {
+      if (ALLOW_UNREFERENCED.has(k)) return false;
+      // Require a code-like reference — a quoted string literal (e.g. reqStr('K'))
+      // or a property access (e.g. rawMap.K) — not an incidental mention in a comment.
+      return !new RegExp(`['"]${k}['"]|\\.${k}\\b`).test(src);
+    });
     expect(
       missing,
       `SCHEMA keys never referenced in unifiedConfiguration.ts (wire them into CamundaConfig, or allow-list with a reason): ${missing.join(', ')}`

@@ -436,9 +436,13 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
   // configSchema.ts the single source of truth for defaults (#145).
   const reqStr = (k: EnvVarKey): string => {
     const v = rawMap[k];
-    if (v !== undefined) return v;
+    // Treat an explicitly empty / whitespace-only value as unset so it falls back to
+    // the schema default (preserves the pre-refactor `|| 'default'` semantics — e.g.
+    // an empty CAMUNDA_DEFAULT_TENANT_ID must not become an empty tenant id).
+    if (v !== undefined && v.trim() !== '') return v;
     const d = defaultValue(k);
     if (d !== undefined) return String(d);
+    if (v !== undefined) return v;
     throw new Error(`Internal configuration error: no value or schema default for ${k}`);
   };
   const reqInt = (k: EnvVarKey): number => {

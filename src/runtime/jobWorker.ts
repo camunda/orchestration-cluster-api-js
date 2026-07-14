@@ -103,13 +103,16 @@ export class JobWorker {
 
   constructor(client: CamundaClient, cfg: JobWorkerConfig) {
     this._client = client;
+    // Nullish-coalesce each defaulted field so an explicitly-passed `undefined`
+    // cannot wipe out a required runtime default (a plain `{...defaults, ...cfg}`
+    // spread would let `maxParallelJobs: undefined` override the default).
     this._cfg = {
-      pollIntervalMs: 1,
-      autoStart: true,
-      validateSchemas: false,
-      maxParallelJobs: 10,
-      jobTimeoutMs: 60_000,
       ...cfg,
+      pollIntervalMs: cfg.pollIntervalMs ?? 1,
+      autoStart: cfg.autoStart ?? true,
+      validateSchemas: cfg.validateSchemas ?? false,
+      maxParallelJobs: cfg.maxParallelJobs ?? 10,
+      jobTimeoutMs: cfg.jobTimeoutMs ?? 60_000,
     };
     this._maxParallelJobs = this._cfg.maxParallelJobs;
     this._jobTimeoutMs = this._cfg.jobTimeoutMs;
