@@ -6,7 +6,8 @@ export const SCHEMA = {
   CAMUNDA_REST_ADDRESS: {
     type: 'string',
     default: 'http://localhost:8080/v2',
-    doc: 'Base REST endpoint address.',
+    aliases: ['ZEEBE_REST_ADDRESS'],
+    doc: 'Base REST endpoint address. Legacy alias: ZEEBE_REST_ADDRESS (used only when CAMUNDA_REST_ADDRESS is unset).',
   },
   CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: {
     desc: 'Maximum total HTTP attempts (including the initial attempt) for transient failures (429,503, network).',
@@ -256,6 +257,10 @@ export function isSecret(key: EnvVarKey): boolean {
 }
 export function requiredWhen(key: EnvVarKey): { key: EnvVarKey; equals: string } | undefined {
   return (SCHEMA as any)[key].requiredWhen;
+}
+// Legacy env var names accepted as fallbacks for a canonical key (declared in SCHEMA).
+export function aliases(key: EnvVarKey): readonly string[] {
+  return (SCHEMA as any)[key].aliases ?? [];
 }
 export function defaultValue(key: EnvVarKey): any {
   return (SCHEMA as any)[key].default;

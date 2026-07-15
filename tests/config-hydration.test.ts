@@ -61,6 +61,15 @@ describe('unified configuration hydration', () => {
     expect(config.restAddress).toBe('https://cluster.alias.example/v2');
   });
 
+  it('falls back to the schema default when a defaulted string var is empty', () => {
+    // An explicitly empty env var must not become an empty effective value, and the
+    // schema default must be applied at the rawMap stage so effective / __raw reflect it.
+    const { config, effective } = hydrateConfig({ env: { CAMUNDA_DEFAULT_TENANT_ID: '' } });
+    expect(config.defaultTenantId).toBe('<default>');
+    expect(config.__raw.CAMUNDA_DEFAULT_TENANT_ID).toBe('<default>');
+    expect(effective.CAMUNDA_DEFAULT_TENANT_ID).toBe('<default>');
+  });
+
   it('infers OAUTH auth strategy when CAMUNDA_OAUTH_URL provided and strategy missing', () => {
     const { config } = hydrateConfig({
       env: {
