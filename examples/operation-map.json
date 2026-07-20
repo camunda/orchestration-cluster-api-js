@@ -113,7 +113,7 @@
     {
       "file": "process-instance.ts",
       "region": "AssignProcessInstanceBusinessId",
-      "label": "Assign a business id to a process instance"
+      "label": "Assign a business ID to a process instance"
     }
   ],
   "createDeployment": [
