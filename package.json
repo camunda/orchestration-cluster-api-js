@@ -68,6 +68,7 @@
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
     "lint": "biome lint .",
     "lint:fix": "biome check . --write",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "format": "biome format . --write",
     "format:check": "biome check .",
     "release": "semantic-release",

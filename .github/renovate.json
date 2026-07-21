@@ -31,5 +31,6 @@
       "automerge": true
     }
   ],
-  "vulnerabilityAlerts": { "enabled": false }
+  "vulnerabilityAlerts": { "enabled": true },
+  "osvVulnerabilityAlerts": true
 }
