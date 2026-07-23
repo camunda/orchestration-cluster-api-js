@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:73ad42fb782f5c72dd84bdc40ef81313976c3f4083436c18c7019e7e0a3295cc",
+  "specHash": "sha256:d13bc9d204c7e72691377d7ac75c580db83acec006dbd3f4635c4fbe05245865",
   "semanticKeys": [
     {
       "name": "AgentHistoryItemKey",
@@ -1462,6 +1462,22 @@
       "stableId": "category-filter-property"
     },
     {
+      "name": "ClusterVariableKindFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ClusterVariableKindEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "ref",
+          "ref": "ClusterVariableKindExactMatch"
+        },
+        {
+          "branchType": "ref",
+          "ref": "AdvancedClusterVariableKindFilter"
+        }
+      ],
+      "stableId": "cluster-variable-kind-filter-property"
+    },
+    {
       "name": "ClusterVariableScopeFilterProperty",
       "kind": "union-wrapper",
       "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
@@ -2684,6 +2700,14 @@
       ]
     },
     {
+      "operationId": "searchProcessDefinitionVariableNames",
+      "path": "/process-definitions/{processDefinitionKey}/variable-names/search",
+      "method": "post",
+      "tags": [
+        "Process definition"
+      ]
+    },
+    {
       "operationId": "getProcessDefinitionXML",
       "path": "/process-definitions/{processDefinitionKey}/xml",
       "method": "get",
@@ -3157,12 +3181,12 @@
           }
         ],
         "x-semantic-establishes": {
-          "kind": "AgentInstanceIteration",
+          "kind": "AgentInstanceLoopIteration",
           "identifiedBy": [
             {
               "in": "body",
-              "name": "iteration",
-              "semanticType": "IterationId"
+              "name": "loopIteration",
+              "semanticType": "LoopIterationId"
             }
           ]
         },
@@ -7264,6 +7288,44 @@
       }
     },
     {
+      "operationId": "searchProcessDefinitionVariableNames",
+      "path": "/process-definitions/{processDefinitionKey}/variable-names/search",
+      "method": "post",
+      "tags": [
+        "Process definition"
+      ],
+      "summary": "Search process definition variable names",
+      "description": "Search for distinct variable names defined on a process definition, optionally narrowed by the name filter.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "processDefinitionKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "process-definitions.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "ProcessDefinitionVariableNameSearchQuery",
+      "successResponseSchemaRef": "ProcessDefinitionVariableNameSearchQueryResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": true,
+        "x-permission-enforcement": "filter",
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "READ_PROCESS_INSTANCE"
+          }
+        ],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "getProcessDefinitionXML",
       "path": "/process-definitions/{processDefinitionKey}/xml",
       "method": "get",
@@ -7586,6 +7648,49 @@
       }
     },
     {
+      "operationId": "resumeProcessInstancesBatchOperation",
+      "path": "/process-instances/resumption",
+      "method": "post",
+      "tags": [
+        "Process instance"
+      ],
+      "summary": "Resume process instances (batch)",
+      "description": "Resumes multiple suspended process instances.\nSince only SUSPENDED root instances can be resumed, any given\nfilters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "process-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "ProcessInstanceResumptionBatchOperationRequest",
+      "successResponseSchemaRef": "BatchOperationCreatedResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [
+          {
+            "anyOf": [
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE"
+              },
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE"
+              }
+            ]
+          }
+        ],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "searchProcessInstances",
       "path": "/process-instances/search",
       "method": "post",
@@ -7622,6 +7727,49 @@
       }
     },
     {
+      "operationId": "suspendProcessInstancesBatchOperation",
+      "path": "/process-instances/suspension",
+      "method": "post",
+      "tags": [
+        "Process instance"
+      ],
+      "summary": "Suspend process instances (batch)",
+      "description": "Suspends multiple running process instances.\nSince only ACTIVE root instances can be suspended, any given\nfilters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "process-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "ProcessInstanceSuspensionBatchOperationRequest",
+      "successResponseSchemaRef": "BatchOperationCreatedResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [
+          {
+            "anyOf": [
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE"
+              },
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE"
+              }
+            ]
+          }
+        ],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "getProcessInstance",
       "path": "/process-instances/{processInstanceKey}",
       "method": "get",
@@ -7653,6 +7801,42 @@
           }
         ],
         "x-added-in-version": "8.8"
+      }
+    },
+    {
+      "operationId": "assignProcessInstanceBusinessId",
+      "path": "/process-instances/{processInstanceKey}/business-id-assignment",
+      "method": "post",
+      "tags": [
+        "Process instance"
+      ],
+      "summary": "Assign business id to process instance",
+      "description": "Assigns a business id to an already-running process instance that currently has none.\n\nThe assignment is single and irreversible: only artifacts created after the assignment\n(for example future jobs, user tasks, decision instances, and message subscriptions) carry\nthe business id, while existing artifacts are not retroactively enriched. Re-sending the\nsame business id succeeds as a no-op. This endpoint is only useful while business id\nuniqueness enforcement is disabled; when it is enabled, the request is rejected with a 409\nresponse.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "processInstanceKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "process-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "ProcessInstanceBusinessIdAssignmentInstruction",
+      "successStatus": 204,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "UPDATE_PROCESS_INSTANCE"
+          }
+        ],
+        "x-added-in-version": "8.10"
       }
     },
     {
@@ -7904,6 +8088,42 @@
       }
     },
     {
+      "operationId": "resumeProcessInstance",
+      "path": "/process-instances/{processInstanceKey}/resumption",
+      "method": "post",
+      "tags": [
+        "Process instance"
+      ],
+      "summary": "Resume process instance",
+      "description": "Resumes a suspended process instance, returning it to the ACTIVE state and continuing processing.\nOnly process instances in the SUSPENDED state can be resumed.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "processInstanceKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "process-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "ResumeProcessInstanceRequest",
+      "successStatus": 204,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "SUSPEND_PROCESS_INSTANCE"
+          }
+        ],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "getProcessInstanceSequenceFlows",
       "path": "/process-instances/{processInstanceKey}/sequence-flows",
       "method": "get",
@@ -8002,6 +8222,42 @@
           {
             "resourceType": "PROCESS_DEFINITION",
             "permissionType": "READ_PROCESS_INSTANCE"
+          }
+        ],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
+      "operationId": "suspendProcessInstance",
+      "path": "/process-instances/{processInstanceKey}/suspension",
+      "method": "post",
+      "tags": [
+        "Process instance"
+      ],
+      "summary": "Suspend process instance",
+      "description": "Suspends a running process instance, pausing further processing until it is resumed.\nOnly process instances in the ACTIVE state can be suspended.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [
+        "processInstanceKey"
+      ],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "process-instances.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "SuspendProcessInstanceRequest",
+      "successStatus": 204,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "SUSPEND_PROCESS_INSTANCE"
           }
         ],
         "x-added-in-version": "8.10"
@@ -8967,6 +9223,42 @@
           }
         },
         "x-added-in-version": "8.8"
+      }
+    },
+    {
+      "operationId": "resolveSecrets",
+      "path": "/secrets/resolve",
+      "method": "post",
+      "tags": [
+        "Secret"
+      ],
+      "summary": "Resolve secrets (alpha)",
+      "description": "Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's\nphysical tenant in a single round-trip.\n\nEach reference is authorized and resolved independently. For valid requests, the endpoint\nalways responds with HTTP 200: successfully resolved references are returned in `resolved`,\nwhile references that could not be resolved (for example not found, malformed or over-long,\nor the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of\none reference never fails the others. Only structurally invalid requests are rejected with\nHTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n\nPhase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;\nevery other authorized, valid reference returns `NOT_FOUND`.\n",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "secrets.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "SecretResolveRequest",
+      "successResponseSchemaRef": "SecretResolveResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-permission-enforcement": "filter",
+        "x-required-permissions": [
+          {
+            "resourceType": "SECRET",
+            "permissionType": "REVEAL"
+          }
+        ],
+        "x-added-in-version": "8.10"
       }
     },
     {
@@ -10103,6 +10395,72 @@
       }
     },
     {
+      "operationId": "changeClusterMode",
+      "path": "/mode",
+      "method": "patch",
+      "tags": [
+        "Recovery"
+      ],
+      "summary": "Change cluster mode",
+      "description": "Transitions the cluster between processing and recovery mode. This is a non-blocking operation: the request is acknowledged once the change has been accepted, before the transition itself has completed. Entering recovery mode deactivates all partitions so that only a restricted set of read-only operations remains available; exiting recovery mode returns the cluster to normal processing. Returns the planned cluster change so its progress can be monitored via the topology.",
+      "eventuallyConsistent": false,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [],
+      "queryParams": [
+        {
+          "name": "mode",
+          "required": true
+        },
+        {
+          "name": "dryRun",
+          "required": false
+        }
+      ],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "cluster.yaml",
+      "requestBodyContentTypes": [],
+      "successResponseSchemaRef": "ClusterModeChangeResponse",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
+      "operationId": "restore",
+      "path": "/restore",
+      "method": "post",
+      "tags": [
+        "Recovery"
+      ],
+      "summary": "Restore from a backup",
+      "description": "Restores the cluster from a backup. The restore is described either by a single backup ID or by a time range (`from`/`to`) that selects the backups to restore. This endpoint is only accessible while the cluster is in recovery mode; requests are rejected otherwise. The request is validated and acknowledged, but the restore itself is performed asynchronously.",
+      "eventuallyConsistent": false,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "cluster.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "RestoreRequest",
+      "successResponseSchemaRef": "ClusterModeChangeResponse",
+      "successStatus": 202,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "createUser",
       "path": "/users",
       "method": "post",
@@ -10654,7 +11012,6 @@
       "requestBodyContentTypes": [
         "application/json"
       ],
-      "requestBodySchemaRef": "UserTaskEffectiveVariableSearchQueryRequest",
       "successResponseSchemaRef": "VariableSearchQueryResult",
       "successStatus": 200,
       "vendorExtensions": {
@@ -11041,9 +11398,9 @@
   ],
   "integrity": {
     "totalSemanticKeys": 41,
-    "totalUnions": 64,
-    "totalOperations": 195,
-    "totalEventuallyConsistent": 91,
+    "totalUnions": 65,
+    "totalOperations": 204,
+    "totalEventuallyConsistent": 92,
     "totalDeprecatedEnumSchemas": 2,
     "totalSemanticProviders": 23
   }

@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateAdHocSubProcessActivitiesData, ActivateAdHocSubProcessActivitiesErrors, ActivateAdHocSubProcessActivitiesResponses, ActivateJobsData, ActivateJobsErrors, ActivateJobsResponses, AssignClientToGroupData, AssignClientToGroupErrors, AssignClientToGroupResponses, AssignClientToTenantData, AssignClientToTenantErrors, AssignClientToTenantResponses, AssignGroupToTenantData, AssignGroupToTenantErrors, AssignGroupToTenantResponses, AssignMappingRuleToGroupData, AssignMappingRuleToGroupErrors, AssignMappingRuleToGroupResponses, AssignMappingRuleToTenantData, AssignMappingRuleToTenantErrors, AssignMappingRuleToTenantResponses, AssignRoleToClientData, AssignRoleToClientErrors, AssignRoleToClientResponses, AssignRoleToGroupData, AssignRoleToGroupErrors, AssignRoleToGroupResponses, AssignRoleToMappingRuleData, AssignRoleToMappingRuleErrors, AssignRoleToMappingRuleResponses, AssignRoleToTenantData, AssignRoleToTenantErrors, AssignRoleToTenantResponses, AssignRoleToUserData, AssignRoleToUserErrors, AssignRoleToUserResponses, AssignUserTaskData, AssignUserTaskErrors, AssignUserTaskResponses, AssignUserToGroupData, AssignUserToGroupErrors, AssignUserToGroupResponses, AssignUserToTenantData, AssignUserToTenantErrors, AssignUserToTenantResponses, BroadcastSignalData, BroadcastSignalErrors, BroadcastSignalResponses, CancelBatchOperationData, CancelBatchOperationErrors, CancelBatchOperationResponses, CancelProcessInstanceData, CancelProcessInstanceErrors, CancelProcessInstanceResponses, CancelProcessInstancesBatchOperationData, CancelProcessInstancesBatchOperationErrors, CancelProcessInstancesBatchOperationResponses, CompleteJobData, CompleteJobErrors, CompleteJobResponses, CompleteUserTaskData, CompleteUserTaskErrors, CompleteUserTaskResponses, CorrelateMessageData, CorrelateMessageErrors, CorrelateMessageResponses, CreateAdminUserData, CreateAdminUserErrors, CreateAdminUserResponses, CreateAgentInstanceData, CreateAgentInstanceErrors, CreateAgentInstanceHistoryItemData, CreateAgentInstanceHistoryItemErrors, CreateAgentInstanceHistoryItemResponses, CreateAgentInstanceResponses, CreateAuthorizationData, CreateAuthorizationErrors, CreateAuthorizationResponses, CreateDeploymentData, CreateDeploymentErrors, CreateDeploymentResponses, CreateDocumentData, CreateDocumentErrors, CreateDocumentLinkData, CreateDocumentLinkErrors, CreateDocumentLinkResponses, CreateDocumentResponses, CreateDocumentsData, CreateDocumentsErrors, CreateDocumentsResponses, CreateElementInstanceVariablesData, CreateElementInstanceVariablesErrors, CreateElementInstanceVariablesResponses, CreateGlobalClusterVariableData, CreateGlobalClusterVariableErrors, CreateGlobalClusterVariableResponses, CreateGlobalTaskListenerData, CreateGlobalTaskListenerErrors, CreateGlobalTaskListenerResponses, CreateGroupData, CreateGroupErrors, CreateGroupResponses, CreateMappingRuleData, CreateMappingRuleErrors, CreateMappingRuleResponses, CreateProcessInstanceData, CreateProcessInstanceErrors, CreateProcessInstanceResponses, CreateRoleData, CreateRoleErrors, CreateRoleResponses, CreateTenantClusterVariableData, CreateTenantClusterVariableErrors, CreateTenantClusterVariableResponses, CreateTenantData, CreateTenantErrors, CreateTenantResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteAuthorizationData, DeleteAuthorizationErrors, DeleteAuthorizationResponses, DeleteDecisionInstanceData, DeleteDecisionInstanceErrors, DeleteDecisionInstanceResponses, DeleteDecisionInstancesBatchOperationData, DeleteDecisionInstancesBatchOperationErrors, DeleteDecisionInstancesBatchOperationResponses, DeleteDocumentData, DeleteDocumentErrors, DeleteDocumentResponses, DeleteGlobalClusterVariableData, DeleteGlobalClusterVariableErrors, DeleteGlobalClusterVariableResponses, DeleteGlobalTaskListenerData, DeleteGlobalTaskListenerErrors, DeleteGlobalTaskListenerResponses, DeleteGroupData, DeleteGroupErrors, DeleteGroupResponses, DeleteMappingRuleData, DeleteMappingRuleErrors, DeleteMappingRuleResponses, DeleteProcessInstanceData, DeleteProcessInstanceErrors, DeleteProcessInstanceResponses, DeleteProcessInstancesBatchOperationData, DeleteProcessInstancesBatchOperationErrors, DeleteProcessInstancesBatchOperationResponses, DeleteResourceData, DeleteResourceErrors, DeleteResourceResponses, DeleteRoleData, DeleteRoleErrors, DeleteRoleResponses, DeleteTenantClusterVariableData, DeleteTenantClusterVariableErrors, DeleteTenantClusterVariableResponses, DeleteTenantData, DeleteTenantErrors, DeleteTenantResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, EvaluateConditionalsData, EvaluateConditionalsErrors, EvaluateConditionalsResponses, EvaluateDecisionData, EvaluateDecisionErrors, EvaluateDecisionResponses, EvaluateExpressionData, EvaluateExpressionErrors, EvaluateExpressionResponses, FailJobData, FailJobErrors, FailJobResponses, GetAgentInstanceData, GetAgentInstanceErrors, GetAgentInstanceResponses, GetAuditLogData, GetAuditLogErrors, GetAuditLogResponses, GetAuthenticationData, GetAuthenticationErrors, GetAuthenticationResponses, GetAuthorizationData, GetAuthorizationErrors, GetAuthorizationResponses, GetBatchOperationData, GetBatchOperationErrors, GetBatchOperationResponses, GetDecisionDefinitionData, GetDecisionDefinitionErrors, GetDecisionDefinitionResponses, GetDecisionDefinitionXmlData, GetDecisionDefinitionXmlErrors, GetDecisionDefinitionXmlResponses, GetDecisionInstanceData, GetDecisionInstanceErrors, GetDecisionInstanceResponses, GetDecisionRequirementsData, GetDecisionRequirementsErrors, GetDecisionRequirementsResponses, GetDecisionRequirementsXmlData, GetDecisionRequirementsXmlErrors, GetDecisionRequirementsXmlResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetElementInstanceData, GetElementInstanceErrors, GetElementInstanceResponses, GetFormByKeyData, GetFormByKeyErrors, GetFormByKeyResponses, GetGlobalClusterVariableData, GetGlobalClusterVariableErrors, GetGlobalClusterVariableResponses, GetGlobalJobStatisticsData, GetGlobalJobStatisticsErrors, GetGlobalJobStatisticsResponses, GetGlobalTaskListenerData, GetGlobalTaskListenerErrors, GetGlobalTaskListenerResponses, GetGroupData, GetGroupErrors, GetGroupResponses, GetIncidentData, GetIncidentErrors, GetIncidentResponses, GetJobErrorStatisticsData, GetJobErrorStatisticsErrors, GetJobErrorStatisticsResponses, GetJobTimeSeriesStatisticsData, GetJobTimeSeriesStatisticsErrors, GetJobTimeSeriesStatisticsResponses, GetJobTypeStatisticsData, GetJobTypeStatisticsErrors, GetJobTypeStatisticsResponses, GetJobWorkerStatisticsData, GetJobWorkerStatisticsErrors, GetJobWorkerStatisticsResponses, GetLicenseData, GetLicenseErrors, GetLicenseResponses, GetMappingRuleData, GetMappingRuleErrors, GetMappingRuleResponses, GetProcessDefinitionData, GetProcessDefinitionErrors, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceStatisticsErrors, GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionInstanceVersionStatisticsErrors, GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsErrors, GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionResponses, GetProcessDefinitionStatisticsData, GetProcessDefinitionStatisticsErrors, GetProcessDefinitionStatisticsResponses, GetProcessDefinitionXmlData, GetProcessDefinitionXmlErrors, GetProcessDefinitionXmlResponses, GetProcessInstanceCallHierarchyData, GetProcessInstanceCallHierarchyErrors, GetProcessInstanceCallHierarchyResponses, GetProcessInstanceData, GetProcessInstanceErrors, GetProcessInstanceResponses, GetProcessInstanceSequenceFlowsData, GetProcessInstanceSequenceFlowsErrors, GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByDefinitionErrors, GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByErrorData, GetProcessInstanceStatisticsByErrorErrors, GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsData, GetProcessInstanceStatisticsErrors, GetProcessInstanceStatisticsResponses, GetProcessInstanceWaitStateStatisticsData, GetProcessInstanceWaitStateStatisticsErrors, GetProcessInstanceWaitStateStatisticsResponses, GetResourceContentBinaryData, GetResourceContentBinaryErrors, GetResourceContentBinaryResponses, GetResourceContentData, GetResourceContentErrors, GetResourceContentResponses, GetResourceData, GetResourceErrors, GetResourceResponses, GetRoleData, GetRoleErrors, GetRoleResponses, GetStartProcessFormData, GetStartProcessFormErrors, GetStartProcessFormResponses, GetStatusData, GetStatusErrors, GetStatusResponses, GetSystemConfigurationData, GetSystemConfigurationErrors, GetSystemConfigurationResponses, GetTenantClusterVariableData, GetTenantClusterVariableErrors, GetTenantClusterVariableResponses, GetTenantData, GetTenantErrors, GetTenantResponses, GetTopologyData, GetTopologyErrors, GetTopologyResponses, GetUsageMetricsData, GetUsageMetricsErrors, GetUsageMetricsResponses, GetUserData, GetUserErrors, GetUserResponses, GetUserTaskData, GetUserTaskErrors, GetUserTaskFormData, GetUserTaskFormErrors, GetUserTaskFormResponses, GetUserTaskResponses, GetVariableData, GetVariableErrors, GetVariableResponses, MigrateProcessInstanceData, MigrateProcessInstanceErrors, MigrateProcessInstanceResponses, MigrateProcessInstancesBatchOperationData, MigrateProcessInstancesBatchOperationErrors, MigrateProcessInstancesBatchOperationResponses, ModifyProcessInstanceData, ModifyProcessInstanceErrors, ModifyProcessInstanceResponses, ModifyProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationErrors, ModifyProcessInstancesBatchOperationResponses, PinClockData, PinClockErrors, PinClockResponses, PublishMessageData, PublishMessageErrors, PublishMessageResponses, ResetClockData, ResetClockErrors, ResetClockResponses, ResolveIncidentData, ResolveIncidentErrors, ResolveIncidentResponses, ResolveIncidentsBatchOperationData, ResolveIncidentsBatchOperationErrors, ResolveIncidentsBatchOperationResponses, ResolveProcessInstanceIncidentsData, ResolveProcessInstanceIncidentsErrors, ResolveProcessInstanceIncidentsResponses, ResumeBatchOperationData, ResumeBatchOperationErrors, ResumeBatchOperationResponses, SearchAgentInstanceHistoryData, SearchAgentInstanceHistoryErrors, SearchAgentInstanceHistoryResponses, SearchAgentInstancesData, SearchAgentInstancesErrors, SearchAgentInstancesResponses, SearchAuditLogsData, SearchAuditLogsErrors, SearchAuditLogsResponses, SearchAuthorizationsData, SearchAuthorizationsErrors, SearchAuthorizationsResponses, SearchBatchOperationItemsData, SearchBatchOperationItemsErrors, SearchBatchOperationItemsResponses, SearchBatchOperationsData, SearchBatchOperationsErrors, SearchBatchOperationsResponses, SearchClientsForGroupData, SearchClientsForGroupErrors, SearchClientsForGroupResponses, SearchClientsForRoleData, SearchClientsForRoleErrors, SearchClientsForRoleResponses, SearchClientsForTenantData, SearchClientsForTenantResponses, SearchClusterVariablesData, SearchClusterVariablesErrors, SearchClusterVariablesResponses, SearchCorrelatedMessageSubscriptionsData, SearchCorrelatedMessageSubscriptionsErrors, SearchCorrelatedMessageSubscriptionsResponses, SearchDecisionDefinitionsData, SearchDecisionDefinitionsErrors, SearchDecisionDefinitionsResponses, SearchDecisionInstancesData, SearchDecisionInstancesErrors, SearchDecisionInstancesResponses, SearchDecisionRequirementsData, SearchDecisionRequirementsErrors, SearchDecisionRequirementsResponses, SearchElementInstanceIncidentsData, SearchElementInstanceIncidentsErrors, SearchElementInstanceIncidentsResponses, SearchElementInstancesData, SearchElementInstancesErrors, SearchElementInstancesResponses, SearchElementInstanceWaitStatesData, SearchElementInstanceWaitStatesErrors, SearchElementInstanceWaitStatesResponses, SearchGlobalTaskListenersData, SearchGlobalTaskListenersErrors, SearchGlobalTaskListenersResponses, SearchGroupIdsForTenantData, SearchGroupIdsForTenantResponses, SearchGroupsData, SearchGroupsErrors, SearchGroupsForRoleData, SearchGroupsForRoleErrors, SearchGroupsForRoleResponses, SearchGroupsResponses, SearchIncidentsData, SearchIncidentsErrors, SearchIncidentsResponses, SearchJobsData, SearchJobsErrors, SearchJobsResponses, SearchMappingRuleData, SearchMappingRuleErrors, SearchMappingRuleResponses, SearchMappingRulesForGroupData, SearchMappingRulesForGroupErrors, SearchMappingRulesForGroupResponses, SearchMappingRulesForRoleData, SearchMappingRulesForRoleErrors, SearchMappingRulesForRoleResponses, SearchMappingRulesForTenantData, SearchMappingRulesForTenantResponses, SearchMessageSubscriptionsData, SearchMessageSubscriptionsErrors, SearchMessageSubscriptionsResponses, SearchProcessDefinitionsData, SearchProcessDefinitionsErrors, SearchProcessDefinitionsResponses, SearchProcessInstanceIncidentsData, SearchProcessInstanceIncidentsErrors, SearchProcessInstanceIncidentsResponses, SearchProcessInstancesData, SearchProcessInstancesErrors, SearchProcessInstancesResponses, SearchResourcesData, SearchResourcesErrors, SearchResourcesResponses, SearchRolesData, SearchRolesErrors, SearchRolesForGroupData, SearchRolesForGroupErrors, SearchRolesForGroupResponses, SearchRolesForTenantData, SearchRolesForTenantResponses, SearchRolesResponses, SearchTenantsData, SearchTenantsErrors, SearchTenantsResponses, SearchUsersData, SearchUsersErrors, SearchUsersForGroupData, SearchUsersForGroupErrors, SearchUsersForGroupResponses, SearchUsersForRoleData, SearchUsersForRoleErrors, SearchUsersForRoleResponses, SearchUsersForTenantData, SearchUsersForTenantResponses, SearchUsersResponses, SearchUserTaskAuditLogsData, SearchUserTaskAuditLogsErrors, SearchUserTaskAuditLogsResponses, SearchUserTaskEffectiveVariablesData, SearchUserTaskEffectiveVariablesErrors, SearchUserTaskEffectiveVariablesResponses, SearchUserTasksData, SearchUserTasksErrors, SearchUserTasksResponses, SearchUserTaskVariablesData, SearchUserTaskVariablesErrors, SearchUserTaskVariablesResponses, SearchVariablesData, SearchVariablesErrors, SearchVariablesResponses, SuspendBatchOperationData, SuspendBatchOperationErrors, SuspendBatchOperationResponses, ThrowJobErrorData, ThrowJobErrorErrors, ThrowJobErrorResponses, UnassignClientFromGroupData, UnassignClientFromGroupErrors, UnassignClientFromGroupResponses, UnassignClientFromTenantData, UnassignClientFromTenantErrors, UnassignClientFromTenantResponses, UnassignGroupFromTenantData, UnassignGroupFromTenantErrors, UnassignGroupFromTenantResponses, UnassignMappingRuleFromGroupData, UnassignMappingRuleFromGroupErrors, UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromTenantData, UnassignMappingRuleFromTenantErrors, UnassignMappingRuleFromTenantResponses, UnassignRoleFromClientData, UnassignRoleFromClientErrors, UnassignRoleFromClientResponses, UnassignRoleFromGroupData, UnassignRoleFromGroupErrors, UnassignRoleFromGroupResponses, UnassignRoleFromMappingRuleData, UnassignRoleFromMappingRuleErrors, UnassignRoleFromMappingRuleResponses, UnassignRoleFromTenantData, UnassignRoleFromTenantErrors, UnassignRoleFromTenantResponses, UnassignRoleFromUserData, UnassignRoleFromUserErrors, UnassignRoleFromUserResponses, UnassignUserFromGroupData, UnassignUserFromGroupErrors, UnassignUserFromGroupResponses, UnassignUserFromTenantData, UnassignUserFromTenantErrors, UnassignUserFromTenantResponses, UnassignUserTaskData, UnassignUserTaskErrors, UnassignUserTaskResponses, UpdateAgentInstanceData, UpdateAgentInstanceErrors, UpdateAgentInstanceResponses, UpdateAuthorizationData, UpdateAuthorizationErrors, UpdateAuthorizationResponses, UpdateGlobalClusterVariableData, UpdateGlobalClusterVariableErrors, UpdateGlobalClusterVariableResponses, UpdateGlobalTaskListenerData, UpdateGlobalTaskListenerErrors, UpdateGlobalTaskListenerResponses, UpdateGroupData, UpdateGroupErrors, UpdateGroupResponses, UpdateJobData, UpdateJobErrors, UpdateJobResponses, UpdateJobsBatchOperationData, UpdateJobsBatchOperationErrors, UpdateJobsBatchOperationResponses, UpdateMappingRuleData, UpdateMappingRuleErrors, UpdateMappingRuleResponses, UpdateRoleData, UpdateRoleErrors, UpdateRoleResponses, UpdateTenantClusterVariableData, UpdateTenantClusterVariableErrors, UpdateTenantClusterVariableResponses, UpdateTenantData, UpdateTenantErrors, UpdateTenantResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UpdateUserTaskData, UpdateUserTaskErrors, UpdateUserTaskResponses } from './types.gen';
+import type { ActivateAdHocSubProcessActivitiesData, ActivateAdHocSubProcessActivitiesErrors, ActivateAdHocSubProcessActivitiesResponses, ActivateJobsData, ActivateJobsErrors, ActivateJobsResponses, AssignClientToGroupData, AssignClientToGroupErrors, AssignClientToGroupResponses, AssignClientToTenantData, AssignClientToTenantErrors, AssignClientToTenantResponses, AssignGroupToTenantData, AssignGroupToTenantErrors, AssignGroupToTenantResponses, AssignMappingRuleToGroupData, AssignMappingRuleToGroupErrors, AssignMappingRuleToGroupResponses, AssignMappingRuleToTenantData, AssignMappingRuleToTenantErrors, AssignMappingRuleToTenantResponses, AssignProcessInstanceBusinessIdData, AssignProcessInstanceBusinessIdErrors, AssignProcessInstanceBusinessIdResponses, AssignRoleToClientData, AssignRoleToClientErrors, AssignRoleToClientResponses, AssignRoleToGroupData, AssignRoleToGroupErrors, AssignRoleToGroupResponses, AssignRoleToMappingRuleData, AssignRoleToMappingRuleErrors, AssignRoleToMappingRuleResponses, AssignRoleToTenantData, AssignRoleToTenantErrors, AssignRoleToTenantResponses, AssignRoleToUserData, AssignRoleToUserErrors, AssignRoleToUserResponses, AssignUserTaskData, AssignUserTaskErrors, AssignUserTaskResponses, AssignUserToGroupData, AssignUserToGroupErrors, AssignUserToGroupResponses, AssignUserToTenantData, AssignUserToTenantErrors, AssignUserToTenantResponses, BroadcastSignalData, BroadcastSignalErrors, BroadcastSignalResponses, CancelBatchOperationData, CancelBatchOperationErrors, CancelBatchOperationResponses, CancelProcessInstanceData, CancelProcessInstanceErrors, CancelProcessInstanceResponses, CancelProcessInstancesBatchOperationData, CancelProcessInstancesBatchOperationErrors, CancelProcessInstancesBatchOperationResponses, ChangeClusterModeData, ChangeClusterModeErrors, ChangeClusterModeResponses, CompleteJobData, CompleteJobErrors, CompleteJobResponses, CompleteUserTaskData, CompleteUserTaskErrors, CompleteUserTaskResponses, CorrelateMessageData, CorrelateMessageErrors, CorrelateMessageResponses, CreateAdminUserData, CreateAdminUserErrors, CreateAdminUserResponses, CreateAgentInstanceData, CreateAgentInstanceErrors, CreateAgentInstanceHistoryItemData, CreateAgentInstanceHistoryItemErrors, CreateAgentInstanceHistoryItemResponses, CreateAgentInstanceResponses, CreateAuthorizationData, CreateAuthorizationErrors, CreateAuthorizationResponses, CreateDeploymentData, CreateDeploymentErrors, CreateDeploymentResponses, CreateDocumentData, CreateDocumentErrors, CreateDocumentLinkData, CreateDocumentLinkErrors, CreateDocumentLinkResponses, CreateDocumentResponses, CreateDocumentsData, CreateDocumentsErrors, CreateDocumentsResponses, CreateElementInstanceVariablesData, CreateElementInstanceVariablesErrors, CreateElementInstanceVariablesResponses, CreateGlobalClusterVariableData, CreateGlobalClusterVariableErrors, CreateGlobalClusterVariableResponses, CreateGlobalTaskListenerData, CreateGlobalTaskListenerErrors, CreateGlobalTaskListenerResponses, CreateGroupData, CreateGroupErrors, CreateGroupResponses, CreateMappingRuleData, CreateMappingRuleErrors, CreateMappingRuleResponses, CreateProcessInstanceData, CreateProcessInstanceErrors, CreateProcessInstanceResponses, CreateRoleData, CreateRoleErrors, CreateRoleResponses, CreateTenantClusterVariableData, CreateTenantClusterVariableErrors, CreateTenantClusterVariableResponses, CreateTenantData, CreateTenantErrors, CreateTenantResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteAuthorizationData, DeleteAuthorizationErrors, DeleteAuthorizationResponses, DeleteDecisionInstanceData, DeleteDecisionInstanceErrors, DeleteDecisionInstanceResponses, DeleteDecisionInstancesBatchOperationData, DeleteDecisionInstancesBatchOperationErrors, DeleteDecisionInstancesBatchOperationResponses, DeleteDocumentData, DeleteDocumentErrors, DeleteDocumentResponses, DeleteGlobalClusterVariableData, DeleteGlobalClusterVariableErrors, DeleteGlobalClusterVariableResponses, DeleteGlobalTaskListenerData, DeleteGlobalTaskListenerErrors, DeleteGlobalTaskListenerResponses, DeleteGroupData, DeleteGroupErrors, DeleteGroupResponses, DeleteMappingRuleData, DeleteMappingRuleErrors, DeleteMappingRuleResponses, DeleteProcessInstanceData, DeleteProcessInstanceErrors, DeleteProcessInstanceResponses, DeleteProcessInstancesBatchOperationData, DeleteProcessInstancesBatchOperationErrors, DeleteProcessInstancesBatchOperationResponses, DeleteResourceData, DeleteResourceErrors, DeleteResourceResponses, DeleteRoleData, DeleteRoleErrors, DeleteRoleResponses, DeleteTenantClusterVariableData, DeleteTenantClusterVariableErrors, DeleteTenantClusterVariableResponses, DeleteTenantData, DeleteTenantErrors, DeleteTenantResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, EvaluateConditionalsData, EvaluateConditionalsErrors, EvaluateConditionalsResponses, EvaluateDecisionData, EvaluateDecisionErrors, EvaluateDecisionResponses, EvaluateExpressionData, EvaluateExpressionErrors, EvaluateExpressionResponses, FailJobData, FailJobErrors, FailJobResponses, GetAgentInstanceData, GetAgentInstanceErrors, GetAgentInstanceResponses, GetAuditLogData, GetAuditLogErrors, GetAuditLogResponses, GetAuthenticationData, GetAuthenticationErrors, GetAuthenticationResponses, GetAuthorizationData, GetAuthorizationErrors, GetAuthorizationResponses, GetBatchOperationData, GetBatchOperationErrors, GetBatchOperationResponses, GetDecisionDefinitionData, GetDecisionDefinitionErrors, GetDecisionDefinitionResponses, GetDecisionDefinitionXmlData, GetDecisionDefinitionXmlErrors, GetDecisionDefinitionXmlResponses, GetDecisionInstanceData, GetDecisionInstanceErrors, GetDecisionInstanceResponses, GetDecisionRequirementsData, GetDecisionRequirementsErrors, GetDecisionRequirementsResponses, GetDecisionRequirementsXmlData, GetDecisionRequirementsXmlErrors, GetDecisionRequirementsXmlResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetElementInstanceData, GetElementInstanceErrors, GetElementInstanceResponses, GetFormByKeyData, GetFormByKeyErrors, GetFormByKeyResponses, GetGlobalClusterVariableData, GetGlobalClusterVariableErrors, GetGlobalClusterVariableResponses, GetGlobalJobStatisticsData, GetGlobalJobStatisticsErrors, GetGlobalJobStatisticsResponses, GetGlobalTaskListenerData, GetGlobalTaskListenerErrors, GetGlobalTaskListenerResponses, GetGroupData, GetGroupErrors, GetGroupResponses, GetIncidentData, GetIncidentErrors, GetIncidentResponses, GetJobErrorStatisticsData, GetJobErrorStatisticsErrors, GetJobErrorStatisticsResponses, GetJobTimeSeriesStatisticsData, GetJobTimeSeriesStatisticsErrors, GetJobTimeSeriesStatisticsResponses, GetJobTypeStatisticsData, GetJobTypeStatisticsErrors, GetJobTypeStatisticsResponses, GetJobWorkerStatisticsData, GetJobWorkerStatisticsErrors, GetJobWorkerStatisticsResponses, GetLicenseData, GetLicenseErrors, GetLicenseResponses, GetMappingRuleData, GetMappingRuleErrors, GetMappingRuleResponses, GetProcessDefinitionData, GetProcessDefinitionErrors, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceStatisticsErrors, GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionInstanceVersionStatisticsErrors, GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsErrors, GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionResponses, GetProcessDefinitionStatisticsData, GetProcessDefinitionStatisticsErrors, GetProcessDefinitionStatisticsResponses, GetProcessDefinitionXmlData, GetProcessDefinitionXmlErrors, GetProcessDefinitionXmlResponses, GetProcessInstanceCallHierarchyData, GetProcessInstanceCallHierarchyErrors, GetProcessInstanceCallHierarchyResponses, GetProcessInstanceData, GetProcessInstanceErrors, GetProcessInstanceResponses, GetProcessInstanceSequenceFlowsData, GetProcessInstanceSequenceFlowsErrors, GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByDefinitionErrors, GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByErrorData, GetProcessInstanceStatisticsByErrorErrors, GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsData, GetProcessInstanceStatisticsErrors, GetProcessInstanceStatisticsResponses, GetProcessInstanceWaitStateStatisticsData, GetProcessInstanceWaitStateStatisticsErrors, GetProcessInstanceWaitStateStatisticsResponses, GetResourceContentBinaryData, GetResourceContentBinaryErrors, GetResourceContentBinaryResponses, GetResourceContentData, GetResourceContentErrors, GetResourceContentResponses, GetResourceData, GetResourceErrors, GetResourceResponses, GetRoleData, GetRoleErrors, GetRoleResponses, GetStartProcessFormData, GetStartProcessFormErrors, GetStartProcessFormResponses, GetStatusData, GetStatusErrors, GetStatusResponses, GetSystemConfigurationData, GetSystemConfigurationErrors, GetSystemConfigurationResponses, GetTenantClusterVariableData, GetTenantClusterVariableErrors, GetTenantClusterVariableResponses, GetTenantData, GetTenantErrors, GetTenantResponses, GetTopologyData, GetTopologyErrors, GetTopologyResponses, GetUsageMetricsData, GetUsageMetricsErrors, GetUsageMetricsResponses, GetUserData, GetUserErrors, GetUserResponses, GetUserTaskData, GetUserTaskErrors, GetUserTaskFormData, GetUserTaskFormErrors, GetUserTaskFormResponses, GetUserTaskResponses, GetVariableData, GetVariableErrors, GetVariableResponses, MigrateProcessInstanceData, MigrateProcessInstanceErrors, MigrateProcessInstanceResponses, MigrateProcessInstancesBatchOperationData, MigrateProcessInstancesBatchOperationErrors, MigrateProcessInstancesBatchOperationResponses, ModifyProcessInstanceData, ModifyProcessInstanceErrors, ModifyProcessInstanceResponses, ModifyProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationErrors, ModifyProcessInstancesBatchOperationResponses, PinClockData, PinClockErrors, PinClockResponses, PublishMessageData, PublishMessageErrors, PublishMessageResponses, ResetClockData, ResetClockErrors, ResetClockResponses, ResolveIncidentData, ResolveIncidentErrors, ResolveIncidentResponses, ResolveIncidentsBatchOperationData, ResolveIncidentsBatchOperationErrors, ResolveIncidentsBatchOperationResponses, ResolveProcessInstanceIncidentsData, ResolveProcessInstanceIncidentsErrors, ResolveProcessInstanceIncidentsResponses, ResolveSecretsData, ResolveSecretsErrors, ResolveSecretsResponses, RestoreData, RestoreErrors, RestoreResponses, ResumeBatchOperationData, ResumeBatchOperationErrors, ResumeBatchOperationResponses, ResumeProcessInstanceData, ResumeProcessInstanceErrors, ResumeProcessInstanceResponses, ResumeProcessInstancesBatchOperationData, ResumeProcessInstancesBatchOperationErrors, ResumeProcessInstancesBatchOperationResponses, SearchAgentInstanceHistoryData, SearchAgentInstanceHistoryErrors, SearchAgentInstanceHistoryResponses, SearchAgentInstancesData, SearchAgentInstancesErrors, SearchAgentInstancesResponses, SearchAuditLogsData, SearchAuditLogsErrors, SearchAuditLogsResponses, SearchAuthorizationsData, SearchAuthorizationsErrors, SearchAuthorizationsResponses, SearchBatchOperationItemsData, SearchBatchOperationItemsErrors, SearchBatchOperationItemsResponses, SearchBatchOperationsData, SearchBatchOperationsErrors, SearchBatchOperationsResponses, SearchClientsForGroupData, SearchClientsForGroupErrors, SearchClientsForGroupResponses, SearchClientsForRoleData, SearchClientsForRoleErrors, SearchClientsForRoleResponses, SearchClientsForTenantData, SearchClientsForTenantResponses, SearchClusterVariablesData, SearchClusterVariablesErrors, SearchClusterVariablesResponses, SearchCorrelatedMessageSubscriptionsData, SearchCorrelatedMessageSubscriptionsErrors, SearchCorrelatedMessageSubscriptionsResponses, SearchDecisionDefinitionsData, SearchDecisionDefinitionsErrors, SearchDecisionDefinitionsResponses, SearchDecisionInstancesData, SearchDecisionInstancesErrors, SearchDecisionInstancesResponses, SearchDecisionRequirementsData, SearchDecisionRequirementsErrors, SearchDecisionRequirementsResponses, SearchElementInstanceIncidentsData, SearchElementInstanceIncidentsErrors, SearchElementInstanceIncidentsResponses, SearchElementInstancesData, SearchElementInstancesErrors, SearchElementInstancesResponses, SearchElementInstanceWaitStatesData, SearchElementInstanceWaitStatesErrors, SearchElementInstanceWaitStatesResponses, SearchGlobalTaskListenersData, SearchGlobalTaskListenersErrors, SearchGlobalTaskListenersResponses, SearchGroupIdsForTenantData, SearchGroupIdsForTenantResponses, SearchGroupsData, SearchGroupsErrors, SearchGroupsForRoleData, SearchGroupsForRoleErrors, SearchGroupsForRoleResponses, SearchGroupsResponses, SearchIncidentsData, SearchIncidentsErrors, SearchIncidentsResponses, SearchJobsData, SearchJobsErrors, SearchJobsResponses, SearchMappingRuleData, SearchMappingRuleErrors, SearchMappingRuleResponses, SearchMappingRulesForGroupData, SearchMappingRulesForGroupErrors, SearchMappingRulesForGroupResponses, SearchMappingRulesForRoleData, SearchMappingRulesForRoleErrors, SearchMappingRulesForRoleResponses, SearchMappingRulesForTenantData, SearchMappingRulesForTenantResponses, SearchMessageSubscriptionsData, SearchMessageSubscriptionsErrors, SearchMessageSubscriptionsResponses, SearchProcessDefinitionsData, SearchProcessDefinitionsErrors, SearchProcessDefinitionsResponses, SearchProcessDefinitionVariableNamesData, SearchProcessDefinitionVariableNamesErrors, SearchProcessDefinitionVariableNamesResponses, SearchProcessInstanceIncidentsData, SearchProcessInstanceIncidentsErrors, SearchProcessInstanceIncidentsResponses, SearchProcessInstancesData, SearchProcessInstancesErrors, SearchProcessInstancesResponses, SearchResourcesData, SearchResourcesErrors, SearchResourcesResponses, SearchRolesData, SearchRolesErrors, SearchRolesForGroupData, SearchRolesForGroupErrors, SearchRolesForGroupResponses, SearchRolesForTenantData, SearchRolesForTenantResponses, SearchRolesResponses, SearchTenantsData, SearchTenantsErrors, SearchTenantsResponses, SearchUsersData, SearchUsersErrors, SearchUsersForGroupData, SearchUsersForGroupErrors, SearchUsersForGroupResponses, SearchUsersForRoleData, SearchUsersForRoleErrors, SearchUsersForRoleResponses, SearchUsersForTenantData, SearchUsersForTenantResponses, SearchUsersResponses, SearchUserTaskAuditLogsData, SearchUserTaskAuditLogsErrors, SearchUserTaskAuditLogsResponses, SearchUserTaskEffectiveVariablesData, SearchUserTaskEffectiveVariablesErrors, SearchUserTaskEffectiveVariablesResponses, SearchUserTasksData, SearchUserTasksErrors, SearchUserTasksResponses, SearchUserTaskVariablesData, SearchUserTaskVariablesErrors, SearchUserTaskVariablesResponses, SearchVariablesData, SearchVariablesErrors, SearchVariablesResponses, SuspendBatchOperationData, SuspendBatchOperationErrors, SuspendBatchOperationResponses, SuspendProcessInstanceData, SuspendProcessInstanceErrors, SuspendProcessInstanceResponses, SuspendProcessInstancesBatchOperationData, SuspendProcessInstancesBatchOperationErrors, SuspendProcessInstancesBatchOperationResponses, ThrowJobErrorData, ThrowJobErrorErrors, ThrowJobErrorResponses, UnassignClientFromGroupData, UnassignClientFromGroupErrors, UnassignClientFromGroupResponses, UnassignClientFromTenantData, UnassignClientFromTenantErrors, UnassignClientFromTenantResponses, UnassignGroupFromTenantData, UnassignGroupFromTenantErrors, UnassignGroupFromTenantResponses, UnassignMappingRuleFromGroupData, UnassignMappingRuleFromGroupErrors, UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromTenantData, UnassignMappingRuleFromTenantErrors, UnassignMappingRuleFromTenantResponses, UnassignRoleFromClientData, UnassignRoleFromClientErrors, UnassignRoleFromClientResponses, UnassignRoleFromGroupData, UnassignRoleFromGroupErrors, UnassignRoleFromGroupResponses, UnassignRoleFromMappingRuleData, UnassignRoleFromMappingRuleErrors, UnassignRoleFromMappingRuleResponses, UnassignRoleFromTenantData, UnassignRoleFromTenantErrors, UnassignRoleFromTenantResponses, UnassignRoleFromUserData, UnassignRoleFromUserErrors, UnassignRoleFromUserResponses, UnassignUserFromGroupData, UnassignUserFromGroupErrors, UnassignUserFromGroupResponses, UnassignUserFromTenantData, UnassignUserFromTenantErrors, UnassignUserFromTenantResponses, UnassignUserTaskData, UnassignUserTaskErrors, UnassignUserTaskResponses, UpdateAgentInstanceData, UpdateAgentInstanceErrors, UpdateAgentInstanceResponses, UpdateAuthorizationData, UpdateAuthorizationErrors, UpdateAuthorizationResponses, UpdateGlobalClusterVariableData, UpdateGlobalClusterVariableErrors, UpdateGlobalClusterVariableResponses, UpdateGlobalTaskListenerData, UpdateGlobalTaskListenerErrors, UpdateGlobalTaskListenerResponses, UpdateGroupData, UpdateGroupErrors, UpdateGroupResponses, UpdateJobData, UpdateJobErrors, UpdateJobResponses, UpdateJobsBatchOperationData, UpdateJobsBatchOperationErrors, UpdateJobsBatchOperationResponses, UpdateMappingRuleData, UpdateMappingRuleErrors, UpdateMappingRuleResponses, UpdateRoleData, UpdateRoleErrors, UpdateRoleResponses, UpdateTenantClusterVariableData, UpdateTenantClusterVariableErrors, UpdateTenantClusterVariableResponses, UpdateTenantData, UpdateTenantErrors, UpdateTenantResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UpdateUserTaskData, UpdateUserTaskErrors, UpdateUserTaskResponses } from './types.gen';
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
      * You can provide a client instance returned by `createClient()` instead of
@@ -3107,6 +3107,34 @@ export const getProcessDefinitionStatistics = <ThrowOnError extends boolean = tr
 };
 
 /**
+ * Search process definition variable names
+ *
+ * Search for distinct variable names defined on a process definition, optionally narrowed by the name filter.
+ */
+export const searchProcessDefinitionVariableNames = <ThrowOnError extends boolean = true>(options: Options<SearchProcessDefinitionVariableNamesData, ThrowOnError>) => {
+    return (options.client ?? client).post<SearchProcessDefinitionVariableNamesResponses, SearchProcessDefinitionVariableNamesErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-definitions/{processDefinitionKey}/variable-names/search',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
  * Get process definition XML
  *
  * Returns process definition as XML.
@@ -3356,6 +3384,38 @@ export const modifyProcessInstancesBatchOperation = <ThrowOnError extends boolea
 };
 
 /**
+ * Resume process instances (batch)
+ *
+ * Resumes multiple suspended process instances.
+ * Since only SUSPENDED root instances can be resumed, any given
+ * filters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.
+ * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+ */
+export const resumeProcessInstancesBatchOperation = <ThrowOnError extends boolean = true>(options: Options<ResumeProcessInstancesBatchOperationData, ThrowOnError>) => {
+    return (options.client ?? client).post<ResumeProcessInstancesBatchOperationResponses, ResumeProcessInstancesBatchOperationErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/resumption',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
  * Search process instances
  *
  * Search for process instances based on given criteria.
@@ -3384,6 +3444,38 @@ export const searchProcessInstances = <ThrowOnError extends boolean = true>(opti
 };
 
 /**
+ * Suspend process instances (batch)
+ *
+ * Suspends multiple running process instances.
+ * Since only ACTIVE root instances can be suspended, any given
+ * filters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.
+ * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+ */
+export const suspendProcessInstancesBatchOperation = <ThrowOnError extends boolean = true>(options: Options<SuspendProcessInstancesBatchOperationData, ThrowOnError>) => {
+    return (options.client ?? client).post<SuspendProcessInstancesBatchOperationResponses, SuspendProcessInstancesBatchOperationErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/suspension',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
  * Get process instance
  *
  * Get the process instance by the process instance key.
@@ -3404,6 +3496,42 @@ export const getProcessInstance = <ThrowOnError extends boolean = true>(options:
         ],
         url: '/process-instances/{processInstanceKey}',
         ...options
+    });
+};
+
+/**
+ * Assign business id to process instance
+ *
+ * Assigns a business id to an already-running process instance that currently has none.
+ *
+ * The assignment is single and irreversible: only artifacts created after the assignment
+ * (for example future jobs, user tasks, decision instances, and message subscriptions) carry
+ * the business id, while existing artifacts are not retroactively enriched. Re-sending the
+ * same business id succeeds as a no-op. This endpoint is only useful while business id
+ * uniqueness enforcement is disabled; when it is enabled, the request is rejected with a 409
+ * response.
+ *
+ */
+export const assignProcessInstanceBusinessId = <ThrowOnError extends boolean = true>(options: Options<AssignProcessInstanceBusinessIdData, ThrowOnError>) => {
+    return (options.client ?? client).post<AssignProcessInstanceBusinessIdResponses, AssignProcessInstanceBusinessIdErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/business-id-assignment',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
@@ -3616,6 +3744,36 @@ export const modifyProcessInstance = <ThrowOnError extends boolean = true>(optio
 };
 
 /**
+ * Resume process instance
+ *
+ * Resumes a suspended process instance, returning it to the ACTIVE state and continuing processing.
+ * Only process instances in the SUSPENDED state can be resumed.
+ *
+ */
+export const resumeProcessInstance = <ThrowOnError extends boolean = true>(options: Options<ResumeProcessInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).post<ResumeProcessInstanceResponses, ResumeProcessInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/resumption',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
  * Get sequence flows
  *
  * Get sequence flows taken by the process instance.
@@ -3684,6 +3842,36 @@ export const getProcessInstanceWaitStateStatistics = <ThrowOnError extends boole
         ],
         url: '/process-instances/{processInstanceKey}/statistics/wait-states',
         ...options
+    });
+};
+
+/**
+ * Suspend process instance
+ *
+ * Suspends a running process instance, pausing further processing until it is resumed.
+ * Only process instances in the ACTIVE state can be suspended.
+ *
+ */
+export const suspendProcessInstance = <ThrowOnError extends boolean = true>(options: Options<SuspendProcessInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).post<SuspendProcessInstanceResponses, SuspendProcessInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/suspension',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
@@ -4288,6 +4476,48 @@ export const assignRoleToUser = <ThrowOnError extends boolean = true>(options: O
         ],
         url: '/roles/{roleId}/users/{username}',
         ...options
+    });
+};
+
+/**
+ * Resolve secrets (alpha)
+ *
+ * Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's
+ * physical tenant in a single round-trip.
+ *
+ * Each reference is authorized and resolved independently. For valid requests, the endpoint
+ * always responds with HTTP 200: successfully resolved references are returned in `resolved`,
+ * while references that could not be resolved (for example not found, malformed or over-long,
+ * or the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of
+ * one reference never fails the others. Only structurally invalid requests are rejected with
+ * HTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.
+ *
+ * This endpoint is an alpha feature and may be subject to change in future releases.
+ *
+ * Phase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;
+ * every other authorized, valid reference returns `NOT_FOUND`.
+ *
+ */
+export const resolveSecrets = <ThrowOnError extends boolean = true>(options: Options<ResolveSecretsData, ThrowOnError>) => {
+    return (options.client ?? client).post<ResolveSecretsResponses, ResolveSecretsErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/secrets/resolve',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
@@ -4952,6 +5182,58 @@ export const getTopology = <ThrowOnError extends boolean = true>(options?: Optio
         ],
         url: '/topology',
         ...options
+    });
+};
+
+/**
+ * Change cluster mode
+ *
+ * Transitions the cluster between processing and recovery mode. This is a non-blocking operation: the request is acknowledged once the change has been accepted, before the transition itself has completed. Entering recovery mode deactivates all partitions so that only a restricted set of read-only operations remains available; exiting recovery mode returns the cluster to normal processing. Returns the planned cluster change so its progress can be monitored via the topology.
+ */
+export const changeClusterMode = <ThrowOnError extends boolean = true>(options: Options<ChangeClusterModeData, ThrowOnError>) => {
+    return (options.client ?? client).patch<ChangeClusterModeResponses, ChangeClusterModeErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/mode',
+        ...options
+    });
+};
+
+/**
+ * Restore from a backup
+ *
+ * Restores the cluster from a backup. The restore is described either by a single backup ID or by a time range (`from`/`to`) that selects the backups to restore. This endpoint is only accessible while the cluster is in recovery mode; requests are rejected otherwise. The request is validated and acknowledged, but the restore itself is performed asynchronously.
+ */
+export const restore = <ThrowOnError extends boolean = true>(options: Options<RestoreData, ThrowOnError>) => {
+    return (options.client ?? client).post<RestoreResponses, RestoreErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/restore',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
