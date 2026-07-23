@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:73ad42fb782f5c72dd84bdc40ef81313976c3f4083436c18c7019e7e0a3295cc",
+  "specHash": "sha256:d13bc9d204c7e72691377d7ac75c580db83acec006dbd3f4635c4fbe05245865",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -2081,6 +2081,29 @@
       }
     },
     {
+      "name": "ClusterVariableKindFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ClusterVariableKindEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterVariableKindExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedClusterVariableKindFilter"
+        }
+      ],
+      "stableId": "cluster-variable-kind-filter-property",
+      "tsType": "ClusterVariableKindExactMatch | AdvancedClusterVariableKindFilter",
+      "zod": {
+        "schemaName": "zClusterVariableKindFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClusterVariableKindFilterProperty"
+      }
+    },
+    {
       "name": "ClusterVariableScopeFilterProperty",
       "kind": "union-wrapper",
       "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
@@ -3206,7 +3229,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 41,
-    "totalUnionWrappers": 64,
+    "totalUnionWrappers": 65,
     "implicitCamundaKeys": []
   }
 }

@@ -122,10 +122,16 @@
       "name": "Process instance"
     },
     {
+      "name": "Recovery"
+    },
+    {
       "name": "Resource"
     },
     {
       "name": "Role"
+    },
+    {
+      "name": "Secret"
     },
     {
       "name": "Setup"
@@ -198,13 +204,23 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
           },
           "404": {
             "description": "The elementInstanceKey does not correspond to an active element instance.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An agent instance already exists for the given element instance.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -272,7 +288,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -347,7 +363,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -418,7 +434,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -454,12 +470,12 @@
         "summary": "Create agent instance history item",
         "description": "Appends a single history item to an agent instance's conversation history.\nThe created item has commitStatus PENDING until the job identified by jobLease\ncompletes successfully, at which point it transitions to COMMITTED. If the job\nfails or is superseded by a retry, the item is marked DISCARDED.\n",
         "x-semantic-establishes": {
-          "kind": "AgentInstanceIteration",
+          "kind": "AgentInstanceLoopIteration",
           "identifiedBy": [
             {
               "in": "body",
-              "name": "iteration",
-              "semanticType": "IterationId"
+              "name": "loopIteration",
+              "semanticType": "LoopIterationId"
             }
           ]
         },
@@ -499,7 +515,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -583,7 +599,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -654,7 +670,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -712,7 +728,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -761,7 +777,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -821,7 +837,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -894,7 +910,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -955,7 +971,7 @@
             "description": "The authorization was updated successfully."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The authorization with the authorizationKey was not found.",
@@ -1021,7 +1037,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -1080,7 +1096,7 @@
             "description": "The authorization was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The authorization with the authorizationKey was not found.",
@@ -1674,7 +1690,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -1754,7 +1770,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -1842,7 +1858,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -1913,7 +1929,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -1994,7 +2010,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2089,7 +2105,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2192,7 +2208,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2293,7 +2309,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2377,7 +2393,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2554,7 +2570,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2698,7 +2714,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2759,7 +2775,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2830,7 +2846,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2901,7 +2917,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -2962,7 +2978,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3033,7 +3049,7 @@
             "description": "The decision instance is marked for deletion."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3121,7 +3137,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3182,7 +3198,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3243,7 +3259,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3314,7 +3330,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3896,7 +3912,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -3970,7 +3986,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4031,7 +4047,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4092,7 +4108,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4173,7 +4189,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4311,7 +4327,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4372,7 +4388,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4452,7 +4468,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4532,7 +4548,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4620,7 +4636,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4694,7 +4710,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4767,7 +4783,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4836,7 +4852,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4910,7 +4926,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -4977,7 +4993,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -5065,7 +5081,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -5133,7 +5149,7 @@
             "description": "The group was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The group with the given ID was not found.",
@@ -5224,7 +5240,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -5498,7 +5514,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -5772,7 +5788,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -5863,7 +5879,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6117,7 +6133,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6178,7 +6194,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6329,7 +6345,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6389,7 +6405,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6450,7 +6466,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
@@ -6511,7 +6527,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6910,7 +6926,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -6995,7 +7011,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7056,7 +7072,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7117,7 +7133,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7178,7 +7194,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7239,7 +7255,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7421,7 +7437,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7575,7 +7591,7 @@
             "description": "The mapping rule was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The mapping rule with the mappingRuleId was not found.",
@@ -7650,7 +7666,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The mapping rule with the mappingRuleId was not found.",
@@ -7718,7 +7734,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7906,7 +7922,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -7967,7 +7983,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8028,7 +8044,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8089,7 +8105,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8163,7 +8179,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8245,7 +8261,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8255,6 +8271,78 @@
           }
         },
         "x-added-in-version": "8.8"
+      }
+    },
+    "/process-definitions/{processDefinitionKey}/variable-names/search": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Process definition"
+        ],
+        "operationId": "searchProcessDefinitionVariableNames",
+        "x-permission-enforcement": "filter",
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "READ_PROCESS_INSTANCE"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Search process definition variable names",
+        "description": "Search for distinct variable names defined on a process definition, optionally narrowed by the name filter.",
+        "parameters": [
+          {
+            "name": "processDefinitionKey",
+            "in": "path",
+            "required": true,
+            "description": "The assigned key of the process definition, which acts as a unique identifier for this process definition.",
+            "schema": {
+              "$ref": "#/components/schemas/ProcessDefinitionKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessDefinitionVariableNameSearchQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The process definition variable name search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProcessDefinitionVariableNameSearchQueryResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/process-definitions/{processDefinitionKey}/xml": {
@@ -8316,7 +8404,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8387,7 +8475,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8556,7 +8644,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8631,7 +8719,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8706,7 +8794,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8781,7 +8869,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8856,7 +8944,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8866,6 +8954,81 @@
           }
         },
         "x-added-in-version": "8.8"
+      }
+    },
+    "/process-instances/resumption": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Process instance"
+        ],
+        "operationId": "resumeProcessInstancesBatchOperation",
+        "x-required-permissions": [
+          {
+            "anyOf": [
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE"
+              },
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE"
+              }
+            ]
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Resume process instances (batch)",
+        "description": "Resumes multiple suspended process instances.\nSince only SUSPENDED root instances can be resumed, any given\nfilters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessInstanceResumptionBatchOperationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch operation request was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchOperationCreatedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The process instance batch operation failed. More details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/process-instances/search": {
@@ -8917,7 +9080,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8927,6 +9090,81 @@
           }
         },
         "x-added-in-version": "8.6"
+      }
+    },
+    "/process-instances/suspension": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Process instance"
+        ],
+        "operationId": "suspendProcessInstancesBatchOperation",
+        "x-required-permissions": [
+          {
+            "anyOf": [
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE"
+              },
+              {
+                "resourceType": "BATCH",
+                "permissionType": "CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE"
+              }
+            ]
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Suspend process instances (batch)",
+        "description": "Suspends multiple running process instances.\nSince only ACTIVE root instances can be suspended, any given\nfilters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessInstanceSuspensionBatchOperationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch operation request was created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchOperationCreatedResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The process instance batch operation failed. More details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/process-instances/{processInstanceKey}": {
@@ -8978,7 +9216,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -8998,6 +9236,87 @@
           }
         },
         "x-added-in-version": "8.8"
+      }
+    },
+    "/process-instances/{processInstanceKey}/business-id-assignment": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Process instance"
+        ],
+        "operationId": "assignProcessInstanceBusinessId",
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "UPDATE_PROCESS_INSTANCE"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Assign business id to process instance",
+        "description": "Assigns a business id to an already-running process instance that currently has none.\n\nThe assignment is single and irreversible: only artifacts created after the assignment\n(for example future jobs, user tasks, decision instances, and message subscriptions) carry\nthe business id, while existing artifacts are not retroactively enriched. Re-sending the\nsame business id succeeds as a no-op. This endpoint is only useful while business id\nuniqueness enforcement is disabled; when it is enabled, the request is rejected with a 409\nresponse.\n",
+        "parameters": [
+          {
+            "name": "processInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the process instance to assign the business id to.",
+            "schema": {
+              "$ref": "#/components/schemas/ProcessInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessInstanceBusinessIdAssignmentInstruction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The business id is assigned to the process instance."
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "404": {
+            "description": "The process instance is not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The business id assignment failed because the process instance is not eligible, for example it already has a different business id, it is a call-activity child, or business id uniqueness enforcement is enabled. More details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/process-instances/{processInstanceKey}/call-hierarchy": {
@@ -9052,7 +9371,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -9197,7 +9516,7 @@
             "description": "The process instance is marked for deletion."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -9281,7 +9600,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The process instance is not found.",
@@ -9362,7 +9681,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -9536,6 +9855,87 @@
         "x-added-in-version": "8.6"
       }
     },
+    "/process-instances/{processInstanceKey}/resumption": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Process instance"
+        ],
+        "operationId": "resumeProcessInstance",
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "SUSPEND_PROCESS_INSTANCE"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Resume process instance",
+        "description": "Resumes a suspended process instance, returning it to the ACTIVE state and continuing processing.\nOnly process instances in the SUSPENDED state can be resumed.\n",
+        "parameters": [
+          {
+            "name": "processInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the process instance to resume.",
+            "schema": {
+              "$ref": "#/components/schemas/ProcessInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResumeProcessInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The process instance is resumed."
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "404": {
+            "description": "The process instance is not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The process instance is not in the SUSPENDED state and cannot be resumed.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
     "/process-instances/{processInstanceKey}/sequence-flows": {
       "get": {
         "x-eventually-consistent": true,
@@ -9585,7 +9985,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -9647,7 +10047,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -9709,13 +10109,94 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
+    "/process-instances/{processInstanceKey}/suspension": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Process instance"
+        ],
+        "operationId": "suspendProcessInstance",
+        "x-required-permissions": [
+          {
+            "resourceType": "PROCESS_DEFINITION",
+            "permissionType": "SUSPEND_PROCESS_INSTANCE"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Suspend process instance",
+        "description": "Suspends a running process instance, pausing further processing until it is resumed.\nOnly process instances in the ACTIVE state can be suspended.\n",
+        "parameters": [
+          {
+            "name": "processInstanceKey",
+            "in": "path",
+            "required": true,
+            "description": "The key of the process instance to suspend.",
+            "schema": {
+              "$ref": "#/components/schemas/ProcessInstanceKey"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuspendProcessInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The process instance is suspended."
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "404": {
+            "description": "The process instance is not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "The process instance is not in the ACTIVE state and cannot be suspended.\nMore details are provided in the response body.\n",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
           }
         },
         "x-added-in-version": "8.10"
@@ -9770,7 +10251,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -10116,21 +10597,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "description": "The request lacks valid authentication credentials.",
-            "headers": {
-              "WWW-Authenticate": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "description": "Forbidden. The request is not allowed.",
@@ -10211,7 +10678,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -10278,7 +10745,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -10366,7 +10833,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The role with the ID is not found.",
@@ -10434,7 +10901,7 @@
             "description": "The role was deleted successfully."
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "404": {
             "description": "The role with the ID was not found.",
@@ -10525,7 +10992,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -10799,7 +11266,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -11074,7 +11541,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -11348,7 +11815,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -11551,6 +12018,67 @@
           }
         },
         "x-added-in-version": "8.8"
+      }
+    },
+    "/secrets/resolve": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Secret"
+        ],
+        "operationId": "resolveSecrets",
+        "x-permission-enforcement": "filter",
+        "x-required-permissions": [
+          {
+            "resourceType": "SECRET",
+            "permissionType": "REVEAL"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Resolve secrets (alpha)",
+        "description": "Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's\nphysical tenant in a single round-trip.\n\nEach reference is authorized and resolved independently. For valid requests, the endpoint\nalways responds with HTTP 200: successfully resolved references are returned in `resolved`,\nwhile references that could not be resolved (for example not found, malformed or over-long,\nor the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of\none reference never fails the others. Only structurally invalid requests are rejected with\nHTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n\nPhase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;\nevery other authorized, valid reference returns `NOT_FOUND`.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecretResolveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The batch was processed. Per-reference outcomes are split between `resolved` and\n`errors`; this status is returned even when some or all references failed.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecretResolveResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/setup/user": {
@@ -11818,7 +12346,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -11891,7 +12419,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
@@ -12039,7 +12567,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -12119,7 +12647,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -13541,13 +14069,149 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
         },
         "x-added-in-version": "8.5"
+      }
+    },
+    "/mode": {
+      "patch": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Recovery"
+        ],
+        "operationId": "changeClusterMode",
+        "x-required-permissions": [],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Change cluster mode",
+        "description": "Transitions the cluster between processing and recovery mode. This is a non-blocking operation: the request is acknowledged once the change has been accepted, before the transition itself has completed. Entering recovery mode deactivates all partitions so that only a restricted set of read-only operations remains available; exiting recovery mode returns the cluster to normal processing. Returns the planned cluster change so its progress can be monitored via the topology.",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": true,
+            "description": "The target cluster mode.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PROCESSING",
+                "RECOVERING"
+              ]
+            }
+          },
+          {
+            "name": "dryRun",
+            "in": "query",
+            "required": false,
+            "description": "If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The mode change request was accepted; returns the planned cluster changes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClusterModeChangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "description": "The request lacks valid authentication credentials.",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
+    "/restore": {
+      "post": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Recovery"
+        ],
+        "operationId": "restore",
+        "x-required-permissions": [],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Restore from a backup",
+        "description": "Restores the cluster from a backup. The restore is described either by a single backup ID or by a time range (`from`/`to`) that selects the backups to restore. This endpoint is only accessible while the cluster is in recovery mode; requests are rejected otherwise. The request is validated and acknowledged, but the restore itself is performed asynchronously.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "The restore request was accepted; returns the planned cluster changes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClusterModeChangeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "409": {
+            "description": "The cluster is not in recovery mode, so the restore cannot be accepted."
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
       }
     },
     "/users": {
@@ -13608,7 +14272,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -13681,7 +14345,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -13748,7 +14412,7 @@
             }
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -13983,7 +14647,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -14052,7 +14716,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -14577,7 +15241,34 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserTaskEffectiveVariableSearchQueryRequest"
+                "description": "User task effective variable search query request. Uses offset-based pagination only.\n",
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "page": {
+                    "description": "Pagination parameters.",
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/OffsetPagination"
+                      }
+                    ]
+                  },
+                  "sort": {
+                    "description": "Sort field criteria.",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/paths/~1user-tasks~1{userTaskKey}~1variables~1search/post/requestBody/content/application~1json/schema/properties/sort/items"
+                    }
+                  },
+                  "filter": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/UserTaskVariableFilter"
+                      }
+                    ],
+                    "description": "The user task variable search filters."
+                  }
+                }
               }
             }
           }
@@ -14663,7 +15354,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -14819,7 +15510,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -14880,7 +15571,7 @@
             "$ref": "#/paths/~1clock/put/responses/400"
           },
           "401": {
-            "$ref": "#/paths/~1roles/post/responses/401"
+            "$ref": "#/paths/~1mode/patch/responses/401"
           },
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
@@ -15167,7 +15858,7 @@
             ]
           },
           "metrics": {
-            "description": "Aggregated metrics across all iterations of this agent instance.",
+            "description": "Aggregated metrics across all loopIterations of this agent instance.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AgentInstanceMetrics"
@@ -15414,7 +16105,7 @@
         ],
         "properties": {
           "elementInstanceKey": {
-            "description": "The key of the AHSP or AI Agent Task element instance.\nThe engine uses this key to infer processInstanceKey, elementId,\nprocessDefinitionKey, and tenantId.\n",
+            "description": "The key of the AI Agent Sub-process or AI Agent Task element instance.\nThe engine uses this key to infer processInstanceKey, elementId,\nprocessDefinitionKey, and tenantId.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ElementInstanceKey"
@@ -15611,12 +16302,12 @@
             "description": "Opaque lease token received from the job activation response.",
             "type": "string"
           },
-          "iteration": {
-            "description": "Sequential iteration number this item belongs to. Omit if not grouping items into iterations.",
+          "loopIteration": {
+            "description": "The loopIteration this item belongs to. A loopIteration is one pass through the agent\nfeedback loop: one LLM call, its tool dispatches, and their results. Omit if not grouping\nitems by loopIteration.\n",
             "nullable": true,
             "allOf": [
               {
-                "$ref": "#/components/schemas/IterationId"
+                "$ref": "#/components/schemas/LoopIterationId"
               }
             ]
           },
@@ -15691,7 +16382,7 @@
             "enum": [
               "producedAt",
               "historyItemKey",
-              "iteration"
+              "loopIteration"
             ]
           },
           "order": {
@@ -15762,8 +16453,8 @@
               }
             ]
           },
-          "iteration": {
-            "description": "The iteration number.",
+          "loopIteration": {
+            "description": "Filter by loopIteration number. A loopIteration is one pass through the agent feedback loop (one LLM call, its tool dispatches, and their results).",
             "allOf": [
               {
                 "$ref": "#/components/schemas/IntegerFilterProperty"
@@ -15818,9 +16509,9 @@
           "content",
           "elementInstanceKey",
           "historyItemKey",
-          "iteration",
           "jobKey",
           "jobLease",
+          "loopIteration",
           "metrics",
           "producedAt",
           "role",
@@ -15863,12 +16554,12 @@
             "description": "The lease token of the activation that produced this item.",
             "type": "string"
           },
-          "iteration": {
-            "description": "The sequential iteration number this item belongs to. Null if not provided by the connector.",
+          "loopIteration": {
+            "description": "The loopIteration this item belongs to. A loopIteration is one pass through the agent\nfeedback loop: one LLM call, its tool dispatches, and their results. Null if not provided\nby the connector.\n",
             "nullable": true,
             "allOf": [
               {
-                "$ref": "#/components/schemas/IterationId"
+                "$ref": "#/components/schemas/LoopIterationId"
               }
             ]
           },
@@ -15895,7 +16586,8 @@
             }
           },
           "metrics": {
-            "description": "Per-call token and latency metrics. Zero-valued when not available.",
+            "description": "Per-call token and latency metrics. Null when metrics were not provided at creation time.",
+            "nullable": true,
             "allOf": [
               {
                 "$ref": "#/components/schemas/AgentInstanceHistoryItemMetrics"
@@ -16007,7 +16699,7 @@
       "AgentInstanceObjectContent": {
         "type": "object",
         "title": "Object content",
-        "description": "An arbitrary structured content block.",
+        "description": "An arbitrary structured content block. Accepts any valid JSON value:\nobjects, arrays, numbers, booleans, or strings.\nUse TEXT content for human-readable natural language;\nuse OBJECT content for machine-readable structured data.\n",
         "additionalProperties": false,
         "required": [
           "contentType",
@@ -16020,9 +16712,7 @@
             "example": "OBJECT"
           },
           "object": {
-            "description": "Arbitrary structured content.",
-            "type": "object",
-            "additionalProperties": true
+            "description": "Arbitrary structured content — any valid JSON value (object, array, number, boolean, or string)."
           }
         }
       },
@@ -16076,17 +16766,20 @@
         ],
         "properties": {
           "inputTokens": {
-            "description": "Input tokens consumed by this LLM call.",
+            "description": "Input tokens consumed by this LLM call. Null when not provided.",
+            "nullable": true,
             "type": "integer",
             "format": "int64"
           },
           "outputTokens": {
-            "description": "Output tokens produced by this LLM call.",
+            "description": "Output tokens produced by this LLM call. Null when not provided.",
+            "nullable": true,
             "type": "integer",
             "format": "int64"
           },
           "durationMs": {
-            "description": "Wall-clock duration of the LLM call in milliseconds.",
+            "description": "Wall-clock duration of the LLM call in milliseconds. Null when not provided.",
+            "nullable": true,
             "type": "integer",
             "format": "int64"
           }
@@ -17597,6 +18290,7 @@
           "CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE",
           "CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE",
           "CREATE_BATCH_OPERATION_RESOLVE_INCIDENT",
+          "CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE",
           "CREATE_BATCH_OPERATION_UPDATE_JOB",
           "CREATE_DECISION_INSTANCE",
           "CREATE_PROCESS_INSTANCE",
@@ -17611,6 +18305,7 @@
           "DELETE_TASK_LISTENER",
           "EVALUATE",
           "MODIFY_PROCESS_INSTANCE",
+          "PAUSE",
           "READ",
           "READ_DECISION_DEFINITION",
           "READ_DECISION_INSTANCE",
@@ -17620,6 +18315,9 @@
           "READ_USAGE_METRIC",
           "READ_USER_TASK",
           "READ_TASK_LISTENER",
+          "RESTORE",
+          "REVEAL",
+          "SUSPEND_PROCESS_INSTANCE",
           "UPDATE",
           "UPDATE_PROCESS_INSTANCE",
           "UPDATE_USER_TASK",
@@ -17632,12 +18330,14 @@
         "enum": [
           "AUDIT_LOG",
           "AUTHORIZATION",
+          "BACKUP",
           "BATCH",
           "CLUSTER_VARIABLE",
           "COMPONENT",
           "DECISION_DEFINITION",
           "DECISION_REQUIREMENTS_DEFINITION",
           "DOCUMENT",
+          "EXPORTER",
           "EXPRESSION",
           "GLOBAL_LISTENER",
           "GROUP",
@@ -17646,6 +18346,7 @@
           "PROCESS_DEFINITION",
           "RESOURCE",
           "ROLE",
+          "SECRET",
           "SYSTEM",
           "TENANT",
           "USER",
@@ -18370,6 +19071,48 @@
           "targetElementId"
         ]
       },
+      "ProcessInstanceSuspensionBatchOperationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The process instance filter that defines which process instances should be suspended.",
+        "properties": {
+          "filter": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceFilter"
+              }
+            ],
+            "description": "The process instance filter."
+          },
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
+      "ProcessInstanceResumptionBatchOperationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The process instance filter that defines which process instances should be resumed.",
+        "properties": {
+          "filter": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessInstanceFilter"
+              }
+            ],
+            "description": "The process instance filter."
+          },
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
+          }
+        },
+        "required": [
+          "filter"
+        ]
+      },
       "BatchOperationItemStateEnum": {
         "description": "The batch operation item state.",
         "type": "string",
@@ -18406,6 +19149,8 @@
           "MIGRATE_PROCESS_INSTANCE",
           "MODIFY_PROCESS_INSTANCE",
           "RESOLVE_INCIDENT",
+          "RESUME_PROCESS_INSTANCE",
+          "SUSPEND_PROCESS_INSTANCE",
           "UPDATE_JOB",
           "UPDATE_VARIABLE"
         ]
@@ -18590,6 +19335,14 @@
           "timestamp"
         ]
       },
+      "ClusterVariableKindEnum": {
+        "type": "string",
+        "enum": [
+          "JSON",
+          "SECRET_REFERENCE"
+        ],
+        "description": "The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time."
+      },
       "ClusterVariableScopeEnum": {
         "type": "string",
         "enum": [
@@ -18616,8 +19369,41 @@
           "value": {
             "type": "object",
             "description": "The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses."
+          },
+          "metadata": {
+            "description": "A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).",
+            "type": "object",
+            "maxProperties": 100,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "kind": {
+            "description": "The kind of the cluster variable. Defaults to JSON if not specified.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClusterVariableKindEnum"
+              }
+            ]
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "metadata",
+            "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "kind",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "UpdateClusterVariableRequest": {
         "type": "object",
@@ -18628,8 +19414,29 @@
           "value": {
             "type": "object",
             "description": "The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses."
+          },
+          "metadata": {
+            "description": "A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).",
+            "type": "object",
+            "maxProperties": 100,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "metadata",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "ClusterVariableResult": {
         "type": "object",
@@ -18675,6 +19482,8 @@
         "description": "Cluster variable response item.",
         "type": "object",
         "required": [
+          "kind",
+          "metadata",
           "name",
           "scope",
           "tenantId"
@@ -18695,8 +19504,36 @@
             "type": "string",
             "nullable": true,
             "description": "Only provided if the cluster variable scope is TENANT. Null for global scope variables."
+          },
+          "metadata": {
+            "description": "A generic key-value metadata bag attached to the cluster variable. Values are strings or numbers.",
+            "type": "object",
+            "maxProperties": 100,
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ClusterVariableKindEnum"
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "metadata",
+            "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "kind",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "ClusterVariableSearchQueryRequest": {
         "description": "Cluster variable search query request.",
@@ -18785,6 +19622,97 @@
           "isTruncated": {
             "description": "Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.\n",
             "type": "boolean"
+          },
+          "metadata": {
+            "description": "Filter by metadata entries. A map of metadata key to an advanced filter on that key's value. Metadata values are strings or numbers.",
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/AdvancedMetadataValueFilter"
+            }
+          },
+          "kind": {
+            "description": "The kind filter for cluster variables.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClusterVariableKindFilterProperty"
+              }
+            ]
+          }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "kind",
+            "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "metadata",
+            "addedInVersion": "8.10"
+          }
+        ]
+      },
+      "AdvancedMetadataValueFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced filter on a metadata value (string or number).",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the metadata key exists.",
+            "type": "boolean"
+          },
+          "$gt": {
+            "description": "Greater than comparison with the provided value.",
+            "type": "number"
+          },
+          "$gte": {
+            "description": "Greater than or equal comparison with the provided value.",
+            "type": "number"
+          },
+          "$lt": {
+            "description": "Lower than comparison with the provided value.",
+            "type": "number"
+          },
+          "$lte": {
+            "description": "Lower than or equal comparison with the provided value.",
+            "type": "number"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "$like": {
+            "$ref": "#/components/schemas/LikeFilter"
           }
         }
       },
@@ -18829,6 +19757,54 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ClusterVariableScopeEnum"
+            }
+          },
+          "$like": {
+            "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "ClusterVariableKindFilterProperty": {
+        "description": "ClusterVariableKindEnum property with full advanced search capabilities.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/ClusterVariableKindExactMatch"
+          },
+          {
+            "$ref": "#/components/schemas/AdvancedClusterVariableKindFilter"
+          }
+        ]
+      },
+      "AdvancedClusterVariableKindFilter": {
+        "title": "Advanced filter",
+        "description": "Advanced ClusterVariableKindEnum filter.",
+        "type": "object",
+        "properties": {
+          "$eq": {
+            "description": "Checks for equality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClusterVariableKindEnum"
+              }
+            ]
+          },
+          "$neq": {
+            "description": "Checks for inequality with the provided value.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClusterVariableKindEnum"
+              }
+            ]
+          },
+          "$exists": {
+            "description": "Checks if the current property exists.",
+            "type": "boolean"
+          },
+          "$in": {
+            "description": "Checks if the property matches any of the provided values.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClusterVariableKindEnum"
             }
           },
           "$like": {
@@ -18947,6 +19923,7 @@
         "description": "Provides information on a broker node.",
         "type": "object",
         "required": [
+          "brokerId",
           "host",
           "nodeId",
           "partitions",
@@ -18955,10 +19932,16 @@
         ],
         "properties": {
           "nodeId": {
-            "description": "The unique (within a cluster) node ID for the broker.",
+            "description": "The node ID for the broker. The uniqueness of this identifier depends if the cluster is zone-aware or not. - non zone-aware: (default) nodeId is unique across the cluster - zone-aware:  (opt-in) nodeId is unique only within its zone. If you are migrating to a zone aware cluster, you must use `brokerId` instead. This property is deprecated, as it's been replaced by `brokerId`.\n",
             "type": "integer",
             "format": "int32",
+            "deprecated": true,
             "example": 0
+          },
+          "brokerId": {
+            "description": "The unique (within a cluster) broker identifier. When the cluster is not zoned, then it's a string that represents the nodeId (an integer). When the cluster is zoned, instead, it's of the form \"$zoneName_$nodeId\", providing uniqueness even across zones.\n",
+            "type": "string",
+            "example": "eu-west-1_0"
           },
           "host": {
             "description": "The hostname for reaching the broker.",
@@ -18983,7 +19966,13 @@
             "type": "string",
             "example": "8.8.0"
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "brokerId",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "Partition": {
         "description": "Provides information on a partition within a broker node.",
@@ -18991,7 +19980,8 @@
         "required": [
           "health",
           "partitionId",
-          "role"
+          "role",
+          "state"
         ],
         "properties": {
           "partitionId": {
@@ -19018,6 +20008,100 @@
               "healthy",
               "unhealthy",
               "dead"
+            ]
+          },
+          "state": {
+            "description": "Describes the current operational state of the partition within the cluster configuration.\n",
+            "type": "string",
+            "example": "active",
+            "enum": [
+              "unknown",
+              "joining",
+              "active",
+              "leaving",
+              "recovering"
+            ]
+          }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "state",
+            "addedInVersion": "8.10"
+          }
+        ]
+      },
+      "ClusterModeChangeResponse": {
+        "description": "The planned changes resulting from a cluster mode transition request.",
+        "type": "object",
+        "required": [
+          "changeId",
+          "plannedChanges"
+        ],
+        "properties": {
+          "changeId": {
+            "description": "The ID of the cluster change that was triggered by the request.",
+            "type": "string",
+            "example": "7"
+          },
+          "plannedChanges": {
+            "description": "The ordered list of operations that will be applied to complete the change.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClusterModeChangeOperation"
+            }
+          }
+        }
+      },
+      "ClusterModeChangeOperation": {
+        "description": "A single operation that is part of a cluster mode change.",
+        "type": "object",
+        "required": [
+          "mode",
+          "operation"
+        ],
+        "properties": {
+          "operation": {
+            "description": "The type of the operation.",
+            "type": "string",
+            "example": "ModeChangeOperation"
+          },
+          "mode": {
+            "description": "The target mode of the operation, if applicable.",
+            "type": "string",
+            "nullable": true,
+            "example": "RECOVERING"
+          }
+        }
+      },
+      "RestoreRequest": {
+        "description": "Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.",
+        "type": "object",
+        "properties": {
+          "from": {
+            "description": "The start of the time range to restore from, as an ISO 8601 timestamp.",
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2024-01-01T10:00:00Z"
+          },
+          "to": {
+            "description": "The end of the time range to restore from, as an ISO 8601 timestamp.",
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2024-01-01T12:00:00Z"
+          },
+          "backupIds": {
+            "description": "The IDs of the backups to restore from, one per partition.",
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": [
+              100,
+              101
             ]
           }
         }
@@ -24130,12 +25214,12 @@
         "maxLength": 256,
         "example": "order-12345"
       },
-      "IterationId": {
-        "description": "A client-provided sequential integer identifying a logical iteration: one LLM\ncall, its tool dispatches, and their results. Must be a positive integer,\nincreasing with each iteration. Established by the\nconnector when appending the first history item of an iteration.\n",
+      "LoopIterationId": {
+        "description": "A client-provided sequential integer identifying one pass through the agent\nfeedback loop: one LLM call, its tool dispatches, and their results. Must be\na positive integer, increasing with each loopIteration. Established by the\nconnector when appending the first history item of a loopIteration.\n",
         "type": "integer",
         "format": "int32",
         "minimum": 1,
-        "x-semantic-type": "IterationId",
+        "x-semantic-type": "LoopIterationId",
         "x-semantic-client-minted": true,
         "example": 1
       },
@@ -25615,6 +26699,11 @@
             ],
             "description": "The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.\n",
             "default": "PROVIDED"
+          },
+          "withLease": {
+            "description": "Whether to activate the jobs with a lease. When true, each activated job is assigned a distinct, opaque lease token, returned as ActivatedJobResult.leaseToken. The lease fences the complete, fail, and throw-error commands against a superseded activation of the same job (for example, after the job timed out or failed and was re-activated by another worker): a command carrying a stale lease token is rejected rather than racing with the newer activation. Once a job has been activated with a lease, it is served only to leasing workers of that job type; a homogeneous fleet per job type is recommended. Omit or set to false to activate jobs without a lease.\n",
+            "type": "boolean",
+            "nullable": true
           }
         },
         "required": [
@@ -25626,6 +26715,10 @@
           {
             "propertyName": "tenantFilter",
             "addedInVersion": "8.9"
+          },
+          {
+            "propertyName": "withLease",
+            "addedInVersion": "8.10"
           }
         ]
       },
@@ -25660,7 +26753,9 @@
           "elementInstanceKey",
           "jobKey",
           "kind",
+          "leaseToken",
           "listenerEventType",
+          "physicalTenantId",
           "priority",
           "processDefinitionId",
           "processDefinitionKey",
@@ -25739,6 +26834,10 @@
             ],
             "description": "The ID of the tenant that owns the job."
           },
+          "physicalTenantId": {
+            "type": "string",
+            "description": "The ID of the physical tenant that the job-activation request was routed to;\nthe default physical tenant when the request did not specify one.\n"
+          },
           "jobKey": {
             "allOf": [
               {
@@ -25811,6 +26910,11 @@
             "description": "The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n",
             "type": "integer",
             "format": "int32"
+          },
+          "leaseToken": {
+            "description": "The lease token identifying this activation. This is `null` when the job was activated without a lease.\n",
+            "nullable": true,
+            "type": "string"
           }
         },
         "x-properties-added-in-version": [
@@ -25840,6 +26944,14 @@
           },
           {
             "propertyName": "businessId",
+            "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "leaseToken",
+            "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "physicalTenantId",
             "addedInVersion": "8.10"
           }
         ]
@@ -26523,8 +27635,19 @@
             "description": "JSON object that will instantiate the variables at the local scope of the job's associated task.\n",
             "type": "object",
             "additionalProperties": true
+          },
+          "leaseToken": {
+            "description": "The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.\nFor a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).\nA job that was activated without a lease requires no token.\n",
+            "type": "string",
+            "nullable": true
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "leaseToken",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "JobErrorRequest": {
         "type": "object",
@@ -26544,10 +27667,21 @@
             "description": "JSON object that will instantiate the variables at the local scope of the error catch event that catches the thrown error.\n",
             "type": "object",
             "nullable": true
+          },
+          "leaseToken": {
+            "description": "The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.\nFor a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).\nA job that was activated without a lease requires no token.\n",
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
           "errorCode"
+        ],
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "leaseToken",
+            "addedInVersion": "8.10"
+          }
         ]
       },
       "JobCompletionRequest": {
@@ -26562,12 +27696,34 @@
           },
           "result": {
             "$ref": "#/components/schemas/JobResult"
+          },
+          "leaseToken": {
+            "description": "The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.\nFor a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).\nA job that was activated without a lease requires no token.\n",
+            "type": "string",
+            "nullable": true
+          },
+          "businessId": {
+            "nullable": true,
+            "description": "An optional business id to assign to the process instance the job belongs to, as part of completing the job, letting a worker set the identifier from work it just performed.\nThe business id can only be assigned to a root process instance: if the job belongs to a child process instance (one started by a call activity), the completion is rejected. An empty business id is likewise rejected. The assignment is single and irreversible and is only accepted while business id uniqueness is disabled. Only artifacts created after the assignment carry the business id; already-existing ones are not enriched. Completing with a business id that differs from one already assigned rejects the whole completion, leaving the job open; re-sending the identical business id is an idempotent no-op.\n",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BusinessId"
+              }
+            ]
           }
         },
         "x-properties-added-in-version": [
           {
             "propertyName": "result",
             "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "leaseToken",
+            "addedInVersion": "8.10"
+          },
+          {
+            "propertyName": "businessId",
+            "addedInVersion": "8.10"
           }
         ]
       },
@@ -26722,6 +27878,11 @@
           },
           "operationReference": {
             "$ref": "#/components/schemas/OperationReference"
+          },
+          "leaseToken": {
+            "description": "The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.\nFor a leased job, a supplied token is validated to prove the command comes from the worker that holds the current lease; a command carrying a stale token is rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).\nAn update without a token always applies to support operator and bulk updates of leased jobs. Note that this is different from lifecycle requests like complete, fail, and throw-error that always require a token for leased jobs.\nA job that was activated without a lease requires no token.\n",
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -26731,6 +27892,10 @@
           {
             "propertyName": "operationReference",
             "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "leaseToken",
+            "addedInVersion": "8.10"
           }
         ]
       },
@@ -26823,6 +27988,7 @@
           "MIGRATED",
           "PRIORITY_UPDATED",
           "RETRIES_UPDATED",
+          "TIMEOUT_UPDATED",
           "TIMED_OUT"
         ]
       },
@@ -29620,8 +30786,18 @@
           "hasStartForm": {
             "description": "Indicates whether the start event of the process has an associated Form Key.",
             "type": "boolean"
+          },
+          "isDeleted": {
+            "description": "Filter by whether the process definition has been deleted.\nWhen not set, both deleted and non-deleted process definitions are returned.\nSet to `false` to exclude deleted definitions (recommended for most use cases).\nSet to `true` to return only deleted definitions that are still retained in secondary storage.\n",
+            "type": "boolean"
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "isDeleted",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "ProcessDefinitionSearchQueryResult": {
         "type": "object",
@@ -29647,6 +30823,7 @@
         "type": "object",
         "required": [
           "hasStartForm",
+          "isDeleted",
           "name",
           "processDefinitionId",
           "processDefinitionKey",
@@ -29702,8 +30879,18 @@
           "hasStartForm": {
             "description": "Indicates whether the start event of the process has an associated Form Key.",
             "type": "boolean"
+          },
+          "isDeleted": {
+            "description": "Whether this process definition has been deleted but is still retained in secondary storage.",
+            "type": "boolean"
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "isDeleted",
+            "addedInVersion": "8.10"
+          }
+        ]
       },
       "ProcessDefinitionElementStatisticsQuery": {
         "description": "Process definition element statistics request.",
@@ -29774,6 +30961,75 @@
             "description": "The total number of completed instances of the element.",
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "ProcessDefinitionVariableNameSearchQuery": {
+        "description": "Process definition variable name search query request.",
+        "additionalProperties": false,
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryRequest"
+          }
+        ],
+        "properties": {
+          "filter": {
+            "description": "The process definition variable name search filters.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProcessDefinitionVariableNameFilter"
+              }
+            ]
+          }
+        }
+      },
+      "ProcessDefinitionVariableNameFilter": {
+        "description": "Process definition variable name filter request.",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "The variable name search filter.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StringFilterProperty"
+              }
+            ]
+          }
+        }
+      },
+      "ProcessDefinitionVariableNameSearchQueryResult": {
+        "description": "Process definition variable name search query response.",
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SearchQueryResponse"
+          }
+        ],
+        "properties": {
+          "items": {
+            "description": "The matching variable names.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProcessDefinitionVariableNameSearchResult"
+            }
+          }
+        }
+      },
+      "ProcessDefinitionVariableNameSearchResult": {
+        "description": "Process definition variable name search response item.",
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "description": "The variable name.",
+            "type": "string"
           }
         }
       },
@@ -30480,6 +31736,7 @@
               "parentElementInstanceKey",
               "startDate",
               "endDate",
+              "suspendedDate",
               "state",
               "hasIncident",
               "tenantId",
@@ -30552,6 +31809,14 @@
           "hasIncident": {
             "type": "boolean",
             "description": "Whether this process instance has a related incident or not."
+          },
+          "suspendedDate": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DateTimeFilterProperty"
+              }
+            ],
+            "description": "The time this process instance most recently entered the SUSPENDED state.\nThis is cleared (null) again once the process instance is resumed.\n"
           },
           "tenantId": {
             "allOf": [
@@ -30677,6 +31942,10 @@
           {
             "propertyName": "hasIncident",
             "addedInVersion": "8.8"
+          },
+          {
+            "propertyName": "suspendedDate",
+            "addedInVersion": "8.10"
           },
           {
             "propertyName": "tenantId",
@@ -30898,6 +32167,7 @@
           "rootProcessInstanceKey",
           "startDate",
           "state",
+          "suspendedDate",
           "tags",
           "tenantId"
         ],
@@ -30933,6 +32203,12 @@
           },
           "state": {
             "$ref": "#/components/schemas/ProcessInstanceStateEnum"
+          },
+          "suspendedDate": {
+            "description": "The time this process instance most recently entered the `SUSPENDED` state.\nThis is `null` if the process instance is not currently suspended.\n",
+            "nullable": true,
+            "type": "string",
+            "format": "date-time"
           },
           "hasIncident": {
             "type": "boolean",
@@ -31027,6 +32303,10 @@
             "addedInVersion": "8.6"
           },
           {
+            "propertyName": "suspendedDate",
+            "addedInVersion": "8.10"
+          },
+          {
             "propertyName": "hasIncident",
             "addedInVersion": "8.8"
           },
@@ -31075,6 +32355,26 @@
         }
       },
       "DeleteProcessInstanceRequest": {
+        "type": "object",
+        "nullable": true,
+        "additionalProperties": false,
+        "properties": {
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
+          }
+        }
+      },
+      "SuspendProcessInstanceRequest": {
+        "type": "object",
+        "nullable": true,
+        "additionalProperties": false,
+        "properties": {
+          "operationReference": {
+            "$ref": "#/components/schemas/OperationReference"
+          }
+        }
+      },
+      "ResumeProcessInstanceRequest": {
         "type": "object",
         "nullable": true,
         "additionalProperties": false,
@@ -31317,6 +32617,19 @@
             "propertyName": "targetElementId",
             "addedInVersion": "8.6"
           }
+        ]
+      },
+      "ProcessInstanceBusinessIdAssignmentInstruction": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The instruction describing the business id to assign to a running process instance.\n",
+        "properties": {
+          "businessId": {
+            "$ref": "#/components/schemas/BusinessId"
+          }
+        },
+        "required": [
+          "businessId"
         ]
       },
       "ProcessInstanceModificationInstruction": {
@@ -31634,6 +32947,7 @@
         "enum": [
           "ACTIVE",
           "COMPLETED",
+          "SUSPENDED",
           "TERMINATED"
         ]
       },
@@ -32343,6 +33657,95 @@
             "propertyName": "endCursor",
             "addedInVersion": "8.8"
           }
+        ]
+      },
+      "SecretResolveRequest": {
+        "type": "object",
+        "required": [
+          "references"
+        ],
+        "properties": {
+          "references": {
+            "type": "array",
+            "maxItems": 20,
+            "description": "The secret references to resolve, each of the form `camunda.secrets.<name>`.\nDuplicate references are deduplicated by the server and resolved once.\nAt most 20 references may be requested in a single batch.\n",
+            "items": {
+              "type": "string",
+              "maxLength": 256,
+              "description": "A secret reference of the form `camunda.secrets.<name>`."
+            }
+          }
+        }
+      },
+      "SecretResolveResult": {
+        "type": "object",
+        "required": [
+          "errors",
+          "resolved"
+        ],
+        "description": "The per-reference outcome of a resolve request.",
+        "properties": {
+          "resolved": {
+            "type": "array",
+            "description": "The references that were successfully resolved.",
+            "items": {
+              "$ref": "#/components/schemas/ResolvedSecret"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "description": "The references that could not be resolved, each with a typed error code.",
+            "items": {
+              "$ref": "#/components/schemas/SecretResolutionError"
+            }
+          }
+        }
+      },
+      "ResolvedSecret": {
+        "type": "object",
+        "required": [
+          "reference",
+          "value"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "The resolved secret reference of the form `camunda.secrets.<name>`."
+          },
+          "value": {
+            "type": "string",
+            "description": "The resolved secret value."
+          }
+        }
+      },
+      "SecretResolutionError": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "reference"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "The secret reference that could not be resolved."
+          },
+          "code": {
+            "$ref": "#/components/schemas/SecretErrorCode"
+          },
+          "message": {
+            "type": "string",
+            "description": "A human-readable description of the failure. Never contains the secret value;\nonly error metadata (codes, names) is included.\n"
+          }
+        }
+      },
+      "SecretErrorCode": {
+        "type": "string",
+        "description": "The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed.\n",
+        "enum": [
+          "NOT_FOUND",
+          "ACCESS_DENIED",
+          "INVALID_REFERENCE"
         ]
       },
       "SignalBroadcastRequest": {
@@ -34704,6 +36107,16 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/ClusterVariableScopeEnum"
+          }
+        ]
+      },
+      "ClusterVariableKindExactMatch": {
+        "type": "string",
+        "title": "Exact match",
+        "description": "Matches the value exactly.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ClusterVariableKindEnum"
           }
         ]
       },

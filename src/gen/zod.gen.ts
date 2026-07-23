@@ -173,17 +173,21 @@ export const zAgentInstanceTextContent = z.object({
 /**
  * Object content
  *
- * An arbitrary structured content block.
+ * An arbitrary structured content block. Accepts any valid JSON value:
+ * objects, arrays, numbers, booleans, or strings.
+ * Use TEXT content for human-readable natural language;
+ * use OBJECT content for machine-readable structured data.
+ *
  */
 export const zAgentInstanceObjectContent = z.object({
     contentType: z.string().register(z.globalRegistry, {
         description: 'The content type discriminator.'
     }),
-    object: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'Arbitrary structured content.'
+    object: z.unknown().register(z.globalRegistry, {
+        description: 'Arbitrary structured content — any valid JSON value (object, array, number, boolean, or string).'
     })
 }).register(z.globalRegistry, {
-    description: 'An arbitrary structured content block.'
+    description: 'An arbitrary structured content block. Accepts any valid JSON value:\nobjects, arrays, numbers, booleans, or strings.\nUse TEXT content for human-readable natural language;\nuse OBJECT content for machine-readable structured data.\n'
 });
 
 /**
@@ -225,15 +229,18 @@ export const zAgentInstanceToolCall = z.object({
  * Per-call token and latency metrics for an ASSISTANT history item.
  */
 export const zAgentInstanceHistoryItemMetrics = z.object({
-    inputTokens: z.coerce.number().int().register(z.globalRegistry, {
-        description: 'Input tokens consumed by this LLM call.'
-    }),
-    outputTokens: z.coerce.number().int().register(z.globalRegistry, {
-        description: 'Output tokens produced by this LLM call.'
-    }),
-    durationMs: z.coerce.number().int().register(z.globalRegistry, {
-        description: 'Wall-clock duration of the LLM call in milliseconds.'
-    })
+    inputTokens: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ]),
+    outputTokens: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ]),
+    durationMs: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ])
 }).register(z.globalRegistry, {
     description: 'Per-call token and latency metrics for an ASSISTANT history item.'
 });
@@ -399,6 +406,7 @@ export const zPermissionTypeEnum = z.enum([
     'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
+    'CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_UPDATE_JOB',
     'CREATE_DECISION_INSTANCE',
     'CREATE_PROCESS_INSTANCE',
@@ -413,6 +421,7 @@ export const zPermissionTypeEnum = z.enum([
     'DELETE_TASK_LISTENER',
     'EVALUATE',
     'MODIFY_PROCESS_INSTANCE',
+    'PAUSE',
     'READ',
     'READ_DECISION_DEFINITION',
     'READ_DECISION_INSTANCE',
@@ -422,6 +431,9 @@ export const zPermissionTypeEnum = z.enum([
     'READ_USAGE_METRIC',
     'READ_USER_TASK',
     'READ_TASK_LISTENER',
+    'RESTORE',
+    'REVEAL',
+    'SUSPEND_PROCESS_INSTANCE',
     'UPDATE',
     'UPDATE_PROCESS_INSTANCE',
     'UPDATE_USER_TASK',
@@ -436,12 +448,14 @@ export const zPermissionTypeEnum = z.enum([
 export const zResourceTypeEnum = z.enum([
     'AUDIT_LOG',
     'AUTHORIZATION',
+    'BACKUP',
     'BATCH',
     'CLUSTER_VARIABLE',
     'COMPONENT',
     'DECISION_DEFINITION',
     'DECISION_REQUIREMENTS_DEFINITION',
     'DOCUMENT',
+    'EXPORTER',
     'EXPRESSION',
     'GLOBAL_LISTENER',
     'GROUP',
@@ -450,6 +464,7 @@ export const zResourceTypeEnum = z.enum([
     'PROCESS_DEFINITION',
     'RESOURCE',
     'ROLE',
+    'SECRET',
     'SYSTEM',
     'TENANT',
     'USER',
@@ -584,6 +599,8 @@ export const zBatchOperationTypeEnum = z.enum([
     'MIGRATE_PROCESS_INSTANCE',
     'MODIFY_PROCESS_INSTANCE',
     'RESOLVE_INCIDENT',
+    'RESUME_PROCESS_INSTANCE',
+    'SUSPEND_PROCESS_INSTANCE',
     'UPDATE_JOB',
     'UPDATE_VARIABLE'
 ]).register(z.globalRegistry, {
@@ -594,6 +611,16 @@ export const zClockPinRequest = z.object({
     timestamp: z.coerce.number().int().register(z.globalRegistry, {
         description: 'The exact time in epoch milliseconds to which the clock should be pinned.'
     })
+});
+
+/**
+ * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
+ */
+export const zClusterVariableKindEnum = z.enum([
+    'JSON',
+    'SECRET_REFERENCE'
+]).register(z.globalRegistry, {
+    description: 'The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.'
 });
 
 /**
@@ -609,7 +636,13 @@ export const zClusterVariableScopeEnum = z.enum([
 export const zUpdateClusterVariableRequest = z.object({
     value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
-    })
+    }),
+    metadata: z.optional(z.record(z.string(), z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
+    }))
 });
 
 /**
@@ -632,6 +665,15 @@ export const zPartition = z.object({
         'dead'
     ]).register(z.globalRegistry, {
         description: 'Describes the current health of the partition.'
+    }),
+    state: z.enum([
+        'unknown',
+        'joining',
+        'active',
+        'leaving',
+        'recovering'
+    ]).register(z.globalRegistry, {
+        description: 'Describes the current operational state of the partition within the cluster configuration.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Provides information on a partition within a broker node.'
@@ -642,7 +684,10 @@ export const zPartition = z.object({
  */
 export const zBrokerInfo = z.object({
     nodeId: z.int().register(z.globalRegistry, {
-        description: 'The unique (within a cluster) node ID for the broker.'
+        description: "The node ID for the broker. The uniqueness of this identifier depends if the cluster is zone-aware or not. - non zone-aware: (default) nodeId is unique across the cluster - zone-aware:  (opt-in) nodeId is unique only within its zone. If you are migrating to a zone aware cluster, you must use `brokerId` instead. This property is deprecated, as it's been replaced by `brokerId`.\n"
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: "The unique (within a cluster) broker identifier. When the cluster is not zoned, then it's a string that represents the nodeId (an integer). When the cluster is zoned, instead, it's of the form \"$zoneName_$nodeId\", providing uniqueness even across zones.\n"
     }),
     host: z.string().register(z.globalRegistry, {
         description: 'The hostname for reaching the broker.'
@@ -688,6 +733,55 @@ export const zTopologyResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The response of a topology request.'
+});
+
+/**
+ * A single operation that is part of a cluster mode change.
+ */
+export const zClusterModeChangeOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    mode: z.union([
+        z.string(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'A single operation that is part of a cluster mode change.'
+});
+
+/**
+ * The planned changes resulting from a cluster mode transition request.
+ */
+export const zClusterModeChangeResponse = z.object({
+    changeId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the cluster change that was triggered by the request.'
+    }),
+    plannedChanges: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
+        description: 'The ordered list of operations that will be applied to complete the change.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The planned changes resulting from a cluster mode transition request.'
+});
+
+/**
+ * Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.
+ */
+export const zRestoreRequest = z.object({
+    from: z.optional(z.union([
+        z.iso.datetime(),
+        z.null()
+    ])),
+    to: z.optional(z.union([
+        z.iso.datetime(),
+        z.null()
+    ])),
+    backupIds: z.optional(z.union([
+        z.array(z.coerce.number().int()),
+        z.null()
+    ]))
+}).register(z.globalRegistry, {
+    description: 'Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.'
 });
 
 /**
@@ -1153,6 +1247,46 @@ export const zAdvancedBatchOperationItemStateFilter = z.object({
 /**
  * Advanced filter
  *
+ * Advanced filter on a metadata value (string or number).
+ */
+export const zAdvancedMetadataValueFilter = z.object({
+    '$eq': z.optional(z.union([
+        z.string(),
+        z.number()
+    ])),
+    '$neq': z.optional(z.union([
+        z.string(),
+        z.number()
+    ])),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the metadata key exists.'
+    })),
+    '$gt': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Greater than comparison with the provided value.'
+    })),
+    '$gte': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Greater than or equal comparison with the provided value.'
+    })),
+    '$lt': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Lower than comparison with the provided value.'
+    })),
+    '$lte': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Lower than or equal comparison with the provided value.'
+    })),
+    '$in': z.optional(z.array(z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced filter on a metadata value (string or number).'
+});
+
+/**
+ * Advanced filter
+ *
  * Advanced ClusterVariableScopeEnum filter.
  */
 export const zAdvancedClusterVariableScopeFilter = z.object({
@@ -1167,6 +1301,25 @@ export const zAdvancedClusterVariableScopeFilter = z.object({
     '$like': z.optional(zLikeFilter)
 }).register(z.globalRegistry, {
     description: 'Advanced ClusterVariableScopeEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced ClusterVariableKindEnum filter.
+ */
+export const zAdvancedClusterVariableKindFilter = z.object({
+    '$eq': z.optional(zClusterVariableKindEnum),
+    '$neq': z.optional(zClusterVariableKindEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zClusterVariableKindEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced ClusterVariableKindEnum filter.'
 });
 
 /**
@@ -1702,7 +1855,14 @@ export const zCreateClusterVariableRequest = z.object({
     name: zClusterVariableName,
     value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
-    })
+    }),
+    metadata: z.optional(z.record(z.string(), z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
+    })),
+    kind: z.optional(zClusterVariableKindEnum)
 });
 
 /**
@@ -1714,7 +1874,14 @@ export const zClusterVariableResultBase = z.object({
     tenantId: z.union([
         z.string(),
         z.null()
-    ])
+    ]),
+    metadata: z.record(z.string(), z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'A generic key-value metadata bag attached to the cluster variable. Values are strings or numbers.'
+    }),
+    kind: zClusterVariableKindEnum
 }).register(z.globalRegistry, {
     description: 'Cluster variable response item.'
 });
@@ -1766,14 +1933,14 @@ export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry,
 });
 
 /**
- * A client-provided sequential integer identifying a logical iteration: one LLM
- * call, its tool dispatches, and their results. Must be a positive integer,
- * increasing with each iteration. Established by the
- * connector when appending the first history item of an iteration.
+ * A client-provided sequential integer identifying one pass through the agent
+ * feedback loop: one LLM call, its tool dispatches, and their results. Must be
+ * a positive integer, increasing with each loopIteration. Established by the
+ * connector when appending the first history item of a loopIteration.
  *
  */
-export const zIterationId = z.int().gte(1).register(z.globalRegistry, {
-    description: 'A client-provided sequential integer identifying a logical iteration: one LLM\ncall, its tool dispatches, and their results. Must be a positive integer,\nincreasing with each iteration. Established by the\nconnector when appending the first history item of an iteration.\n'
+export const zLoopIterationId = z.int().gte(1).register(z.globalRegistry, {
+    description: 'A client-provided sequential integer identifying one pass through the agent\nfeedback loop: one LLM call, its tool dispatches, and their results. Must be\na positive integer, increasing with each loopIteration. Established by the\nconnector when appending the first history item of a loopIteration.\n'
 });
 
 /**
@@ -2098,7 +2265,11 @@ export const zJobFailRequest = z.object({
     })).default(0),
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: "JSON object that will instantiate the variables at the local scope of the job's associated task.\n"
-    }))
+    })),
+    leaseToken: z.optional(z.union([
+        z.string(),
+        z.null()
+    ]))
 });
 
 export const zJobErrorRequest = z.object({
@@ -2111,6 +2282,10 @@ export const zJobErrorRequest = z.object({
     ])),
     variables: z.optional(z.union([
         z.record(z.string(), z.unknown()),
+        z.null()
+    ])),
+    leaseToken: z.optional(z.union([
+        z.string(),
         z.null()
     ]))
 });
@@ -2236,7 +2411,15 @@ export const zJobCompletionRequest = z.object({
         z.record(z.string(), z.unknown()),
         z.null()
     ])),
-    result: z.optional(zJobResult)
+    result: z.optional(zJobResult),
+    leaseToken: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
+    businessId: z.optional(z.union([
+        zBusinessId,
+        z.null()
+    ]))
 });
 
 /**
@@ -2292,7 +2475,11 @@ export const zJobActivationRequest = z.object({
     tenantIds: z.optional(z.array(zTenantId).register(z.globalRegistry, {
         description: 'A list of IDs of tenants for which to activate jobs.'
     })),
-    tenantFilter: z.optional(zTenantFilterEnum)
+    tenantFilter: z.optional(zTenantFilterEnum),
+    withLease: z.optional(z.union([
+        z.boolean(),
+        z.null()
+    ]))
 });
 
 /**
@@ -2307,6 +2494,7 @@ export const zJobStateEnum = z.enum([
     'MIGRATED',
     'PRIORITY_UPDATED',
     'RETRIES_UPDATED',
+    'TIMEOUT_UPDATED',
     'TIMED_OUT'
 ]).register(z.globalRegistry, {
     description: 'The state of the job.'
@@ -2877,8 +3065,8 @@ export const zAgentInstanceHistoryItemRequest = z.object({
     jobLease: z.string().register(z.globalRegistry, {
         description: 'Opaque lease token received from the job activation response.'
     }),
-    iteration: z.optional(z.union([
-        zIterationId,
+    loopIteration: z.optional(z.union([
+        zLoopIterationId,
         z.null()
     ])),
     role: zAgentInstanceHistoryRoleEnum,
@@ -3015,6 +3203,9 @@ export const zActivatedJobResult = z.object({
         description: 'All variables visible to the task scope, computed at activation time.'
     }),
     tenantId: zTenantId,
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the physical tenant that the job-activation request was routed to;\nthe default physical tenant when the request did not specify one.\n'
+    }),
     jobKey: zJobKey,
     processInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
@@ -3036,7 +3227,11 @@ export const zActivatedJobResult = z.object({
     ]),
     priority: z.int().register(z.globalRegistry, {
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
-    })
+    }),
+    leaseToken: z.union([
+        z.string(),
+        z.null()
+    ])
 });
 
 /**
@@ -3645,7 +3840,11 @@ export const zIncidentResolutionRequest = z.object({
 
 export const zJobUpdateRequest = z.object({
     changeset: zJobChangeset,
-    operationReference: z.optional(zOperationReference)
+    operationReference: z.optional(zOperationReference),
+    leaseToken: z.optional(z.union([
+        z.string(),
+        z.null()
+    ]))
 });
 
 /**
@@ -3724,8 +3923,8 @@ export const zAgentInstanceHistoryItemResult = z.object({
     jobLease: z.string().register(z.globalRegistry, {
         description: 'The lease token of the activation that produced this item.'
     }),
-    iteration: z.union([
-        zIterationId,
+    loopIteration: z.union([
+        zLoopIterationId,
         z.null()
     ]),
     role: zAgentInstanceHistoryRoleEnum,
@@ -3735,7 +3934,10 @@ export const zAgentInstanceHistoryItemResult = z.object({
     toolCalls: z.array(zAgentInstanceToolCall).register(z.globalRegistry, {
         description: 'Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls with arguments populated.\nTOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).\n'
     }),
-    metrics: zAgentInstanceHistoryItemMetrics,
+    metrics: z.union([
+        zAgentInstanceHistoryItemMetrics,
+        z.null()
+    ]),
     commitStatus: zAgentInstanceHistoryCommitStatusEnum,
     producedAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'The connector-side timestamp of when this message was produced.'
@@ -4546,6 +4748,9 @@ export const zProcessDefinitionFilter = z.object({
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    })),
+    isDeleted: z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Filter by whether the process definition has been deleted.\nWhen not set, both deleted and non-deleted process definitions are returned.\nSet to `false` to exclude deleted definitions (recommended for most use cases).\nSet to `true` to return only deleted definitions that are still retained in secondary storage.\n'
     }))
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -4571,6 +4776,9 @@ export const zProcessDefinitionResult = z.object({
     processDefinitionKey: zProcessDefinitionKey,
     hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    }),
+    isDeleted: z.boolean().register(z.globalRegistry, {
+        description: 'Whether this process definition has been deleted but is still retained in secondary storage.'
     })
 });
 
@@ -4604,6 +4812,26 @@ export const zProcessDefinitionElementStatisticsQueryResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Process definition element statistics query response.'
+});
+
+/**
+ * Process definition variable name filter request.
+ */
+export const zProcessDefinitionVariableNameFilter = z.object({
+    name: z.optional(zStringFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name filter request.'
+});
+
+/**
+ * Process definition variable name search response item.
+ */
+export const zProcessDefinitionVariableNameSearchResult = z.object({
+    name: z.string().register(z.globalRegistry, {
+        description: 'The variable name.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name search response item.'
 });
 
 export const zProcessDefinitionMessageSubscriptionStatisticsResult = z.object({
@@ -4802,6 +5030,20 @@ export const zDeleteProcessInstanceRequest = z.union([
     z.null()
 ]);
 
+export const zSuspendProcessInstanceRequest = z.union([
+    z.object({
+        operationReference: z.optional(zOperationReference)
+    }),
+    z.null()
+]);
+
+export const zResumeProcessInstanceRequest = z.union([
+    z.object({
+        operationReference: z.optional(zOperationReference)
+    }),
+    z.null()
+]);
+
 export const zProcessInstanceCallHierarchyEntry = z.object({
     processInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
@@ -4911,6 +5153,16 @@ export const zProcessInstanceMigrationInstruction = z.object({
     operationReference: z.optional(zOperationReference)
 }).register(z.globalRegistry, {
     description: 'The migration instructions describe how to migrate a process instance from one process definition to another.\n'
+});
+
+/**
+ * The instruction describing the business id to assign to a running process instance.
+ *
+ */
+export const zProcessInstanceBusinessIdAssignmentInstruction = z.object({
+    businessId: zBusinessId
+}).register(z.globalRegistry, {
+    description: 'The instruction describing the business id to assign to a running process instance.\n'
 });
 
 /**
@@ -5100,6 +5352,7 @@ export const zProcessInstanceModificationInstruction = z.object({
 export const zProcessInstanceStateEnum = z.enum([
     'ACTIVE',
     'COMPLETED',
+    'SUSPENDED',
     'TERMINATED'
 ]).register(z.globalRegistry, {
     description: 'Process instance states'
@@ -5129,6 +5382,10 @@ export const zProcessInstanceResult = z.object({
         z.null()
     ]),
     state: zProcessInstanceStateEnum,
+    suspendedDate: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
     hasIncident: z.boolean().register(z.globalRegistry, {
         description: 'Whether this process instance has a related incident or not.'
     }),
@@ -5352,6 +5609,15 @@ export const zSearchQueryRequest = z.object({
 });
 
 /**
+ * Process definition variable name search query request.
+ */
+export const zProcessDefinitionVariableNameSearchQuery = zSearchQueryRequest.and(z.object({
+    filter: z.optional(zProcessDefinitionVariableNameFilter)
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name search query request.'
+}));
+
+/**
  * The order in which to sort the related field.
  */
 export const zSortOrderEnum = z.enum([
@@ -5383,7 +5649,7 @@ export const zAgentInstanceHistorySearchQuerySortRequest = z.object({
     field: z.enum([
         'producedAt',
         'historyItemKey',
-        'iteration'
+        'loopIteration'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -5884,6 +6150,7 @@ export const zProcessInstanceSearchQuerySortRequest = z.object({
         'parentElementInstanceKey',
         'startDate',
         'endDate',
+        'suspendedDate',
         'state',
         'hasIncident',
         'tenantId',
@@ -6237,6 +6504,17 @@ export const zProcessDefinitionSearchQueryResult = zSearchQueryResponse.and(z.ob
     })
 }));
 
+/**
+ * Process definition variable name search query response.
+ */
+export const zProcessDefinitionVariableNameSearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zProcessDefinitionVariableNameSearchResult).register(z.globalRegistry, {
+        description: 'The matching variable names.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name search query response.'
+}));
+
 export const zProcessDefinitionMessageSubscriptionStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionMessageSubscriptionStatisticsResult).register(z.globalRegistry, {
         description: 'The matching process definition message subscription statistics.'
@@ -6300,6 +6578,63 @@ export const zRoleMappingRuleSearchResult = zSearchQueryResponse.and(z.object({
         description: 'The matching mapping rules.'
     })
 }));
+
+export const zSecretResolveRequest = z.object({
+    references: z.array(z.string().max(256).register(z.globalRegistry, {
+        description: 'A secret reference of the form `camunda.secrets.<name>`.'
+    })).max(20).register(z.globalRegistry, {
+        description: 'The secret references to resolve, each of the form `camunda.secrets.<name>`.\nDuplicate references are deduplicated by the server and resolved once.\nAt most 20 references may be requested in a single batch.\n'
+    })
+});
+
+export const zResolvedSecret = z.object({
+    reference: z.string().register(z.globalRegistry, {
+        description: 'The resolved secret reference of the form `camunda.secrets.<name>`.'
+    }),
+    value: z.string().register(z.globalRegistry, {
+        description: 'The resolved secret value.'
+    })
+});
+
+/**
+ * The typed reason a reference could not be resolved.
+ *
+ * - `NOT_FOUND`: no secret exists for the reference.
+ * - `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.
+ * - `INVALID_REFERENCE`: the reference is malformed.
+ *
+ */
+export const zSecretErrorCode = z.enum([
+    'NOT_FOUND',
+    'ACCESS_DENIED',
+    'INVALID_REFERENCE'
+]).register(z.globalRegistry, {
+    description: 'The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed.\n'
+});
+
+export const zSecretResolutionError = z.object({
+    reference: z.string().register(z.globalRegistry, {
+        description: 'The secret reference that could not be resolved.'
+    }),
+    code: zSecretErrorCode,
+    message: z.string().register(z.globalRegistry, {
+        description: 'A human-readable description of the failure. Never contains the secret value;\nonly error metadata (codes, names) is included.\n'
+    })
+});
+
+/**
+ * The per-reference outcome of a resolve request.
+ */
+export const zSecretResolveResult = z.object({
+    resolved: z.array(zResolvedSecret).register(z.globalRegistry, {
+        description: 'The references that were successfully resolved.'
+    }),
+    errors: z.array(zSecretResolutionError).register(z.globalRegistry, {
+        description: 'The references that could not be resolved, each with a typed error code.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The per-reference outcome of a resolve request.'
+});
 
 export const zSignalBroadcastRequest = z.object({
     signalName: z.string().register(z.globalRegistry, {
@@ -7369,6 +7704,21 @@ export const zClusterVariableScopeFilterProperty = z.union([
 ]);
 
 /**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zClusterVariableKindExactMatch = zClusterVariableKindEnum;
+
+/**
+ * ClusterVariableKindEnum property with full advanced search capabilities.
+ */
+export const zClusterVariableKindFilterProperty = z.union([
+    zClusterVariableKindExactMatch,
+    zAdvancedClusterVariableKindFilter
+]);
+
+/**
  * Cluster variable filter request.
  */
 export const zClusterVariableSearchQueryFilterRequest = z.object({
@@ -7378,7 +7728,11 @@ export const zClusterVariableSearchQueryFilterRequest = z.object({
     tenantId: z.optional(zStringFilterProperty),
     isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.\n'
-    }))
+    })),
+    metadata: z.optional(z.record(z.string(), zAdvancedMetadataValueFilter).register(z.globalRegistry, {
+        description: "Filter by metadata entries. A map of metadata key to an advanced filter on that key's value. Metadata values are strings or numbers."
+    })),
+    kind: z.optional(zClusterVariableKindFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Cluster variable filter request.'
 });
@@ -8117,7 +8471,7 @@ export const zAgentInstanceHistoryFilter = z.object({
     role: z.optional(zAgentInstanceHistoryRoleFilterProperty),
     elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
     jobKey: z.optional(zJobKeyFilterProperty),
-    iteration: z.optional(zIntegerFilterProperty),
+    loopIteration: z.optional(zIntegerFilterProperty),
     commitStatus: z.optional(zAgentInstanceHistoryCommitStatusFilterProperty),
     producedAt: z.optional(zDateTimeFilterProperty)
 }).register(z.globalRegistry, {
@@ -8429,6 +8783,7 @@ export const zBaseProcessInstanceFilterFields = z.object({
     hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Whether this process instance has a related incident or not.'
     })),
+    suspendedDate: z.optional(zDateTimeFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
     variables: z.optional(z.array(zVariableValueFilterProperty).register(z.globalRegistry, {
         description: 'The process instance variables.'
@@ -8543,6 +8898,26 @@ export const zProcessInstanceModificationBatchOperationRequest = z.object({
     operationReference: z.optional(zOperationReference)
 }).register(z.globalRegistry, {
     description: 'The process instance filter to define on which process instances tokens should be moved,\nand new element instances should be activated or terminated.\n'
+});
+
+/**
+ * The process instance filter that defines which process instances should be suspended.
+ */
+export const zProcessInstanceSuspensionBatchOperationRequest = z.object({
+    filter: zProcessInstanceFilter,
+    operationReference: z.optional(zOperationReference)
+}).register(z.globalRegistry, {
+    description: 'The process instance filter that defines which process instances should be suspended.'
+});
+
+/**
+ * The process instance filter that defines which process instances should be resumed.
+ */
+export const zProcessInstanceResumptionBatchOperationRequest = z.object({
+    filter: zProcessInstanceFilter,
+    operationReference: z.optional(zOperationReference)
+}).register(z.globalRegistry, {
+    description: 'The process instance filter that defines which process instances should be resumed.'
 });
 
 /**
@@ -10085,6 +10460,19 @@ export const zGetProcessDefinitionStatisticsData = z.object({
  */
 export const zGetProcessDefinitionStatisticsResponse = zProcessDefinitionElementStatisticsQueryResult;
 
+export const zSearchProcessDefinitionVariableNamesData = z.object({
+    body: z.optional(zProcessDefinitionVariableNameSearchQuery),
+    path: z.object({
+        processDefinitionKey: zProcessDefinitionKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process definition variable name search result.
+ */
+export const zSearchProcessDefinitionVariableNamesResponse = zProcessDefinitionVariableNameSearchQueryResult;
+
 export const zGetProcessDefinitionXmlData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -10177,6 +10565,17 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
  */
 export const zModifyProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
 
+export const zResumeProcessInstancesBatchOperationData = z.object({
+    body: zProcessInstanceResumptionBatchOperationRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch operation request was created.
+ */
+export const zResumeProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
+
 export const zSearchProcessInstancesData = z.object({
     body: z.optional(zProcessInstanceSearchQuery),
     path: z.optional(z.never()),
@@ -10187,6 +10586,17 @@ export const zSearchProcessInstancesData = z.object({
  * The process instance search result.
  */
 export const zSearchProcessInstancesResponse = zProcessInstanceSearchQueryResult;
+
+export const zSuspendProcessInstancesBatchOperationData = z.object({
+    body: zProcessInstanceSuspensionBatchOperationRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch operation request was created.
+ */
+export const zSuspendProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
 
 export const zGetProcessInstanceData = z.object({
     body: z.optional(z.never()),
@@ -10200,6 +10610,21 @@ export const zGetProcessInstanceData = z.object({
  * The process instance is successfully returned.
  */
 export const zGetProcessInstanceResponse = zProcessInstanceResult;
+
+export const zAssignProcessInstanceBusinessIdData = z.object({
+    body: zProcessInstanceBusinessIdAssignmentInstruction,
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The business id is assigned to the process instance.
+ */
+export const zAssignProcessInstanceBusinessIdResponse = z.void().register(z.globalRegistry, {
+    description: 'The business id is assigned to the process instance.'
+});
 
 export const zGetProcessInstanceCallHierarchyData = z.object({
     body: z.optional(z.never()),
@@ -10302,6 +10727,21 @@ export const zModifyProcessInstanceResponse = z.void().register(z.globalRegistry
     description: 'The process instance is modified.'
 });
 
+export const zResumeProcessInstanceData = z.object({
+    body: z.optional(zResumeProcessInstanceRequest),
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance is resumed.
+ */
+export const zResumeProcessInstanceResponse = z.void().register(z.globalRegistry, {
+    description: 'The process instance is resumed.'
+});
+
 export const zGetProcessInstanceSequenceFlowsData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -10340,6 +10780,21 @@ export const zGetProcessInstanceWaitStateStatisticsData = z.object({
  * The process instance wait state statistics result.
  */
 export const zGetProcessInstanceWaitStateStatisticsResponse = zProcessInstanceWaitStateStatisticsQueryResult;
+
+export const zSuspendProcessInstanceData = z.object({
+    body: z.optional(zSuspendProcessInstanceRequest),
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance is suspended.
+ */
+export const zSuspendProcessInstanceResponse = z.void().register(z.globalRegistry, {
+    description: 'The process instance is suspended.'
+});
 
 export const zSearchResourcesData = z.object({
     body: z.optional(zResourceSearchQuery),
@@ -10650,6 +11105,19 @@ export const zAssignRoleToUserData = z.object({
 export const zAssignRoleToUserResponse = z.void().register(z.globalRegistry, {
     description: 'The role was assigned successfully to the user.'
 });
+
+export const zResolveSecretsData = z.object({
+    body: zSecretResolveRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch was processed. Per-reference outcomes are split between `resolved` and
+ * `errors`; this status is returned even when some or all references failed.
+ *
+ */
+export const zResolveSecretsResponse = zSecretResolveResult;
 
 export const zCreateAdminUserData = z.object({
     body: zUserRequest,
@@ -11018,6 +11486,38 @@ export const zGetTopologyData = z.object({
  */
 export const zGetTopologyResponse = zTopologyResponse;
 
+export const zChangeClusterModeData = z.object({
+    body: z.optional(z.never()),
+    path: z.optional(z.never()),
+    query: z.object({
+        mode: z.enum([
+            'PROCESSING',
+            'RECOVERING'
+        ]).register(z.globalRegistry, {
+            description: 'The target cluster mode.'
+        }),
+        dryRun: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
+        })).default(false)
+    })
+});
+
+/**
+ * The mode change request was accepted; returns the planned cluster changes.
+ */
+export const zChangeClusterModeResponse = zClusterModeChangeResponse;
+
+export const zRestoreData = z.object({
+    body: zRestoreRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The restore request was accepted; returns the planned cluster changes.
+ */
+export const zRestoreResponse = zClusterModeChangeResponse;
+
 export const zCreateUserData = z.object({
     body: zUserRequest,
     path: z.optional(z.never()),
@@ -11179,7 +11679,15 @@ export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
 });
 
 export const zSearchUserTaskEffectiveVariablesData = z.object({
-    body: z.optional(zUserTaskEffectiveVariableSearchQueryRequest),
+    body: z.optional(z.object({
+        page: z.optional(zOffsetPagination),
+        sort: z.optional(z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
+            description: 'Sort field criteria.'
+        })),
+        filter: z.optional(zUserTaskVariableFilter)
+    }).register(z.globalRegistry, {
+        description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
+    })),
     path: z.object({
         userTaskKey: zUserTaskKey
     }),
