@@ -1429,5 +1429,12 @@
       "region": "SearchUserTaskEffectiveVariables",
       "label": "Search user task effective variables"
     }
+  ],
+  "resolveSecrets": [
+    {
+      "file": "secret.ts",
+      "region": "ResolveSecrets",
+      "label": "Resolve secrets"
+    }
   ]
 }
