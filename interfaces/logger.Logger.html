@@ -13,7 +13,7 @@
 <h1>Interface Logger</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">Logger</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-call-signature" href="#code-1">code</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">level</span><span class="tsd-signature-symbol">:</span> <a href="../types/logger.LogLevel.html" class="tsd-signature-type tsd-kind-type-alias">LogLevel</a><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">code</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">msg</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">data</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#debug-1">debug</a><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#error-1">error</a><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#info-1">info</a><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#level-1">level</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <a href="../types/logger.LogLevel.html" class="tsd-signature-type tsd-kind-type-alias">LogLevel</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#scope-1">scope</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">child</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-interface">Logger</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#setlevel-1">setLevel</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">level</span><span class="tsd-signature-symbol">:</span> <a href="../types/logger.LogLevel.html" class="tsd-signature-type tsd-kind-type-alias">LogLevel</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#settransport-1">setTransport</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">t</span><span class="tsd-signature-symbol">?:</span> <a href="../types/logger.LogTransport.html" class="tsd-signature-type tsd-kind-type-alias">LogTransport</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#silly-1">silly</a><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#trace-1">trace</a><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#warn-1">warn</a><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L24">runtime/logger.ts:24</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L24">runtime/logger.ts:24</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -51,7 +51,7 @@
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">data</span>: <span class="tsd-signature-type">any</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L35">runtime/logger.ts:35</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L35">runtime/logger.ts:35</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="debug"><span>debug</span><a href="#debug" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -64,7 +64,7 @@
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L31">runtime/logger.ts:31</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L31">runtime/logger.ts:31</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="error"><span>error</span><a href="#error" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -77,7 +77,7 @@
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L28">runtime/logger.ts:28</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L28">runtime/logger.ts:28</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="info"><span>info</span><a href="#info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -90,7 +90,7 @@
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L30">runtime/logger.ts:30</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L30">runtime/logger.ts:30</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="level"><span>level</span><a href="#level" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -99,7 +99,7 @@
 <div class="tsd-description">
 <h4 class="tsd-returns-title">Returns <a href="../types/logger.LogLevel.html" class="tsd-signature-type tsd-kind-type-alias">LogLevel</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L25">runtime/logger.ts:25</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L25">runtime/logger.ts:25</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scope"><span>scope</span><a href="#scope" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -112,7 +112,7 @@
 <li><span><span class="tsd-kind-parameter">child</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-interface">Logger</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L34">runtime/logger.ts:34</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L34">runtime/logger.ts:34</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setlevel"><span>set<wbr/>Level</span><a href="#setlevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -125,7 +125,7 @@
 <li><span><span class="tsd-kind-parameter">level</span>: <a href="../types/logger.LogLevel.html" class="tsd-signature-type tsd-kind-type-alias">LogLevel</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L26">runtime/logger.ts:26</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L26">runtime/logger.ts:26</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="settransport"><span>set<wbr/>Transport</span><a href="#settransport" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -138,7 +138,7 @@
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">t</span>: <a href="../types/logger.LogTransport.html" class="tsd-signature-type tsd-kind-type-alias">LogTransport</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L27">runtime/logger.ts:27</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L27">runtime/logger.ts:27</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="silly"><span>silly</span><a href="#silly" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -151,7 +151,7 @@
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L33">runtime/logger.ts:33</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L33">runtime/logger.ts:33</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="trace"><span>trace</span><a href="#trace" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -164,7 +164,7 @@
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L32">runtime/logger.ts:32</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L32">runtime/logger.ts:32</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="warn"><span>warn</span><a href="#warn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -177,7 +177,7 @@
 <li><span><span class="tsd-signature-symbol">...</span><span class="tsd-kind-parameter">a</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5c053fe676d178de33dc5741b7bda0110c130d85/src/runtime/logger.ts#L29">runtime/logger.ts:29</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/runtime/logger.ts#L29">runtime/logger.ts:29</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
