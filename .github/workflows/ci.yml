@@ -36,8 +36,8 @@ jobs:
         run: npm ci
       - name: Generate
         run: npm run generate
-      - name: Lint (Biome)
-        run: npm run lint
+      - name: Lint & format (Biome)
+        run: npm run format:check
       - name: Typecheck
         run: npm run typecheck
 
