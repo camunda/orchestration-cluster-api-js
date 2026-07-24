@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ClusterVariableSearchQueryFilterRequest</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#istruncated">isTruncated</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#kind">kind</a><span class="tsd-signature-symbol">?:</span> <a href="index.ClusterVariableKindFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">ClusterVariableKindFilterProperty</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#metadata">metadata</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">key</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <a href="index.AdvancedMetadataValueFilter.html" class="tsd-signature-type tsd-kind-type-alias">AdvancedMetadataValueFilter</a> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#name">name</a><span class="tsd-signature-symbol">?:</span> <a href="index.StringFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">StringFilterProperty</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#scope">scope</a><span class="tsd-signature-symbol">?:</span> <a href="index.ClusterVariableScopeFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">ClusterVariableScopeFilterProperty</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#tenantid">tenantId</a><span class="tsd-signature-symbol">?:</span> <a href="index.StringFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">StringFilterProperty</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#value">value</a><span class="tsd-signature-symbol">?:</span> <a href="index.StringFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">StringFilterProperty</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2226">gen/types.gen.ts:2226</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2226">gen/types.gen.ts:2226</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -41,49 +41,49 @@
 <div class="tsd-comment tsd-typography"><p>Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2247">gen/types.gen.ts:2247</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2247">gen/types.gen.ts:2247</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="kind"><code class="tsd-tag">Optional</code><span>kind</span><a href="#kind" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">kind</span><span class="tsd-signature-symbol">?:</span> <a href="index.ClusterVariableKindFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">ClusterVariableKindFilterProperty</a></div>
 <div class="tsd-comment tsd-typography"><p>The kind filter for cluster variables.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2257">gen/types.gen.ts:2257</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2257">gen/types.gen.ts:2257</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="metadata"><code class="tsd-tag">Optional</code><span>metadata</span><a href="#metadata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">metadata</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">key</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <a href="index.AdvancedMetadataValueFilter.html" class="tsd-signature-type tsd-kind-type-alias">AdvancedMetadataValueFilter</a> <span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>Filter by metadata entries. A map of metadata key to an advanced filter on that key's value. Metadata values are strings or numbers.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2251">gen/types.gen.ts:2251</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2251">gen/types.gen.ts:2251</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="name"><code class="tsd-tag">Optional</code><span>name</span><a href="#name" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">name</span><span class="tsd-signature-symbol">?:</span> <a href="index.StringFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">StringFilterProperty</a></div>
 <div class="tsd-comment tsd-typography"><p>Name of the cluster variable.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2230">gen/types.gen.ts:2230</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2230">gen/types.gen.ts:2230</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="scope"><code class="tsd-tag">Optional</code><span>scope</span><a href="#scope" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">scope</span><span class="tsd-signature-symbol">?:</span> <a href="index.ClusterVariableScopeFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">ClusterVariableScopeFilterProperty</a></div>
 <div class="tsd-comment tsd-typography"><p>The scope filter for cluster variables.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2238">gen/types.gen.ts:2238</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2238">gen/types.gen.ts:2238</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="tenantid"><code class="tsd-tag">Optional</code><span>tenant<wbr/>Id</span><a href="#tenantid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">tenantId</span><span class="tsd-signature-symbol">?:</span> <a href="index.StringFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">StringFilterProperty</a></div>
 <div class="tsd-comment tsd-typography"><p>Tenant ID of this variable.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2242">gen/types.gen.ts:2242</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2242">gen/types.gen.ts:2242</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="value"><code class="tsd-tag">Optional</code><span>value</span><a href="#value" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">value</span><span class="tsd-signature-symbol">?:</span> <a href="index.StringFilterProperty.html" class="tsd-signature-type tsd-kind-type-alias">StringFilterProperty</a></div>
 <div class="tsd-comment tsd-typography"><p>The value of the cluster variable.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/a88cb0073947055ac767d91672db4bf2c25711ec/src/gen/types.gen.ts#L2234">gen/types.gen.ts:2234</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5ac9e29324eb1a5f8374cf40f90049c8e234ebf2/src/gen/types.gen.ts#L2234">gen/types.gen.ts:2234</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
