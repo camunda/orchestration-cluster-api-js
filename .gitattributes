@@ -1,0 +1,19 @@
+# Normalize line endings on commit: text files are stored with LF in the repo
+# and checked out with LF on all platforms. This keeps `biome format`
+# deterministic across contributors and lets CI enforce formatting without
+# CRLF/LF drift producing spurious diffs.
+* text=auto eol=lf
+
+# Treat common binary assets as binary so git never applies EOL conversion.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
