@@ -5188,6 +5188,7 @@ export const IncidentErrorTypeEnum = {
   JOB_NO_RETRIES: 'JOB_NO_RETRIES',
   MESSAGE_SIZE_EXCEEDED: 'MESSAGE_SIZE_EXCEEDED',
   RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
+  SECRET_RESOLUTION_ERROR: 'SECRET_RESOLUTION_ERROR',
   TASK_LISTENER_NO_RETRIES: 'TASK_LISTENER_NO_RETRIES',
   UNHANDLED_ERROR_EVENT: 'UNHANDLED_ERROR_EVENT',
   UNKNOWN: 'UNKNOWN',
@@ -7886,13 +7887,14 @@ export type ProcessDefinitionFilter = {
      */
     hasStartForm?: boolean;
     /**
-     * Filter by whether the process definition has been deleted.
-     * When not set, both deleted and non-deleted process definitions are returned.
-     * Set to `false` to exclude deleted definitions (recommended for most use cases).
-     * Set to `true` to return only deleted definitions that are still retained in secondary storage.
+     * Filter by the process definition's state.
+     * When not set, process definitions in any state are returned.
+     * Set to `ACTIVE` to exclude deleted definitions (recommended for most use cases).
+     * Set to `DELETED` to return only definitions that have been deleted but are still
+     * retained in secondary storage.
      *
      */
-    isDeleted?: boolean;
+    state?: 'ACTIVE' | 'DELETED';
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -7936,9 +7938,9 @@ export type ProcessDefinitionResult = {
      */
     hasStartForm: boolean;
     /**
-     * Whether this process definition has been deleted but is still retained in secondary storage.
+     * The state of this process definition.
      */
-    isDeleted: boolean;
+    state: 'ACTIVE' | 'DELETED';
 };
 
 /**
@@ -19553,24 +19555,7 @@ export type CompleteUserTaskResponses = {
 export type CompleteUserTaskResponse = CompleteUserTaskResponses[keyof CompleteUserTaskResponses];
 
 export type SearchUserTaskEffectiveVariablesData = {
-    /**
-     * User task effective variable search query request. Uses offset-based pagination only.
-     *
-     */
-    body?: {
-        /**
-         * Pagination parameters.
-         */
-        page?: OffsetPagination;
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<UserTaskVariableSearchQuerySortRequest>;
-        /**
-         * The user task variable search filters.
-         */
-        filter?: UserTaskVariableFilter;
-    };
+    body?: UserTaskEffectiveVariableSearchQueryRequest;
     path: {
         /**
          * The key of the user task.
@@ -19788,7 +19773,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:d13bc9d204c7e72691377d7ac75c580db83acec006dbd3f4635c4fbe05245865
+// specHash=sha256:dc1ef7b1e5da255e2693943a9869f29fbca4ce5250eface7865437c113284d5f
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

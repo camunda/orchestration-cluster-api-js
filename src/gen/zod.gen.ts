@@ -2003,6 +2003,7 @@ export const zIncidentErrorTypeEnum = z.enum([
     'JOB_NO_RETRIES',
     'MESSAGE_SIZE_EXCEEDED',
     'RESOURCE_NOT_FOUND',
+    'SECRET_RESOLUTION_ERROR',
     'TASK_LISTENER_NO_RETRIES',
     'UNHANDLED_ERROR_EVENT',
     'UNKNOWN',
@@ -4749,8 +4750,11 @@ export const zProcessDefinitionFilter = z.object({
     hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
     })),
-    isDeleted: z.optional(z.boolean().register(z.globalRegistry, {
-        description: 'Filter by whether the process definition has been deleted.\nWhen not set, both deleted and non-deleted process definitions are returned.\nSet to `false` to exclude deleted definitions (recommended for most use cases).\nSet to `true` to return only deleted definitions that are still retained in secondary storage.\n'
+    state: z.optional(z.enum([
+        'ACTIVE',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n"
     }))
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -4777,8 +4781,11 @@ export const zProcessDefinitionResult = z.object({
     hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
     }),
-    isDeleted: z.boolean().register(z.globalRegistry, {
-        description: 'Whether this process definition has been deleted but is still retained in secondary storage.'
+    state: z.enum([
+        'ACTIVE',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: 'The state of this process definition.'
     })
 });
 
@@ -11679,15 +11686,7 @@ export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
 });
 
 export const zSearchUserTaskEffectiveVariablesData = z.object({
-    body: z.optional(z.object({
-        page: z.optional(zOffsetPagination),
-        sort: z.optional(z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        })),
-        filter: z.optional(zUserTaskVariableFilter)
-    }).register(z.globalRegistry, {
-        description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
-    })),
+    body: z.optional(zUserTaskEffectiveVariableSearchQueryRequest),
     path: z.object({
         userTaskKey: zUserTaskKey
     }),
