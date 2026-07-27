@@ -31,7 +31,11 @@ describe('lazy schema loading', () => {
     // Trigger schema loading manually
     const schemas = await (client as any)._loadSchemas();
     expect(schemas).toBeDefined();
-    expect(typeof schemas.zCreateProcessInstanceData).toBe('object');
+    // hey-api 0.86 emits `zCreateProcessInstanceData` (envelope); 0.96+ emits
+    // `zCreateProcessInstanceBody` (body-only). Either name proves schemas loaded.
+    const createProcessInstanceSchema =
+      schemas.zCreateProcessInstanceData ?? schemas.zCreateProcessInstanceBody;
+    expect(typeof createProcessInstanceSchema).toBe('object');
     // After first load, the promise should be cached
     expect((client as any)._schemasPromise).not.toBeNull();
     // Second call returns same cached module

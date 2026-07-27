@@ -39,6 +39,47 @@ code = code.replace(
   'responseValidator: undefined,'
 );
 
+// hey-api 0.96+ emits validators as arrow-expression bodies (no braces) of the form:
+//   requestValidator: async (data) => await z.object({ body: ..., path: ..., query: ... }).parseAsync(data),
+//   responseValidator: async (data) => await zXxxResponse.parseAsync(data),
+// Strip these too so we don't double-validate (and so sdk.gen.ts doesn't reference
+// per-part schemas like zXxxBody / zXxxQuery / zXxxResponse that are no longer imported).
+code = stripExpressionValidators(code, 'requestValidator');
+code = stripExpressionValidators(code, 'responseValidator');
+
+function stripExpressionValidators(
+  src: string,
+  kind: 'requestValidator' | 'responseValidator'
+): string {
+  const needle = `${kind}: async (data) => await `;
+  let out = '';
+  let i = 0;
+  while (i < src.length) {
+    const idx = src.indexOf(needle, i);
+    if (idx === -1) {
+      out += src.slice(i);
+      break;
+    }
+    out += src.slice(i, idx);
+    // Scan from end of `await ` until we find a `,` at paren/brace depth 0.
+    let j = idx + needle.length;
+    let depthParen = 0;
+    let depthBrace = 0;
+    while (j < src.length) {
+      const ch = src[j];
+      if (ch === '(') depthParen++;
+      else if (ch === ')') depthParen--;
+      else if (ch === '{') depthBrace++;
+      else if (ch === '}') depthBrace--;
+      else if (ch === ',' && depthParen === 0 && depthBrace === 0) break;
+      j++;
+    }
+    out += `${kind}: undefined`;
+    i = j; // leave the trailing `,` in place
+  }
+  return out;
+}
+
 // Strip the zod.gen import line — validators are neutralized so the import is dead code.
 // Removing it prevents sdk.gen.ts from eagerly loading the 10K-line zod schema module.
 code = code.replace(/^import\s*\{[^}]*\}\s*from\s*'\.\/zod\.gen';\s*\n/m, '');
