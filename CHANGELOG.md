@@ -1,3 +1,11 @@
+# [10.0.0-alpha.17](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.16...v10.0.0-alpha.17) (2026-07-27)
+
+
+### Bug Fixes
+
+* **gen:** forward-compatible generation for @hey-api/openapi-ts 0.97 ([ef36a46](https://github.com/camunda/orchestration-cluster-api-js/commit/ef36a4654eedb7bae905bd56a0b4854d6bbe7ebc))
+* **gen:** forward-compatible generation for @hey-api/openapi-ts 0.97 ([47c7713](https://github.com/camunda/orchestration-cluster-api-js/commit/47c77131da1b51dffebd4745913252697169e5ff))
+
 # [10.0.0-alpha.16](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.15...v10.0.0-alpha.16) (2026-07-27)
 
 
