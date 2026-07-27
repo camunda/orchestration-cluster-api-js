@@ -10161,7 +10161,7 @@ export type Changeset = {
      * The priority of the task.
      */
     priority?: number | null;
-    [key: string]: unknown | string | null | string | null | Array<string> | null | Array<string> | null | number | null | undefined;
+    [key: string]: unknown;
 } | null;
 
 export type UserTaskVariableSearchQuerySortRequest = {

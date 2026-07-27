@@ -1761,8 +1761,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('activateAdHocSubProcessActivities', _schemas.zActivateAdHocSubProcessActivitiesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('activateAdHocSubProcessActivities', _schemas.zActivateAdHocSubProcessActivitiesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -1846,8 +1848,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('activateJobs', _schemas.zActivateJobsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('activateJobs', _schemas.zActivateJobsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -1920,8 +1924,7 @@ export class CamundaClient {
       envelope.path = { groupId, clientId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignClientToGroup', _schemas.zAssignClientToGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignClientToGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -1993,8 +1996,7 @@ export class CamundaClient {
       envelope.path = { tenantId, clientId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignClientToTenant', _schemas.zAssignClientToTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignClientToTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2066,8 +2068,7 @@ export class CamundaClient {
       envelope.path = { tenantId, groupId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignGroupToTenant', _schemas.zAssignGroupToTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignGroupToTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2137,8 +2138,7 @@ export class CamundaClient {
       envelope.path = { groupId, mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignMappingRuleToGroup', _schemas.zAssignMappingRuleToGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignMappingRuleToGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2208,8 +2208,7 @@ export class CamundaClient {
       envelope.path = { tenantId, mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignMappingRuleToTenant', _schemas.zAssignMappingRuleToTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignMappingRuleToTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2291,8 +2290,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignProcessInstanceBusinessId', _schemas.zAssignProcessInstanceBusinessIdData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('assignProcessInstanceBusinessId', _schemas.zAssignProcessInstanceBusinessIdBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2363,8 +2364,7 @@ export class CamundaClient {
       envelope.path = { roleId, clientId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignRoleToClient', _schemas.zAssignRoleToClientData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignRoleToClient', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2434,8 +2434,7 @@ export class CamundaClient {
       envelope.path = { roleId, groupId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignRoleToGroup', _schemas.zAssignRoleToGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignRoleToGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2505,8 +2504,7 @@ export class CamundaClient {
       envelope.path = { roleId, mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignRoleToMappingRule', _schemas.zAssignRoleToMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignRoleToMappingRule', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2578,8 +2576,7 @@ export class CamundaClient {
       envelope.path = { tenantId, roleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignRoleToTenant', _schemas.zAssignRoleToTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignRoleToTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2649,8 +2646,7 @@ export class CamundaClient {
       envelope.path = { roleId, username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignRoleToUser', _schemas.zAssignRoleToUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignRoleToUser', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2723,8 +2719,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignUserTask', _schemas.zAssignUserTaskData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('assignUserTask', _schemas.zAssignUserTaskBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2797,8 +2795,7 @@ export class CamundaClient {
       envelope.path = { groupId, username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignUserToGroup', _schemas.zAssignUserToGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignUserToGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2868,8 +2865,7 @@ export class CamundaClient {
       envelope.path = { tenantId, username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('assignUserToTenant', _schemas.zAssignUserToTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('assignUserToTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -2947,8 +2943,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('broadcastSignal', _schemas.zBroadcastSignalData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('broadcastSignal', _schemas.zBroadcastSignalBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3018,8 +3016,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('cancelBatchOperation', _schemas.zCancelBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('cancelBatchOperation', _schemas.zCancelBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -3097,8 +3097,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('cancelProcessInstance', _schemas.zCancelProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('cancelProcessInstance', _schemas.zCancelProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -3178,8 +3180,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('cancelProcessInstancesBatchOperation', _schemas.zCancelProcessInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('cancelProcessInstancesBatchOperation', _schemas.zCancelProcessInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3257,8 +3261,7 @@ export class CamundaClient {
       envelope.query = { mode, dryRun };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('changeClusterMode', _schemas.zChangeClusterModeData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('changeClusterMode', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -3333,8 +3336,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('completeJob', _schemas.zCompleteJobData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('completeJob', _schemas.zCompleteJobBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -3410,8 +3415,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('completeUserTask', _schemas.zCompleteUserTaskData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('completeUserTask', _schemas.zCompleteUserTaskBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -3496,8 +3503,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('correlateMessage', _schemas.zCorrelateMessageData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('correlateMessage', _schemas.zCorrelateMessageBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3571,8 +3580,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createAdminUser', _schemas.zCreateAdminUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createAdminUser', _schemas.zCreateAdminUserBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3650,8 +3661,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createAgentInstance', _schemas.zCreateAgentInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createAgentInstance', _schemas.zCreateAgentInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3738,8 +3751,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createAgentInstanceHistoryItem', _schemas.zCreateAgentInstanceHistoryItemData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createAgentInstanceHistoryItem', _schemas.zCreateAgentInstanceHistoryItemBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -3815,8 +3830,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createAuthorization', _schemas.zCreateAuthorizationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createAuthorization', _schemas.zCreateAuthorizationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3894,8 +3911,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createDeployment', _schemas.zCreateDeploymentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createDeployment', _schemas.zCreateDeploymentBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -3988,8 +4007,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createDocument', _schemas.zCreateDocumentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createDocument', _schemas.zCreateDocumentBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -4067,8 +4088,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createDocumentLink', _schemas.zCreateDocumentLinkData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createDocumentLink', _schemas.zCreateDocumentLinkBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -4163,8 +4186,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createDocuments', _schemas.zCreateDocumentsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createDocuments', _schemas.zCreateDocumentsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -4242,8 +4267,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createElementInstanceVariables', _schemas.zCreateElementInstanceVariablesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createElementInstanceVariables', _schemas.zCreateElementInstanceVariablesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -4316,8 +4343,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createGlobalClusterVariable', _schemas.zCreateGlobalClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createGlobalClusterVariable', _schemas.zCreateGlobalClusterVariableBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4390,8 +4419,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createGlobalTaskListener', _schemas.zCreateGlobalTaskListenerData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createGlobalTaskListener', _schemas.zCreateGlobalTaskListenerBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4479,8 +4510,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createGroup', _schemas.zCreateGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createGroup', _schemas.zCreateGroupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4555,8 +4588,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createMappingRule', _schemas.zCreateMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createMappingRule', _schemas.zCreateMappingRuleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4658,8 +4693,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createProcessInstance', _schemas.zCreateProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createProcessInstance', _schemas.zCreateProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4731,8 +4768,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createRole', _schemas.zCreateRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createRole', _schemas.zCreateRoleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4804,8 +4843,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createTenant', _schemas.zCreateTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createTenant', _schemas.zCreateTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -4879,8 +4920,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createTenantClusterVariable', _schemas.zCreateTenantClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createTenantClusterVariable', _schemas.zCreateTenantClusterVariableBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -4955,8 +4998,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('createUser', _schemas.zCreateUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('createUser', _schemas.zCreateUserBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -5023,8 +5068,7 @@ export class CamundaClient {
       envelope.path = { authorizationKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteAuthorization', _schemas.zDeleteAuthorizationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteAuthorization', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5092,8 +5136,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteDecisionInstance', _schemas.zDeleteDecisionInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('deleteDecisionInstance', _schemas.zDeleteDecisionInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5167,8 +5213,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteDecisionInstancesBatchOperation', _schemas.zDeleteDecisionInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('deleteDecisionInstancesBatchOperation', _schemas.zDeleteDecisionInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -5239,8 +5287,7 @@ export class CamundaClient {
       envelope.query = { storeId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteDocument', _schemas.zDeleteDocumentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteDocument', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5308,8 +5355,7 @@ export class CamundaClient {
       envelope.path = { name };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteGlobalClusterVariable', _schemas.zDeleteGlobalClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteGlobalClusterVariable', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5378,8 +5424,7 @@ export class CamundaClient {
       envelope.path = { id };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteGlobalTaskListener', _schemas.zDeleteGlobalTaskListenerData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteGlobalTaskListener', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5446,8 +5491,7 @@ export class CamundaClient {
       envelope.path = { groupId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteGroup', _schemas.zDeleteGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5515,8 +5559,7 @@ export class CamundaClient {
       envelope.path = { mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteMappingRule', _schemas.zDeleteMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteMappingRule', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5584,8 +5627,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteProcessInstance', _schemas.zDeleteProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('deleteProcessInstance', _schemas.zDeleteProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5664,8 +5709,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteProcessInstancesBatchOperation', _schemas.zDeleteProcessInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('deleteProcessInstancesBatchOperation', _schemas.zDeleteProcessInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -5748,8 +5795,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteResource', _schemas.zDeleteResourceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('deleteResource', _schemas.zDeleteResourceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5817,8 +5866,7 @@ export class CamundaClient {
       envelope.path = { roleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteRole', _schemas.zDeleteRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteRole', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5885,8 +5933,7 @@ export class CamundaClient {
       envelope.path = { tenantId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteTenant', _schemas.zDeleteTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -5956,8 +6003,7 @@ export class CamundaClient {
       envelope.path = { tenantId, name };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteTenantClusterVariable', _schemas.zDeleteTenantClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteTenantClusterVariable', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6024,8 +6070,7 @@ export class CamundaClient {
       envelope.path = { username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('deleteUser', _schemas.zDeleteUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('deleteUser', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6104,8 +6149,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('evaluateConditionals', _schemas.zEvaluateConditionalsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('evaluateConditionals', _schemas.zEvaluateConditionalsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -6205,8 +6252,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('evaluateDecision', _schemas.zEvaluateDecisionData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('evaluateDecision', _schemas.zEvaluateDecisionBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -6286,8 +6335,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('evaluateExpression', _schemas.zEvaluateExpressionData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('evaluateExpression', _schemas.zEvaluateExpressionBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -6361,8 +6412,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('failJob', _schemas.zFailJobData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('failJob', _schemas.zFailJobBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6439,8 +6492,7 @@ export class CamundaClient {
       envelope.path = { agentInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getAgentInstance', _schemas.zGetAgentInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getAgentInstance', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6514,8 +6566,7 @@ export class CamundaClient {
       envelope.path = { auditLogKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getAuditLog', _schemas.zGetAuditLogData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getAuditLog', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6652,8 +6703,7 @@ export class CamundaClient {
       envelope.path = { authorizationKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getAuthorization', _schemas.zGetAuthorizationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getAuthorization', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6730,8 +6780,7 @@ export class CamundaClient {
       envelope.path = { batchOperationKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getBatchOperation', _schemas.zGetBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getBatchOperation', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6809,8 +6858,7 @@ export class CamundaClient {
       envelope.path = { decisionDefinitionKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getDecisionDefinition', _schemas.zGetDecisionDefinitionData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getDecisionDefinition', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6887,8 +6935,7 @@ export class CamundaClient {
       envelope.path = { decisionDefinitionKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getDecisionDefinitionXML', _schemas.zGetDecisionDefinitionXmlData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getDecisionDefinitionXML', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -6967,8 +7014,7 @@ export class CamundaClient {
       envelope.path = { decisionEvaluationInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getDecisionInstance', _schemas.zGetDecisionInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getDecisionInstance', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7045,8 +7091,7 @@ export class CamundaClient {
       envelope.path = { decisionRequirementsKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getDecisionRequirements', _schemas.zGetDecisionRequirementsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getDecisionRequirements', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7123,8 +7168,7 @@ export class CamundaClient {
       envelope.path = { decisionRequirementsKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getDecisionRequirementsXML', _schemas.zGetDecisionRequirementsXmlData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getDecisionRequirementsXML', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7199,8 +7243,7 @@ export class CamundaClient {
       envelope.query = { storeId, contentHash };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getDocument', _schemas.zGetDocumentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getDocument', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7276,8 +7319,7 @@ export class CamundaClient {
       envelope.path = { elementInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getElementInstance', _schemas.zGetElementInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getElementInstance', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7357,8 +7399,7 @@ export class CamundaClient {
       envelope.path = { formKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getFormByKey', _schemas.zGetFormByKeyData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getFormByKey', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7435,8 +7476,7 @@ export class CamundaClient {
       envelope.path = { name };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getGlobalClusterVariable', _schemas.zGetGlobalClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getGlobalClusterVariable', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7517,8 +7557,7 @@ export class CamundaClient {
       envelope.query = { from, to, jobType };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getGlobalJobStatistics', _schemas.zGetGlobalJobStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getGlobalJobStatistics', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -7595,8 +7634,7 @@ export class CamundaClient {
       envelope.path = { id };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getGlobalTaskListener', _schemas.zGetGlobalTaskListenerData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getGlobalTaskListener', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7670,8 +7708,7 @@ export class CamundaClient {
       envelope.path = { groupId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getGroup', _schemas.zGetGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7751,8 +7788,7 @@ export class CamundaClient {
       envelope.path = { incidentKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getIncident', _schemas.zGetIncidentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getIncident', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -7838,8 +7874,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getJobErrorStatistics', _schemas.zGetJobErrorStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getJobErrorStatistics', _schemas.zGetJobErrorStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -7927,8 +7965,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getJobTimeSeriesStatistics', _schemas.zGetJobTimeSeriesStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getJobTimeSeriesStatistics', _schemas.zGetJobTimeSeriesStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -8005,8 +8045,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getJobTypeStatistics', _schemas.zGetJobTypeStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getJobTypeStatistics', _schemas.zGetJobTypeStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -8092,8 +8134,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getJobWorkerStatistics', _schemas.zGetJobWorkerStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getJobWorkerStatistics', _schemas.zGetJobWorkerStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -8231,8 +8275,7 @@ export class CamundaClient {
       envelope.path = { mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getMappingRule', _schemas.zGetMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getMappingRule', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -8309,8 +8352,7 @@ export class CamundaClient {
       envelope.path = { processDefinitionKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessDefinition', _schemas.zGetProcessDefinitionData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessDefinition', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -8392,8 +8434,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessDefinitionInstanceStatistics', _schemas.zGetProcessDefinitionInstanceStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getProcessDefinitionInstanceStatistics', _schemas.zGetProcessDefinitionInstanceStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -8482,8 +8526,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessDefinitionInstanceVersionStatistics', _schemas.zGetProcessDefinitionInstanceVersionStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getProcessDefinitionInstanceVersionStatistics', _schemas.zGetProcessDefinitionInstanceVersionStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -8565,8 +8611,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessDefinitionMessageSubscriptionStatistics', _schemas.zGetProcessDefinitionMessageSubscriptionStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getProcessDefinitionMessageSubscriptionStatistics', _schemas.zGetProcessDefinitionMessageSubscriptionStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -8646,8 +8694,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessDefinitionStatistics', _schemas.zGetProcessDefinitionStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getProcessDefinitionStatistics', _schemas.zGetProcessDefinitionStatisticsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -8725,8 +8775,7 @@ export class CamundaClient {
       envelope.path = { processDefinitionKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessDefinitionXML', _schemas.zGetProcessDefinitionXmlData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessDefinitionXML', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -8804,8 +8853,7 @@ export class CamundaClient {
       envelope.path = { processInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstance', _schemas.zGetProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessInstance', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -8882,8 +8930,7 @@ export class CamundaClient {
       envelope.path = { processInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstanceCallHierarchy', _schemas.zGetProcessInstanceCallHierarchyData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessInstanceCallHierarchy', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -8962,8 +9009,7 @@ export class CamundaClient {
       envelope.path = { processInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstanceSequenceFlows', _schemas.zGetProcessInstanceSequenceFlowsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessInstanceSequenceFlows', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9042,8 +9088,7 @@ export class CamundaClient {
       envelope.path = { processInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstanceStatistics', _schemas.zGetProcessInstanceStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessInstanceStatistics', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9131,8 +9176,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstanceStatisticsByDefinition', _schemas.zGetProcessInstanceStatisticsByDefinitionData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getProcessInstanceStatisticsByDefinition', _schemas.zGetProcessInstanceStatisticsByDefinitionBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -9213,8 +9260,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstanceStatisticsByError', _schemas.zGetProcessInstanceStatisticsByErrorData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('getProcessInstanceStatisticsByError', _schemas.zGetProcessInstanceStatisticsByErrorBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -9295,8 +9344,7 @@ export class CamundaClient {
       envelope.path = { processInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getProcessInstanceWaitStateStatistics', _schemas.zGetProcessInstanceWaitStateStatisticsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getProcessInstanceWaitStateStatistics', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9381,8 +9429,7 @@ export class CamundaClient {
       envelope.path = { resourceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getResource', _schemas.zGetResourceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getResource', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9471,8 +9518,7 @@ export class CamundaClient {
       envelope.path = { resourceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getResourceContent', _schemas.zGetResourceContentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getResourceContent', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9557,8 +9603,7 @@ export class CamundaClient {
       envelope.path = { resourceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getResourceContentBinary', _schemas.zGetResourceContentBinaryData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getResourceContentBinary', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9632,8 +9677,7 @@ export class CamundaClient {
       envelope.path = { roleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getRole', _schemas.zGetRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getRole', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9714,8 +9758,7 @@ export class CamundaClient {
       envelope.path = { processDefinitionKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getStartProcessForm', _schemas.zGetStartProcessFormData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getStartProcessForm', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9914,8 +9957,7 @@ export class CamundaClient {
       envelope.path = { tenantId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getTenant', _schemas.zGetTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -9995,8 +10037,7 @@ export class CamundaClient {
       envelope.path = { tenantId, name };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getTenantClusterVariable', _schemas.zGetTenantClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getTenantClusterVariable', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10140,8 +10181,7 @@ export class CamundaClient {
       envelope.query = { startTime, endTime, tenantId, withTenants };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getUsageMetrics', _schemas.zGetUsageMetricsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getUsageMetrics', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -10215,8 +10255,7 @@ export class CamundaClient {
       envelope.path = { username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getUser', _schemas.zGetUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getUser', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10290,8 +10329,7 @@ export class CamundaClient {
       envelope.path = { userTaskKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getUserTask', _schemas.zGetUserTaskData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getUserTask', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10372,8 +10410,7 @@ export class CamundaClient {
       envelope.path = { userTaskKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getUserTaskForm', _schemas.zGetUserTaskFormData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getUserTaskForm', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10454,8 +10491,7 @@ export class CamundaClient {
       envelope.path = { variableKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('getVariable', _schemas.zGetVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('getVariable', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10546,8 +10582,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('migrateProcessInstance', _schemas.zMigrateProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('migrateProcessInstance', _schemas.zMigrateProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10639,8 +10677,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('migrateProcessInstancesBatchOperation', _schemas.zMigrateProcessInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('migrateProcessInstancesBatchOperation', _schemas.zMigrateProcessInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -10722,8 +10762,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('modifyProcessInstance', _schemas.zModifyProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('modifyProcessInstance', _schemas.zModifyProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -10813,8 +10855,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('modifyProcessInstancesBatchOperation', _schemas.zModifyProcessInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('modifyProcessInstancesBatchOperation', _schemas.zModifyProcessInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -10891,8 +10935,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('pinClock', _schemas.zPinClockData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('pinClock', _schemas.zPinClockBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -10975,8 +11021,10 @@ export class CamundaClient {
       }
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('publishMessage', _schemas.zPublishMessageData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('publishMessage', _schemas.zPublishMessageBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -11112,8 +11160,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resolveIncident', _schemas.zResolveIncidentData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('resolveIncident', _schemas.zResolveIncidentBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -11191,8 +11241,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resolveIncidentsBatchOperation', _schemas.zResolveIncidentsBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('resolveIncidentsBatchOperation', _schemas.zResolveIncidentsBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -11261,8 +11313,7 @@ export class CamundaClient {
       envelope.path = { processInstanceKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resolveProcessInstanceIncidents', _schemas.zResolveProcessInstanceIncidentsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('resolveProcessInstanceIncidents', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -11361,8 +11412,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resolveSecrets', _schemas.zResolveSecretsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('resolveSecrets', _schemas.zResolveSecretsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -11439,8 +11492,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('restore', _schemas.zRestoreData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('restore', _schemas.zRestoreBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -11510,8 +11565,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resumeBatchOperation', _schemas.zResumeBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('resumeBatchOperation', _schemas.zResumeBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -11582,8 +11639,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resumeProcessInstance', _schemas.zResumeProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('resumeProcessInstance', _schemas.zResumeProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -11663,8 +11722,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('resumeProcessInstancesBatchOperation', _schemas.zResumeProcessInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('resumeProcessInstancesBatchOperation', _schemas.zResumeProcessInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -11750,8 +11811,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchAgentInstanceHistory', _schemas.zSearchAgentInstanceHistoryData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchAgentInstanceHistory', _schemas.zSearchAgentInstanceHistoryBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -11836,8 +11899,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchAgentInstances', _schemas.zSearchAgentInstancesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchAgentInstances', _schemas.zSearchAgentInstancesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -11918,8 +11983,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchAuditLogs', _schemas.zSearchAuditLogsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchAuditLogs', _schemas.zSearchAuditLogsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12001,8 +12068,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchAuthorizations', _schemas.zSearchAuthorizationsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchAuthorizations', _schemas.zSearchAuthorizationsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12083,8 +12152,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchBatchOperationItems', _schemas.zSearchBatchOperationItemsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchBatchOperationItems', _schemas.zSearchBatchOperationItemsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12165,8 +12236,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchBatchOperations', _schemas.zSearchBatchOperationsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchBatchOperations', _schemas.zSearchBatchOperationsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12246,8 +12319,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchClientsForGroup', _schemas.zSearchClientsForGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchClientsForGroup', _schemas.zSearchClientsForGroupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -12328,8 +12403,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchClientsForRole', _schemas.zSearchClientsForRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchClientsForRole', _schemas.zSearchClientsForRoleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -12410,8 +12487,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchClientsForTenant', _schemas.zSearchClientsForTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchClientsForTenant', _schemas.zSearchClientsForTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -12492,8 +12571,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchClusterVariables', _schemas.zSearchClusterVariablesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchClusterVariables', _schemas.zSearchClusterVariablesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -12575,8 +12656,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchCorrelatedMessageSubscriptions', _schemas.zSearchCorrelatedMessageSubscriptionsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchCorrelatedMessageSubscriptions', _schemas.zSearchCorrelatedMessageSubscriptionsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12657,8 +12740,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchDecisionDefinitions', _schemas.zSearchDecisionDefinitionsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchDecisionDefinitions', _schemas.zSearchDecisionDefinitionsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12739,8 +12824,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchDecisionInstances', _schemas.zSearchDecisionInstancesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchDecisionInstances', _schemas.zSearchDecisionInstancesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12821,8 +12908,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchDecisionRequirements', _schemas.zSearchDecisionRequirementsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchDecisionRequirements', _schemas.zSearchDecisionRequirementsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12909,8 +12998,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchElementInstanceIncidents', _schemas.zSearchElementInstanceIncidentsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchElementInstanceIncidents', _schemas.zSearchElementInstanceIncidentsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -12995,8 +13086,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchElementInstances', _schemas.zSearchElementInstancesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchElementInstances', _schemas.zSearchElementInstancesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13090,8 +13183,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchElementInstanceWaitStates', _schemas.zSearchElementInstanceWaitStatesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchElementInstanceWaitStates', _schemas.zSearchElementInstanceWaitStatesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13172,8 +13267,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchGlobalTaskListeners', _schemas.zSearchGlobalTaskListenersData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchGlobalTaskListeners', _schemas.zSearchGlobalTaskListenersBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13253,8 +13350,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchGroupIdsForTenant', _schemas.zSearchGroupIdsForTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchGroupIdsForTenant', _schemas.zSearchGroupIdsForTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -13336,8 +13435,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchGroups', _schemas.zSearchGroupsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchGroups', _schemas.zSearchGroupsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13417,8 +13518,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchGroupsForRole', _schemas.zSearchGroupsForRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchGroupsForRole', _schemas.zSearchGroupsForRoleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -13504,8 +13607,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchIncidents', _schemas.zSearchIncidentsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchIncidents', _schemas.zSearchIncidentsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13587,8 +13692,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchJobs', _schemas.zSearchJobsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchJobs', _schemas.zSearchJobsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13670,8 +13777,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchMappingRule', _schemas.zSearchMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchMappingRule', _schemas.zSearchMappingRuleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -13751,8 +13860,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchMappingRulesForGroup', _schemas.zSearchMappingRulesForGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchMappingRulesForGroup', _schemas.zSearchMappingRulesForGroupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -13833,8 +13944,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchMappingRulesForRole', _schemas.zSearchMappingRulesForRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchMappingRulesForRole', _schemas.zSearchMappingRulesForRoleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -13915,8 +14028,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchMappingRulesForTenant', _schemas.zSearchMappingRulesForTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchMappingRulesForTenant', _schemas.zSearchMappingRulesForTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -14011,8 +14126,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchMessageSubscriptions', _schemas.zSearchMessageSubscriptionsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchMessageSubscriptions', _schemas.zSearchMessageSubscriptionsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14093,8 +14210,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchProcessDefinitions', _schemas.zSearchProcessDefinitionsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchProcessDefinitions', _schemas.zSearchProcessDefinitionsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14176,8 +14295,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchProcessDefinitionVariableNames', _schemas.zSearchProcessDefinitionVariableNamesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchProcessDefinitionVariableNames', _schemas.zSearchProcessDefinitionVariableNamesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -14266,8 +14387,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchProcessInstanceIncidents', _schemas.zSearchProcessInstanceIncidentsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchProcessInstanceIncidents', _schemas.zSearchProcessInstanceIncidentsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -14352,8 +14475,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchProcessInstances', _schemas.zSearchProcessInstancesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchProcessInstances', _schemas.zSearchProcessInstancesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14438,8 +14563,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchResources', _schemas.zSearchResourcesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchResources', _schemas.zSearchResourcesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14520,8 +14647,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchRoles', _schemas.zSearchRolesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchRoles', _schemas.zSearchRolesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14601,8 +14730,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchRolesForGroup', _schemas.zSearchRolesForGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchRolesForGroup', _schemas.zSearchRolesForGroupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -14683,8 +14814,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchRolesForTenant', _schemas.zSearchRolesForTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchRolesForTenant', _schemas.zSearchRolesForTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -14766,8 +14899,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchTenants', _schemas.zSearchTenantsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchTenants', _schemas.zSearchTenantsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14849,8 +14984,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUsers', _schemas.zSearchUsersData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUsers', _schemas.zSearchUsersBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -14930,8 +15067,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUsersForGroup', _schemas.zSearchUsersForGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUsersForGroup', _schemas.zSearchUsersForGroupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15012,8 +15151,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUsersForRole', _schemas.zSearchUsersForRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUsersForRole', _schemas.zSearchUsersForRoleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15094,8 +15235,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUsersForTenant', _schemas.zSearchUsersForTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUsersForTenant', _schemas.zSearchUsersForTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15176,8 +15319,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUserTaskAuditLogs', _schemas.zSearchUserTaskAuditLogsData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUserTaskAuditLogs', _schemas.zSearchUserTaskAuditLogsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15265,8 +15410,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUserTaskEffectiveVariables', _schemas.zSearchUserTaskEffectiveVariablesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUserTaskEffectiveVariables', _schemas.zSearchUserTaskEffectiveVariablesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15351,8 +15498,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUserTasks', _schemas.zSearchUserTasksData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUserTasks', _schemas.zSearchUserTasksBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -15440,8 +15589,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchUserTaskVariables', _schemas.zSearchUserTaskVariablesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchUserTaskVariables', _schemas.zSearchUserTaskVariablesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15536,8 +15687,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('searchVariables', _schemas.zSearchVariablesData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchVariables', _schemas.zSearchVariablesBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.query) opts.query = envelope.query;
@@ -15610,8 +15763,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('suspendBatchOperation', _schemas.zSuspendBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('suspendBatchOperation', _schemas.zSuspendBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15682,8 +15837,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('suspendProcessInstance', _schemas.zSuspendProcessInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('suspendProcessInstance', _schemas.zSuspendProcessInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15763,8 +15920,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('suspendProcessInstancesBatchOperation', _schemas.zSuspendProcessInstancesBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('suspendProcessInstancesBatchOperation', _schemas.zSuspendProcessInstancesBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -15837,8 +15996,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('throwJobError', _schemas.zThrowJobErrorData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('throwJobError', _schemas.zThrowJobErrorBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15911,8 +16072,7 @@ export class CamundaClient {
       envelope.path = { groupId, clientId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignClientFromGroup', _schemas.zUnassignClientFromGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignClientFromGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -15984,8 +16144,7 @@ export class CamundaClient {
       envelope.path = { tenantId, clientId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignClientFromTenant', _schemas.zUnassignClientFromTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignClientFromTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16057,8 +16216,7 @@ export class CamundaClient {
       envelope.path = { tenantId, groupId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignGroupFromTenant', _schemas.zUnassignGroupFromTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignGroupFromTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16128,8 +16286,7 @@ export class CamundaClient {
       envelope.path = { groupId, mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignMappingRuleFromGroup', _schemas.zUnassignMappingRuleFromGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignMappingRuleFromGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16202,8 +16359,7 @@ export class CamundaClient {
       envelope.path = { tenantId, mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignMappingRuleFromTenant', _schemas.zUnassignMappingRuleFromTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignMappingRuleFromTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16273,8 +16429,7 @@ export class CamundaClient {
       envelope.path = { roleId, clientId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignRoleFromClient', _schemas.zUnassignRoleFromClientData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignRoleFromClient', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16344,8 +16499,7 @@ export class CamundaClient {
       envelope.path = { roleId, groupId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignRoleFromGroup', _schemas.zUnassignRoleFromGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignRoleFromGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16415,8 +16569,7 @@ export class CamundaClient {
       envelope.path = { roleId, mappingRuleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignRoleFromMappingRule', _schemas.zUnassignRoleFromMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignRoleFromMappingRule', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16489,8 +16642,7 @@ export class CamundaClient {
       envelope.path = { tenantId, roleId };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignRoleFromTenant', _schemas.zUnassignRoleFromTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignRoleFromTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16560,8 +16712,7 @@ export class CamundaClient {
       envelope.path = { roleId, username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignRoleFromUser', _schemas.zUnassignRoleFromUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignRoleFromUser', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16633,8 +16784,7 @@ export class CamundaClient {
       envelope.path = { groupId, username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignUserFromGroup', _schemas.zUnassignUserFromGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignUserFromGroup', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16706,8 +16856,7 @@ export class CamundaClient {
       envelope.path = { tenantId, username };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignUserFromTenant', _schemas.zUnassignUserFromTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignUserFromTenant', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16775,8 +16924,7 @@ export class CamundaClient {
       envelope.path = { userTaskKey };
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('unassignUserTask', _schemas.zUnassignUserTaskData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        await this._validation.gateRequest('unassignUserTask', undefined, envelope);
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16861,8 +17009,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateAgentInstance', _schemas.zUpdateAgentInstanceData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateAgentInstance', _schemas.zUpdateAgentInstanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -16942,8 +17092,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateAuthorization', _schemas.zUpdateAuthorizationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateAuthorization', _schemas.zUpdateAuthorizationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17017,8 +17169,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateGlobalClusterVariable', _schemas.zUpdateGlobalClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateGlobalClusterVariable', _schemas.zUpdateGlobalClusterVariableBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17091,8 +17245,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateGlobalTaskListener', _schemas.zUpdateGlobalTaskListenerData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateGlobalTaskListener', _schemas.zUpdateGlobalTaskListenerBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17164,8 +17320,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateGroup', _schemas.zUpdateGroupData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateGroup', _schemas.zUpdateGroupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17237,8 +17395,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateJob', _schemas.zUpdateJobData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateJob', _schemas.zUpdateJobBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17317,8 +17477,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateJobsBatchOperation', _schemas.zUpdateJobsBatchOperationData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateJobsBatchOperation', _schemas.zUpdateJobsBatchOperationBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -17392,8 +17554,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateMappingRule', _schemas.zUpdateMappingRuleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateMappingRule', _schemas.zUpdateMappingRuleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17465,8 +17629,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateRole', _schemas.zUpdateRoleData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateRole', _schemas.zUpdateRoleBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17538,8 +17704,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateTenant', _schemas.zUpdateTenantData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateTenant', _schemas.zUpdateTenantBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17614,8 +17782,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateTenantClusterVariable', _schemas.zUpdateTenantClusterVariableData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateTenantClusterVariable', _schemas.zUpdateTenantClusterVariableBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17688,8 +17858,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateUser', _schemas.zUpdateUserData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateUser', _schemas.zUpdateUserBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
@@ -17766,8 +17938,10 @@ export class CamundaClient {
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
-        const maybe = await this._validation.gateRequest('updateUserTask', _schemas.zUpdateUserTaskData, envelope);
-        if (this._validation.settings.req === 'strict') envelope = maybe;
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('updateUserTask', _schemas.zUpdateUserTaskBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.path) opts.path = envelope.path;
