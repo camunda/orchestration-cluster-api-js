@@ -137,14 +137,24 @@ export const handler: BrandingPlugin['Handler'] = (ctx) => {
         lines.push(`// ${k.description.replace(/\n/g, ' ')}`);
       }
 
+      // Most semantic keys are string-branded, but some (e.g. LoopIterationId) have an
+      // integer underlying type. Derive the helper value type from the alias's primitive so
+      // getValue/assumeExists/isValid match it — a hardcoded `string` fails to compile for
+      // numeric keys. String-pattern constraints (assertConstraint) only apply to string keys.
+      const aliasPrimitiveMatch = existingTypesGenSource.match(
+        new RegExp(`^export (?:type|interface) ${k.name}\\b[^=]*=\\s*(number|string)\\b`, 'm')
+      );
+      const valueType = aliasPrimitiveMatch?.[1] === 'number' ? 'number' : 'string';
+      const emitConstraint = valueType === 'string' && doValidate && Boolean(c.length);
+
       lines.push(`export namespace ${k.name} {`);
-      lines.push(`  export function ${lifterName}(value: string): ${k.name} {`);
-      if (doValidate && c.length) lines.push(`    assertConstraint(value, '${k.name}', ${obj});`);
+      lines.push(`  export function ${lifterName}(value: ${valueType}): ${k.name} {`);
+      if (emitConstraint) lines.push(`    assertConstraint(value, '${k.name}', ${obj});`);
       lines.push('    return value as any;');
       lines.push('  }');
-      lines.push(`  export function getValue(key: ${k.name}): string { return key; }`);
-      lines.push('  export function isValid(value: string): boolean {');
-      if (doValidate && c.length) {
+      lines.push(`  export function getValue(key: ${k.name}): ${valueType} { return key; }`);
+      lines.push(`  export function isValid(value: ${valueType}): boolean {`);
+      if (emitConstraint) {
         lines.push('    try {');
         lines.push(`      assertConstraint(value, '${k.name}', ${obj});`);
         lines.push('      return true;');
