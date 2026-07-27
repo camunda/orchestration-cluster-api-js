@@ -1,3 +1,11 @@
+# [10.0.0-alpha.18](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.17...v10.0.0-alpha.18) (2026-07-27)
+
+
+### Bug Fixes
+
+* **gen:** derive semantic-key namespace helper types from alias primitive ([8889015](https://github.com/camunda/orchestration-cluster-api-js/commit/8889015ffc6ef4ec826c1379223ae5eb1465a8fd))
+* **gen:** derive semantic-key namespace helper types from alias primitive ([db969a5](https://github.com/camunda/orchestration-cluster-api-js/commit/db969a51a1a334e0ed0cc2e63868aae161c08054))
+
 # [10.0.0-alpha.17](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.16...v10.0.0-alpha.17) (2026-07-27)
 
 
