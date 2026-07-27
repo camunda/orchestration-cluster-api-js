@@ -134,7 +134,8 @@
     "vitest": "^4.1.9"
   },
   "overrides": {
-    "@semantic-release/github": "^11.0.6"
+    "@semantic-release/github": "^11.0.6",
+    "handlebars": "4.7.9"
   },
   "engines": {
     "node": ">=22"
