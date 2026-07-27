@@ -39,8 +39,10 @@ const nullableNames = new Set<string>();
 const constRegex = /^export const (z\w+) = ([\s\S]*?);$/gm;
 for (const match of source.matchAll(constRegex)) {
   const [, name, value] = match;
-  // Nullable if the top-level (outermost) chain ends with `.nullable()`, optionally followed by
-  // further wrappers we still need to unwrap past for `.extend` (e.g. none observed today).
+  // Treat a const as nullable when its top-level chain ends exactly in `.nullable()`. This is the
+  // only shape the generator emits for `.extend`-ed discriminated-union members. A single
+  // `.unwrap()` (below) only removes one wrapper, so chains like `.nullable().optional()` are
+  // intentionally NOT matched — none are emitted today, and they would need multiple unwraps.
   if (/\.nullable\(\)$/.test(value.trim())) {
     nullableNames.add(name);
   }
