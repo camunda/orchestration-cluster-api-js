@@ -34,8 +34,11 @@ let patched = source.replaceAll('z.coerce.bigint()', 'z.coerce.number().int()');
 
 // Also replace BigInt(...) literals used in .default(), .gte(), .min(), .max()
 // constraints — these are invalid on z.number() and should be plain numbers.
-const bigIntLiteralCount = (patched.match(/BigInt\(\s*[\d-]+\s*\)/g) ?? []).length;
-patched = patched.replace(/BigInt\(\s*([\d-]+)\s*\)/g, '$1');
+// hey-api 0.86 emits `BigInt(123)` (numeric arg); hey-api 0.96+ emits
+// `BigInt('123')` (string arg). Match both forms.
+const bigIntLiteralRe = /BigInt\(\s*['"]?(-?\d+)['"]?\s*\)/g;
+const bigIntLiteralCount = (patched.match(bigIntLiteralRe) ?? []).length;
+patched = patched.replace(bigIntLiteralRe, '$1');
 
 const count = (source.match(/z\.coerce\.bigint\(\)/g) ?? []).length;
 const didPatch = count > 0 || bigIntLiteralCount > 0;
