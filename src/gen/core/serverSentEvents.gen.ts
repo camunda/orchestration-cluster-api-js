@@ -2,6 +2,29 @@
 
 import type { Config } from './types.gen';
 
+// --- Spec-strict runtime compatibility (Deno, Bun) -------------------------
+// The generated client spreads its internal options (non-standard keys such as
+// `client`, `fetch`, `baseUrl`, serializers and validators) into the Request
+// init. Browsers and Node/undici ignore unknown init keys, but Deno and Bun
+// validate them strictly (e.g. Deno rejects `client` unless it is a
+// `Deno.HttpClient`). Keep only standard RequestInit fields before constructing
+// a Request. Injected by hooks/post/630-fix-request-init-runtime-compat.ts.
+const __STANDARD_REQUEST_INIT_KEYS = [
+  'method', 'headers', 'body', 'mode', 'credentials', 'cache', 'redirect',
+  'referrer', 'referrerPolicy', 'integrity', 'keepalive', 'signal', 'window',
+  'duplex', 'priority',
+] as const;
+const sanitizeRequestInit = (init: RequestInit): RequestInit => {
+  if (!init || typeof init !== 'object') return init;
+  const out: Record<string, unknown> = {};
+  for (const key of __STANDARD_REQUEST_INIT_KEYS) {
+    const value = (init as Record<string, unknown>)[key];
+    if (value !== undefined) out[key] = value;
+  }
+  return out as RequestInit;
+};
+
+
 export type ServerSentEventsOptions<TData = unknown> = Omit<
   RequestInit,
   'method'
@@ -132,9 +155,9 @@ export const createSseClient = <TData = unknown>({
           headers,
           signal,
         };
-        let request = new Request(url, requestInit);
+        let request = new Request(url, sanitizeRequestInit(requestInit));
         if (onRequest) {
-          request = await onRequest(url, requestInit);
+          request = await onRequest(url, sanitizeRequestInit(requestInit));
         }
         // fetch must be assigned here, otherwise it would throw the error:
         // TypeError: Failed to execute 'fetch' on 'Window': Illegal invocation

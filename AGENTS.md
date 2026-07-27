@@ -1,18 +1,55 @@
-# Copilot instructions (orchestration-cluster-api-js)
+# AGENTS.md
 
-This repo generates a TypeScript SDK from a multi-file OpenAPI spec sourced from the Camunda monorepo.
+> **Note:** This file delegates to a central AGENTS.md. Read and apply it before proceeding.
 
-## Key flows (what to run)
+**URL:**
+https://raw.githubusercontent.com/camunda/.github/refs/heads/main/AGENTS.md
+
+Treat the central file's contents as if they were written directly in this file.
+Instructions below extend those guidelines and take precedence if there is any conflict.
+
+## Repo-specific instructions
+
+### Role & boundary
+
+This repo generates the TypeScript SDK (`@camunda8/orchestration-cluster-api`) from a multi-file OpenAPI spec sourced from the Camunda monorepo. The published SDK is consumed by application code and downstream tools (e.g. `c8ctl`).
+
+Upstream dependencies — when they misbehave, fix them at the source rather than working around them here:
+
+- [`camunda-schema-bundler`](https://github.com/camunda/camunda-schema-bundler) — fetches and bundles the upstream OpenAPI spec.
+- [`@hey-api/openapi-ts`](https://github.com/hey-api/openapi-ts) — generates `src/gen/*` from the bundled spec.
+- [`camunda/camunda`](https://github.com/camunda/camunda) — source of the OpenAPI spec.
+
+**Path map:**
+
+| Path                       | Ownership and intent                                                                                                  |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `src/runtime/`             | Hand-written runtime (HTTP, retry, backpressure, workers, configuration) — primary edit surface for runtime behavior. |
+| `src/template/`            | Hand-written templates the post-process hooks splice generated content into.                                          |
+| `src/facade/`              | Thin functional facade over the generated SDK — partly generated, partly hand-written.                                |
+| `src/gen/`                 | **Generated.** Produced by `npm run generate`. Never hand-edit.                                                       |
+| `hooks/pre/`, `hooks/post/`| Pre/post-generation pipeline steps — primary edit surface for fixing generator output.                                |
+| `plugins/branding-plugin/` | Plugin that runs inside `@hey-api/openapi-ts`.                                                                        |
+| `scripts/run-pipeline.ts`  | Pipeline orchestrator.                                                                                                |
+| `external-spec/bundled/`   | Bundled OpenAPI spec (`rest-api.bundle.json`) and `spec-metadata.json` — generator inputs.                            |
+| `external-spec/upstream/`  | Sparse clone of the upstream repo. Transient; never commit.                                                           |
+| `examples/readme.ts`       | Source of truth for `README.md` code examples — type-checked.                                                         |
+| `tests/`                   | Unit tests (no live Camunda required).                                                                                |
+| `tests-integration/`       | Integration tests (require live Camunda).                                                                             |
+
+## Generator pipeline
+
+### Key flows (what to run)
 
 - Build (fetches upstream spec): `npm run build`
 - Build using already-fetched spec (fast local iteration): `npm run build:local`
 - Only regenerate the bundled OpenAPI spec: `npm run bundle:spec`
 
-Generation pipeline (high level):
+### Pipeline (high level)
 
 1. `camunda-schema-bundler` → fetch upstream YAML (sparse clone) + bundle → `external-spec/bundled/rest-api.bundle.json` + `spec-metadata.json`
 2. `scripts/run-pipeline.ts` orchestrates numbered hooks:
-   - `hooks/pre/*` → preprocessing (branding metadata from spec-metadata.json)
+   - `hooks/pre/*` → preprocessing (branding metadata from `spec-metadata.json`)
    - `@hey-api/openapi-ts` → generate `src/gen/*` (types, zod, sdk)
    - `hooks/post/*` → postprocessing (index fix, deployment schema, class methods, facade, validation gate, zod augment, activate-jobs enrichment, test scaffolds)
    - Tests
@@ -22,7 +59,7 @@ Hooks are numbered (100, 200, …) and run in lexicographic order. To add a new 
 
 If you are debugging generation issues, prefer reproducing with `npm run build:local` to avoid fetch noise.
 
-## Where things live
+### Where things live
 
 - Bundled spec input to the generator: `external-spec/bundled/rest-api.bundle.json`
 - Spec metadata (operations, keys, unions): `external-spec/bundled/spec-metadata.json`
@@ -35,9 +72,148 @@ If you are debugging generation issues, prefer reproducing with `npm run build:l
 - Spec location constants: `scripts/spec-location.ts`
 - Generator config: `openapi-ts.config.ts`
 
-## Caution: temporary clone directories under `external-spec/`
+### Caution: temporary clone directories under `external-spec/`
 
 The spec bundler creates `.tmp-clone-*` directories under `external-spec/upstream/` during sparse clones. These are transient and **must never be committed** — Git treats them as submodule gitlinks (mode `160000`), which breaks clones for anyone without the referenced commit. The `.gitignore` entry `external-spec/upstream/**/.tmp*` prevents this, but if a new `.tmp*` path slips through, remove it with `git rm --cached <path>` and verify with `git ls-tree -r HEAD | grep 160000`.
+
+## Commit message guidelines
+
+We use Conventional Commits.
+
+Format:
+
+```
+<type>(optional scope): <subject>
+
+<body>
+
+BREAKING CHANGE: <explanation>
+```
+
+Allowed type values (common set):
+
+```
+feat
+fix
+chore
+docs
+style
+refactor
+test
+ci
+build
+perf
+```
+
+Rules:
+
+- Subject length: 5–100 characters.
+- Use imperative mood ("add support", not "added support").
+- Lowercase subject (except proper nouns). No PascalCase subjects.
+- Keep subject concise; body can include details, rationale, links.
+- Prefix breaking changes with `BREAKING CHANGE:` either in body or footer.
+
+### Review-comment fix-ups
+
+Commits that address PR review comments must use the `chore` type (e.g. `chore:` or `chore(<scope>):`), **not** the `fix` type.
+`fix` commits trigger a patch release and a CHANGELOG entry — review iterations are not user-facing bug fixes.
+
+```
+# Correct
+chore: address review comments — use logger.json for dry-run
+
+# Wrong — will pollute the CHANGELOG
+fix: address review comments — use logger.json for dry-run
+```
+
+### Separate generator changes from regenerated output
+
+When a change modifies the generator (hooks, plugins, pipeline scripts, bundler integration, templates) **and** that change causes `src/gen/*` to differ, **split the work into two commits**:
+
+1. **First commit** — generator change only: hook/plugin/script/template/test edits. No `src/gen/*` changes.
+2. **Second commit** — regenerated output: `src/gen/*` (and any other byte-for-byte derived files like `dist/` if relevant) produced by running the pipeline against the first commit.
+
+Why:
+
+- **Cherry-picks stay clean.** Backports to `stable/*` only need the generator commit; the target branch's release CI regenerates `src/gen/*` itself. Mixing the two means the cherry-pick drags generated diff through, which conflicts with whatever generated state the target branch has.
+- **Reviewers can read the change.** Generator commits are small and meaningful; regenerated commits are large and mechanical. Mixing them makes the review effectively unreadable.
+- **`git blame` stays useful** for both surfaces.
+
+Naming convention for the second commit:
+
+```
+chore(gen): regenerate src/gen for <short summary of generator change>
+```
+
+If `npm run build` (or `npm run build:local`) modifies `src/gen/*` after the generator commit, `git add src/gen` and commit it separately — do **not** amend it back into the generator commit.
+
+The pre-push checklist below still applies: always run the full build before pushing, and commit any regenerated drift before the push.
+
+## Pre-push checklist
+
+Before pushing any commits, **always** run `npm run build`. This:
+
+1. Regenerates `src/gen/` from the bundled spec
+2. Syncs README code snippets from `examples/readme.ts` (fails if out of sync)
+3. Runs all unit tests
+4. Produces the `dist/` output
+
+If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing — and respect the **separate-commits rule** above when the modified files are `src/gen/*`.
+
+## Build pipeline
+
+### Always-green policy
+
+Warnings are fatal. Do not suppress a warning to make a build pass. Do not treat any failure as pre-existing or unrelated without explicit confirmation.
+
+```bash
+# Verify baseline -> always green (always run before an AI-assisted session)
+npm run build
+
+# Fast inner loop (unit tests only)
+npm test
+
+# Lint (Biome)
+npx biome check
+```
+
+Never skip the lint and type-check steps before pushing.
+
+## Bug fix process (red/green refactor)
+
+Every bug fix **must** follow the red/green refactor discipline:
+
+1. **Red** — Write a failing test **first**, before changing any production code. The test must fail for the reason you expect (the bug). Commit this separately or demonstrate the failure clearly in the PR.
+2. **Green** — Apply the minimal production fix that makes the test pass.
+3. **Refactor** (optional) — Clean up while keeping all tests green.
+
+### Test scope: target the defect class, not just the instance
+
+The regression test must be broad enough to detect the **class of defect**, not only the specific instance you are fixing. For example, if the bug is "generated method X omits a required parameter", the test should verify that **all** generated methods include their required parameters — not just method X.
+
+A test that only covers the exact instance provides weaker protection: the same category of bug can recur in a different method without being caught.
+
+### Why
+
+- The failing test **proves** the test can detect this category of defect.
+- The green step **proves** the fix resolves it.
+- A class-scoped test acts as a durable regression guard against future reintroduction of the same pattern.
+
+### There are no flaky tests
+
+We do not acknowledge the existence of "flaky tests". A test that passes sometimes and fails other times is reporting one of two things:
+
+1. **A test defect** — the test contains a race, an unbounded timeout, an order-of-operation assumption, an unsynchronised readiness signal, or a dependency on wall-clock timing. Fix the test so its outcome is deterministic for the behaviour it claims to assert.
+2. **A product defect** — the production code has a race, a missed signal, an unhandled error path, or a resource it leaks under load. Fix the product.
+
+Either way, an intermittent failure is a real defect that must be diagnosed and fixed before the change merges. Do not retry the CI job, mark the test `skip`, add a `.retry()`, or describe the failure as "flaky" or "unrelated" in the PR description. "Re-run and hope" is a coping strategy, not engineering.
+
+When triaging an intermittent CI failure:
+
+- Reproduce locally if possible (loops, resource pressure, timeout reduction). If you cannot reproduce, reason from first principles about what *could* differ between local and CI (load, filesystem semantics, signal delivery latency, parallel test interaction).
+- Identify the specific race or assumption. Common shapes: polling for an output line that is printed *before* the relevant handler is registered; timeouts that double as correctness assertions; tests that share a temp directory across runs; tests that depend on event ordering across two processes.
+- Pick category 1 vs category 2 explicitly in the fix commit message, and explain which signal the test was previously relying on and which deterministic signal it now relies on.
+- If timeouts must be generous to absorb runner load, the timeout is a safety net — not a correctness signal. State this in a comment so future maintainers don't tighten it back into a race.
 
 ## Troubleshooting: `TS2304 Cannot find name '_heyapi_…_'`
 
@@ -125,37 +301,6 @@ NODE`
   - the bundled spec snippet around the failing type
   - the generator version (`@hey-api/openapi-ts`)
   - and open an issue upstream or pin a known-good generator version.
-
-## Bug fix process (red/green refactor)
-
-Every bug fix **must** follow the red/green refactor discipline:
-
-1. **Red** — Write a failing test **first**, before changing any production code. The test must fail for the reason you expect (the bug). Commit this separately or demonstrate the failure clearly in the PR.
-2. **Green** — Apply the minimal production fix that makes the test pass.
-3. **Refactor** (optional) — Clean up while keeping all tests green.
-
-### Test scope: target the defect class, not just the instance
-
-The regression test must be broad enough to detect the **class of defect**, not only the specific instance you are fixing. For example, if the bug is "generated method X omits a required parameter", the test should verify that **all** generated methods include their required parameters — not just method X.
-
-A test that only covers the exact instance provides weaker protection: the same category of bug can recur in a different method without being caught.
-
-### Why
-
-- The failing test **proves** the test can detect this category of defect.
-- The green step **proves** the fix resolves it.
-- A class-scoped test acts as a durable regression guard against future reintroduction of the same pattern.
-
-## Pre-push checklist
-
-Before pushing any commits, **always** run `npm run build`. This:
-
-1. Regenerates `src/gen/` from the bundled spec
-2. Syncs README code snippets from `examples/readme.ts` (fails if out of sync)
-3. Runs all unit tests
-4. Produces the `dist/` output
-
-If the build modifies any files (e.g. README snippet drift, generated code changes), commit those changes before pushing.
 
 ## README Code Examples
 

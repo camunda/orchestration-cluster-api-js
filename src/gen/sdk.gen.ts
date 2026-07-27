@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { ActivateAdHocSubProcessActivitiesData, ActivateAdHocSubProcessActivitiesErrors, ActivateAdHocSubProcessActivitiesResponses, ActivateJobsData, ActivateJobsErrors, ActivateJobsResponses, AssignClientToGroupData, AssignClientToGroupErrors, AssignClientToGroupResponses, AssignClientToTenantData, AssignClientToTenantErrors, AssignClientToTenantResponses, AssignGroupToTenantData, AssignGroupToTenantErrors, AssignGroupToTenantResponses, AssignMappingRuleToGroupData, AssignMappingRuleToGroupErrors, AssignMappingRuleToGroupResponses, AssignMappingRuleToTenantData, AssignMappingRuleToTenantErrors, AssignMappingRuleToTenantResponses, AssignRoleToClientData, AssignRoleToClientErrors, AssignRoleToClientResponses, AssignRoleToGroupData, AssignRoleToGroupErrors, AssignRoleToGroupResponses, AssignRoleToMappingRuleData, AssignRoleToMappingRuleErrors, AssignRoleToMappingRuleResponses, AssignRoleToTenantData, AssignRoleToTenantErrors, AssignRoleToTenantResponses, AssignRoleToUserData, AssignRoleToUserErrors, AssignRoleToUserResponses, AssignUserTaskData, AssignUserTaskErrors, AssignUserTaskResponses, AssignUserToGroupData, AssignUserToGroupErrors, AssignUserToGroupResponses, AssignUserToTenantData, AssignUserToTenantErrors, AssignUserToTenantResponses, BroadcastSignalData, BroadcastSignalErrors, BroadcastSignalResponses, CancelBatchOperationData, CancelBatchOperationErrors, CancelBatchOperationResponses, CancelProcessInstanceData, CancelProcessInstanceErrors, CancelProcessInstanceResponses, CancelProcessInstancesBatchOperationData, CancelProcessInstancesBatchOperationErrors, CancelProcessInstancesBatchOperationResponses, CompleteJobData, CompleteJobErrors, CompleteJobResponses, CompleteUserTaskData, CompleteUserTaskErrors, CompleteUserTaskResponses, CorrelateMessageData, CorrelateMessageErrors, CorrelateMessageResponses, CreateAdminUserData, CreateAdminUserErrors, CreateAdminUserResponses, CreateAuthorizationData, CreateAuthorizationErrors, CreateAuthorizationResponses, CreateDeploymentData, CreateDeploymentErrors, CreateDeploymentResponses, CreateDocumentData, CreateDocumentErrors, CreateDocumentLinkData, CreateDocumentLinkErrors, CreateDocumentLinkResponses, CreateDocumentResponses, CreateDocumentsData, CreateDocumentsErrors, CreateDocumentsResponses, CreateElementInstanceVariablesData, CreateElementInstanceVariablesErrors, CreateElementInstanceVariablesResponses, CreateGlobalClusterVariableData, CreateGlobalClusterVariableErrors, CreateGlobalClusterVariableResponses, CreateGlobalTaskListenerData, CreateGlobalTaskListenerErrors, CreateGlobalTaskListenerResponses, CreateGroupData, CreateGroupErrors, CreateGroupResponses, CreateMappingRuleData, CreateMappingRuleErrors, CreateMappingRuleResponses, CreateProcessInstanceData, CreateProcessInstanceErrors, CreateProcessInstanceResponses, CreateRoleData, CreateRoleErrors, CreateRoleResponses, CreateTenantClusterVariableData, CreateTenantClusterVariableErrors, CreateTenantClusterVariableResponses, CreateTenantData, CreateTenantErrors, CreateTenantResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteAuthorizationData, DeleteAuthorizationErrors, DeleteAuthorizationResponses, DeleteDecisionInstanceData, DeleteDecisionInstanceErrors, DeleteDecisionInstanceResponses, DeleteDecisionInstancesBatchOperationData, DeleteDecisionInstancesBatchOperationErrors, DeleteDecisionInstancesBatchOperationResponses, DeleteDocumentData, DeleteDocumentErrors, DeleteDocumentResponses, DeleteGlobalClusterVariableData, DeleteGlobalClusterVariableErrors, DeleteGlobalClusterVariableResponses, DeleteGlobalTaskListenerData, DeleteGlobalTaskListenerErrors, DeleteGlobalTaskListenerResponses, DeleteGroupData, DeleteGroupErrors, DeleteGroupResponses, DeleteMappingRuleData, DeleteMappingRuleErrors, DeleteMappingRuleResponses, DeleteProcessInstanceData, DeleteProcessInstanceErrors, DeleteProcessInstanceResponses, DeleteProcessInstancesBatchOperationData, DeleteProcessInstancesBatchOperationErrors, DeleteProcessInstancesBatchOperationResponses, DeleteResourceData, DeleteResourceErrors, DeleteResourceResponses, DeleteRoleData, DeleteRoleErrors, DeleteRoleResponses, DeleteTenantClusterVariableData, DeleteTenantClusterVariableErrors, DeleteTenantClusterVariableResponses, DeleteTenantData, DeleteTenantErrors, DeleteTenantResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, EvaluateConditionalsData, EvaluateConditionalsErrors, EvaluateConditionalsResponses, EvaluateDecisionData, EvaluateDecisionErrors, EvaluateDecisionResponses, EvaluateExpressionData, EvaluateExpressionErrors, EvaluateExpressionResponses, FailJobData, FailJobErrors, FailJobResponses, GetAuditLogData, GetAuditLogErrors, GetAuditLogResponses, GetAuthenticationData, GetAuthenticationErrors, GetAuthenticationResponses, GetAuthorizationData, GetAuthorizationErrors, GetAuthorizationResponses, GetBatchOperationData, GetBatchOperationErrors, GetBatchOperationResponses, GetDecisionDefinitionData, GetDecisionDefinitionErrors, GetDecisionDefinitionResponses, GetDecisionDefinitionXmlData, GetDecisionDefinitionXmlErrors, GetDecisionDefinitionXmlResponses, GetDecisionInstanceData, GetDecisionInstanceErrors, GetDecisionInstanceResponses, GetDecisionRequirementsData, GetDecisionRequirementsErrors, GetDecisionRequirementsResponses, GetDecisionRequirementsXmlData, GetDecisionRequirementsXmlErrors, GetDecisionRequirementsXmlResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetElementInstanceData, GetElementInstanceErrors, GetElementInstanceResponses, GetGlobalClusterVariableData, GetGlobalClusterVariableErrors, GetGlobalClusterVariableResponses, GetGlobalJobStatisticsData, GetGlobalJobStatisticsErrors, GetGlobalJobStatisticsResponses, GetGlobalTaskListenerData, GetGlobalTaskListenerErrors, GetGlobalTaskListenerResponses, GetGroupData, GetGroupErrors, GetGroupResponses, GetIncidentData, GetIncidentErrors, GetIncidentResponses, GetJobErrorStatisticsData, GetJobErrorStatisticsErrors, GetJobErrorStatisticsResponses, GetJobTimeSeriesStatisticsData, GetJobTimeSeriesStatisticsErrors, GetJobTimeSeriesStatisticsResponses, GetJobTypeStatisticsData, GetJobTypeStatisticsErrors, GetJobTypeStatisticsResponses, GetJobWorkerStatisticsData, GetJobWorkerStatisticsErrors, GetJobWorkerStatisticsResponses, GetLicenseData, GetLicenseErrors, GetLicenseResponses, GetMappingRuleData, GetMappingRuleErrors, GetMappingRuleResponses, GetProcessDefinitionData, GetProcessDefinitionErrors, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceStatisticsErrors, GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionInstanceVersionStatisticsErrors, GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsErrors, GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionResponses, GetProcessDefinitionStatisticsData, GetProcessDefinitionStatisticsErrors, GetProcessDefinitionStatisticsResponses, GetProcessDefinitionXmlData, GetProcessDefinitionXmlErrors, GetProcessDefinitionXmlResponses, GetProcessInstanceCallHierarchyData, GetProcessInstanceCallHierarchyErrors, GetProcessInstanceCallHierarchyResponses, GetProcessInstanceData, GetProcessInstanceErrors, GetProcessInstanceResponses, GetProcessInstanceSequenceFlowsData, GetProcessInstanceSequenceFlowsErrors, GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByDefinitionErrors, GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByErrorData, GetProcessInstanceStatisticsByErrorErrors, GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsData, GetProcessInstanceStatisticsErrors, GetProcessInstanceStatisticsResponses, GetResourceContentData, GetResourceContentErrors, GetResourceContentResponses, GetResourceData, GetResourceErrors, GetResourceResponses, GetRoleData, GetRoleErrors, GetRoleResponses, GetStartProcessFormData, GetStartProcessFormErrors, GetStartProcessFormResponses, GetStatusData, GetStatusErrors, GetStatusResponses, GetSystemConfigurationData, GetSystemConfigurationErrors, GetSystemConfigurationResponses, GetTenantClusterVariableData, GetTenantClusterVariableErrors, GetTenantClusterVariableResponses, GetTenantData, GetTenantErrors, GetTenantResponses, GetTopologyData, GetTopologyErrors, GetTopologyResponses, GetUsageMetricsData, GetUsageMetricsErrors, GetUsageMetricsResponses, GetUserData, GetUserErrors, GetUserResponses, GetUserTaskData, GetUserTaskErrors, GetUserTaskFormData, GetUserTaskFormErrors, GetUserTaskFormResponses, GetUserTaskResponses, GetVariableData, GetVariableErrors, GetVariableResponses, MigrateProcessInstanceData, MigrateProcessInstanceErrors, MigrateProcessInstanceResponses, MigrateProcessInstancesBatchOperationData, MigrateProcessInstancesBatchOperationErrors, MigrateProcessInstancesBatchOperationResponses, ModifyProcessInstanceData, ModifyProcessInstanceErrors, ModifyProcessInstanceResponses, ModifyProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationErrors, ModifyProcessInstancesBatchOperationResponses, PinClockData, PinClockErrors, PinClockResponses, PublishMessageData, PublishMessageErrors, PublishMessageResponses, ResetClockData, ResetClockErrors, ResetClockResponses, ResolveIncidentData, ResolveIncidentErrors, ResolveIncidentResponses, ResolveIncidentsBatchOperationData, ResolveIncidentsBatchOperationErrors, ResolveIncidentsBatchOperationResponses, ResolveProcessInstanceIncidentsData, ResolveProcessInstanceIncidentsErrors, ResolveProcessInstanceIncidentsResponses, ResumeBatchOperationData, ResumeBatchOperationErrors, ResumeBatchOperationResponses, SearchAuditLogsData, SearchAuditLogsErrors, SearchAuditLogsResponses, SearchAuthorizationsData, SearchAuthorizationsErrors, SearchAuthorizationsResponses, SearchBatchOperationItemsData, SearchBatchOperationItemsErrors, SearchBatchOperationItemsResponses, SearchBatchOperationsData, SearchBatchOperationsErrors, SearchBatchOperationsResponses, SearchClientsForGroupData, SearchClientsForGroupErrors, SearchClientsForGroupResponses, SearchClientsForRoleData, SearchClientsForRoleErrors, SearchClientsForRoleResponses, SearchClientsForTenantData, SearchClientsForTenantResponses, SearchClusterVariablesData, SearchClusterVariablesErrors, SearchClusterVariablesResponses, SearchCorrelatedMessageSubscriptionsData, SearchCorrelatedMessageSubscriptionsErrors, SearchCorrelatedMessageSubscriptionsResponses, SearchDecisionDefinitionsData, SearchDecisionDefinitionsErrors, SearchDecisionDefinitionsResponses, SearchDecisionInstancesData, SearchDecisionInstancesErrors, SearchDecisionInstancesResponses, SearchDecisionRequirementsData, SearchDecisionRequirementsErrors, SearchDecisionRequirementsResponses, SearchElementInstanceIncidentsData, SearchElementInstanceIncidentsErrors, SearchElementInstanceIncidentsResponses, SearchElementInstancesData, SearchElementInstancesErrors, SearchElementInstancesResponses, SearchGlobalTaskListenersData, SearchGlobalTaskListenersErrors, SearchGlobalTaskListenersResponses, SearchGroupIdsForTenantData, SearchGroupIdsForTenantResponses, SearchGroupsData, SearchGroupsErrors, SearchGroupsForRoleData, SearchGroupsForRoleErrors, SearchGroupsForRoleResponses, SearchGroupsResponses, SearchIncidentsData, SearchIncidentsErrors, SearchIncidentsResponses, SearchJobsData, SearchJobsErrors, SearchJobsResponses, SearchMappingRuleData, SearchMappingRuleErrors, SearchMappingRuleResponses, SearchMappingRulesForGroupData, SearchMappingRulesForGroupErrors, SearchMappingRulesForGroupResponses, SearchMappingRulesForRoleData, SearchMappingRulesForRoleErrors, SearchMappingRulesForRoleResponses, SearchMappingRulesForTenantData, SearchMappingRulesForTenantResponses, SearchMessageSubscriptionsData, SearchMessageSubscriptionsErrors, SearchMessageSubscriptionsResponses, SearchProcessDefinitionsData, SearchProcessDefinitionsErrors, SearchProcessDefinitionsResponses, SearchProcessInstanceIncidentsData, SearchProcessInstanceIncidentsErrors, SearchProcessInstanceIncidentsResponses, SearchProcessInstancesData, SearchProcessInstancesErrors, SearchProcessInstancesResponses, SearchRolesData, SearchRolesErrors, SearchRolesForGroupData, SearchRolesForGroupErrors, SearchRolesForGroupResponses, SearchRolesForTenantData, SearchRolesForTenantResponses, SearchRolesResponses, SearchTenantsData, SearchTenantsErrors, SearchTenantsResponses, SearchUsersData, SearchUsersErrors, SearchUsersForGroupData, SearchUsersForGroupErrors, SearchUsersForGroupResponses, SearchUsersForRoleData, SearchUsersForRoleErrors, SearchUsersForRoleResponses, SearchUsersForTenantData, SearchUsersForTenantResponses, SearchUsersResponses, SearchUserTaskAuditLogsData, SearchUserTaskAuditLogsErrors, SearchUserTaskAuditLogsResponses, SearchUserTaskEffectiveVariablesData, SearchUserTaskEffectiveVariablesErrors, SearchUserTaskEffectiveVariablesResponses, SearchUserTasksData, SearchUserTasksErrors, SearchUserTasksResponses, SearchUserTaskVariablesData, SearchUserTaskVariablesErrors, SearchUserTaskVariablesResponses, SearchVariablesData, SearchVariablesErrors, SearchVariablesResponses, SuspendBatchOperationData, SuspendBatchOperationErrors, SuspendBatchOperationResponses, ThrowJobErrorData, ThrowJobErrorErrors, ThrowJobErrorResponses, UnassignClientFromGroupData, UnassignClientFromGroupErrors, UnassignClientFromGroupResponses, UnassignClientFromTenantData, UnassignClientFromTenantErrors, UnassignClientFromTenantResponses, UnassignGroupFromTenantData, UnassignGroupFromTenantErrors, UnassignGroupFromTenantResponses, UnassignMappingRuleFromGroupData, UnassignMappingRuleFromGroupErrors, UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromTenantData, UnassignMappingRuleFromTenantErrors, UnassignMappingRuleFromTenantResponses, UnassignRoleFromClientData, UnassignRoleFromClientErrors, UnassignRoleFromClientResponses, UnassignRoleFromGroupData, UnassignRoleFromGroupErrors, UnassignRoleFromGroupResponses, UnassignRoleFromMappingRuleData, UnassignRoleFromMappingRuleErrors, UnassignRoleFromMappingRuleResponses, UnassignRoleFromTenantData, UnassignRoleFromTenantErrors, UnassignRoleFromTenantResponses, UnassignRoleFromUserData, UnassignRoleFromUserErrors, UnassignRoleFromUserResponses, UnassignUserFromGroupData, UnassignUserFromGroupErrors, UnassignUserFromGroupResponses, UnassignUserFromTenantData, UnassignUserFromTenantErrors, UnassignUserFromTenantResponses, UnassignUserTaskData, UnassignUserTaskErrors, UnassignUserTaskResponses, UpdateAuthorizationData, UpdateAuthorizationErrors, UpdateAuthorizationResponses, UpdateGlobalClusterVariableData, UpdateGlobalClusterVariableErrors, UpdateGlobalClusterVariableResponses, UpdateGlobalTaskListenerData, UpdateGlobalTaskListenerErrors, UpdateGlobalTaskListenerResponses, UpdateGroupData, UpdateGroupErrors, UpdateGroupResponses, UpdateJobData, UpdateJobErrors, UpdateJobResponses, UpdateMappingRuleData, UpdateMappingRuleErrors, UpdateMappingRuleResponses, UpdateRoleData, UpdateRoleErrors, UpdateRoleResponses, UpdateTenantClusterVariableData, UpdateTenantClusterVariableErrors, UpdateTenantClusterVariableResponses, UpdateTenantData, UpdateTenantErrors, UpdateTenantResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UpdateUserTaskData, UpdateUserTaskErrors, UpdateUserTaskResponses } from './types.gen';
+import type { ActivateAdHocSubProcessActivitiesData, ActivateAdHocSubProcessActivitiesErrors, ActivateAdHocSubProcessActivitiesResponses, ActivateJobsData, ActivateJobsErrors, ActivateJobsResponses, AssignClientToGroupData, AssignClientToGroupErrors, AssignClientToGroupResponses, AssignClientToTenantData, AssignClientToTenantErrors, AssignClientToTenantResponses, AssignGroupToTenantData, AssignGroupToTenantErrors, AssignGroupToTenantResponses, AssignMappingRuleToGroupData, AssignMappingRuleToGroupErrors, AssignMappingRuleToGroupResponses, AssignMappingRuleToTenantData, AssignMappingRuleToTenantErrors, AssignMappingRuleToTenantResponses, AssignProcessInstanceBusinessIdData, AssignProcessInstanceBusinessIdErrors, AssignProcessInstanceBusinessIdResponses, AssignRoleToClientData, AssignRoleToClientErrors, AssignRoleToClientResponses, AssignRoleToGroupData, AssignRoleToGroupErrors, AssignRoleToGroupResponses, AssignRoleToMappingRuleData, AssignRoleToMappingRuleErrors, AssignRoleToMappingRuleResponses, AssignRoleToTenantData, AssignRoleToTenantErrors, AssignRoleToTenantResponses, AssignRoleToUserData, AssignRoleToUserErrors, AssignRoleToUserResponses, AssignUserTaskData, AssignUserTaskErrors, AssignUserTaskResponses, AssignUserToGroupData, AssignUserToGroupErrors, AssignUserToGroupResponses, AssignUserToTenantData, AssignUserToTenantErrors, AssignUserToTenantResponses, BroadcastSignalData, BroadcastSignalErrors, BroadcastSignalResponses, CancelBatchOperationData, CancelBatchOperationErrors, CancelBatchOperationResponses, CancelProcessInstanceData, CancelProcessInstanceErrors, CancelProcessInstanceResponses, CancelProcessInstancesBatchOperationData, CancelProcessInstancesBatchOperationErrors, CancelProcessInstancesBatchOperationResponses, ChangeClusterModeData, ChangeClusterModeErrors, ChangeClusterModeResponses, CompleteJobData, CompleteJobErrors, CompleteJobResponses, CompleteUserTaskData, CompleteUserTaskErrors, CompleteUserTaskResponses, CorrelateMessageData, CorrelateMessageErrors, CorrelateMessageResponses, CreateAdminUserData, CreateAdminUserErrors, CreateAdminUserResponses, CreateAgentInstanceData, CreateAgentInstanceErrors, CreateAgentInstanceHistoryItemData, CreateAgentInstanceHistoryItemErrors, CreateAgentInstanceHistoryItemResponses, CreateAgentInstanceResponses, CreateAuthorizationData, CreateAuthorizationErrors, CreateAuthorizationResponses, CreateDeploymentData, CreateDeploymentErrors, CreateDeploymentResponses, CreateDocumentData, CreateDocumentErrors, CreateDocumentLinkData, CreateDocumentLinkErrors, CreateDocumentLinkResponses, CreateDocumentResponses, CreateDocumentsData, CreateDocumentsErrors, CreateDocumentsResponses, CreateElementInstanceVariablesData, CreateElementInstanceVariablesErrors, CreateElementInstanceVariablesResponses, CreateGlobalClusterVariableData, CreateGlobalClusterVariableErrors, CreateGlobalClusterVariableResponses, CreateGlobalTaskListenerData, CreateGlobalTaskListenerErrors, CreateGlobalTaskListenerResponses, CreateGroupData, CreateGroupErrors, CreateGroupResponses, CreateMappingRuleData, CreateMappingRuleErrors, CreateMappingRuleResponses, CreateProcessInstanceData, CreateProcessInstanceErrors, CreateProcessInstanceResponses, CreateRoleData, CreateRoleErrors, CreateRoleResponses, CreateTenantClusterVariableData, CreateTenantClusterVariableErrors, CreateTenantClusterVariableResponses, CreateTenantData, CreateTenantErrors, CreateTenantResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteAuthorizationData, DeleteAuthorizationErrors, DeleteAuthorizationResponses, DeleteDecisionInstanceData, DeleteDecisionInstanceErrors, DeleteDecisionInstanceResponses, DeleteDecisionInstancesBatchOperationData, DeleteDecisionInstancesBatchOperationErrors, DeleteDecisionInstancesBatchOperationResponses, DeleteDocumentData, DeleteDocumentErrors, DeleteDocumentResponses, DeleteGlobalClusterVariableData, DeleteGlobalClusterVariableErrors, DeleteGlobalClusterVariableResponses, DeleteGlobalTaskListenerData, DeleteGlobalTaskListenerErrors, DeleteGlobalTaskListenerResponses, DeleteGroupData, DeleteGroupErrors, DeleteGroupResponses, DeleteMappingRuleData, DeleteMappingRuleErrors, DeleteMappingRuleResponses, DeleteProcessInstanceData, DeleteProcessInstanceErrors, DeleteProcessInstanceResponses, DeleteProcessInstancesBatchOperationData, DeleteProcessInstancesBatchOperationErrors, DeleteProcessInstancesBatchOperationResponses, DeleteResourceData, DeleteResourceErrors, DeleteResourceResponses, DeleteRoleData, DeleteRoleErrors, DeleteRoleResponses, DeleteTenantClusterVariableData, DeleteTenantClusterVariableErrors, DeleteTenantClusterVariableResponses, DeleteTenantData, DeleteTenantErrors, DeleteTenantResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, EvaluateConditionalsData, EvaluateConditionalsErrors, EvaluateConditionalsResponses, EvaluateDecisionData, EvaluateDecisionErrors, EvaluateDecisionResponses, EvaluateExpressionData, EvaluateExpressionErrors, EvaluateExpressionResponses, FailJobData, FailJobErrors, FailJobResponses, GetAgentInstanceData, GetAgentInstanceErrors, GetAgentInstanceResponses, GetAuditLogData, GetAuditLogErrors, GetAuditLogResponses, GetAuthenticationData, GetAuthenticationErrors, GetAuthenticationResponses, GetAuthorizationData, GetAuthorizationErrors, GetAuthorizationResponses, GetBatchOperationData, GetBatchOperationErrors, GetBatchOperationResponses, GetDecisionDefinitionData, GetDecisionDefinitionErrors, GetDecisionDefinitionResponses, GetDecisionDefinitionXmlData, GetDecisionDefinitionXmlErrors, GetDecisionDefinitionXmlResponses, GetDecisionInstanceData, GetDecisionInstanceErrors, GetDecisionInstanceResponses, GetDecisionRequirementsData, GetDecisionRequirementsErrors, GetDecisionRequirementsResponses, GetDecisionRequirementsXmlData, GetDecisionRequirementsXmlErrors, GetDecisionRequirementsXmlResponses, GetDocumentData, GetDocumentErrors, GetDocumentResponses, GetElementInstanceData, GetElementInstanceErrors, GetElementInstanceResponses, GetFormByKeyData, GetFormByKeyErrors, GetFormByKeyResponses, GetGlobalClusterVariableData, GetGlobalClusterVariableErrors, GetGlobalClusterVariableResponses, GetGlobalJobStatisticsData, GetGlobalJobStatisticsErrors, GetGlobalJobStatisticsResponses, GetGlobalTaskListenerData, GetGlobalTaskListenerErrors, GetGlobalTaskListenerResponses, GetGroupData, GetGroupErrors, GetGroupResponses, GetIncidentData, GetIncidentErrors, GetIncidentResponses, GetJobErrorStatisticsData, GetJobErrorStatisticsErrors, GetJobErrorStatisticsResponses, GetJobTimeSeriesStatisticsData, GetJobTimeSeriesStatisticsErrors, GetJobTimeSeriesStatisticsResponses, GetJobTypeStatisticsData, GetJobTypeStatisticsErrors, GetJobTypeStatisticsResponses, GetJobWorkerStatisticsData, GetJobWorkerStatisticsErrors, GetJobWorkerStatisticsResponses, GetLicenseData, GetLicenseErrors, GetLicenseResponses, GetMappingRuleData, GetMappingRuleErrors, GetMappingRuleResponses, GetProcessDefinitionData, GetProcessDefinitionErrors, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceStatisticsErrors, GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionInstanceVersionStatisticsErrors, GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsErrors, GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionResponses, GetProcessDefinitionStatisticsData, GetProcessDefinitionStatisticsErrors, GetProcessDefinitionStatisticsResponses, GetProcessDefinitionXmlData, GetProcessDefinitionXmlErrors, GetProcessDefinitionXmlResponses, GetProcessInstanceCallHierarchyData, GetProcessInstanceCallHierarchyErrors, GetProcessInstanceCallHierarchyResponses, GetProcessInstanceData, GetProcessInstanceErrors, GetProcessInstanceResponses, GetProcessInstanceSequenceFlowsData, GetProcessInstanceSequenceFlowsErrors, GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByDefinitionErrors, GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByErrorData, GetProcessInstanceStatisticsByErrorErrors, GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsData, GetProcessInstanceStatisticsErrors, GetProcessInstanceStatisticsResponses, GetProcessInstanceWaitStateStatisticsData, GetProcessInstanceWaitStateStatisticsErrors, GetProcessInstanceWaitStateStatisticsResponses, GetResourceContentBinaryData, GetResourceContentBinaryErrors, GetResourceContentBinaryResponses, GetResourceContentData, GetResourceContentErrors, GetResourceContentResponses, GetResourceData, GetResourceErrors, GetResourceResponses, GetRoleData, GetRoleErrors, GetRoleResponses, GetStartProcessFormData, GetStartProcessFormErrors, GetStartProcessFormResponses, GetStatusData, GetStatusErrors, GetStatusResponses, GetSystemConfigurationData, GetSystemConfigurationErrors, GetSystemConfigurationResponses, GetTenantClusterVariableData, GetTenantClusterVariableErrors, GetTenantClusterVariableResponses, GetTenantData, GetTenantErrors, GetTenantResponses, GetTopologyData, GetTopologyErrors, GetTopologyResponses, GetUsageMetricsData, GetUsageMetricsErrors, GetUsageMetricsResponses, GetUserData, GetUserErrors, GetUserResponses, GetUserTaskData, GetUserTaskErrors, GetUserTaskFormData, GetUserTaskFormErrors, GetUserTaskFormResponses, GetUserTaskResponses, GetVariableData, GetVariableErrors, GetVariableResponses, MigrateProcessInstanceData, MigrateProcessInstanceErrors, MigrateProcessInstanceResponses, MigrateProcessInstancesBatchOperationData, MigrateProcessInstancesBatchOperationErrors, MigrateProcessInstancesBatchOperationResponses, ModifyProcessInstanceData, ModifyProcessInstanceErrors, ModifyProcessInstanceResponses, ModifyProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationErrors, ModifyProcessInstancesBatchOperationResponses, PinClockData, PinClockErrors, PinClockResponses, PublishMessageData, PublishMessageErrors, PublishMessageResponses, ResetClockData, ResetClockErrors, ResetClockResponses, ResolveIncidentData, ResolveIncidentErrors, ResolveIncidentResponses, ResolveIncidentsBatchOperationData, ResolveIncidentsBatchOperationErrors, ResolveIncidentsBatchOperationResponses, ResolveProcessInstanceIncidentsData, ResolveProcessInstanceIncidentsErrors, ResolveProcessInstanceIncidentsResponses, ResolveSecretsData, ResolveSecretsErrors, ResolveSecretsResponses, RestoreData, RestoreErrors, RestoreResponses, ResumeBatchOperationData, ResumeBatchOperationErrors, ResumeBatchOperationResponses, ResumeProcessInstanceData, ResumeProcessInstanceErrors, ResumeProcessInstanceResponses, ResumeProcessInstancesBatchOperationData, ResumeProcessInstancesBatchOperationErrors, ResumeProcessInstancesBatchOperationResponses, SearchAgentInstanceHistoryData, SearchAgentInstanceHistoryErrors, SearchAgentInstanceHistoryResponses, SearchAgentInstancesData, SearchAgentInstancesErrors, SearchAgentInstancesResponses, SearchAuditLogsData, SearchAuditLogsErrors, SearchAuditLogsResponses, SearchAuthorizationsData, SearchAuthorizationsErrors, SearchAuthorizationsResponses, SearchBatchOperationItemsData, SearchBatchOperationItemsErrors, SearchBatchOperationItemsResponses, SearchBatchOperationsData, SearchBatchOperationsErrors, SearchBatchOperationsResponses, SearchClientsForGroupData, SearchClientsForGroupErrors, SearchClientsForGroupResponses, SearchClientsForRoleData, SearchClientsForRoleErrors, SearchClientsForRoleResponses, SearchClientsForTenantData, SearchClientsForTenantResponses, SearchClusterVariablesData, SearchClusterVariablesErrors, SearchClusterVariablesResponses, SearchCorrelatedMessageSubscriptionsData, SearchCorrelatedMessageSubscriptionsErrors, SearchCorrelatedMessageSubscriptionsResponses, SearchDecisionDefinitionsData, SearchDecisionDefinitionsErrors, SearchDecisionDefinitionsResponses, SearchDecisionInstancesData, SearchDecisionInstancesErrors, SearchDecisionInstancesResponses, SearchDecisionRequirementsData, SearchDecisionRequirementsErrors, SearchDecisionRequirementsResponses, SearchElementInstanceIncidentsData, SearchElementInstanceIncidentsErrors, SearchElementInstanceIncidentsResponses, SearchElementInstancesData, SearchElementInstancesErrors, SearchElementInstancesResponses, SearchElementInstanceWaitStatesData, SearchElementInstanceWaitStatesErrors, SearchElementInstanceWaitStatesResponses, SearchGlobalTaskListenersData, SearchGlobalTaskListenersErrors, SearchGlobalTaskListenersResponses, SearchGroupIdsForTenantData, SearchGroupIdsForTenantResponses, SearchGroupsData, SearchGroupsErrors, SearchGroupsForRoleData, SearchGroupsForRoleErrors, SearchGroupsForRoleResponses, SearchGroupsResponses, SearchIncidentsData, SearchIncidentsErrors, SearchIncidentsResponses, SearchJobsData, SearchJobsErrors, SearchJobsResponses, SearchMappingRuleData, SearchMappingRuleErrors, SearchMappingRuleResponses, SearchMappingRulesForGroupData, SearchMappingRulesForGroupErrors, SearchMappingRulesForGroupResponses, SearchMappingRulesForRoleData, SearchMappingRulesForRoleErrors, SearchMappingRulesForRoleResponses, SearchMappingRulesForTenantData, SearchMappingRulesForTenantResponses, SearchMessageSubscriptionsData, SearchMessageSubscriptionsErrors, SearchMessageSubscriptionsResponses, SearchProcessDefinitionsData, SearchProcessDefinitionsErrors, SearchProcessDefinitionsResponses, SearchProcessDefinitionVariableNamesData, SearchProcessDefinitionVariableNamesErrors, SearchProcessDefinitionVariableNamesResponses, SearchProcessInstanceIncidentsData, SearchProcessInstanceIncidentsErrors, SearchProcessInstanceIncidentsResponses, SearchProcessInstancesData, SearchProcessInstancesErrors, SearchProcessInstancesResponses, SearchResourcesData, SearchResourcesErrors, SearchResourcesResponses, SearchRolesData, SearchRolesErrors, SearchRolesForGroupData, SearchRolesForGroupErrors, SearchRolesForGroupResponses, SearchRolesForTenantData, SearchRolesForTenantResponses, SearchRolesResponses, SearchTenantsData, SearchTenantsErrors, SearchTenantsResponses, SearchUsersData, SearchUsersErrors, SearchUsersForGroupData, SearchUsersForGroupErrors, SearchUsersForGroupResponses, SearchUsersForRoleData, SearchUsersForRoleErrors, SearchUsersForRoleResponses, SearchUsersForTenantData, SearchUsersForTenantResponses, SearchUsersResponses, SearchUserTaskAuditLogsData, SearchUserTaskAuditLogsErrors, SearchUserTaskAuditLogsResponses, SearchUserTaskEffectiveVariablesData, SearchUserTaskEffectiveVariablesErrors, SearchUserTaskEffectiveVariablesResponses, SearchUserTasksData, SearchUserTasksErrors, SearchUserTasksResponses, SearchUserTaskVariablesData, SearchUserTaskVariablesErrors, SearchUserTaskVariablesResponses, SearchVariablesData, SearchVariablesErrors, SearchVariablesResponses, SuspendBatchOperationData, SuspendBatchOperationErrors, SuspendBatchOperationResponses, SuspendProcessInstanceData, SuspendProcessInstanceErrors, SuspendProcessInstanceResponses, SuspendProcessInstancesBatchOperationData, SuspendProcessInstancesBatchOperationErrors, SuspendProcessInstancesBatchOperationResponses, ThrowJobErrorData, ThrowJobErrorErrors, ThrowJobErrorResponses, UnassignClientFromGroupData, UnassignClientFromGroupErrors, UnassignClientFromGroupResponses, UnassignClientFromTenantData, UnassignClientFromTenantErrors, UnassignClientFromTenantResponses, UnassignGroupFromTenantData, UnassignGroupFromTenantErrors, UnassignGroupFromTenantResponses, UnassignMappingRuleFromGroupData, UnassignMappingRuleFromGroupErrors, UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromTenantData, UnassignMappingRuleFromTenantErrors, UnassignMappingRuleFromTenantResponses, UnassignRoleFromClientData, UnassignRoleFromClientErrors, UnassignRoleFromClientResponses, UnassignRoleFromGroupData, UnassignRoleFromGroupErrors, UnassignRoleFromGroupResponses, UnassignRoleFromMappingRuleData, UnassignRoleFromMappingRuleErrors, UnassignRoleFromMappingRuleResponses, UnassignRoleFromTenantData, UnassignRoleFromTenantErrors, UnassignRoleFromTenantResponses, UnassignRoleFromUserData, UnassignRoleFromUserErrors, UnassignRoleFromUserResponses, UnassignUserFromGroupData, UnassignUserFromGroupErrors, UnassignUserFromGroupResponses, UnassignUserFromTenantData, UnassignUserFromTenantErrors, UnassignUserFromTenantResponses, UnassignUserTaskData, UnassignUserTaskErrors, UnassignUserTaskResponses, UpdateAgentInstanceData, UpdateAgentInstanceErrors, UpdateAgentInstanceResponses, UpdateAuthorizationData, UpdateAuthorizationErrors, UpdateAuthorizationResponses, UpdateGlobalClusterVariableData, UpdateGlobalClusterVariableErrors, UpdateGlobalClusterVariableResponses, UpdateGlobalTaskListenerData, UpdateGlobalTaskListenerErrors, UpdateGlobalTaskListenerResponses, UpdateGroupData, UpdateGroupErrors, UpdateGroupResponses, UpdateJobData, UpdateJobErrors, UpdateJobResponses, UpdateJobsBatchOperationData, UpdateJobsBatchOperationErrors, UpdateJobsBatchOperationResponses, UpdateMappingRuleData, UpdateMappingRuleErrors, UpdateMappingRuleResponses, UpdateRoleData, UpdateRoleErrors, UpdateRoleResponses, UpdateTenantClusterVariableData, UpdateTenantClusterVariableErrors, UpdateTenantClusterVariableResponses, UpdateTenantData, UpdateTenantErrors, UpdateTenantResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses, UpdateUserTaskData, UpdateUserTaskErrors, UpdateUserTaskResponses } from './types.gen';
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
      * You can provide a client instance returned by `createClient()` instead of
@@ -18,6 +18,181 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
+ * Create agent instance
+ *
+ * Creates a new agent instance. The returned key identifies the instance and must
+ * be used in subsequent update and query calls.
+ *
+ */
+export const createAgentInstance = <ThrowOnError extends boolean = true>(options: Options<CreateAgentInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateAgentInstanceResponses, CreateAgentInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/agent-instances',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Get agent instance
+ *
+ * Returns agent instance as JSON.
+ */
+export const getAgentInstance = <ThrowOnError extends boolean = true>(options: Options<GetAgentInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetAgentInstanceResponses, GetAgentInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/agent-instances/{agentInstanceKey}',
+        ...options
+    });
+};
+
+/**
+ * Update agent instance
+ *
+ * Updates the mutable fields of an agent instance: status, metric counters, and
+ * tools. Metric values are treated as deltas and applied immediately to the
+ * aggregate counters. Tool updates replace the existing tool list.
+ *
+ */
+export const updateAgentInstance = <ThrowOnError extends boolean = true>(options: Options<UpdateAgentInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).patch<UpdateAgentInstanceResponses, UpdateAgentInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/agent-instances/{agentInstanceKey}',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Search agent instances
+ *
+ * Search for agent instances based on given criteria.
+ */
+export const searchAgentInstances = <ThrowOnError extends boolean = true>(options?: Options<SearchAgentInstancesData, ThrowOnError>) => {
+    return (options?.client ?? client).post<SearchAgentInstancesResponses, SearchAgentInstancesErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/agent-instances/search',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers
+        }
+    });
+};
+
+/**
+ * Create agent instance history item
+ *
+ * Appends a single history item to an agent instance's conversation history.
+ * The created item has commitStatus PENDING until the job identified by jobLease
+ * completes successfully, at which point it transitions to COMMITTED. If the job
+ * fails or is superseded by a retry, the item is marked DISCARDED.
+ *
+ */
+export const createAgentInstanceHistoryItem = <ThrowOnError extends boolean = true>(options: Options<CreateAgentInstanceHistoryItemData, ThrowOnError>) => {
+    return (options.client ?? client).post<CreateAgentInstanceHistoryItemResponses, CreateAgentInstanceHistoryItemErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/agent-instances/{agentInstanceKey}/history',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Search agent instance history
+ *
+ * Searches the conversation history of an agent instance. Committed items
+ * are returned by default.
+ *
+ */
+export const searchAgentInstanceHistory = <ThrowOnError extends boolean = true>(options: Options<SearchAgentInstanceHistoryData, ThrowOnError>) => {
+    return (options.client ?? client).post<SearchAgentInstanceHistoryResponses, SearchAgentInstanceHistoryErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/agent-instances/{agentInstanceKey}/history/search',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
  * Search audit logs
  *
  * Search for audit logs based on given criteria.
@@ -26,6 +201,16 @@ export const searchAuditLogs = <ThrowOnError extends boolean = true>(options?: O
     return (options?.client ?? client).post<SearchAuditLogsResponses, SearchAuditLogsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/audit-logs/search',
         ...options,
         headers: {
@@ -44,6 +229,16 @@ export const getAuditLog = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).get<GetAuditLogResponses, GetAuditLogErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/audit-logs/{auditLogKey}',
         ...options
     });
@@ -78,6 +273,16 @@ export const createAuthorization = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).post<CreateAuthorizationResponses, CreateAuthorizationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/authorizations',
         ...options,
         headers: {
@@ -96,6 +301,16 @@ export const searchAuthorizations = <ThrowOnError extends boolean = true>(option
     return (options?.client ?? client).post<SearchAuthorizationsResponses, SearchAuthorizationsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/authorizations/search',
         ...options,
         headers: {
@@ -114,6 +329,16 @@ export const deleteAuthorization = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).delete<DeleteAuthorizationResponses, DeleteAuthorizationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/authorizations/{authorizationKey}',
         ...options
     });
@@ -128,6 +353,16 @@ export const getAuthorization = <ThrowOnError extends boolean = true>(options: O
     return (options.client ?? client).get<GetAuthorizationResponses, GetAuthorizationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/authorizations/{authorizationKey}',
         ...options
     });
@@ -142,6 +377,16 @@ export const updateAuthorization = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).put<UpdateAuthorizationResponses, UpdateAuthorizationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/authorizations/{authorizationKey}',
         ...options,
         headers: {
@@ -160,6 +405,16 @@ export const searchBatchOperationItems = <ThrowOnError extends boolean = true>(o
     return (options?.client ?? client).post<SearchBatchOperationItemsResponses, SearchBatchOperationItemsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/batch-operation-items/search',
         ...options,
         headers: {
@@ -178,6 +433,16 @@ export const searchBatchOperations = <ThrowOnError extends boolean = true>(optio
     return (options?.client ?? client).post<SearchBatchOperationsResponses, SearchBatchOperationsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/batch-operations/search',
         ...options,
         headers: {
@@ -196,6 +461,16 @@ export const getBatchOperation = <ThrowOnError extends boolean = true>(options: 
     return (options.client ?? client).get<GetBatchOperationResponses, GetBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/batch-operations/{batchOperationKey}',
         ...options
     });
@@ -212,6 +487,16 @@ export const cancelBatchOperation = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<CancelBatchOperationResponses, CancelBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/batch-operations/{batchOperationKey}/cancellation',
         ...options,
         headers: {
@@ -232,6 +517,16 @@ export const resumeBatchOperation = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<ResumeBatchOperationResponses, ResumeBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/batch-operations/{batchOperationKey}/resumption',
         ...options,
         headers: {
@@ -252,6 +547,16 @@ export const suspendBatchOperation = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<SuspendBatchOperationResponses, SuspendBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/batch-operations/{batchOperationKey}/suspension',
         ...options,
         headers: {
@@ -276,6 +581,16 @@ export const pinClock = <ThrowOnError extends boolean = true>(options: Options<P
     return (options.client ?? client).put<PinClockResponses, PinClockErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/clock',
         ...options,
         headers: {
@@ -300,6 +615,16 @@ export const resetClock = <ThrowOnError extends boolean = true>(options?: Option
     return (options?.client ?? client).post<ResetClockResponses, ResetClockErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/clock/reset',
         ...options
     });
@@ -314,6 +639,16 @@ export const createGlobalClusterVariable = <ThrowOnError extends boolean = true>
     return (options.client ?? client).post<CreateGlobalClusterVariableResponses, CreateGlobalClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/global',
         ...options,
         headers: {
@@ -332,6 +667,16 @@ export const deleteGlobalClusterVariable = <ThrowOnError extends boolean = true>
     return (options.client ?? client).delete<DeleteGlobalClusterVariableResponses, DeleteGlobalClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/global/{name}',
         ...options
     });
@@ -346,6 +691,16 @@ export const getGlobalClusterVariable = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).get<GetGlobalClusterVariableResponses, GetGlobalClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/global/{name}',
         ...options
     });
@@ -362,6 +717,16 @@ export const updateGlobalClusterVariable = <ThrowOnError extends boolean = true>
     return (options.client ?? client).put<UpdateGlobalClusterVariableResponses, UpdateGlobalClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/global/{name}',
         ...options,
         headers: {
@@ -378,6 +743,16 @@ export const searchClusterVariables = <ThrowOnError extends boolean = true>(opti
     return (options?.client ?? client).post<SearchClusterVariablesResponses, SearchClusterVariablesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/search',
         ...options,
         headers: {
@@ -396,6 +771,16 @@ export const createTenantClusterVariable = <ThrowOnError extends boolean = true>
     return (options.client ?? client).post<CreateTenantClusterVariableResponses, CreateTenantClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/tenants/{tenantId}',
         ...options,
         headers: {
@@ -414,6 +799,16 @@ export const deleteTenantClusterVariable = <ThrowOnError extends boolean = true>
     return (options.client ?? client).delete<DeleteTenantClusterVariableResponses, DeleteTenantClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/tenants/{tenantId}/{name}',
         ...options
     });
@@ -428,6 +823,16 @@ export const getTenantClusterVariable = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).get<GetTenantClusterVariableResponses, GetTenantClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/tenants/{tenantId}/{name}',
         ...options
     });
@@ -444,6 +849,16 @@ export const updateTenantClusterVariable = <ThrowOnError extends boolean = true>
     return (options.client ?? client).put<UpdateTenantClusterVariableResponses, UpdateTenantClusterVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/cluster-variables/tenants/{tenantId}/{name}',
         ...options,
         headers: {
@@ -465,6 +880,16 @@ export const evaluateConditionals = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<EvaluateConditionalsResponses, EvaluateConditionalsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/conditionals/evaluation',
         ...options,
         headers: {
@@ -483,6 +908,16 @@ export const searchCorrelatedMessageSubscriptions = <ThrowOnError extends boolea
     return (options?.client ?? client).post<SearchCorrelatedMessageSubscriptionsResponses, SearchCorrelatedMessageSubscriptionsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/correlated-message-subscriptions/search',
         ...options,
         headers: {
@@ -505,6 +940,16 @@ export const evaluateDecision = <ThrowOnError extends boolean = true>(options: O
     return (options.client ?? client).post<EvaluateDecisionResponses, EvaluateDecisionErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-definitions/evaluation',
         ...options,
         headers: {
@@ -523,6 +968,16 @@ export const searchDecisionDefinitions = <ThrowOnError extends boolean = true>(o
     return (options?.client ?? client).post<SearchDecisionDefinitionsResponses, SearchDecisionDefinitionsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-definitions/search',
         ...options,
         headers: {
@@ -541,6 +996,16 @@ export const getDecisionDefinition = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).get<GetDecisionDefinitionResponses, GetDecisionDefinitionErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-definitions/{decisionDefinitionKey}',
         ...options
     });
@@ -555,6 +1020,16 @@ export const getDecisionDefinitionXml = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).get<GetDecisionDefinitionXmlResponses, GetDecisionDefinitionXmlErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-definitions/{decisionDefinitionKey}/xml',
         ...options
     });
@@ -569,6 +1044,16 @@ export const searchDecisionInstances = <ThrowOnError extends boolean = true>(opt
     return (options?.client ?? client).post<SearchDecisionInstancesResponses, SearchDecisionInstancesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-instances/search',
         ...options,
         headers: {
@@ -587,6 +1072,16 @@ export const getDecisionInstance = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).get<GetDecisionInstanceResponses, GetDecisionInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-instances/{decisionEvaluationInstanceKey}',
         ...options
     });
@@ -601,6 +1096,16 @@ export const deleteDecisionInstance = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).post<DeleteDecisionInstanceResponses, DeleteDecisionInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-instances/{decisionEvaluationKey}/deletion',
         ...options,
         headers: {
@@ -621,6 +1126,16 @@ export const deleteDecisionInstancesBatchOperation = <ThrowOnError extends boole
     return (options.client ?? client).post<DeleteDecisionInstancesBatchOperationResponses, DeleteDecisionInstancesBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-instances/deletion',
         ...options,
         headers: {
@@ -639,6 +1154,16 @@ export const searchDecisionRequirements = <ThrowOnError extends boolean = true>(
     return (options?.client ?? client).post<SearchDecisionRequirementsResponses, SearchDecisionRequirementsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-requirements/search',
         ...options,
         headers: {
@@ -657,6 +1182,16 @@ export const getDecisionRequirements = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).get<GetDecisionRequirementsResponses, GetDecisionRequirementsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-requirements/{decisionRequirementsKey}',
         ...options
     });
@@ -671,6 +1206,16 @@ export const getDecisionRequirementsXml = <ThrowOnError extends boolean = true>(
     return (options.client ?? client).get<GetDecisionRequirementsXmlResponses, GetDecisionRequirementsXmlErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/decision-requirements/{decisionRequirementsKey}/xml',
         ...options
     });
@@ -679,7 +1224,8 @@ export const getDecisionRequirementsXml = <ThrowOnError extends boolean = true>(
 /**
  * Deploy resources
  *
- * Deploys one or more resources (e.g. processes, decision models, or forms).
+ * Deploys one or more resources, including BPMN processes, DMN decision models, forms, RPA resources, and generic files.
+ * A deployment can contain any file type. Files that are not interpreted as BPMN, DMN, form, or RPA resources are stored as deployable generic resources in the engine.
  * This is an atomic call, i.e. either all resources are deployed or none of them are.
  *
  */
@@ -688,6 +1234,16 @@ export const createDeployment = <ThrowOnError extends boolean = true>(options: O
         ...formDataBodySerializer,
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/deployments',
         ...options,
         headers: {
@@ -710,6 +1266,16 @@ export const createDocument = <ThrowOnError extends boolean = true>(options: Opt
         ...formDataBodySerializer,
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/documents',
         ...options,
         headers: {
@@ -744,6 +1310,16 @@ export const createDocuments = <ThrowOnError extends boolean = true>(options: Op
         ...formDataBodySerializer,
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/documents/batch',
         ...options,
         headers: {
@@ -765,6 +1341,16 @@ export const deleteDocument = <ThrowOnError extends boolean = true>(options: Opt
     return (options.client ?? client).delete<DeleteDocumentResponses, DeleteDocumentErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/documents/{documentId}',
         ...options
     });
@@ -782,6 +1368,16 @@ export const getDocument = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).get<GetDocumentResponses, GetDocumentErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/documents/{documentId}',
         ...options
     });
@@ -799,6 +1395,16 @@ export const createDocumentLink = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).post<CreateDocumentLinkResponses, CreateDocumentLinkErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/documents/{documentId}/links',
         ...options,
         headers: {
@@ -820,11 +1426,50 @@ export const activateAdHocSubProcessActivities = <ThrowOnError extends boolean =
     return (options.client ?? client).post<ActivateAdHocSubProcessActivitiesResponses, ActivateAdHocSubProcessActivitiesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/element-instances/ad-hoc-activities/{adHocSubProcessInstanceKey}/activation',
         ...options,
         headers: {
             'Content-Type': 'application/json',
             ...options.headers
+        }
+    });
+};
+
+/**
+ * Search element instance wait states
+ *
+ * Returns the wait states for element instances matching the given filter.
+ *
+ */
+export const searchElementInstanceWaitStates = <ThrowOnError extends boolean = true>(options?: Options<SearchElementInstanceWaitStatesData, ThrowOnError>) => {
+    return (options?.client ?? client).post<SearchElementInstanceWaitStatesResponses, SearchElementInstanceWaitStatesErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/element-instances/wait-states/search',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers
         }
     });
 };
@@ -838,6 +1483,16 @@ export const searchElementInstances = <ThrowOnError extends boolean = true>(opti
     return (options?.client ?? client).post<SearchElementInstancesResponses, SearchElementInstancesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/element-instances/search',
         ...options,
         headers: {
@@ -856,6 +1511,16 @@ export const getElementInstance = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).get<GetElementInstanceResponses, GetElementInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/element-instances/{elementInstanceKey}',
         ...options
     });
@@ -877,6 +1542,16 @@ export const searchElementInstanceIncidents = <ThrowOnError extends boolean = tr
     return (options.client ?? client).post<SearchElementInstanceIncidentsResponses, SearchElementInstanceIncidentsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/element-instances/{elementInstanceKey}/incidents/search',
         ...options,
         headers: {
@@ -901,6 +1576,16 @@ export const createElementInstanceVariables = <ThrowOnError extends boolean = tr
     return (options.client ?? client).put<CreateElementInstanceVariablesResponses, CreateElementInstanceVariablesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/element-instances/{elementInstanceKey}/variables',
         ...options,
         headers: {
@@ -913,18 +1598,57 @@ export const createElementInstanceVariables = <ThrowOnError extends boolean = tr
 /**
  * Evaluate an expression
  *
- * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
+ * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped
+ * cluster variables when a tenant ID is provided. Optionally, provide a `scopeKey` to make the
+ * variables of a specific process instance or element instance visible while evaluating the
+ * expression.
+ *
  */
 export const evaluateExpression = <ThrowOnError extends boolean = true>(options: Options<EvaluateExpressionData, ThrowOnError>) => {
     return (options.client ?? client).post<EvaluateExpressionResponses, EvaluateExpressionErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/expression/evaluation',
         ...options,
         headers: {
             'Content-Type': 'application/json',
             ...options.headers
         }
+    });
+};
+
+/**
+ * Get form by key
+ *
+ * Get a form by its unique form key.
+ *
+ */
+export const getFormByKey = <ThrowOnError extends boolean = true>(options: Options<GetFormByKeyData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetFormByKeyResponses, GetFormByKeyErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/forms/{formKey}',
+        ...options
     });
 };
 
@@ -937,6 +1661,16 @@ export const createGlobalTaskListener = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).post<CreateGlobalTaskListenerResponses, CreateGlobalTaskListenerErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/global-task-listeners',
         ...options,
         headers: {
@@ -955,6 +1689,16 @@ export const deleteGlobalTaskListener = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).delete<DeleteGlobalTaskListenerResponses, DeleteGlobalTaskListenerErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/global-task-listeners/{id}',
         ...options
     });
@@ -969,6 +1713,16 @@ export const getGlobalTaskListener = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).get<GetGlobalTaskListenerResponses, GetGlobalTaskListenerErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/global-task-listeners/{id}',
         ...options
     });
@@ -983,6 +1737,16 @@ export const updateGlobalTaskListener = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).put<UpdateGlobalTaskListenerResponses, UpdateGlobalTaskListenerErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/global-task-listeners/{id}',
         ...options,
         headers: {
@@ -1001,6 +1765,16 @@ export const searchGlobalTaskListeners = <ThrowOnError extends boolean = true>(o
     return (options?.client ?? client).post<SearchGlobalTaskListenersResponses, SearchGlobalTaskListenersErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/global-task-listeners/search',
         ...options,
         headers: {
@@ -1014,11 +1788,37 @@ export const searchGlobalTaskListeners = <ThrowOnError extends boolean = true>(o
  * Create group
  *
  * Create a new group.
+ *
+ * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * (max 256 characters) by `IdentifierValidator.validateId` in the
+ * runtime. This strict validation applies wherever the Groups API
+ * is available: in OIDC deployments that set
+ * `camunda.security.authentication.oidc.groupsClaim` the Groups
+ * API (including this endpoint) is disabled entirely, so group
+ * CRUD never sees externally-minted IdP IDs. The BYOG relaxation
+ * only loosens validation when a group is referenced *as a member*
+ * of a role or tenant (`assignRoleToGroup`,
+ * `assignGroupToTenant`); group CRUD itself always uses the strict
+ * default-id regex. The constraint is not advertised on the
+ * `GroupId` schema so that the same schema can be reused at
+ * member-reference sites without falsely rejecting
+ * externally-minted IdP group IDs there.
+ *
  */
 export const createGroup = <ThrowOnError extends boolean = true>(options?: Options<CreateGroupData, ThrowOnError>) => {
     return (options?.client ?? client).post<CreateGroupResponses, CreateGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups',
         ...options,
         headers: {
@@ -1037,6 +1837,16 @@ export const searchGroups = <ThrowOnError extends boolean = true>(options?: Opti
     return (options?.client ?? client).post<SearchGroupsResponses, SearchGroupsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/search',
         ...options,
         headers: {
@@ -1055,6 +1865,16 @@ export const deleteGroup = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).delete<DeleteGroupResponses, DeleteGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}',
         ...options
     });
@@ -1069,6 +1889,16 @@ export const getGroup = <ThrowOnError extends boolean = true>(options: Options<G
     return (options.client ?? client).get<GetGroupResponses, GetGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}',
         ...options
     });
@@ -1083,6 +1913,16 @@ export const updateGroup = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).put<UpdateGroupResponses, UpdateGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}',
         ...options,
         headers: {
@@ -1101,6 +1941,16 @@ export const searchClientsForGroup = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<SearchClientsForGroupResponses, SearchClientsForGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/clients/search',
         ...options,
         headers: {
@@ -1121,6 +1971,16 @@ export const unassignClientFromGroup = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).delete<UnassignClientFromGroupResponses, UnassignClientFromGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/clients/{clientId}',
         ...options
     });
@@ -1137,6 +1997,16 @@ export const assignClientToGroup = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).put<AssignClientToGroupResponses, AssignClientToGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/clients/{clientId}',
         ...options
     });
@@ -1151,6 +2021,16 @@ export const searchMappingRulesForGroup = <ThrowOnError extends boolean = true>(
     return (options.client ?? client).post<SearchMappingRulesForGroupResponses, SearchMappingRulesForGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/mapping-rules/search',
         ...options,
         headers: {
@@ -1169,6 +2049,16 @@ export const unassignMappingRuleFromGroup = <ThrowOnError extends boolean = true
     return (options.client ?? client).delete<UnassignMappingRuleFromGroupResponses, UnassignMappingRuleFromGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -1183,6 +2073,16 @@ export const assignMappingRuleToGroup = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).put<AssignMappingRuleToGroupResponses, AssignMappingRuleToGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -1197,6 +2097,16 @@ export const searchRolesForGroup = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).post<SearchRolesForGroupResponses, SearchRolesForGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/roles/search',
         ...options,
         headers: {
@@ -1215,6 +2125,16 @@ export const searchUsersForGroup = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).post<SearchUsersForGroupResponses, SearchUsersForGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/users/search',
         ...options,
         headers: {
@@ -1235,6 +2155,16 @@ export const unassignUserFromGroup = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).delete<UnassignUserFromGroupResponses, UnassignUserFromGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/users/{username}',
         ...options
     });
@@ -1251,6 +2181,16 @@ export const assignUserToGroup = <ThrowOnError extends boolean = true>(options: 
     return (options.client ?? client).put<AssignUserToGroupResponses, AssignUserToGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/groups/{groupId}/users/{username}',
         ...options
     });
@@ -1266,6 +2206,16 @@ export const searchIncidents = <ThrowOnError extends boolean = true>(options?: O
     return (options?.client ?? client).post<SearchIncidentsResponses, SearchIncidentsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/incidents/search',
         ...options,
         headers: {
@@ -1285,6 +2235,16 @@ export const getIncident = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).get<GetIncidentResponses, GetIncidentErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/incidents/{incidentKey}',
         ...options
     });
@@ -1301,6 +2261,16 @@ export const resolveIncident = <ThrowOnError extends boolean = true>(options: Op
     return (options.client ?? client).post<ResolveIncidentResponses, ResolveIncidentErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/incidents/{incidentKey}/resolution',
         ...options,
         headers: {
@@ -1322,6 +2292,16 @@ export const getProcessInstanceStatisticsByDefinition = <ThrowOnError extends bo
     return (options.client ?? client).post<GetProcessInstanceStatisticsByDefinitionResponses, GetProcessInstanceStatisticsByDefinitionErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/incidents/statistics/process-instances-by-definition',
         ...options,
         headers: {
@@ -1342,6 +2322,16 @@ export const getProcessInstanceStatisticsByError = <ThrowOnError extends boolean
     return (options?.client ?? client).post<GetProcessInstanceStatisticsByErrorResponses, GetProcessInstanceStatisticsByErrorErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/incidents/statistics/process-instances-by-error',
         ...options,
         headers: {
@@ -1361,6 +2351,16 @@ export const activateJobs = <ThrowOnError extends boolean = true>(options: Optio
     return (options.client ?? client).post<ActivateJobsResponses, ActivateJobsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/activation',
         ...options,
         headers: {
@@ -1379,6 +2379,16 @@ export const searchJobs = <ThrowOnError extends boolean = true>(options?: Option
     return (options?.client ?? client).post<SearchJobsResponses, SearchJobsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/search',
         ...options,
         headers: {
@@ -1397,6 +2407,16 @@ export const updateJob = <ThrowOnError extends boolean = true>(options: Options<
     return (options.client ?? client).patch<UpdateJobResponses, UpdateJobErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/{jobKey}',
         ...options,
         headers: {
@@ -1416,6 +2436,16 @@ export const completeJob = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).post<CompleteJobResponses, CompleteJobErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/{jobKey}/completion',
         ...options,
         headers: {
@@ -1435,6 +2465,16 @@ export const throwJobError = <ThrowOnError extends boolean = true>(options: Opti
     return (options.client ?? client).post<ThrowJobErrorResponses, ThrowJobErrorErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/{jobKey}/error',
         ...options,
         headers: {
@@ -1454,7 +2494,46 @@ export const failJob = <ThrowOnError extends boolean = true>(options: Options<Fa
     return (options.client ?? client).post<FailJobResponses, FailJobErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/{jobKey}/failure',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Update jobs (batch)
+ *
+ * Creates a batch operation to update jobs matching the given filter. At least one changeset field must be non-null. This is done asynchronously; the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+ */
+export const updateJobsBatchOperation = <ThrowOnError extends boolean = true>(options: Options<UpdateJobsBatchOperationData, ThrowOnError>) => {
+    return (options.client ?? client).post<UpdateJobsBatchOperationResponses, UpdateJobsBatchOperationErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/jobs/batch-update',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -1473,6 +2552,16 @@ export const getGlobalJobStatistics = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).get<GetGlobalJobStatisticsResponses, GetGlobalJobStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/statistics/global',
         ...options
     });
@@ -1488,6 +2577,16 @@ export const getJobTypeStatistics = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<GetJobTypeStatisticsResponses, GetJobTypeStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/statistics/by-types',
         ...options,
         headers: {
@@ -1507,6 +2606,16 @@ export const getJobWorkerStatistics = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).post<GetJobWorkerStatisticsResponses, GetJobWorkerStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/statistics/by-workers',
         ...options,
         headers: {
@@ -1528,6 +2637,16 @@ export const getJobTimeSeriesStatistics = <ThrowOnError extends boolean = true>(
     return (options.client ?? client).post<GetJobTimeSeriesStatisticsResponses, GetJobTimeSeriesStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/statistics/time-series',
         ...options,
         headers: {
@@ -1547,6 +2666,16 @@ export const getJobErrorStatistics = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<GetJobErrorStatisticsResponses, GetJobErrorStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/jobs/statistics/errors',
         ...options,
         headers: {
@@ -1580,6 +2709,16 @@ export const createMappingRule = <ThrowOnError extends boolean = true>(options?:
     return (options?.client ?? client).post<CreateMappingRuleResponses, CreateMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/mapping-rules',
         ...options,
         headers: {
@@ -1599,6 +2738,16 @@ export const searchMappingRule = <ThrowOnError extends boolean = true>(options?:
     return (options?.client ?? client).post<SearchMappingRuleResponses, SearchMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/mapping-rules/search',
         ...options,
         headers: {
@@ -1618,6 +2767,16 @@ export const deleteMappingRule = <ThrowOnError extends boolean = true>(options: 
     return (options.client ?? client).delete<DeleteMappingRuleResponses, DeleteMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -1633,6 +2792,16 @@ export const getMappingRule = <ThrowOnError extends boolean = true>(options: Opt
     return (options.client ?? client).get<GetMappingRuleResponses, GetMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -1648,6 +2817,16 @@ export const updateMappingRule = <ThrowOnError extends boolean = true>(options: 
     return (options.client ?? client).put<UpdateMappingRuleResponses, UpdateMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/mapping-rules/{mappingRuleId}',
         ...options,
         headers: {
@@ -1661,11 +2840,34 @@ export const updateMappingRule = <ThrowOnError extends boolean = true>(options: 
  * Search message subscriptions
  *
  * Search for message subscriptions based on given criteria.
+ *
+ * By default, both start and intermediate event subscriptions are returned. Use the
+ * `messageSubscriptionType` filter to restrict results to a single type.
+ *
+ * **Version notes:**
+ * - Start event subscriptions are only captured for deployments made with 8.10 or later.
+ * - The `messageSubscriptionType` field is only populated for data created
+ * with Camunda 8.10 or later. For pre-8.10 data, intermediate event entries have no
+ * `messageSubscriptionType` value stored. For convenience, the API returns `PROCESS_EVENT`
+ * as a default for such search results, though.
+ * - Searching for intermediate event subscriptions **including legacy data** can be achieved
+ * by filtering for `messageSubscriptionType` not matching `START_EVENT`.
+ *
  */
 export const searchMessageSubscriptions = <ThrowOnError extends boolean = true>(options?: Options<SearchMessageSubscriptionsData, ThrowOnError>) => {
     return (options?.client ?? client).post<SearchMessageSubscriptionsResponses, SearchMessageSubscriptionsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/message-subscriptions/search',
         ...options,
         headers: {
@@ -1688,6 +2890,16 @@ export const correlateMessage = <ThrowOnError extends boolean = true>(options: O
     return (options.client ?? client).post<CorrelateMessageResponses, CorrelateMessageErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/messages/correlation',
         ...options,
         headers: {
@@ -1711,6 +2923,16 @@ export const publishMessage = <ThrowOnError extends boolean = true>(options: Opt
     return (options.client ?? client).post<PublishMessageResponses, PublishMessageErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/messages/publication',
         ...options,
         headers: {
@@ -1729,6 +2951,16 @@ export const searchProcessDefinitions = <ThrowOnError extends boolean = true>(op
     return (options?.client ?? client).post<SearchProcessDefinitionsResponses, SearchProcessDefinitionsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/search',
         ...options,
         headers: {
@@ -1748,6 +2980,16 @@ export const getProcessDefinitionMessageSubscriptionStatistics = <ThrowOnError e
     return (options?.client ?? client).post<GetProcessDefinitionMessageSubscriptionStatisticsResponses, GetProcessDefinitionMessageSubscriptionStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/statistics/message-subscriptions',
         ...options,
         headers: {
@@ -1767,6 +3009,16 @@ export const getProcessDefinitionInstanceStatistics = <ThrowOnError extends bool
     return (options?.client ?? client).post<GetProcessDefinitionInstanceStatisticsResponses, GetProcessDefinitionInstanceStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/statistics/process-instances',
         ...options,
         headers: {
@@ -1785,6 +3037,16 @@ export const getProcessDefinition = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).get<GetProcessDefinitionResponses, GetProcessDefinitionErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/{processDefinitionKey}',
         ...options
     });
@@ -1801,6 +3063,16 @@ export const getStartProcessForm = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).get<GetStartProcessFormResponses, GetStartProcessFormErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/{processDefinitionKey}/form',
         ...options
     });
@@ -1815,7 +3087,45 @@ export const getProcessDefinitionStatistics = <ThrowOnError extends boolean = tr
     return (options.client ?? client).post<GetProcessDefinitionStatisticsResponses, GetProcessDefinitionStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/{processDefinitionKey}/statistics/element-instances',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Search process definition variable names
+ *
+ * Search for distinct variable names defined on a process definition, optionally narrowed by the name filter.
+ */
+export const searchProcessDefinitionVariableNames = <ThrowOnError extends boolean = true>(options: Options<SearchProcessDefinitionVariableNamesData, ThrowOnError>) => {
+    return (options.client ?? client).post<SearchProcessDefinitionVariableNamesResponses, SearchProcessDefinitionVariableNamesErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-definitions/{processDefinitionKey}/variable-names/search',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -1833,6 +3143,16 @@ export const getProcessDefinitionXml = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).get<GetProcessDefinitionXmlResponses, GetProcessDefinitionXmlErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/{processDefinitionKey}/xml',
         ...options
     });
@@ -1849,6 +3169,16 @@ export const getProcessDefinitionInstanceVersionStatistics = <ThrowOnError exten
     return (options.client ?? client).post<GetProcessDefinitionInstanceVersionStatisticsResponses, GetProcessDefinitionInstanceVersionStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-definitions/statistics/process-instances-by-version',
         ...options,
         headers: {
@@ -1873,6 +3203,16 @@ export const createProcessInstance = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<CreateProcessInstanceResponses, CreateProcessInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances',
         ...options,
         headers: {
@@ -1895,6 +3235,16 @@ export const cancelProcessInstancesBatchOperation = <ThrowOnError extends boolea
     return (options.client ?? client).post<CancelProcessInstancesBatchOperationResponses, CancelProcessInstancesBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/cancellation',
         ...options,
         headers: {
@@ -1916,6 +3266,16 @@ export const deleteProcessInstancesBatchOperation = <ThrowOnError extends boolea
     return (options.client ?? client).post<DeleteProcessInstancesBatchOperationResponses, DeleteProcessInstancesBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/deletion',
         ...options,
         headers: {
@@ -1938,6 +3298,16 @@ export const resolveIncidentsBatchOperation = <ThrowOnError extends boolean = tr
     return (options?.client ?? client).post<ResolveIncidentsBatchOperationResponses, ResolveIncidentsBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/incident-resolution',
         ...options,
         headers: {
@@ -1960,6 +3330,16 @@ export const migrateProcessInstancesBatchOperation = <ThrowOnError extends boole
     return (options.client ?? client).post<MigrateProcessInstancesBatchOperationResponses, MigrateProcessInstancesBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/migration',
         ...options,
         headers: {
@@ -1984,7 +3364,49 @@ export const modifyProcessInstancesBatchOperation = <ThrowOnError extends boolea
     return (options.client ?? client).post<ModifyProcessInstancesBatchOperationResponses, ModifyProcessInstancesBatchOperationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/modification',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Resume process instances (batch)
+ *
+ * Resumes multiple suspended process instances.
+ * Since only SUSPENDED root instances can be resumed, any given
+ * filters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.
+ * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+ */
+export const resumeProcessInstancesBatchOperation = <ThrowOnError extends boolean = true>(options: Options<ResumeProcessInstancesBatchOperationData, ThrowOnError>) => {
+    return (options.client ?? client).post<ResumeProcessInstancesBatchOperationResponses, ResumeProcessInstancesBatchOperationErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/resumption',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -2002,11 +3424,53 @@ export const searchProcessInstances = <ThrowOnError extends boolean = true>(opti
     return (options?.client ?? client).post<SearchProcessInstancesResponses, SearchProcessInstancesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/search',
         ...options,
         headers: {
             'Content-Type': 'application/json',
             ...options?.headers
+        }
+    });
+};
+
+/**
+ * Suspend process instances (batch)
+ *
+ * Suspends multiple running process instances.
+ * Since only ACTIVE root instances can be suspended, any given
+ * filters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.
+ * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+ */
+export const suspendProcessInstancesBatchOperation = <ThrowOnError extends boolean = true>(options: Options<SuspendProcessInstancesBatchOperationData, ThrowOnError>) => {
+    return (options.client ?? client).post<SuspendProcessInstancesBatchOperationResponses, SuspendProcessInstancesBatchOperationErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/suspension',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
         }
     });
 };
@@ -2020,8 +3484,54 @@ export const getProcessInstance = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).get<GetProcessInstanceResponses, GetProcessInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}',
         ...options
+    });
+};
+
+/**
+ * Assign business id to process instance
+ *
+ * Assigns a business id to an already-running process instance that currently has none.
+ *
+ * The assignment is single and irreversible: only artifacts created after the assignment
+ * (for example future jobs, user tasks, decision instances, and message subscriptions) carry
+ * the business id, while existing artifacts are not retroactively enriched. Re-sending the
+ * same business id succeeds as a no-op. This endpoint is only useful while business id
+ * uniqueness enforcement is disabled; when it is enabled, the request is rejected with a 409
+ * response.
+ *
+ */
+export const assignProcessInstanceBusinessId = <ThrowOnError extends boolean = true>(options: Options<AssignProcessInstanceBusinessIdData, ThrowOnError>) => {
+    return (options.client ?? client).post<AssignProcessInstanceBusinessIdResponses, AssignProcessInstanceBusinessIdErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/business-id-assignment',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
@@ -2034,6 +3544,16 @@ export const getProcessInstanceCallHierarchy = <ThrowOnError extends boolean = t
     return (options.client ?? client).get<GetProcessInstanceCallHierarchyResponses, GetProcessInstanceCallHierarchyErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/call-hierarchy',
         ...options
     });
@@ -2049,6 +3569,16 @@ export const cancelProcessInstance = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<CancelProcessInstanceResponses, CancelProcessInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/cancellation',
         ...options,
         headers: {
@@ -2067,6 +3597,16 @@ export const deleteProcessInstance = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<DeleteProcessInstanceResponses, DeleteProcessInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/deletion',
         ...options,
         headers: {
@@ -2085,6 +3625,16 @@ export const resolveProcessInstanceIncidents = <ThrowOnError extends boolean = t
     return (options.client ?? client).post<ResolveProcessInstanceIncidentsResponses, ResolveProcessInstanceIncidentsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/incident-resolution',
         ...options
     });
@@ -2105,6 +3655,16 @@ export const searchProcessInstanceIncidents = <ThrowOnError extends boolean = tr
     return (options.client ?? client).post<SearchProcessInstanceIncidentsResponses, SearchProcessInstanceIncidentsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/incidents/search',
         ...options,
         headers: {
@@ -2130,6 +3690,16 @@ export const migrateProcessInstance = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).post<MigrateProcessInstanceResponses, MigrateProcessInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/migration',
         ...options,
         headers: {
@@ -2154,7 +3724,47 @@ export const modifyProcessInstance = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).post<ModifyProcessInstanceResponses, ModifyProcessInstanceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/modification',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Resume process instance
+ *
+ * Resumes a suspended process instance, returning it to the ACTIVE state and continuing processing.
+ * Only process instances in the SUSPENDED state can be resumed.
+ *
+ */
+export const resumeProcessInstance = <ThrowOnError extends boolean = true>(options: Options<ResumeProcessInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).post<ResumeProcessInstanceResponses, ResumeProcessInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/resumption',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -2172,6 +3782,16 @@ export const getProcessInstanceSequenceFlows = <ThrowOnError extends boolean = t
     return (options.client ?? client).get<GetProcessInstanceSequenceFlowsResponses, GetProcessInstanceSequenceFlowsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/sequence-flows',
         ...options
     });
@@ -2186,8 +3806,106 @@ export const getProcessInstanceStatistics = <ThrowOnError extends boolean = true
     return (options.client ?? client).get<GetProcessInstanceStatisticsResponses, GetProcessInstanceStatisticsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/process-instances/{processInstanceKey}/statistics/element-instances',
         ...options
+    });
+};
+
+/**
+ * Get wait state statistics
+ *
+ * Get statistics about waiting element instances by the process instance key, grouped by element id.
+ */
+export const getProcessInstanceWaitStateStatistics = <ThrowOnError extends boolean = true>(options: Options<GetProcessInstanceWaitStateStatisticsData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetProcessInstanceWaitStateStatisticsResponses, GetProcessInstanceWaitStateStatisticsErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/statistics/wait-states',
+        ...options
+    });
+};
+
+/**
+ * Suspend process instance
+ *
+ * Suspends a running process instance, pausing further processing until it is resumed.
+ * Only process instances in the ACTIVE state can be suspended.
+ *
+ */
+export const suspendProcessInstance = <ThrowOnError extends boolean = true>(options: Options<SuspendProcessInstanceData, ThrowOnError>) => {
+    return (options.client ?? client).post<SuspendProcessInstanceResponses, SuspendProcessInstanceErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/process-instances/{processInstanceKey}/suspension',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Search resources
+ *
+ * Search for deployed resources based on given criteria.
+ * :::info
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective search APIs.
+ * :::
+ *
+ */
+export const searchResources = <ThrowOnError extends boolean = true>(options?: Options<SearchResourcesData, ThrowOnError>) => {
+    return (options?.client ?? client).post<SearchResourcesResponses, SearchResourcesErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/resources/search',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers
+        }
     });
 };
 
@@ -2196,7 +3914,9 @@ export const getProcessInstanceStatistics = <ThrowOnError extends boolean = true
  *
  * Returns a deployed resource.
  * :::info
- * Currently, this endpoint only supports RPA resources.
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective APIs.
  * :::
  *
  */
@@ -2204,25 +3924,81 @@ export const getResource = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).get<GetResourceResponses, GetResourceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/resources/{resourceKey}',
         ...options
     });
 };
 
 /**
- * Get resource content
+ * Get RPA resource content (deprecated)
  *
- * Returns the content of a deployed resource.
+ * **Deprecated** — use `/resources/{resourceKey}/content/binary` instead, which supports all
+ * resource types and returns content as binary (octet-stream).
+ *
+ * Returns the content of a deployed RPA resource as JSON.
  * :::info
- * Currently, this endpoint only supports RPA resources.
+ * This endpoint only supports RPA resources. For generic resource content in binary format,
+ * use the `/resources/{resourceKey}/content/binary` endpoint.
  * :::
  *
+ *
+ * @deprecated
  */
 export const getResourceContent = <ThrowOnError extends boolean = true>(options: Options<GetResourceContentData, ThrowOnError>) => {
     return (options.client ?? client).get<GetResourceContentResponses, GetResourceContentErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/resources/{resourceKey}/content',
+        ...options
+    });
+};
+
+/**
+ * Get resource content as binary
+ *
+ * Returns the content of a deployed resource in binary format (octet-stream).
+ * :::info
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective APIs.
+ * :::
+ *
+ */
+export const getResourceContentBinary = <ThrowOnError extends boolean = true>(options: Options<GetResourceContentBinaryData, ThrowOnError>) => {
+    return (options.client ?? client).get<GetResourceContentBinaryResponses, GetResourceContentBinaryErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/resources/{resourceKey}/content/binary',
         ...options
     });
 };
@@ -2248,6 +4024,16 @@ export const deleteResource = <ThrowOnError extends boolean = true>(options: Opt
     return (options.client ?? client).post<DeleteResourceResponses, DeleteResourceErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/resources/{resourceKey}/deletion',
         ...options,
         headers: {
@@ -2266,6 +4052,16 @@ export const createRole = <ThrowOnError extends boolean = true>(options?: Option
     return (options?.client ?? client).post<CreateRoleResponses, CreateRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles',
         ...options,
         headers: {
@@ -2284,6 +4080,16 @@ export const searchRoles = <ThrowOnError extends boolean = true>(options?: Optio
     return (options?.client ?? client).post<SearchRolesResponses, SearchRolesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/search',
         ...options,
         headers: {
@@ -2302,6 +4108,16 @@ export const deleteRole = <ThrowOnError extends boolean = true>(options: Options
     return (options.client ?? client).delete<DeleteRoleResponses, DeleteRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}',
         ...options
     });
@@ -2316,6 +4132,16 @@ export const getRole = <ThrowOnError extends boolean = true>(options: Options<Ge
     return (options.client ?? client).get<GetRoleResponses, GetRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}',
         ...options
     });
@@ -2330,6 +4156,16 @@ export const updateRole = <ThrowOnError extends boolean = true>(options: Options
     return (options.client ?? client).put<UpdateRoleResponses, UpdateRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}',
         ...options,
         headers: {
@@ -2348,6 +4184,16 @@ export const searchClientsForRole = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<SearchClientsForRoleResponses, SearchClientsForRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/clients/search',
         ...options,
         headers: {
@@ -2366,6 +4212,16 @@ export const unassignRoleFromClient = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).delete<UnassignRoleFromClientResponses, UnassignRoleFromClientErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/clients/{clientId}',
         ...options
     });
@@ -2380,6 +4236,16 @@ export const assignRoleToClient = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).put<AssignRoleToClientResponses, AssignRoleToClientErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/clients/{clientId}',
         ...options
     });
@@ -2394,6 +4260,16 @@ export const searchGroupsForRole = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).post<SearchGroupsForRoleResponses, SearchGroupsForRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/groups/search',
         ...options,
         headers: {
@@ -2412,6 +4288,16 @@ export const unassignRoleFromGroup = <ThrowOnError extends boolean = true>(optio
     return (options.client ?? client).delete<UnassignRoleFromGroupResponses, UnassignRoleFromGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/groups/{groupId}',
         ...options
     });
@@ -2426,6 +4312,16 @@ export const assignRoleToGroup = <ThrowOnError extends boolean = true>(options: 
     return (options.client ?? client).put<AssignRoleToGroupResponses, AssignRoleToGroupErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/groups/{groupId}',
         ...options
     });
@@ -2440,6 +4336,16 @@ export const searchMappingRulesForRole = <ThrowOnError extends boolean = true>(o
     return (options.client ?? client).post<SearchMappingRulesForRoleResponses, SearchMappingRulesForRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/mapping-rules/search',
         ...options,
         headers: {
@@ -2458,6 +4364,16 @@ export const unassignRoleFromMappingRule = <ThrowOnError extends boolean = true>
     return (options.client ?? client).delete<UnassignRoleFromMappingRuleResponses, UnassignRoleFromMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -2472,6 +4388,16 @@ export const assignRoleToMappingRule = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).put<AssignRoleToMappingRuleResponses, AssignRoleToMappingRuleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -2486,6 +4412,16 @@ export const searchUsersForRole = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).post<SearchUsersForRoleResponses, SearchUsersForRoleErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/users/search',
         ...options,
         headers: {
@@ -2504,6 +4440,16 @@ export const unassignRoleFromUser = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).delete<UnassignRoleFromUserResponses, UnassignRoleFromUserErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/users/{username}',
         ...options
     });
@@ -2518,8 +4464,60 @@ export const assignRoleToUser = <ThrowOnError extends boolean = true>(options: O
     return (options.client ?? client).put<AssignRoleToUserResponses, AssignRoleToUserErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/roles/{roleId}/users/{username}',
         ...options
+    });
+};
+
+/**
+ * Resolve secrets (alpha)
+ *
+ * Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's
+ * physical tenant in a single round-trip.
+ *
+ * Each reference is authorized and resolved independently. For valid requests, the endpoint
+ * always responds with HTTP 200: successfully resolved references are returned in `resolved`,
+ * while references that could not be resolved (for example not found, malformed or over-long,
+ * or the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of
+ * one reference never fails the others. Only structurally invalid requests are rejected with
+ * HTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.
+ *
+ * This endpoint is an alpha feature and may be subject to change in future releases.
+ *
+ * Phase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;
+ * every other authorized, valid reference returns `NOT_FOUND`.
+ *
+ */
+export const resolveSecrets = <ThrowOnError extends boolean = true>(options: Options<ResolveSecretsData, ThrowOnError>) => {
+    return (options.client ?? client).post<ResolveSecretsResponses, ResolveSecretsErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/secrets/resolve',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
@@ -2550,6 +4548,16 @@ export const broadcastSignal = <ThrowOnError extends boolean = true>(options: Op
     return (options.client ?? client).post<BroadcastSignalResponses, BroadcastSignalErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/signals/broadcast',
         ...options,
         headers: {
@@ -2582,6 +4590,16 @@ export const getUsageMetrics = <ThrowOnError extends boolean = true>(options: Op
     return (options.client ?? client).get<GetUsageMetricsResponses, GetUsageMetricsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/system/usage-metrics',
         ...options
     });
@@ -2601,6 +4619,16 @@ export const getSystemConfiguration = <ThrowOnError extends boolean = true>(opti
     return (options?.client ?? client).get<GetSystemConfigurationResponses, GetSystemConfigurationErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/system/configuration',
         ...options
     });
@@ -2615,6 +4643,16 @@ export const createTenant = <ThrowOnError extends boolean = true>(options: Optio
     return (options.client ?? client).post<CreateTenantResponses, CreateTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants',
         ...options,
         headers: {
@@ -2633,6 +4671,16 @@ export const searchTenants = <ThrowOnError extends boolean = true>(options?: Opt
     return (options?.client ?? client).post<SearchTenantsResponses, SearchTenantsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/search',
         ...options,
         headers: {
@@ -2651,6 +4699,16 @@ export const deleteTenant = <ThrowOnError extends boolean = true>(options: Optio
     return (options.client ?? client).delete<DeleteTenantResponses, DeleteTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}',
         ...options
     });
@@ -2665,6 +4723,16 @@ export const getTenant = <ThrowOnError extends boolean = true>(options: Options<
     return (options.client ?? client).get<GetTenantResponses, GetTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}',
         ...options
     });
@@ -2679,6 +4747,16 @@ export const updateTenant = <ThrowOnError extends boolean = true>(options: Optio
     return (options.client ?? client).put<UpdateTenantResponses, UpdateTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}',
         ...options,
         headers: {
@@ -2697,6 +4775,16 @@ export const searchClientsForTenant = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).post<SearchClientsForTenantResponses, unknown, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/clients/search',
         ...options,
         headers: {
@@ -2717,6 +4805,16 @@ export const unassignClientFromTenant = <ThrowOnError extends boolean = true>(op
     return (options.client ?? client).delete<UnassignClientFromTenantResponses, UnassignClientFromTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/clients/{clientId}',
         ...options
     });
@@ -2733,6 +4831,16 @@ export const assignClientToTenant = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).put<AssignClientToTenantResponses, AssignClientToTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/clients/{clientId}',
         ...options
     });
@@ -2747,6 +4855,16 @@ export const searchGroupIdsForTenant = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).post<SearchGroupIdsForTenantResponses, unknown, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/groups/search',
         ...options,
         headers: {
@@ -2767,6 +4885,16 @@ export const unassignGroupFromTenant = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).delete<UnassignGroupFromTenantResponses, UnassignGroupFromTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/groups/{groupId}',
         ...options
     });
@@ -2783,6 +4911,16 @@ export const assignGroupToTenant = <ThrowOnError extends boolean = true>(options
     return (options.client ?? client).put<AssignGroupToTenantResponses, AssignGroupToTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/groups/{groupId}',
         ...options
     });
@@ -2797,6 +4935,16 @@ export const searchMappingRulesForTenant = <ThrowOnError extends boolean = true>
     return (options.client ?? client).post<SearchMappingRulesForTenantResponses, unknown, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/mapping-rules/search',
         ...options,
         headers: {
@@ -2815,6 +4963,16 @@ export const unassignMappingRuleFromTenant = <ThrowOnError extends boolean = tru
     return (options.client ?? client).delete<UnassignMappingRuleFromTenantResponses, UnassignMappingRuleFromTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -2829,6 +4987,16 @@ export const assignMappingRuleToTenant = <ThrowOnError extends boolean = true>(o
     return (options.client ?? client).put<AssignMappingRuleToTenantResponses, AssignMappingRuleToTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/mapping-rules/{mappingRuleId}',
         ...options
     });
@@ -2843,6 +5011,16 @@ export const searchRolesForTenant = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<SearchRolesForTenantResponses, unknown, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/roles/search',
         ...options,
         headers: {
@@ -2864,6 +5042,16 @@ export const unassignRoleFromTenant = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).delete<UnassignRoleFromTenantResponses, UnassignRoleFromTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/roles/{roleId}',
         ...options
     });
@@ -2880,6 +5068,16 @@ export const assignRoleToTenant = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).put<AssignRoleToTenantResponses, AssignRoleToTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/roles/{roleId}',
         ...options
     });
@@ -2894,6 +5092,16 @@ export const searchUsersForTenant = <ThrowOnError extends boolean = true>(option
     return (options.client ?? client).post<SearchUsersForTenantResponses, unknown, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/users/search',
         ...options,
         headers: {
@@ -2914,6 +5122,16 @@ export const unassignUserFromTenant = <ThrowOnError extends boolean = true>(opti
     return (options.client ?? client).delete<UnassignUserFromTenantResponses, UnassignUserFromTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/users/{username}',
         ...options
     });
@@ -2928,6 +5146,16 @@ export const assignUserToTenant = <ThrowOnError extends boolean = true>(options:
     return (options.client ?? client).put<AssignUserToTenantResponses, AssignUserToTenantErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/tenants/{tenantId}/users/{username}',
         ...options
     });
@@ -2942,8 +5170,70 @@ export const getTopology = <ThrowOnError extends boolean = true>(options?: Optio
     return (options?.client ?? client).get<GetTopologyResponses, GetTopologyErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/topology',
         ...options
+    });
+};
+
+/**
+ * Change cluster mode
+ *
+ * Transitions the cluster between processing and recovery mode. This is a non-blocking operation: the request is acknowledged once the change has been accepted, before the transition itself has completed. Entering recovery mode deactivates all partitions so that only a restricted set of read-only operations remains available; exiting recovery mode returns the cluster to normal processing. Returns the planned cluster change so its progress can be monitored via the topology.
+ */
+export const changeClusterMode = <ThrowOnError extends boolean = true>(options: Options<ChangeClusterModeData, ThrowOnError>) => {
+    return (options.client ?? client).patch<ChangeClusterModeResponses, ChangeClusterModeErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/mode',
+        ...options
+    });
+};
+
+/**
+ * Restore from a backup
+ *
+ * Restores the cluster from a backup. The restore is described either by a single backup ID or by a time range (`from`/`to`) that selects the backups to restore. This endpoint is only accessible while the cluster is in recovery mode; requests are rejected otherwise. The request is validated and acknowledged, but the restore itself is performed asynchronously.
+ */
+export const restore = <ThrowOnError extends boolean = true>(options: Options<RestoreData, ThrowOnError>) => {
+    return (options.client ?? client).post<RestoreResponses, RestoreErrors, ThrowOnError>({
+        requestValidator: undefined,
+        responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
+        url: '/restore',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
     });
 };
 
@@ -2956,6 +5246,16 @@ export const createUser = <ThrowOnError extends boolean = true>(options: Options
     return (options.client ?? client).post<CreateUserResponses, CreateUserErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/users',
         ...options,
         headers: {
@@ -2974,6 +5274,16 @@ export const searchUsers = <ThrowOnError extends boolean = true>(options?: Optio
     return (options?.client ?? client).post<SearchUsersResponses, SearchUsersErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/users/search',
         ...options,
         headers: {
@@ -2992,6 +5302,16 @@ export const deleteUser = <ThrowOnError extends boolean = true>(options: Options
     return (options.client ?? client).delete<DeleteUserResponses, DeleteUserErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/users/{username}',
         ...options
     });
@@ -3006,6 +5326,16 @@ export const getUser = <ThrowOnError extends boolean = true>(options: Options<Ge
     return (options.client ?? client).get<GetUserResponses, GetUserErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/users/{username}',
         ...options
     });
@@ -3020,6 +5350,16 @@ export const updateUser = <ThrowOnError extends boolean = true>(options: Options
     return (options.client ?? client).put<UpdateUserResponses, UpdateUserErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/users/{username}',
         ...options,
         headers: {
@@ -3038,6 +5378,16 @@ export const searchUserTasks = <ThrowOnError extends boolean = true>(options?: O
     return (options?.client ?? client).post<SearchUserTasksResponses, SearchUserTasksErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/search',
         ...options,
         headers: {
@@ -3056,6 +5406,16 @@ export const getUserTask = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).get<GetUserTaskResponses, GetUserTaskErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}',
         ...options
     });
@@ -3071,6 +5431,16 @@ export const updateUserTask = <ThrowOnError extends boolean = true>(options: Opt
     return (options.client ?? client).patch<UpdateUserTaskResponses, UpdateUserTaskErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}',
         ...options,
         headers: {
@@ -3090,6 +5460,16 @@ export const unassignUserTask = <ThrowOnError extends boolean = true>(options: O
     return (options.client ?? client).delete<UnassignUserTaskResponses, UnassignUserTaskErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/assignee',
         ...options
     });
@@ -3105,6 +5485,16 @@ export const assignUserTask = <ThrowOnError extends boolean = true>(options: Opt
     return (options.client ?? client).post<AssignUserTaskResponses, AssignUserTaskErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/assignment',
         ...options,
         headers: {
@@ -3123,6 +5513,16 @@ export const searchUserTaskAuditLogs = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).post<SearchUserTaskAuditLogsResponses, SearchUserTaskAuditLogsErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/audit-logs/search',
         ...options,
         headers: {
@@ -3142,6 +5542,16 @@ export const completeUserTask = <ThrowOnError extends boolean = true>(options: O
     return (options.client ?? client).post<CompleteUserTaskResponses, CompleteUserTaskErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/completion',
         ...options,
         headers: {
@@ -3166,6 +5576,16 @@ export const searchUserTaskEffectiveVariables = <ThrowOnError extends boolean = 
     return (options.client ?? client).post<SearchUserTaskEffectiveVariablesResponses, SearchUserTaskEffectiveVariablesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/effective-variables/search',
         ...options,
         headers: {
@@ -3186,6 +5606,16 @@ export const getUserTaskForm = <ThrowOnError extends boolean = true>(options: Op
     return (options.client ?? client).get<GetUserTaskFormResponses, GetUserTaskFormErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/form',
         ...options
     });
@@ -3207,6 +5637,16 @@ export const searchUserTaskVariables = <ThrowOnError extends boolean = true>(opt
     return (options.client ?? client).post<SearchUserTaskVariablesResponses, SearchUserTaskVariablesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/user-tasks/{userTaskKey}/variables/search',
         ...options,
         headers: {
@@ -3233,6 +5673,16 @@ export const searchVariables = <ThrowOnError extends boolean = true>(options?: O
     return (options?.client ?? client).post<SearchVariablesResponses, SearchVariablesErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/variables/search',
         ...options,
         headers: {
@@ -3255,6 +5705,16 @@ export const getVariable = <ThrowOnError extends boolean = true>(options: Option
     return (options.client ?? client).get<GetVariableResponses, GetVariableErrors, ThrowOnError>({
         requestValidator: undefined,
         responseValidator: undefined,
+        security: [
+            {
+                scheme: 'bearer',
+                type: 'http'
+            },
+            {
+                scheme: 'basic',
+                type: 'http'
+            }
+        ],
         url: '/variables/{variableKey}',
         ...options
     });

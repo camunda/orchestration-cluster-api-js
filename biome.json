@@ -12,6 +12,7 @@
       "!coverage",
       "!src/gen",
       "!src/facade",
+      "!json-body-assertions",
       "!.github/workflows",
       "!branding/branding-metadata.json",
       "!tests-integration/methods/manifest.json",

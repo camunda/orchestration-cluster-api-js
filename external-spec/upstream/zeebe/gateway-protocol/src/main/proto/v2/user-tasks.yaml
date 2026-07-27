@@ -7,6 +7,15 @@ paths:
       tags:
         - User task
       operationId: completeUserTask
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
+            - { resourceType: PROCESS_DEFINITION, permissionType: COMPLETE_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: UPDATE }
+            - { resourceType: USER_TASK, permissionType: COMPLETE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Complete user task
       description: >
         Completes a user task with the given key. Completion waits for blocking task listeners on
@@ -51,6 +60,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
         "504":
           $ref: 'common-responses.yaml#/components/responses/GatewayTimeoutTaskListenerBlocking'
+      x-added-in-version: "8.5"
 
   /user-tasks/{userTaskKey}/assignment:
     post:
@@ -58,6 +68,13 @@ paths:
       tags:
         - User task
       operationId: assignUserTask
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Assign user task
       description: >
         Assigns a user task with the given key to the given assignee. Assignment waits for
@@ -103,6 +120,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
         "504":
           $ref: 'common-responses.yaml#/components/responses/GatewayTimeoutTaskListenerBlocking'
+      x-added-in-version: "8.5"
 
   /user-tasks/{userTaskKey}:
     get:
@@ -110,6 +128,13 @@ paths:
       tags:
         - User task
       operationId: getUserTask
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get user task
       description: Get the user task by the user task key.
       parameters:
@@ -140,12 +165,20 @@ paths:
                 $ref: "problem-detail.yaml#/components/schemas/ProblemDetail"
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
     patch:
       x-eventually-consistent: false
       tags:
         - User task
       operationId: updateUserTask
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Update user task
       description: >
         Update a user task with the given key. Updates wait for blocking task listeners on this
@@ -190,6 +223,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
         "504":
           $ref: 'common-responses.yaml#/components/responses/GatewayTimeoutTaskListenerBlocking'
+      x-added-in-version: "8.5"
 
   /user-tasks/{userTaskKey}/form:
     get:
@@ -197,6 +231,13 @@ paths:
       tags:
         - User task
       operationId: getUserTaskForm
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get user task form
       description: |
         Get the form of a user task.
@@ -231,6 +272,7 @@ paths:
                 $ref: "problem-detail.yaml#/components/schemas/ProblemDetail"
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /user-tasks/{userTaskKey}/assignee:
     delete:
@@ -238,6 +280,13 @@ paths:
       tags:
         - User task
       operationId: unassignUserTask
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: UPDATE_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Unassign user task
       description: >
         Removes the assignee of a task with the given key. Unassignment waits for blocking task
@@ -277,6 +326,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
         "504":
           $ref: 'common-responses.yaml#/components/responses/GatewayTimeoutTaskListenerBlocking'
+      x-added-in-version: "8.5"
 
   /user-tasks/search:
     post:
@@ -284,6 +334,14 @@ paths:
       tags:
         - User task
       operationId: searchUserTasks
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Search user tasks
       description: Search for user tasks based on given criteria.
       requestBody:
@@ -307,6 +365,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.6"
 
   /user-tasks/{userTaskKey}/variables/search:
     post:
@@ -314,6 +373,11 @@ paths:
       tags:
         - User task
       operationId: searchUserTaskVariables
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Search user task variables
       description: |
         Search for user task variables based on given criteria. This endpoint returns all variable
@@ -353,6 +417,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InvalidData'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /user-tasks/{userTaskKey}/effective-variables/search:
     post:
@@ -360,6 +425,11 @@ paths:
       tags:
         - User task
       operationId: searchUserTaskEffectiveVariables
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Search user task effective variables
       description: |
         Search for the effective variables of a user task. This endpoint returns deduplicated
@@ -398,6 +468,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InvalidData'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /user-tasks/{userTaskKey}/audit-logs/search:
     post:
@@ -405,6 +476,13 @@ paths:
       tags:
         - User task
       operationId: searchUserTaskAuditLogs
+      x-required-permissions:
+        - anyOf:
+            - { resourceType: PROCESS_DEFINITION, permissionType: READ_USER_TASK }
+            - { resourceType: USER_TASK, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Search user task audit logs
       description: Search for user task audit logs based on given criteria.
       parameters:
@@ -431,6 +509,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InvalidData'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
 
 ## Schema definitions
 
@@ -449,6 +528,7 @@ components:
             - dueDate
             - priority
             - name
+            - businessId
         order:
           $ref: 'search-models.yaml#/components/schemas/SortOrderEnum'
       required:
@@ -483,6 +563,13 @@ components:
           allOf:
             - $ref: 'filters.yaml#/components/schemas/StringFilterProperty'
           description: The assignee of the user task.
+        businessId:
+          allOf:
+            - $ref: 'filters.yaml#/components/schemas/StringFilterProperty'
+          description: >
+            The business ID of the owning process instance the user task belongs to. This only
+            works for user tasks created with 8.10 and onwards. Tasks from prior versions don't
+            contain this data and cannot be found.
         priority:
           allOf:
             - $ref: 'filters.yaml#/components/schemas/IntegerFilterProperty'
@@ -511,7 +598,7 @@ components:
           description: Tenant ID of this user task.
         processDefinitionId:
           allOf:
-            - $ref: 'identifiers.yaml#/components/schemas/ProcessDefinitionId'
+            - $ref: 'identifiers.yaml#/components/schemas/ProcessDefinitionIdFilterProperty'
           description: The ID of the process definition.
         creationDate:
           allOf:
@@ -545,11 +632,11 @@ components:
           description: The key for this user task.
         processDefinitionKey:
           allOf:
-            - $ref: 'keys.yaml#/components/schemas/ProcessDefinitionKey'
+            - $ref: 'keys.yaml#/components/schemas/ProcessDefinitionKeyFilterProperty'
           description: The key of the process definition.
         processInstanceKey:
           allOf:
-            - $ref: 'keys.yaml#/components/schemas/ProcessInstanceKey'
+            - $ref: 'keys.yaml#/components/schemas/ProcessInstanceKeyFilterProperty'
           description: The key of the process instance.
         elementInstanceKey:
           allOf:
@@ -557,6 +644,33 @@ components:
           description: The key of the element instance.
         tags:
           $ref: 'identifiers.yaml#/components/schemas/TagSet'
+      x-properties-added-in-version:
+        - propertyName: priority
+          addedInVersion: "8.8"
+        - propertyName: name
+          addedInVersion: "8.8"
+        - propertyName: tenantId
+          addedInVersion: "8.8"
+        - propertyName: creationDate
+          addedInVersion: "8.8"
+        - propertyName: completionDate
+          addedInVersion: "8.8"
+        - propertyName: followUpDate
+          addedInVersion: "8.8"
+        - propertyName: dueDate
+          addedInVersion: "8.8"
+        - propertyName: processInstanceVariables
+          addedInVersion: "8.8"
+        - propertyName: localVariables
+          addedInVersion: "8.8"
+        - propertyName: userTaskKey
+          addedInVersion: "8.8"
+        - propertyName: elementInstanceKey
+          addedInVersion: "8.8"
+        - propertyName: tags
+          addedInVersion: "8.9"
+        - propertyName: businessId
+          addedInVersion: "8.10"
 
     UserTaskSearchQueryResult:
       description: User task search query response.
@@ -580,6 +694,7 @@ components:
         - name
         - processInstanceKey
         - rootProcessInstanceKey
+        - businessId
         - processDefinitionKey
         - elementInstanceKey
         - processDefinitionId
@@ -698,6 +813,14 @@ components:
           nullable: true
           allOf:
             - $ref: 'keys.yaml#/components/schemas/ProcessInstanceKey'
+        businessId:
+          description: |
+            The business ID of the owning process instance, inherited when the user task was
+            created. This is `null` for user tasks created before version 8.10, and for user tasks
+            whose owning process instance has no business ID.
+          nullable: true
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/BusinessId'
         formKey:
           description: The key of the form.
           nullable: true
@@ -705,6 +828,57 @@ components:
             - $ref: 'keys.yaml#/components/schemas/FormKey'
         tags:
           $ref: 'identifiers.yaml#/components/schemas/TagSet'
+      x-properties-added-in-version:
+        - propertyName: name
+          addedInVersion: "8.8"
+        - propertyName: state
+          addedInVersion: "8.6"
+        - propertyName: assignee
+          addedInVersion: "8.6"
+        - propertyName: elementId
+          addedInVersion: "8.6"
+        - propertyName: candidateGroups
+          addedInVersion: "8.8"
+        - propertyName: candidateUsers
+          addedInVersion: "8.8"
+        - propertyName: processDefinitionId
+          addedInVersion: "8.6"
+        - propertyName: creationDate
+          addedInVersion: "8.6"
+        - propertyName: completionDate
+          addedInVersion: "8.6"
+        - propertyName: followUpDate
+          addedInVersion: "8.6"
+        - propertyName: dueDate
+          addedInVersion: "8.6"
+        - propertyName: tenantId
+          addedInVersion: "8.8"
+        - propertyName: externalFormReference
+          addedInVersion: "8.6"
+        - propertyName: processDefinitionVersion
+          addedInVersion: "8.6"
+        - propertyName: customHeaders
+          addedInVersion: "8.6"
+        - propertyName: priority
+          addedInVersion: "8.6"
+        - propertyName: userTaskKey
+          addedInVersion: "8.8"
+        - propertyName: elementInstanceKey
+          addedInVersion: "8.6"
+        - propertyName: processName
+          addedInVersion: "8.8"
+        - propertyName: processDefinitionKey
+          addedInVersion: "8.6"
+        - propertyName: processInstanceKey
+          addedInVersion: "8.6"
+        - propertyName: rootProcessInstanceKey
+          addedInVersion: "8.9"
+        - propertyName: businessId
+          addedInVersion: "8.10"
+        - propertyName: formKey
+          addedInVersion: "8.6"
+        - propertyName: tags
+          addedInVersion: "8.9"
 
     UserTaskCompletionRequest:
       type: object
@@ -810,6 +984,9 @@ components:
           default: 50
           maximum: 100
           nullable: true
+      x-properties-added-in-version:
+        - propertyName: priority
+          addedInVersion: "8.6"
 
     UserTaskVariableSearchQuerySortRequest:
       type: object
@@ -943,6 +1120,17 @@ components:
             $ref: "#/components/schemas/UserTaskStateEnum"
         $like:
           $ref: "filters.yaml#/components/schemas/LikeFilter"
+      x-properties-added-in-version:
+        - propertyName: "$eq"
+          addedInVersion: "8.8"
+        - propertyName: "$neq"
+          addedInVersion: "8.8"
+        - propertyName: "$exists"
+          addedInVersion: "8.8"
+        - propertyName: "$in"
+          addedInVersion: "8.8"
+        - propertyName: "$like"
+          addedInVersion: "8.8"
 
     UserTaskAuditLogFilter:
       description: The user task audit log search filters.

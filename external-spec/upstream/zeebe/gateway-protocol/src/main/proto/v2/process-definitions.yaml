@@ -7,6 +7,12 @@ paths:
       tags:
         - Process definition
       operationId: searchProcessDefinitions
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_DEFINITION }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Search process definitions
       description: Search for process definitions based on given criteria.
       requestBody:
@@ -30,6 +36,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /process-definitions/{processDefinitionKey}:
     get:
@@ -37,6 +44,11 @@ paths:
       tags:
         - Process definition
       operationId: getProcessDefinition
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_DEFINITION }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get process definition
       description: Returns process definition as JSON.
       parameters:
@@ -71,6 +83,7 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /process-definitions/{processDefinitionKey}/xml:
     get:
@@ -78,6 +91,11 @@ paths:
       tags:
         - Process definition
       operationId: getProcessDefinitionXML
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_DEFINITION }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get process definition XML
       description: Returns process definition as XML.
       parameters:
@@ -117,6 +135,7 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /process-definitions/{processDefinitionKey}/form:
     get:
@@ -124,6 +143,11 @@ paths:
       tags:
         - Process definition
       operationId: getStartProcessForm
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_DEFINITION }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get process start form
       description: |
         Get the start form of a process.
@@ -158,6 +182,7 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /process-definitions/{processDefinitionKey}/statistics/element-instances:
     post:
@@ -165,6 +190,12 @@ paths:
       tags:
         - Process definition
       operationId: getProcessDefinitionStatistics
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get process definition statistics
       description: Get statistics about elements in currently running process instances by process definition key and search filter.
       parameters:
@@ -195,6 +226,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /process-definitions/statistics/message-subscriptions:
     post:
@@ -202,6 +234,12 @@ paths:
       tags:
         - Process definition
       operationId: getProcessDefinitionMessageSubscriptionStatistics
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get message subscription statistics
       description: |
         Get message subscription statistics, grouped by process definition.
@@ -226,6 +264,7 @@ paths:
           $ref: "common-responses.yaml#/components/responses/Forbidden"
         "500":
           $ref: "common-responses.yaml#/components/responses/InternalServerError"
+      x-added-in-version: "8.9"
 
   /process-definitions/statistics/process-instances:
     post:
@@ -233,6 +272,12 @@ paths:
       tags:
         - Process definition
       operationId: getProcessDefinitionInstanceStatistics
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get process instance statistics
       description: |
         Get statistics about process instances, grouped by process definition and tenant.
@@ -257,6 +302,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
 
   /process-definitions/statistics/process-instances-by-version:
     post:
@@ -264,6 +310,12 @@ paths:
       tags:
         - Process definition
       operationId: getProcessDefinitionInstanceVersionStatistics
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: PROCESS_DEFINITION, permissionType: READ_PROCESS_INSTANCE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get process instance statistics by version
       description: |
         Get statistics about process instances, grouped by version for a given process definition.
@@ -289,6 +341,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
 
 ## Schema definitions
 

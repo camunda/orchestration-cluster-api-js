@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import * as SDK from '../src';
 import {
   DecisionDefinitionTypeEnum,
   GlobalTaskListenerEventTypeEnum,
@@ -8,7 +9,6 @@ import {
   PermissionTypeEnum,
   SortOrderEnum,
 } from '../src';
-import * as SDK from '../src';
 
 describe('runtime enum objects', () => {
   it('PermissionTypeEnum exposes values at runtime', () => {

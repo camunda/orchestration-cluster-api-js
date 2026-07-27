@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createCamundaClient, CamundaClient } from '../src';
+import { CamundaClient, createCamundaClient } from '../src';
 import { JobWorker } from '../src/runtime/jobWorker';
 import { ThreadedJobWorker } from '../src/runtime/threadedJobWorker';
 

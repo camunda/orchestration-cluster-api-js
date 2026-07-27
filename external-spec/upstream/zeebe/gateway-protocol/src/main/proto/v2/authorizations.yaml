@@ -6,6 +6,11 @@ paths:
       tags:
         - Authorization
       operationId: createAuthorization
+      x-required-permissions:
+        - { resourceType: AUTHORIZATION, permissionType: CREATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Create authorization
       description: Create the authorization.
       requestBody:
@@ -37,6 +42,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.8"
 
   /authorizations/{authorizationKey}:
     put:
@@ -44,6 +50,11 @@ paths:
       tags:
         - Authorization
       operationId: updateAuthorization
+      x-required-permissions:
+        - { resourceType: AUTHORIZATION, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Update authorization
       description: Update the authorization with the given key.
       parameters:
@@ -74,12 +85,18 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.8"
 
     get:
       x-eventually-consistent: true
       tags:
         - Authorization
       operationId: getAuthorization
+      x-required-permissions:
+        - { resourceType: AUTHORIZATION, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get authorization
       description: Get authorization by the given key.
       parameters:
@@ -108,12 +125,18 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
     delete:
       x-eventually-consistent: false
       tags:
         - Authorization
       operationId: deleteAuthorization
+      x-required-permissions:
+        - { resourceType: AUTHORIZATION, permissionType: DELETE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Delete authorization
       description: Deletes the authorization with the given key.
       parameters:
@@ -138,6 +161,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.8"
 
   /authorizations/search:
     post:
@@ -147,6 +171,12 @@ paths:
       summary: Search authorizations
       description: Search for authorizations based on given criteria.
       operationId: searchAuthorizations
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: AUTHORIZATION, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       requestBody:
         content:
           application/json:
@@ -167,6 +197,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
 ## Schema definitions
 
@@ -229,6 +260,9 @@ components:
         - resourcePropertyName
         - resourceType
         - permissionTypes
+      x-properties-added-in-version:
+        - propertyName: resourcePropertyName
+          addedInVersion: "8.9"
 
     AuthorizationRequest:
       x-polymorphic-schema: true
@@ -296,6 +330,9 @@ components:
           description: The type of resource to search permissions for.
           allOf:
             - $ref: '#/components/schemas/ResourceTypeEnum'
+      x-properties-added-in-version:
+        - propertyName: resourcePropertyNames
+          addedInVersion: "8.9"
 
     AuthorizationResult:
       required:
@@ -334,6 +371,9 @@ components:
           allOf:
             - $ref: '#/components/schemas/AuthorizationKey'
           description: The key of the authorization.
+      x-properties-added-in-version:
+        - propertyName: resourcePropertyName
+          addedInVersion: "8.9"
 
     AuthorizationSearchResult:
       type: object
@@ -349,6 +389,8 @@ components:
             $ref: '#/components/schemas/AuthorizationResult'
 
     AuthorizationCreateResult:
+      x-semantic-provider:
+        - authorizationKey
       type: object
       properties:
         authorizationKey:
@@ -379,6 +421,7 @@ components:
         - CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE
         - CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE
         - CREATE_BATCH_OPERATION_RESOLVE_INCIDENT
+        - CREATE_BATCH_OPERATION_UPDATE_JOB
         - CREATE_DECISION_INSTANCE
         - CREATE_PROCESS_INSTANCE
         - CREATE_TASK_LISTENER

@@ -5,8 +5,42 @@ on:
     branches-ignore:
       - main
       - 'stable/**'
+  pull_request:
+    branches:
+      - main
+      - 'stable/**'
 
 jobs:
+  commitlint:
+    if: github.event_name == 'pull_request'
+    uses: camunda/sdk-infra/.github/workflows/sdk-commitlint.yml@v1
+
+  breaking-change-guard:
+    if: github.event_name == 'pull_request'
+    uses: camunda/sdk-infra/.github/workflows/sdk-breaking-change-guard.yml@v1
+
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Generate
+        run: npm run generate
+      - name: Lint & format (Biome)
+        run: npm run format:check
+      - name: Typecheck
+        run: npm run typecheck
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -26,7 +60,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-          cache-dependency-path: package.json
+          cache-dependency-path: package-lock.json
       - name: Install deps
         run: npm ci
       - name: Generate & Build
@@ -42,7 +76,7 @@ jobs:
             echo 'drift=true' >> $GITHUB_OUTPUT
             echo 'Generation produced changes (reporting only).' >&2
             git diff --name-only | sed 's/^/CHANGED: /'
-            git diff > _gen-drift.patch || true
+            git diff > _generation-drift.patch || true
           else
             echo 'drift=false' >> $GITHUB_OUTPUT
           fi
@@ -57,56 +91,28 @@ jobs:
         run: npm test
 
       - name: Start Integration Stack
-        working-directory: docker
+        id: start-camunda
+        uses: camunda/sdk-infra/actions/start-camunda@v1
+        with:
+          stack: ${{ matrix.stack }}
+          docker-dir: docker
+          max-attempts: '90'
+      - name: Dump container logs on startup failure
+        if: failure() && steps.start-camunda.outcome == 'failure'
         run: |
-          if [ "${{ matrix.stack }}" == "full" ]; then
-            docker compose -f docker-compose-full.yaml up -d
-          else
-            docker compose -f docker-compose.yaml up -d
-          fi
-      - name: Wait for Services Healthy
-        run: |
-          set -e
-          attempts=0
-          max_attempts=60
-          while [ $attempts -lt $max_attempts ]; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9600/actuator/health/status || true)
-            [ "$code" = "200" ] && echo "Broker healthy" && break
-            attempts=$((attempts+1))
-            sleep 5
-            # Optional: Check if containers are still running
-            if [ "${{ matrix.stack }}" == "full" ]; then
-              docker compose -f docker/docker-compose-full.yaml ps -q | xargs docker inspect -f '{{.State.Status}}' | grep -v running || true
-            fi
-          done
-          [ $attempts -ge $max_attempts ] && echo "Broker not healthy" && exit 1 || true
+          echo "=== Container status ==="
+          docker ps -a
+          echo "=== Container logs ==="
+          docker logs camunda-engine 2>&1 | tail -200
       - name: Integration Tests
         run: npm run test:integration
-      - name: Capture Docker Logs (always)
+      - name: Stop Integration Stack
         if: always()
-        run: |
-          mkdir -p _logs
-          COMPOSE_FILE="docker/docker-compose.yaml"
-          if [ "${{ matrix.stack }}" == "full" ]; then
-            COMPOSE_FILE="docker/docker-compose-full.yaml"
-          fi
-          docker compose -f $COMPOSE_FILE logs > ../_logs/compose.log 2>&1 || true
-      - name: Shutdown Integration Stack (always)
-        if: always()
-        working-directory: docker
-        run: |
-          COMPOSE_FILE="docker-compose.yaml"
-          if [ "${{ matrix.stack }}" == "full" ]; then
-            COMPOSE_FILE="docker-compose-full.yaml"
-          fi
-          docker compose -f $COMPOSE_FILE down -v || true
-      - name: Upload Logs Artifact (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v7
+        uses: camunda/sdk-infra/actions/stop-camunda@v1
         with:
-          # Include node version and stack so parallel matrix legs don't conflict
-          name: integration-docker-logs-${{ matrix.node }}-${{ matrix.stack }}
-          path: _logs/compose.log
+          stack: ${{ matrix.stack }}
+          docker-dir: docker
+          artifact-name: integration-docker-logs-${{ matrix.node }}-${{ matrix.stack }}
       - name: Append Job Summary
         if: always()
         run: |

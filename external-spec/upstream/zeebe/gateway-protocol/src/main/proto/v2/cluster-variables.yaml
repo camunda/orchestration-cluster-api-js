@@ -4,11 +4,20 @@ paths:
   /cluster-variables/global:
     post:
       operationId: createGlobalClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: CREATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: false
       tags:
         - Cluster Variable
       summary: Create a global-scoped cluster variable
       description: Create a global-scoped cluster variable.
+      x-semantic-establishes:
+        kind: GlobalClusterVariable
+        identifiedBy:
+          - { in: body, name: name, semanticType: ClusterVariableName }
       requestBody:
         required: true
         content:
@@ -28,16 +37,37 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Unauthorized'
         "403":
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
+        "409":
+          description: A cluster variable with this name already exists.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "problem-detail.yaml#/components/schemas/ProblemDetail"
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
   /cluster-variables/tenants/{tenantId}:
     post:
       operationId: createTenantClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: CREATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: false
       tags:
         - Cluster Variable
       summary: Create a tenant-scoped cluster variable
       description: Create a new cluster variable for the given tenant.
+      x-semantic-establishes:
+        kind: TenantClusterVariable
+        identifiedBy:
+          - { in: path, name: tenantId, semanticType: TenantId }
+          - { in: body, name: name,     semanticType: ClusterVariableName }
+      x-semantic-requires:
+        kind: Tenant
+        bind:
+          tenantId: { from: path, name: tenantId }
       parameters:
         - name: tenantId
           in: path
@@ -64,13 +94,32 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Unauthorized'
         "403":
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
+        "404":
+          description: The tenant with the given ID was not found.
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
+        "409":
+          description: A cluster variable with this name already exists for the given tenant.
+          content:
+            application/problem+json:
+              schema:
+                $ref: "problem-detail.yaml#/components/schemas/ProblemDetail"
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
   /cluster-variables/search:
     post:
       tags:
         - Cluster Variable
       operationId: searchClusterVariables
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: true
       description: Search for cluster variables based on given criteria. By default, long variable values in the response are truncated.
       parameters:
@@ -101,20 +150,30 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
   /cluster-variables/global/{name}:
     get:
       operationId: getGlobalClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: true
       tags:
         - Cluster Variable
       summary: Get a global-scoped cluster variable
       description: Get a global-scoped cluster variable.
+      x-semantic-requires:
+        kind: GlobalClusterVariable
+        bind:
+          name: { from: path, name: name }
       parameters:
         - name: name
           in: path
           required: true
           schema:
-            type: string
+            $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
           description: The name of the cluster variable
       responses:
         '200':
@@ -137,8 +196,14 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
     put:
       operationId: updateGlobalClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: false
       tags:
         - Cluster Variable
@@ -146,12 +211,16 @@ paths:
       description: |
         Updates the value of an existing global cluster variable.
         The variable must exist, otherwise a 404 error is returned.
+      x-semantic-requires:
+        kind: GlobalClusterVariable
+        bind:
+          name: { from: path, name: name }
       parameters:
         - name: name
           in: path
           required: true
           schema:
-            type: string
+            $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
           description: The name of the cluster variable
       requestBody:
         required: true
@@ -180,19 +249,29 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
     delete:
       operationId: deleteGlobalClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: DELETE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: false
       tags:
         - Cluster Variable
       summary: Delete a global-scoped cluster variable
       description: Delete a global-scoped cluster variable.
+      x-semantic-requires:
+        kind: GlobalClusterVariable
+        bind:
+          name: { from: path, name: name }
       parameters:
         - name: name
           in: path
           required: true
           schema:
-            type: string
+            $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
           description: The name of the cluster variable
       responses:
         '204':
@@ -211,14 +290,25 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
   /cluster-variables/tenants/{tenantId}/{name}:
     get:
       operationId: getTenantClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: true
       tags:
         - Cluster Variable
       summary: Get a tenant-scoped cluster variable
       description: Get a tenant-scoped cluster variable.
+      x-semantic-requires:
+        kind: TenantClusterVariable
+        bind:
+          tenantId: { from: path, name: tenantId }
+          name:     { from: path, name: name }
       parameters:
         - name: tenantId
           in: path
@@ -230,7 +320,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
           description: The name of the cluster variable
       responses:
         '200':
@@ -253,8 +343,14 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
     put:
       operationId: updateTenantClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: false
       tags:
         - Cluster Variable
@@ -262,6 +358,11 @@ paths:
       description: |
         Updates the value of an existing tenant-scoped cluster variable.
         The variable must exist, otherwise a 404 error is returned.
+      x-semantic-requires:
+        kind: TenantClusterVariable
+        bind:
+          tenantId: { from: path, name: tenantId }
+          name:     { from: path, name: name }
       parameters:
         - name: tenantId
           in: path
@@ -273,7 +374,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
           description: The name of the cluster variable
       requestBody:
         required: true
@@ -302,13 +403,24 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
     delete:
       operationId: deleteTenantClusterVariable
+      x-required-permissions:
+        - { resourceType: CLUSTER_VARIABLE, permissionType: DELETE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       x-eventually-consistent: false
       tags:
         - Cluster Variable
       summary: Delete a tenant-scoped cluster variable
       description: Delete a tenant-scoped cluster variable.
+      x-semantic-requires:
+        kind: TenantClusterVariable
+        bind:
+          tenantId: { from: path, name: tenantId }
+          name:     { from: path, name: name }
       parameters:
         - name: tenantId
           in: path
@@ -320,7 +432,7 @@ paths:
           in: path
           required: true
           schema:
-            type: string
+            $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
           description: The name of the cluster variable
       responses:
         '204':
@@ -339,6 +451,7 @@ paths:
                 $ref: 'problem-detail.yaml#/components/schemas/ProblemDetail'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.9"
 
 components:
   schemas:
@@ -353,8 +466,9 @@ components:
         - value
       properties:
         name:
-          type: string
           description: The name of the cluster variable. Must be unique within its scope (global or tenant-specific).
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
         value:
           type: object
           description: The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
@@ -400,8 +514,9 @@ components:
         - tenantId
       properties:
         name:
-          type: string
           description: The name of the cluster variable. Unique within its scope (global or tenant-specific).
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/ClusterVariableName'
         scope:
           $ref: '#/components/schemas/ClusterVariableScopeEnum'
         tenantId:

@@ -7,6 +7,781 @@ export type ClientOptions = {
     baseUrl: '{schema}://{host}:{port}/v2' | (string & {});
 };
 
+export type AgentInstanceSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'agentInstanceKey' | 'status' | 'elementId' | 'processInstanceKey' | 'rootProcessInstanceKey' | 'processDefinitionKey' | 'tenantId' | 'creationDate' | 'lastUpdatedDate' | 'completionDate';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Agent instance search request.
+ */
+export type AgentInstanceSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<AgentInstanceSearchQuerySortRequest>;
+    /**
+     * The agent instance search filters.
+     */
+    filter?: AgentInstanceFilter;
+};
+
+/**
+ * Agent instance search filter.
+ */
+export type AgentInstanceFilter = {
+    /**
+     * The unique key of the agent instance.
+     */
+    agentInstanceKey?: AgentInstanceKeyFilterProperty;
+    /**
+     * The current status of the agent instance.
+     */
+    status?: AgentInstanceStatusFilterProperty;
+    /**
+     * The BPMN element ID of the agent task.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * The key of the process instance that owns this agent instance.
+     */
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The key of the root process instance. Filters agent instances belonging to a specific
+     * call hierarchy. The root process instance is the top-level ancestor in the process
+     * instance hierarchy.
+     *
+     */
+    rootProcessInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * The key of the process definition associated with this agent instance.
+     */
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    /**
+     * The tenant ID of the agent instance.
+     */
+    tenantId?: StringFilterProperty;
+    /**
+     * The creation date of the agent instance.
+     */
+    creationDate?: DateTimeFilterProperty;
+    /**
+     * The date the agent instance was last updated.
+     */
+    lastUpdatedDate?: DateTimeFilterProperty;
+    /**
+     * The completion date of the agent instance.
+     */
+    completionDate?: DateTimeFilterProperty;
+    /**
+     * The keys of element instances associated with this agent instance.
+     * If multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.
+     */
+    elementInstanceKeys?: Array<ElementInstanceKeyFilterProperty>;
+    /**
+     * The BPMN process ID of the process definition associated with this agent instance.
+     */
+    processDefinitionId?: StringFilterProperty;
+    /**
+     * The version of the process definition associated with this agent instance.
+     */
+    processDefinitionVersion?: IntegerFilterProperty;
+    /**
+     * The version tag of the process definition associated with this agent instance.
+     */
+    processDefinitionVersionTag?: StringFilterProperty;
+};
+
+/**
+ * Agent instance search response.
+ */
+export type AgentInstanceSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching agent instances.
+     */
+    items: Array<AgentInstanceResult>;
+};
+
+export type AgentInstanceResult = {
+    /**
+     * The unique key for this agent instance.
+     */
+    agentInstanceKey: AgentInstanceKey;
+    status: AgentInstanceStatusEnum;
+    /**
+     * The static definition of the agent, including model, provider, and system prompt.
+     */
+    definition: AgentInstanceDefinition;
+    /**
+     * Aggregated metrics across all loopIterations of this agent instance.
+     */
+    metrics: AgentInstanceMetrics;
+    /**
+     * The configured limits for this agent instance, set once at creation.
+     */
+    limits: AgentInstanceLimits;
+    /**
+     * The tools available to the agent.
+     */
+    tools: Array<AgentTool>;
+    /**
+     * The BPMN element ID of the ad-hoc sub-process or AI agent task that owns this agent instance.
+     */
+    elementId: ElementId;
+    /**
+     * The key of the process instance that owns this agent instance.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The key of the root process instance. The root process instance is the top-level
+     * ancestor in the process instance hierarchy.
+     *
+     */
+    rootProcessInstanceKey: ProcessInstanceKey;
+    /**
+     * The key of the process definition associated with this agent instance.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The BPMN process ID of the process definition associated with this agent instance.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The version of the process definition associated with this agent instance.
+     */
+    processDefinitionVersion: number;
+    /**
+     * The version tag of the process definition associated with this agent instance.
+     */
+    processDefinitionVersionTag: string | null;
+    /**
+     * The tenant ID of this agent instance.
+     */
+    tenantId: TenantId;
+    /**
+     * The date when this agent instance was created.
+     */
+    creationDate: string;
+    /**
+     * The date when this agent instance was last updated.
+     */
+    lastUpdatedDate: string;
+    /**
+     * The date when this agent instance completed. Null while the agent is still running.
+     */
+    completionDate: string | null;
+    /**
+     * The keys of all element instances associated with this agent instance.
+     */
+    elementInstanceKeys: Array<ElementInstanceKey>;
+};
+
+/**
+ * The static definition of an agent instance, set once at creation.
+ */
+export type AgentInstanceDefinition = {
+    /**
+     * The LLM model identifier (for example, gpt-4o).
+     */
+    model: string;
+    /**
+     * The LLM provider (for example, openai or anthropic).
+     */
+    provider: string;
+    /**
+     * The system prompt configured for this agent instance.
+     */
+    systemPrompt: string;
+};
+
+/**
+ * A tool available to the agent.
+ */
+export type AgentTool = {
+    /**
+     * The tool name as visible to the LLM.
+     */
+    name: string;
+    /**
+     * A human-readable description of the tool.
+     */
+    description: string | null;
+    /**
+     * The BPMN element ID of the tool element within the ad-hoc sub-process.
+     */
+    elementId: string | null;
+};
+
+/**
+ * Aggregated metrics for an agent instance across all model calls.
+ */
+export type AgentInstanceMetrics = {
+    /**
+     * Total input tokens consumed across all model calls.
+     */
+    inputTokens: number;
+    /**
+     * Total output tokens produced across all model calls.
+     */
+    outputTokens: number;
+    /**
+     * Total number of LLM calls made.
+     */
+    modelCalls: number;
+    /**
+     * Total number of tool calls made.
+     */
+    toolCalls: number;
+};
+
+/**
+ * The configured limits for an agent instance, set once at creation.
+ */
+export type AgentInstanceLimits = {
+    /**
+     * Maximum LLM calls allowed. -1 if no limit is configured.
+     */
+    maxModelCalls: number;
+    /**
+     * Maximum tool calls allowed. -1 if no limit is configured.
+     */
+    maxToolCalls: number;
+    /**
+     * Maximum total tokens allowed. -1 if no limit is configured.
+     */
+    maxTokens: number;
+};
+
+/**
+ * The current status of an agent instance.
+ */
+export const AgentInstanceStatusEnum = {
+  UNKNOWN: 'UNKNOWN',
+  COMPLETED: 'COMPLETED',
+  IDLE: 'IDLE',
+  INITIALIZING: 'INITIALIZING',
+  THINKING: 'THINKING',
+  TOOL_CALLING: 'TOOL_CALLING',
+  TOOL_DISCOVERY: 'TOOL_DISCOVERY',
+} as const;
+export type AgentInstanceStatusEnum = (typeof AgentInstanceStatusEnum)[keyof typeof AgentInstanceStatusEnum];
+/**
+ * The status values that can be set on an agent instance via an update request.
+ *
+ */
+export const AgentInstanceUpdateStatusEnum = {
+  IDLE: 'IDLE',
+  THINKING: 'THINKING',
+  TOOL_CALLING: 'TOOL_CALLING',
+  TOOL_DISCOVERY: 'TOOL_DISCOVERY',
+} as const;
+export type AgentInstanceUpdateStatusEnum = (typeof AgentInstanceUpdateStatusEnum)[keyof typeof AgentInstanceUpdateStatusEnum];
+/**
+ * Request to create a new agent instance.
+ */
+export type AgentInstanceCreationRequest = {
+    /**
+     * The key of the AI Agent Sub-process or AI Agent Task element instance.
+     * The engine uses this key to infer processInstanceKey, elementId,
+     * processDefinitionKey, and tenantId.
+     *
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * Static definition set once at creation.
+     */
+    definition: AgentInstanceDefinition;
+    /**
+     * Limits for the agent execution. When omitted, all limits default to -1
+     * (no limit).
+     *
+     */
+    limits?: AgentInstanceLimits;
+};
+
+/**
+ * Response returned after successfully creating an agent instance.
+ */
+export type AgentInstanceCreationResult = {
+    /**
+     * The system-generated key for the created agent instance.
+     */
+    agentInstanceKey: AgentInstanceKey;
+};
+
+/**
+ * Metric increments to apply to the agent instance aggregate counters. The engine
+ * accumulates these deltas into running totals on each UPDATED event. All fields
+ * are optional; omit a field to leave the corresponding counter unchanged.
+ *
+ */
+export type AgentInstanceMetricsDelta = {
+    /**
+     * Increment to apply to the total input token counter.
+     */
+    inputTokens?: number;
+    /**
+     * Increment to apply to the total output token counter.
+     */
+    outputTokens?: number;
+    /**
+     * Increment to apply to the total model call counter.
+     */
+    modelCalls?: number;
+    /**
+     * Increment to apply to the total tool call counter.
+     */
+    toolCalls?: number;
+};
+
+/**
+ * Request to update the mutable state of an agent instance.
+ *
+ */
+export type AgentInstanceUpdateRequest = {
+    /**
+     * The key of the currently-active element instance for this agent instance.
+     * Used for ownership/equality validation against the stored agent instance
+     * and, when the supplied key differs from the previous association (re-entry
+     * of an ad-hoc sub-process or AI Agent task), appended to elementInstanceKeys
+     * with the reverse link updated on the supplied element instance.
+     *
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The new status of the agent instance.
+     */
+    status?: AgentInstanceUpdateStatusEnum;
+    /**
+     * Metric increments to apply to the aggregate counters.
+     */
+    metrics?: AgentInstanceMetricsDelta;
+    /**
+     * The complete list of tools available to the agent, replacing any previously
+     * stored tools. When provided, the engine replaces the existing tool list with
+     * this value.
+     *
+     */
+    tools?: Array<AgentTool> | null;
+};
+
+/**
+ * AgentInstanceStatusEnum property with full advanced search capabilities.
+ */
+export type AgentInstanceStatusFilterProperty = AgentInstanceStatusExactMatch | AdvancedAgentInstanceStatusFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceStatusEnum filter.
+ */
+export type AdvancedAgentInstanceStatusFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceStatusEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceStatusEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceStatusEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * Request to append a single history item to an agent instance's conversation history.
+ */
+export type AgentInstanceHistoryItemRequest = {
+    /**
+     * The key of the currently-active element instance.
+     *
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The key of the current job activation during which this history item was produced.
+     */
+    jobKey: JobKey;
+    /**
+     * Opaque lease token received from the job activation response.
+     */
+    jobLease: string;
+    /**
+     * The loopIteration this item belongs to. A loopIteration is one pass through the agent
+     * feedback loop: one LLM call, its tool dispatches, and their results. Omit if not grouping
+     * items by loopIteration.
+     *
+     */
+    loopIteration?: LoopIterationId | null;
+    /**
+     * The role of this history item in the conversation.
+     */
+    role: AgentInstanceHistoryRoleEnum;
+    /**
+     * The content blocks of this history item.
+     */
+    content: Array<AgentInstanceMessageContent>;
+    /**
+     * Tool calls associated with this history item.
+     * For ASSISTANT items: tool calls dispatched by this LLM response, with arguments populated.
+     * For TOOL_RESULT items: single-entry array referencing the originating tool call, with arguments null.
+     * Omit for USER items.
+     *
+     */
+    toolCalls?: Array<AgentInstanceToolCall> | null;
+    /**
+     * Per-call token and latency metrics. Present on ASSISTANT items only.
+     */
+    metrics?: AgentInstanceHistoryItemMetrics | null;
+    /**
+     * The connector-side timestamp of when this message was produced.
+     */
+    producedAt: string;
+};
+
+/**
+ * Response returned after successfully appending a history item.
+ */
+export type AgentInstanceHistoryItemCreationResult = {
+    /**
+     * The system-generated key for the created history item.
+     */
+    historyItemKey: AgentHistoryItemKey;
+};
+
+export type AgentInstanceHistorySearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'producedAt' | 'historyItemKey' | 'loopIteration';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Agent instance history search request.
+ */
+export type AgentInstanceHistorySearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<AgentInstanceHistorySearchQuerySortRequest>;
+    /**
+     * The history item search filters.
+     */
+    filter?: AgentInstanceHistoryFilter;
+};
+
+/**
+ * Agent instance history item search filter.
+ */
+export type AgentInstanceHistoryFilter = {
+    /**
+     * The unique key of the history item.
+     */
+    historyItemKey?: AgentHistoryItemKeyFilterProperty;
+    /**
+     * The role of the history item.
+     */
+    role?: AgentInstanceHistoryRoleFilterProperty;
+    /**
+     * The key of the element instance under which the history item was produced.
+     */
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    /**
+     * The key of the job activation that produced the history item.
+     */
+    jobKey?: JobKeyFilterProperty;
+    /**
+     * Filter by loopIteration number. A loopIteration is one pass through the agent feedback loop (one LLM call, its tool dispatches, and their results).
+     */
+    loopIteration?: IntegerFilterProperty;
+    /**
+     * The commit status of the history item. Defaults to COMMITTED only.
+     * Include PENDING or DISCARDED explicitly to debug in-flight or failed activations.
+     *
+     */
+    commitStatus?: AgentInstanceHistoryCommitStatusFilterProperty;
+    /**
+     * The timestamp when the history item was produced.
+     */
+    producedAt?: DateTimeFilterProperty;
+};
+
+/**
+ * Agent instance history search response.
+ */
+export type AgentInstanceHistorySearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching history items.
+     */
+    items: Array<AgentInstanceHistoryItemResult>;
+};
+
+/**
+ * A single conversation history item belonging to an agent instance.
+ */
+export type AgentInstanceHistoryItemResult = {
+    /**
+     * The unique key for this history item. Stable and sortable by creation order.
+     */
+    historyItemKey: AgentHistoryItemKey;
+    /**
+     * The key of the agent instance this item belongs to.
+     */
+    agentInstanceKey: AgentInstanceKey;
+    /**
+     * The key of the AI Agent Task or ad-hoc sub-process element instance under which this item was produced.
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The key of the job activation during which this item was produced.
+     */
+    jobKey: JobKey;
+    /**
+     * The lease token of the activation that produced this item.
+     */
+    jobLease: string;
+    /**
+     * The loopIteration this item belongs to. A loopIteration is one pass through the agent
+     * feedback loop: one LLM call, its tool dispatches, and their results. Null if not provided
+     * by the connector.
+     *
+     */
+    loopIteration: LoopIterationId | null;
+    /**
+     * The role of this history item in the conversation.
+     */
+    role: AgentInstanceHistoryRoleEnum;
+    /**
+     * The content blocks of this history item.
+     */
+    content: Array<AgentInstanceMessageContent>;
+    /**
+     * Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.
+     * ASSISTANT items: dispatched tool calls with arguments populated.
+     * TOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).
+     *
+     */
+    toolCalls: Array<AgentInstanceToolCall>;
+    /**
+     * Per-call token and latency metrics. Null when metrics were not provided at creation time.
+     */
+    metrics: AgentInstanceHistoryItemMetrics | null;
+    /**
+     * The commit status of this history item.
+     */
+    commitStatus: AgentInstanceHistoryCommitStatusEnum;
+    /**
+     * The connector-side timestamp of when this message was produced.
+     */
+    producedAt: string;
+};
+
+/**
+ * The role of a history item in the agent conversation.
+ */
+export const AgentInstanceHistoryRoleEnum = {
+  USER: 'USER',
+  ASSISTANT: 'ASSISTANT',
+  TOOL_RESULT: 'TOOL_RESULT',
+} as const;
+export type AgentInstanceHistoryRoleEnum = (typeof AgentInstanceHistoryRoleEnum)[keyof typeof AgentInstanceHistoryRoleEnum];
+/**
+ * The commit status of a history item.
+ * COMMITTED: the producing job completed successfully.
+ * PENDING: the producing job is still active (in-flight).
+ * DISCARDED: the producing job failed; this item was superseded by a later activation.
+ *
+ */
+export const AgentInstanceHistoryCommitStatusEnum = {
+  COMMITTED: 'COMMITTED',
+  PENDING: 'PENDING',
+  DISCARDED: 'DISCARDED',
+} as const;
+export type AgentInstanceHistoryCommitStatusEnum = (typeof AgentInstanceHistoryCommitStatusEnum)[keyof typeof AgentInstanceHistoryCommitStatusEnum];
+/**
+ * A single content block within a history item. Discriminated by `contentType`.
+ */
+export type AgentInstanceMessageContent = ({
+    contentType: 'TEXT';
+} & AgentInstanceTextContent) | ({
+    contentType: 'DOCUMENT';
+} & AgentInstanceDocumentContent) | ({
+    contentType: 'OBJECT';
+} & AgentInstanceObjectContent);
+
+/**
+ * Text content
+ *
+ * A plain-text content block.
+ */
+export type AgentInstanceTextContent = {
+    /**
+     * The content type discriminator.
+     */
+    contentType: string;
+    /**
+     * The text content.
+     */
+    text: string;
+};
+
+/**
+ * Document content
+ *
+ * A Camunda Document Store reference content block.
+ */
+export type AgentInstanceDocumentContent = {
+    /**
+     * The content type discriminator.
+     */
+    contentType: string;
+    /**
+     * A reference to a document stored in the Camunda Document Store.
+     */
+    documentReference: DocumentReference;
+};
+
+/**
+ * Object content
+ *
+ * An arbitrary structured content block. Accepts any valid JSON value:
+ * objects, arrays, numbers, booleans, or strings.
+ * Use TEXT content for human-readable natural language;
+ * use OBJECT content for machine-readable structured data.
+ *
+ */
+export type AgentInstanceObjectContent = {
+    /**
+     * The content type discriminator.
+     */
+    contentType: string;
+    /**
+     * Arbitrary structured content — any valid JSON value (object, array, number, boolean, or string).
+     */
+    object: unknown;
+};
+
+/**
+ * The content type discriminator for a history item content block.
+ */
+export const AgentInstanceMessageContentTypeEnum = {
+  TEXT: 'TEXT',
+  DOCUMENT: 'DOCUMENT',
+  OBJECT: 'OBJECT',
+} as const;
+export type AgentInstanceMessageContentTypeEnum = (typeof AgentInstanceMessageContentTypeEnum)[keyof typeof AgentInstanceMessageContentTypeEnum];
+/**
+ * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
+ * ASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.
+ *
+ */
+export type AgentInstanceToolCall = {
+    /**
+     * The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.
+     */
+    toolCallId: string;
+    /**
+     * The LLM-visible tool name.
+     */
+    toolName: string;
+    /**
+     * The BPMN element ID handling this tool.
+     */
+    elementId: string | null;
+    /**
+     * The tool call arguments as provided by the LLM. Null on TOOL_RESULT items.
+     */
+    arguments: {
+        [key: string]: unknown;
+    } | null;
+};
+
+/**
+ * Per-call token and latency metrics for an ASSISTANT history item.
+ */
+export type AgentInstanceHistoryItemMetrics = {
+    /**
+     * Input tokens consumed by this LLM call. Null when not provided.
+     */
+    inputTokens: number | null;
+    /**
+     * Output tokens produced by this LLM call. Null when not provided.
+     */
+    outputTokens: number | null;
+    /**
+     * Wall-clock duration of the LLM call in milliseconds. Null when not provided.
+     */
+    durationMs: number | null;
+};
+
+/**
+ * AgentInstanceHistoryRoleEnum property with full advanced search capabilities.
+ */
+export type AgentInstanceHistoryRoleFilterProperty = AgentInstanceHistoryRoleExactMatch | AdvancedAgentInstanceHistoryRoleFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryRoleEnum filter.
+ */
+export type AdvancedAgentInstanceHistoryRoleFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceHistoryRoleEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceHistoryRoleEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceHistoryRoleEnum>;
+};
+
+/**
+ * AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.
+ */
+export type AgentInstanceHistoryCommitStatusFilterProperty = AgentInstanceHistoryCommitStatusExactMatch | AdvancedAgentInstanceHistoryCommitStatusFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryCommitStatusEnum filter.
+ */
+export type AdvancedAgentInstanceHistoryCommitStatusFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceHistoryCommitStatusEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceHistoryCommitStatusEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceHistoryCommitStatusEnum>;
+};
+
 /**
  * Audit log item.
  */
@@ -129,13 +904,21 @@ export type AuditLogResult = {
      *
      */
     entityDescription: string | null;
+    /**
+     * The type of the inbound channel that triggered the operation (e.g. MCP).
+     */
+    inboundChannelType: string | null;
+    /**
+     * The tool name of the inbound channel (e.g. the MCP tool that triggered the operation).
+     */
+    inboundChannelToolName: string | null;
 };
 
 export type AuditLogSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'actorId' | 'actorType' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
+    field: 'actorId' | 'actorType' | 'auditLogKey' | 'batchOperationKey' | 'batchOperationType' | 'category' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionEvaluationKey' | 'decisionRequirementsId' | 'decisionRequirementsKey' | 'elementInstanceKey' | 'entityKey' | 'entityType' | 'jobKey' | 'operationType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'inboundChannelType' | 'inboundChannelToolName' | 'result' | 'tenantId' | 'timestamp' | 'userTaskKey';
     order?: SortOrderEnum;
 };
 
@@ -273,6 +1056,14 @@ export type AuditLogFilter = {
      * The entity description filter.
      */
     entityDescription?: StringFilterProperty;
+    /**
+     * The inbound channel type search filter (e.g. MCP).
+     */
+    inboundChannelType?: StringFilterProperty;
+    /**
+     * The inbound channel tool name search filter.
+     */
+    inboundChannelToolName?: StringFilterProperty;
 };
 
 /**
@@ -736,6 +1527,8 @@ export const PermissionTypeEnum = {
   CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE',
   CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE',
   CREATE_BATCH_OPERATION_RESOLVE_INCIDENT: 'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
+  CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE: 'CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE',
+  CREATE_BATCH_OPERATION_UPDATE_JOB: 'CREATE_BATCH_OPERATION_UPDATE_JOB',
   CREATE_DECISION_INSTANCE: 'CREATE_DECISION_INSTANCE',
   CREATE_PROCESS_INSTANCE: 'CREATE_PROCESS_INSTANCE',
   CREATE_TASK_LISTENER: 'CREATE_TASK_LISTENER',
@@ -749,6 +1542,7 @@ export const PermissionTypeEnum = {
   DELETE_TASK_LISTENER: 'DELETE_TASK_LISTENER',
   EVALUATE: 'EVALUATE',
   MODIFY_PROCESS_INSTANCE: 'MODIFY_PROCESS_INSTANCE',
+  PAUSE: 'PAUSE',
   READ: 'READ',
   READ_DECISION_DEFINITION: 'READ_DECISION_DEFINITION',
   READ_DECISION_INSTANCE: 'READ_DECISION_INSTANCE',
@@ -758,6 +1552,9 @@ export const PermissionTypeEnum = {
   READ_USAGE_METRIC: 'READ_USAGE_METRIC',
   READ_USER_TASK: 'READ_USER_TASK',
   READ_TASK_LISTENER: 'READ_TASK_LISTENER',
+  RESTORE: 'RESTORE',
+  REVEAL: 'REVEAL',
+  SUSPEND_PROCESS_INSTANCE: 'SUSPEND_PROCESS_INSTANCE',
   UPDATE: 'UPDATE',
   UPDATE_PROCESS_INSTANCE: 'UPDATE_PROCESS_INSTANCE',
   UPDATE_USER_TASK: 'UPDATE_USER_TASK',
@@ -770,12 +1567,14 @@ export type PermissionTypeEnum = (typeof PermissionTypeEnum)[keyof typeof Permis
 export const ResourceTypeEnum = {
   AUDIT_LOG: 'AUDIT_LOG',
   AUTHORIZATION: 'AUTHORIZATION',
+  BACKUP: 'BACKUP',
   BATCH: 'BATCH',
   CLUSTER_VARIABLE: 'CLUSTER_VARIABLE',
   COMPONENT: 'COMPONENT',
   DECISION_DEFINITION: 'DECISION_DEFINITION',
   DECISION_REQUIREMENTS_DEFINITION: 'DECISION_REQUIREMENTS_DEFINITION',
   DOCUMENT: 'DOCUMENT',
+  EXPORTER: 'EXPORTER',
   EXPRESSION: 'EXPRESSION',
   GLOBAL_LISTENER: 'GLOBAL_LISTENER',
   GROUP: 'GROUP',
@@ -784,6 +1583,7 @@ export const ResourceTypeEnum = {
   PROCESS_DEFINITION: 'PROCESS_DEFINITION',
   RESOURCE: 'RESOURCE',
   ROLE: 'ROLE',
+  SECRET: 'SECRET',
   SYSTEM: 'SYSTEM',
   TENANT: 'TENANT',
   USER: 'USER',
@@ -1005,9 +1805,12 @@ export type BatchOperationItemResponse = {
      */
     itemKey: string;
     /**
-     * the process instance key of the processed item.
+     * The process instance key of the processed item. Null for batch-op types whose targets
+     * are not process instances (e.g. DELETE_DECISION_INSTANCE, DELETE_DECISION_DEFINITION,
+     * DELETE_PROCESS_DEFINITION).
+     *
      */
-    processInstanceKey: ProcessInstanceKey;
+    processInstanceKey: ProcessInstanceKey | null;
     /**
      * The key of the root process instance. The root process instance is the top-level
      * ancestor in the process instance hierarchy. This field is only present for data
@@ -1138,6 +1941,28 @@ export type ProcessInstanceModificationMoveBatchOperationInstruction = {
 };
 
 /**
+ * The process instance filter that defines which process instances should be suspended.
+ */
+export type ProcessInstanceSuspensionBatchOperationRequest = {
+    /**
+     * The process instance filter.
+     */
+    filter: ProcessInstanceFilter;
+    operationReference?: OperationReference;
+};
+
+/**
+ * The process instance filter that defines which process instances should be resumed.
+ */
+export type ProcessInstanceResumptionBatchOperationRequest = {
+    /**
+     * The process instance filter.
+     */
+    filter: ProcessInstanceFilter;
+    operationReference?: OperationReference;
+};
+
+/**
  * The batch operation item state.
  */
 export const BatchOperationItemStateEnum = {
@@ -1173,6 +1998,9 @@ export const BatchOperationTypeEnum = {
   MIGRATE_PROCESS_INSTANCE: 'MIGRATE_PROCESS_INSTANCE',
   MODIFY_PROCESS_INSTANCE: 'MODIFY_PROCESS_INSTANCE',
   RESOLVE_INCIDENT: 'RESOLVE_INCIDENT',
+  RESUME_PROCESS_INSTANCE: 'RESUME_PROCESS_INSTANCE',
+  SUSPEND_PROCESS_INSTANCE: 'SUSPEND_PROCESS_INSTANCE',
+  UPDATE_JOB: 'UPDATE_JOB',
   UPDATE_VARIABLE: 'UPDATE_VARIABLE',
 } as const;
 export type BatchOperationTypeEnum = (typeof BatchOperationTypeEnum)[keyof typeof BatchOperationTypeEnum];
@@ -1274,6 +2102,14 @@ export type ClockPinRequest = {
 };
 
 /**
+ * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
+ */
+export const ClusterVariableKindEnum = {
+  JSON: 'JSON',
+  SECRET_REFERENCE: 'SECRET_REFERENCE',
+} as const;
+export type ClusterVariableKindEnum = (typeof ClusterVariableKindEnum)[keyof typeof ClusterVariableKindEnum];
+/**
  * The scope of a cluster variable.
  */
 export const ClusterVariableScopeEnum = {
@@ -1285,13 +2121,23 @@ export type CreateClusterVariableRequest = {
     /**
      * The name of the cluster variable. Must be unique within its scope (global or tenant-specific).
      */
-    name: string;
+    name: ClusterVariableName;
     /**
      * The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.
      */
     value: {
         [key: string]: unknown;
     };
+    /**
+     * A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).
+     */
+    metadata?: {
+        [key: string]: string | number;
+    };
+    /**
+     * The kind of the cluster variable. Defaults to JSON if not specified.
+     */
+    kind?: ClusterVariableKindEnum;
 };
 
 export type UpdateClusterVariableRequest = {
@@ -1300,6 +2146,12 @@ export type UpdateClusterVariableRequest = {
      */
     value: {
         [key: string]: unknown;
+    };
+    /**
+     * A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).
+     */
+    metadata?: {
+        [key: string]: string | number;
     };
 };
 
@@ -1331,12 +2183,19 @@ export type ClusterVariableResultBase = {
     /**
      * The name of the cluster variable. Unique within its scope (global or tenant-specific).
      */
-    name: string;
+    name: ClusterVariableName;
     scope: ClusterVariableScopeEnum;
     /**
      * Only provided if the cluster variable scope is TENANT. Null for global scope variables.
      */
     tenantId: string | null;
+    /**
+     * A generic key-value metadata bag attached to the cluster variable. Values are strings or numbers.
+     */
+    metadata: {
+        [key: string]: string | number;
+    };
+    kind: ClusterVariableKindEnum;
 };
 
 /**
@@ -1386,6 +2245,57 @@ export type ClusterVariableSearchQueryFilterRequest = {
      *
      */
     isTruncated?: boolean;
+    /**
+     * Filter by metadata entries. A map of metadata key to an advanced filter on that key's value. Metadata values are strings or numbers.
+     */
+    metadata?: {
+        [key: string]: AdvancedMetadataValueFilter;
+    };
+    /**
+     * The kind filter for cluster variables.
+     */
+    kind?: ClusterVariableKindFilterProperty;
+};
+
+/**
+ * Advanced filter
+ *
+ * Advanced filter on a metadata value (string or number).
+ */
+export type AdvancedMetadataValueFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: string | number;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: string | number;
+    /**
+     * Checks if the metadata key exists.
+     */
+    $exists?: boolean;
+    /**
+     * Greater than comparison with the provided value.
+     */
+    $gt?: number;
+    /**
+     * Greater than or equal comparison with the provided value.
+     */
+    $gte?: number;
+    /**
+     * Lower than comparison with the provided value.
+     */
+    $lt?: number;
+    /**
+     * Lower than or equal comparison with the provided value.
+     */
+    $lte?: number;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<string | number>;
+    $like?: LikeFilter;
 };
 
 /**
@@ -1415,6 +2325,36 @@ export type AdvancedClusterVariableScopeFilter = {
      * Checks if the property matches any of the provided values.
      */
     $in?: Array<ClusterVariableScopeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * ClusterVariableKindEnum property with full advanced search capabilities.
+ */
+export type ClusterVariableKindFilterProperty = ClusterVariableKindExactMatch | AdvancedClusterVariableKindFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ClusterVariableKindEnum filter.
+ */
+export type AdvancedClusterVariableKindFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: ClusterVariableKindEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: ClusterVariableKindEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<ClusterVariableKindEnum>;
     $like?: LikeFilter;
 };
 
@@ -1467,9 +2407,17 @@ export type TopologyResponse = {
  */
 export type BrokerInfo = {
     /**
-     * The unique (within a cluster) node ID for the broker.
+     * The node ID for the broker. The uniqueness of this identifier depends if the cluster is zone-aware or not. - non zone-aware: (default) nodeId is unique across the cluster - zone-aware:  (opt-in) nodeId is unique only within its zone. If you are migrating to a zone aware cluster, you must use `brokerId` instead. This property is deprecated, as it's been replaced by `brokerId`.
+     *
+     *
+     * @deprecated
      */
     nodeId: number;
+    /**
+     * The unique (within a cluster) broker identifier. When the cluster is not zoned, then it's a string that represents the nodeId (an integer). When the cluster is zoned, instead, it's of the form "$zoneName_$nodeId", providing uniqueness even across zones.
+     *
+     */
+    brokerId: string;
     /**
      * The hostname for reaching the broker.
      */
@@ -1504,6 +2452,57 @@ export type Partition = {
      * Describes the current health of the partition.
      */
     health: 'healthy' | 'unhealthy' | 'dead';
+    /**
+     * Describes the current operational state of the partition within the cluster configuration.
+     *
+     */
+    state: 'unknown' | 'joining' | 'active' | 'leaving' | 'recovering';
+};
+
+/**
+ * The planned changes resulting from a cluster mode transition request.
+ */
+export type ClusterModeChangeResponse = {
+    /**
+     * The ID of the cluster change that was triggered by the request.
+     */
+    changeId: string;
+    /**
+     * The ordered list of operations that will be applied to complete the change.
+     */
+    plannedChanges: Array<ClusterModeChangeOperation>;
+};
+
+/**
+ * A single operation that is part of a cluster mode change.
+ */
+export type ClusterModeChangeOperation = {
+    /**
+     * The type of the operation.
+     */
+    operation: string;
+    /**
+     * The target mode of the operation, if applicable.
+     */
+    mode: string | null;
+};
+
+/**
+ * Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.
+ */
+export type RestoreRequest = {
+    /**
+     * The start of the time range to restore from, as an ISO 8601 timestamp.
+     */
+    from?: string | null;
+    /**
+     * The end of the time range to restore from, as an ISO 8601 timestamp.
+     */
+    to?: string | null;
+    /**
+     * The IDs of the backups to restore from, one per partition.
+     */
+    backupIds?: Array<number> | null;
 };
 
 export type ConditionalEvaluationInstruction = {
@@ -1833,7 +2832,7 @@ export type DecisionInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionDefinitionName' | 'decisionDefinitionType' | 'decisionDefinitionVersion' | 'decisionEvaluationInstanceKey' | 'decisionEvaluationKey' | 'elementInstanceKey' | 'evaluationDate' | 'evaluationFailure' | 'processDefinitionKey' | 'processInstanceKey' | 'rootDecisionDefinitionKey' | 'state' | 'tenantId';
+    field: 'businessId' | 'decisionDefinitionId' | 'decisionDefinitionKey' | 'decisionDefinitionName' | 'decisionDefinitionType' | 'decisionDefinitionVersion' | 'decisionEvaluationInstanceKey' | 'decisionEvaluationKey' | 'elementInstanceKey' | 'evaluationDate' | 'evaluationFailure' | 'processDefinitionKey' | 'processInstanceKey' | 'rootDecisionDefinitionKey' | 'state' | 'tenantId';
     order?: SortOrderEnum;
 };
 
@@ -1899,6 +2898,11 @@ export type DecisionInstanceFilter = {
      */
     processInstanceKey?: ProcessInstanceKey;
     /**
+     * The business ID of the owning process instance the decision instance belongs to. This only works for decision instances created with 8.10 and onwards. Decision instances from prior versions and standalone evaluations don't contain this data and cannot be found.
+     *
+     */
+    businessId?: StringFilterProperty;
+    /**
      * The key of the decision.
      */
     decisionDefinitionKey?: DecisionDefinitionKeyFilterProperty;
@@ -1928,6 +2932,14 @@ export type DecisionInstanceSearchQueryResult = SearchQueryResponse & {
 };
 
 export type DecisionInstanceResult = {
+    /**
+     * The business ID of the owning process instance, inherited when the decision instance was
+     * evaluated. This is `null` for decision instances created before version 8.10, for
+     * standalone decision evaluations, and for decision instances whose owning process instance
+     * has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
     /**
      * The ID of the DMN decision.
      */
@@ -2522,6 +3534,66 @@ export type AdvancedResourceKeyFilter = {
     $notIn?: Array<ResourceKey>;
 };
 
+export type ResourceSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'resourceKey' | 'resourceName' | 'resourceId' | 'version' | 'versionTag' | 'deploymentKey' | 'tenantId';
+    order?: SortOrderEnum;
+};
+
+export type ResourceSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<ResourceSearchQuerySortRequest>;
+    /**
+     * The resource search filters.
+     */
+    filter?: ResourceFilter;
+};
+
+/**
+ * Resource search filter.
+ */
+export type ResourceFilter = {
+    /**
+     * The key for this resource.
+     */
+    resourceKey?: ResourceKeyFilterProperty;
+    /**
+     * Resource name of this resource.
+     */
+    resourceName?: StringFilterProperty;
+    /**
+     * Resource ID of this resource.
+     */
+    resourceId?: StringFilterProperty;
+    /**
+     * Version of this resource.
+     */
+    version?: IntegerFilterProperty;
+    /**
+     * Version tag of this resource.
+     */
+    versionTag?: StringFilterProperty;
+    /**
+     * Deployment key of this resource.
+     */
+    deploymentKey?: DeploymentKeyFilterProperty;
+    /**
+     * Tenant ID of this resource.
+     */
+    tenantId?: TenantId;
+};
+
+export type ResourceSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching resources.
+     */
+    items: Array<ResourceResult>;
+};
+
 export type DocumentReference = {
     /**
      * Document discriminator. Always set to "camunda".
@@ -2675,6 +3747,14 @@ export type ElementInstanceSearchQuerySortRequest = {
     order?: SortOrderEnum;
 };
 
+export type ElementInstanceWaitStateQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'elementInstanceKey' | 'processInstanceKey' | 'rootProcessInstanceKey' | 'elementId';
+    order?: SortOrderEnum;
+};
+
 /**
  * Element instance search request.
  */
@@ -2690,9 +3770,42 @@ export type ElementInstanceSearchQuery = SearchQueryRequest & {
 };
 
 /**
- * Element instance filter.
+ * Element instance search filter.
  */
-export type ElementInstanceFilter = {
+export type ElementInstanceFilter = ElementInstanceFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "processInstanceKey": "2251799813685323",
+     * "$or": [
+     * { "elementName": { "$like": "*Order*" } },
+     * { "elementId":   { "$like": "*Order*" } }
+     * ]
+     * }
+     * ```
+     * This matches element instances scoped to the given process instance whose:
+     *
+     * <ul style="padding-left: 20px; margin-left: 20px;">
+     * <li style="list-style-type: disc;"><code>elementName</code> contains <em>Order</em>, or</li>
+     * <li style="list-style-type: disc;"><code>elementId</code> contains <em>Order</em></li>
+     * </ul>
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<ElementInstanceFilterFields>;
+};
+
+/**
+ * Element instance filter fields.
+ */
+export type ElementInstanceFilterFields = {
     /**
      * The process definition ID associated to this element instance.
      */
@@ -2708,12 +3821,12 @@ export type ElementInstanceFilter = {
     /**
      * The element ID for this element instance.
      */
-    elementId?: ElementId;
+    elementId?: ElementIdFilterProperty;
     /**
      * The element name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
      *
      */
-    elementName?: string;
+    elementName?: StringFilterProperty;
     /**
      * Shows whether this element instance has an incident related to.
      */
@@ -2869,6 +3982,325 @@ export type AdHocSubProcessActivateActivitiesInstruction = {
     cancelRemainingInstances?: boolean;
 };
 
+/**
+ * Element instance inspection request.
+ */
+export type ElementInstanceWaitStateQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<ElementInstanceWaitStateQuerySortRequest>;
+    /**
+     * Filter criteria for the inspection.
+     */
+    filter?: ElementInstanceWaitStateFilter;
+};
+
+/**
+ * Filters for the element instance inspection.
+ */
+export type ElementInstanceWaitStateFilter = {
+    /**
+     * Filter by element instance key.
+     */
+    elementInstanceKey?: ElementInstanceKeyFilterProperty;
+    /**
+     * Filter by process instance key.
+     */
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * Filter by root process instance key.
+     */
+    rootProcessInstanceKey?: ProcessInstanceKeyFilterProperty;
+    /**
+     * Filter by element ID.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * Filter by element type.
+     */
+    elementType?: WaitStateElementTypeFilterProperty;
+    /**
+     * Filter by wait state type.
+     */
+    waitStateType?: WaitStateTypeFilterProperty;
+};
+
+/**
+ * Element type property with full advanced search capabilities.
+ */
+export type WaitStateElementTypeFilterProperty = WaitStateElementTypeExactMatch | AdvancedWaitStateElementTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced element type filter.
+ */
+export type AdvancedWaitStateElementTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: WaitStateElementTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: WaitStateElementTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<WaitStateElementTypeEnum>;
+    $like?: LikeFilter;
+};
+
+/**
+ * The BPMN element type of a waiting element instance.
+ */
+export const WaitStateElementTypeEnum = {
+  AD_HOC_SUB_PROCESS: 'AD_HOC_SUB_PROCESS',
+  AD_HOC_SUB_PROCESS_INNER_INSTANCE: 'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
+  BOUNDARY_EVENT: 'BOUNDARY_EVENT',
+  BUSINESS_RULE_TASK: 'BUSINESS_RULE_TASK',
+  CALL_ACTIVITY: 'CALL_ACTIVITY',
+  END_EVENT: 'END_EVENT',
+  EVENT_BASED_GATEWAY: 'EVENT_BASED_GATEWAY',
+  EVENT_SUB_PROCESS: 'EVENT_SUB_PROCESS',
+  EXCLUSIVE_GATEWAY: 'EXCLUSIVE_GATEWAY',
+  INCLUSIVE_GATEWAY: 'INCLUSIVE_GATEWAY',
+  INTERMEDIATE_CATCH_EVENT: 'INTERMEDIATE_CATCH_EVENT',
+  INTERMEDIATE_THROW_EVENT: 'INTERMEDIATE_THROW_EVENT',
+  MANUAL_TASK: 'MANUAL_TASK',
+  MULTI_INSTANCE_BODY: 'MULTI_INSTANCE_BODY',
+  PARALLEL_GATEWAY: 'PARALLEL_GATEWAY',
+  PROCESS: 'PROCESS',
+  RECEIVE_TASK: 'RECEIVE_TASK',
+  SCRIPT_TASK: 'SCRIPT_TASK',
+  SEND_TASK: 'SEND_TASK',
+  SEQUENCE_FLOW: 'SEQUENCE_FLOW',
+  SERVICE_TASK: 'SERVICE_TASK',
+  START_EVENT: 'START_EVENT',
+  SUB_PROCESS: 'SUB_PROCESS',
+  TASK: 'TASK',
+  UNKNOWN: 'UNKNOWN',
+  UNSPECIFIED: 'UNSPECIFIED',
+  USER_TASK: 'USER_TASK',
+} as const;
+export type WaitStateElementTypeEnum = (typeof WaitStateElementTypeEnum)[keyof typeof WaitStateElementTypeEnum];
+/**
+ * Wait state type property with full advanced search capabilities.
+ */
+export type WaitStateTypeFilterProperty = WaitStateTypeExactMatch | AdvancedWaitStateTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced wait state type filter.
+ */
+export type AdvancedWaitStateTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: WaitStateTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: WaitStateTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<WaitStateTypeEnum>;
+    $like?: LikeFilter;
+};
+
+export type ElementInstanceWaitStateQueryResult = SearchQueryResponse & {
+    /**
+     * The matching waiting states.
+     */
+    items: Array<ElementInstanceWaitStateResult>;
+};
+
+/**
+ * An element instance waiting state.
+ */
+export type ElementInstanceWaitStateResult = {
+    /**
+     * Key of the root process instance.
+     */
+    rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The process instance key associated to this element instance.
+     */
+    processInstanceKey: ProcessInstanceKey;
+    /**
+     * The element instance key associated to this element instance.
+     */
+    elementInstanceKey: ElementInstanceKey;
+    /**
+     * The element ID for this element instance.
+     */
+    elementId: ElementId;
+    /**
+     * The BPMN element type of this element instance.
+     */
+    elementType: WaitStateElementTypeEnum;
+    /**
+     * The tenant ID of the element instance.
+     */
+    tenantId: TenantId;
+    /**
+     * The BPMN process ID of the process definition associated to this element instance.
+     */
+    bpmnProcessId: string;
+    /**
+     * Wait-state-specific details, resolved by waitStateType.
+     */
+    details: WaitStateDetails;
+};
+
+/**
+ * Wait-state-specific details of an element instance.
+ */
+export type WaitStateDetails = ({
+    waitStateType: 'JOB';
+} & JobWaitStateDetails) | ({
+    waitStateType: 'MESSAGE';
+} & MessageWaitStateDetails) | ({
+    waitStateType: 'USER_TASK';
+} & UserTaskWaitStateDetails) | ({
+    waitStateType: 'TIMER';
+} & TimerWaitStateDetails) | ({
+    waitStateType: 'SIGNAL';
+} & SignalWaitStateDetails) | ({
+    waitStateType: 'CONDITION';
+} & ConditionWaitStateDetails);
+
+/**
+ * The type of waiting state an element instance is in.
+ */
+export const WaitStateTypeEnum = {
+  JOB: 'JOB',
+  MESSAGE: 'MESSAGE',
+  USER_TASK: 'USER_TASK',
+  TIMER: 'TIMER',
+  SIGNAL: 'SIGNAL',
+  CONDITION: 'CONDITION',
+} as const;
+export type WaitStateTypeEnum = (typeof WaitStateTypeEnum)[keyof typeof WaitStateTypeEnum];
+/**
+ * Common fields shared by all wait-state details variants.
+ */
+export type BaseWaitStateDetails = {
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type JobWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The key of the job.
+     */
+    jobKey: JobKey;
+    /**
+     * The job type (worker subscription identifier).
+     */
+    jobType: string;
+    /**
+     * The kind of job.
+     */
+    jobKind: JobKindEnum;
+    /**
+     * The listener event type of the job (only set for execution listener and task listener jobs).
+     */
+    listenerEventType: JobListenerEventTypeEnum | null;
+    /**
+     * The number of retries remaining for the job.
+     */
+    retries: number | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type MessageWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The name of the message being awaited.
+     */
+    messageName: string;
+    /**
+     * The correlation key for the message subscription (null for start events).
+     */
+    correlationKey: string | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type UserTaskWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The key of the user task.
+     */
+    taskKey: UserTaskKey;
+    /**
+     * The due date of the user task, if set.
+     */
+    dueDate: string | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type TimerWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * When the timer is due, as a UNIX epoch timestamp in milliseconds.
+     */
+    dueDate: number | null;
+    /**
+     * The number of remaining timer repetitions (-1 for infinite, 0 for non-repeating).
+     */
+    repetitions: number | null;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type SignalWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The name of the signal being awaited.
+     */
+    signalName: string;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
+export type ConditionWaitStateDetails = BaseWaitStateDetails & {
+    /**
+     * The condition expression that must evaluate to true to proceed.
+     */
+    expression: string;
+    /**
+     * The variable events that trigger condition re-evaluation. Empty means all events.
+     */
+    events: Array<'create' | 'update'>;
+    /**
+     * The wait state type discriminator.
+     */
+    waitStateType: string;
+};
+
 export type AdHocSubProcessActivateActivityReference = {
     /**
      * The ID of the element that should be activated.
@@ -2891,6 +4323,15 @@ export type ExpressionEvaluationRequest = {
      * Required when the expression references tenant-scoped cluster variables
      */
     tenantId?: string;
+    /**
+     * Key of the process instance or element instance whose variables should be made visible
+     * to the expression. Use a process instance key to evaluate against the process instance
+     * scope, or an element instance key to evaluate against that element instance scope. If
+     * omitted, the expression is evaluated unscoped, using only cluster variables
+     * and request-body variables.
+     *
+     */
+    scopeKey?: ScopeKey;
     /**
      * Optional variables for expression evaluation. These variables are only used for the current evaluation and do not persist beyond it.
      */
@@ -3285,7 +4726,7 @@ export type GroupCreateRequest = {
     /**
      * The ID of the new group.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The display name of the new group.
      */
@@ -3300,7 +4741,7 @@ export type GroupCreateResult = {
     /**
      * The ID of the created group.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The display name of the created group.
      */
@@ -3324,9 +4765,9 @@ export type GroupUpdateRequest = {
 
 export type GroupUpdateResult = {
     /**
-     * The unique external group ID.
+     * The unique group ID.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The name of the group.
      */
@@ -3348,7 +4789,7 @@ export type GroupResult = {
     /**
      * The group ID.
      */
-    groupId: string;
+    groupId: GroupId;
     /**
      * The group description.
      */
@@ -3431,7 +4872,7 @@ export type GroupClientResult = {
     /**
      * The ID of the client.
      */
-    clientId: string;
+    clientId: ClientId;
 };
 
 export type GroupClientSearchResult = SearchQueryResponse & {
@@ -3506,6 +4947,36 @@ export type TenantId = CamundaKey<'TenantId'>;
 export type Username = CamundaKey<'Username'>;
 
 /**
+ * The unique identifier of a role.
+ */
+export type RoleId = CamundaKey<'RoleId'>;
+
+/**
+ * The unique identifier of a group.
+ */
+export type GroupId = CamundaKey<'GroupId'>;
+
+/**
+ * The unique identifier of a mapping rule.
+ */
+export type MappingRuleId = CamundaKey<'MappingRuleId'>;
+
+/**
+ * The unique identifier of an OAuth client.
+ * Minted outside the Camunda REST API: in SaaS by Console, in Self-Managed
+ * with OIDC by the external identity provider (e.g. EntraID, Keycloak,
+ * Okta). In Self-Managed with Basic authentication, machine-to-machine
+ * applications are modelled as users instead — see the user identifier.
+ *
+ */
+export type ClientId = CamundaKey<'ClientId'>;
+
+/**
+ * The name of a cluster variable. Unique within its scope (global or tenant-specific).
+ */
+export type ClusterVariableName = CamundaKey<'ClusterVariableName'>;
+
+/**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
  */
 export type Tag = CamundaKey<'Tag'>;
@@ -3524,6 +4995,83 @@ export type TagSet = Array<Tag> & { readonly length: 0 | 1 | 2 | 3 | 4 | 5 | 6 |
  *
  */
 export type BusinessId = CamundaKey<'BusinessId'>;
+
+/**
+ * A client-provided sequential integer identifying one pass through the agent
+ * feedback loop: one LLM call, its tool dispatches, and their results. Must be
+ * a positive integer, increasing with each loopIteration. Established by the
+ * connector when appending the first history item of a loopIteration.
+ *
+ */
+export type LoopIterationId = number;
+
+/**
+ * ElementId property with full advanced search capabilities.
+ */
+export type ElementIdFilterProperty = ElementIdExactMatch | AdvancedElementIdFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ElementId filter.
+ */
+export type AdvancedElementIdFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: ElementId;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: ElementId;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<ElementId>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<ElementId>;
+    $like?: LikeFilter;
+};
+
+/**
+ * ProcessDefinitionId property with full advanced search capabilities.
+ */
+export type ProcessDefinitionIdFilterProperty = ProcessDefinitionIdExactMatch | AdvancedProcessDefinitionIdFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProcessDefinitionId filter.
+ */
+export type AdvancedProcessDefinitionIdFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: ProcessDefinitionId;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: ProcessDefinitionId;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<ProcessDefinitionId>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<ProcessDefinitionId>;
+    $like?: LikeFilter;
+};
 
 export type IncidentSearchQuery = SearchQueryRequest & {
     /**
@@ -4183,6 +5731,11 @@ export type JobActivationRequest = {
      *
      */
     tenantFilter?: TenantFilterEnum;
+    /**
+     * Whether to activate the jobs with a lease. When true, each activated job is assigned a distinct, opaque lease token, returned as ActivatedJobResult.leaseToken. The lease fences the complete, fail, and throw-error commands against a superseded activation of the same job (for example, after the job timed out or failed and was re-activated by another worker): a command carrying a stale lease token is rejected rather than racing with the newer activation. Once a job has been activated with a lease, it is served only to leasing workers of that job type; a homogeneous fleet per job type is recommended. Omit or set to false to activate jobs without a lease.
+     *
+     */
+    withLease?: boolean | null;
 };
 
 /**
@@ -4241,6 +5794,12 @@ export type ActivatedJobResult = {
      */
     tenantId: TenantId;
     /**
+     * The ID of the physical tenant that the job-activation request was routed to;
+     * the default physical tenant when the request did not specify one.
+     *
+     */
+    physicalTenantId: string;
+    /**
      * The key, a unique identifier for the job.
      */
     jobKey: JobKey;
@@ -4272,6 +5831,23 @@ export type ActivatedJobResult = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The business ID of the owning process instance, inherited when the job was created.
+     * This is `null` for jobs created before version 8.10 and for jobs whose owning process
+     * instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
+    /**
+     * The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.
+     *
+     */
+    priority: number;
+    /**
+     * The lease token identifying this activation. This is `null` when the job was activated without a lease.
+     *
+     */
+    leaseToken: string | null;
 };
 
 /**
@@ -4338,7 +5914,7 @@ export type JobSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
+    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'priority' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
     order?: SortOrderEnum;
 };
 
@@ -4394,6 +5970,11 @@ export type JobFilter = {
      * The listener event type of the job.
      */
     listenerEventType?: JobListenerEventTypeFilterProperty;
+    /**
+     * The priority of the job. Jobs created before 8.10 have no stored priority and are excluded from results when this filter is applied.
+     *
+     */
+    priority?: IntegerFilterProperty;
     /**
      * The process definition ID associated with the job.
      */
@@ -4517,6 +6098,13 @@ export type JobSearchResult = {
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
     /**
+     * The business ID of the owning process instance, inherited when the job was created.
+     * This is `null` for jobs created before version 8.10 and for jobs whose owning process
+     * instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
+    /**
      * The amount of retries left to this job.
      */
     retries: number;
@@ -4538,6 +6126,11 @@ export type JobSearchResult = {
      * When the job was last updated. Field is present for jobs created after 8.9.
      */
     lastUpdateTime: string | null;
+    /**
+     * The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; they appear last when sorting by this field and are excluded when filtering by this field. The API returns 0 for such jobs.
+     *
+     */
+    priority: number;
 };
 
 export type JobFailRequest = {
@@ -4560,6 +6153,13 @@ export type JobFailRequest = {
     variables?: {
         [key: string]: unknown;
     };
+    /**
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * For a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
+     * A job that was activated without a lease requires no token.
+     *
+     */
+    leaseToken?: string | null;
 };
 
 export type JobErrorRequest = {
@@ -4580,6 +6180,13 @@ export type JobErrorRequest = {
     variables?: {
         [key: string]: unknown;
     } | null;
+    /**
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * For a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
+     * A job that was activated without a lease requires no token.
+     *
+     */
+    leaseToken?: string | null;
 };
 
 export type JobCompletionRequest = {
@@ -4590,6 +6197,19 @@ export type JobCompletionRequest = {
         [key: string]: unknown;
     } | null;
     result?: JobResult;
+    /**
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * For a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
+     * A job that was activated without a lease requires no token.
+     *
+     */
+    leaseToken?: string | null;
+    /**
+     * An optional business id to assign to the process instance the job belongs to, as part of completing the job, letting a worker set the identifier from work it just performed.
+     * The business id can only be assigned to a root process instance: if the job belongs to a child process instance (one started by a call activity), the completion is rejected. An empty business id is likewise rejected. The assignment is single and irreversible and is only accepted while business id uniqueness is disabled. Only artifacts created after the assignment carry the business id; already-existing ones are not enriched. Completing with a business id that differs from one already assigned rejects the whole completion, leaving the job open; re-sending the identical business id is an idempotent no-op.
+     *
+     */
+    businessId?: BusinessId | null;
 };
 
 /**
@@ -4708,6 +6328,14 @@ export type JobResultActivateElement = {
 export type JobUpdateRequest = {
     changeset: JobChangeset;
     operationReference?: OperationReference;
+    /**
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * For a leased job, a supplied token is validated to prove the command comes from the worker that holds the current lease; a command carrying a stale token is rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
+     * An update without a token always applies to support operator and bulk updates of leased jobs. Note that this is different from lifecycle requests like complete, fail, and throw-error that always require a token for leased jobs.
+     * A job that was activated without a lease requires no token.
+     *
+     */
+    leaseToken?: string | null;
 };
 
 /**
@@ -4722,6 +6350,26 @@ export type JobChangeset = {
      * The new timeout for the job in milliseconds.
      */
     timeout?: number | null;
+    /**
+     * The new priority for the job. Higher values indicate higher priority.
+     */
+    priority?: number | null;
+};
+
+/**
+ * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
+ *
+ */
+export type JobBatchUpdateRequest = {
+    /**
+     * The job filter. At least one dimension must be set.
+     */
+    filter: JobFilter;
+    /**
+     * The fields to update. At least one field must be non-null.
+     */
+    changeset: JobChangeset;
+    operationReference?: OperationReference;
 };
 
 /**
@@ -4743,7 +6391,9 @@ export const JobStateEnum = {
   ERROR_THROWN: 'ERROR_THROWN',
   FAILED: 'FAILED',
   MIGRATED: 'MIGRATED',
+  PRIORITY_UPDATED: 'PRIORITY_UPDATED',
   RETRIES_UPDATED: 'RETRIES_UPDATED',
+  TIMEOUT_UPDATED: 'TIMEOUT_UPDATED',
   TIMED_OUT: 'TIMED_OUT',
 } as const;
 export type JobStateEnum = (typeof JobStateEnum)[keyof typeof JobStateEnum];
@@ -4762,6 +6412,8 @@ export type JobKindEnum = (typeof JobKindEnum)[keyof typeof JobKindEnum];
  */
 export const JobListenerEventTypeEnum = {
   ASSIGNING: 'ASSIGNING',
+  BEFORE_ALL: 'BEFORE_ALL',
+  CANCEL: 'CANCEL',
   CANCELING: 'CANCELING',
   COMPLETING: 'COMPLETING',
   CREATING: 'CREATING',
@@ -4919,7 +6571,10 @@ export type JobKey = CamundaKey<'JobKey'>;
 export type DecisionDefinitionKey = CamundaKey<'DecisionDefinitionKey'>;
 
 /**
- * System-generated key for a decision evaluation instance.
+ * System-generated identifier for a decision evaluation instance. It is composed of the
+ * parent decision evaluation key and the 1-based index of the evaluated decision within
+ * that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).
+ *
  */
 export type DecisionEvaluationInstanceKey = CamundaKey<'DecisionEvaluationInstanceKey'>;
 
@@ -4949,6 +6604,16 @@ export type BatchOperationKey = CamundaKey<'BatchOperationKey'>;
  *
  */
 export type OperationReference = number;
+
+/**
+ * System-generated key for an agent instance.
+ */
+export type AgentInstanceKey = CamundaKey<'AgentInstanceKey'>;
+
+/**
+ * System-generated key for an agent history item.
+ */
+export type AgentHistoryItemKey = CamundaKey<'AgentHistoryItemKey'>;
 
 /**
  * System-generated key for an audit log entry.
@@ -5222,6 +6887,72 @@ export type AdvancedDecisionEvaluationInstanceKeyFilter = {
 };
 
 /**
+ * AgentInstanceKey property with full advanced search capabilities.
+ */
+export type AgentInstanceKeyFilterProperty = AgentInstanceKeyExactMatch | AdvancedAgentInstanceKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceKey filter.
+ */
+export type AdvancedAgentInstanceKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentInstanceKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentInstanceKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentInstanceKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AgentInstanceKey>;
+};
+
+/**
+ * AgentHistoryItemKey property with full advanced search capabilities.
+ */
+export type AgentHistoryItemKeyFilterProperty = AgentHistoryItemKeyExactMatch | AdvancedAgentHistoryItemKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentHistoryItemKey filter.
+ */
+export type AdvancedAgentHistoryItemKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentHistoryItemKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentHistoryItemKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentHistoryItemKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AgentHistoryItemKey>;
+};
+
+/**
  * AuditLogKey property with full advanced search capabilities.
  */
 export type AuditLogKeyFilterProperty = AuditLogKeyExactMatch | AdvancedAuditLogKeyFilter;
@@ -5394,7 +7125,7 @@ export type MappingRuleCreateRequest = MappingRuleCreateUpdateRequest & {
     /**
      * The unique ID of the mapping rule.
      */
-    mappingRuleId: string;
+    mappingRuleId: MappingRuleId;
 };
 
 export type MappingRuleUpdateRequest = MappingRuleCreateUpdateRequest;
@@ -5415,7 +7146,7 @@ export type MappingRuleCreateUpdateResult = {
     /**
      * The unique ID of the mapping rule.
      */
-    mappingRuleId: string;
+    mappingRuleId: MappingRuleId;
 };
 
 export type MappingRuleCreateResult = MappingRuleCreateUpdateResult;
@@ -5445,7 +7176,7 @@ export type MappingRuleResult = {
     /**
      * The ID of the mapping rule.
      */
-    mappingRuleId: string;
+    mappingRuleId: MappingRuleId;
 };
 
 export type MappingRuleSearchQuerySortRequest = {
@@ -5486,7 +7217,7 @@ export type MappingRuleFilter = {
     /**
      * The ID of the mapping rule.
      */
-    mappingRuleId?: string;
+    mappingRuleId?: MappingRuleId;
 };
 
 export type MessageCorrelationRequest = {
@@ -5509,6 +7240,15 @@ export type MessageCorrelationRequest = {
      * the tenant for which the message is published
      */
     tenantId?: TenantId;
+    /**
+     * An optional business id used to enforce uniqueness of the process instance that a
+     * message start event would create. If provided and uniqueness enforcement is enabled,
+     * the engine rejects starting a new process instance when another root process instance
+     * with the same business id is already active for the same process definition. It has no
+     * effect when the message correlates to a catch, boundary, or intermediate event.
+     *
+     */
+    businessId?: BusinessId;
 };
 
 /**
@@ -5560,6 +7300,15 @@ export type MessagePublicationRequest = {
      * The tenant of the message sender.
      */
     tenantId?: TenantId;
+    /**
+     * An optional business id used to enforce uniqueness of the process instance that a
+     * message start event would create. If provided and uniqueness enforcement is enabled,
+     * the engine rejects starting a new process instance when another root process instance
+     * with the same business id is already active for the same process definition. It has no
+     * effect when the message correlates to a catch, boundary, or intermediate event.
+     *
+     */
+    businessId?: BusinessId;
 };
 
 /**
@@ -5598,6 +7347,8 @@ export type MessageSubscriptionResult = {
     processDefinitionKey: ProcessDefinitionKey | null;
     /**
      * The process instance key associated with this message subscription.
+     * Only populated for intermediate event entities.
+     *
      */
     processInstanceKey: ProcessInstanceKey | null;
     /**
@@ -5613,6 +7364,8 @@ export type MessageSubscriptionResult = {
     elementId: ElementId;
     /**
      * The element instance key associated with this message subscription.
+     * Only populated for intermediate event entities.
+     *
      */
     elementInstanceKey: ElementInstanceKey | null;
     messageSubscriptionState: MessageSubscriptionStateEnum;
@@ -5628,6 +7381,36 @@ export type MessageSubscriptionResult = {
      * The correlation key of the message subscription.
      */
     correlationKey: string | null;
+    messageSubscriptionType: MessageSubscriptionTypeEnum;
+    /**
+     * The subset of `zeebe:properties` extension properties whose keys start with the
+     * `io.camunda.tool:` prefix, extracted from the BPMN element associated with this
+     * subscription. Empty object when no matching properties are defined.
+     *
+     */
+    toolProperties: {
+        [key: string]: string;
+    };
+    /**
+     * The name of the process definition associated with this message subscription.
+     */
+    processDefinitionName: string | null;
+    /**
+     * The version of the process definition associated with this message subscription.
+     */
+    processDefinitionVersion: number | null;
+    /**
+     * Tool name extracted from the `io.camunda.tool:name` zeebe:property.
+     * Null when the property is absent.
+     *
+     */
+    toolName: string | null;
+    /**
+     * Inbound connector type extracted from the `inbound.type` zeebe:property.
+     * Null when the property is absent.
+     *
+     */
+    inboundConnectorType: string | null;
     tenantId: TenantId;
 };
 
@@ -5635,7 +7418,7 @@ export type MessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId';
+    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'messageSubscriptionType' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId' | 'toolName' | 'inboundConnectorType';
     order?: SortOrderEnum;
 };
 
@@ -5698,6 +7481,29 @@ export type MessageSubscriptionFilter = {
      * The unique external tenant ID.
      */
     tenantId?: StringFilterProperty;
+    /**
+     * The type of message subscription to filter by. When omitted, both
+     * `START_EVENT` and `PROCESS_EVENT` are returned. Only available for data
+     * created with Camunda 8.10 or later.
+     *
+     */
+    messageSubscriptionType?: MessageSubscriptionTypeFilterProperty;
+    /**
+     * The name of the process definition associated with this message subscription.
+     */
+    processDefinitionName?: StringFilterProperty;
+    /**
+     * The version of the process definition associated with this message subscription.
+     */
+    processDefinitionVersion?: IntegerFilterProperty;
+    /**
+     * Filter by tool name extracted from the `io.camunda.tool:name` zeebe:property.
+     */
+    toolName?: StringFilterProperty;
+    /**
+     * Filter by inbound connector type extracted from the `inbound.type` zeebe:property.
+     */
+    inboundConnectorType?: StringFilterProperty;
 };
 
 export type CorrelatedMessageSubscriptionSearchQueryResult = SearchQueryResponse & {
@@ -5708,6 +7514,16 @@ export type CorrelatedMessageSubscriptionSearchQueryResult = SearchQueryResponse
 };
 
 export type CorrelatedMessageSubscriptionResult = {
+    /**
+     * The business id associated with this correlated message subscription. For a message
+     * start event correlation, it is the business id carried by the correlating message that
+     * was stamped on the started process instance to enforce its uniqueness. For a catch,
+     * boundary, or intermediate event correlation, it is the business id of the subscribing
+     * process instance, captured when the subscription was opened. It is `null` when the
+     * relevant process instance has no business id.
+     *
+     */
+    businessId: BusinessId | null;
     /**
      * The correlation key of the message.
      */
@@ -5782,12 +7598,17 @@ export type CorrelatedMessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'correlationKey' | 'correlationTime' | 'elementId' | 'elementInstanceKey' | 'messageKey' | 'messageName' | 'partitionId' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'subscriptionKey' | 'tenantId';
+    field: 'businessId' | 'correlationKey' | 'correlationTime' | 'elementId' | 'elementInstanceKey' | 'messageKey' | 'messageName' | 'partitionId' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'subscriptionKey' | 'tenantId';
     order?: SortOrderEnum;
 };
 
 /**
  * The state of message subscription.
+ *
+ * **Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not
+ * tracked for these subscriptions. To query correlation history for process start events,
+ * use the `/correlated-message-subscriptions/search` endpoint.
+ *
  */
 export const MessageSubscriptionStateEnum = {
   CORRELATED: 'CORRELATED',
@@ -5797,9 +7618,30 @@ export const MessageSubscriptionStateEnum = {
 } as const;
 export type MessageSubscriptionStateEnum = (typeof MessageSubscriptionStateEnum)[keyof typeof MessageSubscriptionStateEnum];
 /**
+ * The type of message subscription.
+ * `START_EVENT` is definition-scoped (process start events). Always has a value; only
+ * captured from Camunda 8.10 onwards.
+ * `PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have
+ * no value stored; the API returns `PROCESS_EVENT` as a default for those entries.
+ *
+ */
+export const MessageSubscriptionTypeEnum = {
+  START_EVENT: 'START_EVENT',
+  PROCESS_EVENT: 'PROCESS_EVENT',
+} as const;
+export type MessageSubscriptionTypeEnum = (typeof MessageSubscriptionTypeEnum)[keyof typeof MessageSubscriptionTypeEnum];
+/**
  * Correlated message subscriptions search filter.
  */
 export type CorrelatedMessageSubscriptionFilter = {
+    /**
+     * Filter by the business id stored on the correlated message subscription — for message
+     * start event correlations the correlating message's business id, and for catch, boundary,
+     * or intermediate event correlations the subscribing process instance's business id.
+     * Supports advanced string filtering, including `$like` with `*`/`?` wildcards.
+     *
+     */
+    businessId?: StringFilterProperty;
     /**
      * The correlation key of the message.
      */
@@ -5848,6 +7690,36 @@ export type CorrelatedMessageSubscriptionFilter = {
      * The tenant ID associated with this correlated message subscription.
      */
     tenantId?: StringFilterProperty;
+};
+
+/**
+ * MessageSubscriptionTypeEnum with full advanced search capabilities.
+ */
+export type MessageSubscriptionTypeFilterProperty = MessageSubscriptionTypeExactMatch | AdvancedMessageSubscriptionTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced MessageSubscriptionTypeEnum filter
+ */
+export type AdvancedMessageSubscriptionTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: MessageSubscriptionTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: MessageSubscriptionTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<MessageSubscriptionTypeEnum>;
+    $like?: LikeFilter;
 };
 
 /**
@@ -6013,6 +7885,14 @@ export type ProcessDefinitionFilter = {
      * Indicates whether the start event of the process has an associated Form Key.
      */
     hasStartForm?: boolean;
+    /**
+     * Filter by whether the process definition has been deleted.
+     * When not set, both deleted and non-deleted process definitions are returned.
+     * Set to `false` to exclude deleted definitions (recommended for most use cases).
+     * Set to `true` to return only deleted definitions that are still retained in secondary storage.
+     *
+     */
+    isDeleted?: boolean;
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -6055,6 +7935,10 @@ export type ProcessDefinitionResult = {
      * Indicates whether the start event of the process has an associated Form Key.
      */
     hasStartForm: boolean;
+    /**
+     * Whether this process definition has been deleted but is still retained in secondary storage.
+     */
+    isDeleted: boolean;
 };
 
 /**
@@ -6101,6 +7985,46 @@ export type ProcessElementStatisticsResult = {
      * The total number of completed instances of the element.
      */
     completed: number;
+};
+
+/**
+ * Process definition variable name search query request.
+ */
+export type ProcessDefinitionVariableNameSearchQuery = SearchQueryRequest & {
+    /**
+     * The process definition variable name search filters.
+     */
+    filter?: ProcessDefinitionVariableNameFilter;
+};
+
+/**
+ * Process definition variable name filter request.
+ */
+export type ProcessDefinitionVariableNameFilter = {
+    /**
+     * The variable name search filter.
+     */
+    name?: StringFilterProperty;
+};
+
+/**
+ * Process definition variable name search query response.
+ */
+export type ProcessDefinitionVariableNameSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching variable names.
+     */
+    items: Array<ProcessDefinitionVariableNameSearchResult>;
+};
+
+/**
+ * Process definition variable name search response item.
+ */
+export type ProcessDefinitionVariableNameSearchResult = {
+    /**
+     * The variable name.
+     */
+    name: string;
 };
 
 export type ProcessDefinitionMessageSubscriptionStatisticsQuery = {
@@ -6497,7 +8421,7 @@ export type ProcessInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'processInstanceKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processDefinitionVersionTag' | 'processDefinitionKey' | 'parentProcessInstanceKey' | 'parentElementInstanceKey' | 'startDate' | 'endDate' | 'state' | 'hasIncident' | 'tenantId' | 'businessId';
+    field: 'processInstanceKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processDefinitionVersionTag' | 'processDefinitionKey' | 'parentProcessInstanceKey' | 'parentElementInstanceKey' | 'startDate' | 'endDate' | 'suspendedDate' | 'state' | 'hasIncident' | 'tenantId' | 'businessId';
     order?: SortOrderEnum;
 };
 
@@ -6535,6 +8459,12 @@ export type BaseProcessInstanceFilterFields = {
      * Whether this process instance has a related incident or not.
      */
     hasIncident?: boolean;
+    /**
+     * The time this process instance most recently entered the SUSPENDED state.
+     * This is cleared (null) again once the process instance is resumed.
+     *
+     */
+    suspendedDate?: DateTimeFilterProperty;
     /**
      * The tenant id.
      */
@@ -6741,6 +8671,12 @@ export type ProcessInstanceResult = {
     endDate: string | null;
     state: ProcessInstanceStateEnum;
     /**
+     * The time this process instance most recently entered the `SUSPENDED` state.
+     * This is `null` if the process instance is not currently suspended.
+     *
+     */
+    suspendedDate: string | null;
+    /**
      * Whether this process instance has a related incident or not.
      */
     hasIncident: boolean;
@@ -6780,6 +8716,14 @@ export type CancelProcessInstanceRequest = {
 } | null;
 
 export type DeleteProcessInstanceRequest = {
+    operationReference?: OperationReference;
+} | null;
+
+export type SuspendProcessInstanceRequest = {
+    operationReference?: OperationReference;
+} | null;
+
+export type ResumeProcessInstanceRequest = {
     operationReference?: OperationReference;
 } | null;
 
@@ -6853,6 +8797,30 @@ export type ProcessInstanceElementStatisticsQueryResult = {
 };
 
 /**
+ * Process instance wait state statistics query response.
+ */
+export type ProcessInstanceWaitStateStatisticsQueryResult = {
+    /**
+     * The wait state statistics.
+     */
+    items: Array<ProcessInstanceWaitStateStatisticsResult>;
+};
+
+/**
+ * Process instance wait state statistics response item.
+ */
+export type ProcessInstanceWaitStateStatisticsResult = {
+    /**
+     * The element id for which the wait states are aggregated.
+     */
+    elementId: ElementId;
+    /**
+     * The total number of waiting instances of the element.
+     */
+    waitingCount: number;
+};
+
+/**
  * The migration instructions describe how to migrate a process instance from one process definition to another.
  *
  */
@@ -6881,6 +8849,14 @@ export type MigrateProcessInstanceMappingInstruction = {
      * The element id to migrate into.
      */
     targetElementId: ElementId;
+};
+
+/**
+ * The instruction describing the business id to assign to a running process instance.
+ *
+ */
+export type ProcessInstanceBusinessIdAssignmentInstruction = {
+    businessId: BusinessId;
 };
 
 export type ProcessInstanceModificationInstruction = {
@@ -7092,6 +9068,7 @@ export type ProcessInstanceModificationTerminateByKeyInstruction = {
 export const ProcessInstanceStateEnum = {
   ACTIVE: 'ACTIVE',
   COMPLETED: 'COMPLETED',
+  SUSPENDED: 'SUSPENDED',
   TERMINATED: 'TERMINATED',
 } as const;
 export type ProcessInstanceStateEnum = (typeof ProcessInstanceStateEnum)[keyof typeof ProcessInstanceStateEnum];
@@ -7129,7 +9106,7 @@ export type RoleCreateRequest = {
     /**
      * The ID of the new role.
      */
-    roleId: string;
+    roleId: RoleId;
     /**
      * The display name of the new role.
      */
@@ -7144,7 +9121,7 @@ export type RoleCreateResult = {
     /**
      * The ID of the created role.
      */
-    roleId: string;
+    roleId: RoleId;
     /**
      * The display name of the created role.
      */
@@ -7178,7 +9155,7 @@ export type RoleUpdateResult = {
     /**
      * The ID of the updated role.
      */
-    roleId: string;
+    roleId: RoleId;
 };
 
 /**
@@ -7192,7 +9169,7 @@ export type RoleResult = {
     /**
      * The role id.
      */
-    roleId: string;
+    roleId: RoleId;
     /**
      * The description of the role.
      */
@@ -7228,7 +9205,7 @@ export type RoleFilter = {
     /**
      * The role ID search filters.
      */
-    roleId?: string;
+    roleId?: RoleId;
     /**
      * The role name search filters.
      */
@@ -7275,7 +9252,7 @@ export type RoleClientResult = {
     /**
      * The ID of the client.
      */
-    clientId: string;
+    clientId: ClientId;
 };
 
 export type RoleClientSearchResult = SearchQueryResponse & {
@@ -7304,7 +9281,7 @@ export type RoleGroupResult = {
     /**
      * The id of the group.
      */
-    groupId: string;
+    groupId: GroupId;
 };
 
 export type RoleGroupSearchResult = SearchQueryResponse & {
@@ -7379,7 +9356,7 @@ export type CursorForwardPagination = {
     /**
      * Use the `endCursor` value from the previous response to fetch the next page of results.
      */
-    after: EndCursor;
+    after?: EndCursor;
     /**
      * The maximum number of items to return in one request.
      */
@@ -7393,7 +9370,7 @@ export type CursorBackwardPagination = {
     /**
      * Use the `startCursor` value from the previous response to fetch the previous page of results.
      */
-    before: StartCursor;
+    before?: StartCursor;
     /**
      * The maximum number of items to return in one request.
      */
@@ -7434,6 +9411,65 @@ export type SearchQueryPageResponse = {
      */
     endCursor: EndCursor | null;
 };
+
+export type SecretResolveRequest = {
+    /**
+     * The secret references to resolve, each of the form `camunda.secrets.<name>`.
+     * Duplicate references are deduplicated by the server and resolved once.
+     * At most 20 references may be requested in a single batch.
+     *
+     */
+    references: Array<string>;
+};
+
+/**
+ * The per-reference outcome of a resolve request.
+ */
+export type SecretResolveResult = {
+    /**
+     * The references that were successfully resolved.
+     */
+    resolved: Array<ResolvedSecret>;
+    /**
+     * The references that could not be resolved, each with a typed error code.
+     */
+    errors: Array<SecretResolutionError>;
+};
+
+export type ResolvedSecret = {
+    /**
+     * The resolved secret reference of the form `camunda.secrets.<name>`.
+     */
+    reference: string;
+    /**
+     * The resolved secret value.
+     */
+    value: string;
+};
+
+export type SecretResolutionError = {
+    /**
+     * The secret reference that could not be resolved.
+     */
+    reference: string;
+    code: SecretErrorCode;
+    /**
+     * A human-readable description of the failure. Never contains the secret value;
+     * only error metadata (codes, names) is included.
+     *
+     */
+    message: string;
+};
+
+/**
+ * The typed reason a reference could not be resolved.
+ *
+ * - `NOT_FOUND`: no secret exists for the reference.
+ * - `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.
+ * - `INVALID_REFERENCE`: the reference is malformed.
+ *
+ */
+export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE';
 
 export type SignalBroadcastRequest = {
     /**
@@ -7503,6 +9539,10 @@ export type UsageMetricsResponseItem = {
  */
 export type SystemConfigurationResponse = {
     jobMetrics: JobMetricsConfigurationResponse;
+    components: ComponentsConfigurationResponse;
+    deployment: DeploymentConfigurationResponse;
+    authentication: AuthenticationConfigurationResponse;
+    cloud: CloudConfigurationResponse;
 };
 
 /**
@@ -7535,11 +9575,72 @@ export type JobMetricsConfigurationResponse = {
     maxUniqueKeys: number;
 };
 
+/**
+ * Configuration for active Camunda components in the deployment.
+ */
+export type ComponentsConfigurationResponse = {
+    /**
+     * List of webapp components whose UI is enabled in this deployment.
+     */
+    active: Array<WebappComponent>;
+};
+
+/**
+ * Configuration for deployment characteristics.
+ */
+export type DeploymentConfigurationResponse = {
+    /**
+     * Whether multi-tenancy is enabled.
+     */
+    isMultiTenancyEnabled: boolean;
+    /**
+     * The maximum HTTP request size in bytes.
+     */
+    maxRequestSize: number;
+};
+
+/**
+ * Configuration for authentication and session management.
+ */
+export type AuthenticationConfigurationResponse = {
+    /**
+     * Whether users can log out (false for SaaS deployments).
+     */
+    canLogout: boolean;
+    /**
+     * Whether login is delegated to an external identity provider.
+     */
+    isLoginDelegated: boolean;
+};
+
+/**
+ * Configuration for SaaS/cloud-specific settings.
+ */
+export type CloudConfigurationResponse = {
+    /**
+     * The cloud deployment stage.
+     */
+    stage: CloudStage | null;
+};
+
+/**
+ * A Camunda webapp component name.
+ */
+export type WebappComponent = 'operate' | 'tasklist' | 'admin';
+
+/**
+ * The cloud deployment stage.
+ */
+export type CloudStage = 'dev' | 'int' | 'prod';
+
 export type TenantCreateRequest = {
     /**
-     * The unique ID for the tenant. Must be 255 characters or less. Can contain letters, numbers, [`_`, `-`, `+`, `.`, `@`].
+     * The unique ID for the tenant. Must be 31 characters or less and match
+     * `^[\w.-]{1,31}$` (word characters, `.`, `-`). The literal
+     * `<default>` is also accepted as the default-tenant alias.
+     *
      */
-    tenantId: string;
+    tenantId: TenantId;
     /**
      * The name of the tenant.
      */
@@ -7551,6 +9652,9 @@ export type TenantCreateRequest = {
 };
 
 export type TenantCreateResult = {
+    /**
+     * The unique identifier of the created tenant.
+     */
     tenantId: TenantId;
     /**
      * The name of the tenant.
@@ -7574,6 +9678,9 @@ export type TenantUpdateRequest = {
 };
 
 export type TenantUpdateResult = {
+    /**
+     * The unique identifier of the updated tenant.
+     */
     tenantId: TenantId;
     /**
      * The name of the tenant.
@@ -7593,6 +9700,9 @@ export type TenantResult = {
      * The tenant name.
      */
     name: string;
+    /**
+     * The unique identifier of the tenant.
+     */
     tenantId: TenantId;
     /**
      * The tenant description.
@@ -7626,6 +9736,9 @@ export type TenantSearchQueryRequest = SearchQueryRequest & {
  * Tenant filter request
  */
 export type TenantFilter = {
+    /**
+     * The unique identifier of the tenant.
+     */
     tenantId?: TenantId;
     /**
      * The name of the tenant.
@@ -7673,7 +9786,7 @@ export type TenantClientResult = {
     /**
      * The ID of the client.
      */
-    clientId: string;
+    clientId: ClientId;
 };
 
 export type TenantClientSearchResult = SearchQueryResponse & {
@@ -7700,9 +9813,9 @@ export type TenantClientSearchQuerySortRequest = {
 
 export type TenantGroupResult = {
     /**
-     * The groupId of the group.
+     * The group ID.
      */
-    groupId: string;
+    groupId: GroupId;
 };
 
 export type TenantGroupSearchResult = SearchQueryResponse & {
@@ -7745,7 +9858,7 @@ export type UserTaskSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'creationDate' | 'completionDate' | 'followUpDate' | 'dueDate' | 'priority' | 'name';
+    field: 'creationDate' | 'completionDate' | 'followUpDate' | 'dueDate' | 'priority' | 'name' | 'businessId';
     order?: SortOrderEnum;
 };
 
@@ -7776,6 +9889,11 @@ export type UserTaskFilter = {
      */
     assignee?: StringFilterProperty;
     /**
+     * The business ID of the owning process instance the user task belongs to. This only works for user tasks created with 8.10 and onwards. Tasks from prior versions don't contain this data and cannot be found.
+     *
+     */
+    businessId?: StringFilterProperty;
+    /**
      * The priority of the user task.
      */
     priority?: IntegerFilterProperty;
@@ -7803,7 +9921,7 @@ export type UserTaskFilter = {
     /**
      * The ID of the process definition.
      */
-    processDefinitionId?: ProcessDefinitionId;
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
     /**
      * The user task creation date.
      */
@@ -7835,11 +9953,11 @@ export type UserTaskFilter = {
     /**
      * The key of the process definition.
      */
-    processDefinitionKey?: ProcessDefinitionKey;
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
     /**
      * The key of the process instance.
      */
-    processInstanceKey?: ProcessInstanceKey;
+    processInstanceKey?: ProcessInstanceKeyFilterProperty;
     /**
      * The key of the element instance.
      */
@@ -7947,6 +10065,13 @@ export type UserTaskResult = {
      *
      */
     rootProcessInstanceKey: ProcessInstanceKey | null;
+    /**
+     * The business ID of the owning process instance, inherited when the user task was
+     * created. This is `null` for user tasks created before version 8.10, and for user tasks
+     * whose owning process instance has no business ID.
+     *
+     */
+    businessId: BusinessId | null;
     /**
      * The key of the form.
      */
@@ -8178,9 +10303,9 @@ export type UserRequest = {
      */
     password: string;
     /**
-     * The username of the user.
+     * The username of the new user.
      */
-    username: string;
+    username: Username;
     /**
      * The name of the user.
      */
@@ -8192,6 +10317,9 @@ export type UserRequest = {
 };
 
 export type UserCreateResult = {
+    /**
+     * The username of the created user.
+     */
     username: Username;
     /**
      * The name of the user.
@@ -8219,6 +10347,9 @@ export type UserUpdateRequest = {
 };
 
 export type UserUpdateResult = {
+    /**
+     * The username of the updated user.
+     */
     username: Username;
     /**
      * The name of the user.
@@ -8231,6 +10362,9 @@ export type UserUpdateResult = {
 };
 
 export type UserResult = {
+    /**
+     * The username of the user.
+     */
     username: Username;
     /**
      * The name of the user.
@@ -8469,6 +10603,27 @@ export type SetVariableRequest = {
  *
  * Matches the value exactly.
  */
+export type AgentInstanceStatusExactMatch = AgentInstanceStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceHistoryRoleExactMatch = AgentInstanceHistoryRoleEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceHistoryCommitStatusExactMatch = AgentInstanceHistoryCommitStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AuditLogEntityKeyExactMatch = AuditLogEntityKey;
 
 /**
@@ -8539,6 +10694,13 @@ export type ClusterVariableScopeExactMatch = ClusterVariableScopeEnum;
  *
  * Matches the value exactly.
  */
+export type ClusterVariableKindExactMatch = ClusterVariableKindEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type DecisionInstanceStateExactMatch = DecisionInstanceStateEnum;
 
 /**
@@ -8567,6 +10729,20 @@ export type ElementInstanceStateExactMatch = ElementInstanceStateEnum;
  *
  * Matches the value exactly.
  */
+export type WaitStateElementTypeExactMatch = WaitStateElementTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type WaitStateTypeExactMatch = WaitStateTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type GlobalListenerSourceExactMatch = GlobalListenerSourceEnum;
 
 /**
@@ -8575,6 +10751,20 @@ export type GlobalListenerSourceExactMatch = GlobalListenerSourceEnum;
  * Matches the value exactly.
  */
 export type GlobalTaskListenerEventTypeExactMatch = GlobalTaskListenerEventTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ElementIdExactMatch = ElementId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessDefinitionIdExactMatch = ProcessDefinitionId;
 
 /**
  * Exact match
@@ -8672,6 +10862,20 @@ export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstance
  *
  * Matches the value exactly.
  */
+export type AgentInstanceKeyExactMatch = AgentInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentHistoryItemKeyExactMatch = AgentHistoryItemKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AuditLogKeyExactMatch = AuditLogKey;
 
 /**
@@ -8700,6 +10904,13 @@ export type DecisionRequirementsKeyExactMatch = DecisionRequirementsKey;
  *
  * Matches the value exactly.
  */
+export type MessageSubscriptionTypeExactMatch = MessageSubscriptionTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type MessageSubscriptionStateExactMatch = MessageSubscriptionStateEnum;
 
 /**
@@ -8722,6 +10933,298 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
+
+export type CreateAgentInstanceData = {
+    body: AgentInstanceCreationRequest;
+    path?: never;
+    query?: never;
+    url: '/agent-instances';
+};
+
+export type CreateAgentInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The elementInstanceKey does not correspond to an active element instance.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An agent instance already exists for the given element instance.
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type CreateAgentInstanceError = CreateAgentInstanceErrors[keyof CreateAgentInstanceErrors];
+
+export type CreateAgentInstanceResponses = {
+    /**
+     * The agent instance was created.
+     */
+    200: AgentInstanceCreationResult;
+};
+
+export type CreateAgentInstanceResponse = CreateAgentInstanceResponses[keyof CreateAgentInstanceResponses];
+
+export type GetAgentInstanceData = {
+    body?: never;
+    path: {
+        /**
+         * The key of the agent instance to retrieve.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}';
+};
+
+export type GetAgentInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetAgentInstanceError = GetAgentInstanceErrors[keyof GetAgentInstanceErrors];
+
+export type GetAgentInstanceResponses = {
+    /**
+     * The agent instance is successfully returned.
+     */
+    200: AgentInstanceResult;
+};
+
+export type GetAgentInstanceResponse = GetAgentInstanceResponses[keyof GetAgentInstanceResponses];
+
+export type UpdateAgentInstanceData = {
+    body: AgentInstanceUpdateRequest;
+    path: {
+        /**
+         * The key of the agent instance to update.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}';
+};
+
+export type UpdateAgentInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type UpdateAgentInstanceError = UpdateAgentInstanceErrors[keyof UpdateAgentInstanceErrors];
+
+export type UpdateAgentInstanceResponses = {
+    /**
+     * The agent instance was updated successfully.
+     */
+    204: void;
+};
+
+export type UpdateAgentInstanceResponse = UpdateAgentInstanceResponses[keyof UpdateAgentInstanceResponses];
+
+export type SearchAgentInstancesData = {
+    body?: AgentInstanceSearchQuery;
+    path?: never;
+    query?: never;
+    url: '/agent-instances/search';
+};
+
+export type SearchAgentInstancesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchAgentInstancesError = SearchAgentInstancesErrors[keyof SearchAgentInstancesErrors];
+
+export type SearchAgentInstancesResponses = {
+    /**
+     * The agent instance search result.
+     */
+    200: AgentInstanceSearchQueryResult;
+};
+
+export type SearchAgentInstancesResponse = SearchAgentInstancesResponses[keyof SearchAgentInstancesResponses];
+
+export type CreateAgentInstanceHistoryItemData = {
+    body: AgentInstanceHistoryItemRequest;
+    path: {
+        /**
+         * The key of the agent instance to append the history item to.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}/history';
+};
+
+export type CreateAgentInstanceHistoryItemErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found, or the specified
+     * jobKey does not correspond to an active job.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type CreateAgentInstanceHistoryItemError = CreateAgentInstanceHistoryItemErrors[keyof CreateAgentInstanceHistoryItemErrors];
+
+export type CreateAgentInstanceHistoryItemResponses = {
+    /**
+     * The history item was created.
+     */
+    201: AgentInstanceHistoryItemCreationResult;
+};
+
+export type CreateAgentInstanceHistoryItemResponse = CreateAgentInstanceHistoryItemResponses[keyof CreateAgentInstanceHistoryItemResponses];
+
+export type SearchAgentInstanceHistoryData = {
+    body?: AgentInstanceHistorySearchQuery;
+    path: {
+        /**
+         * The key of the agent instance whose history to search.
+         */
+        agentInstanceKey: AgentInstanceKey;
+    };
+    query?: never;
+    url: '/agent-instances/{agentInstanceKey}/history/search';
+};
+
+export type SearchAgentInstanceHistoryErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent instance with the given key was not found.
+     * More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchAgentInstanceHistoryError = SearchAgentInstanceHistoryErrors[keyof SearchAgentInstanceHistoryErrors];
+
+export type SearchAgentInstanceHistoryResponses = {
+    /**
+     * The agent instance history search result.
+     */
+    200: AgentInstanceHistorySearchQueryResult;
+};
+
+export type SearchAgentInstanceHistoryResponse = SearchAgentInstanceHistoryResponses[keyof SearchAgentInstanceHistoryResponses];
 
 export type SearchAuditLogsData = {
     body?: AuditLogSearchQueryRequest;
@@ -9363,6 +11866,10 @@ export type CreateGlobalClusterVariableErrors = {
      */
     403: ProblemDetail;
     /**
+     * A cluster variable with this name already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -9385,7 +11892,7 @@ export type DeleteGlobalClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/global/{name}';
@@ -9431,7 +11938,7 @@ export type GetGlobalClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/global/{name}';
@@ -9477,7 +11984,7 @@ export type UpdateGlobalClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/global/{name}';
@@ -9585,6 +12092,14 @@ export type CreateTenantClusterVariableErrors = {
      */
     403: ProblemDetail;
     /**
+     * The tenant with the given ID was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * A cluster variable with this name already exists for the given tenant.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -9611,7 +12126,7 @@ export type DeleteTenantClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/tenants/{tenantId}/{name}';
@@ -9661,7 +12176,7 @@ export type GetTenantClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/tenants/{tenantId}/{name}';
@@ -9711,7 +12226,7 @@ export type UpdateTenantClusterVariableData = {
         /**
          * The name of the cluster variable
          */
-        name: string;
+        name: ClusterVariableName;
     };
     query?: never;
     url: '/cluster-variables/tenants/{tenantId}/{name}';
@@ -10087,9 +12602,7 @@ export type GetDecisionInstanceResponses = {
 export type GetDecisionInstanceResponse = GetDecisionInstanceResponses[keyof GetDecisionInstanceResponses];
 
 export type DeleteDecisionInstanceData = {
-    body?: {
-        operationReference?: OperationReference;
-    } | null;
+    body?: DeleteDecisionInstanceRequest;
     path: {
         /**
          * The key of the decision evaluation to delete.
@@ -10609,6 +13122,43 @@ export type ActivateAdHocSubProcessActivitiesResponses = {
 
 export type ActivateAdHocSubProcessActivitiesResponse = ActivateAdHocSubProcessActivitiesResponses[keyof ActivateAdHocSubProcessActivitiesResponses];
 
+export type SearchElementInstanceWaitStatesData = {
+    body?: ElementInstanceWaitStateQuery;
+    path?: never;
+    query?: never;
+    url: '/element-instances/wait-states/search';
+};
+
+export type SearchElementInstanceWaitStatesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchElementInstanceWaitStatesError = SearchElementInstanceWaitStatesErrors[keyof SearchElementInstanceWaitStatesErrors];
+
+export type SearchElementInstanceWaitStatesResponses = {
+    /**
+     * The element instance wait state search result.
+     */
+    200: ElementInstanceWaitStateQueryResult;
+};
+
+export type SearchElementInstanceWaitStatesResponse = SearchElementInstanceWaitStatesResponses[keyof SearchElementInstanceWaitStatesResponses];
+
 export type SearchElementInstancesData = {
     body?: ElementInstanceSearchQuery;
     path?: never;
@@ -10824,6 +13374,52 @@ export type EvaluateExpressionResponses = {
 };
 
 export type EvaluateExpressionResponse = EvaluateExpressionResponses[keyof EvaluateExpressionResponses];
+
+export type GetFormByKeyData = {
+    body?: never;
+    path: {
+        /**
+         * The form key.
+         */
+        formKey: FormKey;
+    };
+    query?: never;
+    url: '/forms/{formKey}';
+};
+
+export type GetFormByKeyErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The form with the given key was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetFormByKeyError = GetFormByKeyErrors[keyof GetFormByKeyErrors];
+
+export type GetFormByKeyResponses = {
+    /**
+     * The form is successfully returned.
+     */
+    200: FormResult;
+};
+
+export type GetFormByKeyResponse = GetFormByKeyResponses[keyof GetFormByKeyResponses];
 
 export type CreateGlobalTaskListenerData = {
     body: CreateGlobalTaskListenerRequest;
@@ -11073,6 +13669,10 @@ export type CreateGroupErrors = {
      */
     403: ProblemDetail;
     /**
+     * Group with this id already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -11137,7 +13737,7 @@ export type DeleteGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}';
@@ -11180,7 +13780,7 @@ export type GetGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}';
@@ -11222,7 +13822,7 @@ export type UpdateGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}';
@@ -11264,23 +13864,12 @@ export type UpdateGroupResponses = {
 export type UpdateGroupResponse = UpdateGroupResponses[keyof UpdateGroupResponses];
 
 export type SearchClientsForGroupData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'clientId';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: GroupClientSearchQueryRequest;
     path: {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/clients/search';
@@ -11315,17 +13904,7 @@ export type SearchClientsForGroupResponses = {
     /**
      * The clients assigned to the group.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching client IDs.
-         */
-        items: Array<{
-            /**
-             * The ID of the client.
-             */
-            clientId: string;
-        }>;
-    };
+    200: GroupClientSearchResult;
 };
 
 export type SearchClientsForGroupResponse = SearchClientsForGroupResponses[keyof SearchClientsForGroupResponses];
@@ -11336,11 +13915,11 @@ export type UnassignClientFromGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/groups/{groupId}/clients/{clientId}';
@@ -11387,11 +13966,11 @@ export type AssignClientToGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/groups/{groupId}/clients/{clientId}';
@@ -11442,7 +14021,7 @@ export type SearchMappingRulesForGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/mapping-rules/search';
@@ -11477,12 +14056,7 @@ export type SearchMappingRulesForGroupResponses = {
     /**
      * The mapping rules assigned to the group.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching mapping rules.
-         */
-        items: Array<MappingRuleResult>;
-    };
+    200: GroupMappingRuleSearchResult;
 };
 
 export type SearchMappingRulesForGroupResponse = SearchMappingRulesForGroupResponses[keyof SearchMappingRulesForGroupResponses];
@@ -11493,11 +14067,11 @@ export type UnassignMappingRuleFromGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/groups/{groupId}/mapping-rules/{mappingRuleId}';
@@ -11544,11 +14118,11 @@ export type AssignMappingRuleToGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/groups/{groupId}/mapping-rules/{mappingRuleId}';
@@ -11599,7 +14173,7 @@ export type SearchRolesForGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/roles/search';
@@ -11634,34 +14208,18 @@ export type SearchRolesForGroupResponses = {
     /**
      * The roles assigned to the group.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching roles.
-         */
-        items: Array<RoleResult>;
-    };
+    200: GroupRoleSearchResult;
 };
 
 export type SearchRolesForGroupResponse = SearchRolesForGroupResponses[keyof SearchRolesForGroupResponses];
 
 export type SearchUsersForGroupData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'username';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: GroupUserSearchQueryRequest;
     path: {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/groups/{groupId}/users/search';
@@ -11696,14 +14254,7 @@ export type SearchUsersForGroupResponses = {
     /**
      * The users assigned to the group.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching members.
-         */
-        items: Array<{
-            username: Username;
-        }>;
-    };
+    200: GroupUserSearchResult;
 };
 
 export type SearchUsersForGroupResponse = SearchUsersForGroupResponses[keyof SearchUsersForGroupResponses];
@@ -11714,7 +14265,7 @@ export type UnassignUserFromGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The user username.
          */
@@ -11765,7 +14316,7 @@ export type AssignUserToGroupData = {
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
         /**
          * The user username.
          */
@@ -12293,6 +14844,44 @@ export type FailJobResponses = {
 
 export type FailJobResponse = FailJobResponses[keyof FailJobResponses];
 
+export type UpdateJobsBatchOperationData = {
+    body: JobBatchUpdateRequest;
+    path?: never;
+    query?: never;
+    url: '/jobs/batch-update';
+};
+
+export type UpdateJobsBatchOperationErrors = {
+    /**
+     * The job batch update operation failed. More details are provided in the response body.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type UpdateJobsBatchOperationError = UpdateJobsBatchOperationErrors[keyof UpdateJobsBatchOperationErrors];
+
+export type UpdateJobsBatchOperationResponses = {
+    /**
+     * The batch operation was created.
+     */
+    200: BatchOperationCreatedResult;
+};
+
+export type UpdateJobsBatchOperationResponse = UpdateJobsBatchOperationResponses[keyof UpdateJobsBatchOperationResponses];
+
 export type GetGlobalJobStatisticsData = {
     body?: never;
     path?: never;
@@ -12541,6 +15130,10 @@ export type CreateMappingRuleErrors = {
      */
     404: ProblemDetail;
     /**
+     * Mapping rule with this id already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -12552,7 +15145,7 @@ export type CreateMappingRuleResponses = {
     /**
      * The mapping rule was created successfully.
      */
-    201: MappingRuleCreateUpdateResult;
+    201: MappingRuleCreateResult;
 };
 
 export type CreateMappingRuleResponse = CreateMappingRuleResponses[keyof CreateMappingRuleResponses];
@@ -12589,12 +15182,7 @@ export type SearchMappingRuleResponses = {
     /**
      * The mapping rule search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching mapping rules.
-         */
-        items: Array<MappingRuleResult>;
-    };
+    200: MappingRuleSearchQueryResult;
 };
 
 export type SearchMappingRuleResponse = SearchMappingRuleResponses[keyof SearchMappingRuleResponses];
@@ -12605,7 +15193,7 @@ export type DeleteMappingRuleData = {
         /**
          * The ID of the mapping rule to delete.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/mapping-rules/{mappingRuleId}';
@@ -12648,7 +15236,7 @@ export type GetMappingRuleData = {
         /**
          * The ID of the mapping rule to get.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/mapping-rules/{mappingRuleId}';
@@ -12686,7 +15274,7 @@ export type UpdateMappingRuleData = {
         /**
          * The ID of the mapping rule to update.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/mapping-rules/{mappingRuleId}';
@@ -12724,7 +15312,7 @@ export type UpdateMappingRuleResponses = {
     /**
      * The mapping rule was updated successfully.
      */
-    200: MappingRuleCreateUpdateResult;
+    200: MappingRuleUpdateResult;
 };
 
 export type UpdateMappingRuleResponse = UpdateMappingRuleResponses[keyof UpdateMappingRuleResponses];
@@ -13093,6 +15681,48 @@ export type GetProcessDefinitionStatisticsResponses = {
 
 export type GetProcessDefinitionStatisticsResponse = GetProcessDefinitionStatisticsResponses[keyof GetProcessDefinitionStatisticsResponses];
 
+export type SearchProcessDefinitionVariableNamesData = {
+    body?: ProcessDefinitionVariableNameSearchQuery;
+    path: {
+        /**
+         * The assigned key of the process definition, which acts as a unique identifier for this process definition.
+         */
+        processDefinitionKey: ProcessDefinitionKey;
+    };
+    query?: never;
+    url: '/process-definitions/{processDefinitionKey}/variable-names/search';
+};
+
+export type SearchProcessDefinitionVariableNamesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchProcessDefinitionVariableNamesError = SearchProcessDefinitionVariableNamesErrors[keyof SearchProcessDefinitionVariableNamesErrors];
+
+export type SearchProcessDefinitionVariableNamesResponses = {
+    /**
+     * The process definition variable name search result.
+     */
+    200: ProcessDefinitionVariableNameSearchQueryResult;
+};
+
+export type SearchProcessDefinitionVariableNamesResponse = SearchProcessDefinitionVariableNamesResponses[keyof SearchProcessDefinitionVariableNamesResponses];
+
 export type GetProcessDefinitionXmlData = {
     body?: never;
     path: {
@@ -13423,6 +16053,44 @@ export type ModifyProcessInstancesBatchOperationResponses = {
 
 export type ModifyProcessInstancesBatchOperationResponse = ModifyProcessInstancesBatchOperationResponses[keyof ModifyProcessInstancesBatchOperationResponses];
 
+export type ResumeProcessInstancesBatchOperationData = {
+    body: ProcessInstanceResumptionBatchOperationRequest;
+    path?: never;
+    query?: never;
+    url: '/process-instances/resumption';
+};
+
+export type ResumeProcessInstancesBatchOperationErrors = {
+    /**
+     * The process instance batch operation failed. More details are provided in the response body.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type ResumeProcessInstancesBatchOperationError = ResumeProcessInstancesBatchOperationErrors[keyof ResumeProcessInstancesBatchOperationErrors];
+
+export type ResumeProcessInstancesBatchOperationResponses = {
+    /**
+     * The batch operation request was created.
+     */
+    200: BatchOperationCreatedResult;
+};
+
+export type ResumeProcessInstancesBatchOperationResponse = ResumeProcessInstancesBatchOperationResponses[keyof ResumeProcessInstancesBatchOperationResponses];
+
 export type SearchProcessInstancesData = {
     body?: ProcessInstanceSearchQuery;
     path?: never;
@@ -13459,6 +16127,44 @@ export type SearchProcessInstancesResponses = {
 };
 
 export type SearchProcessInstancesResponse = SearchProcessInstancesResponses[keyof SearchProcessInstancesResponses];
+
+export type SuspendProcessInstancesBatchOperationData = {
+    body: ProcessInstanceSuspensionBatchOperationRequest;
+    path?: never;
+    query?: never;
+    url: '/process-instances/suspension';
+};
+
+export type SuspendProcessInstancesBatchOperationErrors = {
+    /**
+     * The process instance batch operation failed. More details are provided in the response body.
+     *
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SuspendProcessInstancesBatchOperationError = SuspendProcessInstancesBatchOperationErrors[keyof SuspendProcessInstancesBatchOperationErrors];
+
+export type SuspendProcessInstancesBatchOperationResponses = {
+    /**
+     * The batch operation request was created.
+     */
+    200: BatchOperationCreatedResult;
+};
+
+export type SuspendProcessInstancesBatchOperationResponse = SuspendProcessInstancesBatchOperationResponses[keyof SuspendProcessInstancesBatchOperationResponses];
 
 export type GetProcessInstanceData = {
     body?: never;
@@ -13505,6 +16211,54 @@ export type GetProcessInstanceResponses = {
 };
 
 export type GetProcessInstanceResponse = GetProcessInstanceResponses[keyof GetProcessInstanceResponses];
+
+export type AssignProcessInstanceBusinessIdData = {
+    body: ProcessInstanceBusinessIdAssignmentInstruction;
+    path: {
+        /**
+         * The key of the process instance to assign the business id to.
+         */
+        processInstanceKey: ProcessInstanceKey;
+    };
+    query?: never;
+    url: '/process-instances/{processInstanceKey}/business-id-assignment';
+};
+
+export type AssignProcessInstanceBusinessIdErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The process instance is not found.
+     */
+    404: ProblemDetail;
+    /**
+     * The business id assignment failed because the process instance is not eligible, for example it already has a different business id, it is a call-activity child, or business id uniqueness enforcement is enabled. More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type AssignProcessInstanceBusinessIdError = AssignProcessInstanceBusinessIdErrors[keyof AssignProcessInstanceBusinessIdErrors];
+
+export type AssignProcessInstanceBusinessIdResponses = {
+    /**
+     * The business id is assigned to the process instance.
+     */
+    204: void;
+};
+
+export type AssignProcessInstanceBusinessIdResponse = AssignProcessInstanceBusinessIdResponses[keyof AssignProcessInstanceBusinessIdResponses];
 
 export type GetProcessInstanceCallHierarchyData = {
     body?: never;
@@ -13553,9 +16307,7 @@ export type GetProcessInstanceCallHierarchyResponses = {
 export type GetProcessInstanceCallHierarchyResponse = GetProcessInstanceCallHierarchyResponses[keyof GetProcessInstanceCallHierarchyResponses];
 
 export type CancelProcessInstanceData = {
-    body?: {
-        operationReference?: OperationReference;
-    } | null;
+    body?: CancelProcessInstanceRequest;
     path: {
         /**
          * The key of the process instance to cancel.
@@ -13604,9 +16356,7 @@ export type CancelProcessInstanceResponses = {
 export type CancelProcessInstanceResponse = CancelProcessInstanceResponses[keyof CancelProcessInstanceResponses];
 
 export type DeleteProcessInstanceData = {
-    body?: {
-        operationReference?: OperationReference;
-    } | null;
+    body?: DeleteProcessInstanceRequest;
     path: {
         /**
          * The key of the process instance to delete.
@@ -13840,6 +16590,55 @@ export type ModifyProcessInstanceResponses = {
 
 export type ModifyProcessInstanceResponse = ModifyProcessInstanceResponses[keyof ModifyProcessInstanceResponses];
 
+export type ResumeProcessInstanceData = {
+    body?: ResumeProcessInstanceRequest;
+    path: {
+        /**
+         * The key of the process instance to resume.
+         */
+        processInstanceKey: ProcessInstanceKey;
+    };
+    query?: never;
+    url: '/process-instances/{processInstanceKey}/resumption';
+};
+
+export type ResumeProcessInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The process instance is not found.
+     */
+    404: ProblemDetail;
+    /**
+     * The process instance is not in the SUSPENDED state and cannot be resumed.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ResumeProcessInstanceError = ResumeProcessInstanceErrors[keyof ResumeProcessInstanceErrors];
+
+export type ResumeProcessInstanceResponses = {
+    /**
+     * The process instance is resumed.
+     */
+    204: void;
+};
+
+export type ResumeProcessInstanceResponse = ResumeProcessInstanceResponses[keyof ResumeProcessInstanceResponses];
+
 export type GetProcessInstanceSequenceFlowsData = {
     body?: never;
     path: {
@@ -13924,6 +16723,134 @@ export type GetProcessInstanceStatisticsResponses = {
 
 export type GetProcessInstanceStatisticsResponse = GetProcessInstanceStatisticsResponses[keyof GetProcessInstanceStatisticsResponses];
 
+export type GetProcessInstanceWaitStateStatisticsData = {
+    body?: never;
+    path: {
+        /**
+         * The assigned key of the process instance, which acts as a unique identifier for this process instance.
+         */
+        processInstanceKey: ProcessInstanceKey;
+    };
+    query?: never;
+    url: '/process-instances/{processInstanceKey}/statistics/wait-states';
+};
+
+export type GetProcessInstanceWaitStateStatisticsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetProcessInstanceWaitStateStatisticsError = GetProcessInstanceWaitStateStatisticsErrors[keyof GetProcessInstanceWaitStateStatisticsErrors];
+
+export type GetProcessInstanceWaitStateStatisticsResponses = {
+    /**
+     * The process instance wait state statistics result.
+     */
+    200: ProcessInstanceWaitStateStatisticsQueryResult;
+};
+
+export type GetProcessInstanceWaitStateStatisticsResponse = GetProcessInstanceWaitStateStatisticsResponses[keyof GetProcessInstanceWaitStateStatisticsResponses];
+
+export type SuspendProcessInstanceData = {
+    body?: SuspendProcessInstanceRequest;
+    path: {
+        /**
+         * The key of the process instance to suspend.
+         */
+        processInstanceKey: ProcessInstanceKey;
+    };
+    query?: never;
+    url: '/process-instances/{processInstanceKey}/suspension';
+};
+
+export type SuspendProcessInstanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The process instance is not found.
+     */
+    404: ProblemDetail;
+    /**
+     * The process instance is not in the ACTIVE state and cannot be suspended.
+     * More details are provided in the response body.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type SuspendProcessInstanceError = SuspendProcessInstanceErrors[keyof SuspendProcessInstanceErrors];
+
+export type SuspendProcessInstanceResponses = {
+    /**
+     * The process instance is suspended.
+     */
+    204: void;
+};
+
+export type SuspendProcessInstanceResponse = SuspendProcessInstanceResponses[keyof SuspendProcessInstanceResponses];
+
+export type SearchResourcesData = {
+    body?: ResourceSearchQuery;
+    path?: never;
+    query?: never;
+    url: '/resources/search';
+};
+
+export type SearchResourcesErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchResourcesError = SearchResourcesErrors[keyof SearchResourcesErrors];
+
+export type SearchResourcesResponses = {
+    /**
+     * The resource search result.
+     */
+    200: ResourceSearchQueryResult;
+};
+
+export type SearchResourcesResponse = SearchResourcesResponses[keyof SearchResourcesResponses];
+
 export type GetResourceData = {
     body?: never;
     path: {
@@ -13962,7 +16889,7 @@ export type GetResourceContentData = {
     body?: never;
     path: {
         /**
-         * The unique key identifying the resource.
+         * The unique key identifying the RPA resource.
          */
         resourceKey: ResourceKey;
     };
@@ -13976,6 +16903,10 @@ export type GetResourceContentErrors = {
      */
     404: ProblemDetail;
     /**
+     * The resource exists but is not an RPA resource.
+     */
+    406: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -13987,10 +16918,46 @@ export type GetResourceContentResponses = {
     /**
      * The resource content is successfully returned.
      */
-    200: string;
+    200: {
+        [key: string]: unknown;
+    };
 };
 
 export type GetResourceContentResponse = GetResourceContentResponses[keyof GetResourceContentResponses];
+
+export type GetResourceContentBinaryData = {
+    body?: never;
+    path: {
+        /**
+         * The unique key identifying the resource.
+         */
+        resourceKey: ResourceKey;
+    };
+    query?: never;
+    url: '/resources/{resourceKey}/content/binary';
+};
+
+export type GetResourceContentBinaryErrors = {
+    /**
+     * A resource with the given key was not found.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetResourceContentBinaryError = GetResourceContentBinaryErrors[keyof GetResourceContentBinaryErrors];
+
+export type GetResourceContentBinaryResponses = {
+    /**
+     * The resource content is successfully returned.
+     */
+    200: Blob | File;
+};
+
+export type GetResourceContentBinaryResponse = GetResourceContentBinaryResponses[keyof GetResourceContentBinaryResponses];
 
 export type DeleteResourceData = {
     body?: DeleteResourceRequest;
@@ -14059,6 +17026,10 @@ export type CreateRoleErrors = {
      */
     403: ProblemDetail;
     /**
+     * Role with this id already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -14123,7 +17094,7 @@ export type DeleteRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}';
@@ -14166,7 +17137,7 @@ export type GetRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}';
@@ -14208,7 +17179,7 @@ export type UpdateRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}';
@@ -14250,23 +17221,12 @@ export type UpdateRoleResponses = {
 export type UpdateRoleResponse = UpdateRoleResponses[keyof UpdateRoleResponses];
 
 export type SearchClientsForRoleData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'clientId';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: RoleClientSearchQueryRequest;
     path: {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/clients/search';
@@ -14301,17 +17261,7 @@ export type SearchClientsForRoleResponses = {
     /**
      * The clients with the assigned role.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching clients.
-         */
-        items: Array<{
-            /**
-             * The ID of the client.
-             */
-            clientId: string;
-        }>;
-    };
+    200: RoleClientSearchResult;
 };
 
 export type SearchClientsForRoleResponse = SearchClientsForRoleResponses[keyof SearchClientsForRoleResponses];
@@ -14322,11 +17272,11 @@ export type UnassignRoleFromClientData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/roles/{roleId}/clients/{clientId}';
@@ -14373,11 +17323,11 @@ export type AssignRoleToClientData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The client ID.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/roles/{roleId}/clients/{clientId}';
@@ -14428,7 +17378,7 @@ export type SearchGroupsForRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/groups/search';
@@ -14474,11 +17424,11 @@ export type UnassignRoleFromGroupData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/roles/{roleId}/groups/{groupId}';
@@ -14525,11 +17475,11 @@ export type AssignRoleToGroupData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The group ID.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/roles/{roleId}/groups/{groupId}';
@@ -14580,7 +17530,7 @@ export type SearchMappingRulesForRoleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/mapping-rules/search';
@@ -14615,12 +17565,7 @@ export type SearchMappingRulesForRoleResponses = {
     /**
      * The mapping rules with assigned role.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching mapping rules.
-         */
-        items: Array<MappingRuleResult>;
-    };
+    200: RoleMappingRuleSearchResult;
 };
 
 export type SearchMappingRulesForRoleResponse = SearchMappingRulesForRoleResponses[keyof SearchMappingRulesForRoleResponses];
@@ -14631,11 +17576,11 @@ export type UnassignRoleFromMappingRuleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/roles/{roleId}/mapping-rules/{mappingRuleId}';
@@ -14682,11 +17627,11 @@ export type AssignRoleToMappingRuleData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The mapping rule ID.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/roles/{roleId}/mapping-rules/{mappingRuleId}';
@@ -14732,23 +17677,12 @@ export type AssignRoleToMappingRuleResponses = {
 export type AssignRoleToMappingRuleResponse = AssignRoleToMappingRuleResponses[keyof AssignRoleToMappingRuleResponses];
 
 export type SearchUsersForRoleData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'username';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: RoleUserSearchQueryRequest;
     path: {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/roles/{roleId}/users/search';
@@ -14783,14 +17717,7 @@ export type SearchUsersForRoleResponses = {
     /**
      * The users with the assigned role.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching users.
-         */
-        items: Array<{
-            username: Username;
-        }>;
-    };
+    200: RoleUserSearchResult;
 };
 
 export type SearchUsersForRoleResponse = SearchUsersForRoleResponses[keyof SearchUsersForRoleResponses];
@@ -14801,7 +17728,7 @@ export type UnassignRoleFromUserData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The user username.
          */
@@ -14852,7 +17779,7 @@ export type AssignRoleToUserData = {
         /**
          * The role ID.
          */
-        roleId: string;
+        roleId: RoleId;
         /**
          * The user username.
          */
@@ -14901,6 +17828,46 @@ export type AssignRoleToUserResponses = {
 
 export type AssignRoleToUserResponse = AssignRoleToUserResponses[keyof AssignRoleToUserResponses];
 
+export type ResolveSecretsData = {
+    body: SecretResolveRequest;
+    path?: never;
+    query?: never;
+    url: '/secrets/resolve';
+};
+
+export type ResolveSecretsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ResolveSecretsError = ResolveSecretsErrors[keyof ResolveSecretsErrors];
+
+export type ResolveSecretsResponses = {
+    /**
+     * The batch was processed. Per-reference outcomes are split between `resolved` and
+     * `errors`; this status is returned even when some or all references failed.
+     *
+     */
+    200: SecretResolveResult;
+};
+
+export type ResolveSecretsResponse = ResolveSecretsResponses[keyof ResolveSecretsResponses];
+
 export type CreateAdminUserData = {
     body: UserRequest;
     path?: never;
@@ -14917,6 +17884,10 @@ export type CreateAdminUserErrors = {
      * Forbidden. The request is not allowed.
      */
     403: ProblemDetail;
+    /**
+     * A user with this username already exists.
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -15106,7 +18077,7 @@ export type CreateTenantErrors = {
     /**
      * Tenant with this id already exists.
      */
-    409: unknown;
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -15311,18 +18282,7 @@ export type UpdateTenantResponses = {
 export type UpdateTenantResponse = UpdateTenantResponses[keyof UpdateTenantResponses];
 
 export type SearchClientsForTenantData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'clientId';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: TenantClientSearchQueryRequest;
     path: {
         /**
          * The unique identifier of the tenant.
@@ -15337,17 +18297,7 @@ export type SearchClientsForTenantResponses = {
     /**
      * The search result of users for the tenant.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching clients.
-         */
-        items: Array<{
-            /**
-             * The ID of the client.
-             */
-            clientId: string;
-        }>;
-    };
+    200: TenantClientSearchResult;
 };
 
 export type SearchClientsForTenantResponse = SearchClientsForTenantResponses[keyof SearchClientsForTenantResponses];
@@ -15362,7 +18312,7 @@ export type UnassignClientFromTenantData = {
         /**
          * The unique identifier of the application.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/tenants/{tenantId}/clients/{clientId}';
@@ -15413,7 +18363,7 @@ export type AssignClientToTenantData = {
         /**
          * The unique identifier of the application.
          */
-        clientId: string;
+        clientId: ClientId;
     };
     query?: never;
     url: '/tenants/{tenantId}/clients/{clientId}';
@@ -15485,7 +18435,7 @@ export type UnassignGroupFromTenantData = {
         /**
          * The unique identifier of the group.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/tenants/{tenantId}/groups/{groupId}';
@@ -15536,7 +18486,7 @@ export type AssignGroupToTenantData = {
         /**
          * The unique identifier of the group.
          */
-        groupId: string;
+        groupId: GroupId;
     };
     query?: never;
     url: '/tenants/{tenantId}/groups/{groupId}';
@@ -15593,12 +18543,7 @@ export type SearchMappingRulesForTenantResponses = {
     /**
      * The search result of MappingRules for the tenant.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching mapping rules.
-         */
-        items: Array<MappingRuleResult>;
-    };
+    200: TenantMappingRuleSearchResult;
 };
 
 export type SearchMappingRulesForTenantResponse = SearchMappingRulesForTenantResponses[keyof SearchMappingRulesForTenantResponses];
@@ -15613,7 +18558,7 @@ export type UnassignMappingRuleFromTenantData = {
         /**
          * The unique identifier of the mapping rule.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/mapping-rules/{mappingRuleId}';
@@ -15664,7 +18609,7 @@ export type AssignMappingRuleToTenantData = {
         /**
          * The unique identifier of the mapping rule.
          */
-        mappingRuleId: string;
+        mappingRuleId: MappingRuleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/mapping-rules/{mappingRuleId}';
@@ -15721,12 +18666,7 @@ export type SearchRolesForTenantResponses = {
     /**
      * The search result of roles for the tenant.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching roles.
-         */
-        items: Array<RoleResult>;
-    };
+    200: TenantRoleSearchResult;
 };
 
 export type SearchRolesForTenantResponse = SearchRolesForTenantResponses[keyof SearchRolesForTenantResponses];
@@ -15741,7 +18681,7 @@ export type UnassignRoleFromTenantData = {
         /**
          * The unique identifier of the role.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/roles/{roleId}';
@@ -15792,7 +18732,7 @@ export type AssignRoleToTenantData = {
         /**
          * The unique identifier of the role.
          */
-        roleId: string;
+        roleId: RoleId;
     };
     query?: never;
     url: '/tenants/{tenantId}/roles/{roleId}';
@@ -15834,18 +18774,7 @@ export type AssignRoleToTenantResponses = {
 export type AssignRoleToTenantResponse = AssignRoleToTenantResponses[keyof AssignRoleToTenantResponses];
 
 export type SearchUsersForTenantData = {
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'username';
-            order?: SortOrderEnum;
-        }>;
-    };
+    body?: TenantUserSearchQueryRequest;
     path: {
         /**
          * The unique identifier of the tenant.
@@ -15860,14 +18789,7 @@ export type SearchUsersForTenantResponses = {
     /**
      * The search result of users for the tenant.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching users.
-         */
-        items: Array<{
-            username: Username;
-        }>;
-    };
+    200: TenantUserSearchResult;
 };
 
 export type SearchUsersForTenantResponse = SearchUsersForTenantResponses[keyof SearchUsersForTenantResponses];
@@ -16003,6 +18925,85 @@ export type GetTopologyResponses = {
 
 export type GetTopologyResponse = GetTopologyResponses[keyof GetTopologyResponses];
 
+export type ChangeClusterModeData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * The target cluster mode.
+         */
+        mode: 'PROCESSING' | 'RECOVERING';
+        /**
+         * If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.
+         */
+        dryRun?: boolean;
+    };
+    url: '/mode';
+};
+
+export type ChangeClusterModeErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type ChangeClusterModeError = ChangeClusterModeErrors[keyof ChangeClusterModeErrors];
+
+export type ChangeClusterModeResponses = {
+    /**
+     * The mode change request was accepted; returns the planned cluster changes.
+     */
+    200: ClusterModeChangeResponse;
+};
+
+export type ChangeClusterModeResponse = ChangeClusterModeResponses[keyof ChangeClusterModeResponses];
+
+export type RestoreData = {
+    body: RestoreRequest;
+    path?: never;
+    query?: never;
+    url: '/restore';
+};
+
+export type RestoreErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The cluster is not in recovery mode, so the restore cannot be accepted.
+     */
+    409: unknown;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type RestoreError = RestoreErrors[keyof RestoreErrors];
+
+export type RestoreResponses = {
+    /**
+     * The restore request was accepted; returns the planned cluster changes.
+     */
+    202: ClusterModeChangeResponse;
+};
+
+export type RestoreResponse = RestoreResponses[keyof RestoreResponses];
+
 export type CreateUserData = {
     body: UserRequest;
     path?: never;
@@ -16081,22 +19082,7 @@ export type SearchUsersResponses = {
     /**
      * The user search result.
      */
-    200: SearchQueryResponse & {
-        /**
-         * The matching users.
-         */
-        items: Array<{
-            username: Username;
-            /**
-             * The name of the user.
-             */
-            name: string | null;
-            /**
-             * The email of the user.
-             */
-            email: string | null;
-        }>;
-    };
+    200: UserSearchResult;
 };
 
 export type SearchUsersResponse = SearchUsersResponses[keyof SearchUsersResponses];
@@ -16181,17 +19167,7 @@ export type GetUserResponses = {
     /**
      * The user is successfully returned.
      */
-    200: {
-        username: Username;
-        /**
-         * The name of the user.
-         */
-        name: string | null;
-        /**
-         * The email of the user.
-         */
-        email: string | null;
-    };
+    200: UserResult;
 };
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
@@ -16238,17 +19214,7 @@ export type UpdateUserResponses = {
     /**
      * The user was updated successfully.
      */
-    200: {
-        username: Username;
-        /**
-         * The name of the user.
-         */
-        name: string | null;
-        /**
-         * The email of the user.
-         */
-        email: string | null;
-    };
+    200: UserUpdateResult;
 };
 
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
@@ -16599,13 +19565,7 @@ export type SearchUserTaskEffectiveVariablesData = {
         /**
          * Sort field criteria.
          */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
-            order?: SortOrderEnum;
-        }>;
+        sort?: Array<UserTaskVariableSearchQuerySortRequest>;
         /**
          * The user task variable search filters.
          */
@@ -16699,25 +19659,7 @@ export type GetUserTaskFormResponses = {
 export type GetUserTaskFormResponse = GetUserTaskFormResponses[keyof GetUserTaskFormResponses];
 
 export type SearchUserTaskVariablesData = {
-    /**
-     * User task search query request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * The user task variable search filters.
-         */
-        filter?: UserTaskVariableFilter;
-    };
+    body?: UserTaskVariableSearchQueryRequest;
     path: {
         /**
          * The key of the user task.
@@ -16756,25 +19698,7 @@ export type SearchUserTaskVariablesResponses = {
 export type SearchUserTaskVariablesResponse = SearchUserTaskVariablesResponses[keyof SearchUserTaskVariablesResponses];
 
 export type SearchVariablesData = {
-    /**
-     * Variable search query request.
-     */
-    body?: SearchQueryRequest & {
-        /**
-         * Sort field criteria.
-         */
-        sort?: Array<{
-            /**
-             * The field to sort by.
-             */
-            field: 'value' | 'name' | 'tenantId' | 'variableKey' | 'scopeKey' | 'processInstanceKey';
-            order?: SortOrderEnum;
-        }>;
-        /**
-         * The variable search filters.
-         */
-        filter?: VariableFilter;
-    };
+    body?: VariableSearchQuery;
     path?: never;
     query?: {
         /**
@@ -16863,14 +19787,42 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 
 // branding-plugin generated
-// schemaVersion=1.0.0
-// specHash=sha256:23c77958ed5c8e6d5bec3a5368ea7cc9aef83d7a745bffdbf618c34ece760409
+// schemaVersion=2.0.0
+// specHash=sha256:d13bc9d204c7e72691377d7ac75c580db83acec006dbd3f4635c4fbe05245865
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
 `);
   if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);
+}
+// System-generated key for an agent history item.
+export namespace AgentHistoryItemKey {
+  export function assumeExists(value: string): AgentHistoryItemKey {
+    assertConstraint(value, 'AgentHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  }
+  export function getValue(key: AgentHistoryItemKey): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'AgentHistoryItemKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
+}
+// System-generated key for an agent instance.
+export namespace AgentInstanceKey {
+  export function assumeExists(value: string): AgentInstanceKey {
+    assertConstraint(value, 'AgentInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  }
+  export function getValue(key: AgentInstanceKey): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'AgentInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
 }
 // System-generated entity key for an audit log entry.
 export namespace AuditLogEntityKey {
@@ -16934,6 +19886,34 @@ export namespace BusinessId {
     } catch { return false; }
   }
 }
+// The unique identifier of an OAuth client. Minted outside the Camunda REST API: in SaaS by Console, in Self-Managed with OIDC by the external identity provider (e.g. EntraID, Keycloak, Okta). In Self-Managed with Basic authentication, machine-to-machine applications are modelled as users instead — see the user identifier. 
+export namespace ClientId {
+  export function assumeExists(value: string): ClientId {
+    assertConstraint(value, 'ClientId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: ClientId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ClientId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The name of a cluster variable. Unique within its scope (global or tenant-specific).
+export namespace ClusterVariableName {
+  export function assumeExists(value: string): ClusterVariableName {
+    assertConstraint(value, 'ClusterVariableName', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: ClusterVariableName): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'ClusterVariableName', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
 // System-generated key for a conditional evaluation.
 export namespace ConditionalEvaluationKey {
   export function assumeExists(value: string): ConditionalEvaluationKey {
@@ -16976,16 +19956,16 @@ export namespace DecisionDefinitionKey {
     } catch { return false; }
   }
 }
-// System-generated key for a decision evaluation instance.
+// System-generated identifier for a decision evaluation instance. It is composed of the parent decision evaluation key and the 1-based index of the evaluated decision within that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`). 
 export namespace DecisionEvaluationInstanceKey {
   export function assumeExists(value: string): DecisionEvaluationInstanceKey {
-    assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
     return value as any;
   }
   export function getValue(key: DecisionEvaluationInstanceKey): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      assertConstraint(value, 'DecisionEvaluationInstanceKey', { pattern: "^[0-9]+-[0-9]+$", minLength: 3, maxLength: 30 });
       return true;
     } catch { return false; }
   }
@@ -17121,11 +20101,29 @@ export namespace FormKey {
 // The user-defined id for the global listener
 export namespace GlobalListenerId {
   export function assumeExists(value: string): GlobalListenerId {
+    assertConstraint(value, 'GlobalListenerId', { pattern: "^[a-zA-Z0-9_~@.+\\-]+$", minLength: 1, maxLength: 256 });
     return value as any;
   }
   export function getValue(key: GlobalListenerId): string { return key; }
   export function isValid(value: string): boolean {
-    return true;
+    try {
+      assertConstraint(value, 'GlobalListenerId', { pattern: "^[a-zA-Z0-9_~@.+\\-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The unique identifier of a group.
+export namespace GroupId {
+  export function assumeExists(value: string): GroupId {
+    assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: GroupId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
   }
 }
 // System-generated key for a incident.
@@ -17152,6 +20150,20 @@ export namespace JobKey {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The unique identifier of a mapping rule.
+export namespace MappingRuleId {
+  export function assumeExists(value: string): MappingRuleId {
+    assertConstraint(value, 'MappingRuleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: MappingRuleId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'MappingRuleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
   }
@@ -17226,6 +20238,20 @@ export namespace ProcessInstanceKey {
     } catch { return false; }
   }
 }
+// The unique identifier of a role.
+export namespace RoleId {
+  export function assumeExists(value: string): RoleId {
+    assertConstraint(value, 'RoleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: RoleId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'RoleId', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
 // System-generated key for an signal.
 export namespace SignalKey {
   export function assumeExists(value: string): SignalKey {
@@ -17271,13 +20297,13 @@ export namespace Tag {
 // The unique identifier of the tenant.
 export namespace TenantId {
   export function assumeExists(value: string): TenantId {
-    assertConstraint(value, 'TenantId', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+    assertConstraint(value, 'TenantId', { pattern: "^(<default>|[\\w\\.\\-]{1,31})$", minLength: 1, maxLength: 31 });
     return value as any;
   }
   export function getValue(key: TenantId): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'TenantId', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+      assertConstraint(value, 'TenantId', { pattern: "^(<default>|[\\w\\.\\-]{1,31})$", minLength: 1, maxLength: 31 });
       return true;
     } catch { return false; }
   }
@@ -17285,13 +20311,13 @@ export namespace TenantId {
 // The unique name of a user.
 export namespace Username {
   export function assumeExists(value: string): Username {
-    assertConstraint(value, 'Username', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+    assertConstraint(value, 'Username', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
     return value as any;
   }
   export function getValue(key: Username): string { return key; }
   export function isValid(value: string): boolean {
     try {
-      assertConstraint(value, 'Username', { pattern: "^(<default>|[A-Za-z0-9_@.+-]+)$", minLength: 1, maxLength: 256 });
+      assertConstraint(value, 'Username', { pattern: "^[a-zA-Z0-9_~@.+-]+$", minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
   }

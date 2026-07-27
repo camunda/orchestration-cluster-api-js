@@ -7,6 +7,11 @@ paths:
       tags:
         - Clock
       operationId: pinClock
+      x-required-permissions:
+        - { resourceType: SYSTEM, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Pin internal clock (alpha)
       description: |
         Set a precise, static time for the Zeebe engine's internal clock.
@@ -30,6 +35,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.6"
 
   /clock/reset:
     post:
@@ -37,6 +43,11 @@ paths:
       tags:
         - Clock
       operationId: resetClock
+      x-required-permissions:
+        - { resourceType: SYSTEM, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Reset internal clock (alpha)
       description: |
         Resets the Zeebe engine's internal clock to the current system time, enabling it to tick in real-time.
@@ -52,6 +63,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.6"
 
 ## Schema definitions
 

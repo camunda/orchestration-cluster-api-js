@@ -125,7 +125,7 @@ npm dist-tag add @camunda8/orchestration-cluster-api@<last-9.x-version> 9-stable
 
 5. **Update `SPEC_REF`** in the `build` script in `package.json` on the new stable branch to point to the new server branch (e.g. `SPEC_REF=stable/8.10`).
 
-6. **Add a Dependabot entry** for the new stable branch in [.github/dependabot.yml](.github/dependabot.yml). Dependabot does not support wildcard branch patterns, so each `stable/*` branch must be listed explicitly.
+6. **Add the new stable branch to Renovate** in [.github/renovate.json](.github/renovate.json): append it to `baseBranchPatterns` and mirror the stable-branch `packageRules` entries (patch-only updates; GitHub Actions disabled) for it.
 
 After promotion:
 

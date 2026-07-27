@@ -7,8 +7,17 @@ paths:
       tags:
         - User
       operationId: createUser
+      x-required-permissions:
+        - { resourceType: USER, permissionType: CREATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Create user
       description: Create a new user.
+      x-semantic-establishes:
+        kind: User
+        identifiedBy:
+          - { in: body, name: username, semanticType: Username }
       requestBody:
         content:
           application/json:
@@ -38,6 +47,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.8"
 
   /users/search:
     post:
@@ -45,6 +55,12 @@ paths:
       tags:
         - User
       operationId: searchUsers
+      x-permission-enforcement: filter
+      x-required-permissions:
+        - { resourceType: USER, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Search users
       description: Search for users based on given criteria.
       requestBody:
@@ -67,6 +83,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/Forbidden'
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
   /users/{username}:
     get:
@@ -74,8 +91,17 @@ paths:
       tags:
         - User
       operationId: getUser
+      x-required-permissions:
+        - { resourceType: USER, permissionType: READ }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Get user
       description: Get a user by its username.
+      x-semantic-requires:
+        kind: User
+        bind:
+          username: { from: path, name: username }
       parameters:
         - name: username
           in: path
@@ -102,14 +128,24 @@ paths:
                 $ref: "problem-detail.yaml#/components/schemas/ProblemDetail"
         "500":
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
+      x-added-in-version: "8.8"
 
     put:
       x-eventually-consistent: false
       tags:
         - User
       operationId: updateUser
+      x-required-permissions:
+        - { resourceType: USER, permissionType: UPDATE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Update user
       description: Updates a user.
+      x-semantic-requires:
+        kind: User
+        bind:
+          username: { from: path, name: username }
       parameters:
         - name: username
           in: path
@@ -144,14 +180,24 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.8"
 
     delete:
       x-eventually-consistent: false
       tags:
         - User
       operationId: deleteUser
+      x-required-permissions:
+        - { resourceType: USER, permissionType: DELETE }
+      security:
+        - bearerAuth: []
+        - basicAuth: []
       summary: Delete user
       description: Deletes a user.
+      x-semantic-requires:
+        kind: User
+        bind:
+          username: { from: path, name: username }
       parameters:
         - name: username
           in: path
@@ -174,6 +220,7 @@ paths:
           $ref: 'common-responses.yaml#/components/responses/InternalServerError'
         "503":
           $ref: 'common-responses.yaml#/components/responses/ServiceUnavailable'
+      x-added-in-version: "8.8"
 
 ## Schema definitions
 
@@ -187,8 +234,9 @@ components:
           description: The password of the user.
           type: string
         username:
-          description: The username of the user.
-          type: string
+          description: The username of the new user.
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/Username'
         name:
           description: The name of the user.
           type: string
@@ -205,7 +253,9 @@ components:
         - username
       properties:
         username:
-          $ref: 'identifiers.yaml#/components/schemas/Username'
+          description: The username of the created user.
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/Username'
         name:
           description: The name of the user.
           nullable: true
@@ -236,7 +286,9 @@ components:
       type: object
       properties:
         username:
-          $ref: 'identifiers.yaml#/components/schemas/Username'
+          description: The username of the updated user.
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/Username'
         name:
           description: The name of the user.
           nullable: true
@@ -254,7 +306,9 @@ components:
       type: object
       properties:
         username:
-          $ref: 'identifiers.yaml#/components/schemas/Username'
+          description: The username of the user.
+          allOf:
+            - $ref: 'identifiers.yaml#/components/schemas/Username'
         name:
           description: The name of the user.
           nullable: true

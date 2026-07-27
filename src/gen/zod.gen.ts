@@ -5,6 +5,283 @@ import { __zodAugmentApplied } from '../zod-augment';
 void __zodAugmentApplied; // ensure module retained for prototype patch // branding-plugin zod augmentation
 
 /**
+ * The static definition of an agent instance, set once at creation.
+ */
+export const zAgentInstanceDefinition = z.object({
+    model: z.string().register(z.globalRegistry, {
+        description: 'The LLM model identifier (for example, gpt-4o).'
+    }),
+    provider: z.string().register(z.globalRegistry, {
+        description: 'The LLM provider (for example, openai or anthropic).'
+    }),
+    systemPrompt: z.string().register(z.globalRegistry, {
+        description: 'The system prompt configured for this agent instance.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The static definition of an agent instance, set once at creation.'
+});
+
+/**
+ * A tool available to the agent.
+ */
+export const zAgentTool = z.object({
+    name: z.string().register(z.globalRegistry, {
+        description: 'The tool name as visible to the LLM.'
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    elementId: z.union([
+        z.string(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'A tool available to the agent.'
+});
+
+/**
+ * Aggregated metrics for an agent instance across all model calls.
+ */
+export const zAgentInstanceMetrics = z.object({
+    inputTokens: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'Total input tokens consumed across all model calls.'
+    }),
+    outputTokens: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'Total output tokens produced across all model calls.'
+    }),
+    modelCalls: z.int().register(z.globalRegistry, {
+        description: 'Total number of LLM calls made.'
+    }),
+    toolCalls: z.int().register(z.globalRegistry, {
+        description: 'Total number of tool calls made.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Aggregated metrics for an agent instance across all model calls.'
+});
+
+/**
+ * The configured limits for an agent instance, set once at creation.
+ */
+export const zAgentInstanceLimits = z.object({
+    maxModelCalls: z.int().register(z.globalRegistry, {
+        description: 'Maximum LLM calls allowed. -1 if no limit is configured.'
+    }),
+    maxToolCalls: z.int().register(z.globalRegistry, {
+        description: 'Maximum tool calls allowed. -1 if no limit is configured.'
+    }),
+    maxTokens: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'Maximum total tokens allowed. -1 if no limit is configured.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The configured limits for an agent instance, set once at creation.'
+});
+
+/**
+ * The current status of an agent instance.
+ */
+export const zAgentInstanceStatusEnum = z.enum([
+    'UNKNOWN',
+    'COMPLETED',
+    'IDLE',
+    'INITIALIZING',
+    'THINKING',
+    'TOOL_CALLING',
+    'TOOL_DISCOVERY'
+]).register(z.globalRegistry, {
+    description: 'The current status of an agent instance.'
+});
+
+/**
+ * The status values that can be set on an agent instance via an update request.
+ *
+ */
+export const zAgentInstanceUpdateStatusEnum = z.enum([
+    'IDLE',
+    'THINKING',
+    'TOOL_CALLING',
+    'TOOL_DISCOVERY'
+]).register(z.globalRegistry, {
+    description: 'The status values that can be set on an agent instance via an update request.\n'
+});
+
+/**
+ * Metric increments to apply to the agent instance aggregate counters. The engine
+ * accumulates these deltas into running totals on each UPDATED event. All fields
+ * are optional; omit a field to leave the corresponding counter unchanged.
+ *
+ */
+export const zAgentInstanceMetricsDelta = z.object({
+    inputTokens: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total input token counter.'
+    })),
+    outputTokens: z.optional(z.coerce.number().int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total output token counter.'
+    })),
+    modelCalls: z.optional(z.int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total model call counter.'
+    })),
+    toolCalls: z.optional(z.int().gte(0).register(z.globalRegistry, {
+        description: 'Increment to apply to the total tool call counter.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Metric increments to apply to the agent instance aggregate counters. The engine\naccumulates these deltas into running totals on each UPDATED event. All fields\nare optional; omit a field to leave the corresponding counter unchanged.\n'
+});
+
+/**
+ * The role of a history item in the agent conversation.
+ */
+export const zAgentInstanceHistoryRoleEnum = z.enum([
+    'USER',
+    'ASSISTANT',
+    'TOOL_RESULT'
+]).register(z.globalRegistry, {
+    description: 'The role of a history item in the agent conversation.'
+});
+
+/**
+ * The commit status of a history item.
+ * COMMITTED: the producing job completed successfully.
+ * PENDING: the producing job is still active (in-flight).
+ * DISCARDED: the producing job failed; this item was superseded by a later activation.
+ *
+ */
+export const zAgentInstanceHistoryCommitStatusEnum = z.enum([
+    'COMMITTED',
+    'PENDING',
+    'DISCARDED'
+]).register(z.globalRegistry, {
+    description: 'The commit status of a history item.\nCOMMITTED: the producing job completed successfully.\nPENDING: the producing job is still active (in-flight).\nDISCARDED: the producing job failed; this item was superseded by a later activation.\n'
+});
+
+/**
+ * Text content
+ *
+ * A plain-text content block.
+ */
+export const zAgentInstanceTextContent = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type discriminator.'
+    }),
+    text: z.string().register(z.globalRegistry, {
+        description: 'The text content.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A plain-text content block.'
+});
+
+/**
+ * Object content
+ *
+ * An arbitrary structured content block. Accepts any valid JSON value:
+ * objects, arrays, numbers, booleans, or strings.
+ * Use TEXT content for human-readable natural language;
+ * use OBJECT content for machine-readable structured data.
+ *
+ */
+export const zAgentInstanceObjectContent = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type discriminator.'
+    }),
+    object: z.unknown().register(z.globalRegistry, {
+        description: 'Arbitrary structured content — any valid JSON value (object, array, number, boolean, or string).'
+    })
+}).register(z.globalRegistry, {
+    description: 'An arbitrary structured content block. Accepts any valid JSON value:\nobjects, arrays, numbers, booleans, or strings.\nUse TEXT content for human-readable natural language;\nuse OBJECT content for machine-readable structured data.\n'
+});
+
+/**
+ * The content type discriminator for a history item content block.
+ */
+export const zAgentInstanceMessageContentTypeEnum = z.enum([
+    'TEXT',
+    'DOCUMENT',
+    'OBJECT'
+]).register(z.globalRegistry, {
+    description: 'The content type discriminator for a history item content block.'
+});
+
+/**
+ * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
+ * ASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.
+ *
+ */
+export const zAgentInstanceToolCall = z.object({
+    toolCallId: z.string().register(z.globalRegistry, {
+        description: 'The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.'
+    }),
+    toolName: z.string().register(z.globalRegistry, {
+        description: 'The LLM-visible tool name.'
+    }),
+    elementId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    arguments: z.union([
+        z.record(z.string(), z.unknown()),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\nASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.\n'
+});
+
+/**
+ * Per-call token and latency metrics for an ASSISTANT history item.
+ */
+export const zAgentInstanceHistoryItemMetrics = z.object({
+    inputTokens: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ]),
+    outputTokens: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ]),
+    durationMs: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'Per-call token and latency metrics for an ASSISTANT history item.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryRoleEnum filter.
+ */
+export const zAdvancedAgentInstanceHistoryRoleFilter = z.object({
+    '$eq': z.optional(zAgentInstanceHistoryRoleEnum),
+    '$neq': z.optional(zAgentInstanceHistoryRoleEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentInstanceHistoryRoleEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentInstanceHistoryRoleEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceHistoryCommitStatusEnum filter.
+ */
+export const zAdvancedAgentInstanceHistoryCommitStatusFilter = z.object({
+    '$eq': z.optional(zAgentInstanceHistoryCommitStatusEnum),
+    '$neq': z.optional(zAgentInstanceHistoryCommitStatusEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentInstanceHistoryCommitStatusEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentInstanceHistoryCommitStatusEnum filter.'
+});
+
+/**
  * System-generated entity key for an audit log entry.
  */
 export const zAuditLogEntityKey = z.string().register(z.globalRegistry, {
@@ -129,6 +406,8 @@ export const zPermissionTypeEnum = z.enum([
     'CREATE_BATCH_OPERATION_MIGRATE_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_MODIFY_PROCESS_INSTANCE',
     'CREATE_BATCH_OPERATION_RESOLVE_INCIDENT',
+    'CREATE_BATCH_OPERATION_SUSPEND_PROCESS_INSTANCE',
+    'CREATE_BATCH_OPERATION_UPDATE_JOB',
     'CREATE_DECISION_INSTANCE',
     'CREATE_PROCESS_INSTANCE',
     'CREATE_TASK_LISTENER',
@@ -142,6 +421,7 @@ export const zPermissionTypeEnum = z.enum([
     'DELETE_TASK_LISTENER',
     'EVALUATE',
     'MODIFY_PROCESS_INSTANCE',
+    'PAUSE',
     'READ',
     'READ_DECISION_DEFINITION',
     'READ_DECISION_INSTANCE',
@@ -151,6 +431,9 @@ export const zPermissionTypeEnum = z.enum([
     'READ_USAGE_METRIC',
     'READ_USER_TASK',
     'READ_TASK_LISTENER',
+    'RESTORE',
+    'REVEAL',
+    'SUSPEND_PROCESS_INSTANCE',
     'UPDATE',
     'UPDATE_PROCESS_INSTANCE',
     'UPDATE_USER_TASK',
@@ -165,12 +448,14 @@ export const zPermissionTypeEnum = z.enum([
 export const zResourceTypeEnum = z.enum([
     'AUDIT_LOG',
     'AUTHORIZATION',
+    'BACKUP',
     'BATCH',
     'CLUSTER_VARIABLE',
     'COMPONENT',
     'DECISION_DEFINITION',
     'DECISION_REQUIREMENTS_DEFINITION',
     'DOCUMENT',
+    'EXPORTER',
     'EXPRESSION',
     'GLOBAL_LISTENER',
     'GROUP',
@@ -179,6 +464,7 @@ export const zResourceTypeEnum = z.enum([
     'PROCESS_DEFINITION',
     'RESOURCE',
     'ROLE',
+    'SECRET',
     'SYSTEM',
     'TENANT',
     'USER',
@@ -313,6 +599,9 @@ export const zBatchOperationTypeEnum = z.enum([
     'MIGRATE_PROCESS_INSTANCE',
     'MODIFY_PROCESS_INSTANCE',
     'RESOLVE_INCIDENT',
+    'RESUME_PROCESS_INSTANCE',
+    'SUSPEND_PROCESS_INSTANCE',
+    'UPDATE_JOB',
     'UPDATE_VARIABLE'
 ]).register(z.globalRegistry, {
     description: 'The type of the batch operation.'
@@ -325,6 +614,16 @@ export const zClockPinRequest = z.object({
 });
 
 /**
+ * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
+ */
+export const zClusterVariableKindEnum = z.enum([
+    'JSON',
+    'SECRET_REFERENCE'
+]).register(z.globalRegistry, {
+    description: 'The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.'
+});
+
+/**
  * The scope of a cluster variable.
  */
 export const zClusterVariableScopeEnum = z.enum([
@@ -334,56 +633,17 @@ export const zClusterVariableScopeEnum = z.enum([
     description: 'The scope of a cluster variable.'
 });
 
-export const zCreateClusterVariableRequest = z.object({
-    name: z.string().register(z.globalRegistry, {
-        description: 'The name of the cluster variable. Must be unique within its scope (global or tenant-specific).'
-    }),
-    value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
-    })
-});
-
 export const zUpdateClusterVariableRequest = z.object({
     value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The new value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
-    })
-});
-
-/**
- * Cluster variable response item.
- */
-export const zClusterVariableResultBase = z.object({
-    name: z.string().register(z.globalRegistry, {
-        description: 'The name of the cluster variable. Unique within its scope (global or tenant-specific).'
     }),
-    scope: zClusterVariableScopeEnum,
-    tenantId: z.union([
+    metadata: z.optional(z.record(z.string(), z.union([
         z.string(),
-        z.null()
-    ])
-}).register(z.globalRegistry, {
-    description: 'Cluster variable response item.'
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
+    }))
 });
-
-export const zClusterVariableResult = zClusterVariableResultBase.and(z.object({
-    value: z.string().register(z.globalRegistry, {
-        description: 'Full value of this cluster variable.'
-    })
-}));
-
-/**
- * Cluster variable search response item.
- */
-export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.object({
-    value: z.string().register(z.globalRegistry, {
-        description: 'Value of this cluster variable. Can be truncated.'
-    }),
-    isTruncated: z.boolean().register(z.globalRegistry, {
-        description: 'Whether the value is truncated or not.'
-    })
-}).register(z.globalRegistry, {
-    description: 'Cluster variable search response item.'
-}));
 
 /**
  * Provides information on a partition within a broker node.
@@ -405,6 +665,15 @@ export const zPartition = z.object({
         'dead'
     ]).register(z.globalRegistry, {
         description: 'Describes the current health of the partition.'
+    }),
+    state: z.enum([
+        'unknown',
+        'joining',
+        'active',
+        'leaving',
+        'recovering'
+    ]).register(z.globalRegistry, {
+        description: 'Describes the current operational state of the partition within the cluster configuration.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Provides information on a partition within a broker node.'
@@ -415,7 +684,10 @@ export const zPartition = z.object({
  */
 export const zBrokerInfo = z.object({
     nodeId: z.int().register(z.globalRegistry, {
-        description: 'The unique (within a cluster) node ID for the broker.'
+        description: "The node ID for the broker. The uniqueness of this identifier depends if the cluster is zone-aware or not. - non zone-aware: (default) nodeId is unique across the cluster - zone-aware:  (opt-in) nodeId is unique only within its zone. If you are migrating to a zone aware cluster, you must use `brokerId` instead. This property is deprecated, as it's been replaced by `brokerId`.\n"
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: "The unique (within a cluster) broker identifier. When the cluster is not zoned, then it's a string that represents the nodeId (an integer). When the cluster is zoned, instead, it's of the form \"$zoneName_$nodeId\", providing uniqueness even across zones.\n"
     }),
     host: z.string().register(z.globalRegistry, {
         description: 'The hostname for reaching the broker.'
@@ -461,6 +733,55 @@ export const zTopologyResponse = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The response of a topology request.'
+});
+
+/**
+ * A single operation that is part of a cluster mode change.
+ */
+export const zClusterModeChangeOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    mode: z.union([
+        z.string(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'A single operation that is part of a cluster mode change.'
+});
+
+/**
+ * The planned changes resulting from a cluster mode transition request.
+ */
+export const zClusterModeChangeResponse = z.object({
+    changeId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the cluster change that was triggered by the request.'
+    }),
+    plannedChanges: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
+        description: 'The ordered list of operations that will be applied to complete the change.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The planned changes resulting from a cluster mode transition request.'
+});
+
+/**
+ * Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.
+ */
+export const zRestoreRequest = z.object({
+    from: z.optional(z.union([
+        z.iso.datetime(),
+        z.null()
+    ])),
+    to: z.optional(z.union([
+        z.iso.datetime(),
+        z.null()
+    ])),
+    backupIds: z.optional(z.union([
+        z.array(z.coerce.number().int()),
+        z.null()
+    ]))
+}).register(z.globalRegistry, {
+    description: 'Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.'
 });
 
 /**
@@ -608,18 +929,116 @@ export const zElementInstanceStateEnum = z.enum([
     description: 'Element states'
 });
 
-export const zExpressionEvaluationRequest = z.object({
-    expression: z.string().register(z.globalRegistry, {
-        description: 'The expression to evaluate (e.g., "=x + y")'
-    }),
-    tenantId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'Required when the expression references tenant-scoped cluster variables'
-    })),
-    variables: z.optional(z.union([
-        z.record(z.string(), z.unknown()),
-        z.null()
-    ]))
+/**
+ * The BPMN element type of a waiting element instance.
+ */
+export const zWaitStateElementTypeEnum = z.enum([
+    'AD_HOC_SUB_PROCESS',
+    'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
+    'BOUNDARY_EVENT',
+    'BUSINESS_RULE_TASK',
+    'CALL_ACTIVITY',
+    'END_EVENT',
+    'EVENT_BASED_GATEWAY',
+    'EVENT_SUB_PROCESS',
+    'EXCLUSIVE_GATEWAY',
+    'INCLUSIVE_GATEWAY',
+    'INTERMEDIATE_CATCH_EVENT',
+    'INTERMEDIATE_THROW_EVENT',
+    'MANUAL_TASK',
+    'MULTI_INSTANCE_BODY',
+    'PARALLEL_GATEWAY',
+    'PROCESS',
+    'RECEIVE_TASK',
+    'SCRIPT_TASK',
+    'SEND_TASK',
+    'SEQUENCE_FLOW',
+    'SERVICE_TASK',
+    'START_EVENT',
+    'SUB_PROCESS',
+    'TASK',
+    'UNKNOWN',
+    'UNSPECIFIED',
+    'USER_TASK'
+]).register(z.globalRegistry, {
+    description: 'The BPMN element type of a waiting element instance.'
 });
+
+/**
+ * The type of waiting state an element instance is in.
+ */
+export const zWaitStateTypeEnum = z.enum([
+    'JOB',
+    'MESSAGE',
+    'USER_TASK',
+    'TIMER',
+    'SIGNAL',
+    'CONDITION'
+]).register(z.globalRegistry, {
+    description: 'The type of waiting state an element instance is in.'
+});
+
+/**
+ * Common fields shared by all wait-state details variants.
+ */
+export const zBaseWaitStateDetails = z.object({
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Common fields shared by all wait-state details variants.'
+});
+
+export const zMessageWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    messageName: z.string().register(z.globalRegistry, {
+        description: 'The name of the message being awaited.'
+    }),
+    correlationKey: z.union([
+        z.string(),
+        z.null()
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+export const zTimerWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    dueDate: z.union([
+        z.coerce.number().int(),
+        z.null()
+    ]),
+    repetitions: z.union([
+        z.int(),
+        z.null()
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+export const zSignalWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    signalName: z.string().register(z.globalRegistry, {
+        description: 'The name of the signal being awaited.'
+    }),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+export const zConditionWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    expression: z.string().register(z.globalRegistry, {
+        description: 'The condition expression that must evaluate to true to proceed.'
+    }),
+    events: z.array(z.enum([
+        'create',
+        'update'
+    ])).register(z.globalRegistry, {
+        description: 'The variable events that trigger condition re-evaluation. Empty means all events.'
+    }),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
 
 export const zExpressionEvaluationWarningItem = z.object({
     message: z.string().register(z.globalRegistry, {
@@ -652,6 +1071,25 @@ export const zExpressionEvaluationResult = z.object({
  */
 export const zLikeFilter = z.string().register(z.globalRegistry, {
     description: 'Checks if the property matches the provided like value.\n\nSupported wildcard characters are:\n\n* `*`: matches zero, one, or multiple characters.\n* `?`: matches one, single character.\n\nWildcard characters can be escaped with backslash, for instance: `\\*`.\n'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentInstanceStatusEnum filter.
+ */
+export const zAdvancedAgentInstanceStatusFilter = z.object({
+    '$eq': z.optional(zAgentInstanceStatusEnum),
+    '$neq': z.optional(zAgentInstanceStatusEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentInstanceStatusEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentInstanceStatusEnum filter.'
 });
 
 /**
@@ -809,6 +1247,46 @@ export const zAdvancedBatchOperationItemStateFilter = z.object({
 /**
  * Advanced filter
  *
+ * Advanced filter on a metadata value (string or number).
+ */
+export const zAdvancedMetadataValueFilter = z.object({
+    '$eq': z.optional(z.union([
+        z.string(),
+        z.number()
+    ])),
+    '$neq': z.optional(z.union([
+        z.string(),
+        z.number()
+    ])),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the metadata key exists.'
+    })),
+    '$gt': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Greater than comparison with the provided value.'
+    })),
+    '$gte': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Greater than or equal comparison with the provided value.'
+    })),
+    '$lt': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Lower than comparison with the provided value.'
+    })),
+    '$lte': z.optional(z.number().register(z.globalRegistry, {
+        description: 'Lower than or equal comparison with the provided value.'
+    })),
+    '$in': z.optional(z.array(z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced filter on a metadata value (string or number).'
+});
+
+/**
+ * Advanced filter
+ *
  * Advanced ClusterVariableScopeEnum filter.
  */
 export const zAdvancedClusterVariableScopeFilter = z.object({
@@ -823,6 +1301,25 @@ export const zAdvancedClusterVariableScopeFilter = z.object({
     '$like': z.optional(zLikeFilter)
 }).register(z.globalRegistry, {
     description: 'Advanced ClusterVariableScopeEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced ClusterVariableKindEnum filter.
+ */
+export const zAdvancedClusterVariableKindFilter = z.object({
+    '$eq': z.optional(zClusterVariableKindEnum),
+    '$neq': z.optional(zClusterVariableKindEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zClusterVariableKindEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced ClusterVariableKindEnum filter.'
 });
 
 /**
@@ -864,6 +1361,44 @@ export const zAdvancedElementInstanceStateFilter = z.object({
     '$like': z.optional(zLikeFilter)
 }).register(z.globalRegistry, {
     description: 'Advanced ElementInstanceStateEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced element type filter.
+ */
+export const zAdvancedWaitStateElementTypeFilter = z.object({
+    '$eq': z.optional(zWaitStateElementTypeEnum),
+    '$neq': z.optional(zWaitStateElementTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zWaitStateElementTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced element type filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced wait state type filter.
+ */
+export const zAdvancedWaitStateTypeFilter = z.object({
+    '$eq': z.optional(zWaitStateTypeEnum),
+    '$neq': z.optional(zWaitStateTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zWaitStateTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced wait state type filter.'
 });
 
 /**
@@ -1098,31 +1633,6 @@ export const zAdvancedGlobalTaskListenerEventTypeFilter = z.object({
     description: 'Advanced global listener event type filter.'
 });
 
-export const zGroupCreateRequest = z.object({
-    groupId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the new group.'
-    }),
-    name: z.string().register(z.globalRegistry, {
-        description: 'The display name of the new group.'
-    }),
-    description: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The description of the new group.'
-    }))
-});
-
-export const zGroupCreateResult = z.object({
-    groupId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the created group.'
-    }),
-    name: z.string().register(z.globalRegistry, {
-        description: 'The display name of the created group.'
-    }),
-    description: z.union([
-        z.string(),
-        z.null()
-    ])
-});
-
 export const zGroupUpdateRequest = z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The new name of the group.'
@@ -1130,37 +1640,6 @@ export const zGroupUpdateRequest = z.object({
     description: z.optional(z.string().register(z.globalRegistry, {
         description: 'The new description of the group.'
     }))
-});
-
-export const zGroupUpdateResult = z.object({
-    groupId: z.string().register(z.globalRegistry, {
-        description: 'The unique external group ID.'
-    }),
-    name: z.string().register(z.globalRegistry, {
-        description: 'The name of the group.'
-    }),
-    description: z.union([
-        z.string(),
-        z.null()
-    ])
-});
-
-/**
- * Group search response item.
- */
-export const zGroupResult = z.object({
-    name: z.string().register(z.globalRegistry, {
-        description: 'The group name.'
-    }),
-    groupId: z.string().register(z.globalRegistry, {
-        description: 'The group ID.'
-    }),
-    description: z.union([
-        z.string(),
-        z.null()
-    ])
-}).register(z.globalRegistry, {
-    description: 'Group search response item.'
 });
 
 /**
@@ -1173,12 +1652,6 @@ export const zGroupFilter = z.object({
     }))
 }).register(z.globalRegistry, {
     description: 'Group filter request'
-});
-
-export const zGroupClientResult = z.object({
-    clientId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the client.'
-    })
 });
 
 /**
@@ -1242,7 +1715,7 @@ export const zDecisionDefinitionId = z.string().min(1).regex(/^[\p{L}_][\p{L}\p{
 /**
  * The user-defined id for the global listener
  */
-export const zGlobalListenerId = z.string().register(z.globalRegistry, {
+export const zGlobalListenerId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+\-]+$/).register(z.globalRegistry, {
     description: 'The user-defined id for the global listener'
 });
 
@@ -1260,7 +1733,7 @@ export const zGlobalTaskListenerResult = zGlobalTaskListenerBase.and(z.object({
 /**
  * The unique identifier of the tenant.
  */
-export const zTenantId = z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
+export const zTenantId = z.string().min(1).max(31).regex(/^(<default>|[\w\.\-]{1,31})$/).register(z.globalRegistry, {
     description: 'The unique identifier of the tenant.'
 });
 
@@ -1278,13 +1751,160 @@ export const zDecisionEvaluationById = z.object({
 /**
  * The unique name of a user.
  */
-export const zUsername = z.string().min(1).max(256).regex(/^(<default>|[A-Za-z0-9_@.+-]+)$/).register(z.globalRegistry, {
+export const zUsername = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
     description: 'The unique name of a user.'
 });
 
 export const zGroupUserResult = z.object({
     username: zUsername
 });
+
+/**
+ * The unique identifier of a role.
+ */
+export const zRoleId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+    description: 'The unique identifier of a role.'
+});
+
+/**
+ * The unique identifier of a group.
+ */
+export const zGroupId = z.string().min(1).max(256).register(z.globalRegistry, {
+    description: 'The unique identifier of a group.'
+});
+
+export const zGroupCreateRequest = z.object({
+    groupId: zGroupId,
+    name: z.string().register(z.globalRegistry, {
+        description: 'The display name of the new group.'
+    }),
+    description: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The description of the new group.'
+    }))
+});
+
+export const zGroupCreateResult = z.object({
+    groupId: zGroupId,
+    name: z.string().register(z.globalRegistry, {
+        description: 'The display name of the created group.'
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
+});
+
+export const zGroupUpdateResult = z.object({
+    groupId: zGroupId,
+    name: z.string().register(z.globalRegistry, {
+        description: 'The name of the group.'
+    }),
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
+});
+
+/**
+ * Group search response item.
+ */
+export const zGroupResult = z.object({
+    name: z.string().register(z.globalRegistry, {
+        description: 'The group name.'
+    }),
+    groupId: zGroupId,
+    description: z.union([
+        z.string(),
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'Group search response item.'
+});
+
+/**
+ * The unique identifier of a mapping rule.
+ */
+export const zMappingRuleId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+    description: 'The unique identifier of a mapping rule.'
+});
+
+/**
+ * The unique identifier of an OAuth client.
+ * Minted outside the Camunda REST API: in SaaS by Console, in Self-Managed
+ * with OIDC by the external identity provider (e.g. EntraID, Keycloak,
+ * Okta). In Self-Managed with Basic authentication, machine-to-machine
+ * applications are modelled as users instead — see the user identifier.
+ *
+ */
+export const zClientId = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+    description: 'The unique identifier of an OAuth client.\nMinted outside the Camunda REST API: in SaaS by Console, in Self-Managed\nwith OIDC by the external identity provider (e.g. EntraID, Keycloak,\nOkta). In Self-Managed with Basic authentication, machine-to-machine\napplications are modelled as users instead — see the user identifier.\n'
+});
+
+export const zGroupClientResult = z.object({
+    clientId: zClientId
+});
+
+/**
+ * The name of a cluster variable. Unique within its scope (global or tenant-specific).
+ */
+export const zClusterVariableName = z.string().min(1).max(256).regex(/^[a-zA-Z0-9_~@.+-]+$/).register(z.globalRegistry, {
+    description: 'The name of a cluster variable. Unique within its scope (global or tenant-specific).'
+});
+
+export const zCreateClusterVariableRequest = z.object({
+    name: zClusterVariableName,
+    value: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+        description: 'The value of the cluster variable. Can be any JSON object or primitive value. Will be serialized as a JSON string in responses.'
+    }),
+    metadata: z.optional(z.record(z.string(), z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
+    })),
+    kind: z.optional(zClusterVariableKindEnum)
+});
+
+/**
+ * Cluster variable response item.
+ */
+export const zClusterVariableResultBase = z.object({
+    name: zClusterVariableName,
+    scope: zClusterVariableScopeEnum,
+    tenantId: z.union([
+        z.string(),
+        z.null()
+    ]),
+    metadata: z.record(z.string(), z.union([
+        z.string(),
+        z.number()
+    ])).register(z.globalRegistry, {
+        description: 'A generic key-value metadata bag attached to the cluster variable. Values are strings or numbers.'
+    }),
+    kind: zClusterVariableKindEnum
+}).register(z.globalRegistry, {
+    description: 'Cluster variable response item.'
+});
+
+export const zClusterVariableResult = zClusterVariableResultBase.and(z.object({
+    value: z.string().register(z.globalRegistry, {
+        description: 'Full value of this cluster variable.'
+    })
+}));
+
+/**
+ * Cluster variable search response item.
+ */
+export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.object({
+    value: z.string().register(z.globalRegistry, {
+        description: 'Value of this cluster variable. Can be truncated.'
+    }),
+    isTruncated: z.boolean().register(z.globalRegistry, {
+        description: 'Whether the value is truncated or not.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Cluster variable search response item.'
+}));
 
 /**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
@@ -1310,6 +1930,61 @@ export const zTagSet = z.array(zTag).max(10).register(z.globalRegistry, {
  */
 export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry, {
     description: 'An optional, user-defined string identifier that identifies the process instance\nwithin the scope of a process definition (scoped by tenant). If provided and uniqueness\nenforcement is enabled, the engine will reject creation if another root process instance\nwith the same business id is already active for the same process definition.\nNote that any active child process instances with the same business id are not taken into account.\n'
+});
+
+/**
+ * A client-provided sequential integer identifying one pass through the agent
+ * feedback loop: one LLM call, its tool dispatches, and their results. Must be
+ * a positive integer, increasing with each loopIteration. Established by the
+ * connector when appending the first history item of a loopIteration.
+ *
+ */
+export const zLoopIterationId = z.int().gte(1).register(z.globalRegistry, {
+    description: 'A client-provided sequential integer identifying one pass through the agent\nfeedback loop: one LLM call, its tool dispatches, and their results. Must be\na positive integer, increasing with each loopIteration. Established by the\nconnector when appending the first history item of a loopIteration.\n'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced ElementId filter.
+ */
+export const zAdvancedElementIdFilter = z.object({
+    '$eq': z.optional(zElementId),
+    '$neq': z.optional(zElementId),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zElementId).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zElementId).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced ElementId filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced ProcessDefinitionId filter.
+ */
+export const zAdvancedProcessDefinitionIdFilter = z.object({
+    '$eq': z.optional(zProcessDefinitionId),
+    '$neq': z.optional(zProcessDefinitionId),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zProcessDefinitionId).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zProcessDefinitionId).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced ProcessDefinitionId filter.'
 });
 
 /**
@@ -1590,7 +2265,11 @@ export const zJobFailRequest = z.object({
     })).default(0),
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: "JSON object that will instantiate the variables at the local scope of the job's associated task.\n"
-    }))
+    })),
+    leaseToken: z.optional(z.union([
+        z.string(),
+        z.null()
+    ]))
 });
 
 export const zJobErrorRequest = z.object({
@@ -1603,6 +2282,10 @@ export const zJobErrorRequest = z.object({
     ])),
     variables: z.optional(z.union([
         z.record(z.string(), z.unknown()),
+        z.null()
+    ])),
+    leaseToken: z.optional(z.union([
+        z.string(),
         z.null()
     ]))
 });
@@ -1728,7 +2411,15 @@ export const zJobCompletionRequest = z.object({
         z.record(z.string(), z.unknown()),
         z.null()
     ])),
-    result: z.optional(zJobResult)
+    result: z.optional(zJobResult),
+    leaseToken: z.optional(z.union([
+        z.string(),
+        z.null()
+    ])),
+    businessId: z.optional(z.union([
+        zBusinessId,
+        z.null()
+    ]))
 });
 
 /**
@@ -1741,6 +2432,10 @@ export const zJobChangeset = z.object({
     ])),
     timeout: z.optional(z.union([
         z.coerce.number().int(),
+        z.null()
+    ])),
+    priority: z.optional(z.union([
+        z.int(),
         z.null()
     ]))
 }).register(z.globalRegistry, {
@@ -1780,7 +2475,11 @@ export const zJobActivationRequest = z.object({
     tenantIds: z.optional(z.array(zTenantId).register(z.globalRegistry, {
         description: 'A list of IDs of tenants for which to activate jobs.'
     })),
-    tenantFilter: z.optional(zTenantFilterEnum)
+    tenantFilter: z.optional(zTenantFilterEnum),
+    withLease: z.optional(z.union([
+        z.boolean(),
+        z.null()
+    ]))
 });
 
 /**
@@ -1793,7 +2492,9 @@ export const zJobStateEnum = z.enum([
     'ERROR_THROWN',
     'FAILED',
     'MIGRATED',
+    'PRIORITY_UPDATED',
     'RETRIES_UPDATED',
+    'TIMEOUT_UPDATED',
     'TIMED_OUT'
 ]).register(z.globalRegistry, {
     description: 'The state of the job.'
@@ -1816,6 +2517,8 @@ export const zJobKindEnum = z.enum([
  */
 export const zJobListenerEventTypeEnum = z.enum([
     'ASSIGNING',
+    'BEFORE_ALL',
+    'CANCEL',
     'CANCELING',
     'COMPLETING',
     'CREATING',
@@ -2030,6 +2733,35 @@ export const zDocumentReference = z.object({
     metadata: zDocumentMetadataResponse
 });
 
+/**
+ * Document content
+ *
+ * A Camunda Document Store reference content block.
+ */
+export const zAgentInstanceDocumentContent = z.object({
+    contentType: z.string().register(z.globalRegistry, {
+        description: 'The content type discriminator.'
+    }),
+    documentReference: zDocumentReference
+}).register(z.globalRegistry, {
+    description: 'A Camunda Document Store reference content block.'
+});
+
+/**
+ * A single content block within a history item. Discriminated by `contentType`.
+ */
+export const zAgentInstanceMessageContent = z.union([
+    z.object({
+        contentType: z.literal('TEXT')
+    }).and(zAgentInstanceTextContent),
+    z.object({
+        contentType: z.literal('DOCUMENT')
+    }).and(zAgentInstanceDocumentContent),
+    z.object({
+        contentType: z.literal('OBJECT')
+    }).and(zAgentInstanceObjectContent)
+]);
+
 export const zDocumentCreationBatchResponse = z.object({
     failedDocuments: z.array(zDocumentCreationFailureDetail).register(z.globalRegistry, {
         description: 'Documents that were successfully created.'
@@ -2103,9 +2835,47 @@ export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
 export const zElementInstanceKey = zLongKey;
 
 /**
+ * Request to create a new agent instance.
+ */
+export const zAgentInstanceCreationRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    definition: zAgentInstanceDefinition,
+    limits: z.optional(zAgentInstanceLimits)
+}).register(z.globalRegistry, {
+    description: 'Request to create a new agent instance.'
+});
+
+/**
+ * Request to update the mutable state of an agent instance.
+ *
+ */
+export const zAgentInstanceUpdateRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    status: z.optional(zAgentInstanceUpdateStatusEnum),
+    metrics: z.optional(zAgentInstanceMetricsDelta),
+    tools: z.optional(z.union([
+        z.array(zAgentTool),
+        z.null()
+    ]))
+}).register(z.globalRegistry, {
+    description: 'Request to update the mutable state of an agent instance.\n'
+});
+
+/**
  * System-generated key for a user task.
  */
 export const zUserTaskKey = zLongKey;
+
+export const zUserTaskWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    taskKey: zUserTaskKey,
+    dueDate: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
 
 /**
  * System-generated key for a deployed form.
@@ -2200,6 +2970,20 @@ export const zScopeKey = z.union([
     zElementInstanceKey
 ]);
 
+export const zExpressionEvaluationRequest = z.object({
+    expression: z.string().register(z.globalRegistry, {
+        description: 'The expression to evaluate (e.g., "=x + y")'
+    }),
+    tenantId: z.optional(z.string().register(z.globalRegistry, {
+        description: 'Required when the expression references tenant-scoped cluster variables'
+    })),
+    scopeKey: z.optional(zScopeKey),
+    variables: z.optional(z.union([
+        z.record(z.string(), z.unknown()),
+        z.null()
+    ]))
+});
+
 /**
  * System-generated key for a incident.
  */
@@ -2272,6 +3056,102 @@ export const zElementInstanceResult = z.object({
  */
 export const zJobKey = zLongKey;
 
+/**
+ * Request to append a single history item to an agent instance's conversation history.
+ */
+export const zAgentInstanceHistoryItemRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    jobKey: zJobKey,
+    jobLease: z.string().register(z.globalRegistry, {
+        description: 'Opaque lease token received from the job activation response.'
+    }),
+    loopIteration: z.optional(z.union([
+        zLoopIterationId,
+        z.null()
+    ])),
+    role: zAgentInstanceHistoryRoleEnum,
+    content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The content blocks of this history item.'
+    }),
+    toolCalls: z.optional(z.union([
+        z.array(zAgentInstanceToolCall),
+        z.null()
+    ])),
+    metrics: z.optional(z.union([
+        zAgentInstanceHistoryItemMetrics,
+        z.null()
+    ])),
+    producedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The connector-side timestamp of when this message was produced.'
+    })
+}).register(z.globalRegistry, {
+    description: "Request to append a single history item to an agent instance's conversation history."
+});
+
+export const zJobWaitStateDetails = zBaseWaitStateDetails.and(z.object({
+    jobKey: zJobKey,
+    jobType: z.string().register(z.globalRegistry, {
+        description: 'The job type (worker subscription identifier).'
+    }),
+    jobKind: zJobKindEnum,
+    listenerEventType: z.union([
+        zJobListenerEventTypeEnum,
+        z.null()
+    ]),
+    retries: z.union([
+        z.int(),
+        z.null()
+    ]),
+    waitStateType: z.string().register(z.globalRegistry, {
+        description: 'The wait state type discriminator.'
+    })
+}));
+
+/**
+ * Wait-state-specific details of an element instance.
+ */
+export const zWaitStateDetails = z.union([
+    z.object({
+        waitStateType: z.literal('JOB')
+    }).and(zJobWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('MESSAGE')
+    }).and(zMessageWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('USER_TASK')
+    }).and(zUserTaskWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('TIMER')
+    }).and(zTimerWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('SIGNAL')
+    }).and(zSignalWaitStateDetails),
+    z.object({
+        waitStateType: z.literal('CONDITION')
+    }).and(zConditionWaitStateDetails)
+]);
+
+/**
+ * An element instance waiting state.
+ */
+export const zElementInstanceWaitStateResult = z.object({
+    rootProcessInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
+    processInstanceKey: zProcessInstanceKey,
+    elementInstanceKey: zElementInstanceKey,
+    elementId: zElementId,
+    elementType: zWaitStateElementTypeEnum,
+    tenantId: zTenantId,
+    bpmnProcessId: z.string().register(z.globalRegistry, {
+        description: 'The BPMN process ID of the process definition associated to this element instance.'
+    }),
+    details: zWaitStateDetails
+}).register(z.globalRegistry, {
+    description: 'An element instance waiting state.'
+});
+
 export const zIncidentResult = z.object({
     processDefinitionId: zProcessDefinitionId,
     errorType: zIncidentErrorTypeEnum,
@@ -2323,6 +3203,9 @@ export const zActivatedJobResult = z.object({
         description: 'All variables visible to the task scope, computed at activation time.'
     }),
     tenantId: zTenantId,
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the physical tenant that the job-activation request was routed to;\nthe default physical tenant when the request did not specify one.\n'
+    }),
     jobKey: zJobKey,
     processInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
@@ -2336,6 +3219,17 @@ export const zActivatedJobResult = z.object({
     tags: zTagSet,
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
+        z.null()
+    ]),
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
+    priority: z.int().register(z.globalRegistry, {
+        description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
+    }),
+    leaseToken: z.union([
+        z.string(),
         z.null()
     ])
 });
@@ -2397,6 +3291,10 @@ export const zJobSearchResult = z.object({
         zProcessInstanceKey,
         z.null()
     ]),
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     retries: z.int().register(z.globalRegistry, {
         description: 'The amount of retries left to this job.'
     }),
@@ -2415,7 +3313,10 @@ export const zJobSearchResult = z.object({
     lastUpdateTime: z.union([
         z.iso.datetime(),
         z.null()
-    ])
+    ]),
+    priority: z.int().register(z.globalRegistry, {
+        description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; they appear last when sorting by this field and are excluded when filtering by this field. The API returns 0 for such jobs.\n'
+    })
 });
 
 /**
@@ -2440,9 +3341,14 @@ export const zDecisionEvaluationInstruction = z.union([
 ]);
 
 /**
- * System-generated key for a decision evaluation instance.
+ * System-generated identifier for a decision evaluation instance. It is composed of the
+ * parent decision evaluation key and the 1-based index of the evaluated decision within
+ * that evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).
+ *
  */
-export const zDecisionEvaluationInstanceKey = zLongKey;
+export const zDecisionEvaluationInstanceKey = z.string().min(3).max(30).regex(/^[0-9]+-[0-9]+$/).register(z.globalRegistry, {
+    description: 'System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n'
+});
 
 /**
  * A decision that was evaluated.
@@ -2480,6 +3386,10 @@ export const zEvaluatedDecisionResult = z.object({
 export const zDecisionEvaluationKey = zLongKey;
 
 export const zDecisionInstanceResult = z.object({
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     decisionDefinitionId: zDecisionDefinitionId,
     decisionDefinitionKey: zDecisionDefinitionKey,
     decisionDefinitionName: z.string().register(z.globalRegistry, {
@@ -2863,7 +3773,10 @@ export const zBatchOperationItemResponse = z.object({
     itemKey: z.string().register(z.globalRegistry, {
         description: 'Key of the item, e.g. a process instance key.'
     }),
-    processInstanceKey: zProcessInstanceKey,
+    processInstanceKey: z.union([
+        zProcessInstanceKey,
+        z.null()
+    ]),
     rootProcessInstanceKey: z.union([
         zProcessInstanceKey,
         z.null()
@@ -2927,7 +3840,110 @@ export const zIncidentResolutionRequest = z.object({
 
 export const zJobUpdateRequest = z.object({
     changeset: zJobChangeset,
-    operationReference: z.optional(zOperationReference)
+    operationReference: z.optional(zOperationReference),
+    leaseToken: z.optional(z.union([
+        z.string(),
+        z.null()
+    ]))
+});
+
+/**
+ * System-generated key for an agent instance.
+ */
+export const zAgentInstanceKey = zLongKey;
+
+export const zAgentInstanceResult = z.object({
+    agentInstanceKey: zAgentInstanceKey,
+    status: zAgentInstanceStatusEnum,
+    definition: zAgentInstanceDefinition,
+    metrics: zAgentInstanceMetrics,
+    limits: zAgentInstanceLimits,
+    tools: z.array(zAgentTool).register(z.globalRegistry, {
+        description: 'The tools available to the agent.'
+    }),
+    elementId: zElementId,
+    processInstanceKey: zProcessInstanceKey,
+    rootProcessInstanceKey: zProcessInstanceKey,
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionVersion: z.int().register(z.globalRegistry, {
+        description: 'The version of the process definition associated with this agent instance.'
+    }),
+    processDefinitionVersionTag: z.union([
+        z.string(),
+        z.null()
+    ]),
+    tenantId: zTenantId,
+    creationDate: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The date when this agent instance was created.'
+    }),
+    lastUpdatedDate: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The date when this agent instance was last updated.'
+    }),
+    completionDate: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
+    elementInstanceKeys: z.array(zElementInstanceKey).register(z.globalRegistry, {
+        description: 'The keys of all element instances associated with this agent instance.'
+    })
+});
+
+/**
+ * Response returned after successfully creating an agent instance.
+ */
+export const zAgentInstanceCreationResult = z.object({
+    agentInstanceKey: zAgentInstanceKey
+}).register(z.globalRegistry, {
+    description: 'Response returned after successfully creating an agent instance.'
+});
+
+/**
+ * System-generated key for an agent history item.
+ */
+export const zAgentHistoryItemKey = zLongKey;
+
+/**
+ * Response returned after successfully appending a history item.
+ */
+export const zAgentInstanceHistoryItemCreationResult = z.object({
+    historyItemKey: zAgentHistoryItemKey
+}).register(z.globalRegistry, {
+    description: 'Response returned after successfully appending a history item.'
+});
+
+/**
+ * A single conversation history item belonging to an agent instance.
+ */
+export const zAgentInstanceHistoryItemResult = z.object({
+    historyItemKey: zAgentHistoryItemKey,
+    agentInstanceKey: zAgentInstanceKey,
+    elementInstanceKey: zElementInstanceKey,
+    jobKey: zJobKey,
+    jobLease: z.string().register(z.globalRegistry, {
+        description: 'The lease token of the activation that produced this item.'
+    }),
+    loopIteration: z.union([
+        zLoopIterationId,
+        z.null()
+    ]),
+    role: zAgentInstanceHistoryRoleEnum,
+    content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The content blocks of this history item.'
+    }),
+    toolCalls: z.array(zAgentInstanceToolCall).register(z.globalRegistry, {
+        description: 'Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls with arguments populated.\nTOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).\n'
+    }),
+    metrics: z.union([
+        zAgentInstanceHistoryItemMetrics,
+        z.null()
+    ]),
+    commitStatus: zAgentInstanceHistoryCommitStatusEnum,
+    producedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The connector-side timestamp of when this message was produced.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A single conversation history item belonging to an agent instance.'
 });
 
 /**
@@ -3041,6 +4057,14 @@ export const zAuditLogResult = z.object({
         z.null()
     ]),
     entityDescription: z.union([
+        z.string(),
+        z.null()
+    ]),
+    inboundChannelType: z.union([
+        z.string(),
+        z.null()
+    ]),
+    inboundChannelToolName: z.union([
         z.string(),
         z.null()
     ])
@@ -3219,6 +4243,48 @@ export const zAdvancedDecisionEvaluationInstanceKeyFilter = z.object({
 /**
  * Advanced filter
  *
+ * Advanced AgentInstanceKey filter.
+ */
+export const zAdvancedAgentInstanceKeyFilter = z.object({
+    '$eq': z.optional(zAgentInstanceKey),
+    '$neq': z.optional(zAgentInstanceKey),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentInstanceKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zAgentInstanceKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentInstanceKey filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentHistoryItemKey filter.
+ */
+export const zAdvancedAgentHistoryItemKeyFilter = z.object({
+    '$eq': z.optional(zAgentHistoryItemKey),
+    '$neq': z.optional(zAgentHistoryItemKey),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zAgentHistoryItemKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$notIn': z.optional(z.array(zAgentHistoryItemKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }))
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentHistoryItemKey filter.'
+});
+
+/**
+ * Advanced filter
+ *
  * Advanced AuditLogKey filter.
  */
 export const zAdvancedAuditLogKeyFilter = z.object({
@@ -3334,9 +4400,7 @@ export const zMappingRuleCreateUpdateRequest = z.object({
 });
 
 export const zMappingRuleCreateRequest = zMappingRuleCreateUpdateRequest.and(z.object({
-    mappingRuleId: z.string().register(z.globalRegistry, {
-        description: 'The unique ID of the mapping rule.'
-    })
+    mappingRuleId: zMappingRuleId
 }));
 
 export const zMappingRuleUpdateRequest = zMappingRuleCreateUpdateRequest;
@@ -3351,9 +4415,7 @@ export const zMappingRuleCreateUpdateResult = z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the mapping rule.'
     }),
-    mappingRuleId: z.string().register(z.globalRegistry, {
-        description: 'The unique ID of the mapping rule.'
-    })
+    mappingRuleId: zMappingRuleId
 });
 
 export const zMappingRuleCreateResult = zMappingRuleCreateUpdateResult;
@@ -3370,9 +4432,7 @@ export const zMappingRuleResult = z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the mapping rule.'
     }),
-    mappingRuleId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the mapping rule.'
-    })
+    mappingRuleId: zMappingRuleId
 });
 
 /**
@@ -3388,9 +4448,7 @@ export const zMappingRuleFilter = z.object({
     name: z.optional(z.string().register(z.globalRegistry, {
         description: 'The name of the mapping rule.'
     })),
-    mappingRuleId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The ID of the mapping rule.'
-    }))
+    mappingRuleId: z.optional(zMappingRuleId)
 }).register(z.globalRegistry, {
     description: 'Mapping rule search filter.'
 });
@@ -3405,7 +4463,8 @@ export const zMessageCorrelationRequest = z.object({
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The message variables as JSON document'
     })),
-    tenantId: z.optional(zTenantId)
+    tenantId: z.optional(zTenantId),
+    businessId: z.optional(zBusinessId)
 });
 
 export const zMessagePublicationRequest = z.object({
@@ -3424,11 +4483,17 @@ export const zMessagePublicationRequest = z.object({
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'The message variables as JSON document.'
     })),
-    tenantId: z.optional(zTenantId)
+    tenantId: z.optional(zTenantId),
+    businessId: z.optional(zBusinessId)
 });
 
 /**
  * The state of message subscription.
+ *
+ * **Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not
+ * tracked for these subscriptions. To query correlation history for process start events,
+ * use the `/correlated-message-subscriptions/search` endpoint.
+ *
  */
 export const zMessageSubscriptionStateEnum = z.enum([
     'CORRELATED',
@@ -3436,7 +4501,41 @@ export const zMessageSubscriptionStateEnum = z.enum([
     'DELETED',
     'MIGRATED'
 ]).register(z.globalRegistry, {
-    description: 'The state of message subscription.'
+    description: 'The state of message subscription.\n\n**Note for `START_EVENT` subscriptions:** The `CORRELATED` and `MIGRATED` states are not\ntracked for these subscriptions. To query correlation history for process start events,\nuse the `/correlated-message-subscriptions/search` endpoint.\n'
+});
+
+/**
+ * The type of message subscription.
+ * `START_EVENT` is definition-scoped (process start events). Always has a value; only
+ * captured from Camunda 8.10 onwards.
+ * `PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have
+ * no value stored; the API returns `PROCESS_EVENT` as a default for those entries.
+ *
+ */
+export const zMessageSubscriptionTypeEnum = z.enum([
+    'START_EVENT',
+    'PROCESS_EVENT'
+]).register(z.globalRegistry, {
+    description: 'The type of message subscription.\n`START_EVENT` is definition-scoped (process start events). Always has a value; only\ncaptured from Camunda 8.10 onwards.\n`PROCESS_EVENT` is instance-scoped (intermediate catch events). Pre-8.10 entries have\nno value stored; the API returns `PROCESS_EVENT` as a default for those entries.\n'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced MessageSubscriptionTypeEnum filter
+ */
+export const zAdvancedMessageSubscriptionTypeFilter = z.object({
+    '$eq': z.optional(zMessageSubscriptionTypeEnum),
+    '$neq': z.optional(zMessageSubscriptionTypeEnum),
+    '$exists': z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    })),
+    '$in': z.optional(z.array(zMessageSubscriptionTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    })),
+    '$like': z.optional(zLikeFilter)
+}).register(z.globalRegistry, {
+    description: 'Advanced MessageSubscriptionTypeEnum filter'
 });
 
 /**
@@ -3494,6 +4593,26 @@ export const zMessageSubscriptionResult = z.object({
         z.string(),
         z.null()
     ]),
+    messageSubscriptionType: zMessageSubscriptionTypeEnum,
+    toolProperties: z.record(z.string(), z.string()).register(z.globalRegistry, {
+        description: 'The subset of `zeebe:properties` extension properties whose keys start with the\n`io.camunda.tool:` prefix, extracted from the BPMN element associated with this\nsubscription. Empty object when no matching properties are defined.\n'
+    }),
+    processDefinitionName: z.union([
+        z.string(),
+        z.null()
+    ]),
+    processDefinitionVersion: z.union([
+        z.int(),
+        z.null()
+    ]),
+    toolName: z.union([
+        z.string(),
+        z.null()
+    ]),
+    inboundConnectorType: z.union([
+        z.string(),
+        z.null()
+    ]),
     tenantId: zTenantId
 });
 
@@ -3547,6 +4666,10 @@ export const zMessagePublicationResult = z.object({
 });
 
 export const zCorrelatedMessageSubscriptionResult = z.object({
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     correlationKey: z.union([
         z.string(),
         z.null()
@@ -3625,6 +4748,9 @@ export const zProcessDefinitionFilter = z.object({
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    })),
+    isDeleted: z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Filter by whether the process definition has been deleted.\nWhen not set, both deleted and non-deleted process definitions are returned.\nSet to `false` to exclude deleted definitions (recommended for most use cases).\nSet to `true` to return only deleted definitions that are still retained in secondary storage.\n'
     }))
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -3650,6 +4776,9 @@ export const zProcessDefinitionResult = z.object({
     processDefinitionKey: zProcessDefinitionKey,
     hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    }),
+    isDeleted: z.boolean().register(z.globalRegistry, {
+        description: 'Whether this process definition has been deleted but is still retained in secondary storage.'
     })
 });
 
@@ -3683,6 +4812,26 @@ export const zProcessDefinitionElementStatisticsQueryResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Process definition element statistics query response.'
+});
+
+/**
+ * Process definition variable name filter request.
+ */
+export const zProcessDefinitionVariableNameFilter = z.object({
+    name: z.optional(zStringFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name filter request.'
+});
+
+/**
+ * Process definition variable name search response item.
+ */
+export const zProcessDefinitionVariableNameSearchResult = z.object({
+    name: z.string().register(z.globalRegistry, {
+        description: 'The variable name.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name search response item.'
 });
 
 export const zProcessDefinitionMessageSubscriptionStatisticsResult = z.object({
@@ -3881,6 +5030,20 @@ export const zDeleteProcessInstanceRequest = z.union([
     z.null()
 ]);
 
+export const zSuspendProcessInstanceRequest = z.union([
+    z.object({
+        operationReference: z.optional(zOperationReference)
+    }),
+    z.null()
+]);
+
+export const zResumeProcessInstanceRequest = z.union([
+    z.object({
+        operationReference: z.optional(zOperationReference)
+    }),
+    z.null()
+]);
+
 export const zProcessInstanceCallHierarchyEntry = z.object({
     processInstanceKey: zProcessInstanceKey,
     processDefinitionKey: zProcessDefinitionKey,
@@ -3932,6 +5095,29 @@ export const zProcessInstanceElementStatisticsQueryResult = z.object({
 });
 
 /**
+ * Process instance wait state statistics response item.
+ */
+export const zProcessInstanceWaitStateStatisticsResult = z.object({
+    elementId: zElementId,
+    waitingCount: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'The total number of waiting instances of the element.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process instance wait state statistics response item.'
+});
+
+/**
+ * Process instance wait state statistics query response.
+ */
+export const zProcessInstanceWaitStateStatisticsQueryResult = z.object({
+    items: z.array(zProcessInstanceWaitStateStatisticsResult).register(z.globalRegistry, {
+        description: 'The wait state statistics.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process instance wait state statistics query response.'
+});
+
+/**
  * The mapping instructions describe how to map elements from the source process definition to the target process definition.
  *
  */
@@ -3967,6 +5153,16 @@ export const zProcessInstanceMigrationInstruction = z.object({
     operationReference: z.optional(zOperationReference)
 }).register(z.globalRegistry, {
     description: 'The migration instructions describe how to migrate a process instance from one process definition to another.\n'
+});
+
+/**
+ * The instruction describing the business id to assign to a running process instance.
+ *
+ */
+export const zProcessInstanceBusinessIdAssignmentInstruction = z.object({
+    businessId: zBusinessId
+}).register(z.globalRegistry, {
+    description: 'The instruction describing the business id to assign to a running process instance.\n'
 });
 
 /**
@@ -4156,6 +5352,7 @@ export const zProcessInstanceModificationInstruction = z.object({
 export const zProcessInstanceStateEnum = z.enum([
     'ACTIVE',
     'COMPLETED',
+    'SUSPENDED',
     'TERMINATED'
 ]).register(z.globalRegistry, {
     description: 'Process instance states'
@@ -4185,6 +5382,10 @@ export const zProcessInstanceResult = z.object({
         z.null()
     ]),
     state: zProcessInstanceStateEnum,
+    suspendedDate: z.union([
+        z.iso.datetime(),
+        z.null()
+    ]),
     hasIncident: z.boolean().register(z.globalRegistry, {
         description: 'Whether this process instance has a related incident or not.'
     }),
@@ -4232,9 +5433,7 @@ export const zAdvancedProcessInstanceStateFilter = z.object({
 });
 
 export const zRoleCreateRequest = z.object({
-    roleId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the new role.'
-    }),
+    roleId: zRoleId,
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the new role.'
     }),
@@ -4244,9 +5443,7 @@ export const zRoleCreateRequest = z.object({
 });
 
 export const zRoleCreateResult = z.object({
-    roleId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the created role.'
-    }),
+    roleId: zRoleId,
     name: z.string().register(z.globalRegistry, {
         description: 'The display name of the created role.'
     }),
@@ -4273,9 +5470,7 @@ export const zRoleUpdateResult = z.object({
         z.string(),
         z.null()
     ]),
-    roleId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the updated role.'
-    })
+    roleId: zRoleId
 });
 
 /**
@@ -4285,9 +5480,7 @@ export const zRoleResult = z.object({
     name: z.string().register(z.globalRegistry, {
         description: 'The role name.'
     }),
-    roleId: z.string().register(z.globalRegistry, {
-        description: 'The role id.'
-    }),
+    roleId: zRoleId,
     description: z.union([
         z.string(),
         z.null()
@@ -4300,9 +5493,7 @@ export const zRoleResult = z.object({
  * Role filter request
  */
 export const zRoleFilter = z.object({
-    roleId: z.optional(z.string().register(z.globalRegistry, {
-        description: 'The role ID search filters.'
-    })),
+    roleId: z.optional(zRoleId),
     name: z.optional(z.string().register(z.globalRegistry, {
         description: 'The role name search filters.'
     }))
@@ -4315,15 +5506,11 @@ export const zRoleUserResult = z.object({
 });
 
 export const zRoleClientResult = z.object({
-    clientId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the client.'
-    })
+    clientId: zClientId
 });
 
 export const zRoleGroupResult = z.object({
-    groupId: z.string().register(z.globalRegistry, {
-        description: 'The id of the group.'
-    })
+    groupId: zGroupId
 });
 
 /**
@@ -4351,7 +5538,7 @@ export const zOffsetPagination = z.object({
  * Cursor-based forward pagination
  */
 export const zCursorForwardPagination = z.object({
-    after: zEndCursor,
+    after: z.optional(zEndCursor),
     limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
@@ -4401,7 +5588,7 @@ export const zJobErrorStatisticsQuery = z.object({
  * Cursor-based backward pagination
  */
 export const zCursorBackwardPagination = z.object({
-    before: zStartCursor,
+    before: z.optional(zStartCursor),
     limit: z.optional(z.int().gte(1).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     })).default(100)
@@ -4422,6 +5609,15 @@ export const zSearchQueryRequest = z.object({
 });
 
 /**
+ * Process definition variable name search query request.
+ */
+export const zProcessDefinitionVariableNameSearchQuery = zSearchQueryRequest.and(z.object({
+    filter: z.optional(zProcessDefinitionVariableNameFilter)
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name search query request.'
+}));
+
+/**
  * The order in which to sort the related field.
  */
 export const zSortOrderEnum = z.enum([
@@ -4429,6 +5625,35 @@ export const zSortOrderEnum = z.enum([
     'DESC'
 ]).register(z.globalRegistry, {
     description: 'The order in which to sort the related field.'
+});
+
+export const zAgentInstanceSearchQuerySortRequest = z.object({
+    field: z.enum([
+        'agentInstanceKey',
+        'status',
+        'elementId',
+        'processInstanceKey',
+        'rootProcessInstanceKey',
+        'processDefinitionKey',
+        'tenantId',
+        'creationDate',
+        'lastUpdatedDate',
+        'completionDate'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: z.optional(zSortOrderEnum)
+});
+
+export const zAgentInstanceHistorySearchQuerySortRequest = z.object({
+    field: z.enum([
+        'producedAt',
+        'historyItemKey',
+        'loopIteration'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: z.optional(zSortOrderEnum)
 });
 
 export const zAuditLogSearchQuerySortRequest = z.object({
@@ -4452,6 +5677,8 @@ export const zAuditLogSearchQuerySortRequest = z.object({
         'processDefinitionId',
         'processDefinitionKey',
         'processInstanceKey',
+        'inboundChannelType',
+        'inboundChannelToolName',
         'result',
         'tenantId',
         'timestamp',
@@ -4548,6 +5775,7 @@ export const zDecisionDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
 
 export const zDecisionInstanceSearchQuerySortRequest = z.object({
     field: z.enum([
+        'businessId',
         'decisionDefinitionId',
         'decisionDefinitionKey',
         'decisionDefinitionName',
@@ -4589,6 +5817,21 @@ export const zDecisionRequirementsSearchQuery = zSearchQueryRequest.and(z.object
     filter: z.optional(zDecisionRequirementsFilter)
 }));
 
+export const zResourceSearchQuerySortRequest = z.object({
+    field: z.enum([
+        'resourceKey',
+        'resourceName',
+        'resourceId',
+        'version',
+        'versionTag',
+        'deploymentKey',
+        'tenantId'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: z.optional(zSortOrderEnum)
+});
+
 export const zElementInstanceSearchQuerySortRequest = z.object({
     field: z.enum([
         'elementInstanceKey',
@@ -4603,6 +5846,18 @@ export const zElementInstanceSearchQuerySortRequest = z.object({
         'state',
         'incidentKey',
         'tenantId'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: z.optional(zSortOrderEnum)
+});
+
+export const zElementInstanceWaitStateQuerySortRequest = z.object({
+    field: z.enum([
+        'elementInstanceKey',
+        'processInstanceKey',
+        'rootProcessInstanceKey',
+        'elementId'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -4743,6 +5998,7 @@ export const zJobSearchQuerySortRequest = z.object({
         'jobKey',
         'kind',
         'listenerEventType',
+        'priority',
         'processDefinitionId',
         'processDefinitionKey',
         'processInstanceKey',
@@ -4780,14 +6036,19 @@ export const zMessageSubscriptionSearchQuerySortRequest = z.object({
     field: z.enum([
         'messageSubscriptionKey',
         'processDefinitionId',
+        'processDefinitionName',
+        'processDefinitionVersion',
         'processInstanceKey',
         'elementId',
         'elementInstanceKey',
         'messageSubscriptionState',
+        'messageSubscriptionType',
         'lastUpdatedDate',
         'messageName',
         'correlationKey',
-        'tenantId'
+        'tenantId',
+        'toolName',
+        'inboundConnectorType'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -4796,6 +6057,7 @@ export const zMessageSubscriptionSearchQuerySortRequest = z.object({
 
 export const zCorrelatedMessageSubscriptionSearchQuerySortRequest = z.object({
     field: z.enum([
+        'businessId',
         'correlationKey',
         'correlationTime',
         'elementId',
@@ -4888,6 +6150,7 @@ export const zProcessInstanceSearchQuerySortRequest = z.object({
         'parentElementInstanceKey',
         'startDate',
         'endDate',
+        'suspendedDate',
         'state',
         'hasIncident',
         'tenantId',
@@ -4992,6 +6255,28 @@ export const zSearchQueryResponse = z.object({
 });
 
 /**
+ * Agent instance search response.
+ */
+export const zAgentInstanceSearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zAgentInstanceResult).register(z.globalRegistry, {
+        description: 'The matching agent instances.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Agent instance search response.'
+}));
+
+/**
+ * Agent instance history search response.
+ */
+export const zAgentInstanceHistorySearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zAgentInstanceHistoryItemResult).register(z.globalRegistry, {
+        description: 'The matching history items.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Agent instance history search response.'
+}));
+
+/**
  * Audit log search response.
  */
 export const zAuditLogSearchQueryResult = zSearchQueryResponse.and(z.object({
@@ -5054,9 +6339,21 @@ export const zDecisionRequirementsSearchQueryResult = zSearchQueryResponse.and(z
     })
 }));
 
+export const zResourceSearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zResourceResult).register(z.globalRegistry, {
+        description: 'The matching resources.'
+    })
+}));
+
 export const zElementInstanceSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zElementInstanceResult).register(z.globalRegistry, {
         description: 'The matching element instances.'
+    })
+}));
+
+export const zElementInstanceWaitStateQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zElementInstanceWaitStateResult).register(z.globalRegistry, {
+        description: 'The matching waiting states.'
     })
 }));
 
@@ -5207,6 +6504,17 @@ export const zProcessDefinitionSearchQueryResult = zSearchQueryResponse.and(z.ob
     })
 }));
 
+/**
+ * Process definition variable name search query response.
+ */
+export const zProcessDefinitionVariableNameSearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zProcessDefinitionVariableNameSearchResult).register(z.globalRegistry, {
+        description: 'The matching variable names.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Process definition variable name search query response.'
+}));
+
 export const zProcessDefinitionMessageSubscriptionStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionMessageSubscriptionStatisticsResult).register(z.globalRegistry, {
         description: 'The matching process definition message subscription statistics.'
@@ -5270,6 +6578,63 @@ export const zRoleMappingRuleSearchResult = zSearchQueryResponse.and(z.object({
         description: 'The matching mapping rules.'
     })
 }));
+
+export const zSecretResolveRequest = z.object({
+    references: z.array(z.string().max(256).register(z.globalRegistry, {
+        description: 'A secret reference of the form `camunda.secrets.<name>`.'
+    })).max(20).register(z.globalRegistry, {
+        description: 'The secret references to resolve, each of the form `camunda.secrets.<name>`.\nDuplicate references are deduplicated by the server and resolved once.\nAt most 20 references may be requested in a single batch.\n'
+    })
+});
+
+export const zResolvedSecret = z.object({
+    reference: z.string().register(z.globalRegistry, {
+        description: 'The resolved secret reference of the form `camunda.secrets.<name>`.'
+    }),
+    value: z.string().register(z.globalRegistry, {
+        description: 'The resolved secret value.'
+    })
+});
+
+/**
+ * The typed reason a reference could not be resolved.
+ *
+ * - `NOT_FOUND`: no secret exists for the reference.
+ * - `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.
+ * - `INVALID_REFERENCE`: the reference is malformed.
+ *
+ */
+export const zSecretErrorCode = z.enum([
+    'NOT_FOUND',
+    'ACCESS_DENIED',
+    'INVALID_REFERENCE'
+]).register(z.globalRegistry, {
+    description: 'The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed.\n'
+});
+
+export const zSecretResolutionError = z.object({
+    reference: z.string().register(z.globalRegistry, {
+        description: 'The secret reference that could not be resolved.'
+    }),
+    code: zSecretErrorCode,
+    message: z.string().register(z.globalRegistry, {
+        description: 'A human-readable description of the failure. Never contains the secret value;\nonly error metadata (codes, names) is included.\n'
+    })
+});
+
+/**
+ * The per-reference outcome of a resolve request.
+ */
+export const zSecretResolveResult = z.object({
+    resolved: z.array(zResolvedSecret).register(z.globalRegistry, {
+        description: 'The references that were successfully resolved.'
+    }),
+    errors: z.array(zSecretResolutionError).register(z.globalRegistry, {
+        description: 'The references that could not be resolved, each with a typed error code.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The per-reference outcome of a resolve request.'
+});
 
 export const zSignalBroadcastRequest = z.object({
     signalName: z.string().register(z.globalRegistry, {
@@ -5339,20 +6704,95 @@ export const zJobMetricsConfigurationResponse = z.object({
 });
 
 /**
+ * Configuration for deployment characteristics.
+ */
+export const zDeploymentConfigurationResponse = z.object({
+    isMultiTenancyEnabled: z.boolean().register(z.globalRegistry, {
+        description: 'Whether multi-tenancy is enabled.'
+    }),
+    maxRequestSize: z.coerce.number().int().register(z.globalRegistry, {
+        description: 'The maximum HTTP request size in bytes.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for deployment characteristics.'
+});
+
+/**
+ * Configuration for authentication and session management.
+ */
+export const zAuthenticationConfigurationResponse = z.object({
+    canLogout: z.boolean().register(z.globalRegistry, {
+        description: 'Whether users can log out (false for SaaS deployments).'
+    }),
+    isLoginDelegated: z.boolean().register(z.globalRegistry, {
+        description: 'Whether login is delegated to an external identity provider.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for authentication and session management.'
+});
+
+/**
+ * A Camunda webapp component name.
+ */
+export const zWebappComponent = z.enum([
+    'operate',
+    'tasklist',
+    'admin'
+]).register(z.globalRegistry, {
+    description: 'A Camunda webapp component name.'
+});
+
+/**
+ * Configuration for active Camunda components in the deployment.
+ */
+export const zComponentsConfigurationResponse = z.object({
+    active: z.array(zWebappComponent).register(z.globalRegistry, {
+        description: 'List of webapp components whose UI is enabled in this deployment.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Configuration for active Camunda components in the deployment.'
+});
+
+/**
+ * The cloud deployment stage.
+ */
+export const zCloudStage = z.enum([
+    'dev',
+    'int',
+    'prod'
+]).register(z.globalRegistry, {
+    description: 'The cloud deployment stage.'
+});
+
+/**
+ * Configuration for SaaS/cloud-specific settings.
+ */
+export const zCloudConfigurationResponse = z.object({
+    stage: z.union([
+        zCloudStage,
+        z.null()
+    ])
+}).register(z.globalRegistry, {
+    description: 'Configuration for SaaS/cloud-specific settings.'
+});
+
+/**
  * Envelope for all system configuration sections. Each property
  * represents a feature area.
  *
  */
 export const zSystemConfigurationResponse = z.object({
-    jobMetrics: zJobMetricsConfigurationResponse
+    jobMetrics: zJobMetricsConfigurationResponse,
+    components: zComponentsConfigurationResponse,
+    deployment: zDeploymentConfigurationResponse,
+    authentication: zAuthenticationConfigurationResponse,
+    cloud: zCloudConfigurationResponse
 }).register(z.globalRegistry, {
     description: 'Envelope for all system configuration sections. Each property\nrepresents a feature area.\n'
 });
 
 export const zTenantCreateRequest = z.object({
-    tenantId: z.string().min(1).max(256).regex(/^[A-Za-z0-9_@.+-]+$/).register(z.globalRegistry, {
-        description: 'The unique ID for the tenant. Must be 255 characters or less. Can contain letters, numbers, [`_`, `-`, `+`, `.`, `@`].'
-    }),
+    tenantId: zTenantId,
     name: z.string().register(z.globalRegistry, {
         description: 'The name of the tenant.'
     }),
@@ -5514,9 +6954,7 @@ export const zTenantUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
 }));
 
 export const zTenantClientResult = z.object({
-    clientId: z.string().register(z.globalRegistry, {
-        description: 'The ID of the client.'
-    })
+    clientId: zClientId
 });
 
 export const zTenantClientSearchResult = zSearchQueryResponse.and(z.object({
@@ -5541,9 +6979,7 @@ export const zTenantClientSearchQueryRequest = zSearchQueryRequest.and(z.object(
 }));
 
 export const zTenantGroupResult = z.object({
-    groupId: z.string().register(z.globalRegistry, {
-        description: 'The groupId of the group.'
-    })
+    groupId: zGroupId
 });
 
 export const zTenantGroupSearchResult = zSearchQueryResponse.and(z.object({
@@ -5586,7 +7022,8 @@ export const zUserTaskSearchQuerySortRequest = z.object({
         'followUpDate',
         'dueDate',
         'priority',
-        'name'
+        'name',
+        'businessId'
     ]).register(z.globalRegistry, {
         description: 'The field to sort by.'
     }),
@@ -5763,6 +7200,10 @@ export const zUserTaskResult = z.object({
         zProcessInstanceKey,
         z.null()
     ]),
+    businessId: z.union([
+        zBusinessId,
+        z.null()
+    ]),
     formKey: z.union([
         zFormKey,
         z.null()
@@ -5839,9 +7280,7 @@ export const zUserRequest = z.object({
     password: z.string().register(z.globalRegistry, {
         description: 'The password of the user.'
     }),
-    username: z.string().register(z.globalRegistry, {
-        description: 'The username of the user.'
-    }),
+    username: zUsername,
     name: z.optional(z.string().register(z.globalRegistry, {
         description: 'The name of the user.'
     })),
@@ -6018,6 +7457,51 @@ export const zSetVariableRequest = z.object({
     })).default(false),
     operationReference: z.optional(zOperationReference)
 });
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceStatusExactMatch = zAgentInstanceStatusEnum;
+
+/**
+ * AgentInstanceStatusEnum property with full advanced search capabilities.
+ */
+export const zAgentInstanceStatusFilterProperty = z.union([
+    zAgentInstanceStatusExactMatch,
+    zAdvancedAgentInstanceStatusFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceHistoryRoleExactMatch = zAgentInstanceHistoryRoleEnum;
+
+/**
+ * AgentInstanceHistoryRoleEnum property with full advanced search capabilities.
+ */
+export const zAgentInstanceHistoryRoleFilterProperty = z.union([
+    zAgentInstanceHistoryRoleExactMatch,
+    zAdvancedAgentInstanceHistoryRoleFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceHistoryCommitStatusExactMatch = zAgentInstanceHistoryCommitStatusEnum;
+
+/**
+ * AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.
+ */
+export const zAgentInstanceHistoryCommitStatusFilterProperty = z.union([
+    zAgentInstanceHistoryCommitStatusExactMatch,
+    zAdvancedAgentInstanceHistoryCommitStatusFilter
+]);
 
 /**
  * Exact match
@@ -6220,6 +7704,21 @@ export const zClusterVariableScopeFilterProperty = z.union([
 ]);
 
 /**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zClusterVariableKindExactMatch = zClusterVariableKindEnum;
+
+/**
+ * ClusterVariableKindEnum property with full advanced search capabilities.
+ */
+export const zClusterVariableKindFilterProperty = z.union([
+    zClusterVariableKindExactMatch,
+    zAdvancedClusterVariableKindFilter
+]);
+
+/**
  * Cluster variable filter request.
  */
 export const zClusterVariableSearchQueryFilterRequest = z.object({
@@ -6229,7 +7728,11 @@ export const zClusterVariableSearchQueryFilterRequest = z.object({
     tenantId: z.optional(zStringFilterProperty),
     isTruncated: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.\n'
-    }))
+    })),
+    metadata: z.optional(z.record(z.string(), zAdvancedMetadataValueFilter).register(z.globalRegistry, {
+        description: "Filter by metadata entries. A map of metadata key to an advanced filter on that key's value. Metadata values are strings or numbers."
+    })),
+    kind: z.optional(zClusterVariableKindFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Cluster variable filter request.'
 });
@@ -6292,6 +7795,28 @@ export const zResourceKeyFilterProperty = z.union([
 ]);
 
 /**
+ * Resource search filter.
+ */
+export const zResourceFilter = z.object({
+    resourceKey: z.optional(zResourceKeyFilterProperty),
+    resourceName: z.optional(zStringFilterProperty),
+    resourceId: z.optional(zStringFilterProperty),
+    version: z.optional(zIntegerFilterProperty),
+    versionTag: z.optional(zStringFilterProperty),
+    deploymentKey: z.optional(zDeploymentKeyFilterProperty),
+    tenantId: z.optional(zTenantId)
+}).register(z.globalRegistry, {
+    description: 'Resource search filter.'
+});
+
+export const zResourceSearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zResourceSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zResourceFilter)
+}));
+
+/**
  * Exact match
  *
  * Matches the value exactly.
@@ -6307,75 +7832,34 @@ export const zElementInstanceStateFilterProperty = z.union([
 ]);
 
 /**
- * Element instance filter.
+ * Exact match
+ *
+ * Matches the value exactly.
  */
-export const zElementInstanceFilter = z.object({
-    processDefinitionId: z.optional(zProcessDefinitionId),
-    state: z.optional(zElementInstanceStateFilterProperty),
-    type: z.optional(z.enum([
-        'UNSPECIFIED',
-        'PROCESS',
-        'SUB_PROCESS',
-        'EVENT_SUB_PROCESS',
-        'AD_HOC_SUB_PROCESS',
-        'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
-        'START_EVENT',
-        'INTERMEDIATE_CATCH_EVENT',
-        'INTERMEDIATE_THROW_EVENT',
-        'BOUNDARY_EVENT',
-        'END_EVENT',
-        'SERVICE_TASK',
-        'RECEIVE_TASK',
-        'USER_TASK',
-        'MANUAL_TASK',
-        'TASK',
-        'EXCLUSIVE_GATEWAY',
-        'INCLUSIVE_GATEWAY',
-        'PARALLEL_GATEWAY',
-        'EVENT_BASED_GATEWAY',
-        'SEQUENCE_FLOW',
-        'MULTI_INSTANCE_BODY',
-        'CALL_ACTIVITY',
-        'BUSINESS_RULE_TASK',
-        'SCRIPT_TASK',
-        'SEND_TASK',
-        'UNKNOWN'
-    ]).register(z.globalRegistry, {
-        description: 'Type of element as defined set of values.'
-    })),
-    elementId: z.optional(zElementId),
-    elementName: z.optional(z.string().register(z.globalRegistry, {
-        description: "The element name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.\n"
-    })),
-    hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
-        description: 'Shows whether this element instance has an incident related to.'
-    })),
-    tenantId: z.optional(zTenantId),
-    elementInstanceKey: z.optional(zElementInstanceKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    incidentKey: z.optional(zIncidentKey),
-    startDate: z.optional(zDateTimeFilterProperty),
-    endDate: z.optional(zDateTimeFilterProperty),
-    elementInstanceScopeKey: z.optional(z.union([
-        zElementInstanceKey,
-        zProcessInstanceKey
-    ]))
-}).register(z.globalRegistry, {
-    description: 'Element instance filter.'
-});
+export const zWaitStateElementTypeExactMatch = zWaitStateElementTypeEnum;
 
 /**
- * Element instance search request.
+ * Element type property with full advanced search capabilities.
  */
-export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
-    sort: z.optional(z.array(zElementInstanceSearchQuerySortRequest).register(z.globalRegistry, {
-        description: 'Sort field criteria.'
-    })),
-    filter: z.optional(zElementInstanceFilter)
-}).register(z.globalRegistry, {
-    description: 'Element instance search request.'
-}));
+export const zWaitStateElementTypeFilterProperty = z.union([
+    zWaitStateElementTypeExactMatch,
+    zAdvancedWaitStateElementTypeFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zWaitStateTypeExactMatch = zWaitStateTypeEnum;
+
+/**
+ * Wait state type property with full advanced search capabilities.
+ */
+export const zWaitStateTypeFilterProperty = z.union([
+    zWaitStateTypeExactMatch,
+    zAdvancedWaitStateTypeFilter
+]);
 
 /**
  * Exact match
@@ -6437,6 +7921,114 @@ export const zGlobalTaskListenerSearchQueryRequest = zSearchQueryRequest.and(z.o
 }).register(z.globalRegistry, {
     description: 'Global listener search query request.'
 }));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zElementIdExactMatch = zElementId;
+
+/**
+ * ElementId property with full advanced search capabilities.
+ */
+export const zElementIdFilterProperty = z.union([
+    zElementIdExactMatch,
+    zAdvancedElementIdFilter
+]);
+
+/**
+ * Element instance filter fields.
+ */
+export const zElementInstanceFilterFields = z.object({
+    processDefinitionId: z.optional(zProcessDefinitionId),
+    state: z.optional(zElementInstanceStateFilterProperty),
+    type: z.optional(z.enum([
+        'UNSPECIFIED',
+        'PROCESS',
+        'SUB_PROCESS',
+        'EVENT_SUB_PROCESS',
+        'AD_HOC_SUB_PROCESS',
+        'AD_HOC_SUB_PROCESS_INNER_INSTANCE',
+        'START_EVENT',
+        'INTERMEDIATE_CATCH_EVENT',
+        'INTERMEDIATE_THROW_EVENT',
+        'BOUNDARY_EVENT',
+        'END_EVENT',
+        'SERVICE_TASK',
+        'RECEIVE_TASK',
+        'USER_TASK',
+        'MANUAL_TASK',
+        'TASK',
+        'EXCLUSIVE_GATEWAY',
+        'INCLUSIVE_GATEWAY',
+        'PARALLEL_GATEWAY',
+        'EVENT_BASED_GATEWAY',
+        'SEQUENCE_FLOW',
+        'MULTI_INSTANCE_BODY',
+        'CALL_ACTIVITY',
+        'BUSINESS_RULE_TASK',
+        'SCRIPT_TASK',
+        'SEND_TASK',
+        'UNKNOWN'
+    ]).register(z.globalRegistry, {
+        description: 'Type of element as defined set of values.'
+    })),
+    elementId: z.optional(zElementIdFilterProperty),
+    elementName: z.optional(zStringFilterProperty),
+    hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
+        description: 'Shows whether this element instance has an incident related to.'
+    })),
+    tenantId: z.optional(zTenantId),
+    elementInstanceKey: z.optional(zElementInstanceKey),
+    processInstanceKey: z.optional(zProcessInstanceKey),
+    processDefinitionKey: z.optional(zProcessDefinitionKey),
+    incidentKey: z.optional(zIncidentKey),
+    startDate: z.optional(zDateTimeFilterProperty),
+    endDate: z.optional(zDateTimeFilterProperty),
+    elementInstanceScopeKey: z.optional(z.union([
+        zElementInstanceKey,
+        zProcessInstanceKey
+    ]))
+}).register(z.globalRegistry, {
+    description: 'Element instance filter fields.'
+});
+
+/**
+ * Element instance search filter.
+ */
+export const zElementInstanceFilter = zElementInstanceFilterFields.and(z.object({
+    '$or': z.optional(z.array(zElementInstanceFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "processInstanceKey": "2251799813685323",\n  "$or": [\n    { "elementName": { "$like": "*Order*" } },\n    { "elementId":   { "$like": "*Order*" } }\n  ]\n}\n```\nThis matches element instances scoped to the given process instance whose:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;"><code>elementName</code> contains <em>Order</em>, or</li>\n  <li style="list-style-type: disc;"><code>elementId</code> contains <em>Order</em></li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }))
+}));
+
+/**
+ * Element instance search request.
+ */
+export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zElementInstanceSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zElementInstanceFilter)
+}).register(z.globalRegistry, {
+    description: 'Element instance search request.'
+}));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zProcessDefinitionIdExactMatch = zProcessDefinitionId;
+
+/**
+ * ProcessDefinitionId property with full advanced search capabilities.
+ */
+export const zProcessDefinitionIdFilterProperty = z.union([
+    zProcessDefinitionIdExactMatch,
+    zAdvancedProcessDefinitionIdFilter
+]);
 
 /**
  * Exact match
@@ -6584,6 +8176,32 @@ export const zElementInstanceKeyFilterProperty = z.union([
 ]);
 
 /**
+ * Filters for the element instance inspection.
+ */
+export const zElementInstanceWaitStateFilter = z.object({
+    elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
+    processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    rootProcessInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    elementId: z.optional(zElementIdFilterProperty),
+    elementType: z.optional(zWaitStateElementTypeFilterProperty),
+    waitStateType: z.optional(zWaitStateTypeFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Filters for the element instance inspection.'
+});
+
+/**
+ * Element instance inspection request.
+ */
+export const zElementInstanceWaitStateQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zElementInstanceWaitStateQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zElementInstanceWaitStateFilter)
+}).register(z.globalRegistry, {
+    description: 'Element instance inspection request.'
+}));
+
+/**
  * Exact match
  *
  * Matches the value exactly.
@@ -6649,6 +8267,7 @@ export const zJobFilter = z.object({
     jobKey: z.optional(zJobKeyFilterProperty),
     kind: z.optional(zJobKindFilterProperty),
     listenerEventType: z.optional(zJobListenerEventTypeFilterProperty),
+    priority: z.optional(zIntegerFilterProperty),
     processDefinitionId: z.optional(zStringFilterProperty),
     processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
     processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
@@ -6674,6 +8293,18 @@ export const zJobSearchQuery = zSearchQueryRequest.and(z.object({
 }).register(z.globalRegistry, {
     description: 'Job search request.'
 }));
+
+/**
+ * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
+ *
+ */
+export const zJobBatchUpdateRequest = z.object({
+    filter: zJobFilter,
+    changeset: zJobChangeset,
+    operationReference: z.optional(zOperationReference)
+}).register(z.globalRegistry, {
+    description: 'The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.\n'
+});
 
 /**
  * Exact match
@@ -6771,6 +8402,99 @@ export const zDecisionEvaluationInstanceKeyFilterProperty = z.union([
  *
  * Matches the value exactly.
  */
+export const zAgentInstanceKeyExactMatch = zAgentInstanceKey;
+
+/**
+ * AgentInstanceKey property with full advanced search capabilities.
+ */
+export const zAgentInstanceKeyFilterProperty = z.union([
+    zAgentInstanceKeyExactMatch,
+    zAdvancedAgentInstanceKeyFilter
+]);
+
+/**
+ * Agent instance search filter.
+ */
+export const zAgentInstanceFilter = z.object({
+    agentInstanceKey: z.optional(zAgentInstanceKeyFilterProperty),
+    status: z.optional(zAgentInstanceStatusFilterProperty),
+    elementId: z.optional(zElementIdFilterProperty),
+    processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    rootProcessInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
+    processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
+    tenantId: z.optional(zStringFilterProperty),
+    creationDate: z.optional(zDateTimeFilterProperty),
+    lastUpdatedDate: z.optional(zDateTimeFilterProperty),
+    completionDate: z.optional(zDateTimeFilterProperty),
+    elementInstanceKeys: z.optional(z.array(zElementInstanceKeyFilterProperty).register(z.globalRegistry, {
+        description: 'The keys of element instances associated with this agent instance.\nIf multiple keys are provided, the filter matches agent instances associated with all of the provided keys at the same time.'
+    })),
+    processDefinitionId: z.optional(zStringFilterProperty),
+    processDefinitionVersion: z.optional(zIntegerFilterProperty),
+    processDefinitionVersionTag: z.optional(zStringFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Agent instance search filter.'
+});
+
+/**
+ * Agent instance search request.
+ */
+export const zAgentInstanceSearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zAgentInstanceSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zAgentInstanceFilter)
+}).register(z.globalRegistry, {
+    description: 'Agent instance search request.'
+}));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentHistoryItemKeyExactMatch = zAgentHistoryItemKey;
+
+/**
+ * AgentHistoryItemKey property with full advanced search capabilities.
+ */
+export const zAgentHistoryItemKeyFilterProperty = z.union([
+    zAgentHistoryItemKeyExactMatch,
+    zAdvancedAgentHistoryItemKeyFilter
+]);
+
+/**
+ * Agent instance history item search filter.
+ */
+export const zAgentInstanceHistoryFilter = z.object({
+    historyItemKey: z.optional(zAgentHistoryItemKeyFilterProperty),
+    role: z.optional(zAgentInstanceHistoryRoleFilterProperty),
+    elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
+    jobKey: z.optional(zJobKeyFilterProperty),
+    loopIteration: z.optional(zIntegerFilterProperty),
+    commitStatus: z.optional(zAgentInstanceHistoryCommitStatusFilterProperty),
+    producedAt: z.optional(zDateTimeFilterProperty)
+}).register(z.globalRegistry, {
+    description: 'Agent instance history item search filter.'
+});
+
+/**
+ * Agent instance history search request.
+ */
+export const zAgentInstanceHistorySearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.optional(z.array(zAgentInstanceHistorySearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zAgentInstanceHistoryFilter)
+}).register(z.globalRegistry, {
+    description: 'Agent instance history search request.'
+}));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zAuditLogKeyExactMatch = zAuditLogKey;
 
 /**
@@ -6858,7 +8582,9 @@ export const zAuditLogFilter = z.object({
     decisionEvaluationKey: z.optional(zDecisionEvaluationKeyFilterProperty),
     relatedEntityKey: z.optional(zAuditLogEntityKeyFilterProperty),
     relatedEntityType: z.optional(zEntityTypeFilterProperty),
-    entityDescription: z.optional(zStringFilterProperty)
+    entityDescription: z.optional(zStringFilterProperty),
+    inboundChannelType: z.optional(zStringFilterProperty),
+    inboundChannelToolName: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Audit log filter request'
 });
@@ -6897,6 +8623,7 @@ export const zDecisionInstanceFilter = z.object({
     decisionEvaluationKey: z.optional(zDecisionEvaluationKey),
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     processInstanceKey: z.optional(zProcessInstanceKey),
+    businessId: z.optional(zStringFilterProperty),
     decisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty),
     elementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
     rootDecisionDefinitionKey: z.optional(zDecisionDefinitionKeyFilterProperty),
@@ -6921,6 +8648,21 @@ export const zDecisionInstanceSearchQuery = zSearchQueryRequest.and(z.object({
     })),
     filter: z.optional(zDecisionInstanceFilter)
 }));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zMessageSubscriptionTypeExactMatch = zMessageSubscriptionTypeEnum;
+
+/**
+ * MessageSubscriptionTypeEnum with full advanced search capabilities.
+ */
+export const zMessageSubscriptionTypeFilterProperty = z.union([
+    zMessageSubscriptionTypeExactMatch,
+    zAdvancedMessageSubscriptionTypeFilter
+]);
 
 /**
  * Exact match
@@ -6966,7 +8708,12 @@ export const zMessageSubscriptionFilter = z.object({
     lastUpdatedDate: z.optional(zDateTimeFilterProperty),
     messageName: z.optional(zStringFilterProperty),
     correlationKey: z.optional(zStringFilterProperty),
-    tenantId: z.optional(zStringFilterProperty)
+    tenantId: z.optional(zStringFilterProperty),
+    messageSubscriptionType: z.optional(zMessageSubscriptionTypeFilterProperty),
+    processDefinitionName: z.optional(zStringFilterProperty),
+    processDefinitionVersion: z.optional(zIntegerFilterProperty),
+    toolName: z.optional(zStringFilterProperty),
+    inboundConnectorType: z.optional(zStringFilterProperty)
 }).register(z.globalRegistry, {
     description: 'Message subscription search filter.'
 });
@@ -6982,6 +8729,7 @@ export const zMessageSubscriptionSearchQuery = zSearchQueryRequest.and(z.object(
  * Correlated message subscriptions search filter.
  */
 export const zCorrelatedMessageSubscriptionFilter = z.object({
+    businessId: z.optional(zStringFilterProperty),
     correlationKey: z.optional(zStringFilterProperty),
     correlationTime: z.optional(zDateTimeFilterProperty),
     elementId: z.optional(zStringFilterProperty),
@@ -7035,6 +8783,7 @@ export const zBaseProcessInstanceFilterFields = z.object({
     hasIncident: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Whether this process instance has a related incident or not.'
     })),
+    suspendedDate: z.optional(zDateTimeFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
     variables: z.optional(z.array(zVariableValueFilterProperty).register(z.globalRegistry, {
         description: 'The process instance variables.'
@@ -7152,6 +8901,26 @@ export const zProcessInstanceModificationBatchOperationRequest = z.object({
 });
 
 /**
+ * The process instance filter that defines which process instances should be suspended.
+ */
+export const zProcessInstanceSuspensionBatchOperationRequest = z.object({
+    filter: zProcessInstanceFilter,
+    operationReference: z.optional(zOperationReference)
+}).register(z.globalRegistry, {
+    description: 'The process instance filter that defines which process instances should be suspended.'
+});
+
+/**
+ * The process instance filter that defines which process instances should be resumed.
+ */
+export const zProcessInstanceResumptionBatchOperationRequest = z.object({
+    filter: zProcessInstanceFilter,
+    operationReference: z.optional(zOperationReference)
+}).register(z.globalRegistry, {
+    description: 'The process instance filter that defines which process instances should be resumed.'
+});
+
+/**
  * Process instance search request.
  */
 export const zProcessInstanceSearchQuery = zSearchQueryRequest.and(z.object({
@@ -7184,13 +8953,14 @@ export const zUserTaskStateFilterProperty = z.union([
 export const zUserTaskFilter = z.object({
     state: z.optional(zUserTaskStateFilterProperty),
     assignee: z.optional(zStringFilterProperty),
+    businessId: z.optional(zStringFilterProperty),
     priority: z.optional(zIntegerFilterProperty),
     elementId: z.optional(zElementId),
     name: z.optional(zStringFilterProperty),
     candidateGroup: z.optional(zStringFilterProperty),
     candidateUser: z.optional(zStringFilterProperty),
     tenantId: z.optional(zStringFilterProperty),
-    processDefinitionId: z.optional(zProcessDefinitionId),
+    processDefinitionId: z.optional(zProcessDefinitionIdFilterProperty),
     creationDate: z.optional(zDateTimeFilterProperty),
     completionDate: z.optional(zDateTimeFilterProperty),
     followUpDate: z.optional(zDateTimeFilterProperty),
@@ -7202,8 +8972,8 @@ export const zUserTaskFilter = z.object({
         description: 'The local variables of the user task.'
     })),
     userTaskKey: z.optional(zUserTaskKey),
-    processDefinitionKey: z.optional(zProcessDefinitionKey),
-    processInstanceKey: z.optional(zProcessInstanceKey),
+    processDefinitionKey: z.optional(zProcessDefinitionKeyFilterProperty),
+    processInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
     elementInstanceKey: z.optional(zElementInstanceKey),
     tags: z.optional(zTagSet)
 }).register(z.globalRegistry, {
@@ -7221,6 +8991,82 @@ export const zUserTaskSearchQuery = zSearchQueryRequest.and(z.object({
 }).register(z.globalRegistry, {
     description: 'User task search query request.'
 }));
+
+export const zCreateAgentInstanceData = z.object({
+    body: zAgentInstanceCreationRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance was created.
+ */
+export const zCreateAgentInstanceResponse = zAgentInstanceCreationResult;
+
+export const zGetAgentInstanceData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance is successfully returned.
+ */
+export const zGetAgentInstanceResponse = zAgentInstanceResult;
+
+export const zUpdateAgentInstanceData = z.object({
+    body: zAgentInstanceUpdateRequest,
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance was updated successfully.
+ */
+export const zUpdateAgentInstanceResponse = z.void().register(z.globalRegistry, {
+    description: 'The agent instance was updated successfully.'
+});
+
+export const zSearchAgentInstancesData = z.object({
+    body: z.optional(zAgentInstanceSearchQuery),
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance search result.
+ */
+export const zSearchAgentInstancesResponse = zAgentInstanceSearchQueryResult;
+
+export const zCreateAgentInstanceHistoryItemData = z.object({
+    body: zAgentInstanceHistoryItemRequest,
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The history item was created.
+ */
+export const zCreateAgentInstanceHistoryItemResponse = zAgentInstanceHistoryItemCreationResult;
+
+export const zSearchAgentInstanceHistoryData = z.object({
+    body: z.optional(zAgentInstanceHistorySearchQuery),
+    path: z.object({
+        agentInstanceKey: zAgentInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The agent instance history search result.
+ */
+export const zSearchAgentInstanceHistoryResponse = zAgentInstanceHistorySearchQueryResult;
 
 export const zSearchAuditLogsData = z.object({
     body: z.optional(zAuditLogSearchQueryRequest),
@@ -7442,9 +9288,7 @@ export const zCreateGlobalClusterVariableResponse = zClusterVariableResult;
 export const zDeleteGlobalClusterVariableData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        name: z.string().register(z.globalRegistry, {
-            description: 'The name of the cluster variable'
-        })
+        name: zClusterVariableName
     }),
     query: z.optional(z.never())
 });
@@ -7459,9 +9303,7 @@ export const zDeleteGlobalClusterVariableResponse = z.void().register(z.globalRe
 export const zGetGlobalClusterVariableData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        name: z.string().register(z.globalRegistry, {
-            description: 'The name of the cluster variable'
-        })
+        name: zClusterVariableName
     }),
     query: z.optional(z.never())
 });
@@ -7474,9 +9316,7 @@ export const zGetGlobalClusterVariableResponse = zClusterVariableResult;
 export const zUpdateGlobalClusterVariableData = z.object({
     body: zUpdateClusterVariableRequest,
     path: z.object({
-        name: z.string().register(z.globalRegistry, {
-            description: 'The name of the cluster variable'
-        })
+        name: zClusterVariableName
     }),
     query: z.optional(z.never())
 });
@@ -7518,9 +9358,7 @@ export const zDeleteTenantClusterVariableData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        name: z.string().register(z.globalRegistry, {
-            description: 'The name of the cluster variable'
-        })
+        name: zClusterVariableName
     }),
     query: z.optional(z.never())
 });
@@ -7536,9 +9374,7 @@ export const zGetTenantClusterVariableData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        name: z.string().register(z.globalRegistry, {
-            description: 'The name of the cluster variable'
-        })
+        name: zClusterVariableName
     }),
     query: z.optional(z.never())
 });
@@ -7552,9 +9388,7 @@ export const zUpdateTenantClusterVariableData = z.object({
     body: zUpdateClusterVariableRequest,
     path: z.object({
         tenantId: zTenantId,
-        name: z.string().register(z.globalRegistry, {
-            description: 'The name of the cluster variable'
-        })
+        name: zClusterVariableName
     }),
     query: z.optional(z.never())
 });
@@ -7661,12 +9495,7 @@ export const zGetDecisionInstanceData = z.object({
 export const zGetDecisionInstanceResponse = zDecisionInstanceGetQueryResult;
 
 export const zDeleteDecisionInstanceData = z.object({
-    body: z.optional(z.union([
-        z.object({
-            operationReference: z.optional(zOperationReference)
-        }),
-        z.null()
-    ])),
+    body: z.optional(zDeleteDecisionInstanceRequest),
     path: z.object({
         decisionEvaluationKey: zDecisionEvaluationKey
     }),
@@ -7866,6 +9695,17 @@ export const zActivateAdHocSubProcessActivitiesResponse = z.void().register(z.gl
     description: 'The ad-hoc sub-process instance is modified.'
 });
 
+export const zSearchElementInstanceWaitStatesData = z.object({
+    body: z.optional(zElementInstanceWaitStateQuery),
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The element instance wait state search result.
+ */
+export const zSearchElementInstanceWaitStatesResponse = zElementInstanceWaitStateQueryResult;
+
 export const zSearchElementInstancesData = z.object({
     body: z.optional(zElementInstanceSearchQuery),
     path: z.optional(z.never()),
@@ -7928,6 +9768,19 @@ export const zEvaluateExpressionData = z.object({
  * Expression evaluated successfully
  */
 export const zEvaluateExpressionResponse = zExpressionEvaluationResult;
+
+export const zGetFormByKeyData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        formKey: zFormKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The form is successfully returned.
+ */
+export const zGetFormByKeyResponse = zFormResult;
 
 export const zCreateGlobalTaskListenerData = z.object({
     body: zCreateGlobalTaskListenerRequest,
@@ -8017,9 +9870,7 @@ export const zSearchGroupsResponse = zGroupSearchQueryResult;
 export const zDeleteGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8034,9 +9885,7 @@ export const zDeleteGroupResponse = z.void().register(z.globalRegistry, {
 export const zGetGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8049,9 +9898,7 @@ export const zGetGroupResponse = zGroupResult;
 export const zUpdateGroupData = z.object({
     body: zGroupUpdateRequest,
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8062,22 +9909,9 @@ export const zUpdateGroupData = z.object({
 export const zUpdateGroupResponse = zGroupUpdateResult;
 
 export const zSearchClientsForGroupData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'clientId'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        }))
-    }))),
+    body: z.optional(zGroupClientSearchQueryRequest),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8085,27 +9919,13 @@ export const zSearchClientsForGroupData = z.object({
 /**
  * The clients assigned to the group.
  */
-export const zSearchClientsForGroupResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The ID of the client.'
-        })
-    })).register(z.globalRegistry, {
-        description: 'The matching client IDs.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The clients assigned to the group.'
-}));
+export const zSearchClientsForGroupResponse = zGroupClientSearchResult;
 
 export const zUnassignClientFromGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        }),
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The client ID.'
-        })
+        groupId: zGroupId,
+        clientId: zClientId
     }),
     query: z.optional(z.never())
 });
@@ -8120,12 +9940,8 @@ export const zUnassignClientFromGroupResponse = z.void().register(z.globalRegist
 export const zAssignClientToGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        }),
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The client ID.'
-        })
+        groupId: zGroupId,
+        clientId: zClientId
     }),
     query: z.optional(z.never())
 });
@@ -8140,9 +9956,7 @@ export const zAssignClientToGroupResponse = z.void().register(z.globalRegistry, 
 export const zSearchMappingRulesForGroupData = z.object({
     body: z.optional(zMappingRuleSearchQueryRequest),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8150,23 +9964,13 @@ export const zSearchMappingRulesForGroupData = z.object({
 /**
  * The mapping rules assigned to the group.
  */
-export const zSearchMappingRulesForGroupResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(zMappingRuleResult).register(z.globalRegistry, {
-        description: 'The matching mapping rules.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The mapping rules assigned to the group.'
-}));
+export const zSearchMappingRulesForGroupResponse = zGroupMappingRuleSearchResult;
 
 export const zUnassignMappingRuleFromGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        }),
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The mapping rule ID.'
-        })
+        groupId: zGroupId,
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -8181,12 +9985,8 @@ export const zUnassignMappingRuleFromGroupResponse = z.void().register(z.globalR
 export const zAssignMappingRuleToGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        }),
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The mapping rule ID.'
-        })
+        groupId: zGroupId,
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -8201,9 +10001,7 @@ export const zAssignMappingRuleToGroupResponse = z.void().register(z.globalRegis
 export const zSearchRolesForGroupData = z.object({
     body: z.optional(zRoleSearchQueryRequest),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8211,31 +10009,12 @@ export const zSearchRolesForGroupData = z.object({
 /**
  * The roles assigned to the group.
  */
-export const zSearchRolesForGroupResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(zRoleResult).register(z.globalRegistry, {
-        description: 'The matching roles.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The roles assigned to the group.'
-}));
+export const zSearchRolesForGroupResponse = zGroupRoleSearchResult;
 
 export const zSearchUsersForGroupData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'username'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        }))
-    }))),
+    body: z.optional(zGroupUserSearchQueryRequest),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -8243,22 +10022,12 @@ export const zSearchUsersForGroupData = z.object({
 /**
  * The users assigned to the group.
  */
-export const zSearchUsersForGroupResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        username: zUsername
-    })).register(z.globalRegistry, {
-        description: 'The matching members.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The users assigned to the group.'
-}));
+export const zSearchUsersForGroupResponse = zGroupUserSearchResult;
 
 export const zUnassignUserFromGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        }),
+        groupId: zGroupId,
         username: zUsername
     }),
     query: z.optional(z.never())
@@ -8274,9 +10043,7 @@ export const zUnassignUserFromGroupResponse = z.void().register(z.globalRegistry
 export const zAssignUserToGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        }),
+        groupId: zGroupId,
         username: zUsername
     }),
     query: z.optional(z.never())
@@ -8436,6 +10203,17 @@ export const zFailJobResponse = z.void().register(z.globalRegistry, {
     description: 'The job is failed.'
 });
 
+export const zUpdateJobsBatchOperationData = z.object({
+    body: zJobBatchUpdateRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch operation was created.
+ */
+export const zUpdateJobsBatchOperationResponse = zBatchOperationCreatedResult;
+
 export const zGetGlobalJobStatisticsData = z.object({
     body: z.optional(z.never()),
     path: z.optional(z.never()),
@@ -8521,7 +10299,7 @@ export const zCreateMappingRuleData = z.object({
 /**
  * The mapping rule was created successfully.
  */
-export const zCreateMappingRuleResponse = zMappingRuleCreateUpdateResult;
+export const zCreateMappingRuleResponse = zMappingRuleCreateResult;
 
 export const zSearchMappingRuleData = z.object({
     body: z.optional(zMappingRuleSearchQueryRequest),
@@ -8532,20 +10310,12 @@ export const zSearchMappingRuleData = z.object({
 /**
  * The mapping rule search result.
  */
-export const zSearchMappingRuleResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(zMappingRuleResult).register(z.globalRegistry, {
-        description: 'The matching mapping rules.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The mapping rule search result.'
-}));
+export const zSearchMappingRuleResponse = zMappingRuleSearchQueryResult;
 
 export const zDeleteMappingRuleData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The ID of the mapping rule to delete.'
-        })
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -8560,9 +10330,7 @@ export const zDeleteMappingRuleResponse = z.void().register(z.globalRegistry, {
 export const zGetMappingRuleData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The ID of the mapping rule to get.'
-        })
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -8575,9 +10343,7 @@ export const zGetMappingRuleResponse = zMappingRuleResult;
 export const zUpdateMappingRuleData = z.object({
     body: z.optional(zMappingRuleUpdateRequest),
     path: z.object({
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The ID of the mapping rule to update.'
-        })
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -8585,7 +10351,7 @@ export const zUpdateMappingRuleData = z.object({
 /**
  * The mapping rule was updated successfully.
  */
-export const zUpdateMappingRuleResponse = zMappingRuleCreateUpdateResult;
+export const zUpdateMappingRuleResponse = zMappingRuleUpdateResult;
 
 export const zSearchMessageSubscriptionsData = z.object({
     body: z.optional(zMessageSubscriptionSearchQuery),
@@ -8694,6 +10460,19 @@ export const zGetProcessDefinitionStatisticsData = z.object({
  */
 export const zGetProcessDefinitionStatisticsResponse = zProcessDefinitionElementStatisticsQueryResult;
 
+export const zSearchProcessDefinitionVariableNamesData = z.object({
+    body: z.optional(zProcessDefinitionVariableNameSearchQuery),
+    path: z.object({
+        processDefinitionKey: zProcessDefinitionKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process definition variable name search result.
+ */
+export const zSearchProcessDefinitionVariableNamesResponse = zProcessDefinitionVariableNameSearchQueryResult;
+
 export const zGetProcessDefinitionXmlData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -8786,6 +10565,17 @@ export const zModifyProcessInstancesBatchOperationData = z.object({
  */
 export const zModifyProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
 
+export const zResumeProcessInstancesBatchOperationData = z.object({
+    body: zProcessInstanceResumptionBatchOperationRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch operation request was created.
+ */
+export const zResumeProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
+
 export const zSearchProcessInstancesData = z.object({
     body: z.optional(zProcessInstanceSearchQuery),
     path: z.optional(z.never()),
@@ -8796,6 +10586,17 @@ export const zSearchProcessInstancesData = z.object({
  * The process instance search result.
  */
 export const zSearchProcessInstancesResponse = zProcessInstanceSearchQueryResult;
+
+export const zSuspendProcessInstancesBatchOperationData = z.object({
+    body: zProcessInstanceSuspensionBatchOperationRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch operation request was created.
+ */
+export const zSuspendProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
 
 export const zGetProcessInstanceData = z.object({
     body: z.optional(z.never()),
@@ -8809,6 +10610,21 @@ export const zGetProcessInstanceData = z.object({
  * The process instance is successfully returned.
  */
 export const zGetProcessInstanceResponse = zProcessInstanceResult;
+
+export const zAssignProcessInstanceBusinessIdData = z.object({
+    body: zProcessInstanceBusinessIdAssignmentInstruction,
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The business id is assigned to the process instance.
+ */
+export const zAssignProcessInstanceBusinessIdResponse = z.void().register(z.globalRegistry, {
+    description: 'The business id is assigned to the process instance.'
+});
 
 export const zGetProcessInstanceCallHierarchyData = z.object({
     body: z.optional(z.never()),
@@ -8826,12 +10642,7 @@ export const zGetProcessInstanceCallHierarchyResponse = z.array(zProcessInstance
 });
 
 export const zCancelProcessInstanceData = z.object({
-    body: z.optional(z.union([
-        z.object({
-            operationReference: z.optional(zOperationReference)
-        }),
-        z.null()
-    ])),
+    body: z.optional(zCancelProcessInstanceRequest),
     path: z.object({
         processInstanceKey: zProcessInstanceKey
     }),
@@ -8846,12 +10657,7 @@ export const zCancelProcessInstanceResponse = z.void().register(z.globalRegistry
 });
 
 export const zDeleteProcessInstanceData = z.object({
-    body: z.optional(z.union([
-        z.object({
-            operationReference: z.optional(zOperationReference)
-        }),
-        z.null()
-    ])),
+    body: z.optional(zDeleteProcessInstanceRequest),
     path: z.object({
         processInstanceKey: zProcessInstanceKey
     }),
@@ -8921,6 +10727,21 @@ export const zModifyProcessInstanceResponse = z.void().register(z.globalRegistry
     description: 'The process instance is modified.'
 });
 
+export const zResumeProcessInstanceData = z.object({
+    body: z.optional(zResumeProcessInstanceRequest),
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance is resumed.
+ */
+export const zResumeProcessInstanceResponse = z.void().register(z.globalRegistry, {
+    description: 'The process instance is resumed.'
+});
+
 export const zGetProcessInstanceSequenceFlowsData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -8947,6 +10768,45 @@ export const zGetProcessInstanceStatisticsData = z.object({
  */
 export const zGetProcessInstanceStatisticsResponse = zProcessInstanceElementStatisticsQueryResult;
 
+export const zGetProcessInstanceWaitStateStatisticsData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance wait state statistics result.
+ */
+export const zGetProcessInstanceWaitStateStatisticsResponse = zProcessInstanceWaitStateStatisticsQueryResult;
+
+export const zSuspendProcessInstanceData = z.object({
+    body: z.optional(zSuspendProcessInstanceRequest),
+    path: z.object({
+        processInstanceKey: zProcessInstanceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The process instance is suspended.
+ */
+export const zSuspendProcessInstanceResponse = z.void().register(z.globalRegistry, {
+    description: 'The process instance is suspended.'
+});
+
+export const zSearchResourcesData = z.object({
+    body: z.optional(zResourceSearchQuery),
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The resource search result.
+ */
+export const zSearchResourcesResponse = zResourceSearchQueryResult;
+
 export const zGetResourceData = z.object({
     body: z.optional(z.never()),
     path: z.object({
@@ -8971,7 +10831,22 @@ export const zGetResourceContentData = z.object({
 /**
  * The resource content is successfully returned.
  */
-export const zGetResourceContentResponse = z.string().register(z.globalRegistry, {
+export const zGetResourceContentResponse = z.record(z.string(), z.unknown()).register(z.globalRegistry, {
+    description: 'The resource content is successfully returned.'
+});
+
+export const zGetResourceContentBinaryData = z.object({
+    body: z.optional(z.never()),
+    path: z.object({
+        resourceKey: zResourceKey
+    }),
+    query: z.optional(z.never())
+});
+
+/**
+ * The resource content is successfully returned.
+ */
+export const zGetResourceContentBinaryResponse = z.string().register(z.globalRegistry, {
     description: 'The resource content is successfully returned.'
 });
 
@@ -9013,9 +10888,7 @@ export const zSearchRolesResponse = zRoleSearchQueryResult;
 export const zDeleteRoleData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9030,9 +10903,7 @@ export const zDeleteRoleResponse = z.void().register(z.globalRegistry, {
 export const zGetRoleData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9045,9 +10916,7 @@ export const zGetRoleResponse = zRoleResult;
 export const zUpdateRoleData = z.object({
     body: zRoleUpdateRequest,
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9058,22 +10927,9 @@ export const zUpdateRoleData = z.object({
 export const zUpdateRoleResponse = zRoleUpdateResult;
 
 export const zSearchClientsForRoleData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'clientId'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        }))
-    }))),
+    body: z.optional(zRoleClientSearchQueryRequest),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9081,27 +10937,13 @@ export const zSearchClientsForRoleData = z.object({
 /**
  * The clients with the assigned role.
  */
-export const zSearchClientsForRoleResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The ID of the client.'
-        })
-    })).register(z.globalRegistry, {
-        description: 'The matching clients.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The clients with the assigned role.'
-}));
+export const zSearchClientsForRoleResponse = zRoleClientSearchResult;
 
 export const zUnassignRoleFromClientData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The client ID.'
-        })
+        roleId: zRoleId,
+        clientId: zClientId
     }),
     query: z.optional(z.never())
 });
@@ -9116,12 +10958,8 @@ export const zUnassignRoleFromClientResponse = z.void().register(z.globalRegistr
 export const zAssignRoleToClientData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The client ID.'
-        })
+        roleId: zRoleId,
+        clientId: zClientId
     }),
     query: z.optional(z.never())
 });
@@ -9136,9 +10974,7 @@ export const zAssignRoleToClientResponse = z.void().register(z.globalRegistry, {
 export const zSearchGroupsForRoleData = z.object({
     body: z.optional(zRoleGroupSearchQueryRequest),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9151,12 +10987,8 @@ export const zSearchGroupsForRoleResponse = zRoleGroupSearchResult;
 export const zUnassignRoleFromGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        roleId: zRoleId,
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -9171,12 +11003,8 @@ export const zUnassignRoleFromGroupResponse = z.void().register(z.globalRegistry
 export const zAssignRoleToGroupData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The group ID.'
-        })
+        roleId: zRoleId,
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -9191,9 +11019,7 @@ export const zAssignRoleToGroupResponse = z.void().register(z.globalRegistry, {
 export const zSearchMappingRulesForRoleData = z.object({
     body: z.optional(zMappingRuleSearchQueryRequest),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9201,23 +11027,13 @@ export const zSearchMappingRulesForRoleData = z.object({
 /**
  * The mapping rules with assigned role.
  */
-export const zSearchMappingRulesForRoleResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(zMappingRuleResult).register(z.globalRegistry, {
-        description: 'The matching mapping rules.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The mapping rules with assigned role.'
-}));
+export const zSearchMappingRulesForRoleResponse = zRoleMappingRuleSearchResult;
 
 export const zUnassignRoleFromMappingRuleData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The mapping rule ID.'
-        })
+        roleId: zRoleId,
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -9232,12 +11048,8 @@ export const zUnassignRoleFromMappingRuleResponse = z.void().register(z.globalRe
 export const zAssignRoleToMappingRuleData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The mapping rule ID.'
-        })
+        roleId: zRoleId,
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -9250,22 +11062,9 @@ export const zAssignRoleToMappingRuleResponse = z.void().register(z.globalRegist
 });
 
 export const zSearchUsersForRoleData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'username'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        }))
-    }))),
+    body: z.optional(zRoleUserSearchQueryRequest),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9273,22 +11072,12 @@ export const zSearchUsersForRoleData = z.object({
 /**
  * The users with the assigned role.
  */
-export const zSearchUsersForRoleResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        username: zUsername
-    })).register(z.globalRegistry, {
-        description: 'The matching users.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The users with the assigned role.'
-}));
+export const zSearchUsersForRoleResponse = zRoleUserSearchResult;
 
 export const zUnassignRoleFromUserData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
+        roleId: zRoleId,
         username: zUsername
     }),
     query: z.optional(z.never())
@@ -9304,9 +11093,7 @@ export const zUnassignRoleFromUserResponse = z.void().register(z.globalRegistry,
 export const zAssignRoleToUserData = z.object({
     body: z.optional(z.never()),
     path: z.object({
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The role ID.'
-        }),
+        roleId: zRoleId,
         username: zUsername
     }),
     query: z.optional(z.never())
@@ -9318,6 +11105,19 @@ export const zAssignRoleToUserData = z.object({
 export const zAssignRoleToUserResponse = z.void().register(z.globalRegistry, {
     description: 'The role was assigned successfully to the user.'
 });
+
+export const zResolveSecretsData = z.object({
+    body: zSecretResolveRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The batch was processed. Per-reference outcomes are split between `resolved` and
+ * `errors`; this status is returned even when some or all references failed.
+ *
+ */
+export const zResolveSecretsResponse = zSecretResolveResult;
 
 export const zCreateAdminUserData = z.object({
     body: zUserRequest,
@@ -9451,18 +11251,7 @@ export const zUpdateTenantData = z.object({
 export const zUpdateTenantResponse = zTenantUpdateResult;
 
 export const zSearchClientsForTenantData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'clientId'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        }))
-    }))),
+    body: z.optional(zTenantClientSearchQueryRequest),
     path: z.object({
         tenantId: zTenantId
     }),
@@ -9472,25 +11261,13 @@ export const zSearchClientsForTenantData = z.object({
 /**
  * The search result of users for the tenant.
  */
-export const zSearchClientsForTenantResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The ID of the client.'
-        })
-    })).register(z.globalRegistry, {
-        description: 'The matching clients.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The search result of users for the tenant.'
-}));
+export const zSearchClientsForTenantResponse = zTenantClientSearchResult;
 
 export const zUnassignClientFromTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the application.'
-        })
+        clientId: zClientId
     }),
     query: z.optional(z.never())
 });
@@ -9506,9 +11283,7 @@ export const zAssignClientToTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        clientId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the application.'
-        })
+        clientId: zClientId
     }),
     query: z.optional(z.never())
 });
@@ -9537,9 +11312,7 @@ export const zUnassignGroupFromTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the group.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -9555,9 +11328,7 @@ export const zAssignGroupToTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        groupId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the group.'
-        })
+        groupId: zGroupId
     }),
     query: z.optional(z.never())
 });
@@ -9580,21 +11351,13 @@ export const zSearchMappingRulesForTenantData = z.object({
 /**
  * The search result of MappingRules for the tenant.
  */
-export const zSearchMappingRulesForTenantResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(zMappingRuleResult).register(z.globalRegistry, {
-        description: 'The matching mapping rules.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The search result of MappingRules for the tenant.'
-}));
+export const zSearchMappingRulesForTenantResponse = zTenantMappingRuleSearchResult;
 
 export const zUnassignMappingRuleFromTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the mapping rule.'
-        })
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -9610,9 +11373,7 @@ export const zAssignMappingRuleToTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        mappingRuleId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the mapping rule.'
-        })
+        mappingRuleId: zMappingRuleId
     }),
     query: z.optional(z.never())
 });
@@ -9635,21 +11396,13 @@ export const zSearchRolesForTenantData = z.object({
 /**
  * The search result of roles for the tenant.
  */
-export const zSearchRolesForTenantResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(zRoleResult).register(z.globalRegistry, {
-        description: 'The matching roles.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The search result of roles for the tenant.'
-}));
+export const zSearchRolesForTenantResponse = zTenantRoleSearchResult;
 
 export const zUnassignRoleFromTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the role.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9665,9 +11418,7 @@ export const zAssignRoleToTenantData = z.object({
     body: z.optional(z.never()),
     path: z.object({
         tenantId: zTenantId,
-        roleId: z.string().register(z.globalRegistry, {
-            description: 'The unique identifier of the role.'
-        })
+        roleId: zRoleId
     }),
     query: z.optional(z.never())
 });
@@ -9680,18 +11431,7 @@ export const zAssignRoleToTenantResponse = z.void().register(z.globalRegistry, {
 });
 
 export const zSearchUsersForTenantData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'username'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        }))
-    }))),
+    body: z.optional(zTenantUserSearchQueryRequest),
     path: z.object({
         tenantId: zTenantId
     }),
@@ -9701,15 +11441,7 @@ export const zSearchUsersForTenantData = z.object({
 /**
  * The search result of users for the tenant.
  */
-export const zSearchUsersForTenantResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        username: zUsername
-    })).register(z.globalRegistry, {
-        description: 'The matching users.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The search result of users for the tenant.'
-}));
+export const zSearchUsersForTenantResponse = zTenantUserSearchResult;
 
 export const zUnassignUserFromTenantData = z.object({
     body: z.optional(z.never()),
@@ -9754,6 +11486,38 @@ export const zGetTopologyData = z.object({
  */
 export const zGetTopologyResponse = zTopologyResponse;
 
+export const zChangeClusterModeData = z.object({
+    body: z.optional(z.never()),
+    path: z.optional(z.never()),
+    query: z.object({
+        mode: z.enum([
+            'PROCESSING',
+            'RECOVERING'
+        ]).register(z.globalRegistry, {
+            description: 'The target cluster mode.'
+        }),
+        dryRun: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
+        })).default(false)
+    })
+});
+
+/**
+ * The mode change request was accepted; returns the planned cluster changes.
+ */
+export const zChangeClusterModeResponse = zClusterModeChangeResponse;
+
+export const zRestoreData = z.object({
+    body: zRestoreRequest,
+    path: z.optional(z.never()),
+    query: z.optional(z.never())
+});
+
+/**
+ * The restore request was accepted; returns the planned cluster changes.
+ */
+export const zRestoreResponse = zClusterModeChangeResponse;
+
 export const zCreateUserData = z.object({
     body: zUserRequest,
     path: z.optional(z.never()),
@@ -9774,23 +11538,7 @@ export const zSearchUsersData = z.object({
 /**
  * The user search result.
  */
-export const zSearchUsersResponse = zSearchQueryResponse.and(z.object({
-    items: z.array(z.object({
-        username: zUsername,
-        name: z.union([
-            z.string(),
-            z.null()
-        ]),
-        email: z.union([
-            z.string(),
-            z.null()
-        ])
-    })).register(z.globalRegistry, {
-        description: 'The matching users.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The user search result.'
-}));
+export const zSearchUsersResponse = zUserSearchResult;
 
 export const zDeleteUserData = z.object({
     body: z.optional(z.never()),
@@ -9818,19 +11566,7 @@ export const zGetUserData = z.object({
 /**
  * The user is successfully returned.
  */
-export const zGetUserResponse = z.object({
-    username: zUsername,
-    name: z.union([
-        z.string(),
-        z.null()
-    ]),
-    email: z.union([
-        z.string(),
-        z.null()
-    ])
-}).register(z.globalRegistry, {
-    description: 'The user is successfully returned.'
-});
+export const zGetUserResponse = zUserResult;
 
 export const zUpdateUserData = z.object({
     body: zUserUpdateRequest,
@@ -9843,19 +11579,7 @@ export const zUpdateUserData = z.object({
 /**
  * The user was updated successfully.
  */
-export const zUpdateUserResponse = z.object({
-    username: zUsername,
-    name: z.union([
-        z.string(),
-        z.null()
-    ]),
-    email: z.union([
-        z.string(),
-        z.null()
-    ])
-}).register(z.globalRegistry, {
-    description: 'The user was updated successfully.'
-});
+export const zUpdateUserResponse = zUserUpdateResult;
 
 export const zSearchUserTasksData = z.object({
     body: z.optional(zUserTaskSearchQuery),
@@ -9957,19 +11681,7 @@ export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
 export const zSearchUserTaskEffectiveVariablesData = z.object({
     body: z.optional(z.object({
         page: z.optional(zOffsetPagination),
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'value',
-                'name',
-                'tenantId',
-                'variableKey',
-                'scopeKey',
-                'processInstanceKey'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
+        sort: z.optional(z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
             description: 'Sort field criteria.'
         })),
         filter: z.optional(zUserTaskVariableFilter)
@@ -10007,26 +11719,7 @@ export const zGetUserTaskFormResponse = z.union([
 ]);
 
 export const zSearchUserTaskVariablesData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'value',
-                'name',
-                'tenantId',
-                'variableKey',
-                'scopeKey',
-                'processInstanceKey'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        })),
-        filter: z.optional(zUserTaskVariableFilter)
-    }).register(z.globalRegistry, {
-        description: 'User task search query request.'
-    }))),
+    body: z.optional(zUserTaskVariableSearchQueryRequest),
     path: z.object({
         userTaskKey: zUserTaskKey
     }),
@@ -10043,26 +11736,7 @@ export const zSearchUserTaskVariablesData = z.object({
 export const zSearchUserTaskVariablesResponse = zVariableSearchQueryResult;
 
 export const zSearchVariablesData = z.object({
-    body: z.optional(zSearchQueryRequest.and(z.object({
-        sort: z.optional(z.array(z.object({
-            field: z.enum([
-                'value',
-                'name',
-                'tenantId',
-                'variableKey',
-                'scopeKey',
-                'processInstanceKey'
-            ]).register(z.globalRegistry, {
-                description: 'The field to sort by.'
-            }),
-            order: z.optional(zSortOrderEnum)
-        })).register(z.globalRegistry, {
-            description: 'Sort field criteria.'
-        })),
-        filter: z.optional(zVariableFilter)
-    }).register(z.globalRegistry, {
-        description: 'Variable search query request.'
-    }))),
+    body: z.optional(zVariableSearchQuery),
     path: z.optional(z.never()),
     query: z.optional(z.object({
         truncateValues: z.optional(z.boolean().register(z.globalRegistry, {

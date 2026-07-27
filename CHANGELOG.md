@@ -1,3 +1,110 @@
+# [10.0.0-alpha.15](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.14...v10.0.0-alpha.15) (2026-07-02)
+
+
+### Bug Fixes
+
+* change default CAMUNDA_SDK_LOG_LEVEL from 'error' to 'info' ([839b7ab](https://github.com/camunda/orchestration-cluster-api-js/commit/839b7abb95fee0e7802980802aa1117b2473486c)), closes [#274](https://github.com/camunda/orchestration-cluster-api-js/issues/274)
+
+# [10.0.0-alpha.14](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.13...v10.0.0-alpha.14) (2026-07-01)
+
+
+### Features
+
+* add example coverage for getProcessInstanceWaitStateStatistics ([9fa53ca](https://github.com/camunda/orchestration-cluster-api-js/commit/9fa53ca512a266ed29b23ceec6ccc9199240e4c8)), closes [camunda/orchestration-cluster-api-js#300](https://github.com/camunda/orchestration-cluster-api-js/issues/300)
+
+# [10.0.0-alpha.13](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.12...v10.0.0-alpha.13) (2026-06-28)
+
+
+### Bug Fixes
+
+* **client:** make generated fetch client work on Deno and Bun ([9260000](https://github.com/camunda/orchestration-cluster-api-js/commit/92600004f344a41d7ea5a5158484a98a440c2be3))
+* **client:** sanitize SSE onRequest init and harden the compat hook ([12eff25](https://github.com/camunda/orchestration-cluster-api-js/commit/12eff25fadac6ce45ca28f2c469ccdeb878bf98d))
+
+# [10.0.0-alpha.12](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.11...v10.0.0-alpha.12) (2026-06-18)
+
+
+### Features
+
+* regenerate src/gen for wait-state details union and job priority-updated state ([e0e8c8c](https://github.com/camunda/orchestration-cluster-api-js/commit/e0e8c8c7e30b88799ec17f1c061a21241648ee7d))
+* regenerate src/gen for wait-state details union and job priority-updated state ([76c5f82](https://github.com/camunda/orchestration-cluster-api-js/commit/76c5f829efcf826ff180e3116c4bbf303254c2b6))
+
+# [10.0.0-alpha.11](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.10...v10.0.0-alpha.11) (2026-06-11)
+
+
+### Bug Fixes
+
+* adopt upstream wait-state details union in example ([8f8603c](https://github.com/camunda/orchestration-cluster-api-js/commit/8f8603cd1ed445ab8062c15d525598a5c36084d4))
+* adopt upstream wait-state details union in example ([07ed89c](https://github.com/camunda/orchestration-cluster-api-js/commit/07ed89c0eb2db17f7979ebd57c88983f8561a137))
+
+# [10.0.0-alpha.10](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.9...v10.0.0-alpha.10) (2026-06-09)
+
+
+### Bug Fixes
+
+* apply eventual consistency only to first searchVariablesAsDto search ([29387b0](https://github.com/camunda/orchestration-cluster-api-js/commit/29387b0b478e0c9a4d1dd0eaaf82c0481be5ddd8))
+* **deps:** bump camunda-schema-bundler to 2.4.3 for IterationId generation ([16a7c5d](https://github.com/camunda/orchestration-cluster-api-js/commit/16a7c5ddccc52b60b0dab3efc6048daaba687013))
+* **deps:** bump camunda-schema-bundler to 2.4.3 for IterationId generation ([8a8cdae](https://github.com/camunda/orchestration-cluster-api-js/commit/8a8cdae5fe9327a991e9670e4aeb50c6d8591356))
+* wait for all declared variables at the collection level for searchVariablesAsDto ([ba2f911](https://github.com/camunda/orchestration-cluster-api-js/commit/ba2f911e1d6254d25ac68c3ebfaa690ef0d9067a))
+
+
+### Features
+
+* add searchVariablesAsDto for DTO-driven typed variable maps ([52a544f](https://github.com/camunda/orchestration-cluster-api-js/commit/52a544fcc37f7ecc86fcfa153859baf6cf653b9b))
+* add searchVariablesAsDto for DTO-driven typed variable maps ([67418f2](https://github.com/camunda/orchestration-cluster-api-js/commit/67418f2f9ccbdc8b535b82cb8a66ec77b66143e0))
+
+# [10.0.0-alpha.9](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.8...v10.0.0-alpha.9) (2026-06-04)
+
+
+### Bug Fixes
+
+* pass author-association to community notification workflow ([82e7f6e](https://github.com/camunda/orchestration-cluster-api-js/commit/82e7f6e5b34c60d122b93a302c84dda1fc28f6f9))
+
+# [10.0.0-alpha.8](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.7...v10.0.0-alpha.8) (2026-06-04)
+
+
+### Features
+
+* add Slack notifications for release failures and community events ([051e782](https://github.com/camunda/orchestration-cluster-api-js/commit/051e78230ce2a2eeda53bdc604a99a783e4b5caa))
+* add Slack notifications for release failures and community events ([2981264](https://github.com/camunda/orchestration-cluster-api-js/commit/29812649034d2e961d65a7a80bd8bb2590e77dc1))
+
+# [10.0.0-alpha.7](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.6...v10.0.0-alpha.7) (2026-05-18)
+
+
+### Bug Fixes
+
+* update docker-compose env vars for 8.10 config schema ([d343d56](https://github.com/camunda/orchestration-cluster-api-js/commit/d343d56a54d6b83246e3a2b26b6ce2469c2de77c))
+
+# [10.0.0-alpha.6](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.5...v10.0.0-alpha.6) (2026-05-13)
+
+
+### Features
+
+* add example coverage for 4 new operations ([3a2c875](https://github.com/camunda/orchestration-cluster-api-js/commit/3a2c87577bcca87996cc77546216c68fb5124ec5))
+* add example coverage for 4 new operations ([6d757a4](https://github.com/camunda/orchestration-cluster-api-js/commit/6d757a4be85ba733f07bcd08c1b6ae33aacd6c15))
+
+# [10.0.0-alpha.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.4...v10.0.0-alpha.5) (2026-05-08)
+
+
+### Features
+
+* add agent instance example coverage ([8a0072d](https://github.com/camunda/orchestration-cluster-api-js/commit/8a0072d03cf426ea895863d7cbdd87178c2e7e2f))
+* v10 migration — bundler 2.4.1, branded type examples, README ([dd4a714](https://github.com/camunda/orchestration-cluster-api-js/commit/dd4a7149682b89d1f8f9c0f627dfef5645b10ea7)), closes [#203](https://github.com/camunda/orchestration-cluster-api-js/issues/203) [#204](https://github.com/camunda/orchestration-cluster-api-js/issues/204)
+
+# [10.0.0-alpha.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.3...v10.0.0-alpha.4) (2026-04-29)
+
+
+### Bug Fixes
+
+* **gen:** apply CAMUNDA_DEFAULT_TENANT_ID to activateJobs tenantIds ([fb7c661](https://github.com/camunda/orchestration-cluster-api-js/commit/fb7c661ba1f24dcfcfd738c6e344df09a2e2c52d))
+
+# [10.0.0-alpha.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.2...v10.0.0-alpha.3) (2026-04-29)
+
+
+### Bug Fixes
+
+* **docker:** resolve ambiguous numberOfReplicas config ([ab81098](https://github.com/camunda/orchestration-cluster-api-js/commit/ab810980e7dc3b820f6630ba36b1e191e1dd04ae))
+* getResource is now eventually consistent ([60d6c93](https://github.com/camunda/orchestration-cluster-api-js/commit/60d6c9398934cf5786d444d88472ec8198705ee5))
+
 # [10.0.0-alpha.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.1...v10.0.0-alpha.2) (2026-04-14)
 
 

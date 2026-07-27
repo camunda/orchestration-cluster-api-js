@@ -1,7 +1,7 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resumeBatchOperation as _resumeBatchOperation, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
-import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData } from '../gen/types.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignProcessInstanceBusinessId as _assignProcessInstanceBusinessId, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, changeClusterMode as _changeClusterMode, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAgentInstance as _createAgentInstance, createAgentInstanceHistoryItem as _createAgentInstanceHistoryItem, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAgentInstance as _getAgentInstance, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getFormByKey as _getFormByKey, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getProcessInstanceWaitStateStatistics as _getProcessInstanceWaitStateStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getResourceContentBinary as _getResourceContentBinary, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resolveSecrets as _resolveSecrets, restore as _restore, resumeBatchOperation as _resumeBatchOperation, resumeProcessInstance as _resumeProcessInstance, resumeProcessInstancesBatchOperation as _resumeProcessInstancesBatchOperation, searchAgentInstanceHistory as _searchAgentInstanceHistory, searchAgentInstances as _searchAgentInstances, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchElementInstanceWaitStates as _searchElementInstanceWaitStates, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessDefinitionVariableNames as _searchProcessDefinitionVariableNames, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchResources as _searchResources, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, suspendProcessInstance as _suspendProcessInstance, suspendProcessInstancesBatchOperation as _suspendProcessInstancesBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAgentInstance as _updateAgentInstance, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateJobsBatchOperation as _updateJobsBatchOperation, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAgentInstanceData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, ResolveSecretsData, RestoreData, ResumeProcessInstancesBatchOperationData, SearchAgentInstancesData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchElementInstanceWaitStatesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchResourcesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData, SuspendProcessInstancesBatchOperationData, UpdateJobsBatchOperationData } from '../gen/types.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
 // Lightweight CancelablePromise implementation (local to facade)
@@ -178,6 +178,38 @@ export function createAdminUser(body: _createAdminUser_Body): CancelablePromise<
   return toCancelable(signal => _createAdminUser({ body, signal }).then((r:any)=> (r as any).data));
 }
 
+type _createAgentInstance_Body = CreateAgentInstanceData extends { body?: infer B } ? B : never;
+/**
+ * Create agent instance
+ *
+ * Creates a new agent instance. The returned key identifies the instance and must
+ * be used in subsequent update and query calls.
+ *
+  *
+ * @example Create an agent instance
+ * ```ts
+ * async function createAgentInstanceExample(elementInstanceKey: ElementInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.createAgentInstance({
+ *     elementInstanceKey,
+ *     definition: {
+ *       model: 'gpt-4o',
+ *       provider: 'openai',
+ *       systemPrompt: 'You are a helpful assistant.',
+ *     },
+ *   });
+ * 
+ *   console.log(`Created agent instance: ${result.agentInstanceKey}`);
+ * }
+ * ```
+ * @operationId createAgentInstance
+ * @tags Agent instance
+ */
+export function createAgentInstance(body: _createAgentInstance_Body): CancelablePromise<_DataOf<typeof _createAgentInstance>> {
+  return toCancelable(signal => _createAgentInstance({ body, signal }).then((r:any)=> (r as any).data));
+}
+
 type _createAuthorization_Body = CreateAuthorizationData extends { body?: infer B } ? B : never;
 /**
  * Create authorization
@@ -211,7 +243,8 @@ type _createDeployment_Body = CreateDeploymentData extends { body?: infer B } ? 
 /**
  * Deploy resources
  *
- * Deploys one or more resources (e.g. processes, decision models, or forms).
+ * Deploys one or more resources, including BPMN processes, DMN decision models, forms, RPA resources, and generic files.
+ * A deployment can contain any file type. Files that are not interpreted as BPMN, DMN, form, or RPA resources are stored as deployable generic resources in the engine.
  * This is an atomic call, i.e. either all resources are deployed or none of them are.
  *
   *
@@ -241,11 +274,11 @@ type _createGlobalClusterVariable_Body = CreateGlobalClusterVariableData extends
   *
  * @example Create a global cluster variable
  * ```ts
- * async function createGlobalClusterVariableExample() {
+ * async function createGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createGlobalClusterVariable({
- *     name: 'feature-flags',
+ *     name,
  *     value: { darkMode: true },
  *   });
  * 
@@ -291,14 +324,30 @@ type _createGroup_Body = CreateGroupData extends { body?: infer B } ? B : never;
  * Create group
  *
  * Create a new group.
+ *
+ * The supplied `groupId` is validated against `^[a-zA-Z0-9_~@.+-]+$`
+ * (max 256 characters) by `IdentifierValidator.validateId` in the
+ * runtime. This strict validation applies wherever the Groups API
+ * is available: in OIDC deployments that set
+ * `camunda.security.authentication.oidc.groupsClaim` the Groups
+ * API (including this endpoint) is disabled entirely, so group
+ * CRUD never sees externally-minted IdP IDs. The BYOG relaxation
+ * only loosens validation when a group is referenced *as a member*
+ * of a role or tenant (`assignRoleToGroup`,
+ * `assignGroupToTenant`); group CRUD itself always uses the strict
+ * default-id regex. The constraint is not advertised on the
+ * `GroupId` schema so that the same schema can be reused at
+ * member-reference sites without falsely rejecting
+ * externally-minted IdP group IDs there.
+ *
   *
  * @example Create a group
  * ```ts
- * async function createGroupExample() {
+ * async function createGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     name: 'Engineering Team',
  *   });
  * 
@@ -321,11 +370,11 @@ type _createMappingRule_Body = CreateMappingRuleData extends { body?: infer B } 
   *
  * @example Create a mapping rule
  * ```ts
- * async function createMappingRuleExample() {
+ * async function createMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createMappingRule({
- *     mappingRuleId: 'ldap-group-mapping',
+ *     mappingRuleId,
  *     name: 'LDAP Group Mapping',
  *     claimName: 'groups',
  *     claimValue: 'engineering',
@@ -401,11 +450,11 @@ type _createRole_Body = CreateRoleData extends { body?: infer B } ? B : never;
   *
  * @example Create a role
  * ```ts
- * async function createRoleExample() {
+ * async function createRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createRole({
- *     roleId: 'process-admin',
+ *     roleId,
  *     name: 'Process Admin',
  *   });
  * 
@@ -615,7 +664,11 @@ type _evaluateExpression_Body = EvaluateExpressionData extends { body?: infer B 
 /**
  * Evaluate an expression
  *
- * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
+ * Evaluates a FEEL expression and returns the result. Supports references to tenant scoped
+ * cluster variables when a tenant ID is provided. Optionally, provide a `scopeKey` to make the
+ * variables of a specific process instance or element instance visible while evaluating the
+ * expression.
+ *
   *
  * @example Evaluate an expression
  * ```ts
@@ -1156,6 +1209,160 @@ export function resolveIncidentsBatchOperation(body: _resolveIncidentsBatchOpera
   return toCancelable(signal => _resolveIncidentsBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
+type _resolveSecrets_Body = ResolveSecretsData extends { body?: infer B } ? B : never;
+/**
+ * Resolve secrets (alpha)
+ *
+ * Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's
+ * physical tenant in a single round-trip.
+ *
+ * Each reference is authorized and resolved independently. For valid requests, the endpoint
+ * always responds with HTTP 200: successfully resolved references are returned in `resolved`,
+ * while references that could not be resolved (for example not found, malformed or over-long,
+ * or the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of
+ * one reference never fails the others. Only structurally invalid requests are rejected with
+ * HTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.
+ *
+ * This endpoint is an alpha feature and may be subject to change in future releases.
+ *
+ * Phase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;
+ * every other authorized, valid reference returns `NOT_FOUND`.
+ *
+  *
+ * @example Resolve secrets
+ * ```ts
+ * async function resolveSecretsExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.resolveSecrets({
+ *     references: ['camunda.secrets.myApiToken', 'camunda.secrets.dbPassword'],
+ *   });
+ * 
+ *   // Successfully resolved references are returned in `resolved`; references that
+ *   // could not be resolved are returned in `errors`, each with a typed error code.
+ *   // Never log a resolved value — it holds secret material. Pass it straight to the
+ *   // consumer that needs it (HTTP client, DB driver, ...) instead.
+ *   for (const resolved of result.resolved) {
+ *     console.log(`Resolved ${resolved.reference} (value redacted)`);
+ *     useSecret(resolved.value);
+ *   }
+ * 
+ *   for (const error of result.errors) {
+ *     console.log(`Failed to resolve ${error.reference}: ${error.code} - ${error.message}`);
+ *   }
+ * }
+ * 
+ * // Hands the resolved secret to whatever needs it, without logging it.
+ * function useSecret(_value: string) {}
+ * ```
+ * @operationId resolveSecrets
+ * @tags Secret
+ */
+export function resolveSecrets(body: _resolveSecrets_Body): CancelablePromise<_DataOf<typeof _resolveSecrets>> {
+  return toCancelable(signal => _resolveSecrets({ body, signal }).then((r:any)=> (r as any).data));
+}
+
+type _restore_Body = RestoreData extends { body?: infer B } ? B : never;
+/**
+ * Restore from a backup
+ *
+ * Restores the cluster from a backup. The restore is described either by a single backup ID or by a time range (`from`/`to`) that selects the backups to restore. This endpoint is only accessible while the cluster is in recovery mode; requests are rejected otherwise. The request is validated and acknowledged, but the restore itself is performed asynchronously.
+  *
+ * @example Restore from a backup
+ * ```ts
+ * async function restoreExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // The cluster must be in recovery mode before a restore is accepted. Provide
+ *   // either a list of backup IDs (one per partition) or a time range (`from`/`to`)
+ *   // that selects the backups to restore, but not both.
+ *   const change = await camunda.restore({
+ *     backupIds: [100, 101],
+ *   });
+ * 
+ *   console.log(`Cluster change ${change.changeId}:`);
+ *   for (const op of change.plannedChanges) {
+ *     console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+ *   }
+ * }
+ * ```
+ * @operationId restore
+ * @tags Recovery
+ */
+export function restore(body: _restore_Body): CancelablePromise<_DataOf<typeof _restore>> {
+  return toCancelable(signal => _restore({ body, signal }).then((r:any)=> (r as any).data));
+}
+
+type _resumeProcessInstancesBatchOperation_Body = ResumeProcessInstancesBatchOperationData extends { body?: infer B } ? B : never;
+/**
+ * Resume process instances (batch)
+ *
+ * Resumes multiple suspended process instances.
+ * Since only SUSPENDED root instances can be resumed, any given
+ * filters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.
+ * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+  *
+ * @example Resume process instances in batch
+ * ```ts
+ * async function resumeProcessInstancesBatchOperationExample(
+ *   processDefinitionKey: ProcessDefinitionKey
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.resumeProcessInstancesBatchOperation({
+ *     filter: {
+ *       processDefinitionKey,
+ *     },
+ *   });
+ * 
+ *   console.log(`Batch operation key: ${result.batchOperationKey}`);
+ * }
+ * ```
+ * @operationId resumeProcessInstancesBatchOperation
+ * @tags Process instance
+ */
+export function resumeProcessInstancesBatchOperation(body: _resumeProcessInstancesBatchOperation_Body): CancelablePromise<_DataOf<typeof _resumeProcessInstancesBatchOperation>> {
+  return toCancelable(signal => _resumeProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
+}
+
+type _searchAgentInstances_Body = SearchAgentInstancesData extends { body?: infer B } ? B : never;
+/**
+ * Search agent instances
+ *
+ * Search for agent instances based on given criteria.
+  *
+ * @example Search agent instances
+ * ```ts
+ * async function searchAgentInstancesExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchAgentInstances(
+ *     {
+ *       filter: { status: { $eq: 'IDLE' } },
+ *       sort: [{ field: 'creationDate', order: 'DESC' }],
+ *       page: { limit: 10 },
+ *     },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const instance of result.items ?? []) {
+ *     console.log(`${instance.agentInstanceKey}: ${instance.status}`);
+ *   }
+ *   console.log(`Total: ${result.page.totalItems}`);
+ * }
+ * ```
+ * @operationId searchAgentInstances
+ * @tags Agent instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchAgentInstances(body: _searchAgentInstances_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchAgentInstances>> }): CancelablePromise<_DataOf<typeof _searchAgentInstances>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchAgentInstances({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('searchAgentInstances', false, invoke, ec.consistency);
+}
+
 type _searchAuditLogs_Body = SearchAuditLogsData extends { body?: infer B } ? B : never;
 /**
  * Search audit logs
@@ -1466,6 +1673,53 @@ export function searchElementInstances(body: _searchElementInstances_Body, ec: {
   return eventualPoll('searchElementInstances', false, invoke, ec.consistency);
 }
 
+type _searchElementInstanceWaitStates_Body = SearchElementInstanceWaitStatesData extends { body?: infer B } ? B : never;
+/**
+ * Search element instance wait states
+ *
+ * Returns the wait states for element instances matching the given filter.
+ *
+  *
+ * @example Search element instance wait states
+ * ```ts
+ * async function searchElementInstanceWaitStatesExample(processInstanceKey: ProcessInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchElementInstanceWaitStates(
+ *     {
+ *       filter: {
+ *         processInstanceKey,
+ *       },
+ *       page: { limit: 10 },
+ *     },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const waitState of result.items ?? []) {
+ *     const { details } = waitState;
+ *     let description: string;
+ *     if (details.waitStateType === 'JOB') {
+ *       description = `waiting on job '${details.jobType}'`;
+ *     } else if (details.waitStateType === 'MESSAGE') {
+ *       description = `waiting for message '${details.messageName}'`;
+ *     } else {
+ *       description = `waiting (${details.waitStateType})`;
+ *     }
+ *     console.log(`${waitState.elementId}: ${description}`);
+ *   }
+ * }
+ * ```
+ * @operationId searchElementInstanceWaitStates
+ * @tags Element instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchElementInstanceWaitStates(body: _searchElementInstanceWaitStates_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchElementInstanceWaitStates>> }): CancelablePromise<_DataOf<typeof _searchElementInstanceWaitStates>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchElementInstanceWaitStates({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('searchElementInstanceWaitStates', false, invoke, ec.consistency);
+}
+
 type _searchGlobalTaskListeners_Body = SearchGlobalTaskListenersData extends { body?: infer B } ? B : never;
 /**
  * Search global user task listeners
@@ -1647,6 +1901,19 @@ type _searchMessageSubscriptions_Body = SearchMessageSubscriptionsData extends {
  * Search message subscriptions
  *
  * Search for message subscriptions based on given criteria.
+ *
+ * By default, both start and intermediate event subscriptions are returned. Use the
+ * `messageSubscriptionType` filter to restrict results to a single type.
+ *
+ * **Version notes:**
+ * - Start event subscriptions are only captured for deployments made with 8.10 or later.
+ * - The `messageSubscriptionType` field is only populated for data created
+ * with Camunda 8.10 or later. For pre-8.10 data, intermediate event entries have no
+ * `messageSubscriptionType` value stored. For convenience, the API returns `PROCESS_EVENT`
+ * as a default for such search results, though.
+ * - Searching for intermediate event subscriptions **including legacy data** can be achieved
+ * by filtering for `messageSubscriptionType` not matching `START_EVENT`.
+ *
   *
  * @example Search message subscriptions
  * ```ts
@@ -1745,6 +2012,44 @@ export function searchProcessInstances(body: _searchProcessInstances_Body, ec: {
   if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
   const invoke = () => toCancelable(signal => _searchProcessInstances({ body, signal }).then((r:any)=> (r as any).data));
   return eventualPoll('searchProcessInstances', false, invoke, ec.consistency);
+}
+
+type _searchResources_Body = SearchResourcesData extends { body?: infer B } ? B : never;
+/**
+ * Search resources
+ *
+ * Search for deployed resources based on given criteria.
+ * :::info
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective search APIs.
+ * :::
+ *
+  *
+ * @example Search resources
+ * ```ts
+ * async function searchResourcesExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchResources(
+ *     { page: { limit: 10 } },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const resource of result.items ?? []) {
+ *     console.log(`Resource: ${resource.resourceName}`);
+ *   }
+ * }
+ * ```
+ * @operationId searchResources
+ * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchResources(body: _searchResources_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchResources>> }): CancelablePromise<_DataOf<typeof _searchResources>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchResources({ body, signal }).then((r:any)=> (r as any).data));
+  return eventualPoll('searchResources', false, invoke, ec.consistency);
 }
 
 type _searchRoles_Body = SearchRolesData extends { body?: infer B } ? B : never;
@@ -1886,6 +2191,71 @@ export function searchUserTasks(body: _searchUserTasks_Body, ec: { consistency: 
   return eventualPoll('searchUserTasks', false, invoke, ec.consistency);
 }
 
+type _suspendProcessInstancesBatchOperation_Body = SuspendProcessInstancesBatchOperationData extends { body?: infer B } ? B : never;
+/**
+ * Suspend process instances (batch)
+ *
+ * Suspends multiple running process instances.
+ * Since only ACTIVE root instances can be suspended, any given
+ * filters for state and parentProcessInstanceKey are ignored and overridden during this batch operation.
+ * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+  *
+ * @example Suspend process instances in batch
+ * ```ts
+ * async function suspendProcessInstancesBatchOperationExample(
+ *   processDefinitionKey: ProcessDefinitionKey
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.suspendProcessInstancesBatchOperation({
+ *     filter: {
+ *       processDefinitionKey,
+ *     },
+ *   });
+ * 
+ *   console.log(`Batch operation key: ${result.batchOperationKey}`);
+ * }
+ * ```
+ * @operationId suspendProcessInstancesBatchOperation
+ * @tags Process instance
+ */
+export function suspendProcessInstancesBatchOperation(body: _suspendProcessInstancesBatchOperation_Body): CancelablePromise<_DataOf<typeof _suspendProcessInstancesBatchOperation>> {
+  return toCancelable(signal => _suspendProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
+}
+
+type _updateJobsBatchOperation_Body = UpdateJobsBatchOperationData extends { body?: infer B } ? B : never;
+/**
+ * Update jobs (batch)
+ *
+ * Creates a batch operation to update jobs matching the given filter. At least one changeset field must be non-null. This is done asynchronously; the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
+ *
+  *
+ * @example Update jobs in batch
+ * ```ts
+ * async function updateJobsBatchOperationExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.updateJobsBatchOperation({
+ *     filter: {
+ *       type: 'payment-processing',
+ *       hasFailedWithRetriesLeft: false,
+ *     },
+ *     changeset: {
+ *       retries: 3,
+ *     },
+ *   });
+ * 
+ *   console.log(`Batch operation key: ${result.batchOperationKey}`);
+ * }
+ * ```
+ * @operationId updateJobsBatchOperation
+ * @tags Job
+ */
+export function updateJobsBatchOperation(body: _updateJobsBatchOperation_Body): CancelablePromise<_DataOf<typeof _updateJobsBatchOperation>> {
+  return toCancelable(signal => _updateJobsBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
+}
+
 /**
  * Activate activities within an ad-hoc sub-process
  *
@@ -1924,12 +2294,12 @@ export function activateAdHocSubProcessActivities(options?: Parameters<typeof _a
   *
  * @example Assign a client to a group
  * ```ts
- * async function assignClientToGroupExample() {
+ * async function assignClientToGroupExample(groupId: GroupId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignClientToGroup({
- *     groupId: 'engineering-team',
- *     clientId: 'my-service-account',
+ *     groupId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -1949,12 +2319,12 @@ export function assignClientToGroup(options?: Parameters<typeof _assignClientToG
   *
  * @example Assign a client to a tenant
  * ```ts
- * async function assignClientToTenantExample(tenantId: TenantId) {
+ * async function assignClientToTenantExample(tenantId: TenantId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignClientToTenant({
  *     tenantId,
- *     clientId: 'my-service-account',
+ *     clientId,
  *   });
  * }
  * ```
@@ -1974,12 +2344,12 @@ export function assignClientToTenant(options?: Parameters<typeof _assignClientTo
   *
  * @example Assign a group to a tenant
  * ```ts
- * async function assignGroupToTenantExample(tenantId: TenantId) {
+ * async function assignGroupToTenantExample(tenantId: TenantId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignGroupToTenant({
  *     tenantId,
- *     groupId: 'engineering-team',
+ *     groupId,
  *   });
  * }
  * ```
@@ -1997,12 +2367,12 @@ export function assignGroupToTenant(options?: Parameters<typeof _assignGroupToTe
   *
  * @example Assign a mapping rule to a group
  * ```ts
- * async function assignMappingRuleToGroupExample() {
+ * async function assignMappingRuleToGroupExample(groupId: GroupId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignMappingRuleToGroup({
- *     groupId: 'engineering-team',
- *     mappingRuleId: 'rule-123',
+ *     groupId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -2020,12 +2390,12 @@ export function assignMappingRuleToGroup(options?: Parameters<typeof _assignMapp
   *
  * @example Assign a mapping rule to a tenant
  * ```ts
- * async function assignMappingRuleToTenantExample(tenantId: TenantId) {
+ * async function assignMappingRuleToTenantExample(tenantId: TenantId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignMappingRuleToTenant({
  *     tenantId,
- *     mappingRuleId: 'rule-123',
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -2037,18 +2407,52 @@ export function assignMappingRuleToTenant(options?: Parameters<typeof _assignMap
 }
 
 /**
+ * Assign business id to process instance
+ *
+ * Assigns a business id to an already-running process instance that currently has none.
+ *
+ * The assignment is single and irreversible: only artifacts created after the assignment
+ * (for example future jobs, user tasks, decision instances, and message subscriptions) carry
+ * the business id, while existing artifacts are not retroactively enriched. Re-sending the
+ * same business id succeeds as a no-op. This endpoint is only useful while business id
+ * uniqueness enforcement is disabled; when it is enabled, the request is rejected with a 409
+ * response.
+ *
+  *
+ * @example Assign a business ID to a process instance
+ * ```ts
+ * async function assignProcessInstanceBusinessIdExample(
+ *   processInstanceKey: ProcessInstanceKey,
+ *   businessId: BusinessId
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.assignProcessInstanceBusinessId({
+ *     processInstanceKey,
+ *     businessId,
+ *   });
+ * }
+ * ```
+ * @operationId assignProcessInstanceBusinessId
+ * @tags Process instance
+ */
+export function assignProcessInstanceBusinessId(options?: Parameters<typeof _assignProcessInstanceBusinessId>[0]): CancelablePromise<_DataOf<typeof _assignProcessInstanceBusinessId>> {
+  return toCancelable(signal => _assignProcessInstanceBusinessId({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Assign a role to a client
  *
  * Assigns the specified role to the client. The client will inherit the authorizations associated with this role.
   *
  * @example Assign a role to a client
  * ```ts
- * async function assignRoleToClientExample() {
+ * async function assignRoleToClientExample(roleId: RoleId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToClient({
- *     roleId: 'process-admin',
- *     clientId: 'my-service-account',
+ *     roleId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -2066,12 +2470,12 @@ export function assignRoleToClient(options?: Parameters<typeof _assignRoleToClie
   *
  * @example Assign a role to a group
  * ```ts
- * async function assignRoleToGroupExample() {
+ * async function assignRoleToGroupExample(roleId: RoleId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToGroup({
- *     roleId: 'process-admin',
- *     groupId: 'engineering-team',
+ *     roleId,
+ *     groupId,
  *   });
  * }
  * ```
@@ -2089,12 +2493,12 @@ export function assignRoleToGroup(options?: Parameters<typeof _assignRoleToGroup
   *
  * @example Assign a role to a mapping rule
  * ```ts
- * async function assignRoleToMappingRuleExample() {
+ * async function assignRoleToMappingRuleExample(roleId: RoleId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToMappingRule({
- *     roleId: 'process-admin',
- *     mappingRuleId: 'rule-123',
+ *     roleId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -2114,12 +2518,12 @@ export function assignRoleToMappingRule(options?: Parameters<typeof _assignRoleT
   *
  * @example Assign a role to a tenant
  * ```ts
- * async function assignRoleToTenantExample(tenantId: TenantId) {
+ * async function assignRoleToTenantExample(tenantId: TenantId, roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToTenant({
  *     tenantId,
- *     roleId: 'process-admin',
+ *     roleId,
  *   });
  * }
  * ```
@@ -2137,11 +2541,11 @@ export function assignRoleToTenant(options?: Parameters<typeof _assignRoleToTena
   *
  * @example Assign a role to a user
  * ```ts
- * async function assignRoleToUserExample(username: Username) {
+ * async function assignRoleToUserExample(roleId: RoleId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignRoleToUser({
- *     roleId: 'process-admin',
+ *     roleId,
  *     username,
  *   });
  * }
@@ -2187,11 +2591,11 @@ export function assignUserTask(options?: Parameters<typeof _assignUserTask>[0]):
   *
  * @example Assign a user to a group
  * ```ts
- * async function assignUserToGroupExample(username: Username) {
+ * async function assignUserToGroupExample(groupId: GroupId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.assignUserToGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     username,
  *   });
  * }
@@ -2278,6 +2682,37 @@ export function cancelProcessInstance(options?: Parameters<typeof _cancelProcess
 }
 
 /**
+ * Change cluster mode
+ *
+ * Transitions the cluster between processing and recovery mode. This is a non-blocking operation: the request is acknowledged once the change has been accepted, before the transition itself has completed. Entering recovery mode deactivates all partitions so that only a restricted set of read-only operations remains available; exiting recovery mode returns the cluster to normal processing. Returns the planned cluster change so its progress can be monitored via the topology.
+  *
+ * @example Change cluster mode
+ * ```ts
+ * async function changeClusterModeExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Transition the cluster into recovery mode. Pass `dryRun: true` to validate
+ *   // the request and inspect the resulting plan without applying it. Omit it (or
+ *   // set it to false) to actually trigger the transition.
+ *   const change = await camunda.changeClusterMode({
+ *     mode: 'RECOVERING',
+ *     dryRun: true,
+ *   });
+ * 
+ *   console.log(`Cluster change ${change.changeId}:`);
+ *   for (const op of change.plannedChanges) {
+ *     console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+ *   }
+ * }
+ * ```
+ * @operationId changeClusterMode
+ * @tags Recovery
+ */
+export function changeClusterMode(options?: Parameters<typeof _changeClusterMode>[0]): CancelablePromise<_DataOf<typeof _changeClusterMode>> {
+  return toCancelable(signal => _changeClusterMode({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Complete job
  *
  * Complete a job with the given payload, which allows completing the associated service task.
@@ -2329,6 +2764,45 @@ export function completeJob(options?: Parameters<typeof _completeJob>[0]): Cance
  */
 export function completeUserTask(options?: Parameters<typeof _completeUserTask>[0]): CancelablePromise<_DataOf<typeof _completeUserTask>> {
   return toCancelable(signal => _completeUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Create agent instance history item
+ *
+ * Appends a single history item to an agent instance's conversation history.
+ * The created item has commitStatus PENDING until the job identified by jobLease
+ * completes successfully, at which point it transitions to COMMITTED. If the job
+ * fails or is superseded by a retry, the item is marked DISCARDED.
+ *
+  *
+ * @example Append an agent instance history item
+ * ```ts
+ * async function createAgentInstanceHistoryItemExample(
+ *   agentInstanceKey: AgentInstanceKey,
+ *   elementInstanceKey: ElementInstanceKey,
+ *   jobKey: JobKey,
+ *   jobLease: string
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.createAgentInstanceHistoryItem({
+ *     agentInstanceKey,
+ *     elementInstanceKey,
+ *     jobKey,
+ *     jobLease,
+ *     role: 'ASSISTANT',
+ *     content: [{ contentType: 'TEXT', text: 'How can I help you today?' }],
+ *     producedAt: new Date().toISOString(),
+ *   });
+ * 
+ *   console.log(`Created history item: ${result.historyItemKey}`);
+ * }
+ * ```
+ * @operationId createAgentInstanceHistoryItem
+ * @tags Agent instance
+ */
+export function createAgentInstanceHistoryItem(options?: Parameters<typeof _createAgentInstanceHistoryItem>[0]): CancelablePromise<_DataOf<typeof _createAgentInstanceHistoryItem>> {
+  return toCancelable(signal => _createAgentInstanceHistoryItem({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -2470,12 +2944,12 @@ export function createElementInstanceVariables(options?: Parameters<typeof _crea
   *
  * @example Create a tenant cluster variable
  * ```ts
- * async function createTenantClusterVariableExample(tenantId: TenantId) {
+ * async function createTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.createTenantClusterVariable({
  *     tenantId,
- *     name: 'config',
+ *     name,
  *     value: { region: 'us-east-1' },
  *   });
  * 
@@ -2559,10 +3033,10 @@ export function deleteDocument(options?: Parameters<typeof _deleteDocument>[0]):
   *
  * @example Delete a global cluster variable
  * ```ts
- * async function deleteGlobalClusterVariableExample() {
+ * async function deleteGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteGlobalClusterVariable({ name: 'feature-flags' });
+ *   await camunda.deleteGlobalClusterVariable({ name });
  * }
  * ```
  * @operationId deleteGlobalClusterVariable
@@ -2601,10 +3075,10 @@ export function deleteGlobalTaskListener(options?: Parameters<typeof _deleteGlob
   *
  * @example Delete a group
  * ```ts
- * async function deleteGroupExample() {
+ * async function deleteGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteGroup({ groupId: 'engineering-team' });
+ *   await camunda.deleteGroup({ groupId });
  * }
  * ```
  * @operationId deleteGroup
@@ -2622,10 +3096,10 @@ export function deleteGroup(options?: Parameters<typeof _deleteGroup>[0]): Cance
   *
  * @example Delete a mapping rule
  * ```ts
- * async function deleteMappingRuleExample() {
+ * async function deleteMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteMappingRule({ mappingRuleId: 'ldap-group-mapping' });
+ *   await camunda.deleteMappingRule({ mappingRuleId });
  * }
  * ```
  * @operationId deleteMappingRule
@@ -2697,10 +3171,10 @@ export function deleteResource(options?: Parameters<typeof _deleteResource>[0]):
   *
  * @example Delete a role
  * ```ts
- * async function deleteRoleExample() {
+ * async function deleteRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
- *   await camunda.deleteRole({ roleId: 'process-admin' });
+ *   await camunda.deleteRole({ roleId });
  * }
  * ```
  * @operationId deleteRole
@@ -2737,12 +3211,12 @@ export function deleteTenant(options?: Parameters<typeof _deleteTenant>[0]): Can
   *
  * @example Delete a tenant cluster variable
  * ```ts
- * async function deleteTenantClusterVariableExample(tenantId: TenantId) {
+ * async function deleteTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.deleteTenantClusterVariable({
  *     tenantId,
- *     name: 'config',
+ *     name,
  *   });
  * }
  * ```
@@ -2797,6 +3271,36 @@ export function deleteUser(options?: Parameters<typeof _deleteUser>[0]): Cancela
  */
 export function failJob(options?: Parameters<typeof _failJob>[0]): CancelablePromise<_DataOf<typeof _failJob>> {
   return toCancelable(signal => _failJob({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Get agent instance
+ *
+ * Returns agent instance as JSON.
+  *
+ * @example Get an agent instance
+ * ```ts
+ * async function getAgentInstanceExample(agentInstanceKey: AgentInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const instance = await camunda.getAgentInstance(
+ *     { agentInstanceKey },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   console.log(`Status: ${instance.status}`);
+ *   console.log(`Element: ${instance.elementId}`);
+ * }
+ * ```
+ * @operationId getAgentInstance
+ * @tags Agent instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getAgentInstance(options: Parameters<typeof _getAgentInstance>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getAgentInstance>> }): CancelablePromise<_DataOf<typeof _getAgentInstance>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getAgentInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getAgentInstance', true, invoke, ec.consistency);
 }
 
 /**
@@ -3112,17 +3616,49 @@ export function getElementInstance(options: Parameters<typeof _getElementInstanc
 }
 
 /**
+ * Get form by key
+ *
+ * Get a form by its unique form key.
+ *
+  *
+ * @example Get a form by key
+ * ```ts
+ * async function getFormByKeyExample(formKey: FormKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const form = await camunda.getFormByKey(
+ *     {
+ *       formKey,
+ *     },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   console.log(`Form: ${form.formId}, version: ${form.version}`);
+ * }
+ * ```
+ * @operationId getFormByKey
+ * @tags Form
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getFormByKey(options: Parameters<typeof _getFormByKey>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getFormByKey>> }): CancelablePromise<_DataOf<typeof _getFormByKey>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getFormByKey({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getFormByKey', true, invoke, ec.consistency);
+}
+
+/**
  * Get a global-scoped cluster variable
  *
  * Get a global-scoped cluster variable.
   *
  * @example Get a global cluster variable
  * ```ts
- * async function getGlobalClusterVariableExample() {
+ * async function getGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const variable = await camunda.getGlobalClusterVariable(
- *     { name: 'feature-flags' },
+ *     { name },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -3209,13 +3745,10 @@ export function getGlobalTaskListener(options: Parameters<typeof _getGlobalTaskL
   *
  * @example Get a group
  * ```ts
- * async function getGroupExample() {
+ * async function getGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
- *   const group = await camunda.getGroup(
- *     { groupId: 'engineering-team' },
- *     { consistency: { waitUpToMs: 5000 } }
- *   );
+ *   const group = await camunda.getGroup({ groupId }, { consistency: { waitUpToMs: 5000 } });
  * 
  *   console.log(`Group: ${group.name}`);
  * }
@@ -3293,11 +3826,11 @@ export function getLicense(options?: Parameters<typeof _getLicense>[0]): Cancela
   *
  * @example Get a mapping rule
  * ```ts
- * async function getMappingRuleExample() {
+ * async function getMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const rule = await camunda.getMappingRule(
- *     { mappingRuleId: 'ldap-group-mapping' },
+ *     { mappingRuleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -3528,11 +4061,46 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
 }
 
 /**
+ * Get wait state statistics
+ *
+ * Get statistics about waiting element instances by the process instance key, grouped by element id.
+  *
+ * @example Get process instance wait state statistics
+ * ```ts
+ * async function getProcessInstanceWaitStateStatisticsExample(
+ *   processInstanceKey: ProcessInstanceKey
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.getProcessInstanceWaitStateStatistics(
+ *     { processInstanceKey },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const stat of result.items ?? []) {
+ *     console.log(`Element ${stat.elementId}: waiting=${stat.waitingCount}`);
+ *   }
+ * }
+ * ```
+ * @operationId getProcessInstanceWaitStateStatistics
+ * @tags Process instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getProcessInstanceWaitStateStatistics(options: Parameters<typeof _getProcessInstanceWaitStateStatistics>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getProcessInstanceWaitStateStatistics>> }): CancelablePromise<_DataOf<typeof _getProcessInstanceWaitStateStatistics>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getProcessInstanceWaitStateStatistics({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getProcessInstanceWaitStateStatistics', true, invoke, ec.consistency);
+}
+
+/**
  * Get resource
  *
  * Returns a deployed resource.
  * :::info
- * Currently, this endpoint only supports RPA resources.
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective APIs.
  * :::
  *
   *
@@ -3541,46 +4109,103 @@ export function getProcessInstanceStatistics(options: Parameters<typeof _getProc
  * async function getResourceExample(resourceKey: ProcessDefinitionKey) {
  *   const camunda = createCamundaClient();
  * 
- *   const resource = await camunda.getResource({
- *     resourceKey,
- *   });
+ *   const resource = await camunda.getResource(
+ *     {
+ *       resourceKey,
+ *     },
+ *     { consistency: { waitUpToMs: 0 } }
+ *   );
  * 
  *   console.log(`Resource: ${resource.resourceName} (${resource.resourceId})`);
  * }
  * ```
  * @operationId getResource
  * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function getResource(options?: Parameters<typeof _getResource>[0]): CancelablePromise<_DataOf<typeof _getResource>> {
-  return toCancelable(signal => _getResource({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+export function getResource(options: Parameters<typeof _getResource>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getResource>> }): CancelablePromise<_DataOf<typeof _getResource>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getResource({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getResource', true, invoke, ec.consistency);
 }
 
 /**
- * Get resource content
+ * Get RPA resource content (deprecated)
  *
- * Returns the content of a deployed resource.
+ * **Deprecated** — use `/resources/{resourceKey}/content/binary` instead, which supports all
+ * resource types and returns content as binary (octet-stream).
+ *
+ * Returns the content of a deployed RPA resource as JSON.
  * :::info
- * Currently, this endpoint only supports RPA resources.
+ * This endpoint only supports RPA resources. For generic resource content in binary format,
+ * use the `/resources/{resourceKey}/content/binary` endpoint.
  * :::
  *
+ *
+ * @deprecated
   *
  * @example Get resource content
  * ```ts
  * async function getResourceContentExample(resourceKey: ProcessDefinitionKey) {
  *   const camunda = createCamundaClient();
  * 
- *   const content = await camunda.getResourceContent({
- *     resourceKey,
- *   });
+ *   const content = await camunda.getResourceContent(
+ *     {
+ *       resourceKey,
+ *     },
+ *     { consistency: { waitUpToMs: 0 } }
+ *   );
  * 
  *   console.log(`Content retrieved (type: ${typeof content})`);
  * }
  * ```
  * @operationId getResourceContent
  * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function getResourceContent(options?: Parameters<typeof _getResourceContent>[0]): CancelablePromise<_DataOf<typeof _getResourceContent>> {
-  return toCancelable(signal => _getResourceContent({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+export function getResourceContent(options: Parameters<typeof _getResourceContent>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getResourceContent>> }): CancelablePromise<_DataOf<typeof _getResourceContent>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getResourceContent({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getResourceContent', true, invoke, ec.consistency);
+}
+
+/**
+ * Get resource content as binary
+ *
+ * Returns the content of a deployed resource in binary format (octet-stream).
+ * :::info
+ * This endpoint does not return BPMN process definitions, DMN decision definitions, or form
+ * resources. To query BPMN process definitions or DMN decision definitions, use their
+ * respective APIs.
+ * :::
+ *
+  *
+ * @example Get resource content as binary
+ * ```ts
+ * async function getResourceContentBinaryExample(resourceKey: ProcessDefinitionKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const content = await camunda.getResourceContentBinary(
+ *     {
+ *       resourceKey,
+ *     },
+ *     { consistency: { waitUpToMs: 0 } }
+ *   );
+ * 
+ *   console.log(`Binary content retrieved (type: ${typeof content})`);
+ * }
+ * ```
+ * @operationId getResourceContentBinary
+ * @tags Resource
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function getResourceContentBinary(options: Parameters<typeof _getResourceContentBinary>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _getResourceContentBinary>> }): CancelablePromise<_DataOf<typeof _getResourceContentBinary>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _getResourceContentBinary({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('getResourceContentBinary', true, invoke, ec.consistency);
 }
 
 /**
@@ -3590,13 +4215,10 @@ export function getResourceContent(options?: Parameters<typeof _getResourceConte
   *
  * @example Get a role
  * ```ts
- * async function getRoleExample() {
+ * async function getRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
- *   const role = await camunda.getRole(
- *     { roleId: 'process-admin' },
- *     { consistency: { waitUpToMs: 5000 } }
- *   );
+ *   const role = await camunda.getRole({ roleId }, { consistency: { waitUpToMs: 5000 } });
  * 
  *   console.log(`Role: ${role.name}`);
  * }
@@ -3727,13 +4349,13 @@ export function getTenant(options: Parameters<typeof _getTenant>[0] | undefined,
   *
  * @example Get a tenant cluster variable
  * ```ts
- * async function getTenantClusterVariableExample(tenantId: TenantId) {
+ * async function getTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   const variable = await camunda.getTenantClusterVariable(
  *     {
  *       tenantId,
- *       name: 'config',
+ *       name,
  *     },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
@@ -4098,17 +4720,78 @@ export function resumeBatchOperation(options?: Parameters<typeof _resumeBatchOpe
 }
 
 /**
+ * Resume process instance
+ *
+ * Resumes a suspended process instance, returning it to the ACTIVE state and continuing processing.
+ * Only process instances in the SUSPENDED state can be resumed.
+ *
+  *
+ * @example Resume a process instance
+ * ```ts
+ * async function resumeProcessInstanceExample(processInstanceKey: ProcessInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.resumeProcessInstance({ processInstanceKey });
+ * }
+ * ```
+ * @operationId resumeProcessInstance
+ * @tags Process instance
+ */
+export function resumeProcessInstance(options?: Parameters<typeof _resumeProcessInstance>[0]): CancelablePromise<_DataOf<typeof _resumeProcessInstance>> {
+  return toCancelable(signal => _resumeProcessInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Search agent instance history
+ *
+ * Searches the conversation history of an agent instance. Committed items
+ * are returned by default.
+ *
+  *
+ * @example Search agent instance history
+ * ```ts
+ * async function searchAgentInstanceHistoryExample(agentInstanceKey: AgentInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchAgentInstanceHistory(
+ *     {
+ *       agentInstanceKey,
+ *       filter: { role: { $eq: 'ASSISTANT' } },
+ *       sort: [{ field: 'producedAt', order: 'ASC' }],
+ *       page: { limit: 20 },
+ *     },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const item of result.items ?? []) {
+ *     console.log(`${item.historyItemKey} (${item.role})`);
+ *   }
+ *   console.log(`Total: ${result.page.totalItems}`);
+ * }
+ * ```
+ * @operationId searchAgentInstanceHistory
+ * @tags Agent instance
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchAgentInstanceHistory(options: Parameters<typeof _searchAgentInstanceHistory>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchAgentInstanceHistory>> }): CancelablePromise<_DataOf<typeof _searchAgentInstanceHistory>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchAgentInstanceHistory({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('searchAgentInstanceHistory', false, invoke, ec.consistency);
+}
+
+/**
  * Search group clients
  *
  * Search clients assigned to a group.
   *
  * @example Search clients in a group
  * ```ts
- * async function searchClientsForGroupExample() {
+ * async function searchClientsForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchClientsForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4135,11 +4818,11 @@ export function searchClientsForGroup(options: Parameters<typeof _searchClientsF
   *
  * @example Search clients for a role
  * ```ts
- * async function searchClientsForRoleExample() {
+ * async function searchClientsForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchClientsForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4297,11 +4980,11 @@ export function searchGroupIdsForTenant(options: Parameters<typeof _searchGroupI
   *
  * @example Search groups for a role
  * ```ts
- * async function searchGroupsForRoleExample() {
+ * async function searchGroupsForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchGroupsForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4328,11 +5011,11 @@ export function searchGroupsForRole(options: Parameters<typeof _searchGroupsForR
   *
  * @example Search mapping rules for a group
  * ```ts
- * async function searchMappingRulesForGroupExample() {
+ * async function searchMappingRulesForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchMappingRulesForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4359,11 +5042,11 @@ export function searchMappingRulesForGroup(options: Parameters<typeof _searchMap
   *
  * @example Search mapping rules for a role
  * ```ts
- * async function searchMappingRulesForRoleExample() {
+ * async function searchMappingRulesForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchMappingRulesForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4415,6 +5098,39 @@ export function searchMappingRulesForTenant(options: Parameters<typeof _searchMa
 }
 
 /**
+ * Search process definition variable names
+ *
+ * Search for distinct variable names defined on a process definition, optionally narrowed by the name filter.
+  *
+ * @example Search process definition variable names
+ * ```ts
+ * async function searchProcessDefinitionVariableNamesExample(
+ *   processDefinitionKey: ProcessDefinitionKey
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.searchProcessDefinitionVariableNames(
+ *     { processDefinitionKey },
+ *     { consistency: { waitUpToMs: 5000 } }
+ *   );
+ * 
+ *   for (const variable of result.items ?? []) {
+ *     console.log(`Variable name: ${variable.name}`);
+ *   }
+ * }
+ * ```
+ * @operationId searchProcessDefinitionVariableNames
+ * @tags Process definition
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchProcessDefinitionVariableNames(options: Parameters<typeof _searchProcessDefinitionVariableNames>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchProcessDefinitionVariableNames>> }): CancelablePromise<_DataOf<typeof _searchProcessDefinitionVariableNames>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchProcessDefinitionVariableNames({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('searchProcessDefinitionVariableNames', false, invoke, ec.consistency);
+}
+
+/**
  * Search related incidents
  *
  * Search for incidents caused by the process instance or any of its called process or decision instances.
@@ -4460,11 +5176,11 @@ export function searchProcessInstanceIncidents(options: Parameters<typeof _searc
   *
  * @example Search roles for a group
  * ```ts
- * async function searchRolesForGroupExample() {
+ * async function searchRolesForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchRolesForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4522,11 +5238,11 @@ export function searchRolesForTenant(options: Parameters<typeof _searchRolesForT
   *
  * @example Search users in a group
  * ```ts
- * async function searchUsersForGroupExample() {
+ * async function searchUsersForGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchUsersForGroup(
- *     { groupId: 'engineering-team' },
+ *     { groupId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4553,11 +5269,11 @@ export function searchUsersForGroup(options: Parameters<typeof _searchUsersForGr
   *
  * @example Search users for a role
  * ```ts
- * async function searchUsersForRoleExample() {
+ * async function searchUsersForRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   const result = await camunda.searchUsersForRole(
- *     { roleId: 'process-admin' },
+ *     { roleId },
  *     { consistency: { waitUpToMs: 5000 } }
  *   );
  * 
@@ -4781,6 +5497,28 @@ export function suspendBatchOperation(options?: Parameters<typeof _suspendBatchO
 }
 
 /**
+ * Suspend process instance
+ *
+ * Suspends a running process instance, pausing further processing until it is resumed.
+ * Only process instances in the ACTIVE state can be suspended.
+ *
+  *
+ * @example Suspend a process instance
+ * ```ts
+ * async function suspendProcessInstanceExample(processInstanceKey: ProcessInstanceKey) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.suspendProcessInstance({ processInstanceKey });
+ * }
+ * ```
+ * @operationId suspendProcessInstance
+ * @tags Process instance
+ */
+export function suspendProcessInstance(options?: Parameters<typeof _suspendProcessInstance>[0]): CancelablePromise<_DataOf<typeof _suspendProcessInstance>> {
+  return toCancelable(signal => _suspendProcessInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Throw error for job
  *
  * Reports a business error (i.e. non-technical) that occurs while processing a job.
@@ -4814,12 +5552,12 @@ export function throwJobError(options?: Parameters<typeof _throwJobError>[0]): C
   *
  * @example Unassign a client from a group
  * ```ts
- * async function unassignClientFromGroupExample() {
+ * async function unassignClientFromGroupExample(groupId: GroupId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignClientFromGroup({
- *     groupId: 'engineering-team',
- *     clientId: 'my-service-account',
+ *     groupId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -4839,12 +5577,12 @@ export function unassignClientFromGroup(options?: Parameters<typeof _unassignCli
   *
  * @example Unassign a client from a tenant
  * ```ts
- * async function unassignClientFromTenantExample(tenantId: TenantId) {
+ * async function unassignClientFromTenantExample(tenantId: TenantId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignClientFromTenant({
  *     tenantId,
- *     clientId: 'my-service-account',
+ *     clientId,
  *   });
  * }
  * ```
@@ -4864,12 +5602,12 @@ export function unassignClientFromTenant(options?: Parameters<typeof _unassignCl
   *
  * @example Unassign a group from a tenant
  * ```ts
- * async function unassignGroupFromTenantExample(tenantId: TenantId) {
+ * async function unassignGroupFromTenantExample(tenantId: TenantId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignGroupFromTenant({
  *     tenantId,
- *     groupId: 'engineering-team',
+ *     groupId,
  *   });
  * }
  * ```
@@ -4887,12 +5625,12 @@ export function unassignGroupFromTenant(options?: Parameters<typeof _unassignGro
   *
  * @example Unassign a mapping rule from a group
  * ```ts
- * async function unassignMappingRuleFromGroupExample() {
+ * async function unassignMappingRuleFromGroupExample(groupId: GroupId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignMappingRuleFromGroup({
- *     groupId: 'engineering-team',
- *     mappingRuleId: 'rule-123',
+ *     groupId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -4910,12 +5648,15 @@ export function unassignMappingRuleFromGroup(options?: Parameters<typeof _unassi
   *
  * @example Unassign a mapping rule from a tenant
  * ```ts
- * async function unassignMappingRuleFromTenantExample(tenantId: TenantId) {
+ * async function unassignMappingRuleFromTenantExample(
+ *   tenantId: TenantId,
+ *   mappingRuleId: MappingRuleId
+ * ) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignMappingRuleFromTenant({
  *     tenantId,
- *     mappingRuleId: 'rule-123',
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -4933,12 +5674,12 @@ export function unassignMappingRuleFromTenant(options?: Parameters<typeof _unass
   *
  * @example Unassign a role from a client
  * ```ts
- * async function unassignRoleFromClientExample() {
+ * async function unassignRoleFromClientExample(roleId: RoleId, clientId: ClientId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromClient({
- *     roleId: 'process-admin',
- *     clientId: 'my-service-account',
+ *     roleId,
+ *     clientId,
  *   });
  * }
  * ```
@@ -4956,12 +5697,12 @@ export function unassignRoleFromClient(options?: Parameters<typeof _unassignRole
   *
  * @example Unassign a role from a group
  * ```ts
- * async function unassignRoleFromGroupExample() {
+ * async function unassignRoleFromGroupExample(roleId: RoleId, groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromGroup({
- *     roleId: 'process-admin',
- *     groupId: 'engineering-team',
+ *     roleId,
+ *     groupId,
  *   });
  * }
  * ```
@@ -4979,12 +5720,12 @@ export function unassignRoleFromGroup(options?: Parameters<typeof _unassignRoleF
   *
  * @example Unassign a role from a mapping rule
  * ```ts
- * async function unassignRoleFromMappingRuleExample() {
+ * async function unassignRoleFromMappingRuleExample(roleId: RoleId, mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromMappingRule({
- *     roleId: 'process-admin',
- *     mappingRuleId: 'rule-123',
+ *     roleId,
+ *     mappingRuleId,
  *   });
  * }
  * ```
@@ -5005,12 +5746,12 @@ export function unassignRoleFromMappingRule(options?: Parameters<typeof _unassig
   *
  * @example Unassign a role from a tenant
  * ```ts
- * async function unassignRoleFromTenantExample(tenantId: TenantId) {
+ * async function unassignRoleFromTenantExample(tenantId: TenantId, roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromTenant({
  *     tenantId,
- *     roleId: 'process-admin',
+ *     roleId,
  *   });
  * }
  * ```
@@ -5028,11 +5769,11 @@ export function unassignRoleFromTenant(options?: Parameters<typeof _unassignRole
   *
  * @example Unassign a role from a user
  * ```ts
- * async function unassignRoleFromUserExample(username: Username) {
+ * async function unassignRoleFromUserExample(roleId: RoleId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignRoleFromUser({
- *     roleId: 'process-admin',
+ *     roleId,
  *     username,
  *   });
  * }
@@ -5053,11 +5794,11 @@ export function unassignRoleFromUser(options?: Parameters<typeof _unassignRoleFr
   *
  * @example Unassign a user from a group
  * ```ts
- * async function unassignUserFromGroupExample(username: Username) {
+ * async function unassignUserFromGroupExample(groupId: GroupId, username: Username) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.unassignUserFromGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     username,
  *   });
  * }
@@ -5116,6 +5857,43 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
 }
 
 /**
+ * Update agent instance
+ *
+ * Updates the mutable fields of an agent instance: status, metric counters, and
+ * tools. Metric values are treated as deltas and applied immediately to the
+ * aggregate counters. Tool updates replace the existing tool list.
+ *
+  *
+ * @example Update an agent instance
+ * ```ts
+ * async function updateAgentInstanceExample(
+ *   agentInstanceKey: AgentInstanceKey,
+ *   elementInstanceKey: ElementInstanceKey
+ * ) {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.updateAgentInstance({
+ *     agentInstanceKey,
+ *     elementInstanceKey,
+ *     status: 'THINKING',
+ *     metrics: {
+ *       inputTokens: 150,
+ *       outputTokens: 50,
+ *       modelCalls: 1,
+ *     },
+ *   });
+ * 
+ *   console.log(`Updated agent instance: ${agentInstanceKey}`);
+ * }
+ * ```
+ * @operationId updateAgentInstance
+ * @tags Agent instance
+ */
+export function updateAgentInstance(options?: Parameters<typeof _updateAgentInstance>[0]): CancelablePromise<_DataOf<typeof _updateAgentInstance>> {
+  return toCancelable(signal => _updateAgentInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Update authorization
  *
  * Update the authorization with the given key.
@@ -5155,11 +5933,11 @@ export function updateAuthorization(options?: Parameters<typeof _updateAuthoriza
   *
  * @example Update a global cluster variable
  * ```ts
- * async function updateGlobalClusterVariableExample() {
+ * async function updateGlobalClusterVariableExample(name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateGlobalClusterVariable({
- *     name: 'feature-flags',
+ *     name,
  *     value: { darkMode: false },
  *   });
  * }
@@ -5202,11 +5980,11 @@ export function updateGlobalTaskListener(options?: Parameters<typeof _updateGlob
   *
  * @example Update a group
  * ```ts
- * async function updateGroupExample() {
+ * async function updateGroupExample(groupId: GroupId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateGroup({
- *     groupId: 'engineering-team',
+ *     groupId,
  *     name: 'Engineering Team',
  *   });
  * }
@@ -5249,11 +6027,11 @@ export function updateJob(options?: Parameters<typeof _updateJob>[0]): Cancelabl
   *
  * @example Update a mapping rule
  * ```ts
- * async function updateMappingRuleExample() {
+ * async function updateMappingRuleExample(mappingRuleId: MappingRuleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateMappingRule({
- *     mappingRuleId: 'ldap-group-mapping',
+ *     mappingRuleId,
  *     name: 'LDAP Group Mapping',
  *     claimName: 'groups',
  *     claimValue: 'engineering-team',
@@ -5274,11 +6052,11 @@ export function updateMappingRule(options?: Parameters<typeof _updateMappingRule
   *
  * @example Update a role
  * ```ts
- * async function updateRoleExample() {
+ * async function updateRoleExample(roleId: RoleId) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateRole({
- *     roleId: 'process-admin',
+ *     roleId,
  *     name: 'Process Administrator',
  *   });
  * }
@@ -5322,12 +6100,12 @@ export function updateTenant(options?: Parameters<typeof _updateTenant>[0]): Can
   *
  * @example Update a tenant cluster variable
  * ```ts
- * async function updateTenantClusterVariableExample(tenantId: TenantId) {
+ * async function updateTenantClusterVariableExample(tenantId: TenantId, name: ClusterVariableName) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateTenantClusterVariable({
  *     tenantId,
- *     name: 'config',
+ *     name,
  *     value: { region: 'eu-west-1' },
  *   });
  * }
@@ -5391,4 +6169,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=7859385dc415da57 totalWrappers=183 elements=1162 physicalLines=2845
+// SENTINEL_FACADE_PREWRITE hash=df299377e1b45d17 totalWrappers=204 elements=1298 physicalLines=3252

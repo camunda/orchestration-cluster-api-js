@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "1.0.0",
-  "specHash": "sha256:23c77958ed5c8e6d5bec3a5368ea7cc9aef83d7a745bffdbf618c34ece760409",
+  "schemaVersion": "2.0.0",
+  "specHash": "sha256:d13bc9d204c7e72691377d7ac75c580db83acec006dbd3f4635c4fbe05245865",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -10,6 +10,90 @@
     "namespaceFactories": true
   },
   "keys": [
+    {
+      "name": "AgentHistoryItemKey",
+      "semanticType": "AgentHistoryItemKey",
+      "category": "system-key",
+      "description": "System-generated key for an agent history item.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "6755399441055744"
+      ],
+      "extensions": {
+        "x-semantic-type": "AgentHistoryItemKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "agent-history-item-key",
+      "brand": {
+        "tsType": "CamundaKey<'AgentHistoryItemKey'>"
+      },
+      "zod": {
+        "schemaName": "zAgentHistoryItemKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentHistoryItemKey"
+      }
+    },
+    {
+      "name": "AgentInstanceKey",
+      "semanticType": "AgentInstanceKey",
+      "category": "system-key",
+      "description": "System-generated key for an agent instance.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "4503599627370496"
+      ],
+      "extensions": {
+        "x-semantic-type": "AgentInstanceKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "agent-instance-key",
+      "brand": {
+        "tsType": "CamundaKey<'AgentInstanceKey'>"
+      },
+      "zod": {
+        "schemaName": "zAgentInstanceKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceKey"
+      }
+    },
     {
       "name": "AuditLogEntityKey",
       "semanticType": "AuditLogEntityKey",
@@ -211,6 +295,88 @@
       }
     },
     {
+      "name": "ClientId",
+      "semanticType": "ClientId",
+      "category": "model-id",
+      "description": "The unique identifier of an OAuth client.\nMinted outside the Camunda REST API: in SaaS by Console, in Self-Managed\nwith OIDC by the external identity provider (e.g. EntraID, Keycloak,\nOkta). In Self-Managed with Basic authentication, machine-to-machine\napplications are modelled as users instead — see the user identifier.\n",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ClientId"
+      },
+      "examples": [
+        "my-application"
+      ],
+      "extensions": {
+        "x-semantic-type": "ClientId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "client-id",
+      "brand": {
+        "tsType": "CamundaKey<'ClientId'>"
+      },
+      "zod": {
+        "schemaName": "zClientId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClientId"
+      }
+    },
+    {
+      "name": "ClusterVariableName",
+      "semanticType": "ClusterVariableName",
+      "category": "system-key",
+      "description": "The name of a cluster variable. Unique within its scope (global or tenant-specific).",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "ClusterVariableName"
+      },
+      "examples": [
+        "feature-flag-checkout"
+      ],
+      "extensions": {
+        "x-semantic-type": "ClusterVariableName"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "cluster-variable-name",
+      "brand": {
+        "tsType": "CamundaKey<'ClusterVariableName'>"
+      },
+      "zod": {
+        "schemaName": "zClusterVariableName",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClusterVariableName"
+      }
+    },
+    {
       "name": "ConditionalEvaluationKey",
       "semanticType": "ConditionalEvaluationKey",
       "category": "system-key",
@@ -338,28 +504,27 @@
       "name": "DecisionEvaluationInstanceKey",
       "semanticType": "DecisionEvaluationInstanceKey",
       "category": "system-key",
-      "description": "System-generated key for a decision evaluation instance.",
+      "description": "System-generated identifier for a decision evaluation instance. It is composed of the\nparent decision evaluation key and the 1-based index of the evaluated decision within\nthat evaluation, joined by a hyphen (format: `<decisionEvaluationKey>-<index>`).\n",
       "composition": {
-        "schemaKind": "allOf",
-        "refs": [
-          "LongKey"
-        ],
+        "schemaKind": "inline",
+        "refs": [],
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^-?[0-9]+$",
-        "minLength": 1,
-        "maxLength": 25
+        "pattern": "^[0-9]+-[0-9]+$",
+        "minLength": 3,
+        "maxLength": 30,
+        "format": "DecisionEvaluationInstanceKey"
       },
       "examples": [
-        "2251799813684367"
+        "2251799813684367-1"
       ],
       "extensions": {
         "x-semantic-type": "DecisionEvaluationInstanceKey"
       },
       "flags": {
         "semanticKey": true,
-        "includesLongKeyRef": true,
+        "includesLongKeyRef": false,
         "deprecated": false
       },
       "stableId": "decision-evaluation-instance-key",
@@ -786,6 +951,9 @@
         "inlineFragments": 0
       },
       "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+\\-]+$",
+        "minLength": 1,
+        "maxLength": 256,
         "format": "GlobalListenerId"
       },
       "examples": [
@@ -811,6 +979,46 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/GlobalListenerId"
+      }
+    },
+    {
+      "name": "GroupId",
+      "semanticType": "GroupId",
+      "category": "model-id",
+      "description": "The unique identifier of a group.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "GroupId"
+      },
+      "examples": [
+        "engineering"
+      ],
+      "extensions": {
+        "x-semantic-type": "GroupId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "group-id",
+      "brand": {
+        "tsType": "CamundaKey<'GroupId'>"
+      },
+      "zod": {
+        "schemaName": "zGroupId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/GroupId"
       }
     },
     {
@@ -895,6 +1103,47 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/JobKey"
+      }
+    },
+    {
+      "name": "MappingRuleId",
+      "semanticType": "MappingRuleId",
+      "category": "model-id",
+      "description": "The unique identifier of a mapping rule.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "MappingRuleId"
+      },
+      "examples": [
+        "my-mapping-rule"
+      ],
+      "extensions": {
+        "x-semantic-type": "MappingRuleId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "mapping-rule-id",
+      "brand": {
+        "tsType": "CamundaKey<'MappingRuleId'>"
+      },
+      "zod": {
+        "schemaName": "zMappingRuleId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/MappingRuleId"
       }
     },
     {
@@ -1106,6 +1355,47 @@
       }
     },
     {
+      "name": "RoleId",
+      "semanticType": "RoleId",
+      "category": "model-id",
+      "description": "The unique identifier of a role.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "RoleId"
+      },
+      "examples": [
+        "admin"
+      ],
+      "extensions": {
+        "x-semantic-type": "RoleId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "role-id",
+      "brand": {
+        "tsType": "CamundaKey<'RoleId'>"
+      },
+      "zod": {
+        "schemaName": "zRoleId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/RoleId"
+      }
+    },
+    {
       "name": "SignalKey",
       "semanticType": "SignalKey",
       "category": "system-key",
@@ -1238,9 +1528,9 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^(<default>|[A-Za-z0-9_@.+-]+)$",
+        "pattern": "^(<default>|[\\w\\.\\-]{1,31})$",
         "minLength": 1,
-        "maxLength": 256,
+        "maxLength": 31,
         "format": "TenantId"
       },
       "examples": [
@@ -1279,7 +1569,7 @@
         "inlineFragments": 0
       },
       "constraints": {
-        "pattern": "^(<default>|[A-Za-z0-9_@.+-]+)$",
+        "pattern": "^[a-zA-Z0-9_~@.+-]+$",
         "minLength": 1,
         "maxLength": 256,
         "format": "Username"
@@ -1392,6 +1682,148 @@
     }
   ],
   "unions": [
+    {
+      "name": "AgentHistoryItemKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentHistoryItemKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentHistoryItemKeyExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentHistoryItemKeyFilter"
+        }
+      ],
+      "stableId": "agent-history-item-key-filter-property",
+      "tsType": "AgentHistoryItemKeyExactMatch | AdvancedAgentHistoryItemKeyFilter",
+      "zod": {
+        "schemaName": "zAgentHistoryItemKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentHistoryItemKeyFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceHistoryCommitStatusFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceHistoryCommitStatusEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceHistoryCommitStatusExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceHistoryCommitStatusFilter"
+        }
+      ],
+      "stableId": "agent-instance-history-commit-status-filter-property",
+      "tsType": "AgentInstanceHistoryCommitStatusExactMatch | AdvancedAgentInstanceHistoryCommitStatusFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceHistoryCommitStatusFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceHistoryCommitStatusFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceHistoryRoleFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceHistoryRoleEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceHistoryRoleExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceHistoryRoleFilter"
+        }
+      ],
+      "stableId": "agent-instance-history-role-filter-property",
+      "tsType": "AgentInstanceHistoryRoleExactMatch | AdvancedAgentInstanceHistoryRoleFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceHistoryRoleFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceHistoryRoleFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceKeyExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceKeyFilter"
+        }
+      ],
+      "stableId": "agent-instance-key-filter-property",
+      "tsType": "AgentInstanceKeyExactMatch | AdvancedAgentInstanceKeyFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceKeyFilterProperty"
+      }
+    },
+    {
+      "name": "AgentInstanceMessageContent",
+      "kind": "union-wrapper",
+      "description": "A single content block within a history item. Discriminated by `contentType`.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceTextContent"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceDocumentContent"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceObjectContent"
+        }
+      ],
+      "stableId": "agent-instance-message-content",
+      "tsType": "AgentInstanceTextContent | AgentInstanceDocumentContent | AgentInstanceObjectContent",
+      "zod": {
+        "schemaName": "zAgentInstanceMessageContent"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceMessageContent"
+      }
+    },
+    {
+      "name": "AgentInstanceStatusFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentInstanceStatusEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentInstanceStatusExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentInstanceStatusFilter"
+        }
+      ],
+      "stableId": "agent-instance-status-filter-property",
+      "tsType": "AgentInstanceStatusExactMatch | AdvancedAgentInstanceStatusFilter",
+      "zod": {
+        "schemaName": "zAgentInstanceStatusFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentInstanceStatusFilterProperty"
+      }
+    },
     {
       "name": "AncestorScopeInstruction",
       "kind": "union-wrapper",
@@ -1649,6 +2081,29 @@
       }
     },
     {
+      "name": "ClusterVariableKindFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ClusterVariableKindEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterVariableKindExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedClusterVariableKindFilter"
+        }
+      ],
+      "stableId": "cluster-variable-kind-filter-property",
+      "tsType": "ClusterVariableKindExactMatch | AdvancedClusterVariableKindFilter",
+      "zod": {
+        "schemaName": "zClusterVariableKindFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClusterVariableKindFilterProperty"
+      }
+    },
+    {
       "name": "ClusterVariableScopeFilterProperty",
       "kind": "union-wrapper",
       "description": "ClusterVariableScopeEnum property with full advanced search capabilities.",
@@ -1851,6 +2306,29 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/DeploymentKeyFilterProperty"
+      }
+    },
+    {
+      "name": "ElementIdFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ElementId property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ElementIdExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedElementIdFilter"
+        }
+      ],
+      "stableId": "element-id-filter-property",
+      "tsType": "ElementIdExactMatch | AdvancedElementIdFilter",
+      "zod": {
+        "schemaName": "zElementIdFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ElementIdFilterProperty"
       }
     },
     {
@@ -2221,6 +2699,29 @@
       }
     },
     {
+      "name": "MessageSubscriptionTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "MessageSubscriptionTypeEnum with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "MessageSubscriptionTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedMessageSubscriptionTypeFilter"
+        }
+      ],
+      "stableId": "message-subscription-type-filter-property",
+      "tsType": "MessageSubscriptionTypeExactMatch | AdvancedMessageSubscriptionTypeFilter",
+      "zod": {
+        "schemaName": "zMessageSubscriptionTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/MessageSubscriptionTypeFilterProperty"
+      }
+    },
+    {
       "name": "OperationTypeFilterProperty",
       "kind": "union-wrapper",
       "description": "AuditLogOperationTypeEnum property with full advanced search capabilities.",
@@ -2241,6 +2742,29 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/OperationTypeFilterProperty"
+      }
+    },
+    {
+      "name": "ProcessDefinitionIdFilterProperty",
+      "kind": "union-wrapper",
+      "description": "ProcessDefinitionId property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ProcessDefinitionIdExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedProcessDefinitionIdFilter"
+        }
+      ],
+      "stableId": "process-definition-id-filter-property",
+      "tsType": "ProcessDefinitionIdExactMatch | AdvancedProcessDefinitionIdFilter",
+      "zod": {
+        "schemaName": "zProcessDefinitionIdFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ProcessDefinitionIdFilterProperty"
       }
     },
     {
@@ -2597,6 +3121,91 @@
       "source": {
         "schemaPointer": "#/components/schemas/VariableKeyFilterProperty"
       }
+    },
+    {
+      "name": "WaitStateDetails",
+      "kind": "union-wrapper",
+      "description": "Wait-state-specific details of an element instance.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "JobWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "MessageWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "UserTaskWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "TimerWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "SignalWaitStateDetails"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ConditionWaitStateDetails"
+        }
+      ],
+      "stableId": "wait-state-details",
+      "tsType": "JobWaitStateDetails | MessageWaitStateDetails | UserTaskWaitStateDetails | TimerWaitStateDetails | SignalWaitStateDetails | ConditionWaitStateDetails",
+      "zod": {
+        "schemaName": "zWaitStateDetails"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/WaitStateDetails"
+      }
+    },
+    {
+      "name": "WaitStateElementTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Element type property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "WaitStateElementTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedWaitStateElementTypeFilter"
+        }
+      ],
+      "stableId": "wait-state-element-type-filter-property",
+      "tsType": "WaitStateElementTypeExactMatch | AdvancedWaitStateElementTypeFilter",
+      "zod": {
+        "schemaName": "zWaitStateElementTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/WaitStateElementTypeFilterProperty"
+      }
+    },
+    {
+      "name": "WaitStateTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "Wait state type property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "WaitStateTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedWaitStateTypeFilter"
+        }
+      ],
+      "stableId": "wait-state-type-filter-property",
+      "tsType": "WaitStateTypeExactMatch | AdvancedWaitStateTypeFilter",
+      "zod": {
+        "schemaName": "zWaitStateTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/WaitStateTypeFilterProperty"
+      }
     }
   ],
   "arrays": [
@@ -2619,8 +3228,8 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 34,
-    "totalUnionWrappers": 52,
+    "totalPrimaryKeys": 41,
+    "totalUnionWrappers": 65,
     "implicitCamundaKeys": []
   }
 }

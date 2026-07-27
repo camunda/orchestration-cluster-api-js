@@ -25,14 +25,18 @@ describe('integration acceptance', () => {
     const res = await camunda.getAuthentication();
     expect(res).toBeDefined();
   });
-  it('throws when using a Blob instead of File (invalid resources array)', async () => {
+  it('accepts a Blob without a filename and falls back to resourceName "blob"', async () => {
+    // Behavioural change in Camunda 8.x server (arrived alongside the 8.7 spec bump in PR #174):
+    // multipart parts without a filename are no longer rejected; the server defaults
+    // resourceName to "blob" and proceeds with the deployment. This is server behaviour, not
+    // spec-defined — the spec only requires `resources` to be an array of binary parts.
     const buffer = await fs.promises.readFile('./tests-integration/fixtures/test-process.bpmn');
     const copied = Uint8Array.from(buffer);
     const blob = new Blob([copied], { type: 'application/xml' });
     const camunda = createCamundaClient({ throwOnError: true });
-    await expect(
-      camunda.createDeployment({ resources: [blob as any] } as any)
-    ).rejects.toBeDefined();
+    const result = await camunda.createDeployment({ resources: [blob as any] } as any);
+    expect(result.deploymentKey).toBeDefined();
+    expect(result.deployments?.[0]?.resource?.resourceName).toBe('blob');
   });
 
   // This won't throw if the broker is not using Basic Auth
@@ -52,14 +56,16 @@ describe('integration acceptance', () => {
     await expect(camunda.createDeployment({ resources: [file] } as any)).rejects.toBeDefined();
   });
 
-  it('returns Result (ok:false) with CamundaResultClient instead of throwing', async () => {
+  it('returns Result (ok:true) with CamundaResultClient for a Blob deployment', async () => {
+    // See note on the Blob-without-filename test above: the server now accepts this and
+    // resolves to a successful deployment, so the Result wrapper reports ok:true.
     const buffer = await fs.promises.readFile('./tests-integration/fixtures/test-process.bpmn');
     const copied = Uint8Array.from(buffer);
     const blob = new Blob([copied], { type: 'application/xml' });
     const client = createCamundaResultClient({});
     const res = await (client as any).createDeployment({ resources: [blob as any] });
-    expect(res.ok).toBe(false);
-    expect(res.error).toBeDefined();
+    expect(res.ok).toBe(true);
+    expect(res.value?.deploymentKey).toBeDefined();
   });
 
   it('can activate jobs, and the job has a tag', { timeout: 20000 }, async () => {

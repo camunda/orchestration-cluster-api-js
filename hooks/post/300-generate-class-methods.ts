@@ -3,9 +3,80 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const METADATA_PATH = path.join(ROOT, 'external-spec/bundled/spec-metadata.json');
+const BUNDLED_SPEC_PATH = path.join(ROOT, 'external-spec/bundled/rest-api.bundle.json');
 const TEMPLATE_FILE = path.join(ROOT, 'src/template/CamundaClient.template.ts');
 const CLASS_FILE = path.join(ROOT, 'src/gen/CamundaClient.ts');
 const SDK_GEN_PATH = path.join(ROOT, 'src/gen/sdk.gen.ts');
+
+/**
+ * Detect operations whose request body has an optional `tenantIds: array`
+ * property. Mirrors `optionalTenantIdInBody` (singular) from the bundler
+ * metadata, but for the plural array case (e.g. `activateJobs`).
+ *
+ * Sourced from the bundled spec rather than spec-metadata.json so this hook
+ * remains self-contained and does not require a `camunda-schema-bundler`
+ * release. See issue #170.
+ */
+function collectOpsWithOptionalTenantIdsArray(): Set<string> {
+  const result = new Set<string>();
+  if (!fs.existsSync(BUNDLED_SPEC_PATH)) return result;
+  const spec = JSON.parse(fs.readFileSync(BUNDLED_SPEC_PATH, 'utf8'));
+  const componentSchemas = (spec?.components?.schemas || {}) as Record<
+    string,
+    Record<string, unknown>
+  >;
+
+  function resolveSchemaRef(
+    schema: Record<string, unknown> | undefined
+  ): Record<string, unknown> | undefined {
+    if (!schema) return undefined;
+    if (typeof schema['$ref'] === 'string') {
+      const name = (schema['$ref'] as string).split('/').pop()!;
+      return componentSchemas[name];
+    }
+    return schema;
+  }
+
+  function hasOptionalTenantIdsArray(schema: Record<string, unknown> | undefined): boolean {
+    if (!schema || schema['type'] !== 'object') return false;
+    const props = schema['properties'] as Record<string, Record<string, unknown>> | undefined;
+    if (!props || !props['tenantIds']) return false;
+    const required = (schema['required'] as string[] | undefined) ?? [];
+    if (required.includes('tenantIds')) return false;
+    return props['tenantIds']['type'] === 'array';
+  }
+
+  const paths = (spec?.paths || {}) as Record<string, Record<string, unknown>>;
+  for (const methods of Object.values(paths)) {
+    for (const op of Object.values(methods)) {
+      const opObj = op as Record<string, unknown>;
+      const opId = opObj['operationId'] as string | undefined;
+      if (!opId) continue;
+      const rb = opObj['requestBody'] as Record<string, unknown> | undefined;
+      const content = rb?.['content'] as Record<string, unknown> | undefined;
+      if (!content) continue;
+      for (const [ct, mediaObj] of Object.entries(content)) {
+        if (!/json/i.test(ct)) continue;
+        const media = mediaObj as Record<string, unknown> | undefined;
+        const rawSchema = media?.['schema'] as Record<string, unknown> | undefined;
+        const resolved = resolveSchemaRef(rawSchema);
+        if (!resolved) continue;
+        const variants = (resolved['oneOf'] || resolved['anyOf']) as
+          | Record<string, unknown>[]
+          | undefined;
+        if (Array.isArray(variants) && variants.length > 1) {
+          const all =
+            variants.length > 0 &&
+            variants.map((v) => resolveSchemaRef(v)).every((rs) => hasOptionalTenantIdsArray(rs));
+          if (all) result.add(opId);
+        } else if (hasOptionalTenantIdsArray(resolved)) {
+          result.add(opId);
+        }
+      }
+    }
+  }
+  return result;
+}
 
 const MARK_TYPES_START = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===';
 const MARK_TYPES_END = '// === AUTO-GENERATED CAMUNDA SUPPORT TYPES END ===';
@@ -74,8 +145,10 @@ async function main() {
     pathParams: string[];
     queryParams: Array<{ name: string; required: boolean }>;
     optionalTenantIdInBody: boolean;
+    optionalTenantIdsInBody: boolean;
   }
   const ops: OpMeta[] = [];
+  const opsWithTenantIdsArray = collectOpsWithOptionalTenantIdsArray();
   for (const op of metadata.operations) {
     const originalId = op.operationId;
     const opId = sanitize(originalId);
@@ -93,6 +166,7 @@ async function main() {
       pathParams: op.pathParams || [],
       queryParams: op.queryParams || [],
       optionalTenantIdInBody: op.optionalTenantIdInBody || false,
+      optionalTenantIdsInBody: opsWithTenantIdsArray.has(originalId),
     });
   }
   ops.sort((a, b) => a.opId.localeCompare(b.opId));
@@ -261,6 +335,21 @@ export type ${o.opId}Consistency = {
           "        this._log.trace(() => ['tenant.default.inject', { op: '" +
             o.originalOpId +
             "', tenant: this._config.defaultTenantId }]);"
+        );
+        methods.push('      }');
+      }
+      if (o.hasBody && o.optionalTenantIdsInBody) {
+        // Inject [defaultTenantId] when caller omits tenantIds (or passes empty array).
+        // Only inject when a default tenant is configured — otherwise leave the field
+        // absent so downstream behavior matches "no default" semantics. See issue #170.
+        methods.push(
+          '      if (envelope.body && this._config.defaultTenantId !== undefined && this._config.defaultTenantId !== null && (!Array.isArray(envelope.body.tenantIds) || envelope.body.tenantIds.length === 0)) {'
+        );
+        methods.push('        envelope.body.tenantIds = [this._config.defaultTenantId];');
+        methods.push(
+          "        this._log.trace(() => ['tenant.default.inject', { op: '" +
+            o.originalOpId +
+            "', tenantIds: [this._config.defaultTenantId] }]);"
         );
         methods.push('      }');
       }
