@@ -54,7 +54,10 @@ for (const op of operations) {
   if (ignore.includes(op)) continue;
   const fileName = `${op}.test.ts`;
   if (!existingSet.has(fileName)) {
-    const content = `// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.\nimport { describe, it } from 'vitest';\n\nimport { createCamundaClient } from '../../dist';\n\ndescribe('${op}', () => {\n  it('scaffold', () => {\n    const _camunda = createCamundaClient();\n    // TODO: implement ${op} test logic\n  });\n});\n`;
+    // NOTE: keep the two imports adjacent — a blank line between them makes
+    // Biome's `assist/source/organizeImports` fail on the freshly generated
+    // scaffold, which breaks CI whenever a new operation appears in the spec.
+    const content = `// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.\nimport { describe, it } from 'vitest';\nimport { createCamundaClient } from '../../dist';\n\ndescribe('${op}', () => {\n  it('scaffold', () => {\n    const _camunda = createCamundaClient();\n    // TODO: implement ${op} test logic\n  });\n});\n`;
     fs.writeFileSync(path.join(TEST_DIR, fileName), content, 'utf8');
     created.push(fileName);
   }
