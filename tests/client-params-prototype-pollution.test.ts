@@ -60,11 +60,25 @@ describe('buildClientParams prototype pollution', () => {
     expect((params.query as Record<string, unknown>).polluted).toBeUndefined();
   });
 
-  it('does not pollute Object.prototype via a bare __proto__ key under allowExtra', () => {
+  it('does not substitute the slot prototype via a bare __proto__ key under allowExtra', () => {
     const fields = [{ allowExtra: { query: true }, args: [] }];
 
-    buildClientParams([{ __proto__: { alsoPolluted: 'yes' } }], fields);
+    // The payload must be built with JSON.parse, not an object literal: `{ __proto__: x }`
+    // sets the literal's own prototype and creates no own key at all, so `Object.entries`
+    // would yield nothing and the allowExtra branch would never run. JSON.parse produces a
+    // genuine own property named `__proto__` — which is also how this arrives in practice,
+    // from a parsed request body.
+    const payload = JSON.parse('{"__proto__": {"alsoPolluted": "yes"}}');
+    const params = buildClientParams([payload], fields);
 
+    // The write lands on the slot object, so that is what has to be asserted. Checking only
+    // Object.prototype would pass even against the vulnerable implementation, because
+    // `params.query['__proto__'] = v` substitutes the prototype of `params.query` itself
+    // rather than mutating the global prototype.
+    expect(Object.getPrototypeOf(params.query)).toBeNull();
+    expect((params.query as Record<string, unknown>).alsoPolluted).toBeUndefined();
+
+    // The global prototype must also be untouched.
     expect(({} as Record<string, unknown>).alsoPolluted).toBeUndefined();
     expect(Object.prototype).not.toHaveProperty('alsoPolluted');
   });
