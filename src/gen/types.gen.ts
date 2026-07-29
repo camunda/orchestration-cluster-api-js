@@ -1608,6 +1608,274 @@ export type OwnerTypeEnum = (typeof OwnerTypeEnum)[keyof typeof OwnerTypeEnum];
 export type AuthorizationKey = CamundaKey<'AuthorizationKey'>;
 
 /**
+ * Backup ID
+ *
+ * The id of the backup. Must be a positive numerical value. As backups are logically
+ * ordered by their ids (ascending), each successive backup must use a higher id than the
+ * previous one.
+ *
+ */
+export type BackupId = number;
+
+/**
+ * Backup ID Prefix
+ *
+ * A prefix of a backup id, followed by a single '*' as a wildcard, matching any backup id
+ * starting with the given prefix.
+ *
+ */
+export type BackupIdPrefix = string;
+
+/**
+ * Partition ID
+ *
+ * The id of a partition. Always a positive number greater than or equal to 1.
+ */
+export type PartitionId = number;
+
+/**
+ * Runtime Backup State
+ *
+ * The aggregated state of the backup, computed from the state of each partition.
+ */
+export type StateCode = 'DOES_NOT_EXIST' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'INCOMPLETE' | 'DELETED';
+
+/**
+ * TakeRuntimeBackupRequest
+ *
+ * Request body for taking a runtime backup.
+ */
+export type TakeRuntimeBackupRequest = {
+    /**
+     * The id of the backup to take. Must be omitted if continuous backups and/or a
+     * backup or checkpoint schedule is enabled for the physical tenant.
+     *
+     */
+    backupId?: BackupId | null;
+};
+
+/**
+ * TakeRuntimeBackupResponse
+ *
+ * Response body for taking a runtime backup.
+ */
+export type TakeRuntimeBackupResponse = {
+    /**
+     * The id of the backup that has been scheduled.
+     */
+    backupId: BackupId;
+};
+
+/**
+ * Backup Info
+ *
+ * Detailed status of a runtime backup. The aggregated state is computed from the backup
+ * state of each partition as:
+ * - If the backup of all partitions is 'COMPLETED', the overall state is 'COMPLETED'.
+ * - If one partition is 'FAILED', the overall state is 'FAILED'.
+ * - Otherwise, if one partition is 'DOES_NOT_EXIST', the overall state is 'INCOMPLETE'.
+ * - Otherwise, if one partition is 'IN_PROGRESS', the overall state is 'IN_PROGRESS'.
+ *
+ */
+export type BackupInfo = {
+    /**
+     * The id of the backup.
+     */
+    backupId: BackupId;
+    /**
+     * The aggregated state of the backup.
+     */
+    state: StateCode;
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * Detailed status of the backup per partition. Always contains every partition of
+     * the physical tenant.
+     *
+     */
+    readonly details: Array<PartitionBackupInfo>;
+};
+
+/**
+ * Partition Backup Info
+ *
+ * Detailed info of the backup for a given partition.
+ */
+export type PartitionBackupInfo = {
+    /**
+     * The id of the partition.
+     */
+    partitionId: PartitionId;
+    /**
+     * The state of the backup on this partition.
+     */
+    state: StateCode;
+    /**
+     * Failure reason if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * The timestamp at which the backup was started on this partition.
+     */
+    readonly createdAt: string | null;
+    /**
+     * The timestamp at which the backup was last updated on this partition, e.g. changed
+     * state from 'IN_PROGRESS' to 'COMPLETED'.
+     *
+     */
+    readonly lastUpdatedAt: string | null;
+    /**
+     * The id of the snapshot which is included in this backup.
+     */
+    readonly snapshotId: string | null;
+    /**
+     * The first log position included in this backup.
+     */
+    readonly firstLogPosition: number | null;
+    /**
+     * The position of the checkpoint for this backup.
+     */
+    readonly checkpointPosition: number | null;
+    /**
+     * The id of the broker from which the backup was taken for this partition.
+     */
+    readonly brokerId: number | null;
+    /**
+     * The version of the broker from which the backup was taken for this partition.
+     *
+     */
+    readonly brokerVersion: string | null;
+};
+
+/**
+ * Checkpoint Type
+ *
+ * The type of the checkpoint.
+ */
+export type CheckpointType = 'MARKER' | 'SCHEDULED_BACKUP' | 'MANUAL_BACKUP';
+
+/**
+ * Backup Type
+ *
+ * The type of the backup.
+ */
+export type BackupType = 'MANUAL_BACKUP' | 'SCHEDULED_BACKUP';
+
+/**
+ * Checkpoint ID
+ *
+ * The id of the checkpoint. Must be a non-negative numerical value. As checkpoints are
+ * logically ordered by their ids (ascending), each successive checkpoint must use a
+ * higher id than the previous one.
+ *
+ */
+export type CheckpointId = number;
+
+/**
+ * Partition Checkpoint State
+ *
+ * Detailed information about the checkpoint state for a given partition.
+ */
+export type PartitionCheckpointState = {
+    /**
+     * The id of the checkpoint.
+     */
+    checkpointId: CheckpointId;
+    /**
+     * The type of the checkpoint.
+     */
+    checkpointType: CheckpointType;
+    /**
+     * The id of the partition.
+     */
+    partitionId: PartitionId;
+    /**
+     * The log position of the checkpoint.
+     */
+    checkpointPosition: number;
+    /**
+     * The timestamp at which the checkpoint was created.
+     */
+    checkpointTimestamp: string;
+};
+
+/**
+ * Partition Backup State
+ *
+ * Detailed information about the backup state for a given partition.
+ */
+export type PartitionBackupState = {
+    /**
+     * The id of the checkpoint this backup is based on.
+     */
+    checkpointId: CheckpointId;
+    /**
+     * The type of the backup.
+     */
+    checkpointType: BackupType;
+    /**
+     * The id of the partition. Omitted when nested inside a backup range's `start`/`end`,
+     * where the partition is already identified by the enclosing range.
+     *
+     */
+    partitionId: PartitionId | null;
+    /**
+     * The log position of the checkpoint this backup is based on.
+     */
+    checkpointPosition: number;
+    /**
+     * The first log position included in this backup.
+     */
+    firstLogPosition: number;
+    /**
+     * The timestamp at which the checkpoint was created.
+     */
+    checkpointTimestamp: string;
+};
+
+/**
+ * Partition Backup Range
+ *
+ * Information about one backup range for a partition.
+ */
+export type PartitionBackupRange = {
+    /**
+     * The id of the partition.
+     */
+    partitionId: PartitionId;
+    /**
+     * The oldest backup in the range.
+     */
+    start: PartitionBackupState | null;
+    /**
+     * The newest backup in the range.
+     */
+    end: PartitionBackupState | null;
+};
+
+/**
+ * Runtime Backup State
+ *
+ * Information about the checkpoint and backup state of the physical tenant.
+ */
+export type RuntimeBackupState = {
+    /**
+     * List of partition checkpoint states.
+     */
+    checkpointStates: Array<PartitionCheckpointState>;
+    /**
+     * List of partition backup states.
+     */
+    backupStates: Array<PartitionBackupState>;
+    /**
+     * List of partition backup ranges.
+     */
+    ranges: Array<PartitionBackupRange>;
+};
+
+/**
  * The created batch operation.
  */
 export type BatchOperationCreatedResult = {
@@ -2367,6 +2635,11 @@ export type ClusterVariableSearchQueryResult = SearchQueryResponse & {
      */
     items: Array<ClusterVariableSearchResult>;
 };
+
+/**
+ * The operating mode of a cluster's partitions.
+ */
+export type Mode = 'PROCESSING' | 'RECOVERING';
 
 /**
  * The response of a topology request.
@@ -6217,11 +6490,7 @@ export type JobCompletionRequest = {
  * The result of the completed job as determined by the worker.
  *
  */
-export type JobResult = ({
-    type: 'userTask';
-} & JobResultUserTask) | ({
-    type: 'adHocSubProcess';
-} & JobResultAdHocSubProcess);
+export type JobResult = JobResultUserTask | JobResultAdHocSubProcess;
 
 /**
  * Job result details for a user task completion, optionally including a denial reason and corrected task properties.
@@ -8359,9 +8628,7 @@ export type ProcessInstanceCreationStartInstruction = {
     elementId: ElementId;
 };
 
-export type ProcessInstanceCreationRuntimeInstruction = {
-    type: 'TERMINATE_PROCESS_INSTANCE';
-} & ProcessInstanceCreationTerminateInstruction;
+export type ProcessInstanceCreationRuntimeInstruction = ProcessInstanceCreationTerminateInstruction;
 
 /**
  * Terminates the process instance after a specific BPMN element is completed or terminated.
@@ -9472,6 +9739,31 @@ export type SecretResolutionError = {
  *
  */
 export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE';
+
+/**
+ * Reserved for future filtering options. Currently takes no properties. The request body is
+ * optional: omitting it (or sending an empty object) applies no filters.
+ *
+ */
+export type SecretListRequest = {
+    [key: string]: never;
+};
+
+/**
+ * The secret references the caller is authorized to see.
+ *
+ * Unbounded for now: Phase 1's backend is mocked with at most 3 references. Pagination is
+ * expected to land here before GA, once a real secret store can return a tenant's full
+ * enumeration in one response. This is an alpha endpoint, so that is not yet a
+ * breaking-contract concern.
+ *
+ */
+export type SecretListResult = {
+    /**
+     * The secret references, each of the form `camunda.secrets.<name>`.
+     */
+    references: Array<string>;
+};
 
 export type SignalBroadcastRequest = {
     /**
@@ -10936,6 +11228,499 @@ export type ProcessInstanceStateExactMatch = ProcessInstanceStateEnum;
  */
 export type UserTaskStateExactMatch = UserTaskStateEnum;
 
+/**
+ * System-generated key for an authorization.
+ */
+export type AuthorizationKeyWritable = LongKey;
+
+/**
+ * Backup Info
+ *
+ * Detailed status of a runtime backup. The aggregated state is computed from the backup
+ * state of each partition as:
+ * - If the backup of all partitions is 'COMPLETED', the overall state is 'COMPLETED'.
+ * - If one partition is 'FAILED', the overall state is 'FAILED'.
+ * - Otherwise, if one partition is 'DOES_NOT_EXIST', the overall state is 'INCOMPLETE'.
+ * - Otherwise, if one partition is 'IN_PROGRESS', the overall state is 'IN_PROGRESS'.
+ *
+ */
+export type BackupInfoWritable = {
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+};
+
+/**
+ * Partition Backup Info
+ *
+ * Detailed info of the backup for a given partition.
+ */
+export type PartitionBackupInfoWritable = {
+    /**
+     * Failure reason if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+};
+
+/**
+ * System-generated key for a conditional evaluation.
+ */
+export type ConditionalEvaluationKeyWritable = LongKey;
+
+/**
+ * Key for a deployment.
+ */
+export type DeploymentKeyWritable = LongKey;
+
+/**
+ * The system-assigned key for this resource.
+ */
+export type ResourceKeyWritable = ProcessDefinitionKeyWritable | DecisionRequirementsKeyWritable | FormKeyWritable | DecisionDefinitionKeyWritable;
+
+/**
+ * List of user task event types that trigger the listener.
+ */
+export type GlobalTaskListenerEventTypesWritable = Array<GlobalTaskListenerEventTypeEnum>;
+
+/**
+ * List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
+ */
+export type TagSetWritable = Array<Tag>;
+
+/**
+ * System-generated key for a process instance.
+ */
+export type ProcessInstanceKeyWritable = LongKey;
+
+/**
+ * System-generated key for a deployed process definition.
+ */
+export type ProcessDefinitionKeyWritable = LongKey;
+
+/**
+ * System-generated key for a element instance.
+ */
+export type ElementInstanceKeyWritable = LongKey;
+
+/**
+ * System-generated key for a user task.
+ */
+export type UserTaskKeyWritable = LongKey;
+
+/**
+ * System-generated key for a deployed form.
+ */
+export type FormKeyWritable = LongKey;
+
+/**
+ * System-generated key for a variable.
+ */
+export type VariableKeyWritable = LongKey;
+
+/**
+ * System-generated key for a scope. A scope can hold variables and represents either an
+ * element instance in a BPMN process or the process instance itself.
+ *
+ */
+export type ScopeKeyWritable = ProcessInstanceKeyWritable | ElementInstanceKeyWritable;
+
+/**
+ * System-generated key for a incident.
+ */
+export type IncidentKeyWritable = LongKey;
+
+/**
+ * System-generated key for a job.
+ */
+export type JobKeyWritable = LongKey;
+
+/**
+ * System-generated key for a decision definition.
+ */
+export type DecisionDefinitionKeyWritable = LongKey;
+
+/**
+ * System-generated key for a decision evaluation.
+ */
+export type DecisionEvaluationKeyWritable = LongKey;
+
+/**
+ * System-generated key for a deployed decision requirements definition.
+ */
+export type DecisionRequirementsKeyWritable = LongKey;
+
+/**
+ * System-generated key for a deployed decision instance.
+ */
+export type DecisionInstanceKeyWritable = LongKey;
+
+/**
+ * System-generated key for an agent instance.
+ */
+export type AgentInstanceKeyWritable = LongKey;
+
+/**
+ * System-generated key for an agent history item.
+ */
+export type AgentHistoryItemKeyWritable = LongKey;
+
+/**
+ * System-generated key for an audit log entry.
+ */
+export type AuditLogKeyWritable = LongKey;
+
+/**
+ * System-generated key for a message subscription.
+ */
+export type MessageSubscriptionKeyWritable = LongKey;
+
+/**
+ * System-generated key for an message.
+ */
+export type MessageKeyWritable = LongKey;
+
+/**
+ * System-generated key for an signal.
+ */
+export type SignalKeyWritable = LongKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceStatusExactMatchWritable = AgentInstanceStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceHistoryRoleExactMatchWritable = AgentInstanceHistoryRoleEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceHistoryCommitStatusExactMatchWritable = AgentInstanceHistoryCommitStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogEntityKeyExactMatchWritable = AuditLogEntityKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type EntityTypeExactMatchWritable = AuditLogEntityTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type OperationTypeExactMatchWritable = AuditLogOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type CategoryExactMatchWritable = AuditLogCategoryEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogResultExactMatchWritable = AuditLogResultEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogActorTypeExactMatchWritable = AuditLogActorTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type BatchOperationTypeExactMatchWritable = BatchOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type BatchOperationStateExactMatchWritable = BatchOperationStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type BatchOperationItemStateExactMatchWritable = BatchOperationItemStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ClusterVariableScopeExactMatchWritable = ClusterVariableScopeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ClusterVariableKindExactMatchWritable = ClusterVariableKindEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionInstanceStateExactMatchWritable = DecisionInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DeploymentKeyExactMatchWritable = DeploymentKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ResourceKeyExactMatchWritable = ResourceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ElementInstanceStateExactMatchWritable = ElementInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type WaitStateElementTypeExactMatchWritable = WaitStateElementTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type WaitStateTypeExactMatchWritable = WaitStateTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type GlobalListenerSourceExactMatchWritable = GlobalListenerSourceEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type GlobalTaskListenerEventTypeExactMatchWritable = GlobalTaskListenerEventTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ElementIdExactMatchWritable = ElementId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessDefinitionIdExactMatchWritable = ProcessDefinitionId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type IncidentErrorTypeExactMatchWritable = IncidentErrorTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type IncidentStateExactMatchWritable = IncidentStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobKindExactMatchWritable = JobKindEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobListenerEventTypeExactMatchWritable = JobListenerEventTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobStateExactMatchWritable = JobStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessDefinitionKeyExactMatchWritable = ProcessDefinitionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessInstanceKeyExactMatchWritable = ProcessInstanceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ElementInstanceKeyExactMatchWritable = ElementInstanceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type JobKeyExactMatchWritable = JobKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionDefinitionKeyExactMatchWritable = DecisionDefinitionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ScopeKeyExactMatchWritable = ScopeKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type VariableKeyExactMatchWritable = VariableKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionEvaluationInstanceKeyExactMatchWritable = DecisionEvaluationInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentInstanceKeyExactMatchWritable = AgentInstanceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentHistoryItemKeyExactMatchWritable = AgentHistoryItemKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AuditLogKeyExactMatchWritable = AuditLogKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type FormKeyExactMatchWritable = FormKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionEvaluationKeyExactMatchWritable = DecisionEvaluationKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type DecisionRequirementsKeyExactMatchWritable = DecisionRequirementsKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type MessageSubscriptionTypeExactMatchWritable = MessageSubscriptionTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type MessageSubscriptionStateExactMatchWritable = MessageSubscriptionStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type MessageSubscriptionKeyExactMatchWritable = MessageSubscriptionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
 export type CreateAgentInstanceData = {
     body: AgentInstanceCreationRequest;
     path?: never;
@@ -10994,7 +11779,7 @@ export type GetAgentInstanceData = {
         /**
          * The key of the agent instance to retrieve.
          */
-        agentInstanceKey: AgentInstanceKey;
+        agentInstanceKey: AgentInstanceKeyWritable;
     };
     query?: never;
     url: '/agent-instances/{agentInstanceKey}';
@@ -11047,7 +11832,7 @@ export type UpdateAgentInstanceData = {
         /**
          * The key of the agent instance to update.
          */
-        agentInstanceKey: AgentInstanceKey;
+        agentInstanceKey: AgentInstanceKeyWritable;
     };
     query?: never;
     url: '/agent-instances/{agentInstanceKey}';
@@ -11132,7 +11917,7 @@ export type CreateAgentInstanceHistoryItemData = {
         /**
          * The key of the agent instance to append the history item to.
          */
-        agentInstanceKey: AgentInstanceKey;
+        agentInstanceKey: AgentInstanceKeyWritable;
     };
     query?: never;
     url: '/agent-instances/{agentInstanceKey}/history';
@@ -11186,7 +11971,7 @@ export type SearchAgentInstanceHistoryData = {
         /**
          * The key of the agent instance whose history to search.
          */
-        agentInstanceKey: AgentInstanceKey;
+        agentInstanceKey: AgentInstanceKeyWritable;
     };
     query?: never;
     url: '/agent-instances/{agentInstanceKey}/history/search';
@@ -11271,7 +12056,7 @@ export type GetAuditLogData = {
         /**
          * The audit log key.
          */
-        auditLogKey: AuditLogKey;
+        auditLogKey: AuditLogKeyWritable;
     };
     query?: never;
     url: '/audit-logs/{auditLogKey}';
@@ -11429,7 +12214,7 @@ export type DeleteAuthorizationData = {
         /**
          * The key of the authorization to delete.
          */
-        authorizationKey: AuthorizationKey;
+        authorizationKey: AuthorizationKeyWritable;
     };
     query?: never;
     url: '/authorizations/{authorizationKey}';
@@ -11472,7 +12257,7 @@ export type GetAuthorizationData = {
         /**
          * The key of the authorization to get.
          */
-        authorizationKey: AuthorizationKey;
+        authorizationKey: AuthorizationKeyWritable;
     };
     query?: never;
     url: '/authorizations/{authorizationKey}';
@@ -11514,7 +12299,7 @@ export type UpdateAuthorizationData = {
         /**
          * The key of the authorization to delete.
          */
-        authorizationKey: AuthorizationKey;
+        authorizationKey: AuthorizationKeyWritable;
     };
     query?: never;
     url: '/authorizations/{authorizationKey}';
@@ -11550,6 +12335,313 @@ export type UpdateAuthorizationResponses = {
 };
 
 export type UpdateAuthorizationResponse = UpdateAuthorizationResponses[keyof UpdateAuthorizationResponses];
+
+export type ListRuntimeBackupsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * A prefix that backup ids must match, ending in a single '*'. If omitted, all
+         * backups are returned.
+         *
+         */
+        prefix?: BackupIdPrefix;
+    };
+    url: '/backups/runtime';
+};
+
+export type ListRuntimeBackupsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ListRuntimeBackupsError = ListRuntimeBackupsErrors[keyof ListRuntimeBackupsErrors];
+
+export type ListRuntimeBackupsResponses = {
+    /**
+     * The list of runtime backups.
+     */
+    200: Array<BackupInfo>;
+};
+
+export type ListRuntimeBackupsResponse = ListRuntimeBackupsResponses[keyof ListRuntimeBackupsResponses];
+
+export type TakeRuntimeBackupData = {
+    body?: TakeRuntimeBackupRequest;
+    path?: never;
+    query?: never;
+    url: '/backups/runtime';
+};
+
+export type TakeRuntimeBackupErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * A backup with the same or a higher id already exists.
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+    /**
+     * The request from gateway to broker timed out.
+     */
+    504: ProblemDetail;
+};
+
+export type TakeRuntimeBackupError = TakeRuntimeBackupErrors[keyof TakeRuntimeBackupErrors];
+
+export type TakeRuntimeBackupResponses = {
+    /**
+     * The backup has been successfully scheduled.
+     */
+    202: TakeRuntimeBackupResponse;
+};
+
+export type TakeRuntimeBackupResponse2 = TakeRuntimeBackupResponses[keyof TakeRuntimeBackupResponses];
+
+export type DeleteRuntimeBackupStateData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/backups/runtime/state';
+};
+
+export type DeleteRuntimeBackupStateErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteRuntimeBackupStateError = DeleteRuntimeBackupStateErrors[keyof DeleteRuntimeBackupStateErrors];
+
+export type DeleteRuntimeBackupStateResponses = {
+    /**
+     * The runtime backup state has been successfully reset.
+     */
+    204: void;
+};
+
+export type DeleteRuntimeBackupStateResponse = DeleteRuntimeBackupStateResponses[keyof DeleteRuntimeBackupStateResponses];
+
+export type GetRuntimeBackupStateData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/backups/runtime/state';
+};
+
+export type GetRuntimeBackupStateErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetRuntimeBackupStateError = GetRuntimeBackupStateErrors[keyof GetRuntimeBackupStateErrors];
+
+export type GetRuntimeBackupStateResponses = {
+    /**
+     * The runtime backup state.
+     */
+    200: RuntimeBackupState;
+};
+
+export type GetRuntimeBackupStateResponse = GetRuntimeBackupStateResponses[keyof GetRuntimeBackupStateResponses];
+
+export type SyncRuntimeBackupStateData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/backups/runtime/state/sync';
+};
+
+export type SyncRuntimeBackupStateErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+    /**
+     * The request from gateway to broker timed out.
+     */
+    504: ProblemDetail;
+};
+
+export type SyncRuntimeBackupStateError = SyncRuntimeBackupStateErrors[keyof SyncRuntimeBackupStateErrors];
+
+export type SyncRuntimeBackupStateResponses = {
+    /**
+     * The updated runtime backup state.
+     */
+    200: RuntimeBackupState;
+};
+
+export type SyncRuntimeBackupStateResponse = SyncRuntimeBackupStateResponses[keyof SyncRuntimeBackupStateResponses];
+
+export type DeleteRuntimeBackupData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: never;
+    url: '/backups/runtime/{backupId}';
+};
+
+export type DeleteRuntimeBackupErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteRuntimeBackupError = DeleteRuntimeBackupErrors[keyof DeleteRuntimeBackupErrors];
+
+export type DeleteRuntimeBackupResponses = {
+    /**
+     * The backup has been successfully deleted.
+     */
+    204: void;
+};
+
+export type DeleteRuntimeBackupResponse = DeleteRuntimeBackupResponses[keyof DeleteRuntimeBackupResponses];
+
+export type GetRuntimeBackupData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: never;
+    url: '/backups/runtime/{backupId}';
+};
+
+export type GetRuntimeBackupErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * A backup with the given id does not exist.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetRuntimeBackupError = GetRuntimeBackupErrors[keyof GetRuntimeBackupErrors];
+
+export type GetRuntimeBackupResponses = {
+    /**
+     * The runtime backup.
+     */
+    200: BackupInfo;
+};
+
+export type GetRuntimeBackupResponse = GetRuntimeBackupResponses[keyof GetRuntimeBackupResponses];
 
 export type SearchBatchOperationItemsData = {
     body?: BatchOperationItemSearchQuery;
@@ -12431,7 +13523,7 @@ export type GetDecisionDefinitionData = {
         /**
          * The assigned key of the decision definition, which acts as a unique identifier for this decision.
          */
-        decisionDefinitionKey: DecisionDefinitionKey;
+        decisionDefinitionKey: DecisionDefinitionKeyWritable;
     };
     query?: never;
     url: '/decision-definitions/{decisionDefinitionKey}';
@@ -12478,7 +13570,7 @@ export type GetDecisionDefinitionXmlData = {
         /**
          * The assigned key of the decision definition, which acts as a unique identifier for this decision.
          */
-        decisionDefinitionKey: DecisionDefinitionKey;
+        decisionDefinitionKey: DecisionDefinitionKeyWritable;
     };
     query?: never;
     url: '/decision-definitions/{decisionDefinitionKey}/xml';
@@ -12609,7 +13701,7 @@ export type DeleteDecisionInstanceData = {
         /**
          * The key of the decision evaluation to delete.
          */
-        decisionEvaluationKey: DecisionEvaluationKey;
+        decisionEvaluationKey: DecisionEvaluationKeyWritable;
     };
     query?: never;
     url: '/decision-instances/{decisionEvaluationKey}/deletion';
@@ -12731,7 +13823,7 @@ export type GetDecisionRequirementsData = {
         /**
          * The assigned key of the decision requirements, which acts as a unique identifier for this decision requirements.
          */
-        decisionRequirementsKey: DecisionRequirementsKey;
+        decisionRequirementsKey: DecisionRequirementsKeyWritable;
     };
     query?: never;
     url: '/decision-requirements/{decisionRequirementsKey}';
@@ -12778,7 +13870,7 @@ export type GetDecisionRequirementsXmlData = {
         /**
          * The assigned key of the decision requirements, which acts as a unique identifier for this decision.
          */
-        decisionRequirementsKey: DecisionRequirementsKey;
+        decisionRequirementsKey: DecisionRequirementsKeyWritable;
     };
     query?: never;
     url: '/decision-requirements/{decisionRequirementsKey}/xml';
@@ -13079,7 +14171,7 @@ export type ActivateAdHocSubProcessActivitiesData = {
         /**
          * The key of the ad-hoc sub-process instance that contains the activities.
          */
-        adHocSubProcessInstanceKey: ElementInstanceKey;
+        adHocSubProcessInstanceKey: ElementInstanceKeyWritable;
     };
     query?: never;
     url: '/element-instances/ad-hoc-activities/{adHocSubProcessInstanceKey}/activation';
@@ -13204,7 +14296,7 @@ export type GetElementInstanceData = {
         /**
          * The assigned key of the element instance, which acts as a unique identifier for this element instance.
          */
-        elementInstanceKey: ElementInstanceKey;
+        elementInstanceKey: ElementInstanceKeyWritable;
     };
     query?: never;
     url: '/element-instances/{elementInstanceKey}';
@@ -13252,7 +14344,7 @@ export type SearchElementInstanceIncidentsData = {
         /**
          * The unique key of the element instance to search incidents for.
          */
-        elementInstanceKey: ElementInstanceKey;
+        elementInstanceKey: ElementInstanceKeyWritable;
     };
     query?: never;
     url: '/element-instances/{elementInstanceKey}/incidents/search';
@@ -13301,7 +14393,7 @@ export type CreateElementInstanceVariablesData = {
          * element, such as a service task (see the `elementInstanceKey` on the job message).
          *
          */
-        elementInstanceKey: ElementInstanceKey;
+        elementInstanceKey: ElementInstanceKeyWritable;
     };
     query?: never;
     url: '/element-instances/{elementInstanceKey}/variables';
@@ -13339,6 +14431,87 @@ export type CreateElementInstanceVariablesResponses = {
 };
 
 export type CreateElementInstanceVariablesResponse = CreateElementInstanceVariablesResponses[keyof CreateElementInstanceVariablesResponses];
+
+export type PauseExportingData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * If true, soft-pauses exporting instead of a hard pause.
+         */
+        soft?: boolean;
+    };
+    url: '/exporting/pause';
+};
+
+export type PauseExportingErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type PauseExportingError = PauseExportingErrors[keyof PauseExportingErrors];
+
+export type PauseExportingResponses = {
+    /**
+     * Exporting was successfully paused.
+     */
+    204: void;
+};
+
+export type PauseExportingResponse = PauseExportingResponses[keyof PauseExportingResponses];
+
+export type ResumeExportingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/exporting/resume';
+};
+
+export type ResumeExportingErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ResumeExportingError = ResumeExportingErrors[keyof ResumeExportingErrors];
+
+export type ResumeExportingResponses = {
+    /**
+     * Exporting was successfully resumed.
+     */
+    204: void;
+};
+
+export type ResumeExportingResponse = ResumeExportingResponses[keyof ResumeExportingResponses];
 
 export type EvaluateExpressionData = {
     body: ExpressionEvaluationRequest;
@@ -13383,7 +14556,7 @@ export type GetFormByKeyData = {
         /**
          * The form key.
          */
-        formKey: FormKey;
+        formKey: FormKeyWritable;
     };
     query?: never;
     url: '/forms/{formKey}';
@@ -14410,7 +15583,7 @@ export type GetIncidentData = {
         /**
          * The assigned key of the incident, which acts as a unique identifier for this incident.
          */
-        incidentKey: IncidentKey;
+        incidentKey: IncidentKeyWritable;
     };
     query?: never;
     url: '/incidents/{incidentKey}';
@@ -14456,7 +15629,7 @@ export type ResolveIncidentData = {
         /**
          * Key of the incident to resolve.
          */
-        incidentKey: IncidentKey;
+        incidentKey: IncidentKeyWritable;
     };
     query?: never;
     url: '/incidents/{incidentKey}/resolution';
@@ -14658,7 +15831,7 @@ export type UpdateJobData = {
         /**
          * The key of the job to update.
          */
-        jobKey: JobKey;
+        jobKey: JobKeyWritable;
     };
     query?: never;
     url: '/jobs/{jobKey}';
@@ -14706,7 +15879,7 @@ export type CompleteJobData = {
         /**
          * The key of the job to complete.
          */
-        jobKey: JobKey;
+        jobKey: JobKeyWritable;
     };
     query?: never;
     url: '/jobs/{jobKey}/completion';
@@ -14754,7 +15927,7 @@ export type ThrowJobErrorData = {
         /**
          * The key of the job.
          */
-        jobKey: JobKey;
+        jobKey: JobKeyWritable;
     };
     query?: never;
     url: '/jobs/{jobKey}/error';
@@ -14803,7 +15976,7 @@ export type FailJobData = {
         /**
          * The key of the job to fail.
          */
-        jobKey: JobKey;
+        jobKey: JobKeyWritable;
     };
     query?: never;
     url: '/jobs/{jobKey}/failure';
@@ -15550,7 +16723,7 @@ export type GetProcessDefinitionData = {
          * The assigned key of the process definition, which acts as a unique identifier for this process definition.
          *
          */
-        processDefinitionKey: ProcessDefinitionKey;
+        processDefinitionKey: ProcessDefinitionKeyWritable;
     };
     query?: never;
     url: '/process-definitions/{processDefinitionKey}';
@@ -15597,7 +16770,7 @@ export type GetStartProcessFormData = {
         /**
          * The process key.
          */
-        processDefinitionKey: ProcessDefinitionKey;
+        processDefinitionKey: ProcessDefinitionKeyWritable;
     };
     query?: never;
     url: '/process-definitions/{processDefinitionKey}/form';
@@ -15647,7 +16820,7 @@ export type GetProcessDefinitionStatisticsData = {
         /**
          * The assigned key of the process definition, which acts as a unique identifier for this process definition.
          */
-        processDefinitionKey: ProcessDefinitionKey;
+        processDefinitionKey: ProcessDefinitionKeyWritable;
     };
     query?: never;
     url: '/process-definitions/{processDefinitionKey}/statistics/element-instances';
@@ -15689,7 +16862,7 @@ export type SearchProcessDefinitionVariableNamesData = {
         /**
          * The assigned key of the process definition, which acts as a unique identifier for this process definition.
          */
-        processDefinitionKey: ProcessDefinitionKey;
+        processDefinitionKey: ProcessDefinitionKeyWritable;
     };
     query?: never;
     url: '/process-definitions/{processDefinitionKey}/variable-names/search';
@@ -15732,7 +16905,7 @@ export type GetProcessDefinitionXmlData = {
          * The assigned key of the process definition, which acts as a unique identifier for this process definition.
          *
          */
-        processDefinitionKey: ProcessDefinitionKey;
+        processDefinitionKey: ProcessDefinitionKeyWritable;
     };
     query?: never;
     url: '/process-definitions/{processDefinitionKey}/xml';
@@ -16174,7 +17347,7 @@ export type GetProcessInstanceData = {
         /**
          * The process instance key.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}';
@@ -16220,7 +17393,7 @@ export type AssignProcessInstanceBusinessIdData = {
         /**
          * The key of the process instance to assign the business id to.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/business-id-assignment';
@@ -16268,7 +17441,7 @@ export type GetProcessInstanceCallHierarchyData = {
         /**
          * The key of the process instance to fetch the hierarchy for.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/call-hierarchy';
@@ -16314,7 +17487,7 @@ export type CancelProcessInstanceData = {
         /**
          * The key of the process instance to cancel.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/cancellation';
@@ -16363,7 +17536,7 @@ export type DeleteProcessInstanceData = {
         /**
          * The key of the process instance to delete.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/deletion';
@@ -16414,7 +17587,7 @@ export type ResolveProcessInstanceIncidentsData = {
         /**
          * The key of the process instance to resolve incidents for.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/incident-resolution';
@@ -16461,7 +17634,7 @@ export type SearchProcessInstanceIncidentsData = {
         /**
          * The assigned key of the process instance, which acts as a unique identifier for this process instance.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/incidents/search';
@@ -16507,7 +17680,7 @@ export type MigrateProcessInstanceData = {
         /**
          * The key of the process instance that should be migrated.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/migration';
@@ -16555,7 +17728,7 @@ export type ModifyProcessInstanceData = {
         /**
          * The key of the process instance that should be modified.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/modification';
@@ -16598,7 +17771,7 @@ export type ResumeProcessInstanceData = {
         /**
          * The key of the process instance to resume.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/resumption';
@@ -16647,7 +17820,7 @@ export type GetProcessInstanceSequenceFlowsData = {
         /**
          * The assigned key of the process instance, which acts as a unique identifier for this process instance.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/sequence-flows';
@@ -16689,7 +17862,7 @@ export type GetProcessInstanceStatisticsData = {
         /**
          * The assigned key of the process instance, which acts as a unique identifier for this process instance.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/statistics/element-instances';
@@ -16731,7 +17904,7 @@ export type GetProcessInstanceWaitStateStatisticsData = {
         /**
          * The assigned key of the process instance, which acts as a unique identifier for this process instance.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/statistics/wait-states';
@@ -16773,7 +17946,7 @@ export type SuspendProcessInstanceData = {
         /**
          * The key of the process instance to suspend.
          */
-        processInstanceKey: ProcessInstanceKey;
+        processInstanceKey: ProcessInstanceKeyWritable;
     };
     query?: never;
     url: '/process-instances/{processInstanceKey}/suspension';
@@ -16859,7 +18032,7 @@ export type GetResourceData = {
         /**
          * The unique key identifying the resource.
          */
-        resourceKey: ResourceKey;
+        resourceKey: ResourceKeyWritable;
     };
     query?: never;
     url: '/resources/{resourceKey}';
@@ -16893,7 +18066,7 @@ export type GetResourceContentData = {
         /**
          * The unique key identifying the RPA resource.
          */
-        resourceKey: ResourceKey;
+        resourceKey: ResourceKeyWritable;
     };
     query?: never;
     url: '/resources/{resourceKey}/content';
@@ -16933,7 +18106,7 @@ export type GetResourceContentBinaryData = {
         /**
          * The unique key identifying the resource.
          */
-        resourceKey: ResourceKey;
+        resourceKey: ResourceKeyWritable;
     };
     query?: never;
     url: '/resources/{resourceKey}/content/binary';
@@ -16970,7 +18143,7 @@ export type DeleteResourceData = {
          * definition or the key of a form definition
          *
          */
-        resourceKey: ResourceKey;
+        resourceKey: ResourceKeyWritable;
     };
     query?: never;
     url: '/resources/{resourceKey}/deletion';
@@ -17870,6 +19043,44 @@ export type ResolveSecretsResponses = {
 
 export type ResolveSecretsResponse = ResolveSecretsResponses[keyof ResolveSecretsResponses];
 
+export type ListSecretsData = {
+    body?: SecretListRequest;
+    path?: never;
+    query?: never;
+    url: '/secrets/list';
+};
+
+export type ListSecretsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ListSecretsError = ListSecretsErrors[keyof ListSecretsErrors];
+
+export type ListSecretsResponses = {
+    /**
+     * The references the caller is authorized to see.
+     */
+    200: SecretListResult;
+};
+
+export type ListSecretsResponse = ListSecretsResponses[keyof ListSecretsResponses];
+
 export type CreateAdminUserData = {
     body: UserRequest;
     path?: never;
@@ -17959,14 +19170,14 @@ export type GetStatusData = {
 
 export type GetStatusErrors = {
     /**
-     * The cluster is DOWN and does not have any partition with a healthy leader.
+     * The default physical tenant is DOWN and does not have any partition with a healthy leader.
      */
     503: unknown;
 };
 
 export type GetStatusResponses = {
     /**
-     * The cluster is UP and has at least one partition with a healthy leader.
+     * The default physical tenant is UP and has at least one partition with a healthy leader.
      */
     204: void;
 };
@@ -18934,7 +20145,7 @@ export type ChangeClusterModeData = {
         /**
          * The target cluster mode.
          */
-        mode: 'PROCESSING' | 'RECOVERING';
+        mode: Mode;
         /**
          * If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.
          */
@@ -19264,7 +20475,7 @@ export type GetUserTaskData = {
         /**
          * The user task key.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}';
@@ -19310,7 +20521,7 @@ export type UpdateUserTaskData = {
         /**
          * The key of the user task to update.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}';
@@ -19364,7 +20575,7 @@ export type UnassignUserTaskData = {
         /**
          * The key of the user task.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}/assignee';
@@ -19418,7 +20629,7 @@ export type AssignUserTaskData = {
         /**
          * The key of the user task to assign.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}/assignment';
@@ -19472,7 +20683,7 @@ export type SearchUserTaskAuditLogsData = {
         /**
          * The key of the user task.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}/audit-logs/search';
@@ -19506,7 +20717,7 @@ export type CompleteUserTaskData = {
         /**
          * The key of the user task to complete.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}/completion';
@@ -19560,7 +20771,7 @@ export type SearchUserTaskEffectiveVariablesData = {
         /**
          * The key of the user task.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: {
         /**
@@ -19599,7 +20810,7 @@ export type GetUserTaskFormData = {
         /**
          * The user task key.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: never;
     url: '/user-tasks/{userTaskKey}/form';
@@ -19649,7 +20860,7 @@ export type SearchUserTaskVariablesData = {
         /**
          * The key of the user task.
          */
-        userTaskKey: UserTaskKey;
+        userTaskKey: UserTaskKeyWritable;
     };
     query?: {
         /**
@@ -19730,7 +20941,7 @@ export type GetVariableData = {
         /**
          * The variable key.
          */
-        variableKey: VariableKey;
+        variableKey: VariableKeyWritable;
     };
     query?: never;
     url: '/variables/{variableKey}';
@@ -19773,7 +20984,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:dc1ef7b1e5da255e2693943a9869f29fbca4ce5250eface7865437c113284d5f
+// specHash=sha256:a7939e6269dd779f0b706ea2869d62646eeec0b54b8f35cb0f8185da92e84a9d
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

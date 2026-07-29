@@ -1437,6 +1437,13 @@
       "label": "Resolve secrets"
     }
   ],
+  "listSecrets": [
+    {
+      "file": "secret.ts",
+      "region": "ListSecrets",
+      "label": "List secret references"
+    }
+  ],
   "takeRuntimeBackup": [
     {
       "file": "backup.ts",

@@ -1,7 +1,7 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignProcessInstanceBusinessId as _assignProcessInstanceBusinessId, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, changeClusterMode as _changeClusterMode, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAgentInstance as _createAgentInstance, createAgentInstanceHistoryItem as _createAgentInstanceHistoryItem, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAgentInstance as _getAgentInstance, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getFormByKey as _getFormByKey, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getProcessInstanceWaitStateStatistics as _getProcessInstanceWaitStateStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getResourceContentBinary as _getResourceContentBinary, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resolveSecrets as _resolveSecrets, restore as _restore, resumeBatchOperation as _resumeBatchOperation, resumeProcessInstance as _resumeProcessInstance, resumeProcessInstancesBatchOperation as _resumeProcessInstancesBatchOperation, searchAgentInstanceHistory as _searchAgentInstanceHistory, searchAgentInstances as _searchAgentInstances, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchElementInstanceWaitStates as _searchElementInstanceWaitStates, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessDefinitionVariableNames as _searchProcessDefinitionVariableNames, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchResources as _searchResources, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, suspendProcessInstance as _suspendProcessInstance, suspendProcessInstancesBatchOperation as _suspendProcessInstancesBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAgentInstance as _updateAgentInstance, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateJobsBatchOperation as _updateJobsBatchOperation, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
-import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAgentInstanceData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, ResolveSecretsData, RestoreData, ResumeProcessInstancesBatchOperationData, SearchAgentInstancesData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchElementInstanceWaitStatesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchResourcesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData, SuspendProcessInstancesBatchOperationData, UpdateJobsBatchOperationData } from '../gen/types.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignProcessInstanceBusinessId as _assignProcessInstanceBusinessId, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, changeClusterMode as _changeClusterMode, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAgentInstance as _createAgentInstance, createAgentInstanceHistoryItem as _createAgentInstanceHistoryItem, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteRuntimeBackup as _deleteRuntimeBackup, deleteRuntimeBackupState as _deleteRuntimeBackupState, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAgentInstance as _getAgentInstance, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getFormByKey as _getFormByKey, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getProcessInstanceWaitStateStatistics as _getProcessInstanceWaitStateStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getResourceContentBinary as _getResourceContentBinary, getRole as _getRole, getRuntimeBackup as _getRuntimeBackup, getRuntimeBackupState as _getRuntimeBackupState, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, listRuntimeBackups as _listRuntimeBackups, listSecrets as _listSecrets, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pauseExporting as _pauseExporting, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resolveSecrets as _resolveSecrets, restore as _restore, resumeBatchOperation as _resumeBatchOperation, resumeExporting as _resumeExporting, resumeProcessInstance as _resumeProcessInstance, resumeProcessInstancesBatchOperation as _resumeProcessInstancesBatchOperation, searchAgentInstanceHistory as _searchAgentInstanceHistory, searchAgentInstances as _searchAgentInstances, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchElementInstanceWaitStates as _searchElementInstanceWaitStates, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessDefinitionVariableNames as _searchProcessDefinitionVariableNames, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchResources as _searchResources, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, suspendProcessInstance as _suspendProcessInstance, suspendProcessInstancesBatchOperation as _suspendProcessInstancesBatchOperation, syncRuntimeBackupState as _syncRuntimeBackupState, takeRuntimeBackup as _takeRuntimeBackup, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAgentInstance as _updateAgentInstance, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateJobsBatchOperation as _updateJobsBatchOperation, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAgentInstanceData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, ListSecretsData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, ResolveSecretsData, RestoreData, ResumeProcessInstancesBatchOperationData, SearchAgentInstancesData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchElementInstanceWaitStatesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchResourcesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData, SuspendProcessInstancesBatchOperationData, TakeRuntimeBackupData, UpdateJobsBatchOperationData } from '../gen/types.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
 // Lightweight CancelablePromise implementation (local to facade)
@@ -1024,6 +1024,25 @@ export function getProcessInstanceStatisticsByError(body: _getProcessInstanceSta
   if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
   const invoke = () => toCancelable(signal => _getProcessInstanceStatisticsByError({ body, signal }).then((r:any)=> (r as any).data));
   return eventualPoll('getProcessInstanceStatisticsByError', false, invoke, ec.consistency);
+}
+
+type _listSecrets_Body = ListSecretsData extends { body?: infer B } ? B : never;
+/**
+ * List secrets (alpha)
+ *
+ * List the `camunda.secrets.*` references known for the caller's physical tenant.
+ *
+ * Only references the caller holds `SECRET:READ` on are returned. This endpoint never
+ * returns secret values, only the reference names.
+ *
+ * This endpoint is an alpha feature and may be subject to change in future releases.
+ *
+  *
+ * @operationId listSecrets
+ * @tags Secret
+ */
+export function listSecrets(body: _listSecrets_Body): CancelablePromise<_DataOf<typeof _listSecrets>> {
+  return toCancelable(signal => _listSecrets({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _migrateProcessInstancesBatchOperation_Body = MigrateProcessInstancesBatchOperationData extends { body?: infer B } ? B : never;
@@ -2224,6 +2243,37 @@ export function suspendProcessInstancesBatchOperation(body: _suspendProcessInsta
   return toCancelable(signal => _suspendProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
+type _takeRuntimeBackup_Body = TakeRuntimeBackupData extends { body?: infer B } ? B : never;
+/**
+ * Take a runtime backup
+ *
+ * Triggers a backup of runtime data on all partitions of the physical tenant.
+ *
+ * The `backupId` must be omitted if continuous backups and/or a backup or checkpoint
+ * schedule is enabled for the physical tenant, as the id is generated automatically.
+ * Otherwise, `backupId` is required.
+ *
+  *
+ * @example Take a runtime backup
+ * ```ts
+ * async function takeRuntimeBackupExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Omit `backupId` when continuous backups or a backup/checkpoint schedule is
+ *   // enabled for the physical tenant — the id is then generated by the cluster.
+ *   // Otherwise `backupId` is required and must be higher than any existing one.
+ *   const backup = await camunda.takeRuntimeBackup({ backupId: 100 });
+ * 
+ *   console.log(`Scheduled backup ${backup.backupId}`);
+ * }
+ * ```
+ * @operationId takeRuntimeBackup
+ * @tags Backup
+ */
+export function takeRuntimeBackup(body: _takeRuntimeBackup_Body): CancelablePromise<_DataOf<typeof _takeRuntimeBackup>> {
+  return toCancelable(signal => _takeRuntimeBackup({ body, signal }).then((r:any)=> (r as any).data));
+}
+
 type _updateJobsBatchOperation_Body = UpdateJobsBatchOperationData extends { body?: infer B } ? B : never;
 /**
  * Update jobs (batch)
@@ -3182,6 +3232,51 @@ export function deleteResource(options?: Parameters<typeof _deleteResource>[0]):
  */
 export function deleteRole(options?: Parameters<typeof _deleteRole>[0]): CancelablePromise<_DataOf<typeof _deleteRole>> {
   return toCancelable(signal => _deleteRole({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Delete runtime backup
+ *
+ * Deletes the runtime backup with the given id.
+  *
+ * @example Delete a runtime backup
+ * ```ts
+ * async function deleteRuntimeBackupExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.deleteRuntimeBackup({ backupId: 100 });
+ * }
+ * ```
+ * @operationId deleteRuntimeBackup
+ * @tags Backup
+ */
+export function deleteRuntimeBackup(options?: Parameters<typeof _deleteRuntimeBackup>[0]): CancelablePromise<_DataOf<typeof _deleteRuntimeBackup>> {
+  return toCancelable(signal => _deleteRuntimeBackup({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Delete runtime backup state
+ *
+ * Resets the runtime backup state of every partition of the physical tenant, clearing
+ * all checkpoint info, backup info, checkpoint metadata, and backup ranges. Used when
+ * switching backup stores.
+ *
+  *
+ * @example Delete the runtime backup state
+ * ```ts
+ * async function deleteRuntimeBackupStateExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Clears all checkpoint info, backup info, checkpoint metadata, and backup
+ *   // ranges on every partition. Used when switching backup stores.
+ *   await camunda.deleteRuntimeBackupState();
+ * }
+ * ```
+ * @operationId deleteRuntimeBackupState
+ * @tags Backup
+ */
+export function deleteRuntimeBackupState(options?: Parameters<typeof _deleteRuntimeBackupState>[0]): CancelablePromise<_DataOf<typeof _deleteRuntimeBackupState>> {
+  return toCancelable(signal => _deleteRuntimeBackupState({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -4235,6 +4330,66 @@ export function getRole(options: Parameters<typeof _getRole>[0] | undefined, ec:
 }
 
 /**
+ * Get runtime backup
+ *
+ * Returns detailed status of the runtime backup with the given id.
+  *
+ * @example Get a runtime backup
+ * ```ts
+ * async function getRuntimeBackupExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const backup = await camunda.getRuntimeBackup({ backupId: 100 });
+ * 
+ *   console.log(`Backup ${backup.backupId}: ${backup.state}`);
+ *   for (const partition of backup.details) {
+ *     console.log(`  Partition ${partition.partitionId}: ${partition.state}`);
+ *   }
+ * }
+ * ```
+ * @operationId getRuntimeBackup
+ * @tags Backup
+ */
+export function getRuntimeBackup(options?: Parameters<typeof _getRuntimeBackup>[0]): CancelablePromise<_DataOf<typeof _getRuntimeBackup>> {
+  return toCancelable(signal => _getRuntimeBackup({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Get runtime backup state
+ *
+ * Returns the current checkpoint and backup state of every partition of the physical
+ * tenant. Unlike the `backupRuntime` actuator, this fails the whole request if the
+ * checkpoint state or the backup ranges cannot be retrieved from any partition, instead
+ * of silently returning an empty section.
+ *
+  *
+ * @example Get the runtime backup state
+ * ```ts
+ * async function getRuntimeBackupStateExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const state = await camunda.getRuntimeBackupState();
+ * 
+ *   for (const checkpoint of state.checkpointStates) {
+ *     console.log(
+ *       `Partition ${checkpoint.partitionId} checkpoint ${checkpoint.checkpointId} (${checkpoint.checkpointType})`
+ *     );
+ *   }
+ *   for (const range of state.ranges) {
+ *     console.log(
+ *       `Partition ${range.partitionId} range: ${range.start?.checkpointId} -> ${range.end?.checkpointId}`
+ *     );
+ *   }
+ * }
+ * ```
+ * @operationId getRuntimeBackupState
+ * @tags Backup
+ */
+export function getRuntimeBackupState(options?: Parameters<typeof _getRuntimeBackupState>[0]): CancelablePromise<_DataOf<typeof _getRuntimeBackupState>> {
+  return toCancelable(signal => _getRuntimeBackupState({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Get process start form
  *
  * Get the start form of a process.
@@ -4268,9 +4423,9 @@ export function getStartProcessForm(options: Parameters<typeof _getStartProcessF
 }
 
 /**
- * Get cluster status
+ * Get physical tenant status
  *
- * Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
+ * Checks the health status of the default physical tenant by verifying if there's at least one partition of its group with a healthy leader. This endpoint is scoped to the default physical tenant only: it is available unprefixed and at `/physical-tenants/default/v2/status`, but not for any other physical tenant id (`/physical-tenants/{id}/v2/status` returns 404 for every other id, whether or not a physical tenant with that id exists). If the cluster has only a single physical tenant (the default), this endpoint is equivalent to `/cluster/v2/status`. Use `/cluster/v2/status` for the aggregated status of the whole cluster, or `/physical-tenants/{id}/v2/topology` for the health of a specific physical tenant's partitions.
   *
  * @example Check cluster status
  * ```ts
@@ -4551,6 +4706,33 @@ export function getVariable(options: Parameters<typeof _getVariable>[0] | undefi
 }
 
 /**
+ * List runtime backups
+ *
+ * Returns a list of all available runtime backups of the physical tenant, with their
+ * state and additional info, sorted in descending order of backupId.
+ *
+  *
+ * @example List runtime backups
+ * ```ts
+ * async function listRuntimeBackupsExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // `prefix` must end in a single '*'. Omit it to list every backup.
+ *   const backups = await camunda.listRuntimeBackups({ prefix: '10*' });
+ * 
+ *   for (const backup of backups) {
+ *     console.log(`Backup ${backup.backupId}: ${backup.state}`);
+ *   }
+ * }
+ * ```
+ * @operationId listRuntimeBackups
+ * @tags Backup
+ */
+export function listRuntimeBackups(options?: Parameters<typeof _listRuntimeBackups>[0]): CancelablePromise<_DataOf<typeof _listRuntimeBackups>> {
+  return toCancelable(signal => _listRuntimeBackups({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Migrate process instance
  *
  * Migrates a process instance to a new process definition.
@@ -4623,6 +4805,36 @@ export function migrateProcessInstance(options?: Parameters<typeof _migrateProce
  */
 export function modifyProcessInstance(options?: Parameters<typeof _modifyProcessInstance>[0]): CancelablePromise<_DataOf<typeof _modifyProcessInstance>> {
   return toCancelable(signal => _modifyProcessInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Pause exporting
+ *
+ * Pauses exporting on all partitions of the physical tenant. While paused, exported records
+ * are not committed, so the log is not compacted for the affected partitions.
+ *
+ * With `soft=true`, exporting continues to run but its position is not committed, so the
+ * state after resuming is identical to a hard pause; use this variant when exporting must
+ * keep progressing (e.g. to avoid falling behind) while still preventing log compaction,
+ * such as during a backup.
+ *
+  *
+ * @example Pause exporting
+ * ```ts
+ * async function pauseExportingExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // With `soft: true` exporting keeps running but its position is not committed,
+ *   // so the log is still not compacted — use it when exporting must keep
+ *   // progressing, for example while a backup is taken.
+ *   await camunda.pauseExporting({ soft: true });
+ * }
+ * ```
+ * @operationId pauseExporting
+ * @tags Exporting
+ */
+export function pauseExporting(options?: Parameters<typeof _pauseExporting>[0]): CancelablePromise<_DataOf<typeof _pauseExporting>> {
+  return toCancelable(signal => _pauseExporting({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -4717,6 +4929,27 @@ export function resolveProcessInstanceIncidents(options?: Parameters<typeof _res
  */
 export function resumeBatchOperation(options?: Parameters<typeof _resumeBatchOperation>[0]): CancelablePromise<_DataOf<typeof _resumeBatchOperation>> {
   return toCancelable(signal => _resumeBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Resume exporting
+ *
+ * Resumes exporting on all partitions of the physical tenant after a pause or soft pause.
+ *
+  *
+ * @example Resume exporting
+ * ```ts
+ * async function resumeExportingExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.resumeExporting();
+ * }
+ * ```
+ * @operationId resumeExporting
+ * @tags Exporting
+ */
+export function resumeExporting(options?: Parameters<typeof _resumeExporting>[0]): CancelablePromise<_DataOf<typeof _resumeExporting>> {
+  return toCancelable(signal => _resumeExporting({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -5519,6 +5752,33 @@ export function suspendProcessInstance(options?: Parameters<typeof _suspendProce
 }
 
 /**
+ * Force-write runtime backup state
+ *
+ * Force-writes the checkpoint and backup metadata of every partition of the physical
+ * tenant to the backup store, independent of any backup being taken or confirmed, and
+ * returns the updated state.
+ *
+  *
+ * @example Force-write the runtime backup state
+ * ```ts
+ * async function syncRuntimeBackupStateExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Force-writes checkpoint and backup metadata of every partition to the backup
+ *   // store, independent of any backup being taken, and returns the updated state.
+ *   const state = await camunda.syncRuntimeBackupState();
+ * 
+ *   console.log(`Synced ${state.backupStates.length} partition backup states`);
+ * }
+ * ```
+ * @operationId syncRuntimeBackupState
+ * @tags Backup
+ */
+export function syncRuntimeBackupState(options?: Parameters<typeof _syncRuntimeBackupState>[0]): CancelablePromise<_DataOf<typeof _syncRuntimeBackupState>> {
+  return toCancelable(signal => _syncRuntimeBackupState({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Throw error for job
  *
  * Reports a business error (i.e. non-technical) that occurs while processing a job.
@@ -6169,4 +6429,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=df299377e1b45d17 totalWrappers=204 elements=1298 physicalLines=3252
+// SENTINEL_FACADE_PREWRITE hash=f452944fee9802f7 totalWrappers=214 elements=1350 physicalLines=3405
