@@ -6016,6 +6016,15 @@ export type ProcessDefinitionFilter = {
      * Indicates whether the start event of the process has an associated Form Key.
      */
     hasStartForm?: boolean;
+    /**
+     * Filter by the process definition's state.
+     * When not set, process definitions in any state are returned.
+     * Set to `ACTIVE` to exclude deleted definitions (recommended for most use cases).
+     * Set to `DELETED` to return only definitions that have been deleted but are still
+     * retained in secondary storage.
+     *
+     */
+    state?: 'ACTIVE' | 'DELETED';
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -6058,6 +6067,10 @@ export type ProcessDefinitionResult = {
      * Indicates whether the start event of the process has an associated Form Key.
      */
     hasStartForm: boolean;
+    /**
+     * The state of this process definition.
+     */
+    state: 'ACTIVE' | 'DELETED';
 };
 
 /**
@@ -9366,6 +9379,10 @@ export type CreateGlobalClusterVariableErrors = {
      */
     403: ProblemDetail;
     /**
+     * A cluster variable with this name already exists.
+     */
+    409: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -9591,6 +9608,10 @@ export type CreateTenantClusterVariableErrors = {
      * The tenant with the given ID was not found.
      */
     404: ProblemDetail;
+    /**
+     * A cluster variable with this name already exists for the given tenant.
+     */
+    409: ProblemDetail;
     /**
      * An internal error occurred while processing the request.
      */
@@ -16871,7 +16892,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:fe524536c89d236f85a390f5877becc6d497fe83c039dcb2f58f8805269bcd44
+// specHash=sha256:186417ed34bb227df96548b0cdeeaa8e8941ebf743d209ba75717a39ac06ef76
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

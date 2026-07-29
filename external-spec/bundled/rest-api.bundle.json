@@ -979,6 +979,16 @@
           "403": {
             "$ref": "#/paths/~1roles/post/responses/403"
           },
+          "409": {
+            "description": "A cluster variable with this name already exists.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
           "500": {
             "$ref": "#/paths/~1clock/put/responses/500"
           }
@@ -1264,6 +1274,16 @@
           },
           "404": {
             "description": "The tenant with the given ID was not found.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A cluster variable with this name already exists for the given tenant.",
             "content": {
               "application/problem+json": {
                 "schema": {
@@ -21746,8 +21766,22 @@
           "hasStartForm": {
             "description": "Indicates whether the start event of the process has an associated Form Key.",
             "type": "boolean"
+          },
+          "state": {
+            "description": "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n",
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DELETED"
+            ]
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "state",
+            "addedInVersion": "8.9.14"
+          }
+        ]
       },
       "ProcessDefinitionSearchQueryResult": {
         "type": "object",
@@ -21779,7 +21813,8 @@
           "versionTag",
           "processDefinitionId",
           "tenantId",
-          "hasStartForm"
+          "hasStartForm",
+          "state"
         ],
         "properties": {
           "name": {
@@ -21828,8 +21863,22 @@
           "hasStartForm": {
             "description": "Indicates whether the start event of the process has an associated Form Key.",
             "type": "boolean"
+          },
+          "state": {
+            "description": "The state of this process definition.",
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DELETED"
+            ]
           }
-        }
+        },
+        "x-properties-added-in-version": [
+          {
+            "propertyName": "state",
+            "addedInVersion": "8.9.14"
+          }
+        ]
       },
       "ProcessDefinitionElementStatisticsQuery": {
         "description": "Process definition element statistics request.",

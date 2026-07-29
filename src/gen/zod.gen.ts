@@ -3630,6 +3630,12 @@ export const zProcessDefinitionFilter = z.object({
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    })),
+    state: z.optional(z.enum([
+        'ACTIVE',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n"
     }))
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -3655,6 +3661,12 @@ export const zProcessDefinitionResult = z.object({
     processDefinitionKey: zProcessDefinitionKey,
     hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    }),
+    state: z.enum([
+        'ACTIVE',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: 'The state of this process definition.'
     })
 });
 
