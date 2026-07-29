@@ -1,3 +1,11 @@
+## [9.1.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.3...v9.1.4) (2026-07-29)
+
+
+### Bug Fixes
+
+* **ci:** pin @semantic-release/github to 11.x to unblock releases ([fd07350](https://github.com/camunda/orchestration-cluster-api-js/commit/fd07350832c2cd35341bb9e50070222905c77479))
+* **ci:** pin @semantic-release/github to 11.x to unblock releases ([4a8b8ee](https://github.com/camunda/orchestration-cluster-api-js/commit/4a8b8eee9aa3972e9c64cbca22eb63c349074ade)), closes [#377](https://github.com/camunda/orchestration-cluster-api-js/issues/377)
+
 ## [9.1.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.2...v9.1.3) (2026-07-29)
 
 
