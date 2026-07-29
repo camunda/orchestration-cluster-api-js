@@ -520,6 +520,225 @@ export const zAuthorizationFilter = z.object({
     description: 'Authorization search filter.'
 });
 
+/**
+ * Backup ID
+ *
+ * The id of the backup. Must be a positive numerical value. As backups are logically
+ * ordered by their ids (ascending), each successive backup must use a higher id than the
+ * previous one.
+ *
+ */
+export const zBackupId = z.coerce.number().int().gte(1).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+    description: 'The id of the backup. Must be a positive numerical value. As backups are logically\nordered by their ids (ascending), each successive backup must use a higher id than the\nprevious one.\n'
+});
+
+/**
+ * Backup ID Prefix
+ *
+ * A prefix of a backup id, followed by a single '*' as a wildcard, matching any backup id
+ * starting with the given prefix.
+ *
+ */
+export const zBackupIdPrefix = z.string().regex(/^\d*\*$/).register(z.globalRegistry, {
+    description: 'A prefix of a backup id, followed by a single \'*\' as a wildcard, matching any backup id\nstarting with the given prefix.\n'
+});
+
+/**
+ * Partition ID
+ *
+ * The id of a partition. Always a positive number greater than or equal to 1.
+ */
+export const zPartitionId = z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+    description: 'The id of a partition. Always a positive number greater than or equal to 1.'
+});
+
+/**
+ * Runtime Backup State
+ *
+ * The aggregated state of the backup, computed from the state of each partition.
+ */
+export const zStateCode = z.enum([
+    'DOES_NOT_EXIST',
+    'IN_PROGRESS',
+    'COMPLETED',
+    'FAILED',
+    'INCOMPLETE',
+    'DELETED'
+]).register(z.globalRegistry, {
+    description: 'The aggregated state of the backup, computed from the state of each partition.'
+});
+
+/**
+ * TakeRuntimeBackupRequest
+ *
+ * Request body for taking a runtime backup.
+ */
+export const zTakeRuntimeBackupRequest = z.object({
+    backupId: zBackupId.nullish()
+}).register(z.globalRegistry, {
+    description: 'Request body for taking a runtime backup.'
+});
+
+/**
+ * TakeRuntimeBackupResponse
+ *
+ * Response body for taking a runtime backup.
+ */
+export const zTakeRuntimeBackupResponse = z.object({
+    backupId: zBackupId
+}).register(z.globalRegistry, {
+    description: 'Response body for taking a runtime backup.'
+});
+
+/**
+ * Partition Backup Info
+ *
+ * Detailed info of the backup for a given partition.
+ */
+export const zPartitionBackupInfo = z.object({
+    partitionId: zPartitionId,
+    state: zStateCode,
+    failureReason: z.string().nullable(),
+    createdAt: z.iso.datetime().readonly().nullable(),
+    lastUpdatedAt: z.iso.datetime().readonly().nullable(),
+    snapshotId: z.string().readonly().nullable(),
+    firstLogPosition: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).readonly().nullable(),
+    checkpointPosition: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).readonly().nullable(),
+    brokerId: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).readonly().nullable(),
+    brokerVersion: z.string().readonly().nullable()
+}).register(z.globalRegistry, {
+    description: 'Detailed info of the backup for a given partition.'
+});
+
+/**
+ * Backup Info
+ *
+ * Detailed status of a runtime backup. The aggregated state is computed from the backup
+ * state of each partition as:
+ * - If the backup of all partitions is 'COMPLETED', the overall state is 'COMPLETED'.
+ * - If one partition is 'FAILED', the overall state is 'FAILED'.
+ * - Otherwise, if one partition is 'DOES_NOT_EXIST', the overall state is 'INCOMPLETE'.
+ * - Otherwise, if one partition is 'IN_PROGRESS', the overall state is 'IN_PROGRESS'.
+ *
+ */
+export const zBackupInfo = z.object({
+    backupId: zBackupId,
+    state: zStateCode,
+    failureReason: z.string().nullable(),
+    details: z.array(zPartitionBackupInfo).register(z.globalRegistry, {
+        description: 'Detailed status of the backup per partition. Always contains every partition of\nthe physical tenant.\n'
+    }).readonly()
+}).register(z.globalRegistry, {
+    description: 'Detailed status of a runtime backup. The aggregated state is computed from the backup\nstate of each partition as:\n- If the backup of all partitions is \'COMPLETED\', the overall state is \'COMPLETED\'.\n- If one partition is \'FAILED\', the overall state is \'FAILED\'.\n- Otherwise, if one partition is \'DOES_NOT_EXIST\', the overall state is \'INCOMPLETE\'.\n- Otherwise, if one partition is \'IN_PROGRESS\', the overall state is \'IN_PROGRESS\'.\n'
+});
+
+/**
+ * Checkpoint Type
+ *
+ * The type of the checkpoint.
+ */
+export const zCheckpointType = z.enum([
+    'MARKER',
+    'SCHEDULED_BACKUP',
+    'MANUAL_BACKUP'
+]).register(z.globalRegistry, {
+    description: 'The type of the checkpoint.'
+});
+
+/**
+ * Backup Type
+ *
+ * The type of the backup.
+ */
+export const zBackupType = z.enum(['MANUAL_BACKUP', 'SCHEDULED_BACKUP']).register(z.globalRegistry, {
+    description: 'The type of the backup.'
+});
+
+/**
+ * Checkpoint ID
+ *
+ * The id of the checkpoint. Must be a non-negative numerical value. As checkpoints are
+ * logically ordered by their ids (ascending), each successive checkpoint must use a
+ * higher id than the previous one.
+ *
+ */
+export const zCheckpointId = z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+    description: 'The id of the checkpoint. Must be a non-negative numerical value. As checkpoints are\nlogically ordered by their ids (ascending), each successive checkpoint must use a\nhigher id than the previous one.\n'
+});
+
+/**
+ * Partition Checkpoint State
+ *
+ * Detailed information about the checkpoint state for a given partition.
+ */
+export const zPartitionCheckpointState = z.object({
+    checkpointId: zCheckpointId,
+    checkpointType: zCheckpointType,
+    partitionId: zPartitionId,
+    checkpointPosition: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'The log position of the checkpoint.'
+    }),
+    checkpointTimestamp: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The timestamp at which the checkpoint was created.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Detailed information about the checkpoint state for a given partition.'
+});
+
+/**
+ * Partition Backup State
+ *
+ * Detailed information about the backup state for a given partition.
+ */
+export const zPartitionBackupState = z.object({
+    checkpointId: zCheckpointId,
+    checkpointType: zBackupType,
+    partitionId: zPartitionId.nullable(),
+    checkpointPosition: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'The log position of the checkpoint this backup is based on.'
+    }),
+    firstLogPosition: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'The first log position included in this backup.'
+    }),
+    checkpointTimestamp: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The timestamp at which the checkpoint was created.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Detailed information about the backup state for a given partition.'
+});
+
+/**
+ * Partition Backup Range
+ *
+ * Information about one backup range for a partition.
+ */
+export const zPartitionBackupRange = z.object({
+    partitionId: zPartitionId,
+    start: zPartitionBackupState.nullable(),
+    end: zPartitionBackupState.nullable()
+}).register(z.globalRegistry, {
+    description: 'Information about one backup range for a partition.'
+});
+
+/**
+ * Runtime Backup State
+ *
+ * Information about the checkpoint and backup state of the physical tenant.
+ */
+export const zRuntimeBackupState = z.object({
+    checkpointStates: z.array(zPartitionCheckpointState).register(z.globalRegistry, {
+        description: 'List of partition checkpoint states.'
+    }),
+    backupStates: z.array(zPartitionBackupState).register(z.globalRegistry, {
+        description: 'List of partition backup states.'
+    }),
+    ranges: z.array(zPartitionBackupRange).register(z.globalRegistry, {
+        description: 'List of partition backup ranges.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Information about the checkpoint and backup state of the physical tenant.'
+});
+
 export const zBatchOperationError = z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The partition ID where the error occurred.'
@@ -610,6 +829,13 @@ export const zUpdateClusterVariableRequest = z.object({
     ])).register(z.globalRegistry, {
         description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
     }).optional()
+});
+
+/**
+ * The operating mode of a cluster's partitions.
+ */
+export const zMode = z.enum(['PROCESSING', 'RECOVERING']).register(z.globalRegistry, {
+    description: 'The operating mode of a cluster\'s partitions.'
 });
 
 /**
@@ -2263,9 +2489,9 @@ export const zJobResultAdHocSubProcess = z.object({
  * The result of the completed job as determined by the worker.
  *
  */
-export const zJobResult = z.discriminatedUnion('type', [
-    zJobResultUserTask.unwrap().extend({ type: z.literal('userTask') }),
-    zJobResultAdHocSubProcess.unwrap().extend({ type: z.literal('adHocSubProcess') })
+export const zJobResult = z.union([
+    zJobResultUserTask,
+    zJobResultAdHocSubProcess
 ]);
 
 export const zJobCompletionRequest = z.object({
@@ -4402,9 +4628,7 @@ export const zProcessInstanceCreationTerminateInstruction = z.object({
     description: 'Terminates the process instance after a specific BPMN element is completed or terminated.\n'
 });
 
-export const zProcessInstanceCreationRuntimeInstruction = z.object({
-    type: z.literal('TERMINATE_PROCESS_INSTANCE')
-}).and(zProcessInstanceCreationTerminateInstruction);
+export const zProcessInstanceCreationRuntimeInstruction = zProcessInstanceCreationTerminateInstruction;
 
 /**
  * Process creation by id
@@ -6027,6 +6251,34 @@ export const zSecretResolveResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The per-reference outcome of a resolve request.'
+});
+
+/**
+ * Reserved for future filtering options. Currently takes no properties. The request body is
+ * optional: omitting it (or sending an empty object) applies no filters.
+ *
+ */
+export const zSecretListRequest = z.record(z.string(), z.never()).register(z.globalRegistry, {
+    description: 'Reserved for future filtering options. Currently takes no properties. The request body is\noptional: omitting it (or sending an empty object) applies no filters.\n'
+});
+
+/**
+ * The secret references the caller is authorized to see.
+ *
+ * Unbounded for now: Phase 1's backend is mocked with at most 3 references. Pagination is
+ * expected to land here before GA, once a real secret store can return a tenant's full
+ * enumeration in one response. This is an alpha endpoint, so that is not yet a
+ * breaking-contract concern.
+ *
+ */
+export const zSecretListResult = z.object({
+    references: z.array(z.string().register(z.globalRegistry, {
+        description: 'A secret reference of the form `camunda.secrets.<name>`.'
+    })).register(z.globalRegistry, {
+        description: 'The secret references, each of the form `camunda.secrets.<name>`.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The secret references the caller is authorized to see.\n\nUnbounded for now: Phase 1\'s backend is mocked with at most 3 references. Pagination is\nexpected to land here before GA, once a real secret store can return a tenant\'s full\nenumeration in one response. This is an alpha endpoint, so that is not yet a\nbreaking-contract concern.\n'
 });
 
 export const zSignalBroadcastRequest = z.object({
@@ -8268,6 +8520,509 @@ export const zUserTaskSearchQuery = zSearchQueryRequest.and(z.object({
     description: 'User task search query request.'
 }));
 
+/**
+ * System-generated key for an authorization.
+ */
+export const zAuthorizationKeyWritable = zLongKey;
+
+/**
+ * Backup Info
+ *
+ * Detailed status of a runtime backup. The aggregated state is computed from the backup
+ * state of each partition as:
+ * - If the backup of all partitions is 'COMPLETED', the overall state is 'COMPLETED'.
+ * - If one partition is 'FAILED', the overall state is 'FAILED'.
+ * - Otherwise, if one partition is 'DOES_NOT_EXIST', the overall state is 'INCOMPLETE'.
+ * - Otherwise, if one partition is 'IN_PROGRESS', the overall state is 'IN_PROGRESS'.
+ *
+ */
+export const zBackupInfoWritable = z.object({
+    failureReason: z.string().nullable()
+}).register(z.globalRegistry, {
+    description: 'Detailed status of a runtime backup. The aggregated state is computed from the backup\nstate of each partition as:\n- If the backup of all partitions is \'COMPLETED\', the overall state is \'COMPLETED\'.\n- If one partition is \'FAILED\', the overall state is \'FAILED\'.\n- Otherwise, if one partition is \'DOES_NOT_EXIST\', the overall state is \'INCOMPLETE\'.\n- Otherwise, if one partition is \'IN_PROGRESS\', the overall state is \'IN_PROGRESS\'.\n'
+});
+
+/**
+ * Partition Backup Info
+ *
+ * Detailed info of the backup for a given partition.
+ */
+export const zPartitionBackupInfoWritable = z.object({
+    failureReason: z.string().nullable()
+}).register(z.globalRegistry, {
+    description: 'Detailed info of the backup for a given partition.'
+});
+
+/**
+ * System-generated key for a conditional evaluation.
+ */
+export const zConditionalEvaluationKeyWritable = zLongKey;
+
+/**
+ * Key for a deployment.
+ */
+export const zDeploymentKeyWritable = zLongKey;
+
+/**
+ * List of user task event types that trigger the listener.
+ */
+export const zGlobalTaskListenerEventTypesWritable = z.array(zGlobalTaskListenerEventTypeEnum).register(z.globalRegistry, {
+    description: 'List of user task event types that trigger the listener.'
+});
+
+/**
+ * List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
+ */
+export const zTagSetWritable = z.array(zTag).max(10).register(z.globalRegistry, {
+    description: 'List of tags. Tags need to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.'
+});
+
+/**
+ * System-generated key for a process instance.
+ */
+export const zProcessInstanceKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a deployed process definition.
+ */
+export const zProcessDefinitionKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a element instance.
+ */
+export const zElementInstanceKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a user task.
+ */
+export const zUserTaskKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a deployed form.
+ */
+export const zFormKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a variable.
+ */
+export const zVariableKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a scope. A scope can hold variables and represents either an
+ * element instance in a BPMN process or the process instance itself.
+ *
+ */
+export const zScopeKeyWritable = z.union([
+    zProcessInstanceKeyWritable,
+    zElementInstanceKeyWritable
+]);
+
+/**
+ * System-generated key for a incident.
+ */
+export const zIncidentKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a job.
+ */
+export const zJobKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a decision definition.
+ */
+export const zDecisionDefinitionKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a decision evaluation.
+ */
+export const zDecisionEvaluationKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a deployed decision requirements definition.
+ */
+export const zDecisionRequirementsKeyWritable = zLongKey;
+
+/**
+ * The system-assigned key for this resource.
+ */
+export const zResourceKeyWritable = z.union([
+    zProcessDefinitionKeyWritable,
+    zDecisionRequirementsKeyWritable,
+    zFormKeyWritable,
+    zDecisionDefinitionKeyWritable
+]);
+
+/**
+ * System-generated key for a deployed decision instance.
+ */
+export const zDecisionInstanceKeyWritable = zLongKey;
+
+/**
+ * System-generated key for an agent instance.
+ */
+export const zAgentInstanceKeyWritable = zLongKey;
+
+/**
+ * System-generated key for an agent history item.
+ */
+export const zAgentHistoryItemKeyWritable = zLongKey;
+
+/**
+ * System-generated key for an audit log entry.
+ */
+export const zAuditLogKeyWritable = zLongKey;
+
+/**
+ * System-generated key for a message subscription.
+ */
+export const zMessageSubscriptionKeyWritable = zLongKey;
+
+/**
+ * System-generated key for an message.
+ */
+export const zMessageKeyWritable = zLongKey;
+
+/**
+ * System-generated key for an signal.
+ */
+export const zSignalKeyWritable = zLongKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceStatusExactMatchWritable = zAgentInstanceStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceHistoryRoleExactMatchWritable = zAgentInstanceHistoryRoleEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceHistoryCommitStatusExactMatchWritable = zAgentInstanceHistoryCommitStatusEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAuditLogEntityKeyExactMatchWritable = zAuditLogEntityKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zEntityTypeExactMatchWritable = zAuditLogEntityTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zOperationTypeExactMatchWritable = zAuditLogOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zCategoryExactMatchWritable = zAuditLogCategoryEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAuditLogResultExactMatchWritable = zAuditLogResultEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAuditLogActorTypeExactMatchWritable = zAuditLogActorTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zBatchOperationTypeExactMatchWritable = zBatchOperationTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zBatchOperationStateExactMatchWritable = zBatchOperationStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zBatchOperationItemStateExactMatchWritable = zBatchOperationItemStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zClusterVariableScopeExactMatchWritable = zClusterVariableScopeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zClusterVariableKindExactMatchWritable = zClusterVariableKindEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zDecisionInstanceStateExactMatchWritable = zDecisionInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zDeploymentKeyExactMatchWritable = zDeploymentKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zResourceKeyExactMatchWritable = zResourceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zElementInstanceStateExactMatchWritable = zElementInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zWaitStateElementTypeExactMatchWritable = zWaitStateElementTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zWaitStateTypeExactMatchWritable = zWaitStateTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zGlobalListenerSourceExactMatchWritable = zGlobalListenerSourceEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zGlobalTaskListenerEventTypeExactMatchWritable = zGlobalTaskListenerEventTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zElementIdExactMatchWritable = zElementId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zProcessDefinitionIdExactMatchWritable = zProcessDefinitionId;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zIncidentErrorTypeExactMatchWritable = zIncidentErrorTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zIncidentStateExactMatchWritable = zIncidentStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zJobKindExactMatchWritable = zJobKindEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zJobListenerEventTypeExactMatchWritable = zJobListenerEventTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zJobStateExactMatchWritable = zJobStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zProcessDefinitionKeyExactMatchWritable = zProcessDefinitionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zProcessInstanceKeyExactMatchWritable = zProcessInstanceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zElementInstanceKeyExactMatchWritable = zElementInstanceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zJobKeyExactMatchWritable = zJobKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zDecisionDefinitionKeyExactMatchWritable = zDecisionDefinitionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zScopeKeyExactMatchWritable = zScopeKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zVariableKeyExactMatchWritable = zVariableKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zDecisionEvaluationInstanceKeyExactMatchWritable = zDecisionEvaluationInstanceKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentInstanceKeyExactMatchWritable = zAgentInstanceKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentHistoryItemKeyExactMatchWritable = zAgentHistoryItemKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAuditLogKeyExactMatchWritable = zAuditLogKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zFormKeyExactMatchWritable = zFormKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zDecisionEvaluationKeyExactMatchWritable = zDecisionEvaluationKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zDecisionRequirementsKeyExactMatchWritable = zDecisionRequirementsKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zMessageSubscriptionTypeExactMatchWritable = zMessageSubscriptionTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zMessageSubscriptionStateExactMatchWritable = zMessageSubscriptionStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zMessageSubscriptionKeyExactMatchWritable = zMessageSubscriptionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zProcessInstanceStateExactMatchWritable = zProcessInstanceStateEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zUserTaskStateExactMatchWritable = zUserTaskStateEnum;
+
 export const zCreateAgentInstanceBody = zAgentInstanceCreationRequest;
 
 /**
@@ -8276,7 +9031,7 @@ export const zCreateAgentInstanceBody = zAgentInstanceCreationRequest;
 export const zCreateAgentInstanceResponse = zAgentInstanceCreationResult;
 
 export const zGetAgentInstancePath = z.object({
-    agentInstanceKey: zAgentInstanceKey
+    agentInstanceKey: zAgentInstanceKeyWritable
 });
 
 /**
@@ -8287,7 +9042,7 @@ export const zGetAgentInstanceResponse = zAgentInstanceResult;
 export const zUpdateAgentInstanceBody = zAgentInstanceUpdateRequest;
 
 export const zUpdateAgentInstancePath = z.object({
-    agentInstanceKey: zAgentInstanceKey
+    agentInstanceKey: zAgentInstanceKeyWritable
 });
 
 /**
@@ -8307,7 +9062,7 @@ export const zSearchAgentInstancesResponse = zAgentInstanceSearchQueryResult;
 export const zCreateAgentInstanceHistoryItemBody = zAgentInstanceHistoryItemRequest;
 
 export const zCreateAgentInstanceHistoryItemPath = z.object({
-    agentInstanceKey: zAgentInstanceKey
+    agentInstanceKey: zAgentInstanceKeyWritable
 });
 
 /**
@@ -8318,7 +9073,7 @@ export const zCreateAgentInstanceHistoryItemResponse = zAgentInstanceHistoryItem
 export const zSearchAgentInstanceHistoryBody = zAgentInstanceHistorySearchQuery;
 
 export const zSearchAgentInstanceHistoryPath = z.object({
-    agentInstanceKey: zAgentInstanceKey
+    agentInstanceKey: zAgentInstanceKeyWritable
 });
 
 /**
@@ -8334,7 +9089,7 @@ export const zSearchAuditLogsBody = zAuditLogSearchQueryRequest;
 export const zSearchAuditLogsResponse = zAuditLogSearchQueryResult;
 
 export const zGetAuditLogPath = z.object({
-    auditLogKey: zAuditLogKey
+    auditLogKey: zAuditLogKeyWritable
 });
 
 /**
@@ -8362,7 +9117,7 @@ export const zSearchAuthorizationsBody = zAuthorizationSearchQuery;
 export const zSearchAuthorizationsResponse = zAuthorizationSearchResult;
 
 export const zDeleteAuthorizationPath = z.object({
-    authorizationKey: zAuthorizationKey
+    authorizationKey: zAuthorizationKeyWritable
 });
 
 /**
@@ -8373,7 +9128,7 @@ export const zDeleteAuthorizationResponse = z.void().register(z.globalRegistry, 
 });
 
 export const zGetAuthorizationPath = z.object({
-    authorizationKey: zAuthorizationKey
+    authorizationKey: zAuthorizationKeyWritable
 });
 
 /**
@@ -8384,7 +9139,7 @@ export const zGetAuthorizationResponse = zAuthorizationResult;
 export const zUpdateAuthorizationBody = zAuthorizationRequest;
 
 export const zUpdateAuthorizationPath = z.object({
-    authorizationKey: zAuthorizationKey
+    authorizationKey: zAuthorizationKeyWritable
 });
 
 /**
@@ -8393,6 +9148,61 @@ export const zUpdateAuthorizationPath = z.object({
 export const zUpdateAuthorizationResponse = z.void().register(z.globalRegistry, {
     description: 'The authorization was updated successfully.'
 });
+
+export const zListRuntimeBackupsQuery = z.object({
+    prefix: zBackupIdPrefix.optional()
+});
+
+/**
+ * The list of runtime backups.
+ */
+export const zListRuntimeBackupsResponse = z.array(zBackupInfo).register(z.globalRegistry, {
+    description: 'The list of runtime backups.'
+});
+
+export const zTakeRuntimeBackupBody = zTakeRuntimeBackupRequest;
+
+/**
+ * The backup has been successfully scheduled.
+ */
+export const zTakeRuntimeBackupResponse2 = zTakeRuntimeBackupResponse;
+
+/**
+ * The runtime backup state has been successfully reset.
+ */
+export const zDeleteRuntimeBackupStateResponse = z.void().register(z.globalRegistry, {
+    description: 'The runtime backup state has been successfully reset.'
+});
+
+/**
+ * The runtime backup state.
+ */
+export const zGetRuntimeBackupStateResponse = zRuntimeBackupState;
+
+/**
+ * The updated runtime backup state.
+ */
+export const zSyncRuntimeBackupStateResponse = zRuntimeBackupState;
+
+export const zDeleteRuntimeBackupPath = z.object({
+    backupId: zBackupId
+});
+
+/**
+ * The backup has been successfully deleted.
+ */
+export const zDeleteRuntimeBackupResponse = z.void().register(z.globalRegistry, {
+    description: 'The backup has been successfully deleted.'
+});
+
+export const zGetRuntimeBackupPath = z.object({
+    backupId: zBackupId
+});
+
+/**
+ * The runtime backup.
+ */
+export const zGetRuntimeBackupResponse = zBackupInfo;
 
 export const zSearchBatchOperationItemsBody = zBatchOperationItemSearchQuery;
 
@@ -8597,7 +9407,7 @@ export const zSearchDecisionDefinitionsBody = zDecisionDefinitionSearchQuery;
 export const zSearchDecisionDefinitionsResponse = zDecisionDefinitionSearchQueryResult;
 
 export const zGetDecisionDefinitionPath = z.object({
-    decisionDefinitionKey: zDecisionDefinitionKey
+    decisionDefinitionKey: zDecisionDefinitionKeyWritable
 });
 
 /**
@@ -8606,7 +9416,7 @@ export const zGetDecisionDefinitionPath = z.object({
 export const zGetDecisionDefinitionResponse = zDecisionDefinitionResult;
 
 export const zGetDecisionDefinitionXmlPath = z.object({
-    decisionDefinitionKey: zDecisionDefinitionKey
+    decisionDefinitionKey: zDecisionDefinitionKeyWritable
 });
 
 /**
@@ -8635,7 +9445,7 @@ export const zGetDecisionInstanceResponse = zDecisionInstanceGetQueryResult;
 export const zDeleteDecisionInstanceBody = zDeleteDecisionInstanceRequest;
 
 export const zDeleteDecisionInstancePath = z.object({
-    decisionEvaluationKey: zDecisionEvaluationKey
+    decisionEvaluationKey: zDecisionEvaluationKeyWritable
 });
 
 /**
@@ -8660,7 +9470,7 @@ export const zSearchDecisionRequirementsBody = zDecisionRequirementsSearchQuery;
 export const zSearchDecisionRequirementsResponse = zDecisionRequirementsSearchQueryResult;
 
 export const zGetDecisionRequirementsPath = z.object({
-    decisionRequirementsKey: zDecisionRequirementsKey
+    decisionRequirementsKey: zDecisionRequirementsKeyWritable
 });
 
 /**
@@ -8669,7 +9479,7 @@ export const zGetDecisionRequirementsPath = z.object({
 export const zGetDecisionRequirementsResponse = zDecisionRequirementsResult;
 
 export const zGetDecisionRequirementsXmlPath = z.object({
-    decisionRequirementsKey: zDecisionRequirementsKey
+    decisionRequirementsKey: zDecisionRequirementsKeyWritable
 });
 
 /**
@@ -8791,7 +9601,7 @@ export const zCreateDocumentLinkResponse = zDocumentLink;
 export const zActivateAdHocSubProcessActivitiesBody = zAdHocSubProcessActivateActivitiesInstruction;
 
 export const zActivateAdHocSubProcessActivitiesPath = z.object({
-    adHocSubProcessInstanceKey: zElementInstanceKey
+    adHocSubProcessInstanceKey: zElementInstanceKeyWritable
 });
 
 /**
@@ -8816,7 +9626,7 @@ export const zSearchElementInstancesBody = zElementInstanceSearchQuery;
 export const zSearchElementInstancesResponse = zElementInstanceSearchQueryResult;
 
 export const zGetElementInstancePath = z.object({
-    elementInstanceKey: zElementInstanceKey
+    elementInstanceKey: zElementInstanceKeyWritable
 });
 
 /**
@@ -8827,7 +9637,7 @@ export const zGetElementInstanceResponse = zElementInstanceResult;
 export const zSearchElementInstanceIncidentsBody = zIncidentSearchQuery;
 
 export const zSearchElementInstanceIncidentsPath = z.object({
-    elementInstanceKey: zElementInstanceKey
+    elementInstanceKey: zElementInstanceKeyWritable
 });
 
 /**
@@ -8838,7 +9648,7 @@ export const zSearchElementInstanceIncidentsResponse = zIncidentSearchQueryResul
 export const zCreateElementInstanceVariablesBody = zSetVariableRequest;
 
 export const zCreateElementInstanceVariablesPath = z.object({
-    elementInstanceKey: zElementInstanceKey
+    elementInstanceKey: zElementInstanceKeyWritable
 });
 
 /**
@@ -8846,6 +9656,26 @@ export const zCreateElementInstanceVariablesPath = z.object({
  */
 export const zCreateElementInstanceVariablesResponse = z.void().register(z.globalRegistry, {
     description: 'The variables were updated.'
+});
+
+export const zPauseExportingQuery = z.object({
+    soft: z.boolean().register(z.globalRegistry, {
+        description: 'If true, soft-pauses exporting instead of a hard pause.'
+    }).optional().default(false)
+});
+
+/**
+ * Exporting was successfully paused.
+ */
+export const zPauseExportingResponse = z.void().register(z.globalRegistry, {
+    description: 'Exporting was successfully paused.'
+});
+
+/**
+ * Exporting was successfully resumed.
+ */
+export const zResumeExportingResponse = z.void().register(z.globalRegistry, {
+    description: 'Exporting was successfully resumed.'
 });
 
 export const zEvaluateExpressionBody = zExpressionEvaluationRequest;
@@ -8856,7 +9686,7 @@ export const zEvaluateExpressionBody = zExpressionEvaluationRequest;
 export const zEvaluateExpressionResponse = zExpressionEvaluationResult;
 
 export const zGetFormByKeyPath = z.object({
-    formKey: zFormKey
+    formKey: zFormKeyWritable
 });
 
 /**
@@ -9078,7 +9908,7 @@ export const zSearchIncidentsBody = zIncidentSearchQuery;
 export const zSearchIncidentsResponse = zIncidentSearchQueryResult;
 
 export const zGetIncidentPath = z.object({
-    incidentKey: zIncidentKey
+    incidentKey: zIncidentKeyWritable
 });
 
 /**
@@ -9089,7 +9919,7 @@ export const zGetIncidentResponse = zIncidentResult;
 export const zResolveIncidentBody = zIncidentResolutionRequest;
 
 export const zResolveIncidentPath = z.object({
-    incidentKey: zIncidentKey
+    incidentKey: zIncidentKeyWritable
 });
 
 /**
@@ -9134,7 +9964,7 @@ export const zSearchJobsResponse = zJobSearchQueryResult;
 export const zUpdateJobBody = zJobUpdateRequest;
 
 export const zUpdateJobPath = z.object({
-    jobKey: zJobKey
+    jobKey: zJobKeyWritable
 });
 
 /**
@@ -9147,7 +9977,7 @@ export const zUpdateJobResponse = z.void().register(z.globalRegistry, {
 export const zCompleteJobBody = zJobCompletionRequest;
 
 export const zCompleteJobPath = z.object({
-    jobKey: zJobKey
+    jobKey: zJobKeyWritable
 });
 
 /**
@@ -9160,7 +9990,7 @@ export const zCompleteJobResponse = z.void().register(z.globalRegistry, {
 export const zThrowJobErrorBody = zJobErrorRequest;
 
 export const zThrowJobErrorPath = z.object({
-    jobKey: zJobKey
+    jobKey: zJobKeyWritable
 });
 
 /**
@@ -9173,7 +10003,7 @@ export const zThrowJobErrorResponse = z.void().register(z.globalRegistry, {
 export const zFailJobBody = zJobFailRequest;
 
 export const zFailJobPath = z.object({
-    jobKey: zJobKey
+    jobKey: zJobKeyWritable
 });
 
 /**
@@ -9328,7 +10158,7 @@ export const zGetProcessDefinitionInstanceStatisticsBody = zProcessDefinitionIns
 export const zGetProcessDefinitionInstanceStatisticsResponse = zProcessDefinitionInstanceStatisticsQueryResult;
 
 export const zGetProcessDefinitionPath = z.object({
-    processDefinitionKey: zProcessDefinitionKey
+    processDefinitionKey: zProcessDefinitionKeyWritable
 });
 
 /**
@@ -9337,7 +10167,7 @@ export const zGetProcessDefinitionPath = z.object({
 export const zGetProcessDefinitionResponse = zProcessDefinitionResult;
 
 export const zGetStartProcessFormPath = z.object({
-    processDefinitionKey: zProcessDefinitionKey
+    processDefinitionKey: zProcessDefinitionKeyWritable
 });
 
 export const zGetStartProcessFormResponse = z.union([
@@ -9350,7 +10180,7 @@ export const zGetStartProcessFormResponse = z.union([
 export const zGetProcessDefinitionStatisticsBody = zProcessDefinitionElementStatisticsQuery;
 
 export const zGetProcessDefinitionStatisticsPath = z.object({
-    processDefinitionKey: zProcessDefinitionKey
+    processDefinitionKey: zProcessDefinitionKeyWritable
 });
 
 /**
@@ -9361,7 +10191,7 @@ export const zGetProcessDefinitionStatisticsResponse = zProcessDefinitionElement
 export const zSearchProcessDefinitionVariableNamesBody = zProcessDefinitionVariableNameSearchQuery;
 
 export const zSearchProcessDefinitionVariableNamesPath = z.object({
-    processDefinitionKey: zProcessDefinitionKey
+    processDefinitionKey: zProcessDefinitionKeyWritable
 });
 
 /**
@@ -9370,7 +10200,7 @@ export const zSearchProcessDefinitionVariableNamesPath = z.object({
 export const zSearchProcessDefinitionVariableNamesResponse = zProcessDefinitionVariableNameSearchQueryResult;
 
 export const zGetProcessDefinitionXmlPath = z.object({
-    processDefinitionKey: zProcessDefinitionKey
+    processDefinitionKey: zProcessDefinitionKeyWritable
 });
 
 /**
@@ -9451,7 +10281,7 @@ export const zSuspendProcessInstancesBatchOperationBody = zProcessInstanceSuspen
 export const zSuspendProcessInstancesBatchOperationResponse = zBatchOperationCreatedResult;
 
 export const zGetProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9462,7 +10292,7 @@ export const zGetProcessInstanceResponse = zProcessInstanceResult;
 export const zAssignProcessInstanceBusinessIdBody = zProcessInstanceBusinessIdAssignmentInstruction;
 
 export const zAssignProcessInstanceBusinessIdPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9473,7 +10303,7 @@ export const zAssignProcessInstanceBusinessIdResponse = z.void().register(z.glob
 });
 
 export const zGetProcessInstanceCallHierarchyPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9486,7 +10316,7 @@ export const zGetProcessInstanceCallHierarchyResponse = z.array(zProcessInstance
 export const zCancelProcessInstanceBody = zCancelProcessInstanceRequest;
 
 export const zCancelProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9499,7 +10329,7 @@ export const zCancelProcessInstanceResponse = z.void().register(z.globalRegistry
 export const zDeleteProcessInstanceBody = zDeleteProcessInstanceRequest;
 
 export const zDeleteProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9510,7 +10340,7 @@ export const zDeleteProcessInstanceResponse = z.void().register(z.globalRegistry
 });
 
 export const zResolveProcessInstanceIncidentsPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9521,7 +10351,7 @@ export const zResolveProcessInstanceIncidentsResponse = zBatchOperationCreatedRe
 export const zSearchProcessInstanceIncidentsBody = zIncidentSearchQuery;
 
 export const zSearchProcessInstanceIncidentsPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9532,7 +10362,7 @@ export const zSearchProcessInstanceIncidentsResponse = zIncidentSearchQueryResul
 export const zMigrateProcessInstanceBody = zProcessInstanceMigrationInstruction;
 
 export const zMigrateProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9545,7 +10375,7 @@ export const zMigrateProcessInstanceResponse = z.void().register(z.globalRegistr
 export const zModifyProcessInstanceBody = zProcessInstanceModificationInstruction;
 
 export const zModifyProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9558,7 +10388,7 @@ export const zModifyProcessInstanceResponse = z.void().register(z.globalRegistry
 export const zResumeProcessInstanceBody = zResumeProcessInstanceRequest;
 
 export const zResumeProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9569,7 +10399,7 @@ export const zResumeProcessInstanceResponse = z.void().register(z.globalRegistry
 });
 
 export const zGetProcessInstanceSequenceFlowsPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9578,7 +10408,7 @@ export const zGetProcessInstanceSequenceFlowsPath = z.object({
 export const zGetProcessInstanceSequenceFlowsResponse = zProcessInstanceSequenceFlowsQueryResult;
 
 export const zGetProcessInstanceStatisticsPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9587,7 +10417,7 @@ export const zGetProcessInstanceStatisticsPath = z.object({
 export const zGetProcessInstanceStatisticsResponse = zProcessInstanceElementStatisticsQueryResult;
 
 export const zGetProcessInstanceWaitStateStatisticsPath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9598,7 +10428,7 @@ export const zGetProcessInstanceWaitStateStatisticsResponse = zProcessInstanceWa
 export const zSuspendProcessInstanceBody = zSuspendProcessInstanceRequest;
 
 export const zSuspendProcessInstancePath = z.object({
-    processInstanceKey: zProcessInstanceKey
+    processInstanceKey: zProcessInstanceKeyWritable
 });
 
 /**
@@ -9616,7 +10446,7 @@ export const zSearchResourcesBody = zResourceSearchQuery;
 export const zSearchResourcesResponse = zResourceSearchQueryResult;
 
 export const zGetResourcePath = z.object({
-    resourceKey: zResourceKey
+    resourceKey: zResourceKeyWritable
 });
 
 /**
@@ -9625,7 +10455,7 @@ export const zGetResourcePath = z.object({
 export const zGetResourceResponse = zResourceResult;
 
 export const zGetResourceContentPath = z.object({
-    resourceKey: zResourceKey
+    resourceKey: zResourceKeyWritable
 });
 
 /**
@@ -9636,7 +10466,7 @@ export const zGetResourceContentResponse = z.record(z.string(), z.unknown()).reg
 });
 
 export const zGetResourceContentBinaryPath = z.object({
-    resourceKey: zResourceKey
+    resourceKey: zResourceKeyWritable
 });
 
 /**
@@ -9649,7 +10479,7 @@ export const zGetResourceContentBinaryResponse = z.string().register(z.globalReg
 export const zDeleteResourceBody = zDeleteResourceRequest;
 
 export const zDeleteResourcePath = z.object({
-    resourceKey: zResourceKey
+    resourceKey: zResourceKeyWritable
 });
 
 /**
@@ -9851,6 +10681,13 @@ export const zResolveSecretsBody = zSecretResolveRequest;
  */
 export const zResolveSecretsResponse = zSecretResolveResult;
 
+export const zListSecretsBody = zSecretListRequest;
+
+/**
+ * The references the caller is authorized to see.
+ */
+export const zListSecretsResponse = zSecretListResult;
+
 export const zCreateAdminUserBody = zUserRequest;
 
 /**
@@ -9866,10 +10703,10 @@ export const zBroadcastSignalBody = zSignalBroadcastRequest;
 export const zBroadcastSignalResponse = zSignalBroadcastResult;
 
 /**
- * The cluster is UP and has at least one partition with a healthy leader.
+ * The default physical tenant is UP and has at least one partition with a healthy leader.
  */
 export const zGetStatusResponse = z.void().register(z.globalRegistry, {
-    description: 'The cluster is UP and has at least one partition with a healthy leader.'
+    description: 'The default physical tenant is UP and has at least one partition with a healthy leader.'
 });
 
 export const zGetUsageMetricsQuery = z.object({
@@ -10121,9 +10958,7 @@ export const zAssignUserToTenantResponse = z.void().register(z.globalRegistry, {
 export const zGetTopologyResponse = zTopologyResponse;
 
 export const zChangeClusterModeQuery = z.object({
-    mode: z.enum(['PROCESSING', 'RECOVERING']).register(z.globalRegistry, {
-        description: 'The target cluster mode.'
-    }),
+    mode: zMode,
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
     }).optional().default(false)
@@ -10194,7 +11029,7 @@ export const zSearchUserTasksBody = zUserTaskSearchQuery;
 export const zSearchUserTasksResponse = zUserTaskSearchQueryResult;
 
 export const zGetUserTaskPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 /**
@@ -10205,7 +11040,7 @@ export const zGetUserTaskResponse = zUserTaskResult;
 export const zUpdateUserTaskBody = zUserTaskUpdateRequest;
 
 export const zUpdateUserTaskPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 /**
@@ -10216,7 +11051,7 @@ export const zUpdateUserTaskResponse = z.void().register(z.globalRegistry, {
 });
 
 export const zUnassignUserTaskPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 /**
@@ -10229,7 +11064,7 @@ export const zUnassignUserTaskResponse = z.void().register(z.globalRegistry, {
 export const zAssignUserTaskBody = zUserTaskAssignmentRequest;
 
 export const zAssignUserTaskPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 /**
@@ -10242,7 +11077,7 @@ export const zAssignUserTaskResponse = z.void().register(z.globalRegistry, {
 export const zSearchUserTaskAuditLogsBody = zUserTaskAuditLogSearchQueryRequest;
 
 export const zSearchUserTaskAuditLogsPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 /**
@@ -10253,7 +11088,7 @@ export const zSearchUserTaskAuditLogsResponse = zAuditLogSearchQueryResult;
 export const zCompleteUserTaskBody = zUserTaskCompletionRequest;
 
 export const zCompleteUserTaskPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 /**
@@ -10266,7 +11101,7 @@ export const zCompleteUserTaskResponse = z.void().register(z.globalRegistry, {
 export const zSearchUserTaskEffectiveVariablesBody = zUserTaskEffectiveVariableSearchQueryRequest;
 
 export const zSearchUserTaskEffectiveVariablesPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 export const zSearchUserTaskEffectiveVariablesQuery = z.object({
@@ -10281,7 +11116,7 @@ export const zSearchUserTaskEffectiveVariablesQuery = z.object({
 export const zSearchUserTaskEffectiveVariablesResponse = zVariableSearchQueryResult;
 
 export const zGetUserTaskFormPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 export const zGetUserTaskFormResponse = z.union([
@@ -10294,7 +11129,7 @@ export const zGetUserTaskFormResponse = z.union([
 export const zSearchUserTaskVariablesBody = zUserTaskVariableSearchQueryRequest;
 
 export const zSearchUserTaskVariablesPath = z.object({
-    userTaskKey: zUserTaskKey
+    userTaskKey: zUserTaskKeyWritable
 });
 
 export const zSearchUserTaskVariablesQuery = z.object({
@@ -10322,7 +11157,7 @@ export const zSearchVariablesQuery = z.object({
 export const zSearchVariablesResponse = zVariableSearchQueryResult;
 
 export const zGetVariablePath = z.object({
-    variableKey: zVariableKey
+    variableKey: zVariableKeyWritable
 });
 
 /**

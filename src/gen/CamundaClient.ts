@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 204
+// Operations: 214
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -253,6 +253,11 @@ export type deleteResourceInput = deleteResourceBody & { resourceKey: deleteReso
 type deleteRoleOptions = Parameters<typeof Sdk.deleteRole>[0];
 type deleteRolePathParam_roleId = (NonNullable<deleteRoleOptions> extends { path: { roleId: infer P } } ? P : any);
 export type deleteRoleInput = { roleId: deleteRolePathParam_roleId };
+type deleteRuntimeBackupOptions = Parameters<typeof Sdk.deleteRuntimeBackup>[0];
+type deleteRuntimeBackupPathParam_backupId = (NonNullable<deleteRuntimeBackupOptions> extends { path: { backupId: infer P } } ? P : any);
+export type deleteRuntimeBackupInput = { backupId: deleteRuntimeBackupPathParam_backupId };
+type deleteRuntimeBackupStateOptions = Parameters<typeof Sdk.deleteRuntimeBackupState>[0];
+export type deleteRuntimeBackupStateInput = void;
 type deleteTenantOptions = Parameters<typeof Sdk.deleteTenant>[0];
 type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
 export type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
@@ -592,6 +597,11 @@ export type getRoleConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getRole>> 
 };
+type getRuntimeBackupOptions = Parameters<typeof Sdk.getRuntimeBackup>[0];
+type getRuntimeBackupPathParam_backupId = (NonNullable<getRuntimeBackupOptions> extends { path: { backupId: infer P } } ? P : any);
+export type getRuntimeBackupInput = { backupId: getRuntimeBackupPathParam_backupId };
+type getRuntimeBackupStateOptions = Parameters<typeof Sdk.getRuntimeBackupState>[0];
+export type getRuntimeBackupStateInput = void;
 type getStartProcessFormOptions = Parameters<typeof Sdk.getStartProcessForm>[0];
 type getStartProcessFormPathParam_processDefinitionKey = (NonNullable<getStartProcessFormOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
 export type getStartProcessFormInput = { processDefinitionKey: getStartProcessFormPathParam_processDefinitionKey };
@@ -666,6 +676,12 @@ export type getVariableConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getVariable>> 
 };
+type listRuntimeBackupsOptions = Parameters<typeof Sdk.listRuntimeBackups>[0];
+type listRuntimeBackupsQueryParam_prefix = (NonNullable<listRuntimeBackupsOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
+export type listRuntimeBackupsInput = { prefix?: listRuntimeBackupsQueryParam_prefix };
+type listSecretsOptions = Parameters<typeof Sdk.listSecrets>[0];
+type listSecretsBody = (NonNullable<listSecretsOptions> extends { body?: infer B } ? B : never);
+export type listSecretsInput = listSecretsBody;
 type migrateProcessInstanceOptions = Parameters<typeof Sdk.migrateProcessInstance>[0];
 type migrateProcessInstanceBody = (NonNullable<migrateProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type migrateProcessInstancePathParam_processInstanceKey = (NonNullable<migrateProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -680,6 +696,9 @@ export type modifyProcessInstanceInput = modifyProcessInstanceBody & { processIn
 type modifyProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.modifyProcessInstancesBatchOperation>[0];
 type modifyProcessInstancesBatchOperationBody = (NonNullable<modifyProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 export type modifyProcessInstancesBatchOperationInput = modifyProcessInstancesBatchOperationBody;
+type pauseExportingOptions = Parameters<typeof Sdk.pauseExporting>[0];
+type pauseExportingQueryParam_soft = (NonNullable<pauseExportingOptions> extends { query?: { soft?: infer Q } } ? Q : any);
+export type pauseExportingInput = { soft?: pauseExportingQueryParam_soft };
 type pinClockOptions = Parameters<typeof Sdk.pinClock>[0];
 type pinClockBody = (NonNullable<pinClockOptions> extends { body?: infer B } ? B : never);
 export type pinClockInput = pinClockBody;
@@ -708,6 +727,8 @@ type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 export type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
+type resumeExportingOptions = Parameters<typeof Sdk.resumeExporting>[0];
+export type resumeExportingInput = void;
 type resumeProcessInstanceOptions = Parameters<typeof Sdk.resumeProcessInstance>[0];
 type resumeProcessInstanceBody = (NonNullable<resumeProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type resumeProcessInstancePathParam_processInstanceKey = (NonNullable<resumeProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -1118,6 +1139,11 @@ export type suspendProcessInstanceInput = suspendProcessInstanceBody & { process
 type suspendProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.suspendProcessInstancesBatchOperation>[0];
 type suspendProcessInstancesBatchOperationBody = (NonNullable<suspendProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 export type suspendProcessInstancesBatchOperationInput = suspendProcessInstancesBatchOperationBody;
+type syncRuntimeBackupStateOptions = Parameters<typeof Sdk.syncRuntimeBackupState>[0];
+export type syncRuntimeBackupStateInput = void;
+type takeRuntimeBackupOptions = Parameters<typeof Sdk.takeRuntimeBackup>[0];
+type takeRuntimeBackupBody = (NonNullable<takeRuntimeBackupOptions> extends { body?: infer B } ? B : never);
+export type takeRuntimeBackupInput = takeRuntimeBackupBody;
 type throwJobErrorOptions = Parameters<typeof Sdk.throwJobError>[0];
 type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
 type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
@@ -1225,7 +1251,7 @@ type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
-const VOID_RESPONSES = new Set(['zUpdateAgentInstanceResponse', 'zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
+const VOID_RESPONSES = new Set(['zUpdateAgentInstanceResponse', 'zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
@@ -5910,6 +5936,136 @@ export class CamundaClient {
   }
 
   /**
+   * Delete runtime backup
+   *
+   * Deletes the runtime backup with the given id.
+    *
+   * @example Delete a runtime backup
+   * ```ts
+   * async function deleteRuntimeBackupExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   await camunda.deleteRuntimeBackup({ backupId: 100 });
+   * }
+   * ```
+   * @operationId deleteRuntimeBackup
+   * @tags Backup
+   */
+  deleteRuntimeBackup(input: deleteRuntimeBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackup>>;
+  deleteRuntimeBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { backupId } = arg || {};
+      let envelope: any = {};
+      envelope.path = { backupId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        await this._validation.gateRequest('deleteRuntimeBackup', undefined, envelope);
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteRuntimeBackup(opts);
+        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteRuntimeBackupResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zDeleteRuntimeBackupResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteRuntimeBackup', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackup', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Delete runtime backup state
+   *
+   * Resets the runtime backup state of every partition of the physical tenant, clearing
+   * all checkpoint info, backup info, checkpoint metadata, and backup ranges. Used when
+   * switching backup stores.
+   *
+    *
+   * @example Delete the runtime backup state
+   * ```ts
+   * async function deleteRuntimeBackupStateExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Clears all checkpoint info, backup info, checkpoint metadata, and backup
+   *   // ranges on every partition. Used when switching backup stores.
+   *   await camunda.deleteRuntimeBackupState();
+   * }
+   * ```
+   * @operationId deleteRuntimeBackupState
+   * @tags Backup
+   */
+  deleteRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupState>>;
+  deleteRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteRuntimeBackupState(opts as any);
+        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackupState', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteRuntimeBackupStateResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zDeleteRuntimeBackupStateResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteRuntimeBackupState', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Delete tenant
    *
    * Deletes an existing tenant.
@@ -9723,6 +9879,151 @@ export class CamundaClient {
   }
 
   /**
+   * Get runtime backup
+   *
+   * Returns detailed status of the runtime backup with the given id.
+    *
+   * @example Get a runtime backup
+   * ```ts
+   * async function getRuntimeBackupExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const backup = await camunda.getRuntimeBackup({ backupId: 100 });
+   * 
+   *   console.log(`Backup ${backup.backupId}: ${backup.state}`);
+   *   for (const partition of backup.details) {
+   *     console.log(`  Partition ${partition.partitionId}: ${partition.state}`);
+   *   }
+   * }
+   * ```
+   * @operationId getRuntimeBackup
+   * @tags Backup
+   */
+  getRuntimeBackup(input: getRuntimeBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackup>>;
+  getRuntimeBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { backupId } = arg || {};
+      let envelope: any = {};
+      envelope.path = { backupId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        await this._validation.gateRequest('getRuntimeBackup', undefined, envelope);
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getRuntimeBackup(opts);
+        let data = this._evaluateResponse(_raw, 'getRuntimeBackup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetRuntimeBackupResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetRuntimeBackupResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getRuntimeBackup', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackup', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Get runtime backup state
+   *
+   * Returns the current checkpoint and backup state of every partition of the physical
+   * tenant. Unlike the `backupRuntime` actuator, this fails the whole request if the
+   * checkpoint state or the backup ranges cannot be retrieved from any partition, instead
+   * of silently returning an empty section.
+   *
+    *
+   * @example Get the runtime backup state
+   * ```ts
+   * async function getRuntimeBackupStateExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const state = await camunda.getRuntimeBackupState();
+   * 
+   *   for (const checkpoint of state.checkpointStates) {
+   *     console.log(
+   *       `Partition ${checkpoint.partitionId} checkpoint ${checkpoint.checkpointId} (${checkpoint.checkpointType})`
+   *     );
+   *   }
+   *   for (const range of state.ranges) {
+   *     console.log(
+   *       `Partition ${range.partitionId} range: ${range.start?.checkpointId} -> ${range.end?.checkpointId}`
+   *     );
+   *   }
+   * }
+   * ```
+   * @operationId getRuntimeBackupState
+   * @tags Backup
+   */
+  getRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupState>>;
+  getRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getRuntimeBackupState(opts as any);
+        let data = this._evaluateResponse(_raw, 'getRuntimeBackupState', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetRuntimeBackupStateResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetRuntimeBackupStateResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getRuntimeBackupState', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get process start form
    *
    * Get the start form of a process.
@@ -9804,9 +10105,9 @@ export class CamundaClient {
   }
 
   /**
-   * Get cluster status
+   * Get physical tenant status
    *
-   * Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
+   * Checks the health status of the default physical tenant by verifying if there's at least one partition of its group with a healthy leader. This endpoint is scoped to the default physical tenant only: it is available unprefixed and at `/physical-tenants/default/v2/status`, but not for any other physical tenant id (`/physical-tenants/{id}/v2/status` returns 404 for every other id, whether or not a physical tenant with that id exists). If the cluster has only a single physical tenant (the default), this endpoint is equivalent to `/cluster/v2/status`. Use `/cluster/v2/status` for the aggregated status of the whole cluster, or `/physical-tenants/{id}/v2/topology` for the health of a specific physical tenant's partitions.
     *
    * @example Check cluster status
    * ```ts
@@ -10537,6 +10838,148 @@ export class CamundaClient {
   }
 
   /**
+   * List runtime backups
+   *
+   * Returns a list of all available runtime backups of the physical tenant, with their
+   * state and additional info, sorted in descending order of backupId.
+   *
+    *
+   * @example List runtime backups
+   * ```ts
+   * async function listRuntimeBackupsExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // `prefix` must end in a single '*'. Omit it to list every backup.
+   *   const backups = await camunda.listRuntimeBackups({ prefix: '10*' });
+   * 
+   *   for (const backup of backups) {
+   *     console.log(`Backup ${backup.backupId}: ${backup.state}`);
+   *   }
+   * }
+   * ```
+   * @operationId listRuntimeBackups
+   * @tags Backup
+   */
+  listRuntimeBackups(input: listRuntimeBackupsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listRuntimeBackups>>;
+  listRuntimeBackups(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { prefix } = arg || {};
+      let envelope: any = {};
+      envelope.query = { prefix };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        await this._validation.gateRequest('listRuntimeBackups', undefined, envelope);
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.listRuntimeBackups(opts);
+        let data = this._evaluateResponse(_raw, 'listRuntimeBackups', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zListRuntimeBackupsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zListRuntimeBackupsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('listRuntimeBackups', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'listRuntimeBackups', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * List secrets (alpha)
+   *
+   * List the `camunda.secrets.*` references known for the caller's physical tenant.
+   *
+   * Only references the caller holds `SECRET:READ` on are returned. This endpoint never
+   * returns secret values, only the reference names.
+   *
+   * This endpoint is an alpha feature and may be subject to change in future releases.
+   *
+    *
+   * @operationId listSecrets
+   * @tags Secret
+   */
+  listSecrets(input: listSecretsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listSecrets>>;
+  listSecrets(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('listSecrets', _schemas.zListSecretsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.listSecrets(opts);
+        let data = this._evaluateResponse(_raw, 'listSecrets', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zListSecretsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zListSecretsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('listSecrets', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'listSecrets', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Migrate process instance
    *
    * Migrates a process instance to a new process definition.
@@ -10898,6 +11341,83 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Pause exporting
+   *
+   * Pauses exporting on all partitions of the physical tenant. While paused, exported records
+   * are not committed, so the log is not compacted for the affected partitions.
+   *
+   * With `soft=true`, exporting continues to run but its position is not committed, so the
+   * state after resuming is identical to a hard pause; use this variant when exporting must
+   * keep progressing (e.g. to avoid falling behind) while still preventing log compaction,
+   * such as during a backup.
+   *
+    *
+   * @example Pause exporting
+   * ```ts
+   * async function pauseExportingExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // With `soft: true` exporting keeps running but its position is not committed,
+   *   // so the log is still not compacted — use it when exporting must keep
+   *   // progressing, for example while a backup is taken.
+   *   await camunda.pauseExporting({ soft: true });
+   * }
+   * ```
+   * @operationId pauseExporting
+   * @tags Exporting
+   */
+  pauseExporting(input: pauseExportingInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.pauseExporting>>;
+  pauseExporting(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { soft } = arg || {};
+      let envelope: any = {};
+      envelope.query = { soft };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        await this._validation.gateRequest('pauseExporting', undefined, envelope);
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.pauseExporting(opts);
+        let data = this._evaluateResponse(_raw, 'pauseExporting', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zPauseExportingResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zPauseExportingResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('pauseExporting', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'pauseExporting', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11609,6 +12129,65 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Resume exporting
+   *
+   * Resumes exporting on all partitions of the physical tenant after a pause or soft pause.
+   *
+    *
+   * @example Resume exporting
+   * ```ts
+   * async function resumeExportingExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   await camunda.resumeExporting();
+   * }
+   * ```
+   * @operationId resumeExporting
+   * @tags Exporting
+   */
+  resumeExporting(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.resumeExporting>>;
+  resumeExporting(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.resumeExporting(opts as any);
+        let data = this._evaluateResponse(_raw, 'resumeExporting', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zResumeExportingResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zResumeExportingResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('resumeExporting', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'resumeExporting', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -15963,6 +16542,151 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'suspendProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Force-write runtime backup state
+   *
+   * Force-writes the checkpoint and backup metadata of every partition of the physical
+   * tenant to the backup store, independent of any backup being taken or confirmed, and
+   * returns the updated state.
+   *
+    *
+   * @example Force-write the runtime backup state
+   * ```ts
+   * async function syncRuntimeBackupStateExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Force-writes checkpoint and backup metadata of every partition to the backup
+   *   // store, independent of any backup being taken, and returns the updated state.
+   *   const state = await camunda.syncRuntimeBackupState();
+   * 
+   *   console.log(`Synced ${state.backupStates.length} partition backup states`);
+   * }
+   * ```
+   * @operationId syncRuntimeBackupState
+   * @tags Backup
+   */
+  syncRuntimeBackupState(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.syncRuntimeBackupState>>;
+  syncRuntimeBackupState(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.syncRuntimeBackupState(opts as any);
+        let data = this._evaluateResponse(_raw, 'syncRuntimeBackupState', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSyncRuntimeBackupStateResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSyncRuntimeBackupStateResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('syncRuntimeBackupState', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Take a runtime backup
+   *
+   * Triggers a backup of runtime data on all partitions of the physical tenant.
+   *
+   * The `backupId` must be omitted if continuous backups and/or a backup or checkpoint
+   * schedule is enabled for the physical tenant, as the id is generated automatically.
+   * Otherwise, `backupId` is required.
+   *
+    *
+   * @example Take a runtime backup
+   * ```ts
+   * async function takeRuntimeBackupExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Omit `backupId` when continuous backups or a backup/checkpoint schedule is
+   *   // enabled for the physical tenant — the id is then generated by the cluster.
+   *   // Otherwise `backupId` is required and must be higher than any existing one.
+   *   const backup = await camunda.takeRuntimeBackup({ backupId: 100 });
+   * 
+   *   console.log(`Scheduled backup ${backup.backupId}`);
+   * }
+   * ```
+   * @operationId takeRuntimeBackup
+   * @tags Backup
+   */
+  takeRuntimeBackup(input: takeRuntimeBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeRuntimeBackup>>;
+  takeRuntimeBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('takeRuntimeBackup', _schemas.zTakeRuntimeBackupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.takeRuntimeBackup(opts);
+        let data = this._evaluateResponse(_raw, 'takeRuntimeBackup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zTakeRuntimeBackupResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zTakeRuntimeBackupResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('takeRuntimeBackup', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackup', exempt: false, retryOverride: options?.retry });
     });
   }
 
