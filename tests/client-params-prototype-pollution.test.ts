@@ -31,8 +31,11 @@ describe('buildClientParams prototype pollution', () => {
       'Could not find the `const params: Params = {...}` initialiser in params.gen.ts'
     ).not.toBeNull();
 
+    // `\{\s*\}` rather than `\{\}`, matching hooks/post/630-harden-client-params.ts: a
+    // slot written `{ }` is just as vulnerable as `{}`, and an exact-match regex would
+    // let that shape through this guard silently.
     const unhardened = SLOTS.filter((slot) =>
-      new RegExp(`\\b${slot}:\\s*\\{\\}`).test(initialiser![0])
+      new RegExp(`\\b${slot}:\\s*\\{\\s*\\}`).test(initialiser![0])
     );
 
     expect(
