@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: cancelProcessInstanceInput"
-sidebar_label: "cancelProcessInstanceInput"
+title: 'Type Alias: cancelProcessInstanceInput'
+sidebar_label: 'cancelProcessInstanceInput'
 mdx:
   format: md
 ---

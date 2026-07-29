@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedJobKeyFilter"
-sidebar_label: "AdvancedJobKeyFilter"
+title: 'Type Alias: AdvancedJobKeyFilter'
+sidebar_label: 'AdvancedJobKeyFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:4855](https://github.com/camunda/orchestration-clu
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:4863](https://github.com/camunda/orchestration-clu
 
 Checks if the current property exists.
 
-***
+---
 
 ### $in?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:4867](https://github.com/camunda/orchestration-clu
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $neq?
 
@@ -65,7 +65,7 @@ Defined in: [gen/types.gen.ts:4859](https://github.com/camunda/orchestration-clu
 
 Checks for inequality with the provided value.
 
-***
+---
 
 ### $notIn?
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignUserToGroupData"
-sidebar_label: "AssignUserToGroupData"
+title: 'Type Alias: AssignUserToGroupData'
+sidebar_label: 'AssignUserToGroupData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:11525](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11525)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ username: Username;
 
 The user username.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11536](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11536)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/groups/{groupId}/users/{username}";
+url: '/groups/{groupId}/users/{username}';
 ```
 
 Defined in: [gen/types.gen.ts:11537](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11537)

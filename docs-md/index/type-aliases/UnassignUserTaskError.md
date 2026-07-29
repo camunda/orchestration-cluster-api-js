@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignUserTaskError"
-sidebar_label: "UnassignUserTaskError"
+title: 'Type Alias: UnassignUserTaskError'
+sidebar_label: 'UnassignUserTaskError'
 mdx:
   format: md
 ---

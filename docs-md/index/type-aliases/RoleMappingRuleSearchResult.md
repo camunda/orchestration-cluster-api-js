@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleMappingRuleSearchResult"
-sidebar_label: "RoleMappingRuleSearchResult"
+title: 'Type Alias: RoleMappingRuleSearchResult'
+sidebar_label: 'RoleMappingRuleSearchResult'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceMigrationBatchOperationPlan"
-sidebar_label: "ProcessInstanceMigrationBatchOperationPlan"
+title: 'Type Alias: ProcessInstanceMigrationBatchOperationPlan'
+sidebar_label: 'ProcessInstanceMigrationBatchOperationPlan'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:989](https://github.com/camunda/orchestration-clus
 
 The mapping instructions.
 
-***
+---
 
 ### targetProcessDefinitionKey
 

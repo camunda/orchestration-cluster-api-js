@@ -1,6 +1,6 @@
 ---
-title: "AuditLogKey"
-sidebar_label: "Overview"
+title: 'AuditLogKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessInstanceCallHierarchyData"
-sidebar_label: "GetProcessInstanceCallHierarchyData"
+title: 'Type Alias: GetProcessInstanceCallHierarchyData'
+sidebar_label: 'GetProcessInstanceCallHierarchyData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:13272](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13272)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The key of the process instance to fetch the hierarchy for.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13279](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13279)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}/call-hierarchy";
+url: '/process-instances/{processInstanceKey}/call-hierarchy';
 ```
 
 Defined in: [gen/types.gen.ts:13280](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13280)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobErrorStatisticsFilter"
-sidebar_label: "JobErrorStatisticsFilter"
+title: 'Type Alias: JobErrorStatisticsFilter'
+sidebar_label: 'JobErrorStatisticsFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3924](https://github.com/camunda/orchestration-clu
 
 Optional error code filter with advanced search capabilities.
 
-***
+---
 
 ### errorMessage?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3928](https://github.com/camunda/orchestration-clu
 
 Optional error message filter with advanced search capabilities.
 
-***
+---
 
 ### from
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:3911](https://github.com/camunda/orchestration-clu
 
 Start of the time window to filter metrics. ISO 8601 date-time format.
 
-***
+---
 
 ### jobType
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:3920](https://github.com/camunda/orchestration-clu
 
 Job type to return error metrics for.
 
-***
+---
 
 ### to
 

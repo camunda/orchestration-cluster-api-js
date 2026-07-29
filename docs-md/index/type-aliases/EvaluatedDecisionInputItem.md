@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluatedDecisionInputItem"
-sidebar_label: "EvaluatedDecisionInputItem"
+title: 'Type Alias: EvaluatedDecisionInputItem'
+sidebar_label: 'EvaluatedDecisionInputItem'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1875](https://github.com/camunda/orchestration-clu
 
 The identifier of the decision input.
 
-***
+---
 
 ### inputName
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1879](https://github.com/camunda/orchestration-clu
 
 The name of the decision input.
 
-***
+---
 
 ### inputValue
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedAuditLogEntityKeyFilter"
-sidebar_label: "AdvancedAuditLogEntityKeyFilter"
+title: 'Type Alias: AdvancedAuditLogEntityKeyFilter'
+sidebar_label: 'AdvancedAuditLogEntityKeyFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:332](https://github.com/camunda/orchestration-clus
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:340](https://github.com/camunda/orchestration-clus
 
 Checks if the current property exists.
 
-***
+---
 
 ### $in?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:344](https://github.com/camunda/orchestration-clus
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $neq?
 
@@ -65,7 +65,7 @@ Defined in: [gen/types.gen.ts:336](https://github.com/camunda/orchestration-clus
 
 Checks for inequality with the provided value.
 
-***
+---
 
 ### $notIn?
 

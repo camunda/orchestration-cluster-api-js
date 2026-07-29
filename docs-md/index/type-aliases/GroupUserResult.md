@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupUserResult"
-sidebar_label: "GroupUserResult"
+title: 'Type Alias: GroupUserResult'
+sidebar_label: 'GroupUserResult'
 mdx:
   format: md
 ---

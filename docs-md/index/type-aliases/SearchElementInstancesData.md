@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchElementInstancesData"
-sidebar_label: "SearchElementInstancesData"
+title: 'Type Alias: SearchElementInstancesData'
+sidebar_label: 'SearchElementInstancesData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: ElementInstanceSearchQuery;
 
 Defined in: [gen/types.gen.ts:10375](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10375)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:10376](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10376)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10377](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10377)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/element-instances/search";
+url: '/element-instances/search';
 ```
 
 Defined in: [gen/types.gen.ts:10378](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10378)

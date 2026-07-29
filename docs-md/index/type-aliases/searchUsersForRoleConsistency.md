@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchUsersForRoleConsistency"
-sidebar_label: "searchUsersForRoleConsistency"
+title: 'Type Alias: searchUsersForRoleConsistency'
+sidebar_label: 'searchUsersForRoleConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type searchUsersForRoleConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:931](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L931)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

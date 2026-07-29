@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionEvaluationKeyExactMatch"
-sidebar_label: "DecisionEvaluationKeyExactMatch"
+title: 'Type Alias: DecisionEvaluationKeyExactMatch'
+sidebar_label: 'DecisionEvaluationKeyExactMatch'
 mdx:
   format: md
 ---

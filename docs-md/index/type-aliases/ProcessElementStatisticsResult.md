@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessElementStatisticsResult"
-sidebar_label: "ProcessElementStatisticsResult"
+title: 'Type Alias: ProcessElementStatisticsResult'
+sidebar_label: 'ProcessElementStatisticsResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5870](https://github.com/camunda/orchestration-clu
 
 The total number of active instances of the element.
 
-***
+---
 
 ### canceled
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5874](https://github.com/camunda/orchestration-clu
 
 The total number of canceled instances of the element.
 
-***
+---
 
 ### completed
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5882](https://github.com/camunda/orchestration-clu
 
 The total number of completed instances of the element.
 
-***
+---
 
 ### elementId
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:5866](https://github.com/camunda/orchestration-clu
 
 The element ID for which the results are aggregated.
 
-***
+---
 
 ### incidents
 

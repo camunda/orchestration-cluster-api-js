@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceModificationTerminateInstruction"
-sidebar_label: "ProcessInstanceModificationTerminateInstruction"
+title: 'Type Alias: ProcessInstanceModificationTerminateInstruction'
+sidebar_label: 'ProcessInstanceModificationTerminateInstruction'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ProcessInstanceModificationTerminateInstruction
 
 ```ts
-type ProcessInstanceModificationTerminateInstruction = 
+type ProcessInstanceModificationTerminateInstruction =
   | ProcessInstanceModificationTerminateByIdInstruction
   | ProcessInstanceModificationTerminateByKeyInstruction;
 ```

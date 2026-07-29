@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuditLogErrors"
-sidebar_label: "GetAuditLogErrors"
+title: 'Type Alias: GetAuditLogErrors'
+sidebar_label: 'GetAuditLogErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8541](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:8545](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:8549](https://github.com/camunda/orchestration-clu
 
 The audit log with the given key was not found.
 
-***
+---
 
 ### 500
 

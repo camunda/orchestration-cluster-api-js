@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationSearchQuery"
-sidebar_label: "BatchOperationSearchQuery"
+title: 'Type Alias: BatchOperationSearchQuery'
+sidebar_label: 'BatchOperationSearchQuery'
 mdx:
   format: md
 ---

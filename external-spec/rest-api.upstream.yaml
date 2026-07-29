@@ -1126,7 +1126,11 @@ paths:
         - User task
       operationId: completeUserTask
       summary: Complete user task
-      description: Completes a user task with the given key.
+      description: >
+        Completes a user task with the given key. Completion waits for blocking task listeners on
+        this lifecycle transition. If listener processing is delayed beyond the request timeout,
+        this endpoint can return 504. Other gateway timeout causes are also possible. Retry with
+        backoff and inspect listener worker availability and logs when this repeats.
       parameters:
         - name: userTaskKey
           in: path
@@ -1163,6 +1167,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: '#/components/responses/GatewayTimeoutTaskListenerBlocking'
       x-eventually-consistent: false
   /user-tasks/{userTaskKey}/assignment:
     post:
@@ -1170,7 +1176,12 @@ paths:
         - User task
       operationId: assignUserTask
       summary: Assign user task
-      description: Assigns a user task with the given key to the given assignee.
+      description: >
+        Assigns a user task with the given key to the given assignee. Assignment waits for
+        blocking task listeners on this lifecycle transition. If listener processing is delayed
+        beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are
+        also possible. Retry with backoff and inspect listener worker availability and logs when
+        this repeats.
       parameters:
         - name: userTaskKey
           in: path
@@ -1207,6 +1218,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: '#/components/responses/GatewayTimeoutTaskListenerBlocking'
       x-eventually-consistent: false
   /user-tasks/{userTaskKey}:
     get:
@@ -1251,7 +1264,10 @@ paths:
         - User task
       operationId: updateUserTask
       summary: Update user task
-      description: Update a user task with the given key.
+      description: >
+        Update a user task with the given key. Updates wait for blocking task listeners on this
+        lifecycle transition. If listener processing is delayed beyond the request timeout, this
+        endpoint can return 504.Update a user task with the given key.
       parameters:
         - name: userTaskKey
           in: path
@@ -1288,6 +1304,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: '#/components/responses/GatewayTimeoutTaskListenerBlocking'
       x-eventually-consistent: false
   /user-tasks/{userTaskKey}/form:
     get:
@@ -1336,7 +1354,12 @@ paths:
         - User task
       operationId: unassignUserTask
       summary: Unassign user task
-      description: Removes the assignee of a task with the given key.
+      description: >
+        Removes the assignee of a task with the given key. Unassignment waits for blocking task
+        listeners on this lifecycle transition. If listener processing is delayed beyond the
+        request timeout, this endpoint can return 504. Other gateway timeout causes are also
+        possible. Retry with backoff and inspect listener worker availability and logs when this
+        repeats.
       parameters:
         - name: userTaskKey
           in: path
@@ -1367,6 +1390,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: '#/components/responses/GatewayTimeoutTaskListenerBlocking'
       x-eventually-consistent: false
   /user-tasks/search:
     post:
@@ -1406,7 +1431,13 @@ paths:
       operationId: searchUserTaskVariables
       summary: Search user task variables
       description: |
-        Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
+        Search for user task variables based on given criteria. This endpoint returns all variable
+        documents visible from the user task's scope, including variables from parent scopes in the
+        scope hierarchy. If the same variable name exists at multiple scope levels, each scope's
+        variable is returned as a separate result. Use the
+        `/user-tasks/{userTaskKey}/effective-variables/search` endpoint to get deduplicated variables
+        where the innermost scope takes precedence. By default, long variable values in the response
+        are truncated.
       parameters:
         - name: userTaskKey
           in: path
@@ -1438,6 +1469,50 @@ paths:
           $ref: "#/components/responses/InvalidData"
         "500":
           $ref: "#/components/responses/InternalServerError"
+  /user-tasks/{userTaskKey}/effective-variables/search:
+    post:
+      x-eventually-consistent: true
+      tags:
+        - User task
+      operationId: searchUserTaskEffectiveVariables
+      summary: Search user task effective variables
+      description: |
+        Search for the effective variables of a user task. This endpoint returns deduplicated
+        variables where each variable name appears at most once. When the same variable name exists
+        at multiple scope levels in the scope hierarchy, the value from the innermost scope (closest
+        to the user task) takes precedence. This is useful for retrieving the actual runtime state
+        of variables as seen by the user task. By default, long variable values in the response are
+        truncated.
+      parameters:
+        - name: userTaskKey
+          in: path
+          required: true
+          description: The key of the user task.
+          schema:
+            $ref: '#/components/schemas/UserTaskKey'
+        - name: truncateValues
+          in: query
+          required: false
+          description: When true (default), long variable values in the response are truncated. When false, full variable values are returned.
+          schema:
+            type: boolean
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserTaskEffectiveVariableSearchQueryRequest'
+      responses:
+        "200":
+          description: The user task effective variable search result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VariableSearchQueryResult'
+        "400":
+          $ref: '#/components/responses/InvalidData'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
   /variables/search:
     post:
       tags:
@@ -1991,7 +2066,12 @@ paths:
         - Process instance
       operationId: cancelProcessInstance
       summary: Cancel process instance
-      description: Cancels a running process instance. As a cancelation includes more than just the removal of the process instance resource, the cancelation resource must be posted.
+      description: >
+        Cancels a running process instance. As a cancellation includes more than just the removal
+        of the process instance resource, the cancellation resource must be posted. Cancellation
+        can wait on listener-related processing; when that processing does not complete in time,
+        this endpoint can return 504. Other gateway timeout causes are also possible. Retry with
+        backoff and inspect listener worker availability and logs when this repeats.
       parameters:
         - name: processInstanceKey
           in: path
@@ -2020,6 +2100,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: '#/components/responses/GatewayTimeoutTaskListenerBlocking'
       x-eventually-consistent: false
   /process-instances/cancellation:
     post:
@@ -2059,7 +2141,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalServerError"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /process-instances/incident-resolution:
     post:
       tags:
@@ -2098,7 +2180,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalServerError"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /process-instances/migration:
     post:
       tags:
@@ -2137,7 +2219,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalServerError"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /process-instances/modification:
     post:
       tags:
@@ -2178,7 +2260,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "500":
           $ref: "#/components/responses/InternalServerError"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /process-instances/{processInstanceKey}/migration:
     post:
       tags:
@@ -4770,7 +4852,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /users/search:
     post:
       tags:
@@ -4864,9 +4946,9 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
     put:
-      x-eventually-consistent: true
+      x-eventually-consistent: false
       tags:
         - User
       operationId: updateUser
@@ -4936,7 +5018,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /incidents/search:
     post:
       tags:
@@ -5249,6 +5331,10 @@ paths:
       description: |
         Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.
         Specify the element instance in the `elementInstanceKey` parameter.
+        Variable updates can be delayed by listener-related processing; if processing exceeds the
+        request timeout, this endpoint can return 504. Other gateway timeout causes are also
+        possible. Retry with backoff and inspect listener worker availability and logs when this
+        repeats.
       parameters:
         - name: elementInstanceKey
           in: path
@@ -5274,6 +5360,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
+        "504":
+          $ref: '#/components/responses/GatewayTimeoutTaskListenerBlocking'
       x-eventually-consistent: false
   /element-instances/ad-hoc-activities/{adHocSubProcessInstanceKey}/activation:
     post:
@@ -5456,7 +5544,7 @@ paths:
                 $ref: "#/components/schemas/ProblemDetail"
         "500":
           $ref: "#/components/responses/InternalServerError"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /batch-operations/{batchOperationKey}/suspension:
     post:
       tags:
@@ -5496,7 +5584,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /batch-operations/{batchOperationKey}/resumption:
     post:
       tags:
@@ -5536,7 +5624,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "503":
           $ref: "#/components/responses/ServiceUnavailable"
-      x-eventually-consistent: true
+      x-eventually-consistent: false
   /batch-operation-items/search:
     post:
       tags:
@@ -5728,10 +5816,11 @@ components:
       description: System-generated key for a decision evaluation instance.
       format: DecisionEvaluationInstanceKey
       x-semantic-type: DecisionEvaluationInstanceKey
-      example: "2251799813684367"
       type: string
-      allOf:
-        - $ref: "#/components/schemas/LongKey"
+      pattern: ^[0-9]+-[0-9]+$
+      minLength: 3
+      maxLength: 30
+      example: "2251799813684367-1"
     DecisionEvaluationKey:
       allOf:
         - $ref: "#/components/schemas/LongKey"
@@ -5974,6 +6063,25 @@ components:
           description: The user task variable search filters.
           allOf:
             - $ref: "#/components/schemas/UserTaskVariableFilter"
+    UserTaskEffectiveVariableSearchQueryRequest:
+      description: >
+        User task effective variable search query request. Uses offset-based pagination only.
+      additionalProperties: false
+      type: object
+      properties:
+        page:
+          description: Pagination parameters.
+          allOf:
+            - $ref: '#/components/schemas/OffsetPagination'
+        sort:
+          description: Sort field criteria.
+          type: array
+          items:
+            $ref: '#/components/schemas/UserTaskVariableSearchQuerySortRequest'
+        filter:
+          allOf:
+            - $ref: '#/components/schemas/UserTaskVariableFilter'
+          description: The user task variable search filters.
     UserTaskSearchQueryResult:
       description: User task search query response.
       type: object
@@ -6405,6 +6513,7 @@ components:
             Whether to only return the latest version of each process definition.
             When using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.
             The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
+            When using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.
           type: boolean
         resourceName:
           description: Resource name of this process definition.
@@ -6431,6 +6540,17 @@ components:
         hasStartForm:
           description: Indicates whether the start event of the process has an associated Form Key.
           type: boolean
+        state:
+          description: |
+            Filter by the process definition's state.
+            When not set, process definitions in any state are returned.
+            Set to `ACTIVE` to exclude deleted definitions (recommended for most use cases).
+            Set to `DELETED` to return only definitions that have been deleted but are still
+            retained in secondary storage.
+          type: string
+          enum:
+            - ACTIVE
+            - DELETED
     ProcessDefinitionSearchQueryResult:
       type: object
       allOf:
@@ -6472,6 +6592,12 @@ components:
         hasStartForm:
           description: Indicates whether the start event of the process has an associated Form Key.
           type: boolean
+        state:
+          description: The state of this process definition.
+          type: string
+          enum:
+            - ACTIVE
+            - DELETED
     ProcessInstanceSearchQuerySortRequest:
       type: object
       properties:
@@ -7072,9 +7198,18 @@ components:
           allOf:
             - $ref: "#/components/schemas/ElementInstanceKeyFilterProperty"
         batchOperationId:
-          description: The batch operation ID.
+          description: >
+            The batch operation id.
+
+            **Deprecated**: Use `batchOperationKey` instead. This field will be removed in a future release.
+            If both `batchOperationId` and `batchOperationKey` are provided, the request will be rejected with a 400 error.
           allOf:
             - $ref: "#/components/schemas/StringFilterProperty"
+          deprecated: true
+        batchOperationKey:
+          allOf:
+            - $ref: "#/components/schemas/StringFilterProperty"
+          description: The batch operation key.
         errorMessage:
           description: The error message related to the process.
           allOf:
@@ -11856,8 +11991,8 @@ components:
           allOf:
             - $ref: "#/components/schemas/FormId"
         schema:
-          description: The form content.
-          type: object
+          description: The form schema as a JSON document serialized as a string.
+          type: string
         version:
           description: The version of the the deployed form.
           type: integer
@@ -12384,6 +12519,33 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/ProblemDetail"
+    GatewayTimeoutTaskListenerBlocking:
+      description: >
+        The request timed out between the gateway and the broker. For these endpoints, this often
+        happens when user task listeners are configured and the corresponding listener job is not
+        completed within the request timeout. Common causes include no available job workers for
+        the listener type, busy or crashed job workers, or delayed job completion. As with any
+        gateway timeout, general timeout causes (for example transient network issues) can also
+        result in a 504 response.
+
+        Troubleshooting:
+        - verify that job workers for the listener type are running and healthy
+        - check worker logs for crashes, retries, and completion failures
+        - check network connectivity between workers, gateway, and broker
+        - retry with backoff after transient failures
+        - fail without retries if a problem persists
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetail'
+          examples:
+            taskListenerTimeout:
+              value:
+                type: about:blank
+                title: DEADLINE_EXCEEDED
+                status: 504
+                detail: Expected to handle request, but request timed out between gateway and broker
+                instance: /v2/user-tasks/123/completion
   securitySchemes:
     BearerAuth:
       type: http

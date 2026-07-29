@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignUserFromGroupError"
-sidebar_label: "UnassignUserFromGroupError"
+title: 'Type Alias: UnassignUserFromGroupError'
+sidebar_label: 'UnassignUserFromGroupError'
 mdx:
   format: md
 ---

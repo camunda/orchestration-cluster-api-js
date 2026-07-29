@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: updateTenantClusterVariableInput"
-sidebar_label: "updateTenantClusterVariableInput"
+title: 'Type Alias: updateTenantClusterVariableInput'
+sidebar_label: 'updateTenantClusterVariableInput'
 mdx:
   format: md
 ---

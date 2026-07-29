@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUsersErrors"
-sidebar_label: "SearchUsersErrors"
+title: 'Type Alias: SearchUsersErrors'
+sidebar_label: 'SearchUsersErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:15825](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:15829](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:15833](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

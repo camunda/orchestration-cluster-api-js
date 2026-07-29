@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getLicenseInput"
-sidebar_label: "getLicenseInput"
+title: 'Type Alias: getLicenseInput'
+sidebar_label: 'getLicenseInput'
 mdx:
   format: md
 ---

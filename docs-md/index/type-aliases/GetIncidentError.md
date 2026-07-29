@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetIncidentError"
-sidebar_label: "GetIncidentError"
+title: 'Type Alias: GetIncidentError'
+sidebar_label: 'GetIncidentError'
 mdx:
   format: md
 ---

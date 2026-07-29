@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobChangeset"
-sidebar_label: "JobChangeset"
+title: 'Type Alias: JobChangeset'
+sidebar_label: 'JobChangeset'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:4530](https://github.com/camunda/orchestration-clu
 
 The new number of retries for the job.
 
-***
+---
 
 ### timeout?
 

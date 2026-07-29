@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateTenantClusterVariableData"
-sidebar_label: "CreateTenantClusterVariableData"
+title: 'Type Alias: CreateTenantClusterVariableData'
+sidebar_label: 'CreateTenantClusterVariableData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: CreateClusterVariableRequest;
 
 Defined in: [gen/types.gen.ts:9325](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9325)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ tenantId: TenantId;
 
 The tenant ID
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:9332](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9332)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/cluster-variables/tenants/{tenantId}";
+url: '/cluster-variables/tenants/{tenantId}';
 ```
 
 Defined in: [gen/types.gen.ts:9333](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9333)

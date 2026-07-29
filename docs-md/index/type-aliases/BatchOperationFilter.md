@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationFilter"
-sidebar_label: "BatchOperationFilter"
+title: 'Type Alias: BatchOperationFilter'
+sidebar_label: 'BatchOperationFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:753](https://github.com/camunda/orchestration-clus
 
 The ID of the actor who performed the operation.
 
-***
+---
 
 ### actorType?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:749](https://github.com/camunda/orchestration-clus
 
 The type of the actor who performed the operation.
 
-***
+---
 
 ### batchOperationKey?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:737](https://github.com/camunda/orchestration-clus
 
 The key (or operate legacy ID) of the batch operation.
 
-***
+---
 
 ### operationType?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:741](https://github.com/camunda/orchestration-clus
 
 The type of the batch operation.
 
-***
+---
 
 ### state?
 

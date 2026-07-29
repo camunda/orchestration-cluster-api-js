@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuditLogSearchQueryRequest"
-sidebar_label: "AuditLogSearchQueryRequest"
+title: 'Type Alias: AuditLogSearchQueryRequest'
+sidebar_label: 'AuditLogSearchQueryRequest'
 mdx:
   format: md
 ---

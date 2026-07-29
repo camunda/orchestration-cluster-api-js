@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGroupError"
-sidebar_label: "DeleteGroupError"
+title: 'Type Alias: DeleteGroupError'
+sidebar_label: 'DeleteGroupError'
 mdx:
   format: md
 ---

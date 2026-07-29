@@ -1,6 +1,6 @@
 ---
-title: "VariableKey"
-sidebar_label: "Overview"
+title: 'VariableKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

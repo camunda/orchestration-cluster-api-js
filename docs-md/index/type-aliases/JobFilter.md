@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobFilter"
-sidebar_label: "JobFilter"
+title: 'Type Alias: JobFilter'
+sidebar_label: 'JobFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:4242](https://github.com/camunda/orchestration-clu
 
 When the job was created. Field is present for jobs created after 8.9.
 
-***
+---
 
 ### deadline?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:4162](https://github.com/camunda/orchestration-clu
 
 When the job can next be activated.
 
-***
+---
 
 ### deniedReason?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:4166](https://github.com/camunda/orchestration-clu
 
 The reason provided by the user task listener for denying the work.
 
-***
+---
 
 ### elementId?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:4170](https://github.com/camunda/orchestration-clu
 
 The element ID associated with the job.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:4174](https://github.com/camunda/orchestration-clu
 
 The element instance key associated with the job.
 
-***
+---
 
 ### endTime?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:4178](https://github.com/camunda/orchestration-clu
 
 When the job ended.
 
-***
+---
 
 ### errorCode?
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:4182](https://github.com/camunda/orchestration-clu
 
 The error code provided for the failed job.
 
-***
+---
 
 ### errorMessage?
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:4186](https://github.com/camunda/orchestration-clu
 
 The error message that provides additional context for a failed job.
 
-***
+---
 
 ### hasFailedWithRetriesLeft?
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:4190](https://github.com/camunda/orchestration-clu
 
 Indicates whether the job has failed with retries left.
 
-***
+---
 
 ### isDenied?
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:4194](https://github.com/camunda/orchestration-clu
 
 Indicates whether the user task listener denies the work.
 
-***
+---
 
 ### jobKey?
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:4198](https://github.com/camunda/orchestration-clu
 
 The key, a unique identifier for the job.
 
-***
+---
 
 ### kind?
 
@@ -159,7 +159,7 @@ Defined in: [gen/types.gen.ts:4202](https://github.com/camunda/orchestration-clu
 
 The kind of the job.
 
-***
+---
 
 ### lastUpdateTime?
 
@@ -171,7 +171,7 @@ Defined in: [gen/types.gen.ts:4246](https://github.com/camunda/orchestration-clu
 
 When the job was last updated. Field is present for jobs created after 8.9.
 
-***
+---
 
 ### listenerEventType?
 
@@ -183,7 +183,7 @@ Defined in: [gen/types.gen.ts:4206](https://github.com/camunda/orchestration-clu
 
 The listener event type of the job.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -195,7 +195,7 @@ Defined in: [gen/types.gen.ts:4210](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with the job.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -207,7 +207,7 @@ Defined in: [gen/types.gen.ts:4214](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with the job.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -219,7 +219,7 @@ Defined in: [gen/types.gen.ts:4218](https://github.com/camunda/orchestration-clu
 
 The process instance key associated with the job.
 
-***
+---
 
 ### retries?
 
@@ -231,7 +231,7 @@ Defined in: [gen/types.gen.ts:4222](https://github.com/camunda/orchestration-clu
 
 The number of retries left.
 
-***
+---
 
 ### state?
 
@@ -243,7 +243,7 @@ Defined in: [gen/types.gen.ts:4226](https://github.com/camunda/orchestration-clu
 
 The state of the job.
 
-***
+---
 
 ### tenantId?
 
@@ -255,7 +255,7 @@ Defined in: [gen/types.gen.ts:4230](https://github.com/camunda/orchestration-clu
 
 The tenant ID.
 
-***
+---
 
 ### type?
 
@@ -267,7 +267,7 @@ Defined in: [gen/types.gen.ts:4234](https://github.com/camunda/orchestration-clu
 
 The type of the job.
 
-***
+---
 
 ### worker?
 

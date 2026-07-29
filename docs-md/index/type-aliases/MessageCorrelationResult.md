@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageCorrelationResult"
-sidebar_label: "MessageCorrelationResult"
+title: 'Type Alias: MessageCorrelationResult'
+sidebar_label: 'MessageCorrelationResult'
 mdx:
   format: md
 ---
@@ -28,7 +28,7 @@ Defined in: [gen/types.gen.ts:5311](https://github.com/camunda/orchestration-clu
 
 The key of the correlated message.
 
-***
+---
 
 ### processInstanceKey
 
@@ -40,7 +40,7 @@ Defined in: [gen/types.gen.ts:5315](https://github.com/camunda/orchestration-clu
 
 The key of the first process instance the message correlated with
 
-***
+---
 
 ### tenantId
 

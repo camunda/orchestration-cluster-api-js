@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteDecisionInstanceInput"
-sidebar_label: "deleteDecisionInstanceInput"
+title: 'Type Alias: deleteDecisionInstanceInput'
+sidebar_label: 'deleteDecisionInstanceInput'
 mdx:
   format: md
 ---

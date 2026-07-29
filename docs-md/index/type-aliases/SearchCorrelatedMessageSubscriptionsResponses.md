@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchCorrelatedMessageSubscriptionsResponses"
-sidebar_label: "SearchCorrelatedMessageSubscriptionsResponses"
+title: 'Type Alias: SearchCorrelatedMessageSubscriptionsResponses'
+sidebar_label: 'SearchCorrelatedMessageSubscriptionsResponses'
 mdx:
   format: md
 ---

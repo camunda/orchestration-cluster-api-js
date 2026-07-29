@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SignalBroadcastResult"
-sidebar_label: "SignalBroadcastResult"
+title: 'Type Alias: SignalBroadcastResult'
+sidebar_label: 'SignalBroadcastResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7235](https://github.com/camunda/orchestration-clu
 
 The key of the broadcasted signal.
 
-***
+---
 
 ### tenantId
 

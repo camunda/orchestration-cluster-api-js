@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getDecisionRequirementsXmlInput"
-sidebar_label: "getDecisionRequirementsXmlInput"
+title: 'Type Alias: getDecisionRequirementsXmlInput'
+sidebar_label: 'getDecisionRequirementsXmlInput'
 mdx:
   format: md
 ---

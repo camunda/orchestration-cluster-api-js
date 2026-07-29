@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalListenerSourceExactMatch"
-sidebar_label: "GlobalListenerSourceExactMatch"
+title: 'Type Alias: GlobalListenerSourceExactMatch'
+sidebar_label: 'GlobalListenerSourceExactMatch'
 mdx:
   format: md
 ---

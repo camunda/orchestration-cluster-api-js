@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteRoleErrors"
-sidebar_label: "DeleteRoleErrors"
+title: 'Type Alias: DeleteRoleErrors'
+sidebar_label: 'DeleteRoleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13898](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13902](https://github.com/camunda/orchestration-cl
 
 The role with the ID was not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13906](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

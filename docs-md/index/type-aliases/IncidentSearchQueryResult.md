@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentSearchQueryResult"
-sidebar_label: "IncidentSearchQueryResult"
+title: 'Type Alias: IncidentSearchQueryResult'
+sidebar_label: 'IncidentSearchQueryResult'
 mdx:
   format: md
 ---

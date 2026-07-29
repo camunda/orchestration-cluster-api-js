@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchGlobalTaskListenersResponses"
-sidebar_label: "SearchGlobalTaskListenersResponses"
+title: 'Type Alias: SearchGlobalTaskListenersResponses'
+sidebar_label: 'SearchGlobalTaskListenersResponses'
 mdx:
   format: md
 ---

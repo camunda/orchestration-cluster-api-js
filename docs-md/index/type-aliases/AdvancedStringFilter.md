@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedStringFilter"
-sidebar_label: "AdvancedStringFilter"
+title: 'Type Alias: AdvancedStringFilter'
+sidebar_label: 'AdvancedStringFilter'
 mdx:
   format: md
 ---

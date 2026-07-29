@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchBatchOperationsError"
-sidebar_label: "SearchBatchOperationsError"
+title: 'Type Alias: SearchBatchOperationsError'
+sidebar_label: 'SearchBatchOperationsError'
 mdx:
   format: md
 ---

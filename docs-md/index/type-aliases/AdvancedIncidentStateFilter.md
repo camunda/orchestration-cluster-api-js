@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedIncidentStateFilter"
-sidebar_label: "AdvancedIncidentStateFilter"
+title: 'Type Alias: AdvancedIncidentStateFilter'
+sidebar_label: 'AdvancedIncidentStateFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:3479](https://github.com/camunda/orchestration-clu
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:3487](https://github.com/camunda/orchestration-clu
 
 Checks if the current property exists.
 
-***
+---
 
 ### $in?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:3491](https://github.com/camunda/orchestration-clu
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $like?
 
@@ -63,7 +63,7 @@ optional $like: LikeFilter;
 
 Defined in: [gen/types.gen.ts:3496](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3496)
 
-***
+---
 
 ### $neq?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:3483](https://github.com/camunda/orchestration-clu
 
 Checks for inequality with the provided value.
 
-***
+---
 
 ### $notIn?
 

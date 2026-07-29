@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessDefinitionStatisticsData"
-sidebar_label: "GetProcessDefinitionStatisticsData"
+title: 'Type Alias: GetProcessDefinitionStatisticsData'
+sidebar_label: 'GetProcessDefinitionStatisticsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: ProcessDefinitionElementStatisticsQuery;
 
 Defined in: [gen/types.gen.ts:12817](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12817)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processDefinitionKey: ProcessDefinitionKey;
 
 The assigned key of the process definition, which acts as a unique identifier for this process definition.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:12824](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12824)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-definitions/{processDefinitionKey}/statistics/element-instances";
+url: '/process-definitions/{processDefinitionKey}/statistics/element-instances';
 ```
 
 Defined in: [gen/types.gen.ts:12825](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12825)

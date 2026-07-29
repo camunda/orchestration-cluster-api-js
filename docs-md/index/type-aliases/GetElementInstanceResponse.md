@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetElementInstanceResponse"
-sidebar_label: "GetElementInstanceResponse"
+title: 'Type Alias: GetElementInstanceResponse'
+sidebar_label: 'GetElementInstanceResponse'
 mdx:
   format: md
 ---

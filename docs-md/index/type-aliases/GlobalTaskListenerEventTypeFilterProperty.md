@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalTaskListenerEventTypeFilterProperty"
-sidebar_label: "GlobalTaskListenerEventTypeFilterProperty"
+title: 'Type Alias: GlobalTaskListenerEventTypeFilterProperty'
+sidebar_label: 'GlobalTaskListenerEventTypeFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: GlobalTaskListenerEventTypeFilterProperty
 
 ```ts
-type GlobalTaskListenerEventTypeFilterProperty = 
+type GlobalTaskListenerEventTypeFilterProperty =
   | GlobalTaskListenerEventTypeExactMatch
   | AdvancedGlobalTaskListenerEventTypeFilter;
 ```

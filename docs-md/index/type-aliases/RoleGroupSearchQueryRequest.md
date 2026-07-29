@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleGroupSearchQueryRequest"
-sidebar_label: "RoleGroupSearchQueryRequest"
+title: 'Type Alias: RoleGroupSearchQueryRequest'
+sidebar_label: 'RoleGroupSearchQueryRequest'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalTaskListenerSearchQueryFilterRequest"
-sidebar_label: "GlobalTaskListenerSearchQueryFilterRequest"
+title: 'Type Alias: GlobalTaskListenerSearchQueryFilterRequest'
+sidebar_label: 'GlobalTaskListenerSearchQueryFilterRequest'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3036](https://github.com/camunda/orchestration-clu
 
 Whether the listener runs after model-level listeners.
 
-***
+---
 
 ### eventTypes?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3032](https://github.com/camunda/orchestration-clu
 
 Event types of the global listener.
 
-***
+---
 
 ### id?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:3020](https://github.com/camunda/orchestration-clu
 
 Id of the global listener.
 
-***
+---
 
 ### priority?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:3040](https://github.com/camunda/orchestration-clu
 
 Priority of the global listener.
 
-***
+---
 
 ### retries?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:3028](https://github.com/camunda/orchestration-clu
 
 Number of retries of the global listener.
 
-***
+---
 
 ### source?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:3044](https://github.com/camunda/orchestration-clu
 
 How the global listener was defined.
 
-***
+---
 
 ### type?
 

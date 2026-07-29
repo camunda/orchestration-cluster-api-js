@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateElementInstanceVariablesResponses"
-sidebar_label: "CreateElementInstanceVariablesResponses"
+title: 'Type Alias: CreateElementInstanceVariablesResponses'
+sidebar_label: 'CreateElementInstanceVariablesResponses'
 mdx:
   format: md
 ---

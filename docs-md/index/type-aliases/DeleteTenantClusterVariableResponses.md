@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteTenantClusterVariableResponses"
-sidebar_label: "DeleteTenantClusterVariableResponses"
+title: 'Type Alias: DeleteTenantClusterVariableResponses'
+sidebar_label: 'DeleteTenantClusterVariableResponses'
 mdx:
   format: md
 ---

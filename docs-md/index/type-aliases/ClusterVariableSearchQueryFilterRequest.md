@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ClusterVariableSearchQueryFilterRequest"
-sidebar_label: "ClusterVariableSearchQueryFilterRequest"
+title: 'Type Alias: ClusterVariableSearchQueryFilterRequest'
+sidebar_label: 'ClusterVariableSearchQueryFilterRequest'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1248](https://github.com/camunda/orchestration-clu
 
 Filter cluster variables by truncation status of their stored values. When true, returns only variables whose stored values are truncated (i.e., the value exceeds the storage size limit and is truncated in storage). When false, returns only variables with non-truncated stored values. This filter is based on the underlying storage characteristic, not the response format.
 
-***
+---
 
 ### name?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1231](https://github.com/camunda/orchestration-clu
 
 Name of the cluster variable.
 
-***
+---
 
 ### scope?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1239](https://github.com/camunda/orchestration-clu
 
 The scope filter for cluster variables.
 
-***
+---
 
 ### tenantId?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:1243](https://github.com/camunda/orchestration-clu
 
 Tenant ID of this variable.
 
-***
+---
 
 ### value?
 

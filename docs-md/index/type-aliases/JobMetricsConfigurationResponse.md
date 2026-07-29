@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobMetricsConfigurationResponse"
-sidebar_label: "JobMetricsConfigurationResponse"
+title: 'Type Alias: JobMetricsConfigurationResponse'
+sidebar_label: 'JobMetricsConfigurationResponse'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7287](https://github.com/camunda/orchestration-clu
 
 Whether job metrics export is enabled.
 
-***
+---
 
 ### exportInterval
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:7291](https://github.com/camunda/orchestration-clu
 
 The interval at which job metrics are exported, as an ISO 8601 duration.
 
-***
+---
 
 ### maxJobTypeLength
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:7299](https://github.com/camunda/orchestration-clu
 
 The maximum length of the job type used in job metrics labels.
 
-***
+---
 
 ### maxTenantIdLength
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:7303](https://github.com/camunda/orchestration-clu
 
 The maximum length of the tenant ID used in job metrics labels.
 
-***
+---
 
 ### maxUniqueKeys
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:7307](https://github.com/camunda/orchestration-clu
 
 The maximum number of unique metric keys tracked for job metrics.
 
-***
+---
 
 ### maxWorkerNameLength
 

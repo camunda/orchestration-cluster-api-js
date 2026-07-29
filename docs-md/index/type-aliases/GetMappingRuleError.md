@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetMappingRuleError"
-sidebar_label: "GetMappingRuleError"
+title: 'Type Alias: GetMappingRuleError'
+sidebar_label: 'GetMappingRuleError'
 mdx:
   format: md
 ---

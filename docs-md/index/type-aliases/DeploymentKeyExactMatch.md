@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentKeyExactMatch"
-sidebar_label: "DeploymentKeyExactMatch"
+title: 'Type Alias: DeploymentKeyExactMatch'
+sidebar_label: 'DeploymentKeyExactMatch'
 mdx:
   format: md
 ---

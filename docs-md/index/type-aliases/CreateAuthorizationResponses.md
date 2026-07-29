@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateAuthorizationResponses"
-sidebar_label: "CreateAuthorizationResponses"
+title: 'Type Alias: CreateAuthorizationResponses'
+sidebar_label: 'CreateAuthorizationResponses'
 mdx:
   format: md
 ---

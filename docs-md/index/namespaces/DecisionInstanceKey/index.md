@@ -1,6 +1,6 @@
 ---
-title: "DecisionInstanceKey"
-sidebar_label: "Overview"
+title: 'DecisionInstanceKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

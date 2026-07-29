@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateUserTaskResponses"
-sidebar_label: "UpdateUserTaskResponses"
+title: 'Type Alias: UpdateUserTaskResponses'
+sidebar_label: 'UpdateUserTaskResponses'
 mdx:
   format: md
 ---

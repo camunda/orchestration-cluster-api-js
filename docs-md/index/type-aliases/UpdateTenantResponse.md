@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateTenantResponse"
-sidebar_label: "UpdateTenantResponse"
+title: 'Type Alias: UpdateTenantResponse'
+sidebar_label: 'UpdateTenantResponse'
 mdx:
   format: md
 ---

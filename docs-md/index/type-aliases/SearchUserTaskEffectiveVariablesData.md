@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUserTaskEffectiveVariablesData"
-sidebar_label: "SearchUserTaskEffectiveVariablesData"
+title: 'Type Alias: SearchUserTaskEffectiveVariablesData'
+sidebar_label: 'SearchUserTaskEffectiveVariablesData'
 mdx:
   format: md
 ---
@@ -49,7 +49,7 @@ optional sort: object[];
 
 Sort field criteria.
 
-***
+---
 
 ### path
 
@@ -67,7 +67,7 @@ userTaskKey: UserTaskKey;
 
 The key of the user task.
 
-***
+---
 
 ### query?
 
@@ -85,12 +85,12 @@ optional truncateValues: boolean;
 
 When true (default), long variable values in the response are truncated. When false, full variable values are returned.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/user-tasks/{userTaskKey}/effective-variables/search";
+url: '/user-tasks/{userTaskKey}/effective-variables/search';
 ```
 
 Defined in: [gen/types.gen.ts:16388](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16388)

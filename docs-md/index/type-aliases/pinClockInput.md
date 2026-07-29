@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: pinClockInput"
-sidebar_label: "pinClockInput"
+title: 'Type Alias: pinClockInput'
+sidebar_label: 'pinClockInput'
 mdx:
   format: md
 ---

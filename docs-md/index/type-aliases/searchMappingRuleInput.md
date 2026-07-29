@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchMappingRuleInput"
-sidebar_label: "searchMappingRuleInput"
+title: 'Type Alias: searchMappingRuleInput'
+sidebar_label: 'searchMappingRuleInput'
 mdx:
   format: md
 ---

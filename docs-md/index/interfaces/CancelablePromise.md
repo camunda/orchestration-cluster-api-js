@@ -1,6 +1,6 @@
 ---
-title: "Interface: CancelablePromise<T>"
-sidebar_label: "CancelablePromise<T>"
+title: 'Interface: CancelablePromise<T>'
+sidebar_label: 'CancelablePromise<T>'
 mdx:
   format: md
 ---

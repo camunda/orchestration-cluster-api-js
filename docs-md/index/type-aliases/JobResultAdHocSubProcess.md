@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobResultAdHocSubProcess"
-sidebar_label: "JobResultAdHocSubProcess"
+title: 'Type Alias: JobResultAdHocSubProcess'
+sidebar_label: 'JobResultAdHocSubProcess'
 mdx:
   format: md
 ---
@@ -8,14 +8,12 @@ mdx:
 # Type Alias: JobResultAdHocSubProcess
 
 ```ts
-type JobResultAdHocSubProcess = 
-  | {
+type JobResultAdHocSubProcess = {
   activateElements?: JobResultActivateElement[];
   isCancelRemainingInstances?: boolean;
   isCompletionConditionFulfilled?: boolean;
   type?: string;
-}
-  | null;
+} | null;
 ```
 
 Defined in: [gen/types.gen.ts:4483](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4483)

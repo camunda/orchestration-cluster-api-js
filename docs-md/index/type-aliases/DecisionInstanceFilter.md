@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionInstanceFilter"
-sidebar_label: "DecisionInstanceFilter"
+title: 'Type Alias: DecisionInstanceFilter'
+sidebar_label: 'DecisionInstanceFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1734](https://github.com/camunda/orchestration-clu
 
 The ID of the DMN decision.
 
-***
+---
 
 ### decisionDefinitionKey?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1764](https://github.com/camunda/orchestration-clu
 
 The key of the decision.
 
-***
+---
 
 ### decisionDefinitionName?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1738](https://github.com/camunda/orchestration-clu
 
 The name of the DMN decision.
 
-***
+---
 
 ### decisionDefinitionType?
 
@@ -61,7 +61,7 @@ optional decisionDefinitionType: DecisionDefinitionTypeEnum;
 
 Defined in: [gen/types.gen.ts:1743](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1743)
 
-***
+---
 
 ### decisionDefinitionVersion?
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:1742](https://github.com/camunda/orchestration-clu
 
 The version of the decision.
 
-***
+---
 
 ### decisionEvaluationInstanceKey?
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:1718](https://github.com/camunda/orchestration-clu
 
 The key of the decision evaluation instance.
 
-***
+---
 
 ### decisionEvaluationKey?
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:1752](https://github.com/camunda/orchestration-clu
 
 The key of the parent decision evaluation. Note that this is not the identifier of an individual decision instance; the `decisionEvaluationInstanceKey` is the identifier for a decision instance.
 
-***
+---
 
 ### decisionRequirementsKey?
 
@@ -109,7 +109,7 @@ Defined in: [gen/types.gen.ts:1776](https://github.com/camunda/orchestration-clu
 
 The key of the decision requirements definition.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -121,7 +121,7 @@ Defined in: [gen/types.gen.ts:1768](https://github.com/camunda/orchestration-clu
 
 The key of the element instance this decision instance is linked to.
 
-***
+---
 
 ### evaluationDate?
 
@@ -133,7 +133,7 @@ Defined in: [gen/types.gen.ts:1730](https://github.com/camunda/orchestration-clu
 
 The evaluation date of the decision instance.
 
-***
+---
 
 ### evaluationFailure?
 
@@ -145,7 +145,7 @@ Defined in: [gen/types.gen.ts:1726](https://github.com/camunda/orchestration-clu
 
 The evaluation failure of the decision instance.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -157,7 +157,7 @@ Defined in: [gen/types.gen.ts:1756](https://github.com/camunda/orchestration-clu
 
 The key of the process definition.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -169,7 +169,7 @@ Defined in: [gen/types.gen.ts:1760](https://github.com/camunda/orchestration-clu
 
 The key of the process instance.
 
-***
+---
 
 ### rootDecisionDefinitionKey?
 
@@ -181,7 +181,7 @@ Defined in: [gen/types.gen.ts:1772](https://github.com/camunda/orchestration-clu
 
 The key of the root decision definition.
 
-***
+---
 
 ### state?
 
@@ -193,7 +193,7 @@ Defined in: [gen/types.gen.ts:1722](https://github.com/camunda/orchestration-clu
 
 The state of the decision instance.
 
-***
+---
 
 ### tenantId?
 

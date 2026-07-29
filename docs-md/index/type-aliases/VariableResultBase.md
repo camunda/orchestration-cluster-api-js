@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: VariableResultBase"
-sidebar_label: "VariableResultBase"
+title: 'Type Alias: VariableResultBase'
+sidebar_label: 'VariableResultBase'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:8157](https://github.com/camunda/orchestration-clu
 
 Name of this variable.
 
-***
+---
 
 ### processInstanceKey
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:8177](https://github.com/camunda/orchestration-clu
 
 The key of the process instance of this variable.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -53,7 +53,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### scopeKey
 
@@ -68,7 +68,7 @@ variables, this is the process instance key. For local variables, this is the ke
 specific element instance (task, subprocess, gateway, event, etc.) where the variable is
 directly defined.
 
-***
+---
 
 ### tenantId
 
@@ -80,7 +80,7 @@ Defined in: [gen/types.gen.ts:8161](https://github.com/camunda/orchestration-clu
 
 Tenant ID of this variable.
 
-***
+---
 
 ### variableKey
 

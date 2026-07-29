@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetSystemConfigurationError"
-sidebar_label: "GetSystemConfigurationError"
+title: 'Type Alias: GetSystemConfigurationError'
+sidebar_label: 'GetSystemConfigurationError'
 mdx:
   format: md
 ---

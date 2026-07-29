@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuditLogResult"
-sidebar_label: "AuditLogResult"
+title: 'Type Alias: AuditLogResult'
+sidebar_label: 'AuditLogResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:36](https://github.com/camunda/orchestration-clust
 
 The ID of the actor who performed the operation.
 
-***
+---
 
 ### actorType
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:40](https://github.com/camunda/orchestration-clust
 
 The type of the actor who performed the operation.
 
-***
+---
 
 ### agentElementId
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:44](https://github.com/camunda/orchestration-clust
 
 The element ID of the agent that performed the operation (e.g. ad-hoc subprocess element ID).
 
-***
+---
 
 ### auditLogKey
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:17](https://github.com/camunda/orchestration-clust
 
 The unique key of the audit log entry.
 
-***
+---
 
 ### batchOperationKey
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:24](https://github.com/camunda/orchestration-clust
 
 Key of the batch operation.
 
-***
+---
 
 ### batchOperationType
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:28](https://github.com/camunda/orchestration-clust
 
 The type of batch operation performed, if this is part of a batch.
 
-***
+---
 
 ### category
 
@@ -97,7 +97,7 @@ category: AuditLogCategoryEnum;
 
 Defined in: [gen/types.gen.ts:50](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L50)
 
-***
+---
 
 ### decisionDefinitionId
 
@@ -109,7 +109,7 @@ Defined in: [gen/types.gen.ts:93](https://github.com/camunda/orchestration-clust
 
 The decision definition ID.
 
-***
+---
 
 ### decisionDefinitionKey
 
@@ -121,7 +121,7 @@ Defined in: [gen/types.gen.ts:97](https://github.com/camunda/orchestration-clust
 
 The key of the decision definition.
 
-***
+---
 
 ### decisionEvaluationKey
 
@@ -133,7 +133,7 @@ Defined in: [gen/types.gen.ts:101](https://github.com/camunda/orchestration-clus
 
 The key of the decision evaluation.
 
-***
+---
 
 ### decisionRequirementsId
 
@@ -145,7 +145,7 @@ Defined in: [gen/types.gen.ts:85](https://github.com/camunda/orchestration-clust
 
 The decision requirements ID.
 
-***
+---
 
 ### decisionRequirementsKey
 
@@ -157,7 +157,7 @@ Defined in: [gen/types.gen.ts:89](https://github.com/camunda/orchestration-clust
 
 The assigned key of the decision requirements.
 
-***
+---
 
 ### deploymentKey
 
@@ -169,7 +169,7 @@ Defined in: [gen/types.gen.ts:105](https://github.com/camunda/orchestration-clus
 
 The key of the deployment.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -181,7 +181,7 @@ Defined in: [gen/types.gen.ts:73](https://github.com/camunda/orchestration-clust
 
 The key of the element instance.
 
-***
+---
 
 ### entityDescription
 
@@ -194,7 +194,7 @@ Defined in: [gen/types.gen.ts:131](https://github.com/camunda/orchestration-clus
 Additional description of the entity affected by the operation.
 For example, for variable operations, this will contain the variable name.
 
-***
+---
 
 ### entityKey
 
@@ -204,7 +204,7 @@ entityKey: AuditLogEntityKey;
 
 Defined in: [gen/types.gen.ts:18](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L18)
 
-***
+---
 
 ### entityType
 
@@ -214,7 +214,7 @@ entityType: AuditLogEntityTypeEnum;
 
 Defined in: [gen/types.gen.ts:19](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L19)
 
-***
+---
 
 ### formKey
 
@@ -226,7 +226,7 @@ Defined in: [gen/types.gen.ts:109](https://github.com/camunda/orchestration-clus
 
 The key of the form.
 
-***
+---
 
 ### jobKey
 
@@ -238,7 +238,7 @@ Defined in: [gen/types.gen.ts:77](https://github.com/camunda/orchestration-clust
 
 The key of the job.
 
-***
+---
 
 ### operationType
 
@@ -248,7 +248,7 @@ operationType: AuditLogOperationTypeEnum;
 
 Defined in: [gen/types.gen.ts:20](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L20)
 
-***
+---
 
 ### processDefinitionId
 
@@ -260,7 +260,7 @@ Defined in: [gen/types.gen.ts:54](https://github.com/camunda/orchestration-clust
 
 The process definition ID.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -272,7 +272,7 @@ Defined in: [gen/types.gen.ts:58](https://github.com/camunda/orchestration-clust
 
 The key of the process definition.
 
-***
+---
 
 ### processInstanceKey
 
@@ -284,7 +284,7 @@ Defined in: [gen/types.gen.ts:62](https://github.com/camunda/orchestration-clust
 
 The key of the process instance.
 
-***
+---
 
 ### relatedEntityKey
 
@@ -297,7 +297,7 @@ Defined in: [gen/types.gen.ts:119](https://github.com/camunda/orchestration-clus
 The key of the related entity. The content depends on the operation type and entity type.
 For example, for authorization operations, this will contain the ID of the owner (e.g., user or group) the authorization belongs to.
 
-***
+---
 
 ### relatedEntityType
 
@@ -310,7 +310,7 @@ Defined in: [gen/types.gen.ts:125](https://github.com/camunda/orchestration-clus
 The type of the related entity. The content depends on the operation type and entity type.
 For example, for authorization operations, this will contain the type of the owner (e.g., USER or GROUP) the authorization belongs to.
 
-***
+---
 
 ### resourceKey
 
@@ -322,7 +322,7 @@ Defined in: [gen/types.gen.ts:113](https://github.com/camunda/orchestration-clus
 
 The system-assigned key for this resource.
 
-***
+---
 
 ### result
 
@@ -332,7 +332,7 @@ result: AuditLogResultEnum;
 
 Defined in: [gen/types.gen.ts:49](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L49)
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -346,7 +346,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### tenantId
 
@@ -358,7 +358,7 @@ Defined in: [gen/types.gen.ts:48](https://github.com/camunda/orchestration-clust
 
 The tenant ID of the audit log.
 
-***
+---
 
 ### timestamp
 
@@ -370,7 +370,7 @@ Defined in: [gen/types.gen.ts:32](https://github.com/camunda/orchestration-clust
 
 The timestamp when the operation occurred.
 
-***
+---
 
 ### userTaskKey
 

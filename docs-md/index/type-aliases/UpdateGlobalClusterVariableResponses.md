@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGlobalClusterVariableResponses"
-sidebar_label: "UpdateGlobalClusterVariableResponses"
+title: 'Type Alias: UpdateGlobalClusterVariableResponses'
+sidebar_label: 'UpdateGlobalClusterVariableResponses'
 mdx:
   format: md
 ---

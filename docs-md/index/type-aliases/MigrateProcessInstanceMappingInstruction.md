@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstanceMappingInstruction"
-sidebar_label: "MigrateProcessInstanceMappingInstruction"
+title: 'Type Alias: MigrateProcessInstanceMappingInstruction'
+sidebar_label: 'MigrateProcessInstanceMappingInstruction'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:6658](https://github.com/camunda/orchestration-clu
 
 The element id to migrate from.
 
-***
+---
 
 ### targetElementId
 

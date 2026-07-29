@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getUserTaskFormInput"
-sidebar_label: "getUserTaskFormInput"
+title: 'Type Alias: getUserTaskFormInput'
+sidebar_label: 'getUserTaskFormInput'
 mdx:
   format: md
 ---

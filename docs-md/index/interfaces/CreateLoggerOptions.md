@@ -1,6 +1,6 @@
 ---
-title: "Interface: CreateLoggerOptions"
-sidebar_label: "CreateLoggerOptions"
+title: 'Interface: CreateLoggerOptions'
+sidebar_label: 'CreateLoggerOptions'
 mdx:
   format: md
 ---
@@ -19,7 +19,7 @@ optional level: LogLevel;
 
 Defined in: [runtime/logger.ts:39](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L39)
 
-***
+---
 
 ### scope?
 
@@ -29,7 +29,7 @@ optional scope: string;
 
 Defined in: [runtime/logger.ts:41](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L41)
 
-***
+---
 
 ### transport?
 

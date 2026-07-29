@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ActivateAdHocSubProcessActivitiesResponses"
-sidebar_label: "ActivateAdHocSubProcessActivitiesResponses"
+title: 'Type Alias: ActivateAdHocSubProcessActivitiesResponses'
+sidebar_label: 'ActivateAdHocSubProcessActivitiesResponses'
 mdx:
   format: md
 ---

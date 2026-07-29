@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: LicenseResponse"
-sidebar_label: "LicenseResponse"
+title: 'Type Alias: LicenseResponse'
+sidebar_label: 'LicenseResponse'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5159](https://github.com/camunda/orchestration-clu
 
 The date when the Camunda license expires
 
-***
+---
 
 ### isCommercial
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5155](https://github.com/camunda/orchestration-clu
 
 Will be false when a license contains a non-commerical=true property
 
-***
+---
 
 ### licenseType
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5151](https://github.com/camunda/orchestration-clu
 
 Will return the license type property of the Camunda license
 
-***
+---
 
 ### validLicense
 

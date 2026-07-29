@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getProcessInstanceStatisticsByErrorInput"
-sidebar_label: "getProcessInstanceStatisticsByErrorInput"
+title: 'Type Alias: getProcessInstanceStatisticsByErrorInput'
+sidebar_label: 'getProcessInstanceStatisticsByErrorInput'
 mdx:
   format: md
 ---

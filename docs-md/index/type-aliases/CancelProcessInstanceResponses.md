@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CancelProcessInstanceResponses"
-sidebar_label: "CancelProcessInstanceResponses"
+title: 'Type Alias: CancelProcessInstanceResponses'
+sidebar_label: 'CancelProcessInstanceResponses'
 mdx:
   format: md
 ---

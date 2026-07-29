@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionMessageSubscriptionStatisticsQuery"
-sidebar_label: "ProcessDefinitionMessageSubscriptionStatisticsQuery"
+title: 'Type Alias: ProcessDefinitionMessageSubscriptionStatisticsQuery'
+sidebar_label: 'ProcessDefinitionMessageSubscriptionStatisticsQuery'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5893](https://github.com/camunda/orchestration-clu
 
 The message subscription filters.
 
-***
+---
 
 ### page?
 

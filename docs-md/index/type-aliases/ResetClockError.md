@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResetClockError"
-sidebar_label: "ResetClockError"
+title: 'Type Alias: ResetClockError'
+sidebar_label: 'ResetClockError'
 mdx:
   format: md
 ---

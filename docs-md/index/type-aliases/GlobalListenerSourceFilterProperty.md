@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalListenerSourceFilterProperty"
-sidebar_label: "GlobalListenerSourceFilterProperty"
+title: 'Type Alias: GlobalListenerSourceFilterProperty'
+sidebar_label: 'GlobalListenerSourceFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: GlobalListenerSourceFilterProperty
 
 ```ts
-type GlobalListenerSourceFilterProperty = 
+type GlobalListenerSourceFilterProperty =
   | GlobalListenerSourceExactMatch
   | AdvancedGlobalListenerSourceFilter;
 ```

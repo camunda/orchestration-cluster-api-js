@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: updateMappingRuleInput"
-sidebar_label: "updateMappingRuleInput"
+title: 'Type Alias: updateMappingRuleInput'
+sidebar_label: 'updateMappingRuleInput'
 mdx:
   format: md
 ---

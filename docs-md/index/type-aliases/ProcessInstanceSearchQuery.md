@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceSearchQuery"
-sidebar_label: "ProcessInstanceSearchQuery"
+title: 'Type Alias: ProcessInstanceSearchQuery'
+sidebar_label: 'ProcessInstanceSearchQuery'
 mdx:
   format: md
 ---

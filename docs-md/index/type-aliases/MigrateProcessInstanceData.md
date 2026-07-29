@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstanceData"
-sidebar_label: "MigrateProcessInstanceData"
+title: 'Type Alias: MigrateProcessInstanceData'
+sidebar_label: 'MigrateProcessInstanceData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: ProcessInstanceMigrationInstruction;
 
 Defined in: [gen/types.gen.ts:13515](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13515)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The key of the process instance that should be migrated.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13522](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13522)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}/migration";
+url: '/process-instances/{processInstanceKey}/migration';
 ```
 
 Defined in: [gen/types.gen.ts:13523](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13523)

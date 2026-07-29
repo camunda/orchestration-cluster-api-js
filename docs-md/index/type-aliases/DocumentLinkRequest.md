@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DocumentLinkRequest"
-sidebar_label: "DocumentLinkRequest"
+title: 'Type Alias: DocumentLinkRequest'
+sidebar_label: 'DocumentLinkRequest'
 mdx:
   format: md
 ---

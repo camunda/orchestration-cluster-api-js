@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGlobalTaskListenerErrors"
-sidebar_label: "UpdateGlobalTaskListenerErrors"
+title: 'Type Alias: UpdateGlobalTaskListenerErrors'
+sidebar_label: 'UpdateGlobalTaskListenerErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10745](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:10749](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:10753](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:10757](https://github.com/camunda/orchestration-cl
 
 The global user task listener was not found.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:10761](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupUpdateRequest"
-sidebar_label: "GroupUpdateRequest"
+title: 'Type Alias: GroupUpdateRequest'
+sidebar_label: 'GroupUpdateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3155](https://github.com/camunda/orchestration-clu
 
 The new description of the group.
 
-***
+---
 
 ### name
 

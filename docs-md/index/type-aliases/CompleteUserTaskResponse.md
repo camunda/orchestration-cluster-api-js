@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CompleteUserTaskResponse"
-sidebar_label: "CompleteUserTaskResponse"
+title: 'Type Alias: CompleteUserTaskResponse'
+sidebar_label: 'CompleteUserTaskResponse'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionDefinitionResult"
-sidebar_label: "DecisionDefinitionResult"
+title: 'Type Alias: DecisionDefinitionResult'
+sidebar_label: 'DecisionDefinitionResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1510](https://github.com/camunda/orchestration-clu
 
 The DMN ID of the decision definition.
 
-***
+---
 
 ### decisionDefinitionKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:1514](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this decision definition.
 
-***
+---
 
 ### decisionRequirementsId
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:1518](https://github.com/camunda/orchestration-clu
 
 the DMN ID of the decision requirements graph that the decision definition is part of.
 
-***
+---
 
 ### decisionRequirementsKey
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:1522](https://github.com/camunda/orchestration-clu
 
 The assigned key of the decision requirements graph that the decision definition is part of.
 
-***
+---
 
 ### decisionRequirementsName
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:1526](https://github.com/camunda/orchestration-clu
 
 The DMN name of the decision requirements that the decision definition is part of.
 
-***
+---
 
 ### decisionRequirementsVersion
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:1530](https://github.com/camunda/orchestration-clu
 
 The assigned version of the decision requirements that the decision definition is part of.
 
-***
+---
 
 ### name
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:1534](https://github.com/camunda/orchestration-clu
 
 The DMN name of the decision definition.
 
-***
+---
 
 ### tenantId
 
@@ -109,7 +109,7 @@ Defined in: [gen/types.gen.ts:1538](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the decision definition.
 
-***
+---
 
 ### version
 

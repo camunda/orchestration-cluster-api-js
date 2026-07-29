@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobStateExactMatch"
-sidebar_label: "JobStateExactMatch"
+title: 'Type Alias: JobStateExactMatch'
+sidebar_label: 'JobStateExactMatch'
 mdx:
   format: md
 ---

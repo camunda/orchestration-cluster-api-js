@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionRequirementsSearchQuery"
-sidebar_label: "DecisionRequirementsSearchQuery"
+title: 'Type Alias: DecisionRequirementsSearchQuery'
+sidebar_label: 'DecisionRequirementsSearchQuery'
 mdx:
   format: md
 ---

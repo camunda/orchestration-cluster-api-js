@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdHocSubProcessActivateActivitiesInstruction"
-sidebar_label: "AdHocSubProcessActivateActivitiesInstruction"
+title: 'Type Alias: AdHocSubProcessActivateActivitiesInstruction'
+sidebar_label: 'AdHocSubProcessActivateActivitiesInstruction'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2712](https://github.com/camunda/orchestration-clu
 
 Whether to cancel remaining instances of the ad-hoc sub-process.
 
-***
+---
 
 ### elements
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CorrelateMessageResponse"
-sidebar_label: "CorrelateMessageResponse"
+title: 'Type Alias: CorrelateMessageResponse'
+sidebar_label: 'CorrelateMessageResponse'
 mdx:
   format: md
 ---

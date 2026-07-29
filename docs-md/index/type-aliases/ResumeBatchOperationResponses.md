@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResumeBatchOperationResponses"
-sidebar_label: "ResumeBatchOperationResponses"
+title: 'Type Alias: ResumeBatchOperationResponses'
+sidebar_label: 'ResumeBatchOperationResponses'
 mdx:
   format: md
 ---

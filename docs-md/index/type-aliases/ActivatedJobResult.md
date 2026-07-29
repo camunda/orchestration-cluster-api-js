@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ActivatedJobResult"
-sidebar_label: "ActivatedJobResult"
+title: 'Type Alias: ActivatedJobResult'
+sidebar_label: 'ActivatedJobResult'
 mdx:
   format: md
 ---
@@ -31,7 +31,7 @@ A set of custom headers defined during modelling; returned as a serialized JSON 
 [key: string]: unknown
 ```
 
-***
+---
 
 ### deadline
 
@@ -43,7 +43,7 @@ Defined in: [gen/types.gen.ts:4042](https://github.com/camunda/orchestration-clu
 
 When the job can be activated again, sent as a UNIX epoch timestamp.
 
-***
+---
 
 ### elementId
 
@@ -55,7 +55,7 @@ Defined in: [gen/types.gen.ts:4024](https://github.com/camunda/orchestration-clu
 
 The associated task element ID.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -67,7 +67,7 @@ Defined in: [gen/types.gen.ts:4068](https://github.com/camunda/orchestration-clu
 
 The element instance key of the task.
 
-***
+---
 
 ### jobKey
 
@@ -79,7 +79,7 @@ Defined in: [gen/types.gen.ts:4056](https://github.com/camunda/orchestration-clu
 
 The key, a unique identifier for the job.
 
-***
+---
 
 ### kind
 
@@ -89,7 +89,7 @@ kind: JobKindEnum;
 
 Defined in: [gen/types.gen.ts:4069](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4069)
 
-***
+---
 
 ### listenerEventType
 
@@ -99,7 +99,7 @@ listenerEventType: JobListenerEventTypeEnum;
 
 Defined in: [gen/types.gen.ts:4070](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4070)
 
-***
+---
 
 ### processDefinitionId
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:4016](https://github.com/camunda/orchestration-clu
 
 The bpmn process ID of the job's process definition.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:4064](https://github.com/camunda/orchestration-clu
 
 The key of the job's process definition.
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:4020](https://github.com/camunda/orchestration-clu
 
 The version of the job's process definition.
 
-***
+---
 
 ### processInstanceKey
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:4060](https://github.com/camunda/orchestration-clu
 
 The job's process instance key.
 
-***
+---
 
 ### retries
 
@@ -159,7 +159,7 @@ Defined in: [gen/types.gen.ts:4038](https://github.com/camunda/orchestration-clu
 
 The amount of retries left to this job (should always be positive).
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -173,7 +173,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### tags
 
@@ -183,7 +183,7 @@ tags: TagSet;
 
 Defined in: [gen/types.gen.ts:4077](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4077)
 
-***
+---
 
 ### tenantId
 
@@ -195,7 +195,7 @@ Defined in: [gen/types.gen.ts:4052](https://github.com/camunda/orchestration-clu
 
 The ID of the tenant that owns the job.
 
-***
+---
 
 ### type
 
@@ -207,7 +207,7 @@ Defined in: [gen/types.gen.ts:4012](https://github.com/camunda/orchestration-clu
 
 The type of the job (should match what was requested).
 
-***
+---
 
 ### userTask
 
@@ -220,7 +220,7 @@ Defined in: [gen/types.gen.ts:4076](https://github.com/camunda/orchestration-clu
 User task properties, if the job is a user task.
 This is `null` if the job is not a user task.
 
-***
+---
 
 ### variables
 
@@ -238,7 +238,7 @@ All variables visible to the task scope, computed at activation time.
 [key: string]: unknown
 ```
 
-***
+---
 
 ### worker
 

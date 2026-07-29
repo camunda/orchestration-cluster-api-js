@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStatusErrors"
-sidebar_label: "GetStatusErrors"
+title: 'Type Alias: GetStatusErrors'
+sidebar_label: 'GetStatusErrors'
 mdx:
   format: md
 ---

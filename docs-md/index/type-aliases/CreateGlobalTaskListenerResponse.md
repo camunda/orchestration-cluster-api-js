@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateGlobalTaskListenerResponse"
-sidebar_label: "CreateGlobalTaskListenerResponse"
+title: 'Type Alias: CreateGlobalTaskListenerResponse'
+sidebar_label: 'CreateGlobalTaskListenerResponse'
 mdx:
   format: md
 ---
@@ -8,7 +8,8 @@ mdx:
 # Type Alias: CreateGlobalTaskListenerResponse
 
 ```ts
-type CreateGlobalTaskListenerResponse = CreateGlobalTaskListenerResponses[keyof CreateGlobalTaskListenerResponses];
+type CreateGlobalTaskListenerResponse =
+  CreateGlobalTaskListenerResponses[keyof CreateGlobalTaskListenerResponses];
 ```
 
 Defined in: [gen/types.gen.ts:10634](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10634)

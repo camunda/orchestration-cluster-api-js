@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TenantUpdateRequest"
-sidebar_label: "TenantUpdateRequest"
+title: 'Type Alias: TenantUpdateRequest'
+sidebar_label: 'TenantUpdateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7345](https://github.com/camunda/orchestration-clu
 
 The new description of the tenant.
 
-***
+---
 
 ### name
 

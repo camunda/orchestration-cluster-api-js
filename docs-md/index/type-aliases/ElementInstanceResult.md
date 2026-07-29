@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceResult"
-sidebar_label: "ElementInstanceResult"
+title: 'Type Alias: ElementInstanceResult'
+sidebar_label: 'ElementInstanceResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2653](https://github.com/camunda/orchestration-clu
 
 The element ID for this element instance.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2677](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this element instance.
 
-***
+---
 
 ### elementName
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2657](https://github.com/camunda/orchestration-clu
 
 The element name for this element instance.
 
-***
+---
 
 ### endDate
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:2649](https://github.com/camunda/orchestration-clu
 
 Date when element instance finished.
 
-***
+---
 
 ### hasIncident
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:2669](https://github.com/camunda/orchestration-clu
 
 Shows whether this element instance has an incident. If true also an incidentKey is provided.
 
-***
+---
 
 ### incidentKey
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:2696](https://github.com/camunda/orchestration-clu
 
 Incident key associated with this element instance.
 
-***
+---
 
 ### processDefinitionId
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:2641](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated to this element instance.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -109,7 +109,7 @@ Defined in: [gen/types.gen.ts:2692](https://github.com/camunda/orchestration-clu
 
 The process definition key associated to this element instance.
 
-***
+---
 
 ### processInstanceKey
 
@@ -121,7 +121,7 @@ Defined in: [gen/types.gen.ts:2681](https://github.com/camunda/orchestration-clu
 
 The process instance key associated to this element instance.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -135,7 +135,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### startDate
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:2645](https://github.com/camunda/orchestration-clu
 
 Date when element instance started.
 
-***
+---
 
 ### state
 
@@ -159,7 +159,7 @@ Defined in: [gen/types.gen.ts:2665](https://github.com/camunda/orchestration-clu
 
 State of element instance as defined set of values.
 
-***
+---
 
 ### tenantId
 
@@ -171,12 +171,12 @@ Defined in: [gen/types.gen.ts:2673](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the incident.
 
-***
+---
 
 ### type
 
 ```ts
-type: 
+type:
   | "UNSPECIFIED"
   | "PROCESS"
   | "SUB_PROCESS"

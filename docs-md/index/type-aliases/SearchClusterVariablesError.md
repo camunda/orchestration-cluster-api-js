@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchClusterVariablesError"
-sidebar_label: "SearchClusterVariablesError"
+title: 'Type Alias: SearchClusterVariablesError'
+sidebar_label: 'SearchClusterVariablesError'
 mdx:
   format: md
 ---

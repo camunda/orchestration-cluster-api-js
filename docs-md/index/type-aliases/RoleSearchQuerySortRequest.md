@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleSearchQuerySortRequest"
-sidebar_label: "RoleSearchQuerySortRequest"
+title: 'Type Alias: RoleSearchQuerySortRequest'
+sidebar_label: 'RoleSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,14 +18,14 @@ Defined in: [gen/types.gen.ts:6977](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: "name" | "roleId";
+field: 'name' | 'roleId';
 ```
 
 Defined in: [gen/types.gen.ts:6981](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6981)
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

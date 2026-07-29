@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDeploymentErrors"
-sidebar_label: "CreateDeploymentErrors"
+title: 'Type Alias: CreateDeploymentErrors'
+sidebar_label: 'CreateDeploymentErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10087](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 503
 

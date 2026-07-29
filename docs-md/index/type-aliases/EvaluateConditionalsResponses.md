@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateConditionalsResponses"
-sidebar_label: "EvaluateConditionalsResponses"
+title: 'Type Alias: EvaluateConditionalsResponses'
+sidebar_label: 'EvaluateConditionalsResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluatedDecisionOutputItem"
-sidebar_label: "EvaluatedDecisionOutputItem"
+title: 'Type Alias: EvaluatedDecisionOutputItem'
+sidebar_label: 'EvaluatedDecisionOutputItem'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1893](https://github.com/camunda/orchestration-clu
 
 The ID of the evaluated decison output item.
 
-***
+---
 
 ### outputName
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1897](https://github.com/camunda/orchestration-clu
 
 The name of the of the evaluated decison output item.
 
-***
+---
 
 ### outputValue
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1901](https://github.com/camunda/orchestration-clu
 
 The value of the evaluated decison output item.
 
-***
+---
 
 ### ruleId
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:1905](https://github.com/camunda/orchestration-clu
 
 The ID of the matched rule.
 
-***
+---
 
 ### ruleIndex
 

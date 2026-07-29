@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignUserTaskData"
-sidebar_label: "UnassignUserTaskData"
+title: 'Type Alias: UnassignUserTaskData'
+sidebar_label: 'UnassignUserTaskData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:16156](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16156)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ userTaskKey: UserTaskKey;
 
 The key of the user task.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:16163](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16163)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/user-tasks/{userTaskKey}/assignee";
+url: '/user-tasks/{userTaskKey}/assignee';
 ```
 
 Defined in: [gen/types.gen.ts:16164](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16164)

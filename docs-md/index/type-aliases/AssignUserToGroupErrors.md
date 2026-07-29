@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignUserToGroupErrors"
-sidebar_label: "AssignUserToGroupErrors"
+title: 'Type Alias: AssignUserToGroupErrors'
+sidebar_label: 'AssignUserToGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11544](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11548](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11552](https://github.com/camunda/orchestration-cl
 
 The group or user with the given ID or username was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11556](https://github.com/camunda/orchestration-cl
 
 The user with the given ID is already assigned to the group.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:11560](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

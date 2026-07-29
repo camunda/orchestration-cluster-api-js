@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchIncidentsData"
-sidebar_label: "SearchIncidentsData"
+title: 'Type Alias: SearchIncidentsData'
+sidebar_label: 'SearchIncidentsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: IncidentSearchQuery;
 
 Defined in: [gen/types.gen.ts:11580](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11580)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:11581](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11581)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11582](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11582)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/incidents/search";
+url: '/incidents/search';
 ```
 
 Defined in: [gen/types.gen.ts:11583](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11583)

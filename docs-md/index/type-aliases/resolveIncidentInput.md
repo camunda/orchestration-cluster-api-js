@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: resolveIncidentInput"
-sidebar_label: "resolveIncidentInput"
+title: 'Type Alias: resolveIncidentInput'
+sidebar_label: 'resolveIncidentInput'
 mdx:
   format: md
 ---

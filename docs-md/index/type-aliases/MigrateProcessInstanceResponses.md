@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstanceResponses"
-sidebar_label: "MigrateProcessInstanceResponses"
+title: 'Type Alias: MigrateProcessInstanceResponses'
+sidebar_label: 'MigrateProcessInstanceResponses'
 mdx:
   format: md
 ---

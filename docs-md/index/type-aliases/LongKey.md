@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: LongKey"
-sidebar_label: "LongKey"
+title: 'Type Alias: LongKey'
+sidebar_label: 'LongKey'
 mdx:
   format: md
 ---

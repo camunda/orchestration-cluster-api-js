@@ -1,6 +1,6 @@
 ---
-title: "Interface: LogEvent"
-sidebar_label: "LogEvent"
+title: 'Interface: LogEvent'
+sidebar_label: 'LogEvent'
 mdx:
   format: md
 ---
@@ -19,7 +19,7 @@ args: any[];
 
 Defined in: [runtime/logger.ts:9](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L9)
 
-***
+---
 
 ### code?
 
@@ -29,7 +29,7 @@ optional code: string;
 
 Defined in: [runtime/logger.ts:10](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L10)
 
-***
+---
 
 ### data?
 
@@ -39,7 +39,7 @@ optional data: any;
 
 Defined in: [runtime/logger.ts:11](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L11)
 
-***
+---
 
 ### level
 
@@ -49,7 +49,7 @@ level: LogLevel;
 
 Defined in: [runtime/logger.ts:6](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L6)
 
-***
+---
 
 ### scope
 
@@ -59,7 +59,7 @@ scope: string;
 
 Defined in: [runtime/logger.ts:7](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/logger.ts#L7)
 
-***
+---
 
 ### ts
 

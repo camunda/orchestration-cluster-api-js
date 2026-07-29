@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGlobalClusterVariableErrors"
-sidebar_label: "DeleteGlobalClusterVariableErrors"
+title: 'Type Alias: DeleteGlobalClusterVariableErrors'
+sidebar_label: 'DeleteGlobalClusterVariableErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9160](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9164](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9168](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:9172](https://github.com/camunda/orchestration-clu
 
 Cluster variable not found
 
-***
+---
 
 ### 500
 

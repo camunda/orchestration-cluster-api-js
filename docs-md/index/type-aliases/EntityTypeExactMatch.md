@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EntityTypeExactMatch"
-sidebar_label: "EntityTypeExactMatch"
+title: 'Type Alias: EntityTypeExactMatch'
+sidebar_label: 'EntityTypeExactMatch'
 mdx:
   format: md
 ---

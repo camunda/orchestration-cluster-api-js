@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalTaskListenerBase"
-sidebar_label: "GlobalTaskListenerBase"
+title: 'Type Alias: GlobalTaskListenerBase'
+sidebar_label: 'GlobalTaskListenerBase'
 mdx:
   format: md
 ---

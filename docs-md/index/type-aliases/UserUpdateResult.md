@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserUpdateResult"
-sidebar_label: "UserUpdateResult"
+title: 'Type Alias: UserUpdateResult'
+sidebar_label: 'UserUpdateResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7992](https://github.com/camunda/orchestration-clu
 
 The email of the user.
 
-***
+---
 
 ### name
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:7988](https://github.com/camunda/orchestration-clu
 
 The name of the user.
 
-***
+---
 
 ### username
 

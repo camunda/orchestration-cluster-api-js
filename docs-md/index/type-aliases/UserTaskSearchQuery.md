@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskSearchQuery"
-sidebar_label: "UserTaskSearchQuery"
+title: 'Type Alias: UserTaskSearchQuery'
+sidebar_label: 'UserTaskSearchQuery'
 mdx:
   format: md
 ---

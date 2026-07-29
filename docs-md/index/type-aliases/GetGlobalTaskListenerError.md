@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGlobalTaskListenerError"
-sidebar_label: "GetGlobalTaskListenerError"
+title: 'Type Alias: GetGlobalTaskListenerError'
+sidebar_label: 'GetGlobalTaskListenerError'
 mdx:
   format: md
 ---

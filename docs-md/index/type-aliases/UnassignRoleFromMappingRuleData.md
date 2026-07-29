@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromMappingRuleData"
-sidebar_label: "UnassignRoleFromMappingRuleData"
+title: 'Type Alias: UnassignRoleFromMappingRuleData'
+sidebar_label: 'UnassignRoleFromMappingRuleData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:14391](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14391)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ roleId: string;
 
 The role ID.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:14402](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14402)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}/mapping-rules/{mappingRuleId}";
+url: '/roles/{roleId}/mapping-rules/{mappingRuleId}';
 ```
 
 Defined in: [gen/types.gen.ts:14403](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14403)

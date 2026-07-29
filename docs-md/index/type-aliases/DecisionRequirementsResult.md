@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionRequirementsResult"
-sidebar_label: "DecisionRequirementsResult"
+title: 'Type Alias: DecisionRequirementsResult'
+sidebar_label: 'DecisionRequirementsResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2031](https://github.com/camunda/orchestration-clu
 
 The DMN ID of the decision requirements.
 
-***
+---
 
 ### decisionRequirementsKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2035](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this decision requirements.
 
-***
+---
 
 ### decisionRequirementsName
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2039](https://github.com/camunda/orchestration-clu
 
 The DMN name of the decision requirements.
 
-***
+---
 
 ### resourceName
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:2043](https://github.com/camunda/orchestration-clu
 
 The name of the resource from which this decision requirements was parsed.
 
-***
+---
 
 ### tenantId
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:2047](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the decision requirements.
 
-***
+---
 
 ### version
 

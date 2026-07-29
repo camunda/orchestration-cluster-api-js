@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveIncidentResponses"
-sidebar_label: "ResolveIncidentResponses"
+title: 'Type Alias: ResolveIncidentResponses'
+sidebar_label: 'ResolveIncidentResponses'
 mdx:
   format: md
 ---

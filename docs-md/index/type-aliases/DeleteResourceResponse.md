@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteResourceResponse"
-sidebar_label: "DeleteResourceResponse"
+title: 'Type Alias: DeleteResourceResponse'
+sidebar_label: 'DeleteResourceResponse'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ This field is only populated when the request `deleteHistory` is set to `true` a
 is a process definition. For other resource types (decisions, forms, generic resources),
 this field will be `null`.
 
-***
+---
 
 ### resourceKey
 

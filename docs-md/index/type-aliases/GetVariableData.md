@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetVariableData"
-sidebar_label: "GetVariableData"
+title: 'Type Alias: GetVariableData'
+sidebar_label: 'GetVariableData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:16581](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16581)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ variableKey: VariableKey;
 
 The variable key.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:16588](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16588)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/variables/{variableKey}";
+url: '/variables/{variableKey}';
 ```
 
 Defined in: [gen/types.gen.ts:16589](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16589)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessagePublicationRequest"
-sidebar_label: "MessagePublicationRequest"
+title: 'Type Alias: MessagePublicationRequest'
+sidebar_label: 'MessagePublicationRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5326](https://github.com/camunda/orchestration-clu
 
 The correlation key of the message.
 
-***
+---
 
 ### messageId?
 
@@ -38,7 +38,7 @@ Defined in: [gen/types.gen.ts:5336](https://github.com/camunda/orchestration-clu
 The unique ID of the message. This is used to ensure only one message with the given ID
 will be published during the lifetime of the message (if `timeToLive` is set).
 
-***
+---
 
 ### name
 
@@ -50,7 +50,7 @@ Defined in: [gen/types.gen.ts:5322](https://github.com/camunda/orchestration-clu
 
 The name of the message.
 
-***
+---
 
 ### tenantId?
 
@@ -62,7 +62,7 @@ Defined in: [gen/types.gen.ts:5346](https://github.com/camunda/orchestration-clu
 
 The tenant of the message sender.
 
-***
+---
 
 ### timeToLive?
 
@@ -74,7 +74,7 @@ Defined in: [gen/types.gen.ts:5330](https://github.com/camunda/orchestration-clu
 
 Timespan (in ms) to buffer the message on the broker.
 
-***
+---
 
 ### variables?
 

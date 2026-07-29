@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ExpressionEvaluationRequest"
-sidebar_label: "ExpressionEvaluationRequest"
+title: 'Type Alias: ExpressionEvaluationRequest'
+sidebar_label: 'ExpressionEvaluationRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2732](https://github.com/camunda/orchestration-clu
 
 The expression to evaluate (e.g., "=x + y")
 
-***
+---
 
 ### tenantId?
 
@@ -37,12 +37,12 @@ Defined in: [gen/types.gen.ts:2736](https://github.com/camunda/orchestration-clu
 
 Required when the expression references tenant-scoped cluster variables
 
-***
+---
 
 ### variables?
 
 ```ts
-optional variables: 
+optional variables:
   | {
 [key: string]: unknown;
 }

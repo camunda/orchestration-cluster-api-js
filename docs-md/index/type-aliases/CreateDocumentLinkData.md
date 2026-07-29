@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDocumentLinkData"
-sidebar_label: "CreateDocumentLinkData"
+title: 'Type Alias: CreateDocumentLinkData'
+sidebar_label: 'CreateDocumentLinkData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: DocumentLinkRequest;
 
 Defined in: [gen/types.gen.ts:10284](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10284)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ documentId: DocumentId;
 
 The ID of the document to link.
 
-***
+---
 
 ### query?
 
@@ -67,12 +67,12 @@ optional storeId: string;
 
 The ID of the document store where the document is located.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/documents/{documentId}/links";
+url: '/documents/{documentId}/links';
 ```
 
 Defined in: [gen/types.gen.ts:10302](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10302)

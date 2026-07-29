@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskCompletionRequest"
-sidebar_label: "UserTaskCompletionRequest"
+title: 'Type Alias: UserTaskCompletionRequest'
+sidebar_label: 'UserTaskCompletionRequest'
 mdx:
   format: md
 ---
@@ -25,12 +25,12 @@ Defined in: [gen/types.gen.ts:7740](https://github.com/camunda/orchestration-clu
 
 A custom action value that will be accessible from user task events resulting from this endpoint invocation. If not provided, it will default to "complete".
 
-***
+---
 
 ### variables?
 
 ```ts
-optional variables: 
+optional variables:
   | {
 [key: string]: unknown;
 }

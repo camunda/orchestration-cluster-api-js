@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DocumentCreationFailureDetail"
-sidebar_label: "DocumentCreationFailureDetail"
+title: 'Type Alias: DocumentCreationFailureDetail'
+sidebar_label: 'DocumentCreationFailureDetail'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2408](https://github.com/camunda/orchestration-clu
 
 A human-readable explanation specific to this occurrence of the problem.
 
-***
+---
 
 ### fileName
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2396](https://github.com/camunda/orchestration-clu
 
 The name of the file that failed to upload.
 
-***
+---
 
 ### status
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2400](https://github.com/camunda/orchestration-clu
 
 The HTTP status code of the failure.
 
-***
+---
 
 ### title
 

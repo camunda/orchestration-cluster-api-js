@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateRoleError"
-sidebar_label: "UpdateRoleError"
+title: 'Type Alias: UpdateRoleError'
+sidebar_label: 'UpdateRoleError'
 mdx:
   format: md
 ---

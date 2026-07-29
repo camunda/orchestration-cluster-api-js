@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGroupResponse"
-sidebar_label: "DeleteGroupResponse"
+title: 'Type Alias: DeleteGroupResponse'
+sidebar_label: 'DeleteGroupResponse'
 mdx:
   format: md
 ---

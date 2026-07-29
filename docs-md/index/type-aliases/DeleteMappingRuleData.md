@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteMappingRuleData"
-sidebar_label: "DeleteMappingRuleData"
+title: 'Type Alias: DeleteMappingRuleData'
+sidebar_label: 'DeleteMappingRuleData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:12365](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12365)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ mappingRuleId: string;
 
 The ID of the mapping rule to delete.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:12372](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12372)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/mapping-rules/{mappingRuleId}";
+url: '/mapping-rules/{mappingRuleId}';
 ```
 
 Defined in: [gen/types.gen.ts:12373](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12373)

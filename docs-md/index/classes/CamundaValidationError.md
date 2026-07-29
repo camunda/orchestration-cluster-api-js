@@ -1,6 +1,6 @@
 ---
-title: "Class: CamundaValidationError"
-sidebar_label: "CamundaValidationError"
+title: 'Class: CamundaValidationError'
+sidebar_label: 'CamundaValidationError'
 mdx:
   format: md
 ---
@@ -54,7 +54,7 @@ Defined in: [runtime/errors.ts:143](https://github.com/camunda/orchestration-clu
 #### Overrides
 
 ```ts
-Error.constructor
+Error.constructor;
 ```
 
 ## Properties
@@ -67,7 +67,7 @@ issues: string[];
 
 Defined in: [runtime/errors.ts:142](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/errors.ts#L142)
 
-***
+---
 
 ### operationId?
 
@@ -77,17 +77,17 @@ optional operationId: string;
 
 Defined in: [runtime/errors.ts:140](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/errors.ts#L140)
 
-***
+---
 
 ### side
 
 ```ts
-side: "request" | "response";
+side: 'request' | 'response';
 ```
 
 Defined in: [runtime/errors.ts:139](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/errors.ts#L139)
 
-***
+---
 
 ### summary
 

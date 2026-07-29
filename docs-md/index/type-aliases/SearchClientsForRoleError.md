@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchClientsForRoleError"
-sidebar_label: "SearchClientsForRoleError"
+title: 'Type Alias: SearchClientsForRoleError'
+sidebar_label: 'SearchClientsForRoleError'
 mdx:
   format: md
 ---

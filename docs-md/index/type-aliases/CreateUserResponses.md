@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateUserResponses"
-sidebar_label: "CreateUserResponses"
+title: 'Type Alias: CreateUserResponses'
+sidebar_label: 'CreateUserResponses'
 mdx:
   format: md
 ---

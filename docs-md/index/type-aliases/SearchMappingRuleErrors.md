@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchMappingRuleErrors"
-sidebar_label: "SearchMappingRuleErrors"
+title: 'Type Alias: SearchMappingRuleErrors'
+sidebar_label: 'SearchMappingRuleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12333](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12337](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:12341](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

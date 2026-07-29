@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuthorizationSearchQuerySortRequest"
-sidebar_label: "AuthorizationSearchQuerySortRequest"
+title: 'Type Alias: AuthorizationSearchQuerySortRequest'
+sidebar_label: 'AuthorizationSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:593](https://github.com/camunda/orchestration-clus
 ### field
 
 ```ts
-field: 
+field:
   | "ownerId"
   | "ownerType"
   | "resourceId"
@@ -30,7 +30,7 @@ Defined in: [gen/types.gen.ts:597](https://github.com/camunda/orchestration-clus
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

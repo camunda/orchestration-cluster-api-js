@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignUserToTenantData"
-sidebar_label: "AssignUserToTenantData"
+title: 'Type Alias: AssignUserToTenantData'
+sidebar_label: 'AssignUserToTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:15689](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15689)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ username: Username;
 
 The unique identifier of the user.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15700](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15700)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/users/{username}";
+url: '/tenants/{tenantId}/users/{username}';
 ```
 
 Defined in: [gen/types.gen.ts:15701](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15701)

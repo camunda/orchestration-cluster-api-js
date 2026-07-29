@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SourceElementInstanceKeyInstruction"
-sidebar_label: "SourceElementInstanceKeyInstruction"
+title: 'Type Alias: SourceElementInstanceKeyInstruction'
+sidebar_label: 'SourceElementInstanceKeyInstruction'
 mdx:
   format: md
 ---
@@ -28,7 +28,7 @@ Defined in: [gen/types.gen.ts:6785](https://github.com/camunda/orchestration-clu
 
 The source element instance key for the move instruction.
 
-***
+---
 
 ### sourceType
 

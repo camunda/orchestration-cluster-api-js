@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionInstanceGetQueryResult"
-sidebar_label: "DecisionInstanceGetQueryResult"
+title: 'Type Alias: DecisionInstanceGetQueryResult'
+sidebar_label: 'DecisionInstanceGetQueryResult'
 mdx:
   format: md
 ---

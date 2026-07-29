@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskAuditLogFilter"
-sidebar_label: "UserTaskAuditLogFilter"
+title: 'Type Alias: UserTaskAuditLogFilter'
+sidebar_label: 'UserTaskAuditLogFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7934](https://github.com/camunda/orchestration-clu
 
 The actor ID search filter.
 
-***
+---
 
 ### actorType?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:7930](https://github.com/camunda/orchestration-clu
 
 The actor type search filter.
 
-***
+---
 
 ### operationType?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:7918](https://github.com/camunda/orchestration-clu
 
 The audit log operation type search filter.
 
-***
+---
 
 ### result?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:7922](https://github.com/camunda/orchestration-clu
 
 The audit log result search filter.
 
-***
+---
 
 ### timestamp?
 

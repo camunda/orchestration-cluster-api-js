@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CompleteJobError"
-sidebar_label: "CompleteJobError"
+title: 'Type Alias: CompleteJobError'
+sidebar_label: 'CompleteJobError'
 mdx:
   format: md
 ---

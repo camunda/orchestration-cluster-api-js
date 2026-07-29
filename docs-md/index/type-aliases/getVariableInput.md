@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getVariableInput"
-sidebar_label: "getVariableInput"
+title: 'Type Alias: getVariableInput'
+sidebar_label: 'getVariableInput'
 mdx:
   format: md
 ---

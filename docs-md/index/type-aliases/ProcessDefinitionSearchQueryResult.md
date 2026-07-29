@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionSearchQueryResult"
-sidebar_label: "ProcessDefinitionSearchQueryResult"
+title: 'Type Alias: ProcessDefinitionSearchQueryResult'
+sidebar_label: 'ProcessDefinitionSearchQueryResult'
 mdx:
   format: md
 ---

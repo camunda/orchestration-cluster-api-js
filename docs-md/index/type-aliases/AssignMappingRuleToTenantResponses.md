@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignMappingRuleToTenantResponses"
-sidebar_label: "AssignMappingRuleToTenantResponses"
+title: 'Type Alias: AssignMappingRuleToTenantResponses'
+sidebar_label: 'AssignMappingRuleToTenantResponses'
 mdx:
   format: md
 ---

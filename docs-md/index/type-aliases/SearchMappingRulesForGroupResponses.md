@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchMappingRulesForGroupResponses"
-sidebar_label: "SearchMappingRulesForGroupResponses"
+title: 'Type Alias: SearchMappingRulesForGroupResponses'
+sidebar_label: 'SearchMappingRulesForGroupResponses'
 mdx:
   format: md
 ---

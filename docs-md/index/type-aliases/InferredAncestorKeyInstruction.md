@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: InferredAncestorKeyInstruction"
-sidebar_label: "InferredAncestorKeyInstruction"
+title: 'Type Alias: InferredAncestorKeyInstruction'
+sidebar_label: 'InferredAncestorKeyInstruction'
 mdx:
   format: md
 ---

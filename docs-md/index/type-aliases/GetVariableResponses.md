@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetVariableResponses"
-sidebar_label: "GetVariableResponses"
+title: 'Type Alias: GetVariableResponses'
+sidebar_label: 'GetVariableResponses'
 mdx:
   format: md
 ---

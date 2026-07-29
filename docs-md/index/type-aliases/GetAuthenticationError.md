@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuthenticationError"
-sidebar_label: "GetAuthenticationError"
+title: 'Type Alias: GetAuthenticationError'
+sidebar_label: 'GetAuthenticationError'
 mdx:
   format: md
 ---

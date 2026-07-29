@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetBatchOperationErrors"
-sidebar_label: "GetBatchOperationErrors"
+title: 'Type Alias: GetBatchOperationErrors'
+sidebar_label: 'GetBatchOperationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8885](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:8889](https://github.com/camunda/orchestration-clu
 
 The batch operation is not found.
 
-***
+---
 
 ### 500
 

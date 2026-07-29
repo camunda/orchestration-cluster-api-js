@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceCreationInstruction"
-sidebar_label: "ProcessInstanceCreationInstruction"
+title: 'Type Alias: ProcessInstanceCreationInstruction'
+sidebar_label: 'ProcessInstanceCreationInstruction'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ProcessInstanceCreationInstruction
 
 ```ts
-type ProcessInstanceCreationInstruction = 
+type ProcessInstanceCreationInstruction =
   | ProcessInstanceCreationInstructionByKey
   | ProcessInstanceCreationInstructionById;
 ```

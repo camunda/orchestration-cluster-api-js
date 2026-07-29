@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateTenantError"
-sidebar_label: "UpdateTenantError"
+title: 'Type Alias: UpdateTenantError'
+sidebar_label: 'UpdateTenantError'
 mdx:
   format: md
 ---

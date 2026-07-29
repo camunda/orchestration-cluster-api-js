@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGroupResponses"
-sidebar_label: "UpdateGroupResponses"
+title: 'Type Alias: UpdateGroupResponses'
+sidebar_label: 'UpdateGroupResponses'
 mdx:
   format: md
 ---

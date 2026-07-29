@@ -1,6 +1,6 @@
 ---
-title: "Function: createLogger()"
-sidebar_label: "createLogger()"
+title: 'Function: createLogger()'
+sidebar_label: 'createLogger()'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Interface: ThreadPool"
-sidebar_label: "ThreadPool"
+title: 'Interface: ThreadPool'
+sidebar_label: 'ThreadPool'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Number of threads currently processing a job.
 
 `number`
 
-***
+---
 
 ### idleCount
 
@@ -45,7 +45,7 @@ Number of threads that are ready and idle.
 
 `number`
 
-***
+---
 
 ### onThreadReady
 
@@ -69,7 +69,7 @@ Register a callback invoked whenever a thread becomes ready or idle.
 
 `void`
 
-***
+---
 
 ### ready
 
@@ -87,7 +87,7 @@ Resolves when all threads have been spawned and signalled ready.
 
 `Promise`\<`void`\>
 
-***
+---
 
 ### size
 
@@ -111,9 +111,9 @@ Total number of threads in the pool.
 
 ```ts
 dispatch(
-   pw, 
-   jobData, 
-   handlerModule, 
+   pw,
+   jobData,
+   handlerModule,
 callbacks): Promise<void>;
 ```
 
@@ -150,7 +150,7 @@ The caller is responsible for checking idleness first.
 
 `Promise`\<`void`\>
 
-***
+---
 
 ### getIdleWorker()
 
@@ -166,7 +166,7 @@ Find the first ready & idle thread.
 
 `PoolWorker` \| `undefined`
 
-***
+---
 
 ### terminate()
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getRoleInput"
-sidebar_label: "getRoleInput"
+title: 'Type Alias: getRoleInput'
+sidebar_label: 'getRoleInput'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Function: retryTE()"
-sidebar_label: "retryTE()"
+title: 'Function: retryTE()'
+sidebar_label: 'retryTE()'
 mdx:
   format: md
 ---
@@ -10,7 +10,6 @@ mdx:
 :::caution Technical Preview
 The Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.
 :::
-
 
 ```ts
 function retryTE<E, A>(task, opts): TaskEither<E, A>;

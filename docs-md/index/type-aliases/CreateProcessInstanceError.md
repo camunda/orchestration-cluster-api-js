@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateProcessInstanceError"
-sidebar_label: "CreateProcessInstanceError"
+title: 'Type Alias: CreateProcessInstanceError'
+sidebar_label: 'CreateProcessInstanceError'
 mdx:
   format: md
 ---

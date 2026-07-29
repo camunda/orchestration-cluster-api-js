@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: LimitPagination"
-sidebar_label: "LimitPagination"
+title: 'Type Alias: LimitPagination'
+sidebar_label: 'LimitPagination'
 mdx:
   format: md
 ---

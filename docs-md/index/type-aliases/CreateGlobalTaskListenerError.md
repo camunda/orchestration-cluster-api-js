@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateGlobalTaskListenerError"
-sidebar_label: "CreateGlobalTaskListenerError"
+title: 'Type Alias: CreateGlobalTaskListenerError'
+sidebar_label: 'CreateGlobalTaskListenerError'
 mdx:
   format: md
 ---
@@ -8,7 +8,8 @@ mdx:
 # Type Alias: CreateGlobalTaskListenerError
 
 ```ts
-type CreateGlobalTaskListenerError = CreateGlobalTaskListenerErrors[keyof CreateGlobalTaskListenerErrors];
+type CreateGlobalTaskListenerError =
+  CreateGlobalTaskListenerErrors[keyof CreateGlobalTaskListenerErrors];
 ```
 
 Defined in: [gen/types.gen.ts:10625](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10625)

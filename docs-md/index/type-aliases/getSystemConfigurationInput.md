@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getSystemConfigurationInput"
-sidebar_label: "getSystemConfigurationInput"
+title: 'Type Alias: getSystemConfigurationInput'
+sidebar_label: 'getSystemConfigurationInput'
 mdx:
   format: md
 ---

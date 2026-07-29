@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CancelBatchOperationResponses"
-sidebar_label: "CancelBatchOperationResponses"
+title: 'Type Alias: CancelBatchOperationResponses'
+sidebar_label: 'CancelBatchOperationResponses'
 mdx:
   format: md
 ---

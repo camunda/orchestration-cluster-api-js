@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateClusterVariableRequest"
-sidebar_label: "UpdateClusterVariableRequest"
+title: 'Type Alias: UpdateClusterVariableRequest'
+sidebar_label: 'UpdateClusterVariableRequest'
 mdx:
   format: md
 ---

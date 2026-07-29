@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupClientSearchResult"
-sidebar_label: "GroupClientSearchResult"
+title: 'Type Alias: GroupClientSearchResult'
+sidebar_label: 'GroupClientSearchResult'
 mdx:
   format: md
 ---

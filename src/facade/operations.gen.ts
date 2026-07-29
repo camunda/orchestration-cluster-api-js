@@ -1,6 +1,6 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDocument as _deleteDocument, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteUser as _deleteUser, evaluateDecision as _evaluateDecision, failJob as _failJob, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGroup as _getGroup, getIncident as _getIncident, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getTenant as _getTenant, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resumeBatchOperation as _resumeBatchOperation, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstances as _searchElementInstances, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDocument as _deleteDocument, deleteGroup as _deleteGroup, deleteMappingRule as _deleteMappingRule, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteTenant as _deleteTenant, deleteUser as _deleteUser, evaluateDecision as _evaluateDecision, failJob as _failJob, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getGroup as _getGroup, getIncident as _getIncident, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getRole as _getRole, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getTenant as _getTenant, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resumeBatchOperation as _resumeBatchOperation, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstances as _searchElementInstances, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchProcessDefinitions as _searchProcessDefinitions, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAuthorization as _updateAuthorization, updateGroup as _updateGroup, updateJob as _updateJob, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
 import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAuthorizationData, CreateDeploymentData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, EvaluateDecisionData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData } from '../gen/types.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
@@ -58,13 +58,9 @@ type _cancelProcessInstancesBatchOperation_Body = CancelProcessInstancesBatchOpe
   *
  * @operationId cancelProcessInstancesBatchOperation
  * @tags Process instance
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function cancelProcessInstancesBatchOperation(body: _cancelProcessInstancesBatchOperation_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _cancelProcessInstancesBatchOperation>> }): CancelablePromise<_DataOf<typeof _cancelProcessInstancesBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _cancelProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
-  return eventualPoll('cancelProcessInstancesBatchOperation', false, invoke, ec.consistency);
+export function cancelProcessInstancesBatchOperation(body: _cancelProcessInstancesBatchOperation_Body): CancelablePromise<_DataOf<typeof _cancelProcessInstancesBatchOperation>> {
+  return toCancelable(signal => _cancelProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _correlateMessage_Body = CorrelateMessageData extends { body?: infer B } ? B : never;
@@ -90,13 +86,9 @@ type _createAdminUser_Body = CreateAdminUserData extends { body?: infer B } ? B 
   *
  * @operationId createAdminUser
  * @tags Setup
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function createAdminUser(body: _createAdminUser_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _createAdminUser>> }): CancelablePromise<_DataOf<typeof _createAdminUser>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _createAdminUser({ body, signal }).then((r:any)=> (r as any).data));
-  return eventualPoll('createAdminUser', false, invoke, ec.consistency);
+export function createAdminUser(body: _createAdminUser_Body): CancelablePromise<_DataOf<typeof _createAdminUser>> {
+  return toCancelable(signal => _createAdminUser({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _createAuthorization_Body = CreateAuthorizationData extends { body?: infer B } ? B : never;
@@ -201,13 +193,9 @@ type _createUser_Body = CreateUserData extends { body?: infer B } ? B : never;
   *
  * @operationId createUser
  * @tags User
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function createUser(body: _createUser_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _createUser>> }): CancelablePromise<_DataOf<typeof _createUser>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _createUser({ body, signal }).then((r:any)=> (r as any).data));
-  return eventualPoll('createUser', false, invoke, ec.consistency);
+export function createUser(body: _createUser_Body): CancelablePromise<_DataOf<typeof _createUser>> {
+  return toCancelable(signal => _createUser({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _evaluateDecision_Body = EvaluateDecisionData extends { body?: infer B } ? B : never;
@@ -237,13 +225,9 @@ type _migrateProcessInstancesBatchOperation_Body = MigrateProcessInstancesBatchO
   *
  * @operationId migrateProcessInstancesBatchOperation
  * @tags Process instance
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function migrateProcessInstancesBatchOperation(body: _migrateProcessInstancesBatchOperation_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _migrateProcessInstancesBatchOperation>> }): CancelablePromise<_DataOf<typeof _migrateProcessInstancesBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _migrateProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
-  return eventualPoll('migrateProcessInstancesBatchOperation', false, invoke, ec.consistency);
+export function migrateProcessInstancesBatchOperation(body: _migrateProcessInstancesBatchOperation_Body): CancelablePromise<_DataOf<typeof _migrateProcessInstancesBatchOperation>> {
+  return toCancelable(signal => _migrateProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _modifyProcessInstancesBatchOperation_Body = ModifyProcessInstancesBatchOperationData extends { body?: infer B } ? B : never;
@@ -259,13 +243,9 @@ type _modifyProcessInstancesBatchOperation_Body = ModifyProcessInstancesBatchOpe
   *
  * @operationId modifyProcessInstancesBatchOperation
  * @tags Process instance
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function modifyProcessInstancesBatchOperation(body: _modifyProcessInstancesBatchOperation_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _modifyProcessInstancesBatchOperation>> }): CancelablePromise<_DataOf<typeof _modifyProcessInstancesBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _modifyProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
-  return eventualPoll('modifyProcessInstancesBatchOperation', false, invoke, ec.consistency);
+export function modifyProcessInstancesBatchOperation(body: _modifyProcessInstancesBatchOperation_Body): CancelablePromise<_DataOf<typeof _modifyProcessInstancesBatchOperation>> {
+  return toCancelable(signal => _modifyProcessInstancesBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _pinClock_Body = PinClockData extends { body?: infer B } ? B : never;
@@ -314,13 +294,9 @@ type _resolveIncidentsBatchOperation_Body = ResolveIncidentsBatchOperationData e
   *
  * @operationId resolveIncidentsBatchOperation
  * @tags Process instance
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function resolveIncidentsBatchOperation(body: _resolveIncidentsBatchOperation_Body, ec: { consistency: ConsistencyOptions<_DataOf<typeof _resolveIncidentsBatchOperation>> }): CancelablePromise<_DataOf<typeof _resolveIncidentsBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _resolveIncidentsBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
-  return eventualPoll('resolveIncidentsBatchOperation', false, invoke, ec.consistency);
+export function resolveIncidentsBatchOperation(body: _resolveIncidentsBatchOperation_Body): CancelablePromise<_DataOf<typeof _resolveIncidentsBatchOperation>> {
+  return toCancelable(signal => _resolveIncidentsBatchOperation({ body, signal }).then((r:any)=> (r as any).data));
 }
 
 type _searchAuthorizations_Body = SearchAuthorizationsData extends { body?: infer B } ? B : never;
@@ -783,7 +759,8 @@ export function assignRoleToUser(options?: Parameters<typeof _assignRoleToUser>[
 
 /**
  * Assign user task
- * Assigns a user task with the given key to the given assignee.
+ * Assigns a user task with the given key to the given assignee. Assignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
   *
  * @operationId assignUserTask
  * @tags User task
@@ -824,18 +801,15 @@ export function assignUserToTenant(options?: Parameters<typeof _assignUserToTena
   *
  * @operationId cancelBatchOperation
  * @tags Batch operation
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function cancelBatchOperation(options: Parameters<typeof _cancelBatchOperation>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _cancelBatchOperation>> }): CancelablePromise<_DataOf<typeof _cancelBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _cancelBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
-  return eventualPoll('cancelBatchOperation', false, invoke, ec.consistency);
+export function cancelBatchOperation(options?: Parameters<typeof _cancelBatchOperation>[0]): CancelablePromise<_DataOf<typeof _cancelBatchOperation>> {
+  return toCancelable(signal => _cancelBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
  * Cancel process instance
- * Cancels a running process instance. As a cancelation includes more than just the removal of the process instance resource, the cancelation resource must be posted.
+ * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted. Cancellation can wait on listener-related processing; when that processing does not complete in time, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
   *
  * @operationId cancelProcessInstance
  * @tags Process instance
@@ -858,7 +832,8 @@ export function completeJob(options?: Parameters<typeof _completeJob>[0]): Cance
 
 /**
  * Complete user task
- * Completes a user task with the given key.
+ * Completes a user task with the given key. Completion waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
   *
  * @operationId completeUserTask
  * @tags User task
@@ -925,6 +900,10 @@ export function createDocuments(options?: Parameters<typeof _createDocuments>[0]
  * Update element instance variables
  * Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.
  * Specify the element instance in the `elementInstanceKey` parameter.
+ * Variable updates can be delayed by listener-related processing; if processing exceeds the
+ * request timeout, this endpoint can return 504. Other gateway timeout causes are also
+ * possible. Retry with backoff and inspect listener worker availability and logs when this
+ * repeats.
  *
   *
  * @operationId createElementInstanceVariables
@@ -1032,13 +1011,9 @@ export function deleteTenant(options?: Parameters<typeof _deleteTenant>[0]): Can
   *
  * @operationId deleteUser
  * @tags User
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function deleteUser(options: Parameters<typeof _deleteUser>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _deleteUser>> }): CancelablePromise<_DataOf<typeof _deleteUser>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _deleteUser({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
-  return eventualPoll('deleteUser', false, invoke, ec.consistency);
+export function deleteUser(options?: Parameters<typeof _deleteUser>[0]): CancelablePromise<_DataOf<typeof _deleteUser>> {
+  return toCancelable(signal => _deleteUser({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -1635,13 +1610,9 @@ export function resolveIncident(options?: Parameters<typeof _resolveIncident>[0]
   *
  * @operationId resumeBatchOperation
  * @tags Batch operation
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function resumeBatchOperation(options: Parameters<typeof _resumeBatchOperation>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _resumeBatchOperation>> }): CancelablePromise<_DataOf<typeof _resumeBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _resumeBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
-  return eventualPoll('resumeBatchOperation', false, invoke, ec.consistency);
+export function resumeBatchOperation(options?: Parameters<typeof _resumeBatchOperation>[0]): CancelablePromise<_DataOf<typeof _resumeBatchOperation>> {
+  return toCancelable(signal => _resumeBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -1864,8 +1835,35 @@ export function searchUsersForTenant(options: Parameters<typeof _searchUsersForT
 }
 
 /**
+ * Search user task effective variables
+ * Search for the effective variables of a user task. This endpoint returns deduplicated
+ * variables where each variable name appears at most once. When the same variable name exists
+ * at multiple scope levels in the scope hierarchy, the value from the innermost scope (closest
+ * to the user task) takes precedence. This is useful for retrieving the actual runtime state
+ * of variables as seen by the user task. By default, long variable values in the response are
+ * truncated.
+ *
+  *
+ * @operationId searchUserTaskEffectiveVariables
+ * @tags User task
+  *
+ * Consistency: Eventually consistent – may return 404/empty until propagation.
+ */
+export function searchUserTaskEffectiveVariables(options: Parameters<typeof _searchUserTaskEffectiveVariables>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _searchUserTaskEffectiveVariables>> }): CancelablePromise<_DataOf<typeof _searchUserTaskEffectiveVariables>> {
+  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
+  const invoke = () => toCancelable(signal => _searchUserTaskEffectiveVariables({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+  return eventualPoll('searchUserTaskEffectiveVariables', false, invoke, ec.consistency);
+}
+
+/**
  * Search user task variables
- * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
+ * Search for user task variables based on given criteria. This endpoint returns all variable
+ * documents visible from the user task's scope, including variables from parent scopes in the
+ * scope hierarchy. If the same variable name exists at multiple scope levels, each scope's
+ * variable is returned as a separate result. Use the
+ * `/user-tasks/{userTaskKey}/effective-variables/search` endpoint to get deduplicated variables
+ * where the innermost scope takes precedence. By default, long variable values in the response
+ * are truncated.
  *
   *
  * @operationId searchUserTaskVariables
@@ -1903,13 +1901,9 @@ export function searchVariables(options: Parameters<typeof _searchVariables>[0] 
   *
  * @operationId suspendBatchOperation
  * @tags Batch operation
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function suspendBatchOperation(options: Parameters<typeof _suspendBatchOperation>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _suspendBatchOperation>> }): CancelablePromise<_DataOf<typeof _suspendBatchOperation>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _suspendBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
-  return eventualPoll('suspendBatchOperation', false, invoke, ec.consistency);
+export function suspendBatchOperation(options?: Parameters<typeof _suspendBatchOperation>[0]): CancelablePromise<_DataOf<typeof _suspendBatchOperation>> {
+  return toCancelable(signal => _suspendBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -2079,7 +2073,8 @@ export function unassignUserFromTenant(options?: Parameters<typeof _unassignUser
 
 /**
  * Unassign user task
- * Removes the assignee of a task with the given key.
+ * Removes the assignee of a task with the given key. Unassignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+ *
   *
  * @operationId unassignUserTask
  * @tags User task
@@ -2164,18 +2159,15 @@ export function updateTenant(options?: Parameters<typeof _updateTenant>[0]): Can
   *
  * @operationId updateUser
  * @tags User
-  *
- * Consistency: Eventually consistent – may return 404/empty until propagation.
  */
-export function updateUser(options: Parameters<typeof _updateUser>[0] | undefined, ec: { consistency: ConsistencyOptions<_DataOf<typeof _updateUser>> }): CancelablePromise<_DataOf<typeof _updateUser>> {
-  if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
-  const invoke = () => toCancelable(signal => _updateUser({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
-  return eventualPoll('updateUser', false, invoke, ec.consistency);
+export function updateUser(options?: Parameters<typeof _updateUser>[0]): CancelablePromise<_DataOf<typeof _updateUser>> {
+  return toCancelable(signal => _updateUser({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
  * Update user task
- * Update a user task with the given key.
+ * Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504.Update a user task with the given key.
+ *
   *
  * @operationId updateUserTask
  * @tags User task
@@ -2184,4 +2176,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=09b611f540cbce08 totalWrappers=146 elements=942 physicalLines=2186
+// SENTINEL_FACADE_PREWRITE hash=92ec2100392daf97 totalWrappers=147 elements=927 physicalLines=2178

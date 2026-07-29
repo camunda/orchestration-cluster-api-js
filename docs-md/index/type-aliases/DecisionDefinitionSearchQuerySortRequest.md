@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionDefinitionSearchQuerySortRequest"
-sidebar_label: "DecisionDefinitionSearchQuerySortRequest"
+title: 'Type Alias: DecisionDefinitionSearchQuerySortRequest'
+sidebar_label: 'DecisionDefinitionSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:1431](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "decisionDefinitionKey"
   | "decisionDefinitionId"
   | "name"
@@ -34,7 +34,7 @@ Defined in: [gen/types.gen.ts:1435](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

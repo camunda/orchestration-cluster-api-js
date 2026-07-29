@@ -1,6 +1,6 @@
 ---
-title: "Interface: JobWorkerConfig<In, Out, Headers>"
-sidebar_label: "JobWorkerConfig<In, Out, Headers>"
+title: 'Interface: JobWorkerConfig<In, Out, Headers>'
+sidebar_label: 'JobWorkerConfig<In, Out, Headers>'
 mdx:
   format: md
 ---
@@ -13,15 +13,15 @@ Defined in: [runtime/jobWorker.ts:13](https://github.com/camunda/orchestration-c
 
 ### In
 
-`In` *extends* `z.ZodTypeAny` = `any`
+`In` _extends_ `z.ZodTypeAny` = `any`
 
 ### Out
 
-`Out` *extends* `z.ZodTypeAny` = `any`
+`Out` _extends_ `z.ZodTypeAny` = `any`
 
 ### Headers
 
-`Headers` *extends* `z.ZodTypeAny` = `any`
+`Headers` _extends_ `z.ZodTypeAny` = `any`
 
 ## Properties
 
@@ -35,7 +35,7 @@ Defined in: [runtime/jobWorker.ts:28](https://github.com/camunda/orchestration-c
 
 Immediately start polling for work - default `true`
 
-***
+---
 
 ### customHeadersSchema?
 
@@ -47,7 +47,7 @@ Defined in: [runtime/jobWorker.ts:23](https://github.com/camunda/orchestration-c
 
 Zod schema for custom headers in the activated job
 
-***
+---
 
 ### fetchVariables?
 
@@ -59,7 +59,7 @@ Defined in: [runtime/jobWorker.ts:43](https://github.com/camunda/orchestration-c
 
 Optional list of variable names to fetch during activation
 
-***
+---
 
 ### inputSchema?
 
@@ -71,12 +71,12 @@ Defined in: [runtime/jobWorker.ts:19](https://github.com/camunda/orchestration-c
 
 Zod schema for variables in the activated job
 
-***
+---
 
 ### jobHandler()
 
 ```ts
-jobHandler: (job) => "JOB_ACTION_RECEIPT" | Promise<"JOB_ACTION_RECEIPT">;
+jobHandler: (job) => 'JOB_ACTION_RECEIPT' | Promise<'JOB_ACTION_RECEIPT'>;
 ```
 
 Defined in: [runtime/jobWorker.ts:26](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/jobWorker.ts#L26)
@@ -91,7 +91,7 @@ Defined in: [runtime/jobWorker.ts:26](https://github.com/camunda/orchestration-c
 
 `"JOB_ACTION_RECEIPT"` \| `Promise`\<`"JOB_ACTION_RECEIPT"`\>
 
-***
+---
 
 ### jobTimeoutMs
 
@@ -103,7 +103,7 @@ Defined in: [runtime/jobWorker.ts:39](https://github.com/camunda/orchestration-c
 
 Job activation timeout
 
-***
+---
 
 ### jobType
 
@@ -115,7 +115,7 @@ Defined in: [runtime/jobWorker.ts:41](https://github.com/camunda/orchestration-c
 
 Zeebe job type
 
-***
+---
 
 ### ~~maxBackoffTimeMs?~~
 
@@ -129,7 +129,7 @@ Defined in: [runtime/jobWorker.ts:45](https://github.com/camunda/orchestration-c
 
 Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility.
 
-***
+---
 
 ### maxParallelJobs
 
@@ -141,7 +141,7 @@ Defined in: [runtime/jobWorker.ts:30](https://github.com/camunda/orchestration-c
 
 concurrency limit
 
-***
+---
 
 ### outputSchema?
 
@@ -153,7 +153,7 @@ Defined in: [runtime/jobWorker.ts:21](https://github.com/camunda/orchestration-c
 
 Zod schema for variables in the complete command
 
-***
+---
 
 ### pollIntervalMs?
 
@@ -165,7 +165,7 @@ Defined in: [runtime/jobWorker.ts:25](https://github.com/camunda/orchestration-c
 
 Backoff between polls - default 1ms
 
-***
+---
 
 ### pollTimeoutMs?
 
@@ -179,7 +179,7 @@ The request will be completed when at least one job is activated or after the re
 If the requestTimeout = 0, the request will be completed after a default configured timeout in the broker.
 To immediately complete the request when no job is activated set the requestTimeout to a negative value
 
-***
+---
 
 ### startupJitterMaxSeconds?
 
@@ -194,7 +194,7 @@ When multiple application instances restart simultaneously, this spreads out
 initial activation requests to avoid saturating the server.
 `0` (the default) means no delay.
 
-***
+---
 
 ### validateSchemas?
 
@@ -207,7 +207,7 @@ Defined in: [runtime/jobWorker.ts:59](https://github.com/camunda/orchestration-c
 Validate any provided input, output, customheader schema
 default: false
 
-***
+---
 
 ### workerName?
 

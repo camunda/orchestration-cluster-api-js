@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BroadcastSignalErrors"
-sidebar_label: "BroadcastSignalErrors"
+title: 'Type Alias: BroadcastSignalErrors'
+sidebar_label: 'BroadcastSignalErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14715](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:14719](https://github.com/camunda/orchestration-cl
 
 The signal is not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:14723](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

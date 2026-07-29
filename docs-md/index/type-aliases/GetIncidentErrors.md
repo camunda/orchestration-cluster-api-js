@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetIncidentErrors"
-sidebar_label: "GetIncidentErrors"
+title: 'Type Alias: GetIncidentErrors'
+sidebar_label: 'GetIncidentErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11632](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11636](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11640](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11644](https://github.com/camunda/orchestration-cl
 
 The incident with the given key was not found.
 
-***
+---
 
 ### 500
 

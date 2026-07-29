@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteMappingRuleResponse"
-sidebar_label: "DeleteMappingRuleResponse"
+title: 'Type Alias: DeleteMappingRuleResponse'
+sidebar_label: 'DeleteMappingRuleResponse'
 mdx:
   format: md
 ---

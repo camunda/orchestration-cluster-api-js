@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromTenantError"
-sidebar_label: "UnassignRoleFromTenantError"
+title: 'Type Alias: UnassignRoleFromTenantError'
+sidebar_label: 'UnassignRoleFromTenantError'
 mdx:
   format: md
 ---

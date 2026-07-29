@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUserTaskErrors"
-sidebar_label: "GetUserTaskErrors"
+title: 'Type Alias: GetUserTaskErrors'
+sidebar_label: 'GetUserTaskErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:16071](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:16075](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:16079](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:16083](https://github.com/camunda/orchestration-cl
 
 The user task with the given key was not found.
 
-***
+---
 
 ### 500
 

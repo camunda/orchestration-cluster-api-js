@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDecisionDefinitionXmlResponses"
-sidebar_label: "GetDecisionDefinitionXmlResponses"
+title: 'Type Alias: GetDecisionDefinitionXmlResponses'
+sidebar_label: 'GetDecisionDefinitionXmlResponses'
 mdx:
   format: md
 ---

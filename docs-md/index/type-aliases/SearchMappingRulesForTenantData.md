@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchMappingRulesForTenantData"
-sidebar_label: "SearchMappingRulesForTenantData"
+title: 'Type Alias: SearchMappingRulesForTenantData'
+sidebar_label: 'SearchMappingRulesForTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: MappingRuleSearchQueryRequest;
 
 Defined in: [gen/types.gen.ts:15343](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15343)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15350](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15350)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/mapping-rules/search";
+url: '/tenants/{tenantId}/mapping-rules/search';
 ```
 
 Defined in: [gen/types.gen.ts:15351](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15351)

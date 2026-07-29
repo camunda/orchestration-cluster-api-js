@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateGroupErrors"
-sidebar_label: "CreateGroupErrors"
+title: 'Type Alias: CreateGroupErrors'
+sidebar_label: 'CreateGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10828](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:10832](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:10836](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:10840](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

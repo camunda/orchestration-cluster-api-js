@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceModificationMoveBatchOperationInstruction"
-sidebar_label: "ProcessInstanceModificationMoveBatchOperationInstruction"
+title: 'Type Alias: ProcessInstanceModificationMoveBatchOperationInstruction'
+sidebar_label: 'ProcessInstanceModificationMoveBatchOperationInstruction'
 mdx:
   format: md
 ---
@@ -30,7 +30,7 @@ Defined in: [gen/types.gen.ts:1020](https://github.com/camunda/orchestration-clu
 
 The source element ID.
 
-***
+---
 
 ### targetElementId
 

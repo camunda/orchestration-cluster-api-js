@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceStateFilterProperty"
-sidebar_label: "ProcessInstanceStateFilterProperty"
+title: 'Type Alias: ProcessInstanceStateFilterProperty'
+sidebar_label: 'ProcessInstanceStateFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ProcessInstanceStateFilterProperty
 
 ```ts
-type ProcessInstanceStateFilterProperty = 
+type ProcessInstanceStateFilterProperty =
   | ProcessInstanceStateExactMatch
   | AdvancedProcessInstanceStateFilter;
 ```

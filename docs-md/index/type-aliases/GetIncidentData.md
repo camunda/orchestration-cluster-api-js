@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetIncidentData"
-sidebar_label: "GetIncidentData"
+title: 'Type Alias: GetIncidentData'
+sidebar_label: 'GetIncidentData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:11617](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11617)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ incidentKey: IncidentKey;
 
 The assigned key of the incident, which acts as a unique identifier for this incident.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11624](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11624)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/incidents/{incidentKey}";
+url: '/incidents/{incidentKey}';
 ```
 
 Defined in: [gen/types.gen.ts:11625](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11625)

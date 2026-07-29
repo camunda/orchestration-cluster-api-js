@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SetVariableRequest"
-sidebar_label: "SetVariableRequest"
+title: 'Type Alias: SetVariableRequest'
+sidebar_label: 'SetVariableRequest'
 mdx:
   format: md
 ---
@@ -38,7 +38,7 @@ to `true` leaves scope '1' unchanged and adjusts scope '2' to { "bar": 1, "foo":
 default, with local set to `false`, scope '1' will be { "foo": 5 } and scope '2' will be
 { "bar": 1 }.
 
-***
+---
 
 ### operationReference?
 
@@ -48,7 +48,7 @@ optional operationReference: OperationReference;
 
 Defined in: [gen/types.gen.ts:8226](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8226)
 
-***
+---
 
 ### variables
 

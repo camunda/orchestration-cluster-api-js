@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchMappingRuleError"
-sidebar_label: "SearchMappingRuleError"
+title: 'Type Alias: SearchMappingRuleError'
+sidebar_label: 'SearchMappingRuleError'
 mdx:
   format: md
 ---

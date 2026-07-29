@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentErrorTypeFilterProperty"
-sidebar_label: "IncidentErrorTypeFilterProperty"
+title: 'Type Alias: IncidentErrorTypeFilterProperty'
+sidebar_label: 'IncidentErrorTypeFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: IncidentErrorTypeFilterProperty
 
 ```ts
-type IncidentErrorTypeFilterProperty = 
+type IncidentErrorTypeFilterProperty =
   | IncidentErrorTypeExactMatch
   | AdvancedIncidentErrorTypeFilter;
 ```

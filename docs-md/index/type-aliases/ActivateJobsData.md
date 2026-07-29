@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ActivateJobsData"
-sidebar_label: "ActivateJobsData"
+title: 'Type Alias: ActivateJobsData'
+sidebar_label: 'ActivateJobsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: JobActivationRequest;
 
 Defined in: [gen/types.gen.ts:11790](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11790)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:11791](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11791)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11792](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11792)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/jobs/activation";
+url: '/jobs/activation';
 ```
 
 Defined in: [gen/types.gen.ts:11793](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11793)

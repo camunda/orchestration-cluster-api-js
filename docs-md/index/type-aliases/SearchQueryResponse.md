@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchQueryResponse"
-sidebar_label: "SearchQueryResponse"
+title: 'Type Alias: SearchQueryResponse'
+sidebar_label: 'SearchQueryResponse'
 mdx:
   format: md
 ---

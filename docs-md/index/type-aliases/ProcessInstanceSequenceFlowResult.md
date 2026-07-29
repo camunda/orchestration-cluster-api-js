@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceSequenceFlowResult"
-sidebar_label: "ProcessInstanceSequenceFlowResult"
+title: 'Type Alias: ProcessInstanceSequenceFlowResult'
+sidebar_label: 'ProcessInstanceSequenceFlowResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:6620](https://github.com/camunda/orchestration-clu
 
 The element id for this sequence flow, as provided in the BPMN process.
 
-***
+---
 
 ### processDefinitionId
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:6616](https://github.com/camunda/orchestration-clu
 
 The process definition id.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:6612](https://github.com/camunda/orchestration-clu
 
 The process definition key.
 
-***
+---
 
 ### processInstanceKey
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:6601](https://github.com/camunda/orchestration-clu
 
 The key of this process instance.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -77,7 +77,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### sequenceFlowId
 
@@ -89,7 +89,7 @@ Defined in: [gen/types.gen.ts:6597](https://github.com/camunda/orchestration-clu
 
 The sequence flow id.
 
-***
+---
 
 ### tenantId
 

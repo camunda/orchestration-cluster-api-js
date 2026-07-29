@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessDefinitionStatisticsResponses"
-sidebar_label: "GetProcessDefinitionStatisticsResponses"
+title: 'Type Alias: GetProcessDefinitionStatisticsResponses'
+sidebar_label: 'GetProcessDefinitionStatisticsResponses'
 mdx:
   format: md
 ---

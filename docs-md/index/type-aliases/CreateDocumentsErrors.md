@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDocumentsErrors"
-sidebar_label: "CreateDocumentsErrors"
+title: 'Type Alias: CreateDocumentsErrors'
+sidebar_label: 'CreateDocumentsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10176](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 415
 

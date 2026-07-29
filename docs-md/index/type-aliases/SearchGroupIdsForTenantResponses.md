@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchGroupIdsForTenantResponses"
-sidebar_label: "SearchGroupIdsForTenantResponses"
+title: 'Type Alias: SearchGroupIdsForTenantResponses'
+sidebar_label: 'SearchGroupIdsForTenantResponses'
 mdx:
   format: md
 ---

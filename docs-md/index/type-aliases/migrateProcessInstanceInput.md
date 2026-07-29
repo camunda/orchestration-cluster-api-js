@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: migrateProcessInstanceInput"
-sidebar_label: "migrateProcessInstanceInput"
+title: 'Type Alias: migrateProcessInstanceInput'
+sidebar_label: 'migrateProcessInstanceInput'
 mdx:
   format: md
 ---

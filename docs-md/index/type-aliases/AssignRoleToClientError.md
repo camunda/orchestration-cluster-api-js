@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToClientError"
-sidebar_label: "AssignRoleToClientError"
+title: 'Type Alias: AssignRoleToClientError'
+sidebar_label: 'AssignRoleToClientError'
 mdx:
   format: md
 ---

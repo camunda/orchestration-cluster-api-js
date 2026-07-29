@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchClientsForTenantData"
-sidebar_label: "SearchClientsForTenantData"
+title: 'Type Alias: SearchClientsForTenantData'
+sidebar_label: 'SearchClientsForTenantData'
 mdx:
   format: md
 ---
@@ -33,7 +33,7 @@ optional sort: object[];
 
 Sort field criteria.
 
-***
+---
 
 ### path
 
@@ -51,7 +51,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -61,12 +61,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15094](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15094)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/clients/search";
+url: '/tenants/{tenantId}/clients/search';
 ```
 
 Defined in: [gen/types.gen.ts:15095](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15095)

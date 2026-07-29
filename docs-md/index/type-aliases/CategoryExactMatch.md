@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CategoryExactMatch"
-sidebar_label: "CategoryExactMatch"
+title: 'Type Alias: CategoryExactMatch'
+sidebar_label: 'CategoryExactMatch'
 mdx:
   format: md
 ---

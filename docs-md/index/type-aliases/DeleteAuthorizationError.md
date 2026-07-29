@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteAuthorizationError"
-sidebar_label: "DeleteAuthorizationError"
+title: 'Type Alias: DeleteAuthorizationError'
+sidebar_label: 'DeleteAuthorizationError'
 mdx:
   format: md
 ---

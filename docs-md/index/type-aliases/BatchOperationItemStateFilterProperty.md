@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationItemStateFilterProperty"
-sidebar_label: "BatchOperationItemStateFilterProperty"
+title: 'Type Alias: BatchOperationItemStateFilterProperty'
+sidebar_label: 'BatchOperationItemStateFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: BatchOperationItemStateFilterProperty
 
 ```ts
-type BatchOperationItemStateFilterProperty = 
+type BatchOperationItemStateFilterProperty =
   | BatchOperationItemStateExactMatch
   | AdvancedBatchOperationItemStateFilter;
 ```

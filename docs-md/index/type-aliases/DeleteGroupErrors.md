@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGroupErrors"
-sidebar_label: "DeleteGroupErrors"
+title: 'Type Alias: DeleteGroupErrors'
+sidebar_label: 'DeleteGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10912](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:10916](https://github.com/camunda/orchestration-cl
 
 The group with the given ID was not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:10920](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

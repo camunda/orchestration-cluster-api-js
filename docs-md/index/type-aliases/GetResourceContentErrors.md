@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetResourceContentErrors"
-sidebar_label: "GetResourceContentErrors"
+title: 'Type Alias: GetResourceContentErrors'
+sidebar_label: 'GetResourceContentErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13739](https://github.com/camunda/orchestration-cl
 
 A resource with the given key was not found.
 
-***
+---
 
 ### 500
 

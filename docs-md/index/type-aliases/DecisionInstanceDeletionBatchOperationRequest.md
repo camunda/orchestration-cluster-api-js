@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionInstanceDeletionBatchOperationRequest"
-sidebar_label: "DecisionInstanceDeletionBatchOperationRequest"
+title: 'Type Alias: DecisionInstanceDeletionBatchOperationRequest'
+sidebar_label: 'DecisionInstanceDeletionBatchOperationRequest'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:928](https://github.com/camunda/orchestration-clus
 
 The decision instance filter.
 
-***
+---
 
 ### operationReference?
 

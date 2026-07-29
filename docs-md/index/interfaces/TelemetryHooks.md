@@ -1,6 +1,6 @@
 ---
-title: "Interface: TelemetryHooks"
-sidebar_label: "TelemetryHooks"
+title: 'Interface: TelemetryHooks'
+sidebar_label: 'TelemetryHooks'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [runtime/telemetry.ts:7](https://github.com/camunda/orchestration-cl
 
 `void`
 
-***
+---
 
 ### authError()?
 
@@ -49,7 +49,7 @@ Defined in: [runtime/telemetry.ts:11](https://github.com/camunda/orchestration-c
 
 `void`
 
-***
+---
 
 ### authStart()?
 
@@ -69,7 +69,7 @@ Defined in: [runtime/telemetry.ts:9](https://github.com/camunda/orchestration-cl
 
 `void`
 
-***
+---
 
 ### authSuccess()?
 
@@ -89,7 +89,7 @@ Defined in: [runtime/telemetry.ts:10](https://github.com/camunda/orchestration-c
 
 `void`
 
-***
+---
 
 ### beforeRequest()?
 
@@ -109,7 +109,7 @@ Defined in: [runtime/telemetry.ts:6](https://github.com/camunda/orchestration-cl
 
 `void`
 
-***
+---
 
 ### requestError()?
 
@@ -129,7 +129,7 @@ Defined in: [runtime/telemetry.ts:8](https://github.com/camunda/orchestration-cl
 
 `void`
 
-***
+---
 
 ### retry()?
 

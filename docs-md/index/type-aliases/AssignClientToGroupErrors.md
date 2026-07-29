@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignClientToGroupErrors"
-sidebar_label: "AssignClientToGroupErrors"
+title: 'Type Alias: AssignClientToGroupErrors'
+sidebar_label: 'AssignClientToGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11166](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11170](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11174](https://github.com/camunda/orchestration-cl
 
 The group with the given ID was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11178](https://github.com/camunda/orchestration-cl
 
 The client with the given ID is already assigned to the group.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:11182](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

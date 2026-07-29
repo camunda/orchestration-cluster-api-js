@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: suspendBatchOperationInput"
-sidebar_label: "suspendBatchOperationInput"
+title: 'Type Alias: suspendBatchOperationInput'
+sidebar_label: 'suspendBatchOperationInput'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Function: isRight()"
-sidebar_label: "isRight()"
+title: 'Function: isRight()'
+sidebar_label: 'isRight()'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateDecisionResponse"
-sidebar_label: "EvaluateDecisionResponse"
+title: 'Type Alias: EvaluateDecisionResponse'
+sidebar_label: 'EvaluateDecisionResponse'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDecisionInstanceError"
-sidebar_label: "DeleteDecisionInstanceError"
+title: 'Type Alias: DeleteDecisionInstanceError'
+sidebar_label: 'DeleteDecisionInstanceError'
 mdx:
   format: md
 ---

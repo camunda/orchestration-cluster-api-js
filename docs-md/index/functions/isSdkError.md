@@ -1,6 +1,6 @@
 ---
-title: "Function: isSdkError()"
-sidebar_label: "isSdkError()"
+title: 'Function: isSdkError()'
+sidebar_label: 'isSdkError()'
 mdx:
   format: md
 ---

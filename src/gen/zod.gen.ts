@@ -131,7 +131,9 @@ export const zDecisionDefinitionId = z.string().min(1).max(256).regex(/^[A-Za-z0
 /**
  * System-generated key for a decision evaluation instance.
  */
-export const zDecisionEvaluationInstanceKey = zLongKey;
+export const zDecisionEvaluationInstanceKey = z.string().min(3).max(30).regex(/^[0-9]+-[0-9]+$/).register(z.globalRegistry, {
+    description: 'System-generated key for a decision evaluation instance.'
+});
 
 /**
  * System-generated key for a decision evaluation.
@@ -636,6 +638,20 @@ export const zUserTaskVariableSearchQueryRequest = zSearchQueryRequest.and(z.obj
     description: 'User task search query request.'
 }));
 
+/**
+ * User task effective variable search query request. Uses offset-based pagination only.
+ *
+ */
+export const zUserTaskEffectiveVariableSearchQueryRequest = z.object({
+    page: z.optional(zOffsetPagination),
+    sort: z.optional(z.array(zUserTaskVariableSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    })),
+    filter: z.optional(zUserTaskVariableFilter)
+}).register(z.globalRegistry, {
+    description: 'User task effective variable search query request. Uses offset-based pagination only.\n'
+});
+
 export const zUserTaskResult = z.object({
     name: z.optional(z.string().register(z.globalRegistry, {
         description: 'The name for this user task.'
@@ -897,7 +913,7 @@ export const zProcessDefinitionSearchQuerySortRequest = z.object({
 export const zProcessDefinitionFilter = z.object({
     name: z.optional(zStringFilterProperty),
     isLatestVersion: z.optional(z.boolean().register(z.globalRegistry, {
-        description: 'Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\n'
+        description: 'Whether to only return the latest version of each process definition.\nWhen using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.\nThe response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.\nWhen using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.\n'
     })),
     resourceName: z.optional(z.string().register(z.globalRegistry, {
         description: 'Resource name of this process definition.'
@@ -913,6 +929,12 @@ export const zProcessDefinitionFilter = z.object({
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    })),
+    state: z.optional(z.enum([
+        'ACTIVE',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n"
     }))
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -943,6 +965,12 @@ export const zProcessDefinitionResult = z.object({
     processDefinitionKey: z.optional(zProcessDefinitionKey),
     hasStartForm: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
+    })),
+    state: z.optional(z.enum([
+        'ACTIVE',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: 'The state of this process definition.'
     }))
 });
 
@@ -1107,6 +1135,7 @@ export const zBaseProcessInstanceFilterFields = z.object({
     parentProcessInstanceKey: z.optional(zProcessInstanceKeyFilterProperty),
     parentElementInstanceKey: z.optional(zElementInstanceKeyFilterProperty),
     batchOperationId: z.optional(zStringFilterProperty),
+    batchOperationKey: z.optional(zStringFilterProperty),
     errorMessage: z.optional(zStringFilterProperty),
     hasRetriesLeft: z.optional(z.boolean().register(z.globalRegistry, {
         description: 'Whether the process has failed jobs with retries left.'
@@ -4372,8 +4401,8 @@ export const zSignalBroadcastResult = z.object({
 export const zFormResult = z.object({
     tenantId: z.optional(zTenantId),
     formId: z.optional(zFormId),
-    schema: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
-        description: 'The form content.'
+    schema: z.optional(z.string().register(z.globalRegistry, {
+        description: 'The form schema as a JSON document serialized as a string.'
     })),
     version: z.optional(z.coerce.bigint().register(z.globalRegistry, {
         description: 'The version of the the deployed form.'
@@ -5300,6 +5329,23 @@ export const zSearchUserTaskVariablesData = z.object({
  *
  */
 export const zSearchUserTaskVariablesResponse = zVariableSearchQueryResult;
+
+export const zSearchUserTaskEffectiveVariablesData = z.object({
+    body: z.optional(zUserTaskEffectiveVariableSearchQueryRequest),
+    path: z.object({
+        userTaskKey: zUserTaskKey
+    }),
+    query: z.optional(z.object({
+        truncateValues: z.optional(z.boolean().register(z.globalRegistry, {
+            description: 'When true (default), long variable values in the response are truncated. When false, full variable values are returned.'
+        }))
+    }))
+});
+
+/**
+ * The user task effective variable search result.
+ */
+export const zSearchUserTaskEffectiveVariablesResponse = zVariableSearchQueryResult;
 
 export const zSearchVariablesData = z.object({
     body: z.optional(zVariableSearchQuery),

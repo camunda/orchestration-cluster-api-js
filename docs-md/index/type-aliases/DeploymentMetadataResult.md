@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentMetadataResult"
-sidebar_label: "DeploymentMetadataResult"
+title: 'Type Alias: DeploymentMetadataResult'
+sidebar_label: 'DeploymentMetadataResult'
 mdx:
   format: md
 ---
@@ -25,12 +25,12 @@ Defined in: [gen/types.gen.ts:2077](https://github.com/camunda/orchestration-clu
 
 Deployed decision.
 
-***
+---
 
 ### decisionRequirements
 
 ```ts
-decisionRequirements: 
+decisionRequirements:
   | DeploymentDecisionRequirementsResult
   | null;
 ```
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:2081](https://github.com/camunda/orchestration-clu
 
 Deployed decision requirement definition.
 
-***
+---
 
 ### form
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:2085](https://github.com/camunda/orchestration-clu
 
 Deployed form.
 
-***
+---
 
 ### processDefinition
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:2073](https://github.com/camunda/orchestration-clu
 
 Deployed process.
 
-***
+---
 
 ### resource
 

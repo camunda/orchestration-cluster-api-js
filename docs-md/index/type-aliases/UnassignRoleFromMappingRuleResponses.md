@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromMappingRuleResponses"
-sidebar_label: "UnassignRoleFromMappingRuleResponses"
+title: 'Type Alias: UnassignRoleFromMappingRuleResponses'
+sidebar_label: 'UnassignRoleFromMappingRuleResponses'
 mdx:
   format: md
 ---

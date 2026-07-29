@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProblemDetail"
-sidebar_label: "ProblemDetail"
+title: 'Type Alias: ProblemDetail'
+sidebar_label: 'ProblemDetail'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5725](https://github.com/camunda/orchestration-clu
 
 An explanation of the problem in more detail.
 
-***
+---
 
 ### instance
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5729](https://github.com/camunda/orchestration-clu
 
 A URI path identifying the origin of the problem.
 
-***
+---
 
 ### status
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5721](https://github.com/camunda/orchestration-clu
 
 The HTTP status code for this problem.
 
-***
+---
 
 ### title
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:5717](https://github.com/camunda/orchestration-clu
 
 A summary of the problem type.
 
-***
+---
 
 ### type
 

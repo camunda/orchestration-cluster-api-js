@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentResult"
-sidebar_label: "DeploymentResult"
+title: 'Type Alias: DeploymentResult'
+sidebar_label: 'DeploymentResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2058](https://github.com/camunda/orchestration-clu
 
 The unique key identifying the deployment.
 
-***
+---
 
 ### deployments
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2066](https://github.com/camunda/orchestration-clu
 
 Items deployed by the request.
 
-***
+---
 
 ### tenantId
 

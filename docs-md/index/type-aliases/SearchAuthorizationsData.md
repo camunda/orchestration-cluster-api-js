@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchAuthorizationsData"
-sidebar_label: "SearchAuthorizationsData"
+title: 'Type Alias: SearchAuthorizationsData'
+sidebar_label: 'SearchAuthorizationsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: AuthorizationSearchQuery;
 
 Defined in: [gen/types.gen.ts:8647](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8647)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:8648](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8648)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:8649](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8649)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/authorizations/search";
+url: '/authorizations/search';
 ```
 
 Defined in: [gen/types.gen.ts:8650](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8650)

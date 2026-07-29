@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessDefinitionXmlResponses"
-sidebar_label: "GetProcessDefinitionXmlResponses"
+title: 'Type Alias: GetProcessDefinitionXmlResponses'
+sidebar_label: 'GetProcessDefinitionXmlResponses'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12902](https://github.com/camunda/orchestration-cl
 
 The XML of the process definition is successfully returned.
 
-***
+---
 
 ### 204
 

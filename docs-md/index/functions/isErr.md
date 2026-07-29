@@ -1,6 +1,6 @@
 ---
-title: "Function: isErr()"
-sidebar_label: "isErr()"
+title: 'Function: isErr()'
+sidebar_label: 'isErr()'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveIncidentData"
-sidebar_label: "ResolveIncidentData"
+title: 'Type Alias: ResolveIncidentData'
+sidebar_label: 'ResolveIncidentData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: IncidentResolutionRequest;
 
 Defined in: [gen/types.gen.ts:11663](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11663)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ incidentKey: IncidentKey;
 
 Key of the incident to resolve.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11670](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11670)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/incidents/{incidentKey}/resolution";
+url: '/incidents/{incidentKey}/resolution';
 ```
 
 Defined in: [gen/types.gen.ts:11671](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11671)

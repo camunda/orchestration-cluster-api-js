@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleUpdateResult"
-sidebar_label: "RoleUpdateResult"
+title: 'Type Alias: RoleUpdateResult'
+sidebar_label: 'RoleUpdateResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:6952](https://github.com/camunda/orchestration-clu
 
 The description of the updated role.
 
-***
+---
 
 ### name
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:6948](https://github.com/camunda/orchestration-clu
 
 The display name of the updated role.
 
-***
+---
 
 ### roleId
 

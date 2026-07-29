@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobWorkerStatisticsFilter"
-sidebar_label: "JobWorkerStatisticsFilter"
+title: 'Type Alias: JobWorkerStatisticsFilter'
+sidebar_label: 'JobWorkerStatisticsFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3795](https://github.com/camunda/orchestration-clu
 
 Start of the time window to filter metrics. ISO 8601 date-time format.
 
-***
+---
 
 ### jobType
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3804](https://github.com/camunda/orchestration-clu
 
 Job type to return worker metrics for.
 
-***
+---
 
 ### to
 

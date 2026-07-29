@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchIncidentsError"
-sidebar_label: "SearchIncidentsError"
+title: 'Type Alias: SearchIncidentsError'
+sidebar_label: 'SearchIncidentsError'
 mdx:
   format: md
 ---

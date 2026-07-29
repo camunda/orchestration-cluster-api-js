@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchUsersForGroupInput"
-sidebar_label: "searchUsersForGroupInput"
+title: 'Type Alias: searchUsersForGroupInput'
+sidebar_label: 'searchUsersForGroupInput'
 mdx:
   format: md
 ---

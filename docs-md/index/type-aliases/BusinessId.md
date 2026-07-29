@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BusinessId"
-sidebar_label: "BusinessId"
+title: 'Type Alias: BusinessId'
+sidebar_label: 'BusinessId'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: BusinessId
 
 ```ts
-type BusinessId = CamundaKey<"BusinessId">;
+type BusinessId = CamundaKey<'BusinessId'>;
 ```
 
 Defined in: [gen/types.gen.ts:3359](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3359)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationCreatedResult"
-sidebar_label: "BatchOperationCreatedResult"
+title: 'Type Alias: BatchOperationCreatedResult'
+sidebar_label: 'BatchOperationCreatedResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:704](https://github.com/camunda/orchestration-clus
 
 Key of the batch operation.
 
-***
+---
 
 ### batchOperationType
 

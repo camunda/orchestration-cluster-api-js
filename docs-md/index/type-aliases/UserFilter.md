@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserFilter"
-sidebar_label: "UserFilter"
+title: 'Type Alias: UserFilter'
+sidebar_label: 'UserFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:8041](https://github.com/camunda/orchestration-clu
 
 The email of the user.
 
-***
+---
 
 ### name?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:8037](https://github.com/camunda/orchestration-clu
 
 The name of the user.
 
-***
+---
 
 ### username?
 

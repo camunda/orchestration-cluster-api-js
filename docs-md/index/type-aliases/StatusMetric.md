@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: StatusMetric"
-sidebar_label: "StatusMetric"
+title: 'Type Alias: StatusMetric'
+sidebar_label: 'StatusMetric'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3708](https://github.com/camunda/orchestration-clu
 
 Number of jobs in this status.
 
-***
+---
 
 ### lastUpdatedAt
 

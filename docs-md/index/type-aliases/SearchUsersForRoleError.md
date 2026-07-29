@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUsersForRoleError"
-sidebar_label: "SearchUsersForRoleError"
+title: 'Type Alias: SearchUsersForRoleError'
+sidebar_label: 'SearchUsersForRoleError'
 mdx:
   format: md
 ---

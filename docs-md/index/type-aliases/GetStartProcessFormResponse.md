@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStartProcessFormResponse"
-sidebar_label: "GetStartProcessFormResponse"
+title: 'Type Alias: GetStartProcessFormResponse'
+sidebar_label: 'GetStartProcessFormResponse'
 mdx:
   format: md
 ---

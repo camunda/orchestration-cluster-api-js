@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDecisionInstanceData"
-sidebar_label: "DeleteDecisionInstanceData"
+title: 'Type Alias: DeleteDecisionInstanceData'
+sidebar_label: 'DeleteDecisionInstanceData'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:9851](https://github.com/camunda/orchestration-clu
 ### body?
 
 ```ts
-optional body: 
+optional body:
   | {
   operationReference?: OperationReference;
 }
@@ -27,7 +27,7 @@ optional body:
 
 Defined in: [gen/types.gen.ts:9852](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9852)
 
-***
+---
 
 ### path
 
@@ -45,7 +45,7 @@ decisionEvaluationKey: DecisionEvaluationKey;
 
 The key of the decision evaluation to delete.
 
-***
+---
 
 ### query?
 
@@ -55,12 +55,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:9861](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9861)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/decision-instances/{decisionEvaluationKey}/deletion";
+url: '/decision-instances/{decisionEvaluationKey}/deletion';
 ```
 
 Defined in: [gen/types.gen.ts:9862](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9862)

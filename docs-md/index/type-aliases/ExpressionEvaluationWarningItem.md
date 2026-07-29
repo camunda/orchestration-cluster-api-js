@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ExpressionEvaluationWarningItem"
-sidebar_label: "ExpressionEvaluationWarningItem"
+title: 'Type Alias: ExpressionEvaluationWarningItem'
+sidebar_label: 'ExpressionEvaluationWarningItem'
 mdx:
   format: md
 ---

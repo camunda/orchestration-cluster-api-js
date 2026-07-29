@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ConditionalEvaluationInstruction"
-sidebar_label: "ConditionalEvaluationInstruction"
+title: 'Type Alias: ConditionalEvaluationInstruction'
+sidebar_label: 'ConditionalEvaluationInstruction'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1380](https://github.com/camunda/orchestration-clu
 
 Used to evaluate root-level conditional start events of the process definition with the given key.
 
-***
+---
 
 ### tenantId?
 
@@ -38,7 +38,7 @@ Defined in: [gen/types.gen.ts:1375](https://github.com/camunda/orchestration-clu
 Used to evaluate root-level conditional start events for a tenant with the given ID.
 This will only evaluate root-level conditional start events of process definitions which belong to the tenant.
 
-***
+---
 
 ### variables
 

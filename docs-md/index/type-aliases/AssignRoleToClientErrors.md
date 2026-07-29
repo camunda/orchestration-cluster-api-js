@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToClientErrors"
-sidebar_label: "AssignRoleToClientErrors"
+title: 'Type Alias: AssignRoleToClientErrors'
+sidebar_label: 'AssignRoleToClientErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14152](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:14156](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:14160](https://github.com/camunda/orchestration-cl
 
 The role with the given ID was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:14164](https://github.com/camunda/orchestration-cl
 
 The role was already assigned to the client with the given ID.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:14168](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

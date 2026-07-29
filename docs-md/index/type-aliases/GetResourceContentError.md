@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetResourceContentError"
-sidebar_label: "GetResourceContentError"
+title: 'Type Alias: GetResourceContentError'
+sidebar_label: 'GetResourceContentError'
 mdx:
   format: md
 ---

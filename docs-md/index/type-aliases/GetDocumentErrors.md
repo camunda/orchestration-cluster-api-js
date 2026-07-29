@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDocumentErrors"
-sidebar_label: "GetDocumentErrors"
+title: 'Type Alias: GetDocumentErrors'
+sidebar_label: 'GetDocumentErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10265](https://github.com/camunda/orchestration-cl
 
 The document with the given ID was not found.
 
-***
+---
 
 ### 500
 

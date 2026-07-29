@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchGroupsError"
-sidebar_label: "SearchGroupsError"
+title: 'Type Alias: SearchGroupsError'
+sidebar_label: 'SearchGroupsError'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchJobsData"
-sidebar_label: "SearchJobsData"
+title: 'Type Alias: SearchJobsData'
+sidebar_label: 'SearchJobsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: JobSearchQuery;
 
 Defined in: [gen/types.gen.ts:11828](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11828)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:11829](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11829)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11830](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11830)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/jobs/search";
+url: '/jobs/search';
 ```
 
 Defined in: [gen/types.gen.ts:11831](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11831)

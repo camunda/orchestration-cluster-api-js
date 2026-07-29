@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getBatchOperationInput"
-sidebar_label: "getBatchOperationInput"
+title: 'Type Alias: getBatchOperationInput'
+sidebar_label: 'getBatchOperationInput'
 mdx:
   format: md
 ---

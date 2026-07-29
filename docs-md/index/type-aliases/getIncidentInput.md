@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getIncidentInput"
-sidebar_label: "getIncidentInput"
+title: 'Type Alias: getIncidentInput'
+sidebar_label: 'getIncidentInput'
 mdx:
   format: md
 ---

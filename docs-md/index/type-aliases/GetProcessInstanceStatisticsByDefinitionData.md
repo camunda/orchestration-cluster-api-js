@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessInstanceStatisticsByDefinitionData"
-sidebar_label: "GetProcessInstanceStatisticsByDefinitionData"
+title: 'Type Alias: GetProcessInstanceStatisticsByDefinitionData'
+sidebar_label: 'GetProcessInstanceStatisticsByDefinitionData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: IncidentProcessInstanceStatisticsByDefinitionQuery;
 
 Defined in: [gen/types.gen.ts:11712](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11712)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:11713](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11713)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11714](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11714)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/incidents/statistics/process-instances-by-definition";
+url: '/incidents/statistics/process-instances-by-definition';
 ```
 
 Defined in: [gen/types.gen.ts:11715](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11715)

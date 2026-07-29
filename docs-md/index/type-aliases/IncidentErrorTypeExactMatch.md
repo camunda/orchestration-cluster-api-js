@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentErrorTypeExactMatch"
-sidebar_label: "IncidentErrorTypeExactMatch"
+title: 'Type Alias: IncidentErrorTypeExactMatch'
+sidebar_label: 'IncidentErrorTypeExactMatch'
 mdx:
   format: md
 ---

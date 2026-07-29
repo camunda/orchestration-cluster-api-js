@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateProcessInstanceResult"
-sidebar_label: "CreateProcessInstanceResult"
+title: 'Type Alias: CreateProcessInstanceResult'
+sidebar_label: 'CreateProcessInstanceResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:6272](https://github.com/camunda/orchestration-clu
 
 Business id as provided on creation.
 
-***
+---
 
 ### processDefinitionId
 
@@ -38,7 +38,7 @@ Defined in: [gen/types.gen.ts:6241](https://github.com/camunda/orchestration-clu
 The BPMN process id of the process definition which was used to create the process.
 instance
 
-***
+---
 
 ### processDefinitionKey
 
@@ -50,7 +50,7 @@ Defined in: [gen/types.gen.ts:6261](https://github.com/camunda/orchestration-clu
 
 The key of the process definition which was used to create the process instance.
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -62,7 +62,7 @@ Defined in: [gen/types.gen.ts:6246](https://github.com/camunda/orchestration-clu
 
 The version of the process definition which was used to create the process instance.
 
-***
+---
 
 ### processInstanceKey
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:6267](https://github.com/camunda/orchestration-clu
 The unique identifier of the created process instance; to be used wherever a request
 needs a process instance key (e.g. CancelProcessInstanceRequest).
 
-***
+---
 
 ### tags
 
@@ -85,7 +85,7 @@ tags: TagSet;
 
 Defined in: [gen/types.gen.ts:6268](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6268)
 
-***
+---
 
 ### tenantId
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:6250](https://github.com/camunda/orchestration-clu
 
 The tenant id of the created process instance.
 
-***
+---
 
 ### variables
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetResourceResponses"
-sidebar_label: "GetResourceResponses"
+title: 'Type Alias: GetResourceResponses'
+sidebar_label: 'GetResourceResponses'
 mdx:
   format: md
 ---

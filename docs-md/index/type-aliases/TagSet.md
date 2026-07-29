@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TagSet"
-sidebar_label: "TagSet"
+title: 'Type Alias: TagSet'
+sidebar_label: 'TagSet'
 mdx:
   format: md
 ---

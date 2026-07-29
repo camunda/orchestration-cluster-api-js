@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResumeBatchOperationData"
-sidebar_label: "ResumeBatchOperationData"
+title: 'Type Alias: ResumeBatchOperationData'
+sidebar_label: 'ResumeBatchOperationData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: unknown;
 
 Defined in: [gen/types.gen.ts:8950](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8950)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ batchOperationKey: BatchOperationKey;
 
 The key (or operate legacy ID) of the batch operation.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:8957](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8957)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/batch-operations/{batchOperationKey}/resumption";
+url: '/batch-operations/{batchOperationKey}/resumption';
 ```
 
 Defined in: [gen/types.gen.ts:8958](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8958)

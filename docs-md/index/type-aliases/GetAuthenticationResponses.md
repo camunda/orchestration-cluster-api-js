@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuthenticationResponses"
-sidebar_label: "GetAuthenticationResponses"
+title: 'Type Alias: GetAuthenticationResponses'
+sidebar_label: 'GetAuthenticationResponses'
 mdx:
   format: md
 ---

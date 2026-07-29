@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ModifyProcessInstanceData"
-sidebar_label: "ModifyProcessInstanceData"
+title: 'Type Alias: ModifyProcessInstanceData'
+sidebar_label: 'ModifyProcessInstanceData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: ProcessInstanceModificationInstruction;
 
 Defined in: [gen/types.gen.ts:13563](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13563)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The key of the process instance that should be modified.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13570](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13570)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}/modification";
+url: '/process-instances/{processInstanceKey}/modification';
 ```
 
 Defined in: [gen/types.gen.ts:13571](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13571)

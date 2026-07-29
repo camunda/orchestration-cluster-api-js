@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionInstanceStatisticsResult"
-sidebar_label: "ProcessDefinitionInstanceStatisticsResult"
+title: 'Type Alias: ProcessDefinitionInstanceStatisticsResult'
+sidebar_label: 'ProcessDefinitionInstanceStatisticsResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5965](https://github.com/camunda/orchestration-clu
 
 Total number of currently active process instances of this definition that have at least one incident.
 
-***
+---
 
 ### activeInstancesWithoutIncidentCount
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5961](https://github.com/camunda/orchestration-clu
 
 Total number of currently active process instances of this definition that do not have incidents.
 
-***
+---
 
 ### hasMultipleVersions
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5957](https://github.com/camunda/orchestration-clu
 
 Indicates whether multiple versions of this process definition instance are deployed.
 
-***
+---
 
 ### latestProcessDefinitionName
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:5953](https://github.com/camunda/orchestration-clu
 
 Name of the latest deployed process definition instance version.
 
-***
+---
 
 ### processDefinitionId
 
@@ -73,7 +73,7 @@ processDefinitionId: ProcessDefinitionId;
 
 Defined in: [gen/types.gen.ts:5948](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L5948)
 
-***
+---
 
 ### tenantId
 

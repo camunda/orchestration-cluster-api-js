@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchProcessInstancesResponse"
-sidebar_label: "SearchProcessInstancesResponse"
+title: 'Type Alias: SearchProcessInstancesResponse'
+sidebar_label: 'SearchProcessInstancesResponse'
 mdx:
   format: md
 ---
@@ -8,7 +8,8 @@ mdx:
 # Type Alias: SearchProcessInstancesResponse
 
 ```ts
-type SearchProcessInstancesResponse = SearchProcessInstancesResponses[keyof SearchProcessInstancesResponses];
+type SearchProcessInstancesResponse =
+  SearchProcessInstancesResponses[keyof SearchProcessInstancesResponses];
 ```
 
 Defined in: [gen/types.gen.ts:13223](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13223)

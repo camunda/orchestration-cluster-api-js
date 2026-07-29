@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignClientFromTenantData"
-sidebar_label: "UnassignClientFromTenantData"
+title: 'Type Alias: UnassignClientFromTenantData'
+sidebar_label: 'UnassignClientFromTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:15118](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15118)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15129](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15129)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/clients/{clientId}";
+url: '/tenants/{tenantId}/clients/{clientId}';
 ```
 
 Defined in: [gen/types.gen.ts:15130](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15130)

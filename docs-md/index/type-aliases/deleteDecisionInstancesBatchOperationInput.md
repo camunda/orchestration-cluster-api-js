@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteDecisionInstancesBatchOperationInput"
-sidebar_label: "deleteDecisionInstancesBatchOperationInput"
+title: 'Type Alias: deleteDecisionInstancesBatchOperationInput'
+sidebar_label: 'deleteDecisionInstancesBatchOperationInput'
 mdx:
   format: md
 ---

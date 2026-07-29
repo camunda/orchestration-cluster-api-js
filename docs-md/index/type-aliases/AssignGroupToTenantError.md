@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignGroupToTenantError"
-sidebar_label: "AssignGroupToTenantError"
+title: 'Type Alias: AssignGroupToTenantError'
+sidebar_label: 'AssignGroupToTenantError'
 mdx:
   format: md
 ---

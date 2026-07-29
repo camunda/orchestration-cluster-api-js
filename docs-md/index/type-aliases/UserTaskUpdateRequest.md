@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskUpdateRequest"
-sidebar_label: "UserTaskUpdateRequest"
+title: 'Type Alias: UserTaskUpdateRequest'
+sidebar_label: 'UserTaskUpdateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7766](https://github.com/camunda/orchestration-clu
 
 A custom action value that will be accessible from user task events resulting from this endpoint invocation. If not provided, it will default to "update".
 
-***
+---
 
 ### changeset?
 

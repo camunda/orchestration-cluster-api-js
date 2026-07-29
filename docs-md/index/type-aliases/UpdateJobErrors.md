@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateJobErrors"
-sidebar_label: "UpdateJobErrors"
+title: 'Type Alias: UpdateJobErrors'
+sidebar_label: 'UpdateJobErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11880](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11884](https://github.com/camunda/orchestration-cl
 
 The job with the jobKey is not found.
 
-***
+---
 
 ### 409
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11889](https://github.com/camunda/orchestration-cl
 
 The job with the given key is in the wrong state currently. More details are provided in the response body.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11893](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

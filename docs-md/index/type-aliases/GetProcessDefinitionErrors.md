@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessDefinitionErrors"
-sidebar_label: "GetProcessDefinitionErrors"
+title: 'Type Alias: GetProcessDefinitionErrors'
+sidebar_label: 'GetProcessDefinitionErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12735](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12739](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:12743](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:12748](https://github.com/camunda/orchestration-cl
 
 The process definition with the given key was not found. More details are provided in the response body.
 
-***
+---
 
 ### 500
 

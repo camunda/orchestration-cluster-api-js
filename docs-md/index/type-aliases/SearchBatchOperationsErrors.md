@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchBatchOperationsErrors"
-sidebar_label: "SearchBatchOperationsErrors"
+title: 'Type Alias: SearchBatchOperationsErrors'
+sidebar_label: 'SearchBatchOperationsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8851](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 500
 

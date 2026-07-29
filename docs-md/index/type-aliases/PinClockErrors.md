@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: PinClockErrors"
-sidebar_label: "PinClockErrors"
+title: 'Type Alias: PinClockErrors'
+sidebar_label: 'PinClockErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9054](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 500
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9058](https://github.com/camunda/orchestration-clu
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

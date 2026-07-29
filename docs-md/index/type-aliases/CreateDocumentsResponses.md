@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDocumentsResponses"
-sidebar_label: "CreateDocumentsResponses"
+title: 'Type Alias: CreateDocumentsResponses'
+sidebar_label: 'CreateDocumentsResponses'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10191](https://github.com/camunda/orchestration-cl
 
 All documents were uploaded successfully.
 
-***
+---
 
 ### 207
 

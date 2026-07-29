@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BroadcastSignalResponse"
-sidebar_label: "BroadcastSignalResponse"
+title: 'Type Alias: BroadcastSignalResponse'
+sidebar_label: 'BroadcastSignalResponse'
 mdx:
   format: md
 ---

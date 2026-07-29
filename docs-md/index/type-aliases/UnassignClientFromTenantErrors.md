@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignClientFromTenantErrors"
-sidebar_label: "UnassignClientFromTenantErrors"
+title: 'Type Alias: UnassignClientFromTenantErrors'
+sidebar_label: 'UnassignClientFromTenantErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:15137](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:15141](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:15145](https://github.com/camunda/orchestration-cl
 
 The tenant does not exist or the client was not assigned to it.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:15149](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchRolesForTenantData"
-sidebar_label: "SearchRolesForTenantData"
+title: 'Type Alias: SearchRolesForTenantData'
+sidebar_label: 'SearchRolesForTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: RoleSearchQueryRequest;
 
 Defined in: [gen/types.gen.ts:15471](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15471)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15478](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15478)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/roles/search";
+url: '/tenants/{tenantId}/roles/search';
 ```
 
 Defined in: [gen/types.gen.ts:15479](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15479)

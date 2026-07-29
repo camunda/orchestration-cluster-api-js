@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateDecisionResult"
-sidebar_label: "EvaluateDecisionResult"
+title: 'Type Alias: EvaluateDecisionResult'
+sidebar_label: 'EvaluateDecisionResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1591](https://github.com/camunda/orchestration-clu
 
 The ID of the decision which was evaluated.
 
-***
+---
 
 ### decisionDefinitionKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:1595](https://github.com/camunda/orchestration-clu
 
 The unique key identifying the decision which was evaluated.
 
-***
+---
 
 ### decisionDefinitionName
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:1599](https://github.com/camunda/orchestration-clu
 
 The name of the decision which was evaluated.
 
-***
+---
 
 ### decisionDefinitionVersion
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:1603](https://github.com/camunda/orchestration-clu
 
 The version of the decision which was evaluated.
 
-***
+---
 
 ### decisionEvaluationKey
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:1607](https://github.com/camunda/orchestration-clu
 
 The unique key identifying this decision evaluation.
 
-***
+---
 
 ### ~~decisionInstanceKey~~
 
@@ -87,7 +87,7 @@ Deprecated, please refer to `decisionEvaluationKey`.
 
 #### Deprecated
 
-***
+---
 
 ### decisionRequirementsId
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:1617](https://github.com/camunda/orchestration-clu
 
 The ID of the decision requirements graph that the decision which was evaluated is part of.
 
-***
+---
 
 ### decisionRequirementsKey
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:1621](https://github.com/camunda/orchestration-clu
 
 The unique key identifying the decision requirements graph that the decision which was evaluated is part of.
 
-***
+---
 
 ### evaluatedDecisions
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:1625](https://github.com/camunda/orchestration-clu
 
 Decisions that were evaluated within the requested decision evaluation.
 
-***
+---
 
 ### failedDecisionDefinitionId
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:1629](https://github.com/camunda/orchestration-clu
 
 The ID of the decision which failed during evaluation.
 
-***
+---
 
 ### failureMessage
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:1633](https://github.com/camunda/orchestration-clu
 
 Message describing why the decision which was evaluated failed.
 
-***
+---
 
 ### output
 
@@ -159,7 +159,7 @@ Defined in: [gen/types.gen.ts:1638](https://github.com/camunda/orchestration-clu
 
 JSON document that will instantiate the result of the decision which was evaluated.
 
-***
+---
 
 ### tenantId
 

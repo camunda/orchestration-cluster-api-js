@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskVariableFilter"
-sidebar_label: "UserTaskVariableFilter"
+title: 'Type Alias: UserTaskVariableFilter'
+sidebar_label: 'UserTaskVariableFilter'
 mdx:
   format: md
 ---

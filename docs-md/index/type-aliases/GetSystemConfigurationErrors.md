@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetSystemConfigurationErrors"
-sidebar_label: "GetSystemConfigurationErrors"
+title: 'Type Alias: GetSystemConfigurationErrors'
+sidebar_label: 'GetSystemConfigurationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14830](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: VariableValueFilterProperty"
-sidebar_label: "VariableValueFilterProperty"
+title: 'Type Alias: VariableValueFilterProperty'
+sidebar_label: 'VariableValueFilterProperty'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8191](https://github.com/camunda/orchestration-clu
 
 Name of the variable.
 
-***
+---
 
 ### value
 

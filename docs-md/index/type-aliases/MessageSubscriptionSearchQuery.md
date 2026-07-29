@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionSearchQuery"
-sidebar_label: "MessageSubscriptionSearchQuery"
+title: 'Type Alias: MessageSubscriptionSearchQuery'
+sidebar_label: 'MessageSubscriptionSearchQuery'
 mdx:
   format: md
 ---

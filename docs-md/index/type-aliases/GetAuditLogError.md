@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuditLogError"
-sidebar_label: "GetAuditLogError"
+title: 'Type Alias: GetAuditLogError'
+sidebar_label: 'GetAuditLogError'
 mdx:
   format: md
 ---

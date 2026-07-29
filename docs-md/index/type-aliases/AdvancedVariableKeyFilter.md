@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedVariableKeyFilter"
-sidebar_label: "AdvancedVariableKeyFilter"
+title: 'Type Alias: AdvancedVariableKeyFilter'
+sidebar_label: 'AdvancedVariableKeyFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:4956](https://github.com/camunda/orchestration-clu
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:4964](https://github.com/camunda/orchestration-clu
 
 Checks if the current property exists.
 
-***
+---
 
 ### $in?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:4968](https://github.com/camunda/orchestration-clu
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $neq?
 
@@ -65,7 +65,7 @@ Defined in: [gen/types.gen.ts:4960](https://github.com/camunda/orchestration-clu
 
 Checks for inequality with the provided value.
 
-***
+---
 
 ### $notIn?
 

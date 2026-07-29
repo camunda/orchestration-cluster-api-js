@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getProcessInstanceConsistency"
-sidebar_label: "getProcessInstanceConsistency"
+title: 'Type Alias: getProcessInstanceConsistency'
+sidebar_label: 'getProcessInstanceConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type getProcessInstanceConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:472](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L472)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

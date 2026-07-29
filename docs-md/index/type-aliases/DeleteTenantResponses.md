@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteTenantResponses"
-sidebar_label: "DeleteTenantResponses"
+title: 'Type Alias: DeleteTenantResponses'
+sidebar_label: 'DeleteTenantResponses'
 mdx:
   format: md
 ---

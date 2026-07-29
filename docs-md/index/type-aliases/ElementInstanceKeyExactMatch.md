@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceKeyExactMatch"
-sidebar_label: "ElementInstanceKeyExactMatch"
+title: 'Type Alias: ElementInstanceKeyExactMatch'
+sidebar_label: 'ElementInstanceKeyExactMatch'
 mdx:
   format: md
 ---

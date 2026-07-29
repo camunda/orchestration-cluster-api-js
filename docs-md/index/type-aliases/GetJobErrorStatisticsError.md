@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetJobErrorStatisticsError"
-sidebar_label: "GetJobErrorStatisticsError"
+title: 'Type Alias: GetJobErrorStatisticsError'
+sidebar_label: 'GetJobErrorStatisticsError'
 mdx:
   format: md
 ---

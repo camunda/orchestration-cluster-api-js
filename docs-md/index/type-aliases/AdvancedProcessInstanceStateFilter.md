@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedProcessInstanceStateFilter"
-sidebar_label: "AdvancedProcessInstanceStateFilter"
+title: 'Type Alias: AdvancedProcessInstanceStateFilter'
+sidebar_label: 'AdvancedProcessInstanceStateFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:6882](https://github.com/camunda/orchestration-clu
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:6890](https://github.com/camunda/orchestration-clu
 
 Checks if the current property exists.
 
-***
+---
 
 ### $in?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:6894](https://github.com/camunda/orchestration-clu
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $like?
 
@@ -63,7 +63,7 @@ optional $like: LikeFilter;
 
 Defined in: [gen/types.gen.ts:6895](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6895)
 
-***
+---
 
 ### $neq?
 

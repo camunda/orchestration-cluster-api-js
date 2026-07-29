@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CamundaKey<T>"
-sidebar_label: "CamundaKey<T>"
+title: 'Type Alias: CamundaKey<T>'
+sidebar_label: 'CamundaKey<T>'
 mdx:
   format: md
 ---
@@ -25,4 +25,4 @@ readonly __brand: T;
 
 ### T
 
-`T` *extends* `string` = `string`
+`T` _extends_ `string` = `string`

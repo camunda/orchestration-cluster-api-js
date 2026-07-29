@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CamundaClientLoose"
-sidebar_label: "CamundaClientLoose"
+title: 'Type Alias: CamundaClientLoose'
+sidebar_label: 'CamundaClientLoose'
 mdx:
   format: md
 ---

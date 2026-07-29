@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UseSourceParentKeyInstruction"
-sidebar_label: "UseSourceParentKeyInstruction"
+title: 'Type Alias: UseSourceParentKeyInstruction'
+sidebar_label: 'UseSourceParentKeyInstruction'
 mdx:
   format: md
 ---

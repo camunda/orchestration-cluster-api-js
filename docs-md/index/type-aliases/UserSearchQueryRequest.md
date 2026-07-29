@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserSearchQueryRequest"
-sidebar_label: "UserSearchQueryRequest"
+title: 'Type Alias: UserSearchQueryRequest'
+sidebar_label: 'UserSearchQueryRequest'
 mdx:
   format: md
 ---

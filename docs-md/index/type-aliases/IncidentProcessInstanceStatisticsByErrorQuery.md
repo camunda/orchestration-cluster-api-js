@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentProcessInstanceStatisticsByErrorQuery"
-sidebar_label: "IncidentProcessInstanceStatisticsByErrorQuery"
+title: 'Type Alias: IncidentProcessInstanceStatisticsByErrorQuery'
+sidebar_label: 'IncidentProcessInstanceStatisticsByErrorQuery'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3586](https://github.com/camunda/orchestration-clu
 
 Pagination parameters for process instance statistics grouped by incident error.
 
-***
+---
 
 ### sort?
 

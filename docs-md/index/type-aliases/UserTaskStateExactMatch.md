@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskStateExactMatch"
-sidebar_label: "UserTaskStateExactMatch"
+title: 'Type Alias: UserTaskStateExactMatch'
+sidebar_label: 'UserTaskStateExactMatch'
 mdx:
   format: md
 ---

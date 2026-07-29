@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignUserFromGroupResponses"
-sidebar_label: "UnassignUserFromGroupResponses"
+title: 'Type Alias: UnassignUserFromGroupResponses'
+sidebar_label: 'UnassignUserFromGroupResponses'
 mdx:
   format: md
 ---

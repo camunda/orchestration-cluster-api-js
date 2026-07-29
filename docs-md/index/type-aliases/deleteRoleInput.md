@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteRoleInput"
-sidebar_label: "deleteRoleInput"
+title: 'Type Alias: deleteRoleInput'
+sidebar_label: 'deleteRoleInput'
 mdx:
   format: md
 ---

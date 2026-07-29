@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ThrowJobErrorErrors"
-sidebar_label: "ThrowJobErrorErrors"
+title: 'Type Alias: ThrowJobErrorErrors'
+sidebar_label: 'ThrowJobErrorErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11976](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11981](https://github.com/camunda/orchestration-cl
 
 The job with the given key was not found or is not activated.
 
-***
+---
 
 ### 409
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11986](https://github.com/camunda/orchestration-cl
 
 The job with the given key is in the wrong state currently. More details are provided in the response body.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11990](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

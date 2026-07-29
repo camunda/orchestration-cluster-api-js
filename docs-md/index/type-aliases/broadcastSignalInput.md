@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: broadcastSignalInput"
-sidebar_label: "broadcastSignalInput"
+title: 'Type Alias: broadcastSignalInput'
+sidebar_label: 'broadcastSignalInput'
 mdx:
   format: md
 ---

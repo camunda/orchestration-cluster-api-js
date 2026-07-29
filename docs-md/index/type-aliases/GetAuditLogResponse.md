@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuditLogResponse"
-sidebar_label: "GetAuditLogResponse"
+title: 'Type Alias: GetAuditLogResponse'
+sidebar_label: 'GetAuditLogResponse'
 mdx:
   format: md
 ---

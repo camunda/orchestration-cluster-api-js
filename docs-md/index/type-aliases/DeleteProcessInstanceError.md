@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteProcessInstanceError"
-sidebar_label: "DeleteProcessInstanceError"
+title: 'Type Alias: DeleteProcessInstanceError'
+sidebar_label: 'DeleteProcessInstanceError'
 mdx:
   format: md
 ---

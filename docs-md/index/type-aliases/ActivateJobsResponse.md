@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ActivateJobsResponse"
-sidebar_label: "ActivateJobsResponse"
+title: 'Type Alias: ActivateJobsResponse'
+sidebar_label: 'ActivateJobsResponse'
 mdx:
   format: md
 ---

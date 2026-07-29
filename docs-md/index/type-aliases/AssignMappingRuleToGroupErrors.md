@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignMappingRuleToGroupErrors"
-sidebar_label: "AssignMappingRuleToGroupErrors"
+title: 'Type Alias: AssignMappingRuleToGroupErrors'
+sidebar_label: 'AssignMappingRuleToGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11323](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11327](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11331](https://github.com/camunda/orchestration-cl
 
 The group or mapping rule with the given ID was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11335](https://github.com/camunda/orchestration-cl
 
 The mapping rule with the given ID is already assigned to the group.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:11339](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

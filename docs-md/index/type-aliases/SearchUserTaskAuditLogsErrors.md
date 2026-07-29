@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUserTaskAuditLogsErrors"
-sidebar_label: "SearchUserTaskAuditLogsErrors"
+title: 'Type Alias: SearchUserTaskAuditLogsErrors'
+sidebar_label: 'SearchUserTaskAuditLogsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:16279](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 500
 

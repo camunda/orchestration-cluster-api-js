@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchQueryPageRequest"
-sidebar_label: "SearchQueryPageRequest"
+title: 'Type Alias: SearchQueryPageRequest'
+sidebar_label: 'SearchQueryPageRequest'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: SearchQueryPageRequest
 
 ```ts
-type SearchQueryPageRequest = 
+type SearchQueryPageRequest =
   | LimitPagination
   | OffsetPagination
   | CursorForwardPagination

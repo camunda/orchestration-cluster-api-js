@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchUserTaskAuditLogsInput"
-sidebar_label: "searchUserTaskAuditLogsInput"
+title: 'Type Alias: searchUserTaskAuditLogsInput'
+sidebar_label: 'searchUserTaskAuditLogsInput'
 mdx:
   format: md
 ---

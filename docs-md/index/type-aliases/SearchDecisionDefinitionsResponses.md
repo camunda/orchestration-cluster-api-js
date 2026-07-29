@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchDecisionDefinitionsResponses"
-sidebar_label: "SearchDecisionDefinitionsResponses"
+title: 'Type Alias: SearchDecisionDefinitionsResponses'
+sidebar_label: 'SearchDecisionDefinitionsResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getGroupInput"
-sidebar_label: "getGroupInput"
+title: 'Type Alias: getGroupInput'
+sidebar_label: 'getGroupInput'
 mdx:
   format: md
 ---

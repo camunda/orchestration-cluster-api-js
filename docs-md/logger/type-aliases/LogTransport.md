@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: LogTransport()"
-sidebar_label: "LogTransport()"
+title: 'Type Alias: LogTransport()'
+sidebar_label: 'LogTransport()'
 mdx:
   format: md
 ---

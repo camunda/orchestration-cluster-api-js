@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: OperationReference"
-sidebar_label: "OperationReference"
+title: 'Type Alias: OperationReference'
+sidebar_label: 'OperationReference'
 mdx:
   format: md
 ---

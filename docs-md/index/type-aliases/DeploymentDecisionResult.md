@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentDecisionResult"
-sidebar_label: "DeploymentDecisionResult"
+title: 'Type Alias: DeploymentDecisionResult'
+sidebar_label: 'DeploymentDecisionResult'
 mdx:
   format: md
 ---
@@ -28,7 +28,7 @@ Defined in: [gen/types.gen.ts:2129](https://github.com/camunda/orchestration-clu
 The dmn decision ID, as parsed during deployment, together with the version forms a
 unique identifier for a specific decision.
 
-***
+---
 
 ### decisionDefinitionKey
 
@@ -40,7 +40,7 @@ Defined in: [gen/types.gen.ts:2151](https://github.com/camunda/orchestration-clu
 
 The assigned decision key, which acts as a unique identifier for this decision.
 
-***
+---
 
 ### decisionRequirementsId
 
@@ -52,7 +52,7 @@ Defined in: [gen/types.gen.ts:2146](https://github.com/camunda/orchestration-clu
 
 The dmn ID of the decision requirements graph that this decision is part of, as parsed during deployment.
 
-***
+---
 
 ### decisionRequirementsKey
 
@@ -64,7 +64,7 @@ Defined in: [gen/types.gen.ts:2156](https://github.com/camunda/orchestration-clu
 
 The assigned key of the decision requirements graph that this decision is part of.
 
-***
+---
 
 ### name
 
@@ -76,7 +76,7 @@ Defined in: [gen/types.gen.ts:2137](https://github.com/camunda/orchestration-clu
 
 The DMN name of the decision, as parsed during deployment.
 
-***
+---
 
 ### tenantId
 
@@ -88,7 +88,7 @@ Defined in: [gen/types.gen.ts:2141](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the deployed decision.
 
-***
+---
 
 ### version
 

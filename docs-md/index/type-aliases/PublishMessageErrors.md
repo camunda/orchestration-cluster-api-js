@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: PublishMessageErrors"
-sidebar_label: "PublishMessageErrors"
+title: 'Type Alias: PublishMessageErrors'
+sidebar_label: 'PublishMessageErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12584](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 500
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12588](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobResultUserTask"
-sidebar_label: "JobResultUserTask"
+title: 'Type Alias: JobResultUserTask'
+sidebar_label: 'JobResultUserTask'
 mdx:
   format: md
 ---
@@ -8,14 +8,12 @@ mdx:
 # Type Alias: JobResultUserTask
 
 ```ts
-type JobResultUserTask = 
-  | {
+type JobResultUserTask = {
   corrections?: JobResultCorrections;
   denied?: boolean | null;
   deniedReason?: string | null;
   type?: string;
-}
-  | null;
+} | null;
 ```
 
 Defined in: [gen/types.gen.ts:4419](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4419)

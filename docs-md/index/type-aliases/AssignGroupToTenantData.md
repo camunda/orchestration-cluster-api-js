@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignGroupToTenantData"
-sidebar_label: "AssignGroupToTenantData"
+title: 'Type Alias: AssignGroupToTenantData'
+sidebar_label: 'AssignGroupToTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:15292](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15292)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15303](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15303)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/groups/{groupId}";
+url: '/tenants/{tenantId}/groups/{groupId}';
 ```
 
 Defined in: [gen/types.gen.ts:15304](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15304)

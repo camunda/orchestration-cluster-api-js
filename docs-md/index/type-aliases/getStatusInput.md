@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getStatusInput"
-sidebar_label: "getStatusInput"
+title: 'Type Alias: getStatusInput'
+sidebar_label: 'getStatusInput'
 mdx:
   format: md
 ---

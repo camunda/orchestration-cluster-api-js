@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: updateGlobalClusterVariableInput"
-sidebar_label: "updateGlobalClusterVariableInput"
+title: 'Type Alias: updateGlobalClusterVariableInput'
+sidebar_label: 'updateGlobalClusterVariableInput'
 mdx:
   format: md
 ---

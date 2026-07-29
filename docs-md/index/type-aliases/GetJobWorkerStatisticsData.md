@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetJobWorkerStatisticsData"
-sidebar_label: "GetJobWorkerStatisticsData"
+title: 'Type Alias: GetJobWorkerStatisticsData'
+sidebar_label: 'GetJobWorkerStatisticsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: JobWorkerStatisticsQuery;
 
 Defined in: [gen/types.gen.ts:12148](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12148)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:12149](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12149)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:12150](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12150)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/jobs/statistics/by-workers";
+url: '/jobs/statistics/by-workers';
 ```
 
 Defined in: [gen/types.gen.ts:12151](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12151)

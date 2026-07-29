@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchAuditLogsError"
-sidebar_label: "SearchAuditLogsError"
+title: 'Type Alias: SearchAuditLogsError'
+sidebar_label: 'SearchAuditLogsError'
 mdx:
   format: md
 ---

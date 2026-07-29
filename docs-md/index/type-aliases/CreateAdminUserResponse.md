@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateAdminUserResponse"
-sidebar_label: "CreateAdminUserResponse"
+title: 'Type Alias: CreateAdminUserResponse'
+sidebar_label: 'CreateAdminUserResponse'
 mdx:
   format: md
 ---

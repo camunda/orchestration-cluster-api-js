@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobActivationRequest"
-sidebar_label: "JobActivationRequest"
+title: 'Type Alias: JobActivationRequest'
+sidebar_label: 'JobActivationRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3981](https://github.com/camunda/orchestration-clu
 
 A list of variables to fetch as the job variables; if empty, all visible variables at the time of activation for the scope of the job will be returned.
 
-***
+---
 
 ### maxJobsToActivate
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:3977](https://github.com/camunda/orchestration-clu
 
 The maximum jobs to activate by this request.
 
-***
+---
 
 ### requestTimeout?
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:3986](https://github.com/camunda/orchestration-clu
 
 The request will be completed when at least one job is activated or after the requestTimeout (in ms). If the requestTimeout = 0, a default timeout is used. If the requestTimeout < 0, long polling is disabled and the request is completed immediately, even when no job is activated.
 
-***
+---
 
 ### tenantFilter?
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:3995](https://github.com/camunda/orchestration-clu
 
 The tenant filtering strategy - determines whether to use provided tenant IDs or assigned tenant IDs from the authenticated principal's authorized tenants.
 
-***
+---
 
 ### tenantIds?
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:3990](https://github.com/camunda/orchestration-clu
 
 A list of IDs of tenants for which to activate jobs.
 
-***
+---
 
 ### timeout
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:3973](https://github.com/camunda/orchestration-clu
 
 A job returned after this call will not be activated by another call until the timeout (in ms) has been reached.
 
-***
+---
 
 ### type
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:3964](https://github.com/camunda/orchestration-clu
 
 The job type, as defined in the BPMN process (e.g. <zeebe:taskDefinition type="payment-service" />)
 
-***
+---
 
 ### worker?
 

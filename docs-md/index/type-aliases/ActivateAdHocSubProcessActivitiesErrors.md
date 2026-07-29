@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ActivateAdHocSubProcessActivitiesErrors"
-sidebar_label: "ActivateAdHocSubProcessActivitiesErrors"
+title: 'Type Alias: ActivateAdHocSubProcessActivitiesErrors'
+sidebar_label: 'ActivateAdHocSubProcessActivitiesErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10339](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:10343](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:10347](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:10351](https://github.com/camunda/orchestration-cl
 
 The ad-hoc sub-process instance is not found or the provided key does not identify an ad-hoc sub-process.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:10355](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

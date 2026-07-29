@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionInstanceResult"
-sidebar_label: "DecisionInstanceResult"
+title: 'Type Alias: DecisionInstanceResult'
+sidebar_label: 'DecisionInstanceResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1794](https://github.com/camunda/orchestration-clu
 
 The ID of the DMN decision.
 
-***
+---
 
 ### decisionDefinitionKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:1798](https://github.com/camunda/orchestration-clu
 
 The key of the decision.
 
-***
+---
 
 ### decisionDefinitionName
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:1802](https://github.com/camunda/orchestration-clu
 
 The name of the DMN decision.
 
-***
+---
 
 ### decisionDefinitionType
 
@@ -59,7 +59,7 @@ decisionDefinitionType: DecisionDefinitionTypeEnum;
 
 Defined in: [gen/types.gen.ts:1803](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1803)
 
-***
+---
 
 ### decisionDefinitionVersion
 
@@ -71,7 +71,7 @@ Defined in: [gen/types.gen.ts:1807](https://github.com/camunda/orchestration-clu
 
 The version of the decision.
 
-***
+---
 
 ### decisionEvaluationInstanceKey
 
@@ -81,7 +81,7 @@ decisionEvaluationInstanceKey: DecisionEvaluationInstanceKey;
 
 Defined in: [gen/types.gen.ts:1808](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1808)
 
-***
+---
 
 ### decisionEvaluationKey
 
@@ -93,7 +93,7 @@ Defined in: [gen/types.gen.ts:1812](https://github.com/camunda/orchestration-clu
 
 The key of the decision evaluation where this instance was created.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -105,7 +105,7 @@ Defined in: [gen/types.gen.ts:1816](https://github.com/camunda/orchestration-clu
 
 The key of the element instance this decision instance is linked to.
 
-***
+---
 
 ### evaluationDate
 
@@ -117,7 +117,7 @@ Defined in: [gen/types.gen.ts:1820](https://github.com/camunda/orchestration-clu
 
 The evaluation date of the decision instance.
 
-***
+---
 
 ### evaluationFailure
 
@@ -129,7 +129,7 @@ Defined in: [gen/types.gen.ts:1824](https://github.com/camunda/orchestration-clu
 
 The evaluation failure of the decision instance.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -141,7 +141,7 @@ Defined in: [gen/types.gen.ts:1828](https://github.com/camunda/orchestration-clu
 
 The key of the process definition.
 
-***
+---
 
 ### processInstanceKey
 
@@ -153,7 +153,7 @@ Defined in: [gen/types.gen.ts:1832](https://github.com/camunda/orchestration-clu
 
 The key of the process instance.
 
-***
+---
 
 ### result
 
@@ -165,7 +165,7 @@ Defined in: [gen/types.gen.ts:1836](https://github.com/camunda/orchestration-clu
 
 The result of the decision instance.
 
-***
+---
 
 ### rootDecisionDefinitionKey
 
@@ -177,7 +177,7 @@ Defined in: [gen/types.gen.ts:1840](https://github.com/camunda/orchestration-clu
 
 The key of the root decision definition.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -191,7 +191,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### state
 
@@ -201,7 +201,7 @@ state: DecisionInstanceStateEnum;
 
 Defined in: [gen/types.gen.ts:1848](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1848)
 
-***
+---
 
 ### tenantId
 

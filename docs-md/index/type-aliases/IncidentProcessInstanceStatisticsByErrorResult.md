@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentProcessInstanceStatisticsByErrorResult"
-sidebar_label: "IncidentProcessInstanceStatisticsByErrorResult"
+title: 'Type Alias: IncidentProcessInstanceStatisticsByErrorResult'
+sidebar_label: 'IncidentProcessInstanceStatisticsByErrorResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3614](https://github.com/camunda/orchestration-clu
 
 The number of active process instances that currently have an active incident with this error.
 
-***
+---
 
 ### errorHashCode
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:3605](https://github.com/camunda/orchestration-clu
 
 The hash code identifying a specific incident error..
 
-***
+---
 
 ### errorMessage
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceFilter"
-sidebar_label: "ElementInstanceFilter"
+title: 'Type Alias: ElementInstanceFilter'
+sidebar_label: 'ElementInstanceFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:2558](https://github.com/camunda/orchestration-clu
 
 The element ID for this element instance.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -39,12 +39,12 @@ Defined in: [gen/types.gen.ts:2572](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this element instance.
 
-***
+---
 
 ### elementInstanceScopeKey?
 
 ```ts
-optional elementInstanceScopeKey: 
+optional elementInstanceScopeKey:
   | ElementInstanceKey
   | ProcessInstanceKey;
 ```
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:2597](https://github.com/camunda/orchestration-clu
 
 The scope key of this element instance. If provided with a process instance key it will return element instances that are immediate children of the process instance. If provided with an element instance key it will return element instances that are immediate children of the element instance.
 
-***
+---
 
 ### elementName?
 
@@ -65,7 +65,7 @@ Defined in: [gen/types.gen.ts:2563](https://github.com/camunda/orchestration-clu
 
 The element name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
 
-***
+---
 
 ### endDate?
 
@@ -77,7 +77,7 @@ Defined in: [gen/types.gen.ts:2592](https://github.com/camunda/orchestration-clu
 
 The end date of this element instance.
 
-***
+---
 
 ### hasIncident?
 
@@ -89,7 +89,7 @@ Defined in: [gen/types.gen.ts:2567](https://github.com/camunda/orchestration-clu
 
 Shows whether this element instance has an incident related to.
 
-***
+---
 
 ### incidentKey?
 
@@ -101,7 +101,7 @@ Defined in: [gen/types.gen.ts:2584](https://github.com/camunda/orchestration-clu
 
 The key of incident if field incident is true.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -113,7 +113,7 @@ Defined in: [gen/types.gen.ts:2546](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated to this element instance.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -125,7 +125,7 @@ Defined in: [gen/types.gen.ts:2580](https://github.com/camunda/orchestration-clu
 
 The process definition key associated to this element instance.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -137,7 +137,7 @@ Defined in: [gen/types.gen.ts:2576](https://github.com/camunda/orchestration-clu
 
 The process instance key associated to this element instance.
 
-***
+---
 
 ### startDate?
 
@@ -149,7 +149,7 @@ Defined in: [gen/types.gen.ts:2588](https://github.com/camunda/orchestration-clu
 
 The start date of this element instance.
 
-***
+---
 
 ### state?
 
@@ -161,7 +161,7 @@ Defined in: [gen/types.gen.ts:2550](https://github.com/camunda/orchestration-clu
 
 State of element instance as defined set of values.
 
-***
+---
 
 ### tenantId?
 
@@ -171,12 +171,12 @@ optional tenantId: TenantId;
 
 Defined in: [gen/types.gen.ts:2568](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L2568)
 
-***
+---
 
 ### type?
 
 ```ts
-optional type: 
+optional type:
   | "UNSPECIFIED"
   | "PROCESS"
   | "SUB_PROCESS"

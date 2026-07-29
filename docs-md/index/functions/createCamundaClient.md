@@ -1,6 +1,6 @@
 ---
-title: "Function: createCamundaClient()"
-sidebar_label: "createCamundaClient()"
+title: 'Function: createCamundaClient()'
+sidebar_label: 'createCamundaClient()'
 mdx:
   format: md
 ---

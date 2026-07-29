@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDocumentData"
-sidebar_label: "DeleteDocumentData"
+title: 'Type Alias: DeleteDocumentData'
+sidebar_label: 'DeleteDocumentData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:10201](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10201)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ documentId: DocumentId;
 
 The ID of the document to delete.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional storeId: string;
 
 The ID of the document store to delete the document from.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/documents/{documentId}";
+url: '/documents/{documentId}';
 ```
 
 Defined in: [gen/types.gen.ts:10214](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10214)

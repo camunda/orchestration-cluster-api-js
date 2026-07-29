@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobActionReceipt"
-sidebar_label: "JobActionReceipt"
+title: 'Type Alias: JobActionReceipt'
+sidebar_label: 'JobActionReceipt'
 mdx:
   format: md
 ---

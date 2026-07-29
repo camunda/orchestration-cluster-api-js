@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuditLogSearchQuerySortRequest"
-sidebar_label: "AuditLogSearchQuerySortRequest"
+title: 'Type Alias: AuditLogSearchQuerySortRequest'
+sidebar_label: 'AuditLogSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:134](https://github.com/camunda/orchestration-clus
 ### field
 
 ```ts
-field: 
+field:
   | "actorId"
   | "actorType"
   | "auditLogKey"
@@ -48,7 +48,7 @@ Defined in: [gen/types.gen.ts:138](https://github.com/camunda/orchestration-clus
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

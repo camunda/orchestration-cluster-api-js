@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateDecisionError"
-sidebar_label: "EvaluateDecisionError"
+title: 'Type Alias: EvaluateDecisionError'
+sidebar_label: 'EvaluateDecisionError'
 mdx:
   format: md
 ---

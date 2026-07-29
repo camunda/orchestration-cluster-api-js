@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetSystemConfigurationResponses"
-sidebar_label: "GetSystemConfigurationResponses"
+title: 'Type Alias: GetSystemConfigurationResponses'
+sidebar_label: 'GetSystemConfigurationResponses'
 mdx:
   format: md
 ---

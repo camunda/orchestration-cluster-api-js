@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteUserInput"
-sidebar_label: "deleteUserInput"
+title: 'Type Alias: deleteUserInput'
+sidebar_label: 'deleteUserInput'
 mdx:
   format: md
 ---

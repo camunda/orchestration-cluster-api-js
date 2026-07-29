@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGlobalTaskListenerResponses"
-sidebar_label: "GetGlobalTaskListenerResponses"
+title: 'Type Alias: GetGlobalTaskListenerResponses'
+sidebar_label: 'GetGlobalTaskListenerResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromUserData"
-sidebar_label: "UnassignRoleFromUserData"
+title: 'Type Alias: UnassignRoleFromUserData'
+sidebar_label: 'UnassignRoleFromUserData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:14561](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14561)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ username: Username;
 
 The user username.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:14572](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14572)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}/users/{username}";
+url: '/roles/{roleId}/users/{username}';
 ```
 
 Defined in: [gen/types.gen.ts:14573](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14573)

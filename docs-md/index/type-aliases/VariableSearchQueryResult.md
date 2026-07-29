@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: VariableSearchQueryResult"
-sidebar_label: "VariableSearchQueryResult"
+title: 'Type Alias: VariableSearchQueryResult'
+sidebar_label: 'VariableSearchQueryResult'
 mdx:
   format: md
 ---

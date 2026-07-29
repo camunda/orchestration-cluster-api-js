@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDocumentError"
-sidebar_label: "DeleteDocumentError"
+title: 'Type Alias: DeleteDocumentError'
+sidebar_label: 'DeleteDocumentError'
 mdx:
   format: md
 ---

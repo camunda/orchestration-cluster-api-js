@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: StringFilterProperty"
-sidebar_label: "StringFilterProperty"
+title: 'Type Alias: StringFilterProperty'
+sidebar_label: 'StringFilterProperty'
 mdx:
   format: md
 ---

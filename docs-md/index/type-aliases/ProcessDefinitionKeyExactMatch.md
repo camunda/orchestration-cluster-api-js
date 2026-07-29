@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionKeyExactMatch"
-sidebar_label: "ProcessDefinitionKeyExactMatch"
+title: 'Type Alias: ProcessDefinitionKeyExactMatch'
+sidebar_label: 'ProcessDefinitionKeyExactMatch'
 mdx:
   format: md
 ---

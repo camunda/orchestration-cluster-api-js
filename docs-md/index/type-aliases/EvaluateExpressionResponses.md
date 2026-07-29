@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateExpressionResponses"
-sidebar_label: "EvaluateExpressionResponses"
+title: 'Type Alias: EvaluateExpressionResponses'
+sidebar_label: 'EvaluateExpressionResponses'
 mdx:
   format: md
 ---

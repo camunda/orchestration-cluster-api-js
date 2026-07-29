@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDocumentLinkResponse"
-sidebar_label: "CreateDocumentLinkResponse"
+title: 'Type Alias: CreateDocumentLinkResponse'
+sidebar_label: 'CreateDocumentLinkResponse'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationItemSearchQuerySortRequest"
-sidebar_label: "BatchOperationItemSearchQuerySortRequest"
+title: 'Type Alias: BatchOperationItemSearchQuerySortRequest'
+sidebar_label: 'BatchOperationItemSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:829](https://github.com/camunda/orchestration-clus
 ### field
 
 ```ts
-field: 
+field:
   | "batchOperationKey"
   | "itemKey"
   | "processInstanceKey"
@@ -30,7 +30,7 @@ Defined in: [gen/types.gen.ts:833](https://github.com/camunda/orchestration-clus
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

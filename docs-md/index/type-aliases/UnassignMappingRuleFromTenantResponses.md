@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignMappingRuleFromTenantResponses"
-sidebar_label: "UnassignMappingRuleFromTenantResponses"
+title: 'Type Alias: UnassignMappingRuleFromTenantResponses'
+sidebar_label: 'UnassignMappingRuleFromTenantResponses'
 mdx:
   format: md
 ---

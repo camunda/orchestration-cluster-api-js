@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetTenantResponses"
-sidebar_label: "GetTenantResponses"
+title: 'Type Alias: GetTenantResponses'
+sidebar_label: 'GetTenantResponses'
 mdx:
   format: md
 ---

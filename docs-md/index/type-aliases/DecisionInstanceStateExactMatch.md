@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionInstanceStateExactMatch"
-sidebar_label: "DecisionInstanceStateExactMatch"
+title: 'Type Alias: DecisionInstanceStateExactMatch'
+sidebar_label: 'DecisionInstanceStateExactMatch'
 mdx:
   format: md
 ---

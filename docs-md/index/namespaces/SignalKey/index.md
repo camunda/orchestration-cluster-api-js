@@ -1,6 +1,6 @@
 ---
-title: "SignalKey"
-sidebar_label: "Overview"
+title: 'SignalKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

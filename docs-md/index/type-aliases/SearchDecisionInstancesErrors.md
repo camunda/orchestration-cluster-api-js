@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchDecisionInstancesErrors"
-sidebar_label: "SearchDecisionInstancesErrors"
+title: 'Type Alias: SearchDecisionInstancesErrors'
+sidebar_label: 'SearchDecisionInstancesErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9778](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9782](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9786](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

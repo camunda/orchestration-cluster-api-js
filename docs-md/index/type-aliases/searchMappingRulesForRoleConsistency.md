@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchMappingRulesForRoleConsistency"
-sidebar_label: "searchMappingRulesForRoleConsistency"
+title: 'Type Alias: searchMappingRulesForRoleConsistency'
+sidebar_label: 'searchMappingRulesForRoleConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type searchMappingRulesForRoleConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:829](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L829)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

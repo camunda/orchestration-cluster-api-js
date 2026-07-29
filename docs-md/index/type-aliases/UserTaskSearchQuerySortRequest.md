@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskSearchQuerySortRequest"
-sidebar_label: "UserTaskSearchQuerySortRequest"
+title: 'Type Alias: UserTaskSearchQuerySortRequest'
+sidebar_label: 'UserTaskSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:7516](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "creationDate"
   | "completionDate"
   | "followUpDate"
@@ -31,7 +31,7 @@ Defined in: [gen/types.gen.ts:7520](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

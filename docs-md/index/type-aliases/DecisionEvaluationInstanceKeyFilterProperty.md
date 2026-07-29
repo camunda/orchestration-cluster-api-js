@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionEvaluationInstanceKeyFilterProperty"
-sidebar_label: "DecisionEvaluationInstanceKeyFilterProperty"
+title: 'Type Alias: DecisionEvaluationInstanceKeyFilterProperty'
+sidebar_label: 'DecisionEvaluationInstanceKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: DecisionEvaluationInstanceKeyFilterProperty
 
 ```ts
-type DecisionEvaluationInstanceKeyFilterProperty = 
+type DecisionEvaluationInstanceKeyFilterProperty =
   | DecisionEvaluationInstanceKeyExactMatch
   | AdvancedDecisionEvaluationInstanceKeyFilter;
 ```

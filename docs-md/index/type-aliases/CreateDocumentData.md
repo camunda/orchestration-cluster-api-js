@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDocumentData"
-sidebar_label: "CreateDocumentData"
+title: 'Type Alias: CreateDocumentData'
+sidebar_label: 'CreateDocumentData'
 mdx:
   format: md
 ---
@@ -35,7 +35,7 @@ file: Blob | File;
 optional metadata: DocumentMetadata;
 ```
 
-***
+---
 
 ### path?
 
@@ -45,7 +45,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:10111](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10111)
 
-***
+---
 
 ### query?
 
@@ -71,12 +71,12 @@ optional storeId: string;
 
 The ID of the document store to upload the documents to. Currently, only a single document store is supported per cluster. However, this attribute is included to allow for potential future support of multiple document stores.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/documents";
+url: '/documents';
 ```
 
 Defined in: [gen/types.gen.ts:10123](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10123)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: PinClockResponses"
-sidebar_label: "PinClockResponses"
+title: 'Type Alias: PinClockResponses'
+sidebar_label: 'PinClockResponses'
 mdx:
   format: md
 ---

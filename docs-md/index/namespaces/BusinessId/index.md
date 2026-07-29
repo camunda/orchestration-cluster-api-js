@@ -1,6 +1,6 @@
 ---
-title: "BusinessId"
-sidebar_label: "Overview"
+title: 'BusinessId'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

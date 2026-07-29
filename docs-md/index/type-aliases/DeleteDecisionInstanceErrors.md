@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDecisionInstanceErrors"
-sidebar_label: "DeleteDecisionInstanceErrors"
+title: 'Type Alias: DeleteDecisionInstanceErrors'
+sidebar_label: 'DeleteDecisionInstanceErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9869](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9873](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9877](https://github.com/camunda/orchestration-clu
 
 The decision instance is not found.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:9881](https://github.com/camunda/orchestration-clu
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionKeyFilterProperty"
-sidebar_label: "ProcessDefinitionKeyFilterProperty"
+title: 'Type Alias: ProcessDefinitionKeyFilterProperty'
+sidebar_label: 'ProcessDefinitionKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ProcessDefinitionKeyFilterProperty
 
 ```ts
-type ProcessDefinitionKeyFilterProperty = 
+type ProcessDefinitionKeyFilterProperty =
   | ProcessDefinitionKeyExactMatch
   | AdvancedProcessDefinitionKeyFilter;
 ```

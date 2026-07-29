@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStartProcessFormError"
-sidebar_label: "GetStartProcessFormError"
+title: 'Type Alias: GetStartProcessFormError'
+sidebar_label: 'GetStartProcessFormError'
 mdx:
   format: md
 ---

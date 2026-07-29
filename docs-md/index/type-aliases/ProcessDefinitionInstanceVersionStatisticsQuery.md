@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionInstanceVersionStatisticsQuery"
-sidebar_label: "ProcessDefinitionInstanceVersionStatisticsQuery"
+title: 'Type Alias: ProcessDefinitionInstanceVersionStatisticsQuery'
+sidebar_label: 'ProcessDefinitionInstanceVersionStatisticsQuery'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5988](https://github.com/camunda/orchestration-clu
 
 The process definition instance version statistics search filters.
 
-***
+---
 
 ### page?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5980](https://github.com/camunda/orchestration-clu
 
 Pagination criteria.
 
-***
+---
 
 ### sort?
 

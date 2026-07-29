@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignClientToGroupError"
-sidebar_label: "AssignClientToGroupError"
+title: 'Type Alias: AssignClientToGroupError'
+sidebar_label: 'AssignClientToGroupError'
 mdx:
   format: md
 ---

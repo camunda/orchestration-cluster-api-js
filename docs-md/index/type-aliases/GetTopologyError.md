@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetTopologyError"
-sidebar_label: "GetTopologyError"
+title: 'Type Alias: GetTopologyError'
+sidebar_label: 'GetTopologyError'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUsageMetricsData"
-sidebar_label: "GetUsageMetricsData"
+title: 'Type Alias: GetUsageMetricsData'
+sidebar_label: 'GetUsageMetricsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:14766](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14766)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:14767](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14767)
 
-***
+---
 
 ### query
 
@@ -75,12 +75,12 @@ optional withTenants: boolean;
 
 Whether to return tenant metrics in addition to the total metrics or not. Default false.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/system/usage-metrics";
+url: '/system/usage-metrics';
 ```
 
 Defined in: [gen/types.gen.ts:14786](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14786)

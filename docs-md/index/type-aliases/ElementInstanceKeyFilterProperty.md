@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceKeyFilterProperty"
-sidebar_label: "ElementInstanceKeyFilterProperty"
+title: 'Type Alias: ElementInstanceKeyFilterProperty'
+sidebar_label: 'ElementInstanceKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ElementInstanceKeyFilterProperty
 
 ```ts
-type ElementInstanceKeyFilterProperty = 
+type ElementInstanceKeyFilterProperty =
   | ElementInstanceKeyExactMatch
   | AdvancedElementInstanceKeyFilter;
 ```

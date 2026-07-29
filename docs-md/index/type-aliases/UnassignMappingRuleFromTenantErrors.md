@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignMappingRuleFromTenantErrors"
-sidebar_label: "UnassignMappingRuleFromTenantErrors"
+title: 'Type Alias: UnassignMappingRuleFromTenantErrors'
+sidebar_label: 'UnassignMappingRuleFromTenantErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:15388](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:15392](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:15396](https://github.com/camunda/orchestration-cl
 
 Not found. The tenant or mapping rule was not found.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:15400](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

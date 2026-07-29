@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: Job<In, Headers>"
-sidebar_label: "Job<In, Headers>"
+title: 'Type Alias: Job<In, Headers>'
+sidebar_label: 'Job<In, Headers>'
 mdx:
   format: md
 ---
@@ -31,8 +31,8 @@ variables: InferOrUnknown<In>;
 
 ### In
 
-`In` *extends* `z.ZodTypeAny` \| `undefined`
+`In` _extends_ `z.ZodTypeAny` \| `undefined`
 
 ### Headers
 
-`Headers` *extends* `z.ZodTypeAny` \| `undefined`
+`Headers` _extends_ `z.ZodTypeAny` \| `undefined`

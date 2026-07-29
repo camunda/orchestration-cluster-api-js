@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateUserError"
-sidebar_label: "CreateUserError"
+title: 'Type Alias: CreateUserError'
+sidebar_label: 'CreateUserError'
 mdx:
   format: md
 ---

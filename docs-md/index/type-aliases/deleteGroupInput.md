@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteGroupInput"
-sidebar_label: "deleteGroupInput"
+title: 'Type Alias: deleteGroupInput'
+sidebar_label: 'deleteGroupInput'
 mdx:
   format: md
 ---

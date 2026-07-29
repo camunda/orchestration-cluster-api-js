@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalTaskListenerSearchQuerySortRequest"
-sidebar_label: "GlobalTaskListenerSearchQuerySortRequest"
+title: 'Type Alias: GlobalTaskListenerSearchQuerySortRequest'
+sidebar_label: 'GlobalTaskListenerSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,14 +18,14 @@ Defined in: [gen/types.gen.ts:3005](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: "id" | "type" | "afterNonGlobal" | "priority" | "source";
+field: 'id' | 'type' | 'afterNonGlobal' | 'priority' | 'source';
 ```
 
 Defined in: [gen/types.gen.ts:3009](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3009)
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

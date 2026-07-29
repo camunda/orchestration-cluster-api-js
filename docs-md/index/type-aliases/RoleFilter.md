@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleFilter"
-sidebar_label: "RoleFilter"
+title: 'Type Alias: RoleFilter'
+sidebar_label: 'RoleFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7010](https://github.com/camunda/orchestration-clu
 
 The role name search filters.
 
-***
+---
 
 ### roleId?
 

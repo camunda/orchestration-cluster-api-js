@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalTaskListenerEventTypeExactMatch"
-sidebar_label: "GlobalTaskListenerEventTypeExactMatch"
+title: 'Type Alias: GlobalTaskListenerEventTypeExactMatch'
+sidebar_label: 'GlobalTaskListenerEventTypeExactMatch'
 mdx:
   format: md
 ---

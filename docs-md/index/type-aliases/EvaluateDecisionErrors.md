@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateDecisionErrors"
-sidebar_label: "EvaluateDecisionErrors"
+title: 'Type Alias: EvaluateDecisionErrors'
+sidebar_label: 'EvaluateDecisionErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9609](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9613](https://github.com/camunda/orchestration-clu
 
 The decision is not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9617](https://github.com/camunda/orchestration-clu
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

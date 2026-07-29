@@ -1,6 +1,6 @@
 ---
-title: "Function: fromString()"
-sidebar_label: "fromString()"
+title: 'Function: fromString()'
+sidebar_label: 'fromString()'
 mdx:
   format: md
 ---

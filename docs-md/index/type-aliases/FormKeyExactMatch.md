@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: FormKeyExactMatch"
-sidebar_label: "FormKeyExactMatch"
+title: 'Type Alias: FormKeyExactMatch'
+sidebar_label: 'FormKeyExactMatch'
 mdx:
   format: md
 ---

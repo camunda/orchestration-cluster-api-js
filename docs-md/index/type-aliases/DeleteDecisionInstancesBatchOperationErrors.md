@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDecisionInstancesBatchOperationErrors"
-sidebar_label: "DeleteDecisionInstancesBatchOperationErrors"
+title: 'Type Alias: DeleteDecisionInstancesBatchOperationErrors'
+sidebar_label: 'DeleteDecisionInstancesBatchOperationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9912](https://github.com/camunda/orchestration-clu
 
 The decision instance batch operation failed. More details are provided in the response body.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9916](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9920](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

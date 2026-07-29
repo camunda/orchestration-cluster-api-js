@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetResourceData"
-sidebar_label: "GetResourceData"
+title: 'Type Alias: GetResourceData'
+sidebar_label: 'GetResourceData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:13690](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13690)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ resourceKey: ResourceKey;
 
 The unique key identifying the resource.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13697](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13697)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/resources/{resourceKey}";
+url: '/resources/{resourceKey}';
 ```
 
 Defined in: [gen/types.gen.ts:13698](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13698)

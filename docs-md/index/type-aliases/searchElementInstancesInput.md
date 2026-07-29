@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchElementInstancesInput"
-sidebar_label: "searchElementInstancesInput"
+title: 'Type Alias: searchElementInstancesInput'
+sidebar_label: 'searchElementInstancesInput'
 mdx:
   format: md
 ---

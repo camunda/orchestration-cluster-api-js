@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchBatchOperationsConsistency"
-sidebar_label: "searchBatchOperationsConsistency"
+title: 'Type Alias: searchBatchOperationsConsistency'
+sidebar_label: 'searchBatchOperationsConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type searchBatchOperationsConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:668](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L668)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

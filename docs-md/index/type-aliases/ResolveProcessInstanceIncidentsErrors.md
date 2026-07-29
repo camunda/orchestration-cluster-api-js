@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveProcessInstanceIncidentsErrors"
-sidebar_label: "ResolveProcessInstanceIncidentsErrors"
+title: 'Type Alias: ResolveProcessInstanceIncidentsErrors'
+sidebar_label: 'ResolveProcessInstanceIncidentsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13437](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13441](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13445](https://github.com/camunda/orchestration-cl
 
 The process instance is not found.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:13449](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

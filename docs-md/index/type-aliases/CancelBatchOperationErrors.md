@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CancelBatchOperationErrors"
-sidebar_label: "CancelBatchOperationErrors"
+title: 'Type Alias: CancelBatchOperationErrors'
+sidebar_label: 'CancelBatchOperationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8923](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:8927](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:8931](https://github.com/camunda/orchestration-clu
 
 Not found. The batch operation was not found.
 
-***
+---
 
 ### 500
 

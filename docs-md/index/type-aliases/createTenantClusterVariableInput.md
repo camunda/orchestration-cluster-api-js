@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: createTenantClusterVariableInput"
-sidebar_label: "createTenantClusterVariableInput"
+title: 'Type Alias: createTenantClusterVariableInput'
+sidebar_label: 'createTenantClusterVariableInput'
 mdx:
   format: md
 ---

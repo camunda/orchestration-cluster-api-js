@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getProcessInstanceSequenceFlowsInput"
-sidebar_label: "getProcessInstanceSequenceFlowsInput"
+title: 'Type Alias: getProcessInstanceSequenceFlowsInput'
+sidebar_label: 'getProcessInstanceSequenceFlowsInput'
 mdx:
   format: md
 ---

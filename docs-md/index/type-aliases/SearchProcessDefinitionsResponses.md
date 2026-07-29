@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchProcessDefinitionsResponses"
-sidebar_label: "SearchProcessDefinitionsResponses"
+title: 'Type Alias: SearchProcessDefinitionsResponses'
+sidebar_label: 'SearchProcessDefinitionsResponses'
 mdx:
   format: md
 ---

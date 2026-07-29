@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceSearchQueryResult"
-sidebar_label: "ElementInstanceSearchQueryResult"
+title: 'Type Alias: ElementInstanceSearchQueryResult'
+sidebar_label: 'ElementInstanceSearchQueryResult'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessInstanceStatisticsByDefinitionResponses"
-sidebar_label: "GetProcessInstanceStatisticsByDefinitionResponses"
+title: 'Type Alias: GetProcessInstanceStatisticsByDefinitionResponses'
+sidebar_label: 'GetProcessInstanceStatisticsByDefinitionResponses'
 mdx:
   format: md
 ---

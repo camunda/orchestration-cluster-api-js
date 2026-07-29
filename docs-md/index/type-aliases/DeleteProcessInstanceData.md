@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteProcessInstanceData"
-sidebar_label: "DeleteProcessInstanceData"
+title: 'Type Alias: DeleteProcessInstanceData'
+sidebar_label: 'DeleteProcessInstanceData'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:13368](https://github.com/camunda/orchestration-cl
 ### body?
 
 ```ts
-optional body: 
+optional body:
   | {
   operationReference?: OperationReference;
 }
@@ -27,7 +27,7 @@ optional body:
 
 Defined in: [gen/types.gen.ts:13369](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13369)
 
-***
+---
 
 ### path
 
@@ -45,7 +45,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The key of the process instance to delete.
 
-***
+---
 
 ### query?
 
@@ -55,12 +55,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13378](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13378)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}/deletion";
+url: '/process-instances/{processInstanceKey}/deletion';
 ```
 
 Defined in: [gen/types.gen.ts:13379](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13379)

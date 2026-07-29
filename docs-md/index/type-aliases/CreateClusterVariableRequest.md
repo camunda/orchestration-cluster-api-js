@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateClusterVariableRequest"
-sidebar_label: "CreateClusterVariableRequest"
+title: 'Type Alias: CreateClusterVariableRequest'
+sidebar_label: 'CreateClusterVariableRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1148](https://github.com/camunda/orchestration-clu
 
 The name of the cluster variable. Must be unique within its scope (global or tenant-specific).
 
-***
+---
 
 ### value
 

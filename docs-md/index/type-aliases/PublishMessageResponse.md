@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: PublishMessageResponse"
-sidebar_label: "PublishMessageResponse"
+title: 'Type Alias: PublishMessageResponse'
+sidebar_label: 'PublishMessageResponse'
 mdx:
   format: md
 ---

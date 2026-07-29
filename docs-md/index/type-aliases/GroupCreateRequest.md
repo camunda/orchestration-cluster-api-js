@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupCreateRequest"
-sidebar_label: "GroupCreateRequest"
+title: 'Type Alias: GroupCreateRequest'
+sidebar_label: 'GroupCreateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3129](https://github.com/camunda/orchestration-clu
 
 The description of the new group.
 
-***
+---
 
 ### groupId
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:3121](https://github.com/camunda/orchestration-clu
 
 The ID of the new group.
 
-***
+---
 
 ### name
 

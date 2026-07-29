@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateConditionalResult"
-sidebar_label: "EvaluateConditionalResult"
+title: 'Type Alias: EvaluateConditionalResult'
+sidebar_label: 'EvaluateConditionalResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1394](https://github.com/camunda/orchestration-clu
 
 The unique key of the conditional evaluation operation.
 
-***
+---
 
 ### processInstances
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:1402](https://github.com/camunda/orchestration-clu
 
 List of process instances created. If no root-level conditional start events evaluated to true, the list will be empty.
 
-***
+---
 
 ### tenantId
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGroupResponse"
-sidebar_label: "GetGroupResponse"
+title: 'Type Alias: GetGroupResponse'
+sidebar_label: 'GetGroupResponse'
 mdx:
   format: md
 ---

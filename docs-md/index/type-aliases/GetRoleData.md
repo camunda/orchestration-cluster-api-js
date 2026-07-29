@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetRoleData"
-sidebar_label: "GetRoleData"
+title: 'Type Alias: GetRoleData'
+sidebar_label: 'GetRoleData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:13926](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13926)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ roleId: string;
 
 The role ID.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13933](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13933)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}";
+url: '/roles/{roleId}';
 ```
 
 Defined in: [gen/types.gen.ts:13934](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13934)

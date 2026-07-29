@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: modifyProcessInstancesBatchOperationInput"
-sidebar_label: "modifyProcessInstancesBatchOperationInput"
+title: 'Type Alias: modifyProcessInstancesBatchOperationInput'
+sidebar_label: 'modifyProcessInstancesBatchOperationInput'
 mdx:
   format: md
 ---

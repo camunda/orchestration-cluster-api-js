@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteResourceError"
-sidebar_label: "DeleteResourceError"
+title: 'Type Alias: DeleteResourceError'
+sidebar_label: 'DeleteResourceError'
 mdx:
   format: md
 ---

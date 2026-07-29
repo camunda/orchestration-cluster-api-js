@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobTimeSeriesStatisticsFilter"
-sidebar_label: "JobTimeSeriesStatisticsFilter"
+title: 'Type Alias: JobTimeSeriesStatisticsFilter'
+sidebar_label: 'JobTimeSeriesStatisticsFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3850](https://github.com/camunda/orchestration-clu
 
 Start of the time window to filter metrics. ISO 8601 date-time format.
 
-***
+---
 
 ### jobType
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3859](https://github.com/camunda/orchestration-clu
 
 Job type to return time-series metrics for.
 
-***
+---
 
 ### resolution?
 
@@ -52,7 +52,7 @@ Defined in: [gen/types.gen.ts:3865](https://github.com/camunda/orchestration-clu
 Time bucket resolution as an ISO 8601 duration (for example `PT1M` for 1 minute,
 `PT1H` for 1 hour). If omitted, the server chooses a sensible default.
 
-***
+---
 
 ### to
 

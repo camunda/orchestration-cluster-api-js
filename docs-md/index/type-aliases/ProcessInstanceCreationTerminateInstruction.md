@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceCreationTerminateInstruction"
-sidebar_label: "ProcessInstanceCreationTerminateInstruction"
+title: 'Type Alias: ProcessInstanceCreationTerminateInstruction'
+sidebar_label: 'ProcessInstanceCreationTerminateInstruction'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:6232](https://github.com/camunda/orchestration-clu
 
 The id of the element that, once completed or terminated, will cause the process to be terminated.
 
-***
+---
 
 ### type?
 

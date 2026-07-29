@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionFilter"
-sidebar_label: "MessageSubscriptionFilter"
+title: 'Type Alias: MessageSubscriptionFilter'
+sidebar_label: 'MessageSubscriptionFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5480](https://github.com/camunda/orchestration-clu
 
 The correlation key of the message subscription.
 
-***
+---
 
 ### elementId?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5460](https://github.com/camunda/orchestration-clu
 
 The element ID associated with this message subscription.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5464](https://github.com/camunda/orchestration-clu
 
 The element instance key associated with this message subscription.
 
-***
+---
 
 ### lastUpdatedDate?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:5472](https://github.com/camunda/orchestration-clu
 
 The last updated date of the message subscription.
 
-***
+---
 
 ### messageName?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:5476](https://github.com/camunda/orchestration-clu
 
 The name of the message associated with the message subscription.
 
-***
+---
 
 ### messageSubscriptionKey?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:5444](https://github.com/camunda/orchestration-clu
 
 The message subscription key associated with this message subscription.
 
-***
+---
 
 ### messageSubscriptionState?
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:5468](https://github.com/camunda/orchestration-clu
 
 The message subscription state.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:5452](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with this message subscription.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:5448](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with this correlated message subscription. This only works for data created with 8.9 and later.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:5456](https://github.com/camunda/orchestration-clu
 
 The process instance key associated with this message subscription.
 
-***
+---
 
 ### tenantId?
 

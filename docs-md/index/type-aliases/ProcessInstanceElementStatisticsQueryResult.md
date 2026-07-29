@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceElementStatisticsQueryResult"
-sidebar_label: "ProcessInstanceElementStatisticsQueryResult"
+title: 'Type Alias: ProcessInstanceElementStatisticsQueryResult'
+sidebar_label: 'ProcessInstanceElementStatisticsQueryResult'
 mdx:
   format: md
 ---

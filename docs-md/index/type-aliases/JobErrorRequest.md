@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobErrorRequest"
-sidebar_label: "JobErrorRequest"
+title: 'Type Alias: JobErrorRequest'
+sidebar_label: 'JobErrorRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:4380](https://github.com/camunda/orchestration-clu
 
 The error code that will be matched with an error catch event.
 
-***
+---
 
 ### errorMessage?
 
@@ -37,12 +37,12 @@ Defined in: [gen/types.gen.ts:4385](https://github.com/camunda/orchestration-clu
 
 An error message that provides additional context.
 
-***
+---
 
 ### variables?
 
 ```ts
-optional variables: 
+optional variables:
   | {
 [key: string]: unknown;
 }

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDocumentErrors"
-sidebar_label: "DeleteDocumentErrors"
+title: 'Type Alias: DeleteDocumentErrors'
+sidebar_label: 'DeleteDocumentErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10221](https://github.com/camunda/orchestration-cl
 
 The document with the given ID was not found.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CamundaUserResult"
-sidebar_label: "CamundaUserResult"
+title: 'Type Alias: CamundaUserResult'
+sidebar_label: 'CamundaUserResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:517](https://github.com/camunda/orchestration-clus
 
 The web components the user is authorized to use.
 
-***
+---
 
 ### c8Links
 
@@ -43,7 +43,7 @@ The links to the components in the C8 stack.
 [key: string]: string
 ```
 
-***
+---
 
 ### canLogout
 
@@ -55,7 +55,7 @@ Defined in: [gen/types.gen.ts:543](https://github.com/camunda/orchestration-clus
 
 Flag for understanding if the user is able to perform logout.
 
-***
+---
 
 ### displayName
 
@@ -67,7 +67,7 @@ Defined in: [gen/types.gen.ts:509](https://github.com/camunda/orchestration-clus
 
 The display name of the user.
 
-***
+---
 
 ### email
 
@@ -79,7 +79,7 @@ Defined in: [gen/types.gen.ts:513](https://github.com/camunda/orchestration-clus
 
 The email of the user.
 
-***
+---
 
 ### groups
 
@@ -91,7 +91,7 @@ Defined in: [gen/types.gen.ts:525](https://github.com/camunda/orchestration-clus
 
 The groups assigned to the user.
 
-***
+---
 
 ### roles
 
@@ -103,7 +103,7 @@ Defined in: [gen/types.gen.ts:529](https://github.com/camunda/orchestration-clus
 
 The roles assigned to the user.
 
-***
+---
 
 ### salesPlanType
 
@@ -115,7 +115,7 @@ Defined in: [gen/types.gen.ts:533](https://github.com/camunda/orchestration-clus
 
 The plan of the user.
 
-***
+---
 
 ### tenants
 
@@ -127,7 +127,7 @@ Defined in: [gen/types.gen.ts:521](https://github.com/camunda/orchestration-clus
 
 The tenants the user is a member of.
 
-***
+---
 
 ### username
 

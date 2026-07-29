@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CancelProcessInstanceError"
-sidebar_label: "CancelProcessInstanceError"
+title: 'Type Alias: CancelProcessInstanceError'
+sidebar_label: 'CancelProcessInstanceError'
 mdx:
   format: md
 ---

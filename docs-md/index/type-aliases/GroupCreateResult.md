@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupCreateResult"
-sidebar_label: "GroupCreateResult"
+title: 'Type Alias: GroupCreateResult'
+sidebar_label: 'GroupCreateResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3144](https://github.com/camunda/orchestration-clu
 
 The description of the created group.
 
-***
+---
 
 ### groupId
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:3136](https://github.com/camunda/orchestration-clu
 
 The ID of the created group.
 
-***
+---
 
 ### name
 

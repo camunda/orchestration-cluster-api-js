@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUsageMetricsResponse"
-sidebar_label: "GetUsageMetricsResponse"
+title: 'Type Alias: GetUsageMetricsResponse'
+sidebar_label: 'GetUsageMetricsResponse'
 mdx:
   format: md
 ---

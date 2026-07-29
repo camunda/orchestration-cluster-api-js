@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentDecisionRequirementsResult"
-sidebar_label: "DeploymentDecisionRequirementsResult"
+title: 'Type Alias: DeploymentDecisionRequirementsResult'
+sidebar_label: 'DeploymentDecisionRequirementsResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:2166](https://github.com/camunda/orchestration-clu
 
 The id of the deployed decision requirements.
 
-***
+---
 
 ### decisionRequirementsKey
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:2187](https://github.com/camunda/orchestration-clu
 
 The assigned decision requirements key, which acts as a unique identifier for this decision requirements.
 
-***
+---
 
 ### decisionRequirementsName
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:2170](https://github.com/camunda/orchestration-clu
 
 The name of the deployed decision requirements.
 
-***
+---
 
 ### resourceName
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:2178](https://github.com/camunda/orchestration-clu
 
 The name of the resource.
 
-***
+---
 
 ### tenantId
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:2182](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the deployed decision requirements.
 
-***
+---
 
 ### version
 

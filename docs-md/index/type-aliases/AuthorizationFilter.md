@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuthorizationFilter"
-sidebar_label: "AuthorizationFilter"
+title: 'Type Alias: AuthorizationFilter'
+sidebar_label: 'AuthorizationFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:619](https://github.com/camunda/orchestration-clus
 
 The ID of the owner of permissions.
 
-***
+---
 
 ### ownerType?
 
@@ -37,7 +37,7 @@ optional ownerType: OwnerTypeEnum;
 
 Defined in: [gen/types.gen.ts:620](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L620)
 
-***
+---
 
 ### resourceIds?
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:624](https://github.com/camunda/orchestration-clus
 
 The IDs of the resource to search permissions for.
 
-***
+---
 
 ### resourcePropertyNames?
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:628](https://github.com/camunda/orchestration-clus
 
 The names of the resource properties to search permissions for.
 
-***
+---
 
 ### resourceType?
 

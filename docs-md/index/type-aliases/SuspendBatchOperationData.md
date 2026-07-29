@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SuspendBatchOperationData"
-sidebar_label: "SuspendBatchOperationData"
+title: 'Type Alias: SuspendBatchOperationData'
+sidebar_label: 'SuspendBatchOperationData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: unknown;
 
 Defined in: [gen/types.gen.ts:8997](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8997)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ batchOperationKey: BatchOperationKey;
 
 The key (or operate legacy ID) of the batch operation.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:9004](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9004)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/batch-operations/{batchOperationKey}/suspension";
+url: '/batch-operations/{batchOperationKey}/suspension';
 ```
 
 Defined in: [gen/types.gen.ts:9005](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9005)

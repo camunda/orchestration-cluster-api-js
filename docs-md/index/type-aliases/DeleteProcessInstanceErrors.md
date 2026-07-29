@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteProcessInstanceErrors"
-sidebar_label: "DeleteProcessInstanceErrors"
+title: 'Type Alias: DeleteProcessInstanceErrors'
+sidebar_label: 'DeleteProcessInstanceErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13386](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13390](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13394](https://github.com/camunda/orchestration-cl
 
 The process instance is not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:13398](https://github.com/camunda/orchestration-cl
 
 The process instance is not in a completed or terminated state and cannot be deleted.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:13402](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

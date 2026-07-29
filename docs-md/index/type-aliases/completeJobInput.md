@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: completeJobInput"
-sidebar_label: "completeJobInput"
+title: 'Type Alias: completeJobInput'
+sidebar_label: 'completeJobInput'
 mdx:
   format: md
 ---

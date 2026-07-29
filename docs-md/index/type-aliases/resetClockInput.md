@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: resetClockInput"
-sidebar_label: "resetClockInput"
+title: 'Type Alias: resetClockInput'
+sidebar_label: 'resetClockInput'
 mdx:
   format: md
 ---

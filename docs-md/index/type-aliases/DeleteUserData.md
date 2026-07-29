@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteUserData"
-sidebar_label: "DeleteUserData"
+title: 'Type Alias: DeleteUserData'
+sidebar_label: 'DeleteUserData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:15867](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15867)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ username: Username;
 
 The username of the user to delete.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15874](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15874)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/users/{username}";
+url: '/users/{username}';
 ```
 
 Defined in: [gen/types.gen.ts:15875](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15875)

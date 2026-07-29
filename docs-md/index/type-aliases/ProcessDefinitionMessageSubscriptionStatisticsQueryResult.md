@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionMessageSubscriptionStatisticsQueryResult"
-sidebar_label: "ProcessDefinitionMessageSubscriptionStatisticsQueryResult"
+title: 'Type Alias: ProcessDefinitionMessageSubscriptionStatisticsQueryResult'
+sidebar_label: 'ProcessDefinitionMessageSubscriptionStatisticsQueryResult'
 mdx:
   format: md
 ---

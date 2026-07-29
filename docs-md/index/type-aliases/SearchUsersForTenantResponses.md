@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUsersForTenantResponses"
-sidebar_label: "SearchUsersForTenantResponses"
+title: 'Type Alias: SearchUsersForTenantResponses'
+sidebar_label: 'SearchUsersForTenantResponses'
 mdx:
   format: md
 ---

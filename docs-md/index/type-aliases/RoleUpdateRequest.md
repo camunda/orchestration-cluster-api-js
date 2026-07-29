@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleUpdateRequest"
-sidebar_label: "RoleUpdateRequest"
+title: 'Type Alias: RoleUpdateRequest'
+sidebar_label: 'RoleUpdateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:6941](https://github.com/camunda/orchestration-clu
 
 The description of the new role.
 
-***
+---
 
 ### name
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetMappingRuleErrors"
-sidebar_label: "GetMappingRuleErrors"
+title: 'Type Alias: GetMappingRuleErrors'
+sidebar_label: 'GetMappingRuleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12423](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12427](https://github.com/camunda/orchestration-cl
 
 The mapping rule with the mappingRuleId was not found.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MatchedDecisionRuleItem"
-sidebar_label: "MatchedDecisionRuleItem"
+title: 'Type Alias: MatchedDecisionRuleItem'
+sidebar_label: 'MatchedDecisionRuleItem'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1927](https://github.com/camunda/orchestration-clu
 
 The evaluated decision outputs.
 
-***
+---
 
 ### ruleId
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1919](https://github.com/camunda/orchestration-clu
 
 The ID of the matched rule.
 
-***
+---
 
 ### ruleIndex
 

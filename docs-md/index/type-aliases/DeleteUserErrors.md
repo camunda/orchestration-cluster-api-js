@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteUserErrors"
-sidebar_label: "DeleteUserErrors"
+title: 'Type Alias: DeleteUserErrors'
+sidebar_label: 'DeleteUserErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:15882](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:15886](https://github.com/camunda/orchestration-cl
 
 The user is not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:15890](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

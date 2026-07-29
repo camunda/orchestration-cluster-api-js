@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteMappingRuleErrors"
-sidebar_label: "DeleteMappingRuleErrors"
+title: 'Type Alias: DeleteMappingRuleErrors'
+sidebar_label: 'DeleteMappingRuleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12380](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12384](https://github.com/camunda/orchestration-cl
 
 The mapping rule with the mappingRuleId was not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:12388](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

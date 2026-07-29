@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchVariablesError"
-sidebar_label: "SearchVariablesError"
+title: 'Type Alias: SearchVariablesError'
+sidebar_label: 'SearchVariablesError'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CorrelatedMessageSubscriptionFilter"
-sidebar_label: "CorrelatedMessageSubscriptionFilter"
+title: 'Type Alias: CorrelatedMessageSubscriptionFilter'
+sidebar_label: 'CorrelatedMessageSubscriptionFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5585](https://github.com/camunda/orchestration-clu
 
 The correlation key of the message.
 
-***
+---
 
 ### correlationTime?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5589](https://github.com/camunda/orchestration-clu
 
 The time when the message was correlated.
 
-***
+---
 
 ### elementId?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5593](https://github.com/camunda/orchestration-clu
 
 The element ID that received the message.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:5597](https://github.com/camunda/orchestration-clu
 
 The element instance key that received the message.
 
-***
+---
 
 ### messageKey?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:5601](https://github.com/camunda/orchestration-clu
 
 The message key.
 
-***
+---
 
 ### messageName?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:5605](https://github.com/camunda/orchestration-clu
 
 The name of the message.
 
-***
+---
 
 ### partitionId?
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:5609](https://github.com/camunda/orchestration-clu
 
 The partition ID that correlated the message.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:5613](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with this correlated message subscription.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:5617](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with this correlated message subscription. For intermediate message events, this only works for data created with 8.9 and later.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:5621](https://github.com/camunda/orchestration-clu
 
 The process instance key associated with this correlated message subscription.
 
-***
+---
 
 ### subscriptionKey?
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:5625](https://github.com/camunda/orchestration-clu
 
 The subscription key that received the message.
 
-***
+---
 
 ### tenantId?
 

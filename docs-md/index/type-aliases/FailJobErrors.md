@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: FailJobErrors"
-sidebar_label: "FailJobErrors"
+title: 'Type Alias: FailJobErrors'
+sidebar_label: 'FailJobErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12025](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12030](https://github.com/camunda/orchestration-cl
 
 The job with the given jobKey is not found. It was completed by another worker, or the process instance itself was canceled.
 
-***
+---
 
 ### 409
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:12035](https://github.com/camunda/orchestration-cl
 
 The job with the given key is in the wrong state (i.e: not ACTIVATED or ACTIVATABLE). The job was failed by another worker with retries = 0, and the process is now in an incident state.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:12039](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

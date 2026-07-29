@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: Either<E, A>"
-sidebar_label: "Either<E, A>"
+title: 'Type Alias: Either<E, A>'
+sidebar_label: 'Either<E, A>'
 mdx:
   format: md
 ---
@@ -8,9 +8,7 @@ mdx:
 # Type Alias: Either\<E, A\>
 
 ```ts
-type Either<E, A> = 
-  | Left<E>
-| Right<A>;
+type Either<E, A> = Left<E> | Right<A>;
 ```
 
 Defined in: [fp-ts.ts:11](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/fp-ts.ts#L11)

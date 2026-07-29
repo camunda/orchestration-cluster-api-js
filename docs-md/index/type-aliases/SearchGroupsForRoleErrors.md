@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchGroupsForRoleErrors"
-sidebar_label: "SearchGroupsForRoleErrors"
+title: 'Type Alias: SearchGroupsForRoleErrors'
+sidebar_label: 'SearchGroupsForRoleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14203](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:14207](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:14211](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:14215](https://github.com/camunda/orchestration-cl
 
 The role with the given ID was not found.
 
-***
+---
 
 ### 500
 

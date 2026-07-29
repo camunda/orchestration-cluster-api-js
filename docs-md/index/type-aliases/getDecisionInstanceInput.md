@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getDecisionInstanceInput"
-sidebar_label: "getDecisionInstanceInput"
+title: 'Type Alias: getDecisionInstanceInput'
+sidebar_label: 'getDecisionInstanceInput'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDocumentResponses"
-sidebar_label: "GetDocumentResponses"
+title: 'Type Alias: GetDocumentResponses'
+sidebar_label: 'GetDocumentResponses'
 mdx:
   format: md
 ---

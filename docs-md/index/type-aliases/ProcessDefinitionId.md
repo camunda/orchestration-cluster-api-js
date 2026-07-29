@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionId"
-sidebar_label: "ProcessDefinitionId"
+title: 'Type Alias: ProcessDefinitionId'
+sidebar_label: 'ProcessDefinitionId'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ProcessDefinitionId
 
 ```ts
-type ProcessDefinitionId = CamundaKey<"ProcessDefinitionId">;
+type ProcessDefinitionId = CamundaKey<'ProcessDefinitionId'>;
 ```
 
 Defined in: [gen/types.gen.ts:3309](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3309)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetBatchOperationResponses"
-sidebar_label: "GetBatchOperationResponses"
+title: 'Type Alias: GetBatchOperationResponses'
+sidebar_label: 'GetBatchOperationResponses'
 mdx:
   format: md
 ---

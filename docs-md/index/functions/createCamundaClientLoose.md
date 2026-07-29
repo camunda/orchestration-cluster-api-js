@@ -1,6 +1,6 @@
 ---
-title: "Function: createCamundaClientLoose()"
-sidebar_label: "createCamundaClientLoose()"
+title: 'Function: createCamundaClientLoose()'
+sidebar_label: 'createCamundaClientLoose()'
 mdx:
   format: md
 ---
@@ -480,7 +480,7 @@ activateJobs(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `jobs`: `object`[];
+`jobs`: `object`[];
 \}\>
 
 ### assignClientToGroup()
@@ -709,8 +709,8 @@ broadcastSignal(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `signalKey`: `string`;
-  `tenantId`: `string`;
+`signalKey`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### cancelBatchOperation()
@@ -763,8 +763,8 @@ cancelProcessInstancesBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### clearAuthCache()
@@ -850,9 +850,9 @@ correlateMessage(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `messageKey`: `string`;
-  `processInstanceKey`: `string`;
-  `tenantId`: `string`;
+`messageKey`: `string`;
+`processInstanceKey`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### createAdminUser()
@@ -874,9 +874,9 @@ createAdminUser(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `email`: `string` \| `null`;
-  `name`: `string` \| `null`;
-  `username`: `string`;
+`email`: `string` \| `null`;
+`name`: `string` \| `null`;
+`username`: `string`;
 \}\>
 
 ### createAuthorization()
@@ -892,25 +892,25 @@ createAuthorization(...a): CancelablePromise<{
 ##### a
 
 ...\[
-  \| \{
-  `ownerId`: `string`;
-  `ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
-  `permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
-  `resourceId`: `string`;
-  `resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
+\| \{
+`ownerId`: `string`;
+`ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
+`permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
+`resourceId`: `string`;
+`resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
 \}
-  \| \{
-  `ownerId`: `string`;
-  `ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
-  `permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
-  `resourcePropertyName`: `string`;
-  `resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
+\| \{
+`ownerId`: `string`;
+`ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
+`permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
+`resourcePropertyName`: `string`;
+`resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
 \}, `object`\]
 
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `authorizationKey`: `string`;
+`authorizationKey`: `string`;
 \}\>
 
 ### createDeployment()
@@ -937,14 +937,14 @@ createDeployment(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `decisionRequirements`: `object`[];
-  `decisions`: `object`[];
-  `deploymentKey`: `string`;
-  `deployments`: `object`[];
-  `forms`: `object`[];
-  `processes`: `object`[];
-  `resources`: `object`[];
-  `tenantId`: `string`;
+`decisionRequirements`: `object`[];
+`decisions`: `object`[];
+`deploymentKey`: `string`;
+`deployments`: `object`[];
+`forms`: `object`[];
+`processes`: `object`[];
+`resources`: `object`[];
+`tenantId`: `string`;
 \}\>
 
 ### createDocument()
@@ -986,29 +986,29 @@ createDocument(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `camunda.document.type`: `"camunda"`;
-  `contentHash`: `string` \| `null`;
-  `documentId`: `string`;
-  `metadata`: \{
-     `contentType`: `string`;
-     `customProperties`: \{
-      \[`key`: `string`\]: `unknown`;
-     \};
-     `expiresAt`: `string` \| `null`;
-     `fileName`: `string`;
-     `processDefinitionId`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"ProcessDefinitionId"`;
-      \}
-        \| `null`;
-     `processInstanceKey`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"ProcessInstanceKey"`;
-      \}
-        \| `null`;
-     `size`: `number`;
-  \};
-  `storeId`: `string`;
+`camunda.document.type`: `"camunda"`;
+`contentHash`: `string` \| `null`;
+`documentId`: `string`;
+`metadata`: \{
+`contentType`: `string`;
+`customProperties`: \{
+\[`key`: `string`\]: `unknown`;
+\};
+`expiresAt`: `string` \| `null`;
+`fileName`: `string`;
+`processDefinitionId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessDefinitionId"`;
+\}
+\| `null`;
+`processInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`size`: `number`;
+\};
+`storeId`: `string`;
 \}\>
 
 ### createDocumentLink()
@@ -1029,8 +1029,8 @@ createDocumentLink(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `expiresAt`: `string`;
-  `url`: `string`;
+`expiresAt`: `string`;
+`url`: `string`;
 \}\>
 
 ### createDocuments()
@@ -1051,8 +1051,8 @@ createDocuments(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `createdDocuments`: `object`[];
-  `failedDocuments`: `object`[];
+`createdDocuments`: `object`[];
+`failedDocuments`: `object`[];
 \}\>
 
 ### createElementInstanceVariables()
@@ -1091,10 +1091,10 @@ createGlobalClusterVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
-  `tenantId`: `string` \| `null`;
-  `value`: `string`;
+`name`: `string`;
+`scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
+`tenantId`: `string` \| `null`;
+`value`: `string`;
 \}\>
 
 ### createGlobalTaskListener()
@@ -1120,13 +1120,13 @@ createGlobalTaskListener(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `afterNonGlobal?`: `boolean`;
-  `eventTypes`: [`GlobalTaskListenerEventTypeEnum`](../type-aliases/GlobalTaskListenerEventTypeEnum.md)[];
-  `id`: `string`;
-  `priority?`: `number`;
-  `retries?`: `number`;
-  `source`: [`GlobalListenerSourceEnum`](../type-aliases/GlobalListenerSourceEnum.md);
-  `type?`: `string`;
+`afterNonGlobal?`: `boolean`;
+`eventTypes`: [`GlobalTaskListenerEventTypeEnum`](../type-aliases/GlobalTaskListenerEventTypeEnum.md)[];
+`id`: `string`;
+`priority?`: `number`;
+`retries?`: `number`;
+`source`: [`GlobalListenerSourceEnum`](../type-aliases/GlobalListenerSourceEnum.md);
+`type?`: `string`;
 \}\>
 
 ### createGroup()
@@ -1148,9 +1148,9 @@ createGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `groupId`: `string`;
-  `name`: `string`;
+`description`: `string` \| `null`;
+`groupId`: `string`;
+`name`: `string`;
 \}\>
 
 ### createJobWorker()
@@ -1237,8 +1237,8 @@ stopGracefully(...a): Promise<{
 ###### Returns
 
 `Promise`\<\{
-  `remainingJobs`: `number`;
-  `timedOut`: `boolean`;
+`remainingJobs`: `number`;
+`timedOut`: `boolean`;
 \}\>
 
 ### createMappingRule()
@@ -1261,10 +1261,10 @@ createMappingRule(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `claimName`: `string`;
-  `claimValue`: `string`;
-  `mappingRuleId`: `string`;
-  `name`: `string`;
+`claimName`: `string`;
+`claimValue`: `string`;
+`mappingRuleId`: `string`;
+`name`: `string`;
 \}\>
 
 ### createProcessInstance()
@@ -1293,68 +1293,68 @@ createProcessInstance(...a): CancelablePromise<{
 ##### a
 
 ...\[
-  \| \{
-  `awaitCompletion?`: `boolean`;
-  `businessId?`: \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"BusinessId"`;
-  \};
-  `fetchVariables?`: `string`[];
-  `operationReference?`: `number`;
-  `processDefinitionKey`: `string`;
-  `processDefinitionVersion?`: `number`;
-  `requestTimeout?`: `number`;
-  `runtimeInstructions?`: `object`[];
-  `startInstructions?`: `object`[];
-  `tags?`: `string`[];
-  `tenantId?`: \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"TenantId"`;
-  \};
-  `variables?`: \{
-   \[`key`: `string`\]: `unknown`;
-  \};
+\| \{
+`awaitCompletion?`: `boolean`;
+`businessId?`: \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"BusinessId"`;
+\};
+`fetchVariables?`: `string`[];
+`operationReference?`: `number`;
+`processDefinitionKey`: `string`;
+`processDefinitionVersion?`: `number`;
+`requestTimeout?`: `number`;
+`runtimeInstructions?`: `object`[];
+`startInstructions?`: `object`[];
+`tags?`: `string`[];
+`tenantId?`: \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"TenantId"`;
+\};
+`variables?`: \{
+\[`key`: `string`\]: `unknown`;
+\};
 \}
-  \| \{
-  `awaitCompletion?`: `boolean`;
-  `businessId?`: \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"BusinessId"`;
-  \};
-  `fetchVariables?`: `string`[];
-  `operationReference?`: `number`;
-  `processDefinitionId`: `string`;
-  `processDefinitionVersion?`: `number`;
-  `requestTimeout?`: `number`;
-  `runtimeInstructions?`: `object`[];
-  `startInstructions?`: `object`[];
-  `tags?`: `string`[];
-  `tenantId?`: \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"TenantId"`;
-  \};
-  `variables?`: \{
-   \[`key`: `string`\]: `unknown`;
-  \};
+\| \{
+`awaitCompletion?`: `boolean`;
+`businessId?`: \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"BusinessId"`;
+\};
+`fetchVariables?`: `string`[];
+`operationReference?`: `number`;
+`processDefinitionId`: `string`;
+`processDefinitionVersion?`: `number`;
+`requestTimeout?`: `number`;
+`runtimeInstructions?`: `object`[];
+`startInstructions?`: `object`[];
+`tags?`: `string`[];
+`tenantId?`: \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"TenantId"`;
+\};
+`variables?`: \{
+\[`key`: `string`\]: `unknown`;
+\};
 \}, `object`\]
 
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `businessId`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"BusinessId"`;
-   \}
-     \| `null`;
-  `processDefinitionId`: `string`;
-  `processDefinitionKey`: `string`;
-  `processDefinitionVersion`: `number`;
-  `processInstanceKey`: `string`;
-  `tags`: `string`[];
-  `tenantId`: `string`;
-  `variables`: \{
-   \[`key`: `string`\]: `unknown`;
-  \};
+`businessId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"BusinessId"`;
+\}
+\| `null`;
+`processDefinitionId`: `string`;
+`processDefinitionKey`: `string`;
+`processDefinitionVersion`: `number`;
+`processInstanceKey`: `string`;
+`tags`: `string`[];
+`tenantId`: `string`;
+`variables`: \{
+\[`key`: `string`\]: `unknown`;
+\};
 \}\>
 
 ### createRole()
@@ -1376,9 +1376,9 @@ createRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `name`: `string`;
-  `roleId`: `string`;
+`description`: `string` \| `null`;
+`name`: `string`;
+`roleId`: `string`;
 \}\>
 
 ### createTenant()
@@ -1400,9 +1400,9 @@ createTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `name`: `string`;
-  `tenantId`: `string`;
+`description`: `string` \| `null`;
+`name`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### createTenantClusterVariable()
@@ -1425,10 +1425,10 @@ createTenantClusterVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
-  `tenantId`: `string` \| `null`;
-  `value`: `string`;
+`name`: `string`;
+`scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
+`tenantId`: `string` \| `null`;
+`value`: `string`;
 \}\>
 
 ### createThreadedJobWorker()
@@ -1533,8 +1533,8 @@ stopGracefully(...a): Promise<{
 ###### Returns
 
 `Promise`\<\{
-  `remainingJobs`: `number`;
-  `timedOut`: `boolean`;
+`remainingJobs`: `number`;
+`timedOut`: `boolean`;
 \}\>
 
 ### createUser()
@@ -1556,9 +1556,9 @@ createUser(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `email`: `string` \| `null`;
-  `name`: `string` \| `null`;
-  `username`: `string`;
+`email`: `string` \| `null`;
+`name`: `string` \| `null`;
+`username`: `string`;
 \}\>
 
 ### deleteAuthorization()
@@ -1611,8 +1611,8 @@ deleteDecisionInstancesBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### deleteDocument()
@@ -1729,8 +1729,8 @@ deleteProcessInstancesBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### deleteResource()
@@ -1755,12 +1755,12 @@ deleteResource(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperation`:   \| \{
-     `batchOperationKey`: `string`;
-     `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
-   \}
-     \| `null`;
-  `resourceKey`: `string`;
+`batchOperation`: \| \{
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+\}
+\| `null`;
+`resourceKey`: `string`;
 \}\>
 
 ### deleteRole()
@@ -1851,14 +1851,14 @@ deployResourcesFromFiles(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `decisionRequirements`: `object`[];
-  `decisions`: `object`[];
-  `deploymentKey`: `string`;
-  `deployments`: `object`[];
-  `forms`: `object`[];
-  `processes`: `object`[];
-  `resources`: `object`[];
-  `tenantId`: `string`;
+`decisionRequirements`: `object`[];
+`decisions`: `object`[];
+`deploymentKey`: `string`;
+`deployments`: `object`[];
+`forms`: `object`[];
+`processes`: `object`[];
+`resources`: `object`[];
+`tenantId`: `string`;
 \}\>
 
 ### emitSupportLogPreamble()
@@ -1896,9 +1896,9 @@ evaluateConditionals(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `conditionalEvaluationKey`: `string`;
-  `processInstances`: `object`[];
-  `tenantId`: `string`;
+`conditionalEvaluationKey`: `string`;
+`processInstances`: `object`[];
+`tenantId`: `string`;
 \}\>
 
 ### evaluateDecision()
@@ -1930,47 +1930,47 @@ evaluateDecision(...a): CancelablePromise<{
 ##### a
 
 ...\[
-  \| \{
-  `decisionDefinitionId`: `string`;
-  `tenantId?`: \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"TenantId"`;
-  \};
-  `variables?`: \{
-   \[`key`: `string`\]: `unknown`;
-  \};
+\| \{
+`decisionDefinitionId`: `string`;
+`tenantId?`: \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"TenantId"`;
+\};
+`variables?`: \{
+\[`key`: `string`\]: `unknown`;
+\};
 \}
-  \| \{
-  `decisionDefinitionKey`: `string`;
-  `tenantId?`: \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"TenantId"`;
-  \};
-  `variables?`: \{
-   \[`key`: `string`\]: `unknown`;
-  \};
+\| \{
+`decisionDefinitionKey`: `string`;
+`tenantId?`: \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"TenantId"`;
+\};
+`variables?`: \{
+\[`key`: `string`\]: `unknown`;
+\};
 \}, `object`\]
 
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `decisionDefinitionId`: `string`;
-  `decisionDefinitionKey`: `string`;
-  `decisionDefinitionName`: `string`;
-  `decisionDefinitionVersion`: `number`;
-  `decisionEvaluationKey`: `string`;
-  `decisionInstanceKey`: `string`;
-  `decisionRequirementsId`: `string`;
-  `decisionRequirementsKey`: `string`;
-  `evaluatedDecisions`: `object`[];
-  `failedDecisionDefinitionId`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionDefinitionId"`;
-   \}
-     \| `null`;
-  `failureMessage`: `string` \| `null`;
-  `output`: `string`;
-  `tenantId`: `string`;
+`decisionDefinitionId`: `string`;
+`decisionDefinitionKey`: `string`;
+`decisionDefinitionName`: `string`;
+`decisionDefinitionVersion`: `number`;
+`decisionEvaluationKey`: `string`;
+`decisionInstanceKey`: `string`;
+`decisionRequirementsId`: `string`;
+`decisionRequirementsKey`: `string`;
+`evaluatedDecisions`: `object`[];
+`failedDecisionDefinitionId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionDefinitionId"`;
+\}
+\| `null`;
+`failureMessage`: `string` \| `null`;
+`output`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### evaluateExpression()
@@ -1992,9 +1992,9 @@ evaluateExpression(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `expression`: `string`;
-  `result`: `unknown`;
-  `warnings`: `object`[];
+`expression`: `string`;
+`result`: `unknown`;
+`warnings`: `object`[];
 \}\>
 
 ### failJob()
@@ -2159,120 +2159,120 @@ getAuditLog(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `actorId`: `string` \| `null`;
-  `actorType`:   \| [`AuditLogActorTypeEnum`](../type-aliases/AuditLogActorTypeEnum.md)
-     \| `null`;
-  `agentElementId`: `string` \| `null`;
-  `auditLogKey`: `string`;
-  `batchOperationKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"BatchOperationKey"`;
-   \}
-     \| `null`;
-  `batchOperationType`:   \| [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md)
-     \| `null`;
-  `category`: [`AuditLogCategoryEnum`](../type-aliases/AuditLogCategoryEnum.md);
-  `decisionDefinitionId`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionDefinitionId"`;
-   \}
-     \| `null`;
-  `decisionDefinitionKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionDefinitionKey"`;
-   \}
-     \| `null`;
-  `decisionEvaluationKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionEvaluationKey"`;
-   \}
-     \| `null`;
-  `decisionRequirementsId`: `string` \| `null`;
-  `decisionRequirementsKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionRequirementsKey"`;
-   \}
-     \| `null`;
-  `deploymentKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DeploymentKey"`;
-   \}
-     \| `null`;
-  `elementInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ElementInstanceKey"`;
-   \}
-     \| `null`;
-  `entityDescription`: `string` \| `null`;
-  `entityKey`: `string`;
-  `entityType`: [`AuditLogEntityTypeEnum`](../type-aliases/AuditLogEntityTypeEnum.md);
-  `formKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"FormKey"`;
-   \}
-     \| `null`;
-  `jobKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"JobKey"`;
-   \}
-     \| `null`;
-  `operationType`: [`AuditLogOperationTypeEnum`](../type-aliases/AuditLogOperationTypeEnum.md);
-  `processDefinitionId`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessDefinitionId"`;
-   \}
-     \| `null`;
-  `processDefinitionKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessDefinitionKey"`;
-   \}
-     \| `null`;
-  `processInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `relatedEntityKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"AuditLogEntityKey"`;
-   \}
-     \| `null`;
-  `relatedEntityType`:   \| [`AuditLogEntityTypeEnum`](../type-aliases/AuditLogEntityTypeEnum.md)
-     \| `null`;
-  `resourceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"FormKey"`;
-   \}
-     \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessDefinitionKey"`;
-   \}
-     \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionRequirementsKey"`;
-   \}
-     \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"DecisionDefinitionKey"`;
-   \}
-     \| `null`;
-  `result`: [`AuditLogResultEnum`](../type-aliases/AuditLogResultEnum.md);
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `tenantId`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"TenantId"`;
-   \}
-     \| `null`;
-  `timestamp`: `string`;
-  `userTaskKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"UserTaskKey"`;
-   \}
-     \| `null`;
+`actorId`: `string` \| `null`;
+`actorType`: \| [`AuditLogActorTypeEnum`](../type-aliases/AuditLogActorTypeEnum.md)
+\| `null`;
+`agentElementId`: `string` \| `null`;
+`auditLogKey`: `string`;
+`batchOperationKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"BatchOperationKey"`;
+\}
+\| `null`;
+`batchOperationType`: \| [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md)
+\| `null`;
+`category`: [`AuditLogCategoryEnum`](../type-aliases/AuditLogCategoryEnum.md);
+`decisionDefinitionId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionDefinitionId"`;
+\}
+\| `null`;
+`decisionDefinitionKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionDefinitionKey"`;
+\}
+\| `null`;
+`decisionEvaluationKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionEvaluationKey"`;
+\}
+\| `null`;
+`decisionRequirementsId`: `string` \| `null`;
+`decisionRequirementsKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionRequirementsKey"`;
+\}
+\| `null`;
+`deploymentKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DeploymentKey"`;
+\}
+\| `null`;
+`elementInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ElementInstanceKey"`;
+\}
+\| `null`;
+`entityDescription`: `string` \| `null`;
+`entityKey`: `string`;
+`entityType`: [`AuditLogEntityTypeEnum`](../type-aliases/AuditLogEntityTypeEnum.md);
+`formKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"FormKey"`;
+\}
+\| `null`;
+`jobKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"JobKey"`;
+\}
+\| `null`;
+`operationType`: [`AuditLogOperationTypeEnum`](../type-aliases/AuditLogOperationTypeEnum.md);
+`processDefinitionId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessDefinitionId"`;
+\}
+\| `null`;
+`processDefinitionKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessDefinitionKey"`;
+\}
+\| `null`;
+`processInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`relatedEntityKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"AuditLogEntityKey"`;
+\}
+\| `null`;
+`relatedEntityType`: \| [`AuditLogEntityTypeEnum`](../type-aliases/AuditLogEntityTypeEnum.md)
+\| `null`;
+`resourceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"FormKey"`;
+\}
+\| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessDefinitionKey"`;
+\}
+\| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionRequirementsKey"`;
+\}
+\| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"DecisionDefinitionKey"`;
+\}
+\| `null`;
+`result`: [`AuditLogResultEnum`](../type-aliases/AuditLogResultEnum.md);
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`tenantId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"TenantId"`;
+\}
+\| `null`;
+`timestamp`: `string`;
+`userTaskKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"UserTaskKey"`;
+\}
+\| `null`;
 \}\>
 
 ### getAuthentication()
@@ -2307,22 +2307,22 @@ getAuthentication(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `authorizedComponents`: `string`[];
-  `c8Links`: \{
-   \[`key`: `string`\]: `string`;
-  \};
-  `canLogout`: `boolean`;
-  `displayName`: `string` \| `null`;
-  `email`: `string` \| `null`;
-  `groups`: `string`[];
-  `roles`: `string`[];
-  `salesPlanType`: `string` \| `null`;
-  `tenants`: `object`[];
-  `username`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"Username"`;
-   \}
-     \| `null`;
+`authorizedComponents`: `string`[];
+`c8Links`: \{
+\[`key`: `string`\]: `string`;
+\};
+`canLogout`: `boolean`;
+`displayName`: `string` \| `null`;
+`email`: `string` \| `null`;
+`groups`: `string`[];
+`roles`: `string`[];
+`salesPlanType`: `string` \| `null`;
+`tenants`: `object`[];
+`username`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"Username"`;
+\}
+\| `null`;
 \}\>
 
 ### getAuthHeaders()
@@ -2368,19 +2368,19 @@ getAuthorization(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `authorizationKey`: `string`;
-  `ownerId`: `string`;
-  `ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
-  `permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
-  `resourceId`: `string` \| `null`;
-  `resourcePropertyName`: `string` \| `null`;
-  `resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
+`authorizationKey`: `string`;
+`ownerId`: `string`;
+`ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
+`permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
+`resourceId`: `string` \| `null`;
+`resourcePropertyName`: `string` \| `null`;
+`resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
 \}\>
 
 ### getBackpressureState()
 
 ```ts
-getBackpressureState(...a): 
+getBackpressureState(...a):
   | {
   backoffMs: number;
   consecutive: number;
@@ -2406,20 +2406,20 @@ getBackpressureState(...a):
 
 #### Returns
 
-  \| \{
-  `backoffMs`: `number`;
-  `consecutive`: `number`;
-  `permitsCurrent`: `number`;
-  `permitsMax`: `number` \| `null`;
-  `severity`: [`BackpressureSeverity`](../type-aliases/BackpressureSeverity.md);
-  `waiters`: `number`;
+\| \{
+`backoffMs`: `number`;
+`consecutive`: `number`;
+`permitsCurrent`: `number`;
+`permitsMax`: `number` \| `null`;
+`severity`: [`BackpressureSeverity`](../type-aliases/BackpressureSeverity.md);
+`waiters`: `number`;
 \}
-  \| \{
-  `consecutive`: `number`;
-  `permitsCurrent`: `number`;
-  `permitsMax`: `null`;
-  `severity`: `string`;
-  `waiters`: `number`;
+\| \{
+`consecutive`: `number`;
+`permitsCurrent`: `number`;
+`permitsMax`: `null`;
+`severity`: `string`;
+`waiters`: `number`;
 \}
 
 ### getBatchOperation()
@@ -2450,18 +2450,18 @@ getBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `actorId`: `string` \| `null`;
-  `actorType`:   \| [`AuditLogActorTypeEnum`](../type-aliases/AuditLogActorTypeEnum.md)
-     \| `null`;
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
-  `endDate`: `string` \| `null`;
-  `errors`: `object`[];
-  `operationsCompletedCount`: `number`;
-  `operationsFailedCount`: `number`;
-  `operationsTotalCount`: `number`;
-  `startDate`: `string` \| `null`;
-  `state`: [`BatchOperationStateEnum`](../type-aliases/BatchOperationStateEnum.md);
+`actorId`: `string` \| `null`;
+`actorType`: \| [`AuditLogActorTypeEnum`](../type-aliases/AuditLogActorTypeEnum.md)
+\| `null`;
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`endDate`: `string` \| `null`;
+`errors`: `object`[];
+`operationsCompletedCount`: `number`;
+`operationsFailedCount`: `number`;
+`operationsTotalCount`: `number`;
+`startDate`: `string` \| `null`;
+`state`: [`BatchOperationStateEnum`](../type-aliases/BatchOperationStateEnum.md);
 \}\>
 
 ### getConfig()
@@ -2871,15 +2871,15 @@ getDecisionDefinition(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `decisionDefinitionId`: `string`;
-  `decisionDefinitionKey`: `string`;
-  `decisionRequirementsId`: `string`;
-  `decisionRequirementsKey`: `string`;
-  `decisionRequirementsName`: `string`;
-  `decisionRequirementsVersion`: `number`;
-  `name`: `string`;
-  `tenantId`: `string`;
-  `version`: `number`;
+`decisionDefinitionId`: `string`;
+`decisionDefinitionKey`: `string`;
+`decisionRequirementsId`: `string`;
+`decisionRequirementsKey`: `string`;
+`decisionRequirementsName`: `string`;
+`decisionRequirementsVersion`: `number`;
+`name`: `string`;
+`tenantId`: `string`;
+`version`: `number`;
 \}\>
 
 ### getDecisionDefinitionXml()
@@ -2949,41 +2949,41 @@ getDecisionInstance(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `decisionDefinitionId`: `string`;
-  `decisionDefinitionKey`: `string`;
-  `decisionDefinitionName`: `string`;
-  `decisionDefinitionType`: [`DecisionDefinitionTypeEnum`](../type-aliases/DecisionDefinitionTypeEnum.md);
-  `decisionDefinitionVersion`: `number`;
-  `decisionEvaluationInstanceKey`: `string`;
-  `decisionEvaluationKey`: `string`;
-  `elementInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ElementInstanceKey"`;
-   \}
-     \| `null`;
-  `evaluatedInputs`: `object`[];
-  `evaluationDate`: `string`;
-  `evaluationFailure`: `string` \| `null`;
-  `matchedRules`: `object`[];
-  `processDefinitionKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessDefinitionKey"`;
-   \}
-     \| `null`;
-  `processInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `result`: `string`;
-  `rootDecisionDefinitionKey`: `string`;
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `state`: [`DecisionInstanceStateEnum`](../type-aliases/DecisionInstanceStateEnum.md);
-  `tenantId`: `string`;
+`decisionDefinitionId`: `string`;
+`decisionDefinitionKey`: `string`;
+`decisionDefinitionName`: `string`;
+`decisionDefinitionType`: [`DecisionDefinitionTypeEnum`](../type-aliases/DecisionDefinitionTypeEnum.md);
+`decisionDefinitionVersion`: `number`;
+`decisionEvaluationInstanceKey`: `string`;
+`decisionEvaluationKey`: `string`;
+`elementInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ElementInstanceKey"`;
+\}
+\| `null`;
+`evaluatedInputs`: `object`[];
+`evaluationDate`: `string`;
+`evaluationFailure`: `string` \| `null`;
+`matchedRules`: `object`[];
+`processDefinitionKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessDefinitionKey"`;
+\}
+\| `null`;
+`processInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`result`: `string`;
+`rootDecisionDefinitionKey`: `string`;
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`state`: [`DecisionInstanceStateEnum`](../type-aliases/DecisionInstanceStateEnum.md);
+`tenantId`: `string`;
 \}\>
 
 ### getDecisionRequirements()
@@ -3008,12 +3008,12 @@ getDecisionRequirements(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `decisionRequirementsId`: `string`;
-  `decisionRequirementsKey`: `string`;
-  `decisionRequirementsName`: `string`;
-  `resourceName`: `string`;
-  `tenantId`: `string`;
-  `version`: `number`;
+`decisionRequirementsId`: `string`;
+`decisionRequirementsKey`: `string`;
+`decisionRequirementsName`: `string`;
+`resourceName`: `string`;
+`tenantId`: `string`;
+`version`: `number`;
 \}\>
 
 ### getDecisionRequirementsXml()
@@ -3114,54 +3114,54 @@ getElementInstance(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `elementId`: `string`;
-  `elementInstanceKey`: `string`;
-  `elementName`: `string`;
-  `endDate`: `string` \| `null`;
-  `hasIncident`: `boolean`;
-  `incidentKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"IncidentKey"`;
-   \}
-     \| `null`;
-  `processDefinitionId`: `string`;
-  `processDefinitionKey`: `string`;
-  `processInstanceKey`: `string`;
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `startDate`: `string`;
-  `state`: [`ElementInstanceStateEnum`](../type-aliases/ElementInstanceStateEnum.md);
-  `tenantId`: `string`;
-  `type`:   \| `"USER_TASK"`
-     \| `"UNKNOWN"`
-     \| `"UNSPECIFIED"`
-     \| `"PROCESS"`
-     \| `"SUB_PROCESS"`
-     \| `"EVENT_SUB_PROCESS"`
-     \| `"AD_HOC_SUB_PROCESS"`
-     \| `"AD_HOC_SUB_PROCESS_INNER_INSTANCE"`
-     \| `"START_EVENT"`
-     \| `"INTERMEDIATE_CATCH_EVENT"`
-     \| `"INTERMEDIATE_THROW_EVENT"`
-     \| `"BOUNDARY_EVENT"`
-     \| `"END_EVENT"`
-     \| `"SERVICE_TASK"`
-     \| `"RECEIVE_TASK"`
-     \| `"MANUAL_TASK"`
-     \| `"TASK"`
-     \| `"EXCLUSIVE_GATEWAY"`
-     \| `"INCLUSIVE_GATEWAY"`
-     \| `"PARALLEL_GATEWAY"`
-     \| `"EVENT_BASED_GATEWAY"`
-     \| `"SEQUENCE_FLOW"`
-     \| `"MULTI_INSTANCE_BODY"`
-     \| `"CALL_ACTIVITY"`
-     \| `"BUSINESS_RULE_TASK"`
-     \| `"SCRIPT_TASK"`
-     \| `"SEND_TASK"`;
+`elementId`: `string`;
+`elementInstanceKey`: `string`;
+`elementName`: `string`;
+`endDate`: `string` \| `null`;
+`hasIncident`: `boolean`;
+`incidentKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"IncidentKey"`;
+\}
+\| `null`;
+`processDefinitionId`: `string`;
+`processDefinitionKey`: `string`;
+`processInstanceKey`: `string`;
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`startDate`: `string`;
+`state`: [`ElementInstanceStateEnum`](../type-aliases/ElementInstanceStateEnum.md);
+`tenantId`: `string`;
+`type`: \| `"USER_TASK"`
+\| `"UNKNOWN"`
+\| `"UNSPECIFIED"`
+\| `"PROCESS"`
+\| `"SUB_PROCESS"`
+\| `"EVENT_SUB_PROCESS"`
+\| `"AD_HOC_SUB_PROCESS"`
+\| `"AD_HOC_SUB_PROCESS_INNER_INSTANCE"`
+\| `"START_EVENT"`
+\| `"INTERMEDIATE_CATCH_EVENT"`
+\| `"INTERMEDIATE_THROW_EVENT"`
+\| `"BOUNDARY_EVENT"`
+\| `"END_EVENT"`
+\| `"SERVICE_TASK"`
+\| `"RECEIVE_TASK"`
+\| `"MANUAL_TASK"`
+\| `"TASK"`
+\| `"EXCLUSIVE_GATEWAY"`
+\| `"INCLUSIVE_GATEWAY"`
+\| `"PARALLEL_GATEWAY"`
+\| `"EVENT_BASED_GATEWAY"`
+\| `"SEQUENCE_FLOW"`
+\| `"MULTI_INSTANCE_BODY"`
+\| `"CALL_ACTIVITY"`
+\| `"BUSINESS_RULE_TASK"`
+\| `"SCRIPT_TASK"`
+\| `"SEND_TASK"`;
 \}\>
 
 ### getErrorMode()
@@ -3200,10 +3200,10 @@ getGlobalClusterVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
-  `tenantId`: `string` \| `null`;
-  `value`: `string`;
+`name`: `string`;
+`scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
+`tenantId`: `string` \| `null`;
+`value`: `string`;
 \}\>
 
 ### getGlobalJobStatistics()
@@ -3235,19 +3235,19 @@ getGlobalJobStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `completed`: \{
-     `count`: `number`;
-     `lastUpdatedAt`: `string` \| `null`;
-  \};
-  `created`: \{
-     `count`: `number`;
-     `lastUpdatedAt`: `string` \| `null`;
-  \};
-  `failed`: \{
-     `count`: `number`;
-     `lastUpdatedAt`: `string` \| `null`;
-  \};
-  `isIncomplete`: `boolean`;
+`completed`: \{
+`count`: `number`;
+`lastUpdatedAt`: `string` \| `null`;
+\};
+`created`: \{
+`count`: `number`;
+`lastUpdatedAt`: `string` \| `null`;
+\};
+`failed`: \{
+`count`: `number`;
+`lastUpdatedAt`: `string` \| `null`;
+\};
+`isIncomplete`: `boolean`;
 \}\>
 
 ### getGlobalTaskListener()
@@ -3273,13 +3273,13 @@ getGlobalTaskListener(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `afterNonGlobal?`: `boolean`;
-  `eventTypes`: [`GlobalTaskListenerEventTypeEnum`](../type-aliases/GlobalTaskListenerEventTypeEnum.md)[];
-  `id`: `string`;
-  `priority?`: `number`;
-  `retries?`: `number`;
-  `source`: [`GlobalListenerSourceEnum`](../type-aliases/GlobalListenerSourceEnum.md);
-  `type?`: `string`;
+`afterNonGlobal?`: `boolean`;
+`eventTypes`: [`GlobalTaskListenerEventTypeEnum`](../type-aliases/GlobalTaskListenerEventTypeEnum.md)[];
+`id`: `string`;
+`priority?`: `number`;
+`retries?`: `number`;
+`source`: [`GlobalListenerSourceEnum`](../type-aliases/GlobalListenerSourceEnum.md);
+`type?`: `string`;
 \}\>
 
 ### getGroup()
@@ -3301,9 +3301,9 @@ getGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `groupId`: `string`;
-  `name`: `string`;
+`description`: `string` \| `null`;
+`groupId`: `string`;
+`name`: `string`;
 \}\>
 
 ### getIncident()
@@ -3343,27 +3343,27 @@ getIncident(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `creationTime`: `string`;
-  `elementId`: `string`;
-  `elementInstanceKey`: `string`;
-  `errorMessage`: `string`;
-  `errorType`: [`IncidentErrorTypeEnum`](../type-aliases/IncidentErrorTypeEnum.md);
-  `incidentKey`: `string`;
-  `jobKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"JobKey"`;
-   \}
-     \| `null`;
-  `processDefinitionId`: `string`;
-  `processDefinitionKey`: `string`;
-  `processInstanceKey`: `string`;
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `state`: [`IncidentStateEnum`](../type-aliases/IncidentStateEnum.md);
-  `tenantId`: `string`;
+`creationTime`: `string`;
+`elementId`: `string`;
+`elementInstanceKey`: `string`;
+`errorMessage`: `string`;
+`errorType`: [`IncidentErrorTypeEnum`](../type-aliases/IncidentErrorTypeEnum.md);
+`incidentKey`: `string`;
+`jobKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"JobKey"`;
+\}
+\| `null`;
+`processDefinitionId`: `string`;
+`processDefinitionKey`: `string`;
+`processInstanceKey`: `string`;
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`state`: [`IncidentStateEnum`](../type-aliases/IncidentStateEnum.md);
+`tenantId`: `string`;
 \}\>
 
 ### getJobErrorStatistics()
@@ -3397,21 +3397,21 @@ getJobErrorStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getJobTimeSeriesStatistics()
@@ -3445,21 +3445,21 @@ getJobTimeSeriesStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getJobTypeStatistics()
@@ -3493,21 +3493,21 @@ getJobTypeStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getJobWorkerStatistics()
@@ -3541,21 +3541,21 @@ getJobWorkerStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getLicense()
@@ -3578,10 +3578,10 @@ getLicense(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `expiresAt`: `string` \| `null`;
-  `isCommercial`: `boolean`;
-  `licenseType`: `string`;
-  `validLicense`: `boolean`;
+`expiresAt`: `string` \| `null`;
+`isCommercial`: `boolean`;
+`licenseType`: `string`;
+`validLicense`: `boolean`;
 \}\>
 
 ### getMappingRule()
@@ -3604,10 +3604,10 @@ getMappingRule(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `claimName`: `string`;
-  `claimValue`: `string`;
-  `mappingRuleId`: `string`;
-  `name`: `string`;
+`claimName`: `string`;
+`claimValue`: `string`;
+`mappingRuleId`: `string`;
+`name`: `string`;
 \}\>
 
 ### getProcessDefinition()
@@ -3634,14 +3634,14 @@ getProcessDefinition(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `hasStartForm`: `boolean`;
-  `name`: `string` \| `null`;
-  `processDefinitionId`: `string`;
-  `processDefinitionKey`: `string`;
-  `resourceName`: `string`;
-  `tenantId`: `string`;
-  `version`: `number`;
-  `versionTag`: `string` \| `null`;
+`hasStartForm`: `boolean`;
+`name`: `string` \| `null`;
+`processDefinitionId`: `string`;
+`processDefinitionKey`: `string`;
+`resourceName`: `string`;
+`tenantId`: `string`;
+`version`: `number`;
+`versionTag`: `string` \| `null`;
 \}\>
 
 ### getProcessDefinitionInstanceStatistics()
@@ -3675,21 +3675,21 @@ getProcessDefinitionInstanceStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getProcessDefinitionInstanceVersionStatistics()
@@ -3723,21 +3723,21 @@ getProcessDefinitionInstanceVersionStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getProcessDefinitionMessageSubscriptionStatistics()
@@ -3771,21 +3771,21 @@ getProcessDefinitionMessageSubscriptionStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getProcessDefinitionStatistics()
@@ -3805,7 +3805,7 @@ getProcessDefinitionStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
+`items`: `object`[];
 \}\>
 
 ### getProcessDefinitionXml()
@@ -3872,38 +3872,38 @@ getProcessInstance(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `businessId`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"BusinessId"`;
-   \}
-     \| `null`;
-  `endDate`: `string` \| `null`;
-  `hasIncident`: `boolean`;
-  `parentElementInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ElementInstanceKey"`;
-   \}
-     \| `null`;
-  `parentProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `processDefinitionId`: `string`;
-  `processDefinitionKey`: `string`;
-  `processDefinitionName`: `string` \| `null`;
-  `processDefinitionVersion`: `number`;
-  `processDefinitionVersionTag`: `string` \| `null`;
-  `processInstanceKey`: `string`;
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `startDate`: `string`;
-  `state`: [`ProcessInstanceStateEnum`](../type-aliases/ProcessInstanceStateEnum.md);
-  `tags`: `string`[];
-  `tenantId`: `string`;
+`businessId`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"BusinessId"`;
+\}
+\| `null`;
+`endDate`: `string` \| `null`;
+`hasIncident`: `boolean`;
+`parentElementInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ElementInstanceKey"`;
+\}
+\| `null`;
+`parentProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`processDefinitionId`: `string`;
+`processDefinitionKey`: `string`;
+`processDefinitionName`: `string` \| `null`;
+`processDefinitionVersion`: `number`;
+`processDefinitionVersionTag`: `string` \| `null`;
+`processInstanceKey`: `string`;
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`startDate`: `string`;
+`state`: [`ProcessInstanceStateEnum`](../type-aliases/ProcessInstanceStateEnum.md);
+`tags`: `string`[];
+`tenantId`: `string`;
 \}\>
 
 ### getProcessInstanceCallHierarchy()
@@ -3939,7 +3939,7 @@ getProcessInstanceSequenceFlows(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
+`items`: `object`[];
 \}\>
 
 ### getProcessInstanceStatistics()
@@ -3959,7 +3959,7 @@ getProcessInstanceStatistics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
+`items`: `object`[];
 \}\>
 
 ### getProcessInstanceStatisticsByDefinition()
@@ -3993,21 +3993,21 @@ getProcessInstanceStatisticsByDefinition(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getProcessInstanceStatisticsByError()
@@ -4041,21 +4041,21 @@ getProcessInstanceStatisticsByError(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### getResource()
@@ -4080,12 +4080,12 @@ getResource(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `resourceId`: `string`;
-  `resourceKey`: `string`;
-  `resourceName`: `string`;
-  `tenantId`: `string`;
-  `version`: `number`;
-  `versionTag`: `string` \| `null`;
+`resourceId`: `string`;
+`resourceKey`: `string`;
+`resourceName`: `string`;
+`tenantId`: `string`;
+`version`: `number`;
+`versionTag`: `string` \| `null`;
 \}\>
 
 ### getResourceContent()
@@ -4123,9 +4123,9 @@ getRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `name`: `string`;
-  `roleId`: `string`;
+`description`: `string` \| `null`;
+`name`: `string`;
+`roleId`: `string`;
 \}\>
 
 ### getStartProcessForm()
@@ -4151,13 +4151,13 @@ getStartProcessForm(...a): CancelablePromise<
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<
-  \| `void`
-  \| \{
-  `formId`: `string`;
-  `formKey`: `string`;
-  `schema`: `string`;
-  `tenantId`: `string`;
-  `version`: `number`;
+\| `void`
+\| \{
+`formId`: `string`;
+`formKey`: `string`;
+`schema`: `string`;
+`tenantId`: `string`;
+`version`: `number`;
 \}\>
 
 ### getStatus()
@@ -4200,14 +4200,14 @@ getSystemConfiguration(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `jobMetrics`: \{
-     `enabled`: `boolean`;
-     `exportInterval`: `string`;
-     `maxJobTypeLength`: `number`;
-     `maxTenantIdLength`: `number`;
-     `maxUniqueKeys`: `number`;
-     `maxWorkerNameLength`: `number`;
-  \};
+`jobMetrics`: \{
+`enabled`: `boolean`;
+`exportInterval`: `string`;
+`maxJobTypeLength`: `number`;
+`maxTenantIdLength`: `number`;
+`maxUniqueKeys`: `number`;
+`maxWorkerNameLength`: `number`;
+\};
 \}\>
 
 ### getTenant()
@@ -4229,9 +4229,9 @@ getTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `name`: `string`;
-  `tenantId`: `string`;
+`description`: `string` \| `null`;
+`name`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### getTenantClusterVariable()
@@ -4254,10 +4254,10 @@ getTenantClusterVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
-  `tenantId`: `string` \| `null`;
-  `value`: `string`;
+`name`: `string`;
+`scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
+`tenantId`: `string` \| `null`;
+`value`: `string`;
 \}\>
 
 ### getTopology()
@@ -4283,13 +4283,13 @@ getTopology(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `brokers`: `object`[];
-  `clusterId`: `string` \| `null`;
-  `clusterSize`: `number`;
-  `gatewayVersion`: `string`;
-  `lastCompletedChangeId`: `string`;
-  `partitionsCount`: `number`;
-  `replicationFactor`: `number`;
+`brokers`: `object`[];
+`clusterId`: `string` \| `null`;
+`clusterSize`: `number`;
+`gatewayVersion`: `string`;
+`lastCompletedChangeId`: `string`;
+`partitionsCount`: `number`;
+`replicationFactor`: `number`;
 \}\>
 
 ### getUsageMetrics()
@@ -4315,13 +4315,13 @@ getUsageMetrics(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `activeTenants`: `number`;
-  `assignees`: `number`;
-  `decisionInstances`: `number`;
-  `processInstances`: `number`;
-  `tenants`: \{
-   \[`key`: `string`\]: `object`;
-  \};
+`activeTenants`: `number`;
+`assignees`: `number`;
+`decisionInstances`: `number`;
+`processInstances`: `number`;
+`tenants`: \{
+\[`key`: `string`\]: `object`;
+\};
 \}\>
 
 ### getUser()
@@ -4343,9 +4343,9 @@ getUser(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `email`: `string` \| `null`;
-  `name`: `string` \| `null`;
-  `username`: `string`;
+`email`: `string` \| `null`;
+`name`: `string` \| `null`;
+`username`: `string`;
 \}\>
 
 ### getUserTask()
@@ -4398,40 +4398,40 @@ getUserTask(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `assignee`: `string` \| `null`;
-  `candidateGroups`: `string`[];
-  `candidateUsers`: `string`[];
-  `completionDate`: `string` \| `null`;
-  `creationDate`: `string`;
-  `customHeaders`: \{
-   \[`key`: `string`\]: `string`;
-  \};
-  `dueDate`: `string` \| `null`;
-  `elementId`: `string`;
-  `elementInstanceKey`: `string`;
-  `externalFormReference`: `string` \| `null`;
-  `followUpDate`: `string` \| `null`;
-  `formKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"FormKey"`;
-   \}
-     \| `null`;
-  `name`: `string` \| `null`;
-  `priority`: `number`;
-  `processDefinitionId`: `string`;
-  `processDefinitionKey`: `string`;
-  `processDefinitionVersion`: `number`;
-  `processInstanceKey`: `string`;
-  `processName`: `string` \| `null`;
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `state`: [`UserTaskStateEnum`](../type-aliases/UserTaskStateEnum.md);
-  `tags`: `string`[];
-  `tenantId`: `string`;
-  `userTaskKey`: `string`;
+`assignee`: `string` \| `null`;
+`candidateGroups`: `string`[];
+`candidateUsers`: `string`[];
+`completionDate`: `string` \| `null`;
+`creationDate`: `string`;
+`customHeaders`: \{
+\[`key`: `string`\]: `string`;
+\};
+`dueDate`: `string` \| `null`;
+`elementId`: `string`;
+`elementInstanceKey`: `string`;
+`externalFormReference`: `string` \| `null`;
+`followUpDate`: `string` \| `null`;
+`formKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"FormKey"`;
+\}
+\| `null`;
+`name`: `string` \| `null`;
+`priority`: `number`;
+`processDefinitionId`: `string`;
+`processDefinitionKey`: `string`;
+`processDefinitionVersion`: `number`;
+`processInstanceKey`: `string`;
+`processName`: `string` \| `null`;
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`state`: [`UserTaskStateEnum`](../type-aliases/UserTaskStateEnum.md);
+`tags`: `string`[];
+`tenantId`: `string`;
+`userTaskKey`: `string`;
 \}\>
 
 ### getUserTaskForm()
@@ -4457,13 +4457,13 @@ getUserTaskForm(...a): CancelablePromise<
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<
-  \| `void`
-  \| \{
-  `formId`: `string`;
-  `formKey`: `string`;
-  `schema`: `string`;
-  `tenantId`: `string`;
-  `version`: `number`;
+\| `void`
+\| \{
+`formId`: `string`;
+`formKey`: `string`;
+`schema`: `string`;
+`tenantId`: `string`;
+`version`: `number`;
 \}\>
 
 ### getVariable()
@@ -4493,17 +4493,17 @@ getVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `processInstanceKey`: `string`;
-  `rootProcessInstanceKey`:   \| \{
-   \[`key`: `number`\]: `string`;
-     `__brand`: `"ProcessInstanceKey"`;
-   \}
-     \| `null`;
-  `scopeKey`: `string`;
-  `tenantId`: `string`;
-  `value`: `string`;
-  `variableKey`: `string`;
+`name`: `string`;
+`processInstanceKey`: `string`;
+`rootProcessInstanceKey`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"ProcessInstanceKey"`;
+\}
+\| `null`;
+`scopeKey`: `string`;
+`tenantId`: `string`;
+`value`: `string`;
+`variableKey`: `string`;
 \}\>
 
 ### getWorkers()
@@ -4748,8 +4748,8 @@ migrateProcessInstancesBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### modifyProcessInstance()
@@ -4786,8 +4786,8 @@ modifyProcessInstancesBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### onAuthHeaders()
@@ -4800,11 +4800,11 @@ onAuthHeaders(...a): void;
 
 ##### a
 
-...\[(...`a`) => 
-  \| `Promise`\<\{
+...\[(...`a`) =>
+\| `Promise`\<\{
 \[`key`: `string`\]: `string`;
 \}\>
-  \| \{
+\| \{
 \[`key`: `string`\]: `string`;
 \}\]
 
@@ -4846,8 +4846,8 @@ publishMessage(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `messageKey`: `string`;
-  `tenantId`: `string`;
+`messageKey`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### resetClock()
@@ -4900,8 +4900,8 @@ resolveIncidentsBatchOperation(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### resolveProcessInstanceIncidents()
@@ -4922,8 +4922,8 @@ resolveProcessInstanceIncidents(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `batchOperationKey`: `string`;
-  `batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
+`batchOperationKey`: `string`;
+`batchOperationType`: [`BatchOperationTypeEnum`](../type-aliases/BatchOperationTypeEnum.md);
 \}\>
 
 ### resumeBatchOperation()
@@ -4973,21 +4973,21 @@ searchAuditLogs(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchAuthorizations()
@@ -5021,21 +5021,21 @@ searchAuthorizations(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchBatchOperationItems()
@@ -5069,21 +5069,21 @@ searchBatchOperationItems(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchBatchOperations()
@@ -5117,21 +5117,21 @@ searchBatchOperations(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchClientsForGroup()
@@ -5165,21 +5165,21 @@ searchClientsForGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchClientsForRole()
@@ -5213,21 +5213,21 @@ searchClientsForRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchClientsForTenant()
@@ -5261,21 +5261,21 @@ searchClientsForTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchClusterVariables()
@@ -5309,21 +5309,21 @@ searchClusterVariables(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchCorrelatedMessageSubscriptions()
@@ -5357,21 +5357,21 @@ searchCorrelatedMessageSubscriptions(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchDecisionDefinitions()
@@ -5405,21 +5405,21 @@ searchDecisionDefinitions(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchDecisionInstances()
@@ -5453,21 +5453,21 @@ searchDecisionInstances(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchDecisionRequirements()
@@ -5501,21 +5501,21 @@ searchDecisionRequirements(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchElementInstanceIncidents()
@@ -5549,21 +5549,21 @@ searchElementInstanceIncidents(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchElementInstances()
@@ -5597,21 +5597,21 @@ searchElementInstances(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchGlobalTaskListeners()
@@ -5645,21 +5645,21 @@ searchGlobalTaskListeners(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchGroupIdsForTenant()
@@ -5693,21 +5693,21 @@ searchGroupIdsForTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchGroups()
@@ -5741,21 +5741,21 @@ searchGroups(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchGroupsForRole()
@@ -5789,21 +5789,21 @@ searchGroupsForRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchIncidents()
@@ -5837,21 +5837,21 @@ searchIncidents(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchJobs()
@@ -5885,21 +5885,21 @@ searchJobs(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchMappingRule()
@@ -5933,21 +5933,21 @@ searchMappingRule(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchMappingRulesForGroup()
@@ -5981,21 +5981,21 @@ searchMappingRulesForGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchMappingRulesForRole()
@@ -6029,21 +6029,21 @@ searchMappingRulesForRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchMappingRulesForTenant()
@@ -6077,21 +6077,21 @@ searchMappingRulesForTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchMessageSubscriptions()
@@ -6125,21 +6125,21 @@ searchMessageSubscriptions(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchProcessDefinitions()
@@ -6173,21 +6173,21 @@ searchProcessDefinitions(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchProcessInstanceIncidents()
@@ -6221,21 +6221,21 @@ searchProcessInstanceIncidents(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchProcessInstances()
@@ -6269,21 +6269,21 @@ searchProcessInstances(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchRoles()
@@ -6317,21 +6317,21 @@ searchRoles(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchRolesForGroup()
@@ -6365,21 +6365,21 @@ searchRolesForGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchRolesForTenant()
@@ -6413,21 +6413,21 @@ searchRolesForTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchTenants()
@@ -6461,21 +6461,21 @@ searchTenants(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUsers()
@@ -6509,21 +6509,21 @@ searchUsers(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUsersForGroup()
@@ -6557,21 +6557,21 @@ searchUsersForGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUsersForRole()
@@ -6605,21 +6605,21 @@ searchUsersForRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUsersForTenant()
@@ -6653,21 +6653,21 @@ searchUsersForTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUserTaskAuditLogs()
@@ -6701,21 +6701,21 @@ searchUserTaskAuditLogs(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUserTaskEffectiveVariables()
@@ -6749,21 +6749,21 @@ searchUserTaskEffectiveVariables(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUserTasks()
@@ -6797,21 +6797,21 @@ searchUserTasks(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchUserTaskVariables()
@@ -6845,21 +6845,21 @@ searchUserTaskVariables(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### searchVariables()
@@ -6893,21 +6893,21 @@ searchVariables(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `items`: `object`[];
-  `page`: \{
-     `endCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"EndCursor"`;
-      \}
-        \| `null`;
-     `hasMoreTotalItems`: `boolean`;
-     `startCursor`:   \| \{
-      \[`key`: `number`\]: `string`;
-        `__brand`: `"StartCursor"`;
-      \}
-        \| `null`;
-     `totalItems`: `number`;
-  \};
+`items`: `object`[];
+`page`: \{
+`endCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"EndCursor"`;
+\}
+\| `null`;
+`hasMoreTotalItems`: `boolean`;
+`startCursor`: \| \{
+\[`key`: `number`\]: `string`;
+`__brand`: `"StartCursor"`;
+\}
+\| `null`;
+`totalItems`: `number`;
+\};
 \}\>
 
 ### stopAllWorkers()
@@ -7177,21 +7177,21 @@ updateAuthorization(...a): CancelablePromise<void>;
 ##### a
 
 ...\[
-  \| \{
-  `authorizationKey`: `string`;
-  `ownerId`: `string`;
-  `ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
-  `permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
-  `resourceId`: `string`;
-  `resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
+\| \{
+`authorizationKey`: `string`;
+`ownerId`: `string`;
+`ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
+`permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
+`resourceId`: `string`;
+`resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
 \}
-  \| \{
-  `authorizationKey`: `string`;
-  `ownerId`: `string`;
-  `ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
-  `permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
-  `resourcePropertyName`: `string`;
-  `resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
+\| \{
+`authorizationKey`: `string`;
+`ownerId`: `string`;
+`ownerType`: [`OwnerTypeEnum`](../type-aliases/OwnerTypeEnum.md);
+`permissionTypes`: [`PermissionTypeEnum`](../type-aliases/PermissionTypeEnum.md)[];
+`resourcePropertyName`: `string`;
+`resourceType`: [`ResourceTypeEnum`](../type-aliases/ResourceTypeEnum.md);
 \}, `object`\]
 
 #### Returns
@@ -7218,10 +7218,10 @@ updateGlobalClusterVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
-  `tenantId`: `string` \| `null`;
-  `value`: `string`;
+`name`: `string`;
+`scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
+`tenantId`: `string` \| `null`;
+`value`: `string`;
 \}\>
 
 ### updateGlobalTaskListener()
@@ -7247,13 +7247,13 @@ updateGlobalTaskListener(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `afterNonGlobal?`: `boolean`;
-  `eventTypes`: [`GlobalTaskListenerEventTypeEnum`](../type-aliases/GlobalTaskListenerEventTypeEnum.md)[];
-  `id`: `string`;
-  `priority?`: `number`;
-  `retries?`: `number`;
-  `source`: [`GlobalListenerSourceEnum`](../type-aliases/GlobalListenerSourceEnum.md);
-  `type?`: `string`;
+`afterNonGlobal?`: `boolean`;
+`eventTypes`: [`GlobalTaskListenerEventTypeEnum`](../type-aliases/GlobalTaskListenerEventTypeEnum.md)[];
+`id`: `string`;
+`priority?`: `number`;
+`retries?`: `number`;
+`source`: [`GlobalListenerSourceEnum`](../type-aliases/GlobalListenerSourceEnum.md);
+`type?`: `string`;
 \}\>
 
 ### updateGroup()
@@ -7275,9 +7275,9 @@ updateGroup(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `groupId`: `string`;
-  `name`: `string`;
+`description`: `string` \| `null`;
+`groupId`: `string`;
+`name`: `string`;
 \}\>
 
 ### updateJob()
@@ -7316,10 +7316,10 @@ updateMappingRule(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `claimName`: `string`;
-  `claimValue`: `string`;
-  `mappingRuleId`: `string`;
-  `name`: `string`;
+`claimName`: `string`;
+`claimValue`: `string`;
+`mappingRuleId`: `string`;
+`name`: `string`;
 \}\>
 
 ### updateRole()
@@ -7341,9 +7341,9 @@ updateRole(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `name`: `string`;
-  `roleId`: `string`;
+`description`: `string` \| `null`;
+`name`: `string`;
+`roleId`: `string`;
 \}\>
 
 ### updateTenant()
@@ -7365,9 +7365,9 @@ updateTenant(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `description`: `string` \| `null`;
-  `name`: `string`;
-  `tenantId`: `string`;
+`description`: `string` \| `null`;
+`name`: `string`;
+`tenantId`: `string`;
 \}\>
 
 ### updateTenantClusterVariable()
@@ -7390,10 +7390,10 @@ updateTenantClusterVariable(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `name`: `string`;
-  `scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
-  `tenantId`: `string` \| `null`;
-  `value`: `string`;
+`name`: `string`;
+`scope`: [`ClusterVariableScopeEnum`](../type-aliases/ClusterVariableScopeEnum.md);
+`tenantId`: `string` \| `null`;
+`value`: `string`;
 \}\>
 
 ### updateUser()
@@ -7415,9 +7415,9 @@ updateUser(...a): CancelablePromise<{
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `email`: `string` \| `null`;
-  `name`: `string` \| `null`;
-  `username`: `string`;
+`email`: `string` \| `null`;
+`name`: `string` \| `null`;
+`username`: `string`;
 \}\>
 
 ### updateUserTask()

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetRoleErrors"
-sidebar_label: "GetRoleErrors"
+title: 'Type Alias: GetRoleErrors'
+sidebar_label: 'GetRoleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13941](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13945](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13949](https://github.com/camunda/orchestration-cl
 
 The role with the given ID was not found.
 
-***
+---
 
 ### 500
 

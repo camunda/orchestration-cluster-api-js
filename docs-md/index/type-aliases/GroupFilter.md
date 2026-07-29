@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupFilter"
-sidebar_label: "GroupFilter"
+title: 'Type Alias: GroupFilter'
+sidebar_label: 'GroupFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3220](https://github.com/camunda/orchestration-clu
 
 The group ID search filters.
 
-***
+---
 
 ### name?
 

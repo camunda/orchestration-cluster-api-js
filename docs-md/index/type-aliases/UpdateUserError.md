@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateUserError"
-sidebar_label: "UpdateUserError"
+title: 'Type Alias: UpdateUserError'
+sidebar_label: 'UpdateUserError'
 mdx:
   format: md
 ---

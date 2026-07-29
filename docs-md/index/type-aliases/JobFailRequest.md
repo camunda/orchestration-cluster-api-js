@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobFailRequest"
-sidebar_label: "JobFailRequest"
+title: 'Type Alias: JobFailRequest'
+sidebar_label: 'JobFailRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:4361](https://github.com/camunda/orchestration-clu
 
 An optional error message describing why the job failed; if not provided, an empty string is used.
 
-***
+---
 
 ### retries?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:4357](https://github.com/camunda/orchestration-clu
 
 The amount of retries the job should have left
 
-***
+---
 
 ### retryBackOff?
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:4365](https://github.com/camunda/orchestration-clu
 
 An optional retry back off for the failed job. The job will not be retryable before the current time plus the back off time. The default is 0 which means the job is retryable immediately.
 
-***
+---
 
 ### variables?
 

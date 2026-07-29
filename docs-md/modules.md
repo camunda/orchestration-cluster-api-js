@@ -1,6 +1,6 @@
 ---
-title: "@camunda8/orchestration-cluster-api"
-sidebar_label: "@camunda8/orchestration-cluster-api"
+title: '@camunda8/orchestration-cluster-api'
+sidebar_label: '@camunda8/orchestration-cluster-api'
 sidebar_position: 99
 mdx:
   format: md

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDecisionInstanceErrors"
-sidebar_label: "GetDecisionInstanceErrors"
+title: 'Type Alias: GetDecisionInstanceErrors'
+sidebar_label: 'GetDecisionInstanceErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9820](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9824](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9828](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:9833](https://github.com/camunda/orchestration-clu
 
 The decision instance with the given key was not found. More details are provided in the response body.
 
-***
+---
 
 ### 500
 

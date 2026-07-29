@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceFilterFields"
-sidebar_label: "ProcessInstanceFilterFields"
+title: 'Type Alias: ProcessInstanceFilterFields'
+sidebar_label: 'ProcessInstanceFilterFields'
 mdx:
   format: md
 ---

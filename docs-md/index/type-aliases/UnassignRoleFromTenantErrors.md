@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromTenantErrors"
-sidebar_label: "UnassignRoleFromTenantErrors"
+title: 'Type Alias: UnassignRoleFromTenantErrors'
+sidebar_label: 'UnassignRoleFromTenantErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:15516](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:15520](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:15524](https://github.com/camunda/orchestration-cl
 
 Not found. The tenant or role was not found.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:15528](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

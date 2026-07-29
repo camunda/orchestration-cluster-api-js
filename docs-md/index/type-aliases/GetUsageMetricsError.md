@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUsageMetricsError"
-sidebar_label: "GetUsageMetricsError"
+title: 'Type Alias: GetUsageMetricsError'
+sidebar_label: 'GetUsageMetricsError'
 mdx:
   format: md
 ---

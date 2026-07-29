@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchGlobalTaskListenersErrors"
-sidebar_label: "SearchGlobalTaskListenersErrors"
+title: 'Type Alias: SearchGlobalTaskListenersErrors'
+sidebar_label: 'SearchGlobalTaskListenersErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:10791](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:10795](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:10799](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

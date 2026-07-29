@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MappingRuleFilter"
-sidebar_label: "MappingRuleFilter"
+title: 'Type Alias: MappingRuleFilter'
+sidebar_label: 'MappingRuleFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5261](https://github.com/camunda/orchestration-clu
 
 The claim name to match against a token.
 
-***
+---
 
 ### claimValue?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:5265](https://github.com/camunda/orchestration-clu
 
 The value of the claim to match.
 
-***
+---
 
 ### mappingRuleId?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:5273](https://github.com/camunda/orchestration-clu
 
 The ID of the mapping rule.
 
-***
+---
 
 ### name?
 

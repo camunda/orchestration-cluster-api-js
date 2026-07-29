@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CompleteJobData"
-sidebar_label: "CompleteJobData"
+title: 'Type Alias: CompleteJobData'
+sidebar_label: 'CompleteJobData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: JobCompletionRequest;
 
 Defined in: [gen/types.gen.ts:11913](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11913)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ jobKey: JobKey;
 
 The key of the job to complete.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11920](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11920)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/jobs/{jobKey}/completion";
+url: '/jobs/{jobKey}/completion';
 ```
 
 Defined in: [gen/types.gen.ts:11921](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11921)

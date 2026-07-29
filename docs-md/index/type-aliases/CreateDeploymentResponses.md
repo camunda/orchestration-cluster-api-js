@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDeploymentResponses"
-sidebar_label: "CreateDeploymentResponses"
+title: 'Type Alias: CreateDeploymentResponses'
+sidebar_label: 'CreateDeploymentResponses'
 mdx:
   format: md
 ---

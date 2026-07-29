@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionInstanceStatisticsQuery"
-sidebar_label: "ProcessDefinitionInstanceStatisticsQuery"
+title: 'Type Alias: ProcessDefinitionInstanceStatisticsQuery'
+sidebar_label: 'ProcessDefinitionInstanceStatisticsQuery'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5930](https://github.com/camunda/orchestration-clu
 
 Search cursor pagination.
 
-***
+---
 
 ### sort?
 

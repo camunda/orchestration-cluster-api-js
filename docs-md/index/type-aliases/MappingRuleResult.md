@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MappingRuleResult"
-sidebar_label: "MappingRuleResult"
+title: 'Type Alias: MappingRuleResult'
+sidebar_label: 'MappingRuleResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5220](https://github.com/camunda/orchestration-clu
 
 The name of the claim to map.
 
-***
+---
 
 ### claimValue
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5224](https://github.com/camunda/orchestration-clu
 
 The value of the claim to map.
 
-***
+---
 
 ### mappingRuleId
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:5232](https://github.com/camunda/orchestration-clu
 
 The ID of the mapping rule.
 
-***
+---
 
 ### name
 

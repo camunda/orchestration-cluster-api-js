@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGlobalTaskListenerResponses"
-sidebar_label: "DeleteGlobalTaskListenerResponses"
+title: 'Type Alias: DeleteGlobalTaskListenerResponses'
+sidebar_label: 'DeleteGlobalTaskListenerResponses'
 mdx:
   format: md
 ---

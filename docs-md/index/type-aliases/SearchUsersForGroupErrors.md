@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUsersForGroupErrors"
-sidebar_label: "SearchUsersForGroupErrors"
+title: 'Type Alias: SearchUsersForGroupErrors'
+sidebar_label: 'SearchUsersForGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11436](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11440](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11444](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11448](https://github.com/camunda/orchestration-cl
 
 The group with the given ID was not found.
 
-***
+---
 
 ### 500
 

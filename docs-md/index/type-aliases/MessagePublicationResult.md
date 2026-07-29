@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessagePublicationResult"
-sidebar_label: "MessagePublicationResult"
+title: 'Type Alias: MessagePublicationResult'
+sidebar_label: 'MessagePublicationResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5360](https://github.com/camunda/orchestration-clu
 
 The key of the published message.
 
-***
+---
 
 ### tenantId
 

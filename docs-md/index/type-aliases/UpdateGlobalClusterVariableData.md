@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGlobalClusterVariableData"
-sidebar_label: "UpdateGlobalClusterVariableData"
+title: 'Type Alias: UpdateGlobalClusterVariableData'
+sidebar_label: 'UpdateGlobalClusterVariableData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: UpdateClusterVariableRequest;
 
 Defined in: [gen/types.gen.ts:9237](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9237)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ name: string;
 
 The name of the cluster variable
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:9244](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9244)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/cluster-variables/global/{name}";
+url: '/cluster-variables/global/{name}';
 ```
 
 Defined in: [gen/types.gen.ts:9245](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9245)

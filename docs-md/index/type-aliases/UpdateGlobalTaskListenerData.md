@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGlobalTaskListenerData"
-sidebar_label: "UpdateGlobalTaskListenerData"
+title: 'Type Alias: UpdateGlobalTaskListenerData'
+sidebar_label: 'UpdateGlobalTaskListenerData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: UpdateGlobalTaskListenerRequest;
 
 Defined in: [gen/types.gen.ts:10730](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10730)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ id: GlobalListenerId;
 
 The id of the global user task listener to update.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10737](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10737)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/global-task-listeners/{id}";
+url: '/global-task-listeners/{id}';
 ```
 
 Defined in: [gen/types.gen.ts:10738](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10738)

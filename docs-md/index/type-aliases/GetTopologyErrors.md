@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetTopologyErrors"
-sidebar_label: "GetTopologyErrors"
+title: 'Type Alias: GetTopologyErrors'
+sidebar_label: 'GetTopologyErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:15750](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDocumentError"
-sidebar_label: "GetDocumentError"
+title: 'Type Alias: GetDocumentError'
+sidebar_label: 'GetDocumentError'
 mdx:
   format: md
 ---

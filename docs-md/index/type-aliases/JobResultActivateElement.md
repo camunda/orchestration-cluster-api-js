@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobResultActivateElement"
-sidebar_label: "JobResultActivateElement"
+title: 'Type Alias: JobResultActivateElement'
+sidebar_label: 'JobResultActivateElement'
 mdx:
   format: md
 ---
@@ -27,12 +27,12 @@ Defined in: [gen/types.gen.ts:4509](https://github.com/camunda/orchestration-clu
 
 The element ID to activate.
 
-***
+---
 
 ### variables?
 
 ```ts
-optional variables: 
+optional variables:
   | {
 [key: string]: unknown;
 }

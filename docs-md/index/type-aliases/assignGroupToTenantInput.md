@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: assignGroupToTenantInput"
-sidebar_label: "assignGroupToTenantInput"
+title: 'Type Alias: assignGroupToTenantInput'
+sidebar_label: 'assignGroupToTenantInput'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ groupId: assignGroupToTenantPathParam_groupId;
 
 Defined in: [gen/CamundaClient.ts:71](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L71)
 
-***
+---
 
 ### tenantId
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionInstanceStateFilterProperty"
-sidebar_label: "DecisionInstanceStateFilterProperty"
+title: 'Type Alias: DecisionInstanceStateFilterProperty'
+sidebar_label: 'DecisionInstanceStateFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: DecisionInstanceStateFilterProperty
 
 ```ts
-type DecisionInstanceStateFilterProperty = 
+type DecisionInstanceStateFilterProperty =
   | DecisionInstanceStateExactMatch
   | AdvancedDecisionInstanceStateFilter;
 ```

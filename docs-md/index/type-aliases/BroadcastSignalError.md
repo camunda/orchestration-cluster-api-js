@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BroadcastSignalError"
-sidebar_label: "BroadcastSignalError"
+title: 'Type Alias: BroadcastSignalError'
+sidebar_label: 'BroadcastSignalError'
 mdx:
   format: md
 ---

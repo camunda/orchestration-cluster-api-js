@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUserTaskEffectiveVariablesErrors"
-sidebar_label: "SearchUserTaskEffectiveVariablesErrors"
+title: 'Type Alias: SearchUserTaskEffectiveVariablesErrors'
+sidebar_label: 'SearchUserTaskEffectiveVariablesErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:16395](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionFilter"
-sidebar_label: "ProcessDefinitionFilter"
+title: 'Type Alias: ProcessDefinitionFilter'
+sidebar_label: 'ProcessDefinitionFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5794](https://github.com/camunda/orchestration-clu
 
 Indicates whether the start event of the process has an associated Form Key.
 
-***
+---
 
 ### isLatestVersion?
 
@@ -42,7 +42,7 @@ When using this filter, pagination functionality is limited, you can only pagina
 The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
 When using this filter, sorting is limited to `processDefinitionId` and `tenantId` fields only.
 
-***
+---
 
 ### name?
 
@@ -54,7 +54,7 @@ Defined in: [gen/types.gen.ts:5758](https://github.com/camunda/orchestration-clu
 
 Name of this process definition.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -66,7 +66,7 @@ Defined in: [gen/types.gen.ts:5782](https://github.com/camunda/orchestration-clu
 
 Process definition ID of this process definition.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -78,7 +78,7 @@ Defined in: [gen/types.gen.ts:5790](https://github.com/camunda/orchestration-clu
 
 The key for this process definition.
 
-***
+---
 
 ### resourceName?
 
@@ -90,7 +90,7 @@ Defined in: [gen/types.gen.ts:5770](https://github.com/camunda/orchestration-clu
 
 Resource name of this process definition.
 
-***
+---
 
 ### tenantId?
 
@@ -102,7 +102,7 @@ Defined in: [gen/types.gen.ts:5786](https://github.com/camunda/orchestration-clu
 
 Tenant ID of this process definition.
 
-***
+---
 
 ### version?
 
@@ -114,7 +114,7 @@ Defined in: [gen/types.gen.ts:5774](https://github.com/camunda/orchestration-clu
 
 Version of this process definition.
 
-***
+---
 
 ### versionTag?
 

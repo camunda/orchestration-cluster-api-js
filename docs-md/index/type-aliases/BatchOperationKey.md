@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationKey"
-sidebar_label: "BatchOperationKey"
+title: 'Type Alias: BatchOperationKey'
+sidebar_label: 'BatchOperationKey'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: BatchOperationKey
 
 ```ts
-type BatchOperationKey = CamundaKey<"BatchOperationKey">;
+type BatchOperationKey = CamundaKey<'BatchOperationKey'>;
 ```
 
 Defined in: [gen/types.gen.ts:4728](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4728)

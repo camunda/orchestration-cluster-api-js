@@ -1,6 +1,6 @@
 ---
-title: "DeploymentKey"
-sidebar_label: "Overview"
+title: 'DeploymentKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

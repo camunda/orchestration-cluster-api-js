@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateTenantData"
-sidebar_label: "UpdateTenantData"
+title: 'Type Alias: UpdateTenantData'
+sidebar_label: 'UpdateTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: TenantUpdateRequest;
 
 Defined in: [gen/types.gen.ts:15029](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15029)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15036](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15036)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}";
+url: '/tenants/{tenantId}';
 ```
 
 Defined in: [gen/types.gen.ts:15037](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15037)

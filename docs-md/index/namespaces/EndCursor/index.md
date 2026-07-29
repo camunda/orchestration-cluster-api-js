@@ -1,6 +1,6 @@
 ---
-title: "EndCursor"
-sidebar_label: "Overview"
+title: 'EndCursor'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

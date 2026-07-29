@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceIncidentResolutionBatchOperationRequest"
-sidebar_label: "ProcessInstanceIncidentResolutionBatchOperationRequest"
+title: 'Type Alias: ProcessInstanceIncidentResolutionBatchOperationRequest'
+sidebar_label: 'ProcessInstanceIncidentResolutionBatchOperationRequest'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:950](https://github.com/camunda/orchestration-clus
 
 The process instance filter.
 
-***
+---
 
 ### operationReference?
 

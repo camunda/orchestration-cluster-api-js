@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessInstanceData"
-sidebar_label: "GetProcessInstanceData"
+title: 'Type Alias: GetProcessInstanceData'
+sidebar_label: 'GetProcessInstanceData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:13226](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13226)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The process instance key.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13233](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13233)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}";
+url: '/process-instances/{processInstanceKey}';
 ```
 
 Defined in: [gen/types.gen.ts:13234](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13234)

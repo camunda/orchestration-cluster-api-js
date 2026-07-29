@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: OffsetPagination"
-sidebar_label: "OffsetPagination"
+title: 'Type Alias: OffsetPagination'
+sidebar_label: 'OffsetPagination'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7143](https://github.com/camunda/orchestration-clu
 
 The index of items to start searching from.
 
-***
+---
 
 ### limit?
 

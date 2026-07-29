@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetBatchOperationError"
-sidebar_label: "GetBatchOperationError"
+title: 'Type Alias: GetBatchOperationError'
+sidebar_label: 'GetBatchOperationError'
 mdx:
   format: md
 ---

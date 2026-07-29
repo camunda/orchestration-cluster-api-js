@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentResult"
-sidebar_label: "IncidentResult"
+title: 'Type Alias: IncidentResult'
+sidebar_label: 'IncidentResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3539](https://github.com/camunda/orchestration-clu
 
 The creation time of the incident.
 
-***
+---
 
 ### elementId
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:3535](https://github.com/camunda/orchestration-clu
 
 The element ID associated to this incident.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:3570](https://github.com/camunda/orchestration-clu
 
 The element instance key associated to this incident.
 
-***
+---
 
 ### errorMessage
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:3531](https://github.com/camunda/orchestration-clu
 
 Error message which describes the error in more detail.
 
-***
+---
 
 ### errorType
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:3527](https://github.com/camunda/orchestration-clu
 
 The type of the incident error.
 
-***
+---
 
 ### incidentKey
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:3551](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this incident.
 
-***
+---
 
 ### jobKey
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:3574](https://github.com/camunda/orchestration-clu
 
 The job key, if exists, associated with this incident.
 
-***
+---
 
 ### processDefinitionId
 
@@ -109,7 +109,7 @@ Defined in: [gen/types.gen.ts:3523](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated to this incident.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -121,7 +121,7 @@ Defined in: [gen/types.gen.ts:3555](https://github.com/camunda/orchestration-clu
 
 The process definition key associated to this incident.
 
-***
+---
 
 ### processInstanceKey
 
@@ -133,7 +133,7 @@ Defined in: [gen/types.gen.ts:3559](https://github.com/camunda/orchestration-clu
 
 The process instance key associated to this incident.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -147,7 +147,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### state
 
@@ -159,7 +159,7 @@ Defined in: [gen/types.gen.ts:3543](https://github.com/camunda/orchestration-clu
 
 The incident state.
 
-***
+---
 
 ### tenantId
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchAuditLogsConsistency"
-sidebar_label: "searchAuditLogsConsistency"
+title: 'Type Alias: searchAuditLogsConsistency'
+sidebar_label: 'searchAuditLogsConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type searchAuditLogsConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:644](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L644)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

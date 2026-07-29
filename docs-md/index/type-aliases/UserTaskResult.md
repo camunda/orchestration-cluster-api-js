@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskResult"
-sidebar_label: "UserTaskResult"
+title: 'Type Alias: UserTaskResult'
+sidebar_label: 'UserTaskResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7641](https://github.com/camunda/orchestration-clu
 
 The assignee of the user task.
 
-***
+---
 
 ### candidateGroups
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:7649](https://github.com/camunda/orchestration-clu
 
 The candidate groups for this user task.
 
-***
+---
 
 ### candidateUsers
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:7653](https://github.com/camunda/orchestration-clu
 
 The candidate users for this user task.
 
-***
+---
 
 ### completionDate
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:7665](https://github.com/camunda/orchestration-clu
 
 The completion date of a user task.
 
-***
+---
 
 ### creationDate
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:7661](https://github.com/camunda/orchestration-clu
 
 The creation date of a user task.
 
-***
+---
 
 ### customHeaders
 
@@ -91,7 +91,7 @@ Custom headers for the user task.
 [key: string]: string
 ```
 
-***
+---
 
 ### dueDate
 
@@ -103,7 +103,7 @@ Defined in: [gen/types.gen.ts:7673](https://github.com/camunda/orchestration-clu
 
 The due date of a user task.
 
-***
+---
 
 ### elementId
 
@@ -115,7 +115,7 @@ Defined in: [gen/types.gen.ts:7645](https://github.com/camunda/orchestration-clu
 
 The element ID of the user task.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -127,7 +127,7 @@ Defined in: [gen/types.gen.ts:7700](https://github.com/camunda/orchestration-clu
 
 The key of the element instance.
 
-***
+---
 
 ### externalFormReference
 
@@ -139,7 +139,7 @@ Defined in: [gen/types.gen.ts:7678](https://github.com/camunda/orchestration-clu
 
 The external form reference.
 
-***
+---
 
 ### followUpDate
 
@@ -151,7 +151,7 @@ Defined in: [gen/types.gen.ts:7669](https://github.com/camunda/orchestration-clu
 
 The follow date of a user task.
 
-***
+---
 
 ### formKey
 
@@ -163,7 +163,7 @@ Defined in: [gen/types.gen.ts:7725](https://github.com/camunda/orchestration-clu
 
 The key of the form.
 
-***
+---
 
 ### name
 
@@ -175,7 +175,7 @@ Defined in: [gen/types.gen.ts:7636](https://github.com/camunda/orchestration-clu
 
 The name for this user task.
 
-***
+---
 
 ### priority
 
@@ -187,7 +187,7 @@ Defined in: [gen/types.gen.ts:7692](https://github.com/camunda/orchestration-clu
 
 The priority of a user task. The higher the value the higher the priority.
 
-***
+---
 
 ### processDefinitionId
 
@@ -199,7 +199,7 @@ Defined in: [gen/types.gen.ts:7657](https://github.com/camunda/orchestration-clu
 
 The ID of the process definition.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -211,7 +211,7 @@ Defined in: [gen/types.gen.ts:7710](https://github.com/camunda/orchestration-clu
 
 The key of the process definition.
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -223,7 +223,7 @@ Defined in: [gen/types.gen.ts:7682](https://github.com/camunda/orchestration-clu
 
 The version of the process definition.
 
-***
+---
 
 ### processInstanceKey
 
@@ -235,7 +235,7 @@ Defined in: [gen/types.gen.ts:7714](https://github.com/camunda/orchestration-clu
 
 The key of the process instance.
 
-***
+---
 
 ### processName
 
@@ -248,7 +248,7 @@ Defined in: [gen/types.gen.ts:7706](https://github.com/camunda/orchestration-clu
 The name of the process definition.
 This is `null` if the process has no name defined.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -262,7 +262,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### state
 
@@ -272,7 +272,7 @@ state: UserTaskStateEnum;
 
 Defined in: [gen/types.gen.ts:7637](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7637)
 
-***
+---
 
 ### tags
 
@@ -282,7 +282,7 @@ tags: TagSet;
 
 Defined in: [gen/types.gen.ts:7726](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7726)
 
-***
+---
 
 ### tenantId
 
@@ -292,7 +292,7 @@ tenantId: TenantId;
 
 Defined in: [gen/types.gen.ts:7674](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7674)
 
-***
+---
 
 ### userTaskKey
 

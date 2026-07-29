@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDecisionRequirementsData"
-sidebar_label: "GetDecisionRequirementsData"
+title: 'Type Alias: GetDecisionRequirementsData'
+sidebar_label: 'GetDecisionRequirementsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:9976](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9976)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ decisionRequirementsKey: DecisionRequirementsKey;
 
 The assigned key of the decision requirements, which acts as a unique identifier for this decision requirements.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:9983](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9983)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/decision-requirements/{decisionRequirementsKey}";
+url: '/decision-requirements/{decisionRequirementsKey}';
 ```
 
 Defined in: [gen/types.gen.ts:9984](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9984)

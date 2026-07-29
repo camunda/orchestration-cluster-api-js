@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ModifyProcessInstanceResponses"
-sidebar_label: "ModifyProcessInstanceResponses"
+title: 'Type Alias: ModifyProcessInstanceResponses'
+sidebar_label: 'ModifyProcessInstanceResponses'
 mdx:
   format: md
 ---

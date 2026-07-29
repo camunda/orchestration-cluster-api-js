@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstancesBatchOperationResponse"
-sidebar_label: "MigrateProcessInstancesBatchOperationResponse"
+title: 'Type Alias: MigrateProcessInstancesBatchOperationResponse'
+sidebar_label: 'MigrateProcessInstancesBatchOperationResponse'
 mdx:
   format: md
 ---
@@ -8,7 +8,8 @@ mdx:
 # Type Alias: MigrateProcessInstancesBatchOperationResponse
 
 ```ts
-type MigrateProcessInstancesBatchOperationResponse = MigrateProcessInstancesBatchOperationResponses[keyof MigrateProcessInstancesBatchOperationResponses];
+type MigrateProcessInstancesBatchOperationResponse =
+  MigrateProcessInstancesBatchOperationResponses[keyof MigrateProcessInstancesBatchOperationResponses];
 ```
 
 Defined in: [gen/types.gen.ts:13148](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13148)

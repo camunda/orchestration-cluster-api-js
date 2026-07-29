@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUserTaskFormResponses"
-sidebar_label: "GetUserTaskFormResponses"
+title: 'Type Alias: GetUserTaskFormResponses'
+sidebar_label: 'GetUserTaskFormResponses'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:16454](https://github.com/camunda/orchestration-cl
 
 The form is successfully returned.
 
-***
+---
 
 ### 204
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateMappingRuleErrors"
-sidebar_label: "UpdateMappingRuleErrors"
+title: 'Type Alias: UpdateMappingRuleErrors'
+sidebar_label: 'UpdateMappingRuleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12461](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -38,7 +38,7 @@ Defined in: [gen/types.gen.ts:12467](https://github.com/camunda/orchestration-cl
 The request to update a mapping rule was denied.
 More details are provided in the response body.
 
-***
+---
 
 ### 404
 
@@ -50,7 +50,7 @@ Defined in: [gen/types.gen.ts:12471](https://github.com/camunda/orchestration-cl
 
 The request to update a mapping rule was denied.
 
-***
+---
 
 ### 500
 
@@ -62,7 +62,7 @@ Defined in: [gen/types.gen.ts:12475](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

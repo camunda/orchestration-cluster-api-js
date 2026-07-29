@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getGlobalTaskListenerInput"
-sidebar_label: "getGlobalTaskListenerInput"
+title: 'Type Alias: getGlobalTaskListenerInput'
+sidebar_label: 'getGlobalTaskListenerInput'
 mdx:
   format: md
 ---

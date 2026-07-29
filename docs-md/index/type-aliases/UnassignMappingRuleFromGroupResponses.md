@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignMappingRuleFromGroupResponses"
-sidebar_label: "UnassignMappingRuleFromGroupResponses"
+title: 'Type Alias: UnassignMappingRuleFromGroupResponses'
+sidebar_label: 'UnassignMappingRuleFromGroupResponses'
 mdx:
   format: md
 ---

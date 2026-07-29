@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveIncidentError"
-sidebar_label: "ResolveIncidentError"
+title: 'Type Alias: ResolveIncidentError'
+sidebar_label: 'ResolveIncidentError'
 mdx:
   format: md
 ---

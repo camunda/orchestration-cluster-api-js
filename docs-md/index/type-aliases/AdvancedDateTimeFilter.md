@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedDateTimeFilter"
-sidebar_label: "AdvancedDateTimeFilter"
+title: 'Type Alias: AdvancedDateTimeFilter'
+sidebar_label: 'AdvancedDateTimeFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:2881](https://github.com/camunda/orchestration-clu
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:2889](https://github.com/camunda/orchestration-clu
 
 Checks if the current property exists.
 
-***
+---
 
 ### $gt?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:2893](https://github.com/camunda/orchestration-clu
 
 Greater than comparison with the provided value.
 
-***
+---
 
 ### $gte?
 
@@ -65,7 +65,7 @@ Defined in: [gen/types.gen.ts:2897](https://github.com/camunda/orchestration-clu
 
 Greater than or equal comparison with the provided value.
 
-***
+---
 
 ### $in?
 
@@ -77,7 +77,7 @@ Defined in: [gen/types.gen.ts:2909](https://github.com/camunda/orchestration-clu
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $lt?
 
@@ -89,7 +89,7 @@ Defined in: [gen/types.gen.ts:2901](https://github.com/camunda/orchestration-clu
 
 Lower than comparison with the provided value.
 
-***
+---
 
 ### $lte?
 
@@ -101,7 +101,7 @@ Defined in: [gen/types.gen.ts:2905](https://github.com/camunda/orchestration-clu
 
 Lower than or equal comparison with the provided value.
 
-***
+---
 
 ### $neq?
 

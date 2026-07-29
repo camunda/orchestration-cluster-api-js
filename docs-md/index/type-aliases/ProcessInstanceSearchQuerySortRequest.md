@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceSearchQuerySortRequest"
-sidebar_label: "ProcessInstanceSearchQuerySortRequest"
+title: 'Type Alias: ProcessInstanceSearchQuerySortRequest'
+sidebar_label: 'ProcessInstanceSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:6275](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "processInstanceKey"
   | "processDefinitionId"
   | "processDefinitionName"
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:6279](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

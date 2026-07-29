@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchVariablesData"
-sidebar_label: "SearchVariablesData"
+title: 'Type Alias: SearchVariablesData'
+sidebar_label: 'SearchVariablesData'
 mdx:
   format: md
 ---
@@ -43,7 +43,7 @@ optional sort: object[];
 
 Sort field criteria.
 
-***
+---
 
 ### path?
 
@@ -53,7 +53,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:16540](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16540)
 
-***
+---
 
 ### query?
 
@@ -71,12 +71,12 @@ optional truncateValues: boolean;
 
 When true (default), long variable values in the response are truncated. When false, full variable values are returned.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/variables/search";
+url: '/variables/search';
 ```
 
 Defined in: [gen/types.gen.ts:16547](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16547)

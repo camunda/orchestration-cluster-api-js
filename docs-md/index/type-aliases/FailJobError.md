@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: FailJobError"
-sidebar_label: "FailJobError"
+title: 'Type Alias: FailJobError'
+sidebar_label: 'FailJobError'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionStatisticsFilter"
-sidebar_label: "ProcessDefinitionStatisticsFilter"
+title: 'Type Alias: ProcessDefinitionStatisticsFilter'
+sidebar_label: 'ProcessDefinitionStatisticsFilter'
 mdx:
   format: md
 ---
@@ -27,32 +27,26 @@ Defines a list of alternative filter groups combined using OR logic. Each object
 
 Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
 
-
-*Example:*
+_Example:_
 
 ```json
 {
-"state": "ACTIVE",
-"tenantId": 123,
-"$or": [
-{ "processDefinitionId": "process_v1" },
-{ "processDefinitionId": "process_v2", "hasIncident": true }
-]
+  "state": "ACTIVE",
+  "tenantId": 123,
+  "$or": [
+    { "processDefinitionId": "process_v1" },
+    { "processDefinitionId": "process_v2", "hasIncident": true }
+  ]
 }
 ```
+
 This matches process instances that:
 
-
-- are in *ACTIVE* state
-- have tenant id equal to *123*
+- are in _ACTIVE_ state
+- have tenant id equal to _123_
 - and match either:
 
-- `processDefinitionId` is *process_v1*, or
-- `processDefinitionId` is *process_v2* and `hasIncident` is *true*
-
-
-
-
-
+- `processDefinitionId` is _process_v1_, or
+- `processDefinitionId` is _process_v2_ and `hasIncident` is _true_
 
 Note: Using complex `$or` conditions may impact performance, use with caution in high-volume environments.

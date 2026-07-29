@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateGlobalClusterVariableResponses"
-sidebar_label: "CreateGlobalClusterVariableResponses"
+title: 'Type Alias: CreateGlobalClusterVariableResponses'
+sidebar_label: 'CreateGlobalClusterVariableResponses'
 mdx:
   format: md
 ---

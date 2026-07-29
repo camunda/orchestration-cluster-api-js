@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionInstanceVersionStatisticsFilter"
-sidebar_label: "ProcessDefinitionInstanceVersionStatisticsFilter"
+title: 'Type Alias: ProcessDefinitionInstanceVersionStatisticsFilter'
+sidebar_label: 'ProcessDefinitionInstanceVersionStatisticsFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:5998](https://github.com/camunda/orchestration-clu
 
 The ID of the process definition to retrieve version statistics for.
 
-***
+---
 
 ### tenantId?
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: Partition"
-sidebar_label: "Partition"
+title: 'Type Alias: Partition'
+sidebar_label: 'Partition'
 mdx:
   format: md
 ---
@@ -20,14 +20,14 @@ Provides information on a partition within a broker node.
 ### health
 
 ```ts
-health: "healthy" | "unhealthy" | "dead";
+health: 'healthy' | 'unhealthy' | 'dead';
 ```
 
 Defined in: [gen/types.gen.ts:1366](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1366)
 
 Describes the current health of the partition.
 
-***
+---
 
 ### partitionId
 
@@ -39,12 +39,12 @@ Defined in: [gen/types.gen.ts:1358](https://github.com/camunda/orchestration-clu
 
 The unique ID of this partition.
 
-***
+---
 
 ### role
 
 ```ts
-role: "leader" | "follower" | "inactive";
+role: 'leader' | 'follower' | 'inactive';
 ```
 
 Defined in: [gen/types.gen.ts:1362](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1362)

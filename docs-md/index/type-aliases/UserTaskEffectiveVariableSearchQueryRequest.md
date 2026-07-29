@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskEffectiveVariableSearchQueryRequest"
-sidebar_label: "UserTaskEffectiveVariableSearchQueryRequest"
+title: 'Type Alias: UserTaskEffectiveVariableSearchQueryRequest'
+sidebar_label: 'UserTaskEffectiveVariableSearchQueryRequest'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7850](https://github.com/camunda/orchestration-clu
 
 The user task variable search filters.
 
-***
+---
 
 ### page?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:7842](https://github.com/camunda/orchestration-clu
 
 Pagination parameters.
 
-***
+---
 
 ### sort?
 

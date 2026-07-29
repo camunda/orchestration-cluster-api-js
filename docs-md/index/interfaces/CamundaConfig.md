@@ -1,6 +1,6 @@
 ---
-title: "Interface: CamundaConfig"
-sidebar_label: "CamundaConfig"
+title: 'Interface: CamundaConfig'
+sidebar_label: 'CamundaConfig'
 mdx:
   format: md
 ---
@@ -19,7 +19,7 @@ __raw: Record<string, string | undefined>;
 
 Defined in: [runtime/unifiedConfiguration.ts:119](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/unifiedConfiguration.ts#L119)
 
-***
+---
 
 ### auth
 
@@ -53,7 +53,7 @@ optional username: string;
 strategy: AuthStrategy;
 ```
 
-***
+---
 
 ### backpressure
 
@@ -147,7 +147,7 @@ softFactor: number;
 unlimitedAfterHealthyMs: number;
 ```
 
-***
+---
 
 ### defaultTenantId
 
@@ -157,7 +157,7 @@ defaultTenantId: string;
 
 Defined in: [runtime/unifiedConfiguration.ts:67](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/unifiedConfiguration.ts#L67)
 
-***
+---
 
 ### eventual?
 
@@ -173,7 +173,7 @@ Defined in: [runtime/unifiedConfiguration.ts:105](https://github.com/camunda/orc
 pollDefaultMs: number;
 ```
 
-***
+---
 
 ### httpRetry
 
@@ -201,17 +201,17 @@ maxAttempts: number;
 maxDelayMs: number;
 ```
 
-***
+---
 
 ### logLevel
 
 ```ts
-logLevel: "trace" | "error" | "silent" | "warn" | "info" | "debug";
+logLevel: 'trace' | 'error' | 'silent' | 'warn' | 'info' | 'debug';
 ```
 
 Defined in: [runtime/unifiedConfiguration.ts:104](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/unifiedConfiguration.ts#L104)
 
-***
+---
 
 ### mtls?
 
@@ -263,7 +263,7 @@ optional keyPassphrase: string;
 optional keyPath: string;
 ```
 
-***
+---
 
 ### oauth
 
@@ -333,7 +333,7 @@ optional scope: string;
 timeoutMs: number;
 ```
 
-***
+---
 
 ### restAddress
 
@@ -343,7 +343,7 @@ restAddress: string;
 
 Defined in: [runtime/unifiedConfiguration.ts:65](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/unifiedConfiguration.ts#L65)
 
-***
+---
 
 ### supportLog?
 
@@ -365,7 +365,7 @@ enabled: boolean;
 filePath: string;
 ```
 
-***
+---
 
 ### telemetry?
 
@@ -387,7 +387,7 @@ correlation: boolean;
 log: boolean;
 ```
 
-***
+---
 
 ### tokenAudience
 
@@ -397,7 +397,7 @@ tokenAudience: string;
 
 Defined in: [runtime/unifiedConfiguration.ts:66](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/unifiedConfiguration.ts#L66)
 
-***
+---
 
 ### validation
 

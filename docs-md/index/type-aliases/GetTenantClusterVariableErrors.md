@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetTenantClusterVariableErrors"
-sidebar_label: "GetTenantClusterVariableErrors"
+title: 'Type Alias: GetTenantClusterVariableErrors'
+sidebar_label: 'GetTenantClusterVariableErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9436](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9440](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9444](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:9448](https://github.com/camunda/orchestration-clu
 
 Cluster variable not found
 
-***
+---
 
 ### 500
 

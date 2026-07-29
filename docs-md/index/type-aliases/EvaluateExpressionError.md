@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateExpressionError"
-sidebar_label: "EvaluateExpressionError"
+title: 'Type Alias: EvaluateExpressionError'
+sidebar_label: 'EvaluateExpressionError'
 mdx:
   format: md
 ---

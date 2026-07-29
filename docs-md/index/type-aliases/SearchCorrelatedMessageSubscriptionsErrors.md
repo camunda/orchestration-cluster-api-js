@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchCorrelatedMessageSubscriptionsErrors"
-sidebar_label: "SearchCorrelatedMessageSubscriptionsErrors"
+title: 'Type Alias: SearchCorrelatedMessageSubscriptionsErrors'
+sidebar_label: 'SearchCorrelatedMessageSubscriptionsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9572](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9576](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9580](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

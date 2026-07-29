@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchBatchOperationsInput"
-sidebar_label: "searchBatchOperationsInput"
+title: 'Type Alias: searchBatchOperationsInput'
+sidebar_label: 'searchBatchOperationsInput'
 mdx:
   format: md
 ---

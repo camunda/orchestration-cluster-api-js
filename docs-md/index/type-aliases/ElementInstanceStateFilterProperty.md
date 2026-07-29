@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceStateFilterProperty"
-sidebar_label: "ElementInstanceStateFilterProperty"
+title: 'Type Alias: ElementInstanceStateFilterProperty'
+sidebar_label: 'ElementInstanceStateFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ElementInstanceStateFilterProperty
 
 ```ts
-type ElementInstanceStateFilterProperty = 
+type ElementInstanceStateFilterProperty =
   | ElementInstanceStateExactMatch
   | AdvancedElementInstanceStateFilter;
 ```

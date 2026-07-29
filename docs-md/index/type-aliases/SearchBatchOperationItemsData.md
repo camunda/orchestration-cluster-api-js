@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchBatchOperationItemsData"
-sidebar_label: "SearchBatchOperationItemsData"
+title: 'Type Alias: SearchBatchOperationItemsData'
+sidebar_label: 'SearchBatchOperationItemsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: BatchOperationItemSearchQuery;
 
 Defined in: [gen/types.gen.ts:8812](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8812)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:8813](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8813)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:8814](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8814)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/batch-operation-items/search";
+url: '/batch-operation-items/search';
 ```
 
 Defined in: [gen/types.gen.ts:8815](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8815)

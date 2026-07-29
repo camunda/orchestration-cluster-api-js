@@ -1,6 +1,6 @@
 ---
-title: "IncidentKey"
-sidebar_label: "Overview"
+title: 'IncidentKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

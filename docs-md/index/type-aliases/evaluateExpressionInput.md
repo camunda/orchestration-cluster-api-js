@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: evaluateExpressionInput"
-sidebar_label: "evaluateExpressionInput"
+title: 'Type Alias: evaluateExpressionInput'
+sidebar_label: 'evaluateExpressionInput'
 mdx:
   format: md
 ---

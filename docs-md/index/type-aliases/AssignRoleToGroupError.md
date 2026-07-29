@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToGroupError"
-sidebar_label: "AssignRoleToGroupError"
+title: 'Type Alias: AssignRoleToGroupError'
+sidebar_label: 'AssignRoleToGroupError'
 mdx:
   format: md
 ---

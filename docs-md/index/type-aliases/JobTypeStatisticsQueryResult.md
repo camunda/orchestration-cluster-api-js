@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobTypeStatisticsQueryResult"
-sidebar_label: "JobTypeStatisticsQueryResult"
+title: 'Type Alias: JobTypeStatisticsQueryResult'
+sidebar_label: 'JobTypeStatisticsQueryResult'
 mdx:
   format: md
 ---

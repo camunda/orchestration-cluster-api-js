@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getProcessDefinitionStatisticsInput"
-sidebar_label: "getProcessDefinitionStatisticsInput"
+title: 'Type Alias: getProcessDefinitionStatisticsInput'
+sidebar_label: 'getProcessDefinitionStatisticsInput'
 mdx:
   format: md
 ---

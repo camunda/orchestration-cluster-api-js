@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchProcessInstanceIncidentsResponses"
-sidebar_label: "SearchProcessInstanceIncidentsResponses"
+title: 'Type Alias: SearchProcessInstanceIncidentsResponses'
+sidebar_label: 'SearchProcessInstanceIncidentsResponses'
 mdx:
   format: md
 ---

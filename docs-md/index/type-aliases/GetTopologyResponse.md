@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetTopologyResponse"
-sidebar_label: "GetTopologyResponse"
+title: 'Type Alias: GetTopologyResponse'
+sidebar_label: 'GetTopologyResponse'
 mdx:
   format: md
 ---

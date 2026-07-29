@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResourceResult"
-sidebar_label: "ResourceResult"
+title: 'Type Alias: ResourceResult'
+sidebar_label: 'ResourceResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2285](https://github.com/camunda/orchestration-clu
 
 The resource ID of this resource.
 
-***
+---
 
 ### resourceKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2293](https://github.com/camunda/orchestration-clu
 
 The unique key of this resource.
 
-***
+---
 
 ### resourceName
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2273](https://github.com/camunda/orchestration-clu
 
 The resource name from which this resource was parsed.
 
-***
+---
 
 ### tenantId
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:2289](https://github.com/camunda/orchestration-clu
 
 The tenant ID of this resource.
 
-***
+---
 
 ### version
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:2277](https://github.com/camunda/orchestration-clu
 
 The assigned resource version.
 
-***
+---
 
 ### versionTag
 

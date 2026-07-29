@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteGlobalClusterVariableInput"
-sidebar_label: "deleteGlobalClusterVariableInput"
+title: 'Type Alias: deleteGlobalClusterVariableInput'
+sidebar_label: 'deleteGlobalClusterVariableInput'
 mdx:
   format: md
 ---

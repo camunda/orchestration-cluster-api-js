@@ -1,6 +1,6 @@
 ---
-title: "Function: withTimeoutTE()"
-sidebar_label: "withTimeoutTE()"
+title: 'Function: withTimeoutTE()'
+sidebar_label: 'withTimeoutTE()'
 mdx:
   format: md
 ---
@@ -11,12 +11,8 @@ mdx:
 The Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.
 :::
 
-
 ```ts
-function withTimeoutTE<E, A>(
-   task, 
-   ms, 
-onTimeout?): TaskEither<E, A>;
+function withTimeoutTE<E, A>(task, ms, onTimeout?): TaskEither<E, A>;
 ```
 
 Defined in: [fp-ts.ts:155](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/fp-ts.ts#L155)

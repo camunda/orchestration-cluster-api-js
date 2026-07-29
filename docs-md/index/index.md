@@ -1,6 +1,6 @@
 ---
-title: "index"
-sidebar_label: "Overview"
+title: 'index'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---
@@ -1823,7 +1823,7 @@ mdx:
 
 Renames and re-exports [createCamundaClient](functions/createCamundaClient.md)
 
-***
+---
 
 ### JobActionReceiptSymbol
 

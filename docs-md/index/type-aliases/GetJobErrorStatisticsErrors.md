@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetJobErrorStatisticsErrors"
-sidebar_label: "GetJobErrorStatisticsErrors"
+title: 'Type Alias: GetJobErrorStatisticsErrors'
+sidebar_label: 'GetJobErrorStatisticsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12232](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12236](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:12240](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

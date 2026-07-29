@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ThrowJobErrorData"
-sidebar_label: "ThrowJobErrorData"
+title: 'Type Alias: ThrowJobErrorData'
+sidebar_label: 'ThrowJobErrorData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: JobErrorRequest;
 
 Defined in: [gen/types.gen.ts:11961](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11961)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ jobKey: JobKey;
 
 The key of the job.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11968](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11968)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/jobs/{jobKey}/error";
+url: '/jobs/{jobKey}/error';
 ```
 
 Defined in: [gen/types.gen.ts:11969](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11969)

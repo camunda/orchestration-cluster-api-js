@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getProcessInstanceInput"
-sidebar_label: "getProcessInstanceInput"
+title: 'Type Alias: getProcessInstanceInput'
+sidebar_label: 'getProcessInstanceInput'
 mdx:
   format: md
 ---

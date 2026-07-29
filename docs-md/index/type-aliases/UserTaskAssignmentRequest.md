@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskAssignmentRequest"
-sidebar_label: "UserTaskAssignmentRequest"
+title: 'Type Alias: UserTaskAssignmentRequest'
+sidebar_label: 'UserTaskAssignmentRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7757](https://github.com/camunda/orchestration-clu
 
 A custom action value that will be accessible from user task events resulting from this endpoint invocation. If not provided, it will default to "assign".
 
-***
+---
 
 ### allowOverride?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:7752](https://github.com/camunda/orchestration-clu
 
 By default, the task is reassigned if it was already assigned. Set this to `false` to return an error in such cases. The task must then first be unassigned to be assigned again. Use this when you have users picking from group task queues to prevent race conditions.
 
-***
+---
 
 ### assignee?
 

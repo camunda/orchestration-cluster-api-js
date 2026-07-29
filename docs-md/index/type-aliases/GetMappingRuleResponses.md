@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetMappingRuleResponses"
-sidebar_label: "GetMappingRuleResponses"
+title: 'Type Alias: GetMappingRuleResponses'
+sidebar_label: 'GetMappingRuleResponses'
 mdx:
   format: md
 ---

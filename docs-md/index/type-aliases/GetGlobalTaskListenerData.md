@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGlobalTaskListenerData"
-sidebar_label: "GetGlobalTaskListenerData"
+title: 'Type Alias: GetGlobalTaskListenerData'
+sidebar_label: 'GetGlobalTaskListenerData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:10688](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10688)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ id: GlobalListenerId;
 
 The id of the global user task listener.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10695](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10695)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/global-task-listeners/{id}";
+url: '/global-task-listeners/{id}';
 ```
 
 Defined in: [gen/types.gen.ts:10696](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10696)

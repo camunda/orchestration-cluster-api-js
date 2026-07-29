@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGlobalJobStatisticsData"
-sidebar_label: "GetGlobalJobStatisticsData"
+title: 'Type Alias: GetGlobalJobStatisticsData'
+sidebar_label: 'GetGlobalJobStatisticsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:12059](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12059)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:12060](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12060)
 
-***
+---
 
 ### query
 
@@ -67,12 +67,12 @@ to: string;
 
 End of the time window to filter metrics. ISO 8601 date-time format.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/jobs/statistics/global";
+url: '/jobs/statistics/global';
 ```
 
 Defined in: [gen/types.gen.ts:12077](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12077)

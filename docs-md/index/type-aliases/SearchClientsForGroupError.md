@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchClientsForGroupError"
-sidebar_label: "SearchClientsForGroupError"
+title: 'Type Alias: SearchClientsForGroupError'
+sidebar_label: 'SearchClientsForGroupError'
 mdx:
   format: md
 ---

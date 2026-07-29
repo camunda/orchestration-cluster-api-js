@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CorrelatedMessageSubscriptionSearchQuerySortRequest"
-sidebar_label: "CorrelatedMessageSubscriptionSearchQuerySortRequest"
+title: 'Type Alias: CorrelatedMessageSubscriptionSearchQuerySortRequest'
+sidebar_label: 'CorrelatedMessageSubscriptionSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:5565](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "correlationKey"
   | "correlationTime"
   | "elementId"
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5569](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

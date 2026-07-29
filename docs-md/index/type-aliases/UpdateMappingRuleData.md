@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateMappingRuleData"
-sidebar_label: "UpdateMappingRuleData"
+title: 'Type Alias: UpdateMappingRuleData'
+sidebar_label: 'UpdateMappingRuleData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: MappingRuleUpdateRequest;
 
 Defined in: [gen/types.gen.ts:12446](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12446)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ mappingRuleId: string;
 
 The ID of the mapping rule to update.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:12453](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12453)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/mapping-rules/{mappingRuleId}";
+url: '/mapping-rules/{mappingRuleId}';
 ```
 
 Defined in: [gen/types.gen.ts:12454](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12454)

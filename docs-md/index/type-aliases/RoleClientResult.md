@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleClientResult"
-sidebar_label: "RoleClientResult"
+title: 'Type Alias: RoleClientResult'
+sidebar_label: 'RoleClientResult'
 mdx:
   format: md
 ---

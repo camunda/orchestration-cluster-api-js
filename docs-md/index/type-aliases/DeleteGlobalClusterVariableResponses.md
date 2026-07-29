@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGlobalClusterVariableResponses"
-sidebar_label: "DeleteGlobalClusterVariableResponses"
+title: 'Type Alias: DeleteGlobalClusterVariableResponses'
+sidebar_label: 'DeleteGlobalClusterVariableResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveProcessInstanceIncidentsResponses"
-sidebar_label: "ResolveProcessInstanceIncidentsResponses"
+title: 'Type Alias: ResolveProcessInstanceIncidentsResponses'
+sidebar_label: 'ResolveProcessInstanceIncidentsResponses'
 mdx:
   format: md
 ---

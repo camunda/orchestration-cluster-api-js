@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceMigrationInstruction"
-sidebar_label: "ProcessInstanceMigrationInstruction"
+title: 'Type Alias: ProcessInstanceMigrationInstruction'
+sidebar_label: 'ProcessInstanceMigrationInstruction'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:6646](https://github.com/camunda/orchestration-clu
 
 Element mappings from the source process instance to the target process instance.
 
-***
+---
 
 ### operationReference?
 
@@ -37,7 +37,7 @@ optional operationReference: OperationReference;
 
 Defined in: [gen/types.gen.ts:6647](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6647)
 
-***
+---
 
 ### targetProcessDefinitionKey
 

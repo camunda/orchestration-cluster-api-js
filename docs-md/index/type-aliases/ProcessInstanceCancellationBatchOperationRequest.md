@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceCancellationBatchOperationRequest"
-sidebar_label: "ProcessInstanceCancellationBatchOperationRequest"
+title: 'Type Alias: ProcessInstanceCancellationBatchOperationRequest'
+sidebar_label: 'ProcessInstanceCancellationBatchOperationRequest'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:939](https://github.com/camunda/orchestration-clus
 
 The process instance filter.
 
-***
+---
 
 ### operationReference?
 

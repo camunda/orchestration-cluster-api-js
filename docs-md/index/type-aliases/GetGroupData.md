@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGroupData"
-sidebar_label: "GetGroupData"
+title: 'Type Alias: GetGroupData'
+sidebar_label: 'GetGroupData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:10940](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10940)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ groupId: string;
 
 The group ID.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10947](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10947)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/groups/{groupId}";
+url: '/groups/{groupId}';
 ```
 
 Defined in: [gen/types.gen.ts:10948](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10948)

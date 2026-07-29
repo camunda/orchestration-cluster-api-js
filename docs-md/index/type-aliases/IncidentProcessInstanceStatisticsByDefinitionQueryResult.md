@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentProcessInstanceStatisticsByDefinitionQueryResult"
-sidebar_label: "IncidentProcessInstanceStatisticsByDefinitionQueryResult"
+title: 'Type Alias: IncidentProcessInstanceStatisticsByDefinitionQueryResult'
+sidebar_label: 'IncidentProcessInstanceStatisticsByDefinitionQueryResult'
 mdx:
   format: md
 ---

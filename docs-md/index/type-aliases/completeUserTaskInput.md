@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: completeUserTaskInput"
-sidebar_label: "completeUserTaskInput"
+title: 'Type Alias: completeUserTaskInput'
+sidebar_label: 'completeUserTaskInput'
 mdx:
   format: md
 ---

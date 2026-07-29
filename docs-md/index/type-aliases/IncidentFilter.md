@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentFilter"
-sidebar_label: "IncidentFilter"
+title: 'Type Alias: IncidentFilter'
+sidebar_label: 'IncidentFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3395](https://github.com/camunda/orchestration-clu
 
 Date of incident creation.
 
-***
+---
 
 ### elementId?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3391](https://github.com/camunda/orchestration-clu
 
 The element ID associated to this incident.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:3419](https://github.com/camunda/orchestration-clu
 
 The element instance key associated to this incident.
 
-***
+---
 
 ### errorMessage?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:3387](https://github.com/camunda/orchestration-clu
 
 The error message of this incident.
 
-***
+---
 
 ### errorType?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:3383](https://github.com/camunda/orchestration-clu
 
 Incident error type with a defined set of values.
 
-***
+---
 
 ### incidentKey?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:3407](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this incident.
 
-***
+---
 
 ### jobKey?
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:3423](https://github.com/camunda/orchestration-clu
 
 The job key, if exists, associated with this incident.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:3379](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated to this incident.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:3411](https://github.com/camunda/orchestration-clu
 
 The process definition key associated to this incident.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:3415](https://github.com/camunda/orchestration-clu
 
 The process instance key associated to this incident.
 
-***
+---
 
 ### state?
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:3399](https://github.com/camunda/orchestration-clu
 
 State of this incident with a defined set of values.
 
-***
+---
 
 ### tenantId?
 

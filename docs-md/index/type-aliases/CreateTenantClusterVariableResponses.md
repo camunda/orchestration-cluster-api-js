@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateTenantClusterVariableResponses"
-sidebar_label: "CreateTenantClusterVariableResponses"
+title: 'Type Alias: CreateTenantClusterVariableResponses'
+sidebar_label: 'CreateTenantClusterVariableResponses'
 mdx:
   format: md
 ---

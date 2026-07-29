@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstancesBatchOperationResponses"
-sidebar_label: "MigrateProcessInstancesBatchOperationResponses"
+title: 'Type Alias: MigrateProcessInstancesBatchOperationResponses'
+sidebar_label: 'MigrateProcessInstancesBatchOperationResponses'
 mdx:
   format: md
 ---

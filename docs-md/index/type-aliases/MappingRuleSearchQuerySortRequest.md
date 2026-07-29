@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MappingRuleSearchQuerySortRequest"
-sidebar_label: "MappingRuleSearchQuerySortRequest"
+title: 'Type Alias: MappingRuleSearchQuerySortRequest'
+sidebar_label: 'MappingRuleSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,14 +18,14 @@ Defined in: [gen/types.gen.ts:5235](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: "mappingRuleId" | "claimName" | "claimValue" | "name";
+field: 'mappingRuleId' | 'claimName' | 'claimValue' | 'name';
 ```
 
 Defined in: [gen/types.gen.ts:5239](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L5239)
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: updateAuthorizationInput"
-sidebar_label: "updateAuthorizationInput"
+title: 'Type Alias: updateAuthorizationInput'
+sidebar_label: 'updateAuthorizationInput'
 mdx:
   format: md
 ---

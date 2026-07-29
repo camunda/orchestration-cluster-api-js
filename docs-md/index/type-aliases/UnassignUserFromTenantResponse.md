@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignUserFromTenantResponse"
-sidebar_label: "UnassignUserFromTenantResponse"
+title: 'Type Alias: UnassignUserFromTenantResponse'
+sidebar_label: 'UnassignUserFromTenantResponse'
 mdx:
   format: md
 ---
@@ -8,7 +8,8 @@ mdx:
 # Type Alias: UnassignUserFromTenantResponse
 
 ```ts
-type UnassignUserFromTenantResponse = UnassignUserFromTenantResponses[keyof UnassignUserFromTenantResponses];
+type UnassignUserFromTenantResponse =
+  UnassignUserFromTenantResponses[keyof UnassignUserFromTenantResponses];
 ```
 
 Defined in: [gen/types.gen.ts:15686](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15686)

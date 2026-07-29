@@ -1,6 +1,6 @@
 ---
-title: "BatchOperationKey"
-sidebar_label: "Overview"
+title: 'BatchOperationKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentStateExactMatch"
-sidebar_label: "IncidentStateExactMatch"
+title: 'Type Alias: IncidentStateExactMatch'
+sidebar_label: 'IncidentStateExactMatch'
 mdx:
   format: md
 ---

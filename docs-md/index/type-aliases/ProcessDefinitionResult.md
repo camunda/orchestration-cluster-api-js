@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionResult"
-sidebar_label: "ProcessDefinitionResult"
+title: 'Type Alias: ProcessDefinitionResult'
+sidebar_label: 'ProcessDefinitionResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5836](https://github.com/camunda/orchestration-clu
 
 Indicates whether the start event of the process has an associated Form Key.
 
-***
+---
 
 ### name
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5808](https://github.com/camunda/orchestration-clu
 
 Name of this process definition.
 
-***
+---
 
 ### processDefinitionId
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:5824](https://github.com/camunda/orchestration-clu
 
 Process definition ID of this process definition.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:5832](https://github.com/camunda/orchestration-clu
 
 The key for this process definition.
 
-***
+---
 
 ### resourceName
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:5812](https://github.com/camunda/orchestration-clu
 
 Resource name for this process definition.
 
-***
+---
 
 ### tenantId
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:5828](https://github.com/camunda/orchestration-clu
 
 Tenant ID of this process definition.
 
-***
+---
 
 ### version
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:5816](https://github.com/camunda/orchestration-clu
 
 Version of this process definition.
 
-***
+---
 
 ### versionTag
 

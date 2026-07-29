@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CancelProcessInstanceData"
-sidebar_label: "CancelProcessInstanceData"
+title: 'Type Alias: CancelProcessInstanceData'
+sidebar_label: 'CancelProcessInstanceData'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:13317](https://github.com/camunda/orchestration-cl
 ### body?
 
 ```ts
-optional body: 
+optional body:
   | {
   operationReference?: OperationReference;
 }
@@ -27,7 +27,7 @@ optional body:
 
 Defined in: [gen/types.gen.ts:13318](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13318)
 
-***
+---
 
 ### path
 
@@ -45,7 +45,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The key of the process instance to cancel.
 
-***
+---
 
 ### query?
 
@@ -55,12 +55,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13327](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13327)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}/cancellation";
+url: '/process-instances/{processInstanceKey}/cancellation';
 ```
 
 Defined in: [gen/types.gen.ts:13328](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13328)

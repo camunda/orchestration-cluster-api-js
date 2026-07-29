@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUserTaskAuditLogsData"
-sidebar_label: "SearchUserTaskAuditLogsData"
+title: 'Type Alias: SearchUserTaskAuditLogsData'
+sidebar_label: 'SearchUserTaskAuditLogsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: UserTaskAuditLogSearchQueryRequest;
 
 Defined in: [gen/types.gen.ts:16264](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16264)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ userTaskKey: UserTaskKey;
 
 The key of the user task.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:16271](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16271)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/user-tasks/{userTaskKey}/audit-logs/search";
+url: '/user-tasks/{userTaskKey}/audit-logs/search';
 ```
 
 Defined in: [gen/types.gen.ts:16272](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16272)

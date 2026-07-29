@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CursorBackwardPagination"
-sidebar_label: "CursorBackwardPagination"
+title: 'Type Alias: CursorBackwardPagination'
+sidebar_label: 'CursorBackwardPagination'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7171](https://github.com/camunda/orchestration-clu
 
 Use the `startCursor` value from the previous response to fetch the previous page of results.
 
-***
+---
 
 ### limit?
 

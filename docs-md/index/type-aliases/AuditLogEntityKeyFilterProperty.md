@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuditLogEntityKeyFilterProperty"
-sidebar_label: "AuditLogEntityKeyFilterProperty"
+title: 'Type Alias: AuditLogEntityKeyFilterProperty'
+sidebar_label: 'AuditLogEntityKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: AuditLogEntityKeyFilterProperty
 
 ```ts
-type AuditLogEntityKeyFilterProperty = 
+type AuditLogEntityKeyFilterProperty =
   | AuditLogEntityKeyExactMatch
   | AdvancedAuditLogEntityKeyFilter;
 ```

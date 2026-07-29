@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToMappingRuleResponses"
-sidebar_label: "AssignRoleToMappingRuleResponses"
+title: 'Type Alias: AssignRoleToMappingRuleResponses'
+sidebar_label: 'AssignRoleToMappingRuleResponses'
 mdx:
   format: md
 ---

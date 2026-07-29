@@ -1,6 +1,6 @@
 ---
-title: "Function: getValue()"
-sidebar_label: "getValue()"
+title: 'Function: getValue()'
+sidebar_label: 'getValue()'
 mdx:
   format: md
 ---

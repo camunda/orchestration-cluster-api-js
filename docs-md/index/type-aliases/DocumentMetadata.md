@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DocumentMetadata"
-sidebar_label: "DocumentMetadata"
+title: 'Type Alias: DocumentMetadata'
+sidebar_label: 'DocumentMetadata'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:2429](https://github.com/camunda/orchestration-clu
 
 The content type of the document.
 
-***
+---
 
 ### customProperties?
 
@@ -45,7 +45,7 @@ Custom properties of the document.
 [key: string]: unknown
 ```
 
-***
+---
 
 ### expiresAt?
 
@@ -57,7 +57,7 @@ Defined in: [gen/types.gen.ts:2437](https://github.com/camunda/orchestration-clu
 
 The date and time when the document expires.
 
-***
+---
 
 ### fileName?
 
@@ -69,7 +69,7 @@ Defined in: [gen/types.gen.ts:2433](https://github.com/camunda/orchestration-clu
 
 The name of the file.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -81,7 +81,7 @@ Defined in: [gen/types.gen.ts:2445](https://github.com/camunda/orchestration-clu
 
 The ID of the process definition that created the document.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -93,7 +93,7 @@ Defined in: [gen/types.gen.ts:2449](https://github.com/camunda/orchestration-clu
 
 The key of the process instance that created the document.
 
-***
+---
 
 ### size?
 

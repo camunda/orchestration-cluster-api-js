@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToUserErrors"
-sidebar_label: "AssignRoleToUserErrors"
+title: 'Type Alias: AssignRoleToUserErrors'
+sidebar_label: 'AssignRoleToUserErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14631](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:14635](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:14639](https://github.com/camunda/orchestration-cl
 
 The role or user with the given ID or username was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:14643](https://github.com/camunda/orchestration-cl
 
 The role is already assigned to the user with the given ID.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:14647](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

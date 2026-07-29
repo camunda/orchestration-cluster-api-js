@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceSearchQuerySortRequest"
-sidebar_label: "ElementInstanceSearchQuerySortRequest"
+title: 'Type Alias: ElementInstanceSearchQuerySortRequest'
+sidebar_label: 'ElementInstanceSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:2517](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "elementInstanceKey"
   | "processInstanceKey"
   | "processDefinitionKey"
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2521](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SignalBroadcastRequest"
-sidebar_label: "SignalBroadcastRequest"
+title: 'Type Alias: SignalBroadcastRequest'
+sidebar_label: 'SignalBroadcastRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7214](https://github.com/camunda/orchestration-clu
 
 The name of the signal to broadcast.
 
-***
+---
 
 ### tenantId?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:7224](https://github.com/camunda/orchestration-clu
 
 The ID of the tenant that owns the signal.
 
-***
+---
 
 ### variables?
 

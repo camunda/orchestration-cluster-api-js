@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDecisionInstanceResponses"
-sidebar_label: "DeleteDecisionInstanceResponses"
+title: 'Type Alias: DeleteDecisionInstanceResponses'
+sidebar_label: 'DeleteDecisionInstanceResponses'
 mdx:
   format: md
 ---

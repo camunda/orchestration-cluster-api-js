@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getTopologyInput"
-sidebar_label: "getTopologyInput"
+title: 'Type Alias: getTopologyInput'
+sidebar_label: 'getTopologyInput'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: VariableSearchQuerySortRequest"
-sidebar_label: "VariableSearchQuerySortRequest"
+title: 'Type Alias: VariableSearchQuerySortRequest'
+sidebar_label: 'VariableSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:8051](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "value"
   | "name"
   | "tenantId"
@@ -31,7 +31,7 @@ Defined in: [gen/types.gen.ts:8055](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteAuthorizationData"
-sidebar_label: "DeleteAuthorizationData"
+title: 'Type Alias: DeleteAuthorizationData'
+sidebar_label: 'DeleteAuthorizationData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:8684](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8684)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ authorizationKey: AuthorizationKey;
 
 The key of the authorization to delete.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:8691](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8691)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/authorizations/{authorizationKey}";
+url: '/authorizations/{authorizationKey}';
 ```
 
 Defined in: [gen/types.gen.ts:8692](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8692)

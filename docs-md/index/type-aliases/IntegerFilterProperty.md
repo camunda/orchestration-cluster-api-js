@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IntegerFilterProperty"
-sidebar_label: "IntegerFilterProperty"
+title: 'Type Alias: IntegerFilterProperty'
+sidebar_label: 'IntegerFilterProperty'
 mdx:
   format: md
 ---

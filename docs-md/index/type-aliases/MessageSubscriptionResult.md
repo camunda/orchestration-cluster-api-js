@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionResult"
-sidebar_label: "MessageSubscriptionResult"
+title: 'Type Alias: MessageSubscriptionResult'
+sidebar_label: 'MessageSubscriptionResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5414](https://github.com/camunda/orchestration-clu
 
 The correlation key of the message subscription.
 
-***
+---
 
 ### elementId
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5397](https://github.com/camunda/orchestration-clu
 
 The element ID associated with this message subscription.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:5401](https://github.com/camunda/orchestration-clu
 
 The element instance key associated with this message subscription.
 
-***
+---
 
 ### lastUpdatedDate
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:5406](https://github.com/camunda/orchestration-clu
 
 The last updated date of the message subscription.
 
-***
+---
 
 ### messageName
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:5410](https://github.com/camunda/orchestration-clu
 
 The name of the message associated with the message subscription.
 
-***
+---
 
 ### messageSubscriptionKey
 
@@ -85,7 +85,7 @@ Defined in: [gen/types.gen.ts:5374](https://github.com/camunda/orchestration-clu
 
 The message subscription key associated with this message subscription.
 
-***
+---
 
 ### messageSubscriptionState
 
@@ -95,7 +95,7 @@ messageSubscriptionState: MessageSubscriptionStateEnum;
 
 Defined in: [gen/types.gen.ts:5402](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L5402)
 
-***
+---
 
 ### processDefinitionId
 
@@ -107,7 +107,7 @@ Defined in: [gen/types.gen.ts:5378](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with this message subscription.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -119,7 +119,7 @@ Defined in: [gen/types.gen.ts:5382](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with this message subscription.
 
-***
+---
 
 ### processInstanceKey
 
@@ -131,7 +131,7 @@ Defined in: [gen/types.gen.ts:5386](https://github.com/camunda/orchestration-clu
 
 The process instance key associated with this message subscription.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -145,7 +145,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### tenantId
 

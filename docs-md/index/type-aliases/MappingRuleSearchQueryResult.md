@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MappingRuleSearchQueryResult"
-sidebar_label: "MappingRuleSearchQueryResult"
+title: 'Type Alias: MappingRuleSearchQueryResult'
+sidebar_label: 'MappingRuleSearchQueryResult'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetLicenseResponse"
-sidebar_label: "GetLicenseResponse"
+title: 'Type Alias: GetLicenseResponse'
+sidebar_label: 'GetLicenseResponse'
 mdx:
   format: md
 ---

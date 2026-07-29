@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupResult"
-sidebar_label: "GroupResult"
+title: 'Type Alias: GroupResult'
+sidebar_label: 'GroupResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3188](https://github.com/camunda/orchestration-clu
 
 The group description.
 
-***
+---
 
 ### groupId
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3184](https://github.com/camunda/orchestration-clu
 
 The group ID.
 
-***
+---
 
 ### name
 

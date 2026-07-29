@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResetClockErrors"
-sidebar_label: "ResetClockErrors"
+title: 'Type Alias: ResetClockErrors'
+sidebar_label: 'ResetClockErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9088](https://github.com/camunda/orchestration-clu
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteRoleData"
-sidebar_label: "DeleteRoleData"
+title: 'Type Alias: DeleteRoleData'
+sidebar_label: 'DeleteRoleData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:13883](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13883)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ roleId: string;
 
 The role ID.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13890](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13890)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}";
+url: '/roles/{roleId}';
 ```
 
 Defined in: [gen/types.gen.ts:13891](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13891)

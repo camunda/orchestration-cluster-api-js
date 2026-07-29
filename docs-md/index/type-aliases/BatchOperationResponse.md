@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationResponse"
-sidebar_label: "BatchOperationResponse"
+title: 'Type Alias: BatchOperationResponse'
+sidebar_label: 'BatchOperationResponse'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:795](https://github.com/camunda/orchestration-clus
 
 The ID of the actor who performed the operation. Available for batch operations created since 8.9.
 
-***
+---
 
 ### actorType
 
@@ -39,7 +39,7 @@ The type of the actor who performed the operation.
 This is `null` if the batch operation was created before 8.9,
 or if the actor information is not available.
 
-***
+---
 
 ### batchOperationKey
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:770](https://github.com/camunda/orchestration-clus
 
 Key or (Operate Legacy ID = UUID) of the batch operation.
 
-***
+---
 
 ### batchOperationType
 
@@ -61,7 +61,7 @@ batchOperationType: BatchOperationTypeEnum;
 
 Defined in: [gen/types.gen.ts:772](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L772)
 
-***
+---
 
 ### endDate
 
@@ -74,7 +74,7 @@ Defined in: [gen/types.gen.ts:784](https://github.com/camunda/orchestration-clus
 The end date of the batch operation.
 This is `null` if the batch operation is still running.
 
-***
+---
 
 ### errors
 
@@ -86,7 +86,7 @@ Defined in: [gen/types.gen.ts:811](https://github.com/camunda/orchestration-clus
 
 The errors that occurred per partition during the batch operation.
 
-***
+---
 
 ### operationsCompletedCount
 
@@ -98,7 +98,7 @@ Defined in: [gen/types.gen.ts:807](https://github.com/camunda/orchestration-clus
 
 The number of successfully completed tasks.
 
-***
+---
 
 ### operationsFailedCount
 
@@ -110,7 +110,7 @@ Defined in: [gen/types.gen.ts:803](https://github.com/camunda/orchestration-clus
 
 The number of items which failed during execution of the batch operation. (e.g. because they are rejected by the Zeebe engine).
 
-***
+---
 
 ### operationsTotalCount
 
@@ -122,7 +122,7 @@ Defined in: [gen/types.gen.ts:799](https://github.com/camunda/orchestration-clus
 
 The total number of items contained in this batch operation.
 
-***
+---
 
 ### startDate
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:778](https://github.com/camunda/orchestration-clus
 The start date of the batch operation.
 This is `null` if the batch operation has not yet started.
 
-***
+---
 
 ### state
 

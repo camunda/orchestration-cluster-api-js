@@ -514,4 +514,7 @@ The PR branch is version-scoped, so backport and next-version syncs can coexist.
 ---
 
 Contributions: open a draft PR early when altering generator semantics (branding, class synthesis, facade layering) to surface design discussion before large diffs land.
-````
+
+```
+
+```

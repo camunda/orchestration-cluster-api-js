@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionSearchQuerySortRequest"
-sidebar_label: "MessageSubscriptionSearchQuerySortRequest"
+title: 'Type Alias: MessageSubscriptionSearchQuerySortRequest'
+sidebar_label: 'MessageSubscriptionSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:5418](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "messageSubscriptionKey"
   | "processDefinitionId"
   | "processInstanceKey"
@@ -35,7 +35,7 @@ Defined in: [gen/types.gen.ts:5422](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

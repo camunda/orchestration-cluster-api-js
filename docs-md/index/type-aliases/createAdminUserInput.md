@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: createAdminUserInput"
-sidebar_label: "createAdminUserInput"
+title: 'Type Alias: createAdminUserInput'
+sidebar_label: 'createAdminUserInput'
 mdx:
   format: md
 ---

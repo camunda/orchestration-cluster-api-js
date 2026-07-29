@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: OperationTypeExactMatch"
-sidebar_label: "OperationTypeExactMatch"
+title: 'Type Alias: OperationTypeExactMatch'
+sidebar_label: 'OperationTypeExactMatch'
 mdx:
   format: md
 ---

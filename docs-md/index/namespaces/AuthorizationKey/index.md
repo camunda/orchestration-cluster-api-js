@@ -1,6 +1,6 @@
 ---
-title: "AuthorizationKey"
-sidebar_label: "Overview"
+title: 'AuthorizationKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

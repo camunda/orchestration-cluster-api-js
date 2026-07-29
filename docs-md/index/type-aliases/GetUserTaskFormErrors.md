@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUserTaskFormErrors"
-sidebar_label: "GetUserTaskFormErrors"
+title: 'Type Alias: GetUserTaskFormErrors'
+sidebar_label: 'GetUserTaskFormErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:16429](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:16433](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:16437](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:16441](https://github.com/camunda/orchestration-cl
 
 Not found
 
-***
+---
 
 ### 500
 

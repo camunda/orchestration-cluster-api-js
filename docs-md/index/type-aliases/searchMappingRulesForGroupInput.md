@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchMappingRulesForGroupInput"
-sidebar_label: "searchMappingRulesForGroupInput"
+title: 'Type Alias: searchMappingRulesForGroupInput'
+sidebar_label: 'searchMappingRulesForGroupInput'
 mdx:
   format: md
 ---

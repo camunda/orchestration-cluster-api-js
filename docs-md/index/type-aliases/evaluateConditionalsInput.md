@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: evaluateConditionalsInput"
-sidebar_label: "evaluateConditionalsInput"
+title: 'Type Alias: evaluateConditionalsInput'
+sidebar_label: 'evaluateConditionalsInput'
 mdx:
   format: md
 ---

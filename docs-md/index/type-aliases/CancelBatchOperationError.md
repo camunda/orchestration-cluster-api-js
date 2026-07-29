@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CancelBatchOperationError"
-sidebar_label: "CancelBatchOperationError"
+title: 'Type Alias: CancelBatchOperationError'
+sidebar_label: 'CancelBatchOperationError'
 mdx:
   format: md
 ---

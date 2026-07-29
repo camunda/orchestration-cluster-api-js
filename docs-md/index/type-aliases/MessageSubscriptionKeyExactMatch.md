@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionKeyExactMatch"
-sidebar_label: "MessageSubscriptionKeyExactMatch"
+title: 'Type Alias: MessageSubscriptionKeyExactMatch'
+sidebar_label: 'MessageSubscriptionKeyExactMatch'
 mdx:
   format: md
 ---

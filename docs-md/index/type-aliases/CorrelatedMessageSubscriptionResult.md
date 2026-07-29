@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CorrelatedMessageSubscriptionResult"
-sidebar_label: "CorrelatedMessageSubscriptionResult"
+title: 'Type Alias: CorrelatedMessageSubscriptionResult'
+sidebar_label: 'CorrelatedMessageSubscriptionResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5498](https://github.com/camunda/orchestration-clu
 
 The correlation key of the message.
 
-***
+---
 
 ### correlationTime
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5502](https://github.com/camunda/orchestration-clu
 
 The time when the message was correlated.
 
-***
+---
 
 ### elementId
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:5506](https://github.com/camunda/orchestration-clu
 
 The element ID that received the message.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -62,7 +62,7 @@ Defined in: [gen/types.gen.ts:5512](https://github.com/camunda/orchestration-clu
 The element instance key that received the message.
 It is `null` for start event subscriptions.
 
-***
+---
 
 ### messageKey
 
@@ -74,7 +74,7 @@ Defined in: [gen/types.gen.ts:5516](https://github.com/camunda/orchestration-clu
 
 The message key.
 
-***
+---
 
 ### messageName
 
@@ -86,7 +86,7 @@ Defined in: [gen/types.gen.ts:5520](https://github.com/camunda/orchestration-clu
 
 The name of the message.
 
-***
+---
 
 ### partitionId
 
@@ -98,7 +98,7 @@ Defined in: [gen/types.gen.ts:5524](https://github.com/camunda/orchestration-clu
 
 The partition ID that correlated the message.
 
-***
+---
 
 ### processDefinitionId
 
@@ -110,7 +110,7 @@ Defined in: [gen/types.gen.ts:5528](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with this correlated message subscription.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -122,7 +122,7 @@ Defined in: [gen/types.gen.ts:5532](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with this correlated message subscription.
 
-***
+---
 
 ### processInstanceKey
 
@@ -134,7 +134,7 @@ Defined in: [gen/types.gen.ts:5536](https://github.com/camunda/orchestration-clu
 
 The process instance key associated with this correlated message subscription.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -148,7 +148,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### subscriptionKey
 
@@ -160,7 +160,7 @@ Defined in: [gen/types.gen.ts:5547](https://github.com/camunda/orchestration-clu
 
 The subscription key that received the message.
 
-***
+---
 
 ### tenantId
 

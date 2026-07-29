@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobSearchResult"
-sidebar_label: "JobSearchResult"
+title: 'Type Alias: JobSearchResult'
+sidebar_label: 'JobSearchResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:4346](https://github.com/camunda/orchestration-clu
 
 When the job was created. Field is present for jobs created after 8.9.
 
-***
+---
 
 ### customHeaders
 
@@ -43,7 +43,7 @@ A set of custom headers defined during modelling.
 [key: string]: string
 ```
 
-***
+---
 
 ### deadline
 
@@ -55,7 +55,7 @@ Defined in: [gen/types.gen.ts:4269](https://github.com/camunda/orchestration-clu
 
 If the job has been activated, when it will next be available to be activated.
 
-***
+---
 
 ### deniedReason
 
@@ -67,7 +67,7 @@ Defined in: [gen/types.gen.ts:4273](https://github.com/camunda/orchestration-clu
 
 The reason provided by the user task listener for denying the work.
 
-***
+---
 
 ### elementId
 
@@ -79,7 +79,7 @@ Defined in: [gen/types.gen.ts:4277](https://github.com/camunda/orchestration-clu
 
 The element ID associated with the job. May be missing on job failure.
 
-***
+---
 
 ### elementInstanceKey
 
@@ -91,7 +91,7 @@ Defined in: [gen/types.gen.ts:4281](https://github.com/camunda/orchestration-clu
 
 The element instance key associated with the job.
 
-***
+---
 
 ### endTime
 
@@ -104,7 +104,7 @@ Defined in: [gen/types.gen.ts:4287](https://github.com/camunda/orchestration-clu
 End date of the job.
 This is `null` if the job is not in an end state yet.
 
-***
+---
 
 ### errorCode
 
@@ -116,7 +116,7 @@ Defined in: [gen/types.gen.ts:4291](https://github.com/camunda/orchestration-clu
 
 The error code provided for a failed job.
 
-***
+---
 
 ### errorMessage
 
@@ -128,7 +128,7 @@ Defined in: [gen/types.gen.ts:4295](https://github.com/camunda/orchestration-clu
 
 The error message that provides additional context for a failed job.
 
-***
+---
 
 ### hasFailedWithRetriesLeft
 
@@ -140,7 +140,7 @@ Defined in: [gen/types.gen.ts:4299](https://github.com/camunda/orchestration-clu
 
 Indicates whether the job has failed with retries left.
 
-***
+---
 
 ### isDenied
 
@@ -152,7 +152,7 @@ Defined in: [gen/types.gen.ts:4303](https://github.com/camunda/orchestration-clu
 
 Indicates whether the user task listener denies the work.
 
-***
+---
 
 ### jobKey
 
@@ -164,7 +164,7 @@ Defined in: [gen/types.gen.ts:4307](https://github.com/camunda/orchestration-clu
 
 The key, a unique identifier for the job.
 
-***
+---
 
 ### kind
 
@@ -174,7 +174,7 @@ kind: JobKindEnum;
 
 Defined in: [gen/types.gen.ts:4308](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4308)
 
-***
+---
 
 ### lastUpdateTime
 
@@ -186,7 +186,7 @@ Defined in: [gen/types.gen.ts:4350](https://github.com/camunda/orchestration-clu
 
 When the job was last updated. Field is present for jobs created after 8.9.
 
-***
+---
 
 ### listenerEventType
 
@@ -196,7 +196,7 @@ listenerEventType: JobListenerEventTypeEnum;
 
 Defined in: [gen/types.gen.ts:4309](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4309)
 
-***
+---
 
 ### processDefinitionId
 
@@ -208,7 +208,7 @@ Defined in: [gen/types.gen.ts:4313](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with the job.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -220,7 +220,7 @@ Defined in: [gen/types.gen.ts:4317](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with the job.
 
-***
+---
 
 ### processInstanceKey
 
@@ -232,7 +232,7 @@ Defined in: [gen/types.gen.ts:4321](https://github.com/camunda/orchestration-clu
 
 The process instance key associated with the job.
 
-***
+---
 
 ### retries
 
@@ -244,7 +244,7 @@ Defined in: [gen/types.gen.ts:4332](https://github.com/camunda/orchestration-clu
 
 The amount of retries left to this job.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -258,7 +258,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### state
 
@@ -268,7 +268,7 @@ state: JobStateEnum;
 
 Defined in: [gen/types.gen.ts:4333](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4333)
 
-***
+---
 
 ### tenantId
 
@@ -278,7 +278,7 @@ tenantId: TenantId;
 
 Defined in: [gen/types.gen.ts:4334](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L4334)
 
-***
+---
 
 ### type
 
@@ -290,7 +290,7 @@ Defined in: [gen/types.gen.ts:4338](https://github.com/camunda/orchestration-clu
 
 The type of the job.
 
-***
+---
 
 ### worker
 

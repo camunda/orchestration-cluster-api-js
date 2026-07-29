@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DateTimeFilterProperty"
-sidebar_label: "DateTimeFilterProperty"
+title: 'Type Alias: DateTimeFilterProperty'
+sidebar_label: 'DateTimeFilterProperty'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDecisionRequirementsErrors"
-sidebar_label: "GetDecisionRequirementsErrors"
+title: 'Type Alias: GetDecisionRequirementsErrors'
+sidebar_label: 'GetDecisionRequirementsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9991](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:9995](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:9999](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:10004](https://github.com/camunda/orchestration-cl
 
 The decision requirements with the given key was not found. More details are provided in the response body.
 
-***
+---
 
 ### 500
 

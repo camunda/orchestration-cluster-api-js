@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchMappingRulesForTenantInput"
-sidebar_label: "searchMappingRulesForTenantInput"
+title: 'Type Alias: searchMappingRulesForTenantInput'
+sidebar_label: 'searchMappingRulesForTenantInput'
 mdx:
   format: md
 ---

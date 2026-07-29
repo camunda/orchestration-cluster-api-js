@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionKeyFilterProperty"
-sidebar_label: "MessageSubscriptionKeyFilterProperty"
+title: 'Type Alias: MessageSubscriptionKeyFilterProperty'
+sidebar_label: 'MessageSubscriptionKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: MessageSubscriptionKeyFilterProperty
 
 ```ts
-type MessageSubscriptionKeyFilterProperty = 
+type MessageSubscriptionKeyFilterProperty =
   | MessageSubscriptionKeyExactMatch
   | AdvancedMessageSubscriptionKeyFilter;
 ```

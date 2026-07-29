@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: FailJobResponses"
-sidebar_label: "FailJobResponses"
+title: 'Type Alias: FailJobResponses'
+sidebar_label: 'FailJobResponses'
 mdx:
   format: md
 ---

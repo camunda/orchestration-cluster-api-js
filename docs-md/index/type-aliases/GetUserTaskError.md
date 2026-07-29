@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUserTaskError"
-sidebar_label: "GetUserTaskError"
+title: 'Type Alias: GetUserTaskError'
+sidebar_label: 'GetUserTaskError'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGroupError"
-sidebar_label: "UpdateGroupError"
+title: 'Type Alias: UpdateGroupError'
+sidebar_label: 'UpdateGroupError'
 mdx:
   format: md
 ---

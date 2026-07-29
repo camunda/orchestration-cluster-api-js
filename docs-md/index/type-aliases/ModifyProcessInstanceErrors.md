@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ModifyProcessInstanceErrors"
-sidebar_label: "ModifyProcessInstanceErrors"
+title: 'Type Alias: ModifyProcessInstanceErrors'
+sidebar_label: 'ModifyProcessInstanceErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13578](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13582](https://github.com/camunda/orchestration-cl
 
 The process instance is not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13586](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

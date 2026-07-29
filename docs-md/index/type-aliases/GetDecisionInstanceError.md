@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDecisionInstanceError"
-sidebar_label: "GetDecisionInstanceError"
+title: 'Type Alias: GetDecisionInstanceError'
+sidebar_label: 'GetDecisionInstanceError'
 mdx:
   format: md
 ---

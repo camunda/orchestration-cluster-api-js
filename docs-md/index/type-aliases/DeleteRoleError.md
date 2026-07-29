@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteRoleError"
-sidebar_label: "DeleteRoleError"
+title: 'Type Alias: DeleteRoleError'
+sidebar_label: 'DeleteRoleError'
 mdx:
   format: md
 ---

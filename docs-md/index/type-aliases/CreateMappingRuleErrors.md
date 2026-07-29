@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateMappingRuleErrors"
-sidebar_label: "CreateMappingRuleErrors"
+title: 'Type Alias: CreateMappingRuleErrors'
+sidebar_label: 'CreateMappingRuleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12294](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -38,7 +38,7 @@ Defined in: [gen/types.gen.ts:12300](https://github.com/camunda/orchestration-cl
 The request to create a mapping rule was denied.
 More details are provided in the response body.
 
-***
+---
 
 ### 404
 
@@ -50,7 +50,7 @@ Defined in: [gen/types.gen.ts:12304](https://github.com/camunda/orchestration-cl
 
 The request to create a mapping rule was denied.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignMappingRuleToGroupData"
-sidebar_label: "AssignMappingRuleToGroupData"
+title: 'Type Alias: AssignMappingRuleToGroupData'
+sidebar_label: 'AssignMappingRuleToGroupData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:11304](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11304)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ mappingRuleId: string;
 
 The mapping rule ID.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11315](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11315)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/groups/{groupId}/mapping-rules/{mappingRuleId}";
+url: '/groups/{groupId}/mapping-rules/{mappingRuleId}';
 ```
 
 Defined in: [gen/types.gen.ts:11316](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11316)

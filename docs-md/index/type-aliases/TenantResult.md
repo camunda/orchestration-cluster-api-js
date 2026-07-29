@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TenantResult"
-sidebar_label: "TenantResult"
+title: 'Type Alias: TenantResult'
+sidebar_label: 'TenantResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7372](https://github.com/camunda/orchestration-clu
 
 The tenant description.
 
-***
+---
 
 ### name
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:7367](https://github.com/camunda/orchestration-clu
 
 The tenant name.
 
-***
+---
 
 ### tenantId
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToGroupData"
-sidebar_label: "AssignRoleToGroupData"
+title: 'Type Alias: AssignRoleToGroupData'
+sidebar_label: 'AssignRoleToGroupData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:14285](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14285)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ roleId: string;
 
 The role ID.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:14296](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14296)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}/groups/{groupId}";
+url: '/roles/{roleId}/groups/{groupId}';
 ```
 
 Defined in: [gen/types.gen.ts:14297](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14297)

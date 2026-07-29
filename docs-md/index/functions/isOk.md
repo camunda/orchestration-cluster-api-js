@@ -1,6 +1,6 @@
 ---
-title: "Function: isOk()"
-sidebar_label: "isOk()"
+title: 'Function: isOk()'
+sidebar_label: 'isOk()'
 mdx:
   format: md
 ---

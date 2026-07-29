@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: correlateMessageInput"
-sidebar_label: "correlateMessageInput"
+title: 'Type Alias: correlateMessageInput'
+sidebar_label: 'correlateMessageInput'
 mdx:
   format: md
 ---

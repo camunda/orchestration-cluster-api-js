@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: HttpError"
-sidebar_label: "HttpError"
+title: 'Type Alias: HttpError'
+sidebar_label: 'HttpError'
 mdx:
   format: md
 ---
@@ -10,7 +10,6 @@ mdx:
 :::caution Technical Preview
 The Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.
 :::
-
 
 ```ts
 type HttpError = object & Record<string, any>;

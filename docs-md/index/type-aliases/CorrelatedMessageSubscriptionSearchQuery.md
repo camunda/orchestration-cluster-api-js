@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CorrelatedMessageSubscriptionSearchQuery"
-sidebar_label: "CorrelatedMessageSubscriptionSearchQuery"
+title: 'Type Alias: CorrelatedMessageSubscriptionSearchQuery'
+sidebar_label: 'CorrelatedMessageSubscriptionSearchQuery'
 mdx:
   format: md
 ---

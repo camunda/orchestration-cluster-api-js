@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStartProcessFormErrors"
-sidebar_label: "GetStartProcessFormErrors"
+title: 'Type Alias: GetStartProcessFormErrors'
+sidebar_label: 'GetStartProcessFormErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12782](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:12786](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:12790](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:12794](https://github.com/camunda/orchestration-cl
 
 Not found
 
-***
+---
 
 ### 500
 

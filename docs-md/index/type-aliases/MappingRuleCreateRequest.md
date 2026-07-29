@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MappingRuleCreateRequest"
-sidebar_label: "MappingRuleCreateRequest"
+title: 'Type Alias: MappingRuleCreateRequest'
+sidebar_label: 'MappingRuleCreateRequest'
 mdx:
   format: md
 ---

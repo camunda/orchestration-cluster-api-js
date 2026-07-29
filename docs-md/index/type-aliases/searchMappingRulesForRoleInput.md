@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchMappingRulesForRoleInput"
-sidebar_label: "searchMappingRulesForRoleInput"
+title: 'Type Alias: searchMappingRulesForRoleInput'
+sidebar_label: 'searchMappingRulesForRoleInput'
 mdx:
   format: md
 ---

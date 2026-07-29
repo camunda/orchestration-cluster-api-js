@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateAuthorizationError"
-sidebar_label: "UpdateAuthorizationError"
+title: 'Type Alias: UpdateAuthorizationError'
+sidebar_label: 'UpdateAuthorizationError'
 mdx:
   format: md
 ---

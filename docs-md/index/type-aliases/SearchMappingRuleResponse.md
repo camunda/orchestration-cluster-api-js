@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchMappingRuleResponse"
-sidebar_label: "SearchMappingRuleResponse"
+title: 'Type Alias: SearchMappingRuleResponse'
+sidebar_label: 'SearchMappingRuleResponse'
 mdx:
   format: md
 ---

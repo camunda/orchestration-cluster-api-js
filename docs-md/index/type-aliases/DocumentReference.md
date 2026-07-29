@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DocumentReference"
-sidebar_label: "DocumentReference"
+title: 'Type Alias: DocumentReference'
+sidebar_label: 'DocumentReference'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2376](https://github.com/camunda/orchestration-clu
 
 Document discriminator. Always set to "camunda".
 
-***
+---
 
 ### contentHash
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2388](https://github.com/camunda/orchestration-clu
 
 The hash of the document.
 
-***
+---
 
 ### documentId
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2384](https://github.com/camunda/orchestration-clu
 
 The ID of the document.
 
-***
+---
 
 ### metadata
 
@@ -59,7 +59,7 @@ metadata: DocumentMetadataResponse;
 
 Defined in: [gen/types.gen.ts:2389](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L2389)
 
-***
+---
 
 ### storeId
 

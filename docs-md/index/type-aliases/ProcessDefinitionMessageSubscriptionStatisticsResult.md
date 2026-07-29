@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionMessageSubscriptionStatisticsResult"
-sidebar_label: "ProcessDefinitionMessageSubscriptionStatisticsResult"
+title: 'Type Alias: ProcessDefinitionMessageSubscriptionStatisticsResult'
+sidebar_label: 'ProcessDefinitionMessageSubscriptionStatisticsResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5923](https://github.com/camunda/orchestration-clu
 
 The total number of active message subscriptions for this process definition key.
 
-***
+---
 
 ### processDefinitionId
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5907](https://github.com/camunda/orchestration-clu
 
 The process definition ID associated with this message subscription.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:5915](https://github.com/camunda/orchestration-clu
 
 The process definition key associated with this message subscription.
 
-***
+---
 
 ### processInstancesWithActiveSubscriptions
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:5919](https://github.com/camunda/orchestration-clu
 
 The number of process instances with active message subscriptions.
 
-***
+---
 
 ### tenantId
 

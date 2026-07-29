@@ -1,6 +1,6 @@
 ---
-title: "logger"
-sidebar_label: "Overview"
+title: 'logger'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

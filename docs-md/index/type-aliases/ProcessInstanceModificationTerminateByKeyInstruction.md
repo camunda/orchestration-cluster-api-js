@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceModificationTerminateByKeyInstruction"
-sidebar_label: "ProcessInstanceModificationTerminateByKeyInstruction"
+title: 'Type Alias: ProcessInstanceModificationTerminateByKeyInstruction'
+sidebar_label: 'ProcessInstanceModificationTerminateByKeyInstruction'
 mdx:
   format: md
 ---

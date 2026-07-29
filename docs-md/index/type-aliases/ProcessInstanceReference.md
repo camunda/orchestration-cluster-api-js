@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceReference"
-sidebar_label: "ProcessInstanceReference"
+title: 'Type Alias: ProcessInstanceReference'
+sidebar_label: 'ProcessInstanceReference'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:1414](https://github.com/camunda/orchestration-clu
 
 The key of the process definition.
 
-***
+---
 
 ### processInstanceKey
 

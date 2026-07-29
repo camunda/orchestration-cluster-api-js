@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: resolveIncidentsBatchOperationInput"
-sidebar_label: "resolveIncidentsBatchOperationInput"
+title: 'Type Alias: resolveIncidentsBatchOperationInput'
+sidebar_label: 'resolveIncidentsBatchOperationInput'
 mdx:
   format: md
 ---

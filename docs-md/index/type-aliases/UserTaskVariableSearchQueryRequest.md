@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskVariableSearchQueryRequest"
-sidebar_label: "UserTaskVariableSearchQueryRequest"
+title: 'Type Alias: UserTaskVariableSearchQueryRequest'
+sidebar_label: 'UserTaskVariableSearchQueryRequest'
 mdx:
   format: md
 ---

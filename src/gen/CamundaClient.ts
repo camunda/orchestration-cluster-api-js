@@ -43,7 +43,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 146
+// Operations: 147
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -112,11 +112,6 @@ type cancelBatchOperationOptions = Parameters<typeof Sdk.cancelBatchOperation>[0
 type cancelBatchOperationBody = (NonNullable<cancelBatchOperationOptions> extends { body?: infer B } ? B : never);
 type cancelBatchOperationPathParam_batchOperationKey = (NonNullable<cancelBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 type cancelBatchOperationInput = cancelBatchOperationBody & { batchOperationKey: cancelBatchOperationPathParam_batchOperationKey };
-/** Management of eventual consistency **/
-type cancelBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.cancelBatchOperation>> 
-};
 type cancelProcessInstanceOptions = Parameters<typeof Sdk.cancelProcessInstance>[0];
 type cancelProcessInstanceBody = (NonNullable<cancelProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type cancelProcessInstancePathParam_processInstanceKey = (NonNullable<cancelProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -124,11 +119,6 @@ type cancelProcessInstanceInput = cancelProcessInstanceBody & { processInstanceK
 type cancelProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.cancelProcessInstancesBatchOperation>[0];
 type cancelProcessInstancesBatchOperationBody = (NonNullable<cancelProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 type cancelProcessInstancesBatchOperationInput = cancelProcessInstancesBatchOperationBody;
-/** Management of eventual consistency **/
-type cancelProcessInstancesBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>> 
-};
 type completeJobOptions = Parameters<typeof Sdk.completeJob>[0];
 type completeJobBody = (NonNullable<completeJobOptions> extends { body?: infer B } ? B : never);
 type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends { path: { jobKey: infer P } } ? P : any);
@@ -143,11 +133,6 @@ type correlateMessageInput = correlateMessageBody;
 type createAdminUserOptions = Parameters<typeof Sdk.createAdminUser>[0];
 type createAdminUserBody = (NonNullable<createAdminUserOptions> extends { body?: infer B } ? B : never);
 type createAdminUserInput = createAdminUserBody;
-/** Management of eventual consistency **/
-type createAdminUserConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.createAdminUser>> 
-};
 type createAuthorizationOptions = Parameters<typeof Sdk.createAuthorization>[0];
 type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
 type createAuthorizationInput = createAuthorizationBody;
@@ -191,11 +176,6 @@ type createTenantInput = createTenantBody;
 type createUserOptions = Parameters<typeof Sdk.createUser>[0];
 type createUserBody = (NonNullable<createUserOptions> extends { body?: infer B } ? B : never);
 type createUserInput = createUserBody;
-/** Management of eventual consistency **/
-type createUserConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.createUser>> 
-};
 type deleteAuthorizationOptions = Parameters<typeof Sdk.deleteAuthorization>[0];
 type deleteAuthorizationPathParam_authorizationKey = (NonNullable<deleteAuthorizationOptions> extends { path: { authorizationKey: infer P } } ? P : any);
 type deleteAuthorizationInput = { authorizationKey: deleteAuthorizationPathParam_authorizationKey };
@@ -222,11 +202,6 @@ type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
 type deleteUserOptions = Parameters<typeof Sdk.deleteUser>[0];
 type deleteUserPathParam_username = (NonNullable<deleteUserOptions> extends { path: { username: infer P } } ? P : any);
 type deleteUserInput = { username: deleteUserPathParam_username };
-/** Management of eventual consistency **/
-type deleteUserConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.deleteUser>> 
-};
 type evaluateDecisionOptions = Parameters<typeof Sdk.evaluateDecision>[0];
 type evaluateDecisionBody = (NonNullable<evaluateDecisionOptions> extends { body?: infer B } ? B : never);
 type evaluateDecisionInput = evaluateDecisionBody;
@@ -472,11 +447,6 @@ type migrateProcessInstanceInput = migrateProcessInstanceBody & { processInstanc
 type migrateProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.migrateProcessInstancesBatchOperation>[0];
 type migrateProcessInstancesBatchOperationBody = (NonNullable<migrateProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 type migrateProcessInstancesBatchOperationInput = migrateProcessInstancesBatchOperationBody;
-/** Management of eventual consistency **/
-type migrateProcessInstancesBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>> 
-};
 type modifyProcessInstanceOptions = Parameters<typeof Sdk.modifyProcessInstance>[0];
 type modifyProcessInstanceBody = (NonNullable<modifyProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type modifyProcessInstancePathParam_processInstanceKey = (NonNullable<modifyProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -484,11 +454,6 @@ type modifyProcessInstanceInput = modifyProcessInstanceBody & { processInstanceK
 type modifyProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.modifyProcessInstancesBatchOperation>[0];
 type modifyProcessInstancesBatchOperationBody = (NonNullable<modifyProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 type modifyProcessInstancesBatchOperationInput = modifyProcessInstancesBatchOperationBody;
-/** Management of eventual consistency **/
-type modifyProcessInstancesBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>> 
-};
 type pinClockOptions = Parameters<typeof Sdk.pinClock>[0];
 type pinClockBody = (NonNullable<pinClockOptions> extends { body?: infer B } ? B : never);
 type pinClockInput = pinClockBody;
@@ -504,20 +469,10 @@ type resolveIncidentInput = resolveIncidentBody & { incidentKey: resolveIncident
 type resolveIncidentsBatchOperationOptions = Parameters<typeof Sdk.resolveIncidentsBatchOperation>[0];
 type resolveIncidentsBatchOperationBody = (NonNullable<resolveIncidentsBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resolveIncidentsBatchOperationInput = resolveIncidentsBatchOperationBody;
-/** Management of eventual consistency **/
-type resolveIncidentsBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>> 
-};
 type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0];
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 type resumeBatchOperationInput = resumeBatchOperationBody & { batchOperationKey: resumeBatchOperationPathParam_batchOperationKey };
-/** Management of eventual consistency **/
-type resumeBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.resumeBatchOperation>> 
-};
 type searchAuthorizationsOptions = Parameters<typeof Sdk.searchAuthorizations>[0];
 type searchAuthorizationsBody = (NonNullable<searchAuthorizationsOptions> extends { body?: infer B } ? B : never);
 type searchAuthorizationsInput = searchAuthorizationsBody;
@@ -788,6 +743,16 @@ type searchUsersForTenantConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUsersForTenant>> 
 };
+type searchUserTaskEffectiveVariablesOptions = Parameters<typeof Sdk.searchUserTaskEffectiveVariables>[0];
+type searchUserTaskEffectiveVariablesBody = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { body?: infer B } ? B : never);
+type searchUserTaskEffectiveVariablesPathParam_userTaskKey = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { path: { userTaskKey: infer P } } ? P : any);
+type searchUserTaskEffectiveVariablesQueryParam_truncateValues = (NonNullable<searchUserTaskEffectiveVariablesOptions> extends { query?: { truncateValues?: infer Q } } ? Q : any);
+type searchUserTaskEffectiveVariablesInput = searchUserTaskEffectiveVariablesBody & { userTaskKey: searchUserTaskEffectiveVariablesPathParam_userTaskKey; truncateValues?: searchUserTaskEffectiveVariablesQueryParam_truncateValues };
+/** Management of eventual consistency **/
+type searchUserTaskEffectiveVariablesConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchUserTaskEffectiveVariables>> 
+};
 type searchUserTasksOptions = Parameters<typeof Sdk.searchUserTasks>[0];
 type searchUserTasksBody = (NonNullable<searchUserTasksOptions> extends { body?: infer B } ? B : never);
 type searchUserTasksInput = searchUserTasksBody;
@@ -819,11 +784,6 @@ type suspendBatchOperationOptions = Parameters<typeof Sdk.suspendBatchOperation>
 type suspendBatchOperationBody = (NonNullable<suspendBatchOperationOptions> extends { body?: infer B } ? B : never);
 type suspendBatchOperationPathParam_batchOperationKey = (NonNullable<suspendBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 type suspendBatchOperationInput = suspendBatchOperationBody & { batchOperationKey: suspendBatchOperationPathParam_batchOperationKey };
-/** Management of eventual consistency **/
-type suspendBatchOperationConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.suspendBatchOperation>> 
-};
 type throwJobErrorOptions = Parameters<typeof Sdk.throwJobError>[0];
 type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
 type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
@@ -907,11 +867,6 @@ type updateUserOptions = Parameters<typeof Sdk.updateUser>[0];
 type updateUserBody = (NonNullable<updateUserOptions> extends { body?: infer B } ? B : never);
 type updateUserPathParam_username = (NonNullable<updateUserOptions> extends { path: { username: infer P } } ? P : any);
 type updateUserInput = updateUserBody & { username: updateUserPathParam_username };
-/** Management of eventual consistency **/
-type updateUserConsistency = { 
-/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
-    consistency: ConsistencyOptions<_DataOf<typeof Sdk.updateUser>> 
-};
 type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
@@ -2092,7 +2047,8 @@ export class CamundaClient {
 
   /**
    * Assign user task
-   * Assigns a user task with the given key to the given assignee.
+   * Assigns a user task with the given key to the given assignee. Assignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @operationId assignUserTask
    * @tags User task
@@ -2334,12 +2290,9 @@ export class CamundaClient {
     *
    * @operationId cancelBatchOperation
    * @tags Batch operation
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  cancelBatchOperation(input: cancelBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: cancelBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.cancelBatchOperation>>;
-  cancelBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: cancelBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  cancelBatchOperation(input: cancelBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.cancelBatchOperation>>;
+  cancelBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { batchOperationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -2386,15 +2339,14 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('cancelBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false });
     });
   }
 
   /**
    * Cancel process instance
-   * Cancels a running process instance. As a cancelation includes more than just the removal of the process instance resource, the cancelation resource must be posted.
+   * Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted. Cancellation can wait on listener-related processing; when that processing does not complete in time, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @operationId cancelProcessInstance
    * @tags Process instance
@@ -2461,12 +2413,9 @@ export class CamundaClient {
     *
    * @operationId cancelProcessInstancesBatchOperation
    * @tags Process instance
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  cancelProcessInstancesBatchOperation(input: cancelProcessInstancesBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: cancelProcessInstancesBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>>;
-  cancelProcessInstancesBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: cancelProcessInstancesBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  cancelProcessInstancesBatchOperation(input: cancelProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.cancelProcessInstancesBatchOperation>>;
+  cancelProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2511,9 +2460,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('cancelProcessInstancesBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'cancelProcessInstancesBatchOperation', exempt: false });
     });
   }
 
@@ -2579,7 +2526,8 @@ export class CamundaClient {
 
   /**
    * Complete user task
-   * Completes a user task with the given key.
+   * Completes a user task with the given key. Completion waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @operationId completeUserTask
    * @tags User task
@@ -2707,12 +2655,9 @@ export class CamundaClient {
     *
    * @operationId createAdminUser
    * @tags Setup
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  createAdminUser(input: createAdminUserInput, /** Management of eventual consistency **/ consistencyManagement: createAdminUserConsistency): CancelablePromise<_DataOf<typeof Sdk.createAdminUser>>;
-  createAdminUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: createAdminUserConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  createAdminUser(input: createAdminUserInput): CancelablePromise<_DataOf<typeof Sdk.createAdminUser>>;
+  createAdminUser(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -2757,9 +2702,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('createAdminUser', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'createAdminUser', exempt: false });
     });
   }
 
@@ -3103,6 +3046,10 @@ export class CamundaClient {
    * Update element instance variables
    * Updates all the variables of a particular scope (for example, process instance, element instance) with the given variable data.
    * Specify the element instance in the `elementInstanceKey` parameter.
+   * Variable updates can be delayed by listener-related processing; if processing exceeds the
+   * request timeout, this endpoint can return 504. Other gateway timeout causes are also
+   * possible. Retry with backoff and inspect listener worker availability and logs when this
+   * repeats.
    *
     *
    * @operationId createElementInstanceVariables
@@ -3464,12 +3411,9 @@ export class CamundaClient {
     *
    * @operationId createUser
    * @tags User
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  createUser(input: createUserInput, /** Management of eventual consistency **/ consistencyManagement: createUserConsistency): CancelablePromise<_DataOf<typeof Sdk.createUser>>;
-  createUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: createUserConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  createUser(input: createUserInput): CancelablePromise<_DataOf<typeof Sdk.createUser>>;
+  createUser(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -3514,9 +3458,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('createUser', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'createUser', exempt: false });
     });
   }
 
@@ -3937,12 +3879,9 @@ export class CamundaClient {
     *
    * @operationId deleteUser
    * @tags User
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  deleteUser(input: deleteUserInput, /** Management of eventual consistency **/ consistencyManagement: deleteUserConsistency): CancelablePromise<_DataOf<typeof Sdk.deleteUser>>;
-  deleteUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: deleteUserConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  deleteUser(input: deleteUserInput): CancelablePromise<_DataOf<typeof Sdk.deleteUser>>;
+  deleteUser(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { username } = arg || {};
       let envelope: any = {};
@@ -3987,9 +3926,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('deleteUser', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'deleteUser', exempt: false });
     });
   }
 
@@ -6210,12 +6147,9 @@ export class CamundaClient {
     *
    * @operationId migrateProcessInstancesBatchOperation
    * @tags Process instance
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  migrateProcessInstancesBatchOperation(input: migrateProcessInstancesBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: migrateProcessInstancesBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>>;
-  migrateProcessInstancesBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: migrateProcessInstancesBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  migrateProcessInstancesBatchOperation(input: migrateProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.migrateProcessInstancesBatchOperation>>;
+  migrateProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -6260,9 +6194,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('migrateProcessInstancesBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'migrateProcessInstancesBatchOperation', exempt: false });
     });
   }
 
@@ -6343,12 +6275,9 @@ export class CamundaClient {
     *
    * @operationId modifyProcessInstancesBatchOperation
    * @tags Process instance
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  modifyProcessInstancesBatchOperation(input: modifyProcessInstancesBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: modifyProcessInstancesBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>>;
-  modifyProcessInstancesBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: modifyProcessInstancesBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  modifyProcessInstancesBatchOperation(input: modifyProcessInstancesBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.modifyProcessInstancesBatchOperation>>;
+  modifyProcessInstancesBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -6393,9 +6322,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('modifyProcessInstancesBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'modifyProcessInstancesBatchOperation', exempt: false });
     });
   }
 
@@ -6652,12 +6579,9 @@ export class CamundaClient {
     *
    * @operationId resolveIncidentsBatchOperation
    * @tags Process instance
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  resolveIncidentsBatchOperation(input: resolveIncidentsBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: resolveIncidentsBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>>;
-  resolveIncidentsBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: resolveIncidentsBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  resolveIncidentsBatchOperation(input: resolveIncidentsBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.resolveIncidentsBatchOperation>>;
+  resolveIncidentsBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const _body = arg;
       let envelope: any = {};
@@ -6702,9 +6626,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('resolveIncidentsBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'resolveIncidentsBatchOperation', exempt: false });
     });
   }
 
@@ -6716,12 +6638,9 @@ export class CamundaClient {
     *
    * @operationId resumeBatchOperation
    * @tags Batch operation
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  resumeBatchOperation(input: resumeBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: resumeBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.resumeBatchOperation>>;
-  resumeBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: resumeBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  resumeBatchOperation(input: resumeBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.resumeBatchOperation>>;
+  resumeBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { batchOperationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -6768,9 +6687,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('resumeBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'resumeBatchOperation', exempt: false });
     });
   }
 
@@ -8809,6 +8726,78 @@ export class CamundaClient {
   }
 
   /**
+   * Search user task effective variables
+   * Search for the effective variables of a user task. This endpoint returns deduplicated
+   * variables where each variable name appears at most once. When the same variable name exists
+   * at multiple scope levels in the scope hierarchy, the value from the innermost scope (closest
+   * to the user task) takes precedence. This is useful for retrieving the actual runtime state
+   * of variables as seen by the user task. By default, long variable values in the response are
+   * truncated.
+   *
+    *
+   * @operationId searchUserTaskEffectiveVariables
+   * @tags User task
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchUserTaskEffectiveVariables(input: searchUserTaskEffectiveVariablesInput, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskEffectiveVariablesConsistency): CancelablePromise<_DataOf<typeof Sdk.searchUserTaskEffectiveVariables>>;
+  searchUserTaskEffectiveVariables(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchUserTaskEffectiveVariablesConsistency): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { userTaskKey, truncateValues, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.path = { userTaskKey };
+      envelope.query = { truncateValues };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const maybe = await this._validation.gateRequest('searchUserTaskEffectiveVariables', Schemas.zSearchUserTaskEffectiveVariablesData, envelope);
+        if (this._validation.settings.req === 'strict') envelope = maybe;
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.query) opts.query = envelope.query;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchUserTaskEffectiveVariables(opts);
+        let data = this._evaluateResponse(_raw, 'searchUserTaskEffectiveVariables', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchUserTaskEffectiveVariablesResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schema = Schemas.zSearchUserTaskEffectiveVariablesResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchUserTaskEffectiveVariables', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchUserTaskEffectiveVariables', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
    * Search user tasks
    * Search for user tasks based on given criteria.
    *
@@ -8873,7 +8862,13 @@ export class CamundaClient {
 
   /**
    * Search user task variables
-   * Search for user task variables based on given criteria. By default, long variable values in the response are truncated.
+   * Search for user task variables based on given criteria. This endpoint returns all variable
+   * documents visible from the user task's scope, including variables from parent scopes in the
+   * scope hierarchy. If the same variable name exists at multiple scope levels, each scope's
+   * variable is returned as a separate result. Use the
+   * `/user-tasks/{userTaskKey}/effective-variables/search` endpoint to get deduplicated variables
+   * where the innermost scope takes precedence. By default, long variable values in the response
+   * are truncated.
    *
     *
    * @operationId searchUserTaskVariables
@@ -9011,12 +9006,9 @@ export class CamundaClient {
     *
    * @operationId suspendBatchOperation
    * @tags Batch operation
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  suspendBatchOperation(input: suspendBatchOperationInput, /** Management of eventual consistency **/ consistencyManagement: suspendBatchOperationConsistency): CancelablePromise<_DataOf<typeof Sdk.suspendBatchOperation>>;
-  suspendBatchOperation(arg: any, /** Management of eventual consistency **/ consistencyManagement: suspendBatchOperationConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  suspendBatchOperation(input: suspendBatchOperationInput): CancelablePromise<_DataOf<typeof Sdk.suspendBatchOperation>>;
+  suspendBatchOperation(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { batchOperationKey, ..._body } = arg || {};
       let envelope: any = {};
@@ -9063,9 +9055,7 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('suspendBatchOperation', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'suspendBatchOperation', exempt: false });
     });
   }
 
@@ -9836,7 +9826,8 @@ export class CamundaClient {
 
   /**
    * Unassign user task
-   * Removes the assignee of a task with the given key.
+   * Removes the assignee of a task with the given key. Unassignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
+   *
     *
    * @operationId unassignUserTask
    * @tags User task
@@ -10255,12 +10246,9 @@ export class CamundaClient {
     *
    * @operationId updateUser
    * @tags User
-   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
    */
-  updateUser(input: updateUserInput, /** Management of eventual consistency **/ consistencyManagement: updateUserConsistency): CancelablePromise<_DataOf<typeof Sdk.updateUser>>;
-  updateUser(arg: any, /** Management of eventual consistency **/ consistencyManagement: updateUserConsistency): CancelablePromise<any> {
-    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
-    const useConsistency = consistencyManagement.consistency;
+  updateUser(input: updateUserInput): CancelablePromise<_DataOf<typeof Sdk.updateUser>>;
+  updateUser(arg: any): CancelablePromise<any> {
     return toCancelable(async signal => {
       const { username, ..._body } = arg || {};
       let envelope: any = {};
@@ -10307,15 +10295,14 @@ export class CamundaClient {
           throw e;
         }
       };
-      const invoke = () => toCancelable(()=>call());
-      if (useConsistency) return eventualPoll('updateUser', false, invoke, { ...useConsistency, logger: this._log });
-      return invoke();
+      return this._invokeWithRetry(() => call(), { opId: 'updateUser', exempt: false });
     });
   }
 
   /**
    * Update user task
-   * Update a user task with the given key.
+   * Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504.Update a user task with the given key.
+   *
     *
    * @operationId updateUserTask
    * @tags User task

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UsageMetricsResponseItem"
-sidebar_label: "UsageMetricsResponseItem"
+title: 'Type Alias: UsageMetricsResponseItem'
+sidebar_label: 'UsageMetricsResponseItem'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7268](https://github.com/camunda/orchestration-clu
 
 The amount of unique active task users.
 
-***
+---
 
 ### decisionInstances
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:7264](https://github.com/camunda/orchestration-clu
 
 The amount of executed decision instances.
 
-***
+---
 
 ### processInstances
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ClusterVariableResultBase"
-sidebar_label: "ClusterVariableResultBase"
+title: 'Type Alias: ClusterVariableResultBase'
+sidebar_label: 'ClusterVariableResultBase'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1194](https://github.com/camunda/orchestration-clu
 
 The name of the cluster variable. Unique within its scope (global or tenant-specific).
 
-***
+---
 
 ### scope
 
@@ -37,7 +37,7 @@ scope: ClusterVariableScopeEnum;
 
 Defined in: [gen/types.gen.ts:1195](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1195)
 
-***
+---
 
 ### tenantId
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalTaskListenerEventTypes"
-sidebar_label: "GlobalTaskListenerEventTypes"
+title: 'Type Alias: GlobalTaskListenerEventTypes'
+sidebar_label: 'GlobalTaskListenerEventTypes'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateGlobalTaskListenerRequest"
-sidebar_label: "UpdateGlobalTaskListenerRequest"
+title: 'Type Alias: UpdateGlobalTaskListenerRequest'
+sidebar_label: 'UpdateGlobalTaskListenerRequest'
 mdx:
   format: md
 ---

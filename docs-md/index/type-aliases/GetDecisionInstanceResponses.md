@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDecisionInstanceResponses"
-sidebar_label: "GetDecisionInstanceResponses"
+title: 'Type Alias: GetDecisionInstanceResponses'
+sidebar_label: 'GetDecisionInstanceResponses'
 mdx:
   format: md
 ---

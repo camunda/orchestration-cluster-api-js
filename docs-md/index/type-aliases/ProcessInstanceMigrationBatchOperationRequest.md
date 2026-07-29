@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceMigrationBatchOperationRequest"
-sidebar_label: "ProcessInstanceMigrationBatchOperationRequest"
+title: 'Type Alias: ProcessInstanceMigrationBatchOperationRequest'
+sidebar_label: 'ProcessInstanceMigrationBatchOperationRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:969](https://github.com/camunda/orchestration-clus
 
 The process instance filter.
 
-***
+---
 
 ### migrationPlan
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:973](https://github.com/camunda/orchestration-clus
 
 The migration plan.
 
-***
+---
 
 ### operationReference?
 

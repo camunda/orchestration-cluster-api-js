@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ClusterVariableScopeExactMatch"
-sidebar_label: "ClusterVariableScopeExactMatch"
+title: 'Type Alias: ClusterVariableScopeExactMatch'
+sidebar_label: 'ClusterVariableScopeExactMatch'
 mdx:
   format: md
 ---

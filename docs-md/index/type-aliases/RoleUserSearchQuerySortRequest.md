@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleUserSearchQuerySortRequest"
-sidebar_label: "RoleUserSearchQuerySortRequest"
+title: 'Type Alias: RoleUserSearchQuerySortRequest'
+sidebar_label: 'RoleUserSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,14 +18,14 @@ Defined in: [gen/types.gen.ts:7041](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: "username";
+field: 'username';
 ```
 
 Defined in: [gen/types.gen.ts:7045](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7045)
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

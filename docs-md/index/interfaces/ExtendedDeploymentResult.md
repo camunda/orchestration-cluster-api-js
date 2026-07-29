@@ -1,6 +1,6 @@
 ---
-title: "Interface: ExtendedDeploymentResult"
-sidebar_label: "ExtendedDeploymentResult"
+title: 'Interface: ExtendedDeploymentResult'
+sidebar_label: 'ExtendedDeploymentResult'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ Extended deployment result with typed buckets for direct access to deployed arti
 
 ## Extends
 
-- `_DataOf`\<*typeof* `Sdk.createDeployment`\>
+- `_DataOf`\<_typeof_ `Sdk.createDeployment`\>
 
 ## Properties
 
@@ -25,7 +25,7 @@ decisionRequirements: DeploymentDecisionRequirementsResult[];
 
 Defined in: [gen/CamundaClient.ts:1099](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1099)
 
-***
+---
 
 ### decisions
 
@@ -35,7 +35,7 @@ decisions: DeploymentDecisionResult[];
 
 Defined in: [gen/CamundaClient.ts:1098](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1098)
 
-***
+---
 
 ### deploymentKey
 
@@ -50,10 +50,10 @@ The unique key identifying the deployment.
 #### Inherited from
 
 ```ts
-_DataOf.deploymentKey
+_DataOf.deploymentKey;
 ```
 
-***
+---
 
 ### deployments
 
@@ -68,10 +68,10 @@ Items deployed by the request.
 #### Inherited from
 
 ```ts
-_DataOf.deployments
+_DataOf.deployments;
 ```
 
-***
+---
 
 ### forms
 
@@ -81,7 +81,7 @@ forms: DeploymentFormResult[];
 
 Defined in: [gen/CamundaClient.ts:1100](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1100)
 
-***
+---
 
 ### processes
 
@@ -91,7 +91,7 @@ processes: DeploymentProcessResult[];
 
 Defined in: [gen/CamundaClient.ts:1097](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1097)
 
-***
+---
 
 ### resources
 
@@ -101,7 +101,7 @@ resources: DeploymentResourceResult[];
 
 Defined in: [gen/CamundaClient.ts:1101](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1101)
 
-***
+---
 
 ### tenantId
 
@@ -116,5 +116,5 @@ The tenant ID associated with the deployment.
 #### Inherited from
 
 ```ts
-_DataOf.tenantId
+_DataOf.tenantId;
 ```

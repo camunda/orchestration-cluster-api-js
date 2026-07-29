@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CompleteJobErrors"
-sidebar_label: "CompleteJobErrors"
+title: 'Type Alias: CompleteJobErrors'
+sidebar_label: 'CompleteJobErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11928](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11932](https://github.com/camunda/orchestration-cl
 
 The job with the given key was not found.
 
-***
+---
 
 ### 409
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:11937](https://github.com/camunda/orchestration-cl
 
 The job with the given key is in the wrong state currently. More details are provided in the response body.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:11941](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

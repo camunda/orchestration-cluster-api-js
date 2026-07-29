@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DocumentCreationBatchResponse"
-sidebar_label: "DocumentCreationBatchResponse"
+title: 'Type Alias: DocumentCreationBatchResponse'
+sidebar_label: 'DocumentCreationBatchResponse'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2419](https://github.com/camunda/orchestration-clu
 
 Documents that failed creation.
 
-***
+---
 
 ### failedDocuments
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignUserTaskResponses"
-sidebar_label: "AssignUserTaskResponses"
+title: 'Type Alias: AssignUserTaskResponses'
+sidebar_label: 'AssignUserTaskResponses'
 mdx:
   format: md
 ---

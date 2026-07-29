@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStartProcessFormResponses"
-sidebar_label: "GetStartProcessFormResponses"
+title: 'Type Alias: GetStartProcessFormResponses'
+sidebar_label: 'GetStartProcessFormResponses'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:12807](https://github.com/camunda/orchestration-cl
 
 The form is successfully returned.
 
-***
+---
 
 ### 204
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchUsersForRoleData"
-sidebar_label: "SearchUsersForRoleData"
+title: 'Type Alias: SearchUsersForRoleData'
+sidebar_label: 'SearchUsersForRoleData'
 mdx:
   format: md
 ---
@@ -33,7 +33,7 @@ optional sort: object[];
 
 Sort field criteria.
 
-***
+---
 
 ### path
 
@@ -51,7 +51,7 @@ roleId: string;
 
 The role ID.
 
-***
+---
 
 ### query?
 
@@ -61,12 +61,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:14515](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14515)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}/users/search";
+url: '/roles/{roleId}/users/search';
 ```
 
 Defined in: [gen/types.gen.ts:14516](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14516)

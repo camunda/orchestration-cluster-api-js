@@ -1,6 +1,6 @@
 ---
-title: "Function: isValid()"
-sidebar_label: "isValid()"
+title: 'Function: isValid()'
+sidebar_label: 'isValid()'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getJobTypeStatisticsConsistency"
-sidebar_label: "getJobTypeStatisticsConsistency"
+title: 'Type Alias: getJobTypeStatisticsConsistency'
+sidebar_label: 'getJobTypeStatisticsConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type getJobTypeStatisticsConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:397](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L397)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

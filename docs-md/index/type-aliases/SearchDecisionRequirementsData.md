@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchDecisionRequirementsData"
-sidebar_label: "SearchDecisionRequirementsData"
+title: 'Type Alias: SearchDecisionRequirementsData'
+sidebar_label: 'SearchDecisionRequirementsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: DecisionRequirementsSearchQuery;
 
 Defined in: [gen/types.gen.ts:9939](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9939)
 
-***
+---
 
 ### path?
 
@@ -33,7 +33,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:9940](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9940)
 
-***
+---
 
 ### query?
 
@@ -43,12 +43,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:9941](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9941)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/decision-requirements/search";
+url: '/decision-requirements/search';
 ```
 
 Defined in: [gen/types.gen.ts:9942](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L9942)

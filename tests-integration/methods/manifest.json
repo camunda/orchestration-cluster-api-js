@@ -1,6 +1,6 @@
 {
-  "operations": 146,
-  "tests": 147,
+  "operations": 147,
+  "tests": 148,
   "missing": [],
   "ignored": [],
   "files": [
@@ -121,6 +121,7 @@
     "searchRolesForGroup.test.ts",
     "searchRolesForTenant.test.ts",
     "searchTenants.test.ts",
+    "searchUserTaskEffectiveVariables.test.ts",
     "searchUserTaskVariables.test.ts",
     "searchUserTasks.test.ts",
     "searchUsers.test.ts",

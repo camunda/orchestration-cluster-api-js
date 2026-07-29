@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: VariableFilter"
-sidebar_label: "VariableFilter"
+title: 'Type Alias: VariableFilter'
+sidebar_label: 'VariableFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:8096](https://github.com/camunda/orchestration-clu
 
 Whether the value is truncated or not.
 
-***
+---
 
 ### name?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:8080](https://github.com/camunda/orchestration-clu
 
 Name of the variable.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:8113](https://github.com/camunda/orchestration-clu
 
 The key of the process instance of this variable.
 
-***
+---
 
 ### scopeKey?
 
@@ -67,7 +67,7 @@ variables scoped to tasks, subprocesses, gateways, events, etc.). Use this filte
 find variables directly defined in specific scopes. Note that this does not include
 variables from parent scopes that would be visible through the scope hierarchy.
 
-***
+---
 
 ### tenantId?
 
@@ -79,7 +79,7 @@ Defined in: [gen/types.gen.ts:8092](https://github.com/camunda/orchestration-clu
 
 Tenant ID of this variable.
 
-***
+---
 
 ### value?
 
@@ -94,7 +94,7 @@ Variable values in filters need to be in serialized JSON format. For example, a 
 with string value `myValue` can be found with the filter value `"myValue"`. Consider
 appropriate escaping for special characters in JSON strings when constructing filter values.
 
-***
+---
 
 ### variableKey?
 

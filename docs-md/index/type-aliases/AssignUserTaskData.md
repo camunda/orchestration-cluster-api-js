@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignUserTaskData"
-sidebar_label: "AssignUserTaskData"
+title: 'Type Alias: AssignUserTaskData'
+sidebar_label: 'AssignUserTaskData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: UserTaskAssignmentRequest;
 
 Defined in: [gen/types.gen.ts:16210](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16210)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ userTaskKey: UserTaskKey;
 
 The key of the user task to assign.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:16217](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16217)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/user-tasks/{userTaskKey}/assignment";
+url: '/user-tasks/{userTaskKey}/assignment';
 ```
 
 Defined in: [gen/types.gen.ts:16218](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16218)

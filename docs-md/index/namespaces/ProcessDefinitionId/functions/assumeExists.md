@@ -1,6 +1,6 @@
 ---
-title: "Function: assumeExists()"
-sidebar_label: "assumeExists()"
+title: 'Function: assumeExists()'
+sidebar_label: 'assumeExists()'
 mdx:
   format: md
 ---

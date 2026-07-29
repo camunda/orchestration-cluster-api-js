@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SuspendBatchOperationError"
-sidebar_label: "SuspendBatchOperationError"
+title: 'Type Alias: SuspendBatchOperationError'
+sidebar_label: 'SuspendBatchOperationError'
 mdx:
   format: md
 ---

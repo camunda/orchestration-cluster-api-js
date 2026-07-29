@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignMappingRuleToGroupResponses"
-sidebar_label: "AssignMappingRuleToGroupResponses"
+title: 'Type Alias: AssignMappingRuleToGroupResponses'
+sidebar_label: 'AssignMappingRuleToGroupResponses'
 mdx:
   format: md
 ---

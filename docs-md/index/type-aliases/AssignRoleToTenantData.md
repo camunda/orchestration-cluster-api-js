@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToTenantData"
-sidebar_label: "AssignRoleToTenantData"
+title: 'Type Alias: AssignRoleToTenantData'
+sidebar_label: 'AssignRoleToTenantData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:15548](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15548)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ tenantId: TenantId;
 
 The unique identifier of the tenant.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:15559](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15559)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/tenants/{tenantId}/roles/{roleId}";
+url: '/tenants/{tenantId}/roles/{roleId}';
 ```
 
 Defined in: [gen/types.gen.ts:15560](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L15560)

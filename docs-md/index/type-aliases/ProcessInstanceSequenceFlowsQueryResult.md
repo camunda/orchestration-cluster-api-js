@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceSequenceFlowsQueryResult"
-sidebar_label: "ProcessInstanceSequenceFlowsQueryResult"
+title: 'Type Alias: ProcessInstanceSequenceFlowsQueryResult'
+sidebar_label: 'ProcessInstanceSequenceFlowsQueryResult'
 mdx:
   format: md
 ---

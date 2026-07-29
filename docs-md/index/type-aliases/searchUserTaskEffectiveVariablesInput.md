@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchUserTaskEffectiveVariablesInput"
-sidebar_label: "searchUserTaskEffectiveVariablesInput"
+title: 'Type Alias: searchUserTaskEffectiveVariablesInput'
+sidebar_label: 'searchUserTaskEffectiveVariablesInput'
 mdx:
   format: md
 ---

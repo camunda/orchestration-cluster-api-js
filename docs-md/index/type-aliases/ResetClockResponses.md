@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResetClockResponses"
-sidebar_label: "ResetClockResponses"
+title: 'Type Alias: ResetClockResponses'
+sidebar_label: 'ResetClockResponses'
 mdx:
   format: md
 ---

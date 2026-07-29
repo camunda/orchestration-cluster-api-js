@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceModificationActivateInstruction"
-sidebar_label: "ProcessInstanceModificationActivateInstruction"
+title: 'Type Alias: ProcessInstanceModificationActivateInstruction'
+sidebar_label: 'ProcessInstanceModificationActivateInstruction'
 mdx:
   format: md
 ---
@@ -30,7 +30,7 @@ Set to -1 to create the new element instance within an existing element instance
 flow scope. If multiple instances of the target element's flow scope exist, choose one
 specifically with this property by providing its key.
 
-***
+---
 
 ### elementId
 
@@ -42,7 +42,7 @@ Defined in: [gen/types.gen.ts:6688](https://github.com/camunda/orchestration-clu
 
 The id of the element to activate.
 
-***
+---
 
 ### variableInstructions?
 

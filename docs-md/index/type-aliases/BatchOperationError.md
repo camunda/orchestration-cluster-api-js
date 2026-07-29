@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationError"
-sidebar_label: "BatchOperationError"
+title: 'Type Alias: BatchOperationError'
+sidebar_label: 'BatchOperationError'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:826](https://github.com/camunda/orchestration-clus
 
 The error message that occurred during the batch operation.
 
-***
+---
 
 ### partitionId
 
@@ -37,12 +37,12 @@ Defined in: [gen/types.gen.ts:818](https://github.com/camunda/orchestration-clus
 
 The partition ID where the error occurred.
 
-***
+---
 
 ### type
 
 ```ts
-type: "QUERY_FAILED" | "RESULT_BUFFER_SIZE_EXCEEDED";
+type: 'QUERY_FAILED' | 'RESULT_BUFFER_SIZE_EXCEEDED';
 ```
 
 Defined in: [gen/types.gen.ts:822](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L822)

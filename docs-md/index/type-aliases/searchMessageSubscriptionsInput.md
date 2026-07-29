@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchMessageSubscriptionsInput"
-sidebar_label: "searchMessageSubscriptionsInput"
+title: 'Type Alias: searchMessageSubscriptionsInput'
+sidebar_label: 'searchMessageSubscriptionsInput'
 mdx:
   format: md
 ---

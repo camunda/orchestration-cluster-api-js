@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getResourceInput"
-sidebar_label: "getResourceInput"
+title: 'Type Alias: getResourceInput'
+sidebar_label: 'getResourceInput'
 mdx:
   format: md
 ---

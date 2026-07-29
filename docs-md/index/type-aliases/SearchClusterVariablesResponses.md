@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchClusterVariablesResponses"
-sidebar_label: "SearchClusterVariablesResponses"
+title: 'Type Alias: SearchClusterVariablesResponses'
+sidebar_label: 'SearchClusterVariablesResponses'
 mdx:
   format: md
 ---

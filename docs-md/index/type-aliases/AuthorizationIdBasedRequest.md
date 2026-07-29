@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuthorizationIdBasedRequest"
-sidebar_label: "AuthorizationIdBasedRequest"
+title: 'Type Alias: AuthorizationIdBasedRequest'
+sidebar_label: 'AuthorizationIdBasedRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:550](https://github.com/camunda/orchestration-clus
 
 The ID of the owner of the permissions.
 
-***
+---
 
 ### ownerType
 
@@ -35,7 +35,7 @@ ownerType: OwnerTypeEnum;
 
 Defined in: [gen/types.gen.ts:551](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L551)
 
-***
+---
 
 ### permissionTypes
 
@@ -47,7 +47,7 @@ Defined in: [gen/types.gen.ts:563](https://github.com/camunda/orchestration-clus
 
 The permission types to add.
 
-***
+---
 
 ### resourceId
 
@@ -59,7 +59,7 @@ Defined in: [gen/types.gen.ts:555](https://github.com/camunda/orchestration-clus
 
 The ID of the resource to add permissions to.
 
-***
+---
 
 ### resourceType
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobErrorStatisticsItem"
-sidebar_label: "JobErrorStatisticsItem"
+title: 'Type Alias: JobErrorStatisticsItem'
+sidebar_label: 'JobErrorStatisticsItem'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:3949](https://github.com/camunda/orchestration-clu
 
 The error code identifier.
 
-***
+---
 
 ### errorMessage
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:3953](https://github.com/camunda/orchestration-clu
 
 The error message.
 
-***
+---
 
 ### workers
 

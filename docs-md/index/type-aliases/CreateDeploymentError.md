@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDeploymentError"
-sidebar_label: "CreateDeploymentError"
+title: 'Type Alias: CreateDeploymentError'
+sidebar_label: 'CreateDeploymentError'
 mdx:
   format: md
 ---

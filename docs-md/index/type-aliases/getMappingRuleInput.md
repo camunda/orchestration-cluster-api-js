@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getMappingRuleInput"
-sidebar_label: "getMappingRuleInput"
+title: 'Type Alias: getMappingRuleInput'
+sidebar_label: 'getMappingRuleInput'
 mdx:
   format: md
 ---

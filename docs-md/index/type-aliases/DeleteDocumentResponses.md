@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDocumentResponses"
-sidebar_label: "DeleteDocumentResponses"
+title: 'Type Alias: DeleteDocumentResponses'
+sidebar_label: 'DeleteDocumentResponses'
 mdx:
   format: md
 ---

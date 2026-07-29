@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ThrowJobErrorResponses"
-sidebar_label: "ThrowJobErrorResponses"
+title: 'Type Alias: ThrowJobErrorResponses'
+sidebar_label: 'ThrowJobErrorResponses'
 mdx:
   format: md
 ---

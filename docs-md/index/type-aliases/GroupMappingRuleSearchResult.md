@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GroupMappingRuleSearchResult"
-sidebar_label: "GroupMappingRuleSearchResult"
+title: 'Type Alias: GroupMappingRuleSearchResult'
+sidebar_label: 'GroupMappingRuleSearchResult'
 mdx:
   format: md
 ---

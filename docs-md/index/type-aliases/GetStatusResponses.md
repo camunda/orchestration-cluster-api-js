@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStatusResponses"
-sidebar_label: "GetStatusResponses"
+title: 'Type Alias: GetStatusResponses'
+sidebar_label: 'GetStatusResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceCreationInstructionByKey"
-sidebar_label: "ProcessInstanceCreationInstructionByKey"
+title: 'Type Alias: ProcessInstanceCreationInstructionByKey'
+sidebar_label: 'ProcessInstanceCreationInstructionByKey'
 mdx:
   format: md
 ---
@@ -30,7 +30,7 @@ within the request timeout limit, a 504 response status will be returned. The pr
 instance will continue to run in the background regardless of the timeout. Disabled by
 default.
 
-***
+---
 
 ### businessId?
 
@@ -40,7 +40,7 @@ optional businessId: BusinessId;
 
 Defined in: [gen/types.gen.ts:6200](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6200)
 
-***
+---
 
 ### fetchVariables?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:6198](https://github.com/camunda/orchestration-clu
 List of variables by name to be included in the response when awaitCompletion is set to true.
 If empty, all visible variables in the root scope will be returned.
 
-***
+---
 
 ### operationReference?
 
@@ -63,7 +63,7 @@ optional operationReference: OperationReference;
 
 Defined in: [gen/types.gen.ts:6178](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6178)
 
-***
+---
 
 ### processDefinitionKey
 
@@ -76,7 +76,7 @@ Defined in: [gen/types.gen.ts:6140](https://github.com/camunda/orchestration-clu
 The unique key identifying the process definition, for example, returned for a process in the
 deploy resources endpoint.
 
-***
+---
 
 ### processDefinitionVersion?
 
@@ -89,7 +89,7 @@ Defined in: [gen/types.gen.ts:6146](https://github.com/camunda/orchestration-clu
 As the version is already identified by the `processDefinitionKey`, the value of this field is ignored.
 It's here for backwards-compatibility only as previous releases accepted it in request bodies.
 
-***
+---
 
 ### requestTimeout?
 
@@ -102,7 +102,7 @@ Defined in: [gen/types.gen.ts:6192](https://github.com/camunda/orchestration-clu
 Timeout (in ms) the request waits for the process to complete. By default or
 when set to 0, the generic request timeout configured in the cluster is applied.
 
-***
+---
 
 ### runtimeInstructions?
 
@@ -118,7 +118,7 @@ the process instance. Refer to specific instruction types for more details.
 This parameter is an alpha feature and may be subject to change
 in future releases.
 
-***
+---
 
 ### startInstructions?
 
@@ -132,7 +132,7 @@ List of start instructions. By default, the process instance will start at
 the start event. If provided, the process instance will apply start instructions
 after it has been created.
 
-***
+---
 
 ### tags?
 
@@ -142,7 +142,7 @@ optional tags: TagSet;
 
 Defined in: [gen/types.gen.ts:6199](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6199)
 
-***
+---
 
 ### tenantId?
 
@@ -156,7 +156,7 @@ The tenant id of the process definition.
 If multi-tenancy is enabled, provide the tenant id of the process definition to start a
 process instance of. If multi-tenancy is disabled, don't provide this parameter.
 
-***
+---
 
 ### variables?
 

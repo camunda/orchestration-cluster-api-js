@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteAuthorizationInput"
-sidebar_label: "deleteAuthorizationInput"
+title: 'Type Alias: deleteAuthorizationInput'
+sidebar_label: 'deleteAuthorizationInput'
 mdx:
   format: md
 ---

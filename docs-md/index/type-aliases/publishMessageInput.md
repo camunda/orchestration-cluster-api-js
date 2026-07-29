@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: publishMessageInput"
-sidebar_label: "publishMessageInput"
+title: 'Type Alias: publishMessageInput'
+sidebar_label: 'publishMessageInput'
 mdx:
   format: md
 ---

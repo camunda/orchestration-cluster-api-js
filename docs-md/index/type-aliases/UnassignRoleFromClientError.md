@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromClientError"
-sidebar_label: "UnassignRoleFromClientError"
+title: 'Type Alias: UnassignRoleFromClientError'
+sidebar_label: 'UnassignRoleFromClientError'
 mdx:
   format: md
 ---

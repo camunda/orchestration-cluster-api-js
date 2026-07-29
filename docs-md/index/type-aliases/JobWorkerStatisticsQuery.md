@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobWorkerStatisticsQuery"
-sidebar_label: "JobWorkerStatisticsQuery"
+title: 'Type Alias: JobWorkerStatisticsQuery'
+sidebar_label: 'JobWorkerStatisticsQuery'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ filter: JobWorkerStatisticsFilter;
 
 Defined in: [gen/types.gen.ts:3780](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3780)
 
-***
+---
 
 ### page?
 

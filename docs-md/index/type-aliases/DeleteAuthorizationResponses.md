@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteAuthorizationResponses"
-sidebar_label: "DeleteAuthorizationResponses"
+title: 'Type Alias: DeleteAuthorizationResponses'
+sidebar_label: 'DeleteAuthorizationResponses'
 mdx:
   format: md
 ---

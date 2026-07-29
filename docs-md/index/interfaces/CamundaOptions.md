@@ -1,6 +1,6 @@
 ---
-title: "Interface: CamundaOptions"
-sidebar_label: "CamundaOptions"
+title: 'Interface: CamundaOptions'
+sidebar_label: 'CamundaOptions'
 mdx:
   format: md
 ---
@@ -65,7 +65,7 @@ optional config: Partial<{
 
 Defined in: [gen/CamundaClient.ts:1157](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1157)
 
-***
+---
 
 ### env?
 
@@ -75,7 +75,7 @@ optional env: Record<string, string | undefined>;
 
 Defined in: [gen/CamundaClient.ts:1161](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1161)
 
-***
+---
 
 ### fetch()?
 
@@ -99,7 +99,7 @@ Defined in: [gen/CamundaClient.ts:1159](https://github.com/camunda/orchestration
 
 `Promise`\<`Response`\>
 
-***
+---
 
 ### log?
 
@@ -121,7 +121,7 @@ optional level: LogLevel;
 optional transport: LogTransport;
 ```
 
-***
+---
 
 ### supportLogger?
 
@@ -131,7 +131,7 @@ optional supportLogger: SupportLogger;
 
 Defined in: [gen/CamundaClient.ts:1174](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L1174)
 
-***
+---
 
 ### telemetry?
 
@@ -159,7 +159,7 @@ optional hooks: TelemetryHooks;
 optional mirrorToLog: boolean;
 ```
 
-***
+---
 
 ### throwOnError?
 

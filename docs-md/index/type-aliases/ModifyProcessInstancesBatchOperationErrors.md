@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ModifyProcessInstancesBatchOperationErrors"
-sidebar_label: "ModifyProcessInstancesBatchOperationErrors"
+title: 'Type Alias: ModifyProcessInstancesBatchOperationErrors'
+sidebar_label: 'ModifyProcessInstancesBatchOperationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13162](https://github.com/camunda/orchestration-cl
 
 The process instance batch operation failed. More details are provided in the response body.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13166](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13170](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ClockPinRequest"
-sidebar_label: "ClockPinRequest"
+title: 'Type Alias: ClockPinRequest'
+sidebar_label: 'ClockPinRequest'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdvancedActorTypeFilter"
-sidebar_label: "AdvancedActorTypeFilter"
+title: 'Type Alias: AdvancedActorTypeFilter'
+sidebar_label: 'AdvancedActorTypeFilter'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ Defined in: [gen/types.gen.ts:485](https://github.com/camunda/orchestration-clus
 
 Checks for equality with the provided value.
 
-***
+---
 
 ### $exists?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:493](https://github.com/camunda/orchestration-clus
 
 Checks if the current property exists.
 
-***
+---
 
 ### $in?
 
@@ -53,7 +53,7 @@ Defined in: [gen/types.gen.ts:497](https://github.com/camunda/orchestration-clus
 
 Checks if the property matches any of the provided values.
 
-***
+---
 
 ### $like?
 
@@ -63,7 +63,7 @@ optional $like: LikeFilter;
 
 Defined in: [gen/types.gen.ts:498](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L498)
 
-***
+---
 
 ### $neq?
 

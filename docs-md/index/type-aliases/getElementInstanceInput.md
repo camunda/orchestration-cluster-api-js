@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getElementInstanceInput"
-sidebar_label: "getElementInstanceInput"
+title: 'Type Alias: getElementInstanceInput'
+sidebar_label: 'getElementInstanceInput'
 mdx:
   format: md
 ---

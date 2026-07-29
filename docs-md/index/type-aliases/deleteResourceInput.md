@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteResourceInput"
-sidebar_label: "deleteResourceInput"
+title: 'Type Alias: deleteResourceInput'
+sidebar_label: 'deleteResourceInput'
 mdx:
   format: md
 ---

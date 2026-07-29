@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: createDocumentsInput"
-sidebar_label: "createDocumentsInput"
+title: 'Type Alias: createDocumentsInput'
+sidebar_label: 'createDocumentsInput'
 mdx:
   format: md
 ---

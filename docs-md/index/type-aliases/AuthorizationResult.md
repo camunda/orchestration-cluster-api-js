@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuthorizationResult"
-sidebar_label: "AuthorizationResult"
+title: 'Type Alias: AuthorizationResult'
+sidebar_label: 'AuthorizationResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:660](https://github.com/camunda/orchestration-clus
 
 The key of the authorization.
 
-***
+---
 
 ### ownerId
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:639](https://github.com/camunda/orchestration-clus
 
 The ID of the owner of permissions.
 
-***
+---
 
 ### ownerType
 
@@ -47,7 +47,7 @@ ownerType: OwnerTypeEnum;
 
 Defined in: [gen/types.gen.ts:640](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L640)
 
-***
+---
 
 ### permissionTypes
 
@@ -59,7 +59,7 @@ Defined in: [gen/types.gen.ts:656](https://github.com/camunda/orchestration-clus
 
 Specifies the types of the permissions.
 
-***
+---
 
 ### resourceId
 
@@ -71,7 +71,7 @@ Defined in: [gen/types.gen.ts:648](https://github.com/camunda/orchestration-clus
 
 ID of the resource the permission relates to (mutually exclusive with `resourcePropertyName`).
 
-***
+---
 
 ### resourcePropertyName
 
@@ -83,7 +83,7 @@ Defined in: [gen/types.gen.ts:652](https://github.com/camunda/orchestration-clus
 
 The name of the resource property the permission relates to (mutually exclusive with `resourceId`).
 
-***
+---
 
 ### resourceType
 

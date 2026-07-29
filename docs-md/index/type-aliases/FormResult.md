@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: FormResult"
-sidebar_label: "FormResult"
+title: 'Type Alias: FormResult'
+sidebar_label: 'FormResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2925](https://github.com/camunda/orchestration-clu
 
 The user-provided identifier of the form.
 
-***
+---
 
 ### formKey
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2937](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this form.
 
-***
+---
 
 ### schema
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2929](https://github.com/camunda/orchestration-clu
 
 The form schema as a JSON document serialized as a string.
 
-***
+---
 
 ### tenantId
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:2921](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the form.
 
-***
+---
 
 ### version
 

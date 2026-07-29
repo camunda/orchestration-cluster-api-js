@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AdHocSubProcessActivateActivityReference"
-sidebar_label: "AdHocSubProcessActivateActivityReference"
+title: 'Type Alias: AdHocSubProcessActivateActivityReference'
+sidebar_label: 'AdHocSubProcessActivateActivityReference'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2719](https://github.com/camunda/orchestration-clu
 
 The ID of the element that should be activated.
 
-***
+---
 
 ### variables?
 

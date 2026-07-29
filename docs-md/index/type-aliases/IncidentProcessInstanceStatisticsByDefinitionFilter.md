@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentProcessInstanceStatisticsByDefinitionFilter"
-sidebar_label: "IncidentProcessInstanceStatisticsByDefinitionFilter"
+title: 'Type Alias: IncidentProcessInstanceStatisticsByDefinitionFilter'
+sidebar_label: 'IncidentProcessInstanceStatisticsByDefinitionFilter'
 mdx:
   format: md
 ---

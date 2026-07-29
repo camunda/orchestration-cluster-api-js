@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AuditLogKeyExactMatch"
-sidebar_label: "AuditLogKeyExactMatch"
+title: 'Type Alias: AuditLogKeyExactMatch'
+sidebar_label: 'AuditLogKeyExactMatch'
 mdx:
   format: md
 ---

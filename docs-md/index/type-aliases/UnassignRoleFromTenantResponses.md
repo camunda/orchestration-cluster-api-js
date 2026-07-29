@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignRoleFromTenantResponses"
-sidebar_label: "UnassignRoleFromTenantResponses"
+title: 'Type Alias: UnassignRoleFromTenantResponses'
+sidebar_label: 'UnassignRoleFromTenantResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteProcessInstanceResponses"
-sidebar_label: "DeleteProcessInstanceResponses"
+title: 'Type Alias: DeleteProcessInstanceResponses'
+sidebar_label: 'DeleteProcessInstanceResponses'
 mdx:
   format: md
 ---

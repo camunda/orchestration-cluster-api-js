@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluatedDecisionResult"
-sidebar_label: "EvaluatedDecisionResult"
+title: 'Type Alias: EvaluatedDecisionResult'
+sidebar_label: 'EvaluatedDecisionResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1652](https://github.com/camunda/orchestration-clu
 
 The ID of the decision which was evaluated.
 
-***
+---
 
 ### decisionDefinitionKey
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1685](https://github.com/camunda/orchestration-clu
 
 The unique key identifying the decision which was evaluate.
 
-***
+---
 
 ### decisionDefinitionName
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1656](https://github.com/camunda/orchestration-clu
 
 The name of the decision which was evaluated.
 
-***
+---
 
 ### decisionDefinitionType
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:1664](https://github.com/camunda/orchestration-clu
 
 The type of the decision which was evaluated.
 
-***
+---
 
 ### decisionDefinitionVersion
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:1660](https://github.com/camunda/orchestration-clu
 
 The version of the decision which was evaluated.
 
-***
+---
 
 ### decisionEvaluationInstanceKey
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:1689](https://github.com/camunda/orchestration-clu
 
 The unique key identifying this decision evaluation instance.
 
-***
+---
 
 ### evaluatedInputs
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:1681](https://github.com/camunda/orchestration-clu
 
 The decision inputs that were evaluated within this decision evaluation.
 
-***
+---
 
 ### matchedRules
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:1677](https://github.com/camunda/orchestration-clu
 
 The decision rules that matched within this decision evaluation.
 
-***
+---
 
 ### output
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:1669](https://github.com/camunda/orchestration-clu
 
 JSON document that will instantiate the result of the decision which was evaluated.
 
-***
+---
 
 ### tenantId
 

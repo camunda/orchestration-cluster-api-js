@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGroupError"
-sidebar_label: "GetGroupError"
+title: 'Type Alias: GetGroupError'
+sidebar_label: 'GetGroupError'
 mdx:
   format: md
 ---

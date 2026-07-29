@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceCallHierarchyEntry"
-sidebar_label: "ProcessInstanceCallHierarchyEntry"
+title: 'Type Alias: ProcessInstanceCallHierarchyEntry'
+sidebar_label: 'ProcessInstanceCallHierarchyEntry'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:6573](https://github.com/camunda/orchestration-clu
 
 The key of the process definition.
 
-***
+---
 
 ### processDefinitionName
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:6577](https://github.com/camunda/orchestration-clu
 
 The name of the process definition (fall backs to the process definition id if not available).
 
-***
+---
 
 ### processInstanceKey
 

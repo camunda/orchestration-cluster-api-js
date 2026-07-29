@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignGroupFromTenantResponses"
-sidebar_label: "UnassignGroupFromTenantResponses"
+title: 'Type Alias: UnassignGroupFromTenantResponses'
+sidebar_label: 'UnassignGroupFromTenantResponses'
 mdx:
   format: md
 ---

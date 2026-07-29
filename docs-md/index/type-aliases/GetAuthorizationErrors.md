@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuthorizationErrors"
-sidebar_label: "GetAuthorizationErrors"
+title: 'Type Alias: GetAuthorizationErrors'
+sidebar_label: 'GetAuthorizationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8742](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:8746](https://github.com/camunda/orchestration-clu
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:8750](https://github.com/camunda/orchestration-clu
 
 The authorization with the given key was not found.
 
-***
+---
 
 ### 500
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: PinClockError"
-sidebar_label: "PinClockError"
+title: 'Type Alias: PinClockError'
+sidebar_label: 'PinClockError'
 mdx:
   format: md
 ---

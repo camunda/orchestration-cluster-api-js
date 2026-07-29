@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDocumentLinkErrors"
-sidebar_label: "CreateDocumentLinkErrors"
+title: 'Type Alias: CreateDocumentLinkErrors'
+sidebar_label: 'CreateDocumentLinkErrors'
 mdx:
   format: md
 ---

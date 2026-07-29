@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessInstanceError"
-sidebar_label: "GetProcessInstanceError"
+title: 'Type Alias: GetProcessInstanceError'
+sidebar_label: 'GetProcessInstanceError'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: getJobErrorStatisticsConsistency"
-sidebar_label: "getJobErrorStatisticsConsistency"
+title: 'Type Alias: getJobErrorStatisticsConsistency'
+sidebar_label: 'getJobErrorStatisticsConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type getJobErrorStatisticsConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:381](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L381)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

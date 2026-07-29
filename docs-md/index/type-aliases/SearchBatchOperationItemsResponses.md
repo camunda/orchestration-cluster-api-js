@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchBatchOperationItemsResponses"
-sidebar_label: "SearchBatchOperationItemsResponses"
+title: 'Type Alias: SearchBatchOperationItemsResponses'
+sidebar_label: 'SearchBatchOperationItemsResponses'
 mdx:
   format: md
 ---

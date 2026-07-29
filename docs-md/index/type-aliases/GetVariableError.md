@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetVariableError"
-sidebar_label: "GetVariableError"
+title: 'Type Alias: GetVariableError'
+sidebar_label: 'GetVariableError'
 mdx:
   format: md
 ---

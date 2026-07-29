@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateRoleResponse"
-sidebar_label: "CreateRoleResponse"
+title: 'Type Alias: CreateRoleResponse'
+sidebar_label: 'CreateRoleResponse'
 mdx:
   format: md
 ---

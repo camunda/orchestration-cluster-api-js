@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TenantClientResult"
-sidebar_label: "TenantClientResult"
+title: 'Type Alias: TenantClientResult'
+sidebar_label: 'TenantClientResult'
 mdx:
   format: md
 ---

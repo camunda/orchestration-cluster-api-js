@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetLicenseErrors"
-sidebar_label: "GetLicenseErrors"
+title: 'Type Alias: GetLicenseErrors'
+sidebar_label: 'GetLicenseErrors'
 mdx:
   format: md
 ---

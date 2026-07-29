@@ -1,6 +1,6 @@
 ---
-title: "MessageSubscriptionKey"
-sidebar_label: "Overview"
+title: 'MessageSubscriptionKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

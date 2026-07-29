@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobSearchQuerySortRequest"
-sidebar_label: "JobSearchQuerySortRequest"
+title: 'Type Alias: JobSearchQuerySortRequest'
+sidebar_label: 'JobSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:4147](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "deadline"
   | "deniedReason"
   | "elementId"
@@ -45,7 +45,7 @@ Defined in: [gen/types.gen.ts:4151](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

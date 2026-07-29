@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: RoleCreateRequest"
-sidebar_label: "RoleCreateRequest"
+title: 'Type Alias: RoleCreateRequest'
+sidebar_label: 'RoleCreateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:6915](https://github.com/camunda/orchestration-clu
 
 The description of the new role.
 
-***
+---
 
 ### name
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:6911](https://github.com/camunda/orchestration-clu
 
 The display name of the new role.
 
-***
+---
 
 ### roleId
 

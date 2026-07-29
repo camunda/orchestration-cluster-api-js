@@ -1,6 +1,6 @@
 ---
-title: "Interface: Logger"
-sidebar_label: "Logger"
+title: 'Interface: Logger'
+sidebar_label: 'Logger'
 mdx:
   format: md
 ---
@@ -15,9 +15,9 @@ Defined in: [runtime/logger.ts:24](https://github.com/camunda/orchestration-clus
 
 ```ts
 code(
-   level, 
-   code, 
-   msg, 
+   level,
+   code,
+   msg,
    data?): void;
 ```
 
@@ -45,7 +45,7 @@ Defined in: [runtime/logger.ts:35](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### debug()
 
@@ -65,7 +65,7 @@ Defined in: [runtime/logger.ts:31](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### error()
 
@@ -85,7 +85,7 @@ Defined in: [runtime/logger.ts:28](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### info()
 
@@ -105,7 +105,7 @@ Defined in: [runtime/logger.ts:30](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### level()
 
@@ -119,7 +119,7 @@ Defined in: [runtime/logger.ts:25](https://github.com/camunda/orchestration-clus
 
 [`LogLevel`](../type-aliases/LogLevel.md)
 
-***
+---
 
 ### scope()
 
@@ -139,7 +139,7 @@ Defined in: [runtime/logger.ts:34](https://github.com/camunda/orchestration-clus
 
 `Logger`
 
-***
+---
 
 ### setLevel()
 
@@ -159,7 +159,7 @@ Defined in: [runtime/logger.ts:26](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### setTransport()
 
@@ -179,7 +179,7 @@ Defined in: [runtime/logger.ts:27](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### silly()
 
@@ -199,7 +199,7 @@ Defined in: [runtime/logger.ts:33](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### trace()
 
@@ -219,7 +219,7 @@ Defined in: [runtime/logger.ts:32](https://github.com/camunda/orchestration-clus
 
 `void`
 
-***
+---
 
 ### warn()
 

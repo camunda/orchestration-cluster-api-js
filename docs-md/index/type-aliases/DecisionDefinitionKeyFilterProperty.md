@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionDefinitionKeyFilterProperty"
-sidebar_label: "DecisionDefinitionKeyFilterProperty"
+title: 'Type Alias: DecisionDefinitionKeyFilterProperty'
+sidebar_label: 'DecisionDefinitionKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: DecisionDefinitionKeyFilterProperty
 
 ```ts
-type DecisionDefinitionKeyFilterProperty = 
+type DecisionDefinitionKeyFilterProperty =
   | DecisionDefinitionKeyExactMatch
   | AdvancedDecisionDefinitionKeyFilter;
 ```

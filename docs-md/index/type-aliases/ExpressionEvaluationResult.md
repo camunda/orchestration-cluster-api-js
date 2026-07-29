@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ExpressionEvaluationResult"
-sidebar_label: "ExpressionEvaluationResult"
+title: 'Type Alias: ExpressionEvaluationResult'
+sidebar_label: 'ExpressionEvaluationResult'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2749](https://github.com/camunda/orchestration-clu
 
 The evaluated expression
 
-***
+---
 
 ### result
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2753](https://github.com/camunda/orchestration-clu
 
 The result value. Its type can vary.
 
-***
+---
 
 ### warnings
 

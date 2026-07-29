@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateDeploymentData"
-sidebar_label: "CreateDeploymentData"
+title: 'Type Alias: CreateDeploymentData'
+sidebar_label: 'CreateDeploymentData'
 mdx:
   format: md
 ---
@@ -37,7 +37,7 @@ The binary data to create the deployment resources. It is possible to have more 
 optional tenantId: TenantId;
 ```
 
-***
+---
 
 ### path?
 
@@ -47,7 +47,7 @@ optional path: never;
 
 Defined in: [gen/types.gen.ts:10078](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10078)
 
-***
+---
 
 ### query?
 
@@ -57,12 +57,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10079](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10079)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/deployments";
+url: '/deployments';
 ```
 
 Defined in: [gen/types.gen.ts:10080](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10080)

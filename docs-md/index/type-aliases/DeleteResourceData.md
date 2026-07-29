@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteResourceData"
-sidebar_label: "DeleteResourceData"
+title: 'Type Alias: DeleteResourceData'
+sidebar_label: 'DeleteResourceData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: DeleteResourceRequest;
 
 Defined in: [gen/types.gen.ts:13758](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13758)
 
-***
+---
 
 ### path
 
@@ -43,7 +43,7 @@ The key of the resource to delete.
 This can be the key of a process definition, the key of a decision requirements
 definition or the key of a form definition
 
-***
+---
 
 ### query?
 
@@ -53,12 +53,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13768](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13768)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/resources/{resourceKey}/deletion";
+url: '/resources/{resourceKey}/deletion';
 ```
 
 Defined in: [gen/types.gen.ts:13769](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13769)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResourceKeyExactMatch"
-sidebar_label: "ResourceKeyExactMatch"
+title: 'Type Alias: ResourceKeyExactMatch'
+sidebar_label: 'ResourceKeyExactMatch'
 mdx:
   format: md
 ---

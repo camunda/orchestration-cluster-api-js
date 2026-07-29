@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateConditionalsErrors"
-sidebar_label: "EvaluateConditionalsErrors"
+title: 'Type Alias: EvaluateConditionalsErrors'
+sidebar_label: 'EvaluateConditionalsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:9527](https://github.com/camunda/orchestration-clu
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -39,7 +39,7 @@ The client is not authorized to start process instances for the specified proces
 If a processDefinitionKey is not provided, this indicates that the client is not authorized
 to start process instances for at least one of the matched process definitions.
 
-***
+---
 
 ### 404
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:9538](https://github.com/camunda/orchestration-clu
 
 The process definition was not found for the given processDefinitionKey.
 
-***
+---
 
 ### 500
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:9542](https://github.com/camunda/orchestration-clu
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

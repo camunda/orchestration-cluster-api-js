@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentProcessResult"
-sidebar_label: "DeploymentProcessResult"
+title: 'Type Alias: DeploymentProcessResult'
+sidebar_label: 'DeploymentProcessResult'
 mdx:
   format: md
 ---
@@ -28,7 +28,7 @@ Defined in: [gen/types.gen.ts:2101](https://github.com/camunda/orchestration-clu
 The bpmn process ID, as parsed during deployment, together with the version forms a
 unique identifier for a specific process definition.
 
-***
+---
 
 ### processDefinitionKey
 
@@ -40,7 +40,7 @@ Defined in: [gen/types.gen.ts:2117](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this process.
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -52,7 +52,7 @@ Defined in: [gen/types.gen.ts:2105](https://github.com/camunda/orchestration-clu
 
 The assigned process version.
 
-***
+---
 
 ### resourceName
 
@@ -64,7 +64,7 @@ Defined in: [gen/types.gen.ts:2109](https://github.com/camunda/orchestration-clu
 
 The resource name from which this process was parsed.
 
-***
+---
 
 ### tenantId
 

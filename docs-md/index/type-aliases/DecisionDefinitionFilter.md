@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionDefinitionFilter"
-sidebar_label: "DecisionDefinitionFilter"
+title: 'Type Alias: DecisionDefinitionFilter'
+sidebar_label: 'DecisionDefinitionFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1457](https://github.com/camunda/orchestration-clu
 
 The DMN ID of the decision definition.
 
-***
+---
 
 ### decisionDefinitionKey?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1484](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this decision definition.
 
-***
+---
 
 ### decisionRequirementsId?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1476](https://github.com/camunda/orchestration-clu
 
 the DMN ID of the decision requirements graph that the decision definition is part of.
 
-***
+---
 
 ### decisionRequirementsKey?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:1488](https://github.com/camunda/orchestration-clu
 
 The assigned key of the decision requirements graph that the decision definition is part of.
 
-***
+---
 
 ### decisionRequirementsName?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:1492](https://github.com/camunda/orchestration-clu
 
 The DMN name of the decision requirements that the decision definition is part of.
 
-***
+---
 
 ### decisionRequirementsVersion?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:1496](https://github.com/camunda/orchestration-clu
 
 The assigned version of the decision requirements that the decision definition is part of.
 
-***
+---
 
 ### isLatestVersion?
 
@@ -101,7 +101,7 @@ Whether to only return the latest version of each decision definition.
 When using this filter, pagination functionality is limited, you can only paginate forward using `after` and `limit`.
 The response contains no `startCursor` in the `page`, and requests ignore the `from` and `before` in the `page`.
 
-***
+---
 
 ### name?
 
@@ -113,7 +113,7 @@ Defined in: [gen/types.gen.ts:1461](https://github.com/camunda/orchestration-clu
 
 The DMN name of the decision definition.
 
-***
+---
 
 ### tenantId?
 
@@ -125,7 +125,7 @@ Defined in: [gen/types.gen.ts:1480](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the decision definition.
 
-***
+---
 
 ### version?
 

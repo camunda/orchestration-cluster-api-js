@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentProcessInstanceStatisticsByDefinitionQuery"
-sidebar_label: "IncidentProcessInstanceStatisticsByDefinitionQuery"
+title: 'Type Alias: IncidentProcessInstanceStatisticsByDefinitionQuery'
+sidebar_label: 'IncidentProcessInstanceStatisticsByDefinitionQuery'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:3629](https://github.com/camunda/orchestration-clu
 
 Filter criteria for the aggregated process instance statistics.
 
-***
+---
 
 ### page?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:3633](https://github.com/camunda/orchestration-clu
 
 Pagination parameters for the aggregated process instance statistics.
 
-***
+---
 
 ### sort?
 

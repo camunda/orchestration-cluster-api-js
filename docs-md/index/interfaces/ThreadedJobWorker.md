@@ -1,6 +1,6 @@
 ---
-title: "Interface: ThreadedJobWorker"
-sidebar_label: "ThreadedJobWorker"
+title: 'Interface: ThreadedJobWorker'
+sidebar_label: 'ThreadedJobWorker'
 mdx:
   format: md
 ---
@@ -32,7 +32,7 @@ Defined in: [runtime/threadedJobWorker.ts:134](https://github.com/camunda/orches
 
 `number`
 
-***
+---
 
 ### busyThreads
 
@@ -50,7 +50,7 @@ Number of threads currently processing a job (across all workers).
 
 `number`
 
-***
+---
 
 ### name
 
@@ -66,7 +66,7 @@ Defined in: [runtime/threadedJobWorker.ts:131](https://github.com/camunda/orches
 
 `string`
 
-***
+---
 
 ### poolSize
 
@@ -84,7 +84,7 @@ Number of threads in the shared pool.
 
 `number`
 
-***
+---
 
 ### ready
 
@@ -102,7 +102,7 @@ Resolves when the shared thread pool has finished initialising.
 
 `Promise`\<`void`\>
 
-***
+---
 
 ### stopped
 
@@ -132,7 +132,7 @@ Defined in: [runtime/threadedJobWorker.ts:153](https://github.com/camunda/orches
 
 `void`
 
-***
+---
 
 ### stop()
 
@@ -146,7 +146,7 @@ Defined in: [runtime/threadedJobWorker.ts:167](https://github.com/camunda/orches
 
 `void`
 
-***
+---
 
 ### stopGracefully()
 
@@ -174,6 +174,6 @@ Defined in: [runtime/threadedJobWorker.ts:181](https://github.com/camunda/orches
 #### Returns
 
 `Promise`\<\{
-  `remainingJobs`: `number`;
-  `timedOut`: `boolean`;
+`remainingJobs`: `number`;
+`timedOut`: `boolean`;
 \}\>

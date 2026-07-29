@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: EvaluateConditionalsError"
-sidebar_label: "EvaluateConditionalsError"
+title: 'Type Alias: EvaluateConditionalsError'
+sidebar_label: 'EvaluateConditionalsError'
 mdx:
   format: md
 ---

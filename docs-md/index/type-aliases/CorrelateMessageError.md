@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CorrelateMessageError"
-sidebar_label: "CorrelateMessageError"
+title: 'Type Alias: CorrelateMessageError'
+sidebar_label: 'CorrelateMessageError'
 mdx:
   format: md
 ---

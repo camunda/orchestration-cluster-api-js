@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeploymentResourceResult"
-sidebar_label: "DeploymentResourceResult"
+title: 'Type Alias: DeploymentResourceResult'
+sidebar_label: 'DeploymentResourceResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:2222](https://github.com/camunda/orchestration-clu
 
 The resource id of the deployed resource.
 
-***
+---
 
 ### resourceKey
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:2235](https://github.com/camunda/orchestration-clu
 
 The assigned key, which acts as a unique identifier for this Resource.
 
-***
+---
 
 ### resourceName
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:2226](https://github.com/camunda/orchestration-clu
 
 The name of the deployed resource.
 
-***
+---
 
 ### tenantId
 
@@ -61,7 +61,7 @@ tenantId: TenantId;
 
 Defined in: [gen/types.gen.ts:2231](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L2231)
 
-***
+---
 
 ### version
 

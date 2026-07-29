@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveProcessInstanceIncidentsData"
-sidebar_label: "ResolveProcessInstanceIncidentsData"
+title: 'Type Alias: ResolveProcessInstanceIncidentsData'
+sidebar_label: 'ResolveProcessInstanceIncidentsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:13422](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13422)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processInstanceKey: ProcessInstanceKey;
 
 The key of the process instance to resolve incidents for.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:13429](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13429)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-instances/{processInstanceKey}/incident-resolution";
+url: '/process-instances/{processInstanceKey}/incident-resolution';
 ```
 
 Defined in: [gen/types.gen.ts:13430](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L13430)

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ThreadedJobHandler()"
-sidebar_label: "ThreadedJobHandler()"
+title: 'Type Alias: ThreadedJobHandler()'
+sidebar_label: 'ThreadedJobHandler()'
 mdx:
   format: md
 ---
@@ -8,9 +8,7 @@ mdx:
 # Type Alias: ThreadedJobHandler()
 
 ```ts
-type ThreadedJobHandler = (job, client) => 
-  | Promise<JobActionReceipt>
-  | JobActionReceipt;
+type ThreadedJobHandler = (job, client) => Promise<JobActionReceipt> | JobActionReceipt;
 ```
 
 Defined in: [runtime/threadedJobWorker.ts:31](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/threadedJobWorker.ts#L31)
@@ -41,5 +39,5 @@ export default handler;
 
 ## Returns
 
-  \| `Promise`\<[`JobActionReceipt`](JobActionReceipt.md)\>
-  \| [`JobActionReceipt`](JobActionReceipt.md)
+\| `Promise`\<[`JobActionReceipt`](JobActionReceipt.md)\>
+\| [`JobActionReceipt`](JobActionReceipt.md)

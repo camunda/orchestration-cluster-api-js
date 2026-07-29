@@ -1,6 +1,6 @@
 ---
-title: "Interface: EnrichedActivatedJob"
-sidebar_label: "EnrichedActivatedJob"
+title: 'Interface: EnrichedActivatedJob'
+sidebar_label: 'EnrichedActivatedJob'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [runtime/jobActions.ts:22](https://github.com/camunda/orchestration-
 
 Set true once any acknowledgement method is invoked.
 
-***
+---
 
 ### customHeaders
 
@@ -48,10 +48,10 @@ A set of custom headers defined during modelling; returned as a serialized JSON 
 #### Inherited from
 
 ```ts
-ActivatedJobResult.customHeaders
+ActivatedJobResult.customHeaders;
 ```
 
-***
+---
 
 ### deadline
 
@@ -66,10 +66,10 @@ When the job can be activated again, sent as a UNIX epoch timestamp.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.deadline
+ActivatedJobResult.deadline;
 ```
 
-***
+---
 
 ### elementId
 
@@ -84,10 +84,10 @@ The associated task element ID.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.elementId
+ActivatedJobResult.elementId;
 ```
 
-***
+---
 
 ### elementInstanceKey
 
@@ -102,10 +102,10 @@ The element instance key of the task.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.elementInstanceKey
+ActivatedJobResult.elementInstanceKey;
 ```
 
-***
+---
 
 ### jobKey
 
@@ -120,10 +120,10 @@ The key, a unique identifier for the job.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.jobKey
+ActivatedJobResult.jobKey;
 ```
 
-***
+---
 
 ### kind
 
@@ -136,10 +136,10 @@ Defined in: [gen/types.gen.ts:4069](https://github.com/camunda/orchestration-clu
 #### Inherited from
 
 ```ts
-ActivatedJobResult.kind
+ActivatedJobResult.kind;
 ```
 
-***
+---
 
 ### listenerEventType
 
@@ -152,10 +152,10 @@ Defined in: [gen/types.gen.ts:4070](https://github.com/camunda/orchestration-clu
 #### Inherited from
 
 ```ts
-ActivatedJobResult.listenerEventType
+ActivatedJobResult.listenerEventType;
 ```
 
-***
+---
 
 ### log
 
@@ -165,7 +165,7 @@ log: Logger;
 
 Defined in: [runtime/jobActions.ts:20](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/runtime/jobActions.ts#L20)
 
-***
+---
 
 ### modifyJobTimeout()
 
@@ -189,7 +189,7 @@ Extend the timeout for the job by setting a new timeout
 
 `Promise`\<`void`\>
 
-***
+---
 
 ### modifyRetries()
 
@@ -211,7 +211,7 @@ Defined in: [runtime/jobActions.ts:19](https://github.com/camunda/orchestration-
 
 `Promise`\<`void`\>
 
-***
+---
 
 ### processDefinitionId
 
@@ -226,10 +226,10 @@ The bpmn process ID of the job's process definition.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.processDefinitionId
+ActivatedJobResult.processDefinitionId;
 ```
 
-***
+---
 
 ### processDefinitionKey
 
@@ -244,10 +244,10 @@ The key of the job's process definition.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.processDefinitionKey
+ActivatedJobResult.processDefinitionKey;
 ```
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -262,10 +262,10 @@ The version of the job's process definition.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.processDefinitionVersion
+ActivatedJobResult.processDefinitionVersion;
 ```
 
-***
+---
 
 ### processInstanceKey
 
@@ -280,10 +280,10 @@ The job's process instance key.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.processInstanceKey
+ActivatedJobResult.processInstanceKey;
 ```
 
-***
+---
 
 ### retries
 
@@ -298,10 +298,10 @@ The amount of retries left to this job (should always be positive).
 #### Inherited from
 
 ```ts
-ActivatedJobResult.retries
+ActivatedJobResult.retries;
 ```
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -318,10 +318,10 @@ belonging to process instance hierarchies created in version 8.9 or later.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.rootProcessInstanceKey
+ActivatedJobResult.rootProcessInstanceKey;
 ```
 
-***
+---
 
 ### tags
 
@@ -334,10 +334,10 @@ Defined in: [gen/types.gen.ts:4077](https://github.com/camunda/orchestration-clu
 #### Inherited from
 
 ```ts
-ActivatedJobResult.tags
+ActivatedJobResult.tags;
 ```
 
-***
+---
 
 ### tenantId
 
@@ -352,10 +352,10 @@ The ID of the tenant that owns the job.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.tenantId
+ActivatedJobResult.tenantId;
 ```
 
-***
+---
 
 ### type
 
@@ -370,10 +370,10 @@ The type of the job (should match what was requested).
 #### Inherited from
 
 ```ts
-ActivatedJobResult.type
+ActivatedJobResult.type;
 ```
 
-***
+---
 
 ### userTask
 
@@ -389,10 +389,10 @@ This is `null` if the job is not a user task.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.userTask
+ActivatedJobResult.userTask;
 ```
 
-***
+---
 
 ### variables
 
@@ -413,10 +413,10 @@ All variables visible to the task scope, computed at activation time.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.variables
+ActivatedJobResult.variables;
 ```
 
-***
+---
 
 ### worker
 
@@ -431,7 +431,7 @@ The name of the worker which activated this job.
 #### Inherited from
 
 ```ts
-ActivatedJobResult.worker
+ActivatedJobResult.worker;
 ```
 
 ## Methods
@@ -448,7 +448,7 @@ Defined in: [runtime/jobActions.ts:13](https://github.com/camunda/orchestration-
 
 `Promise`\<`"JOB_ACTION_RECEIPT"`\>
 
-***
+---
 
 ### complete()
 
@@ -466,7 +466,7 @@ Defined in: [runtime/jobActions.ts:10](https://github.com/camunda/orchestration-
 
 `Promise`\<`"JOB_ACTION_RECEIPT"`\>
 
-***
+---
 
 ### error()
 
@@ -486,7 +486,7 @@ Defined in: [runtime/jobActions.ts:12](https://github.com/camunda/orchestration-
 
 `Promise`\<`"JOB_ACTION_RECEIPT"`\>
 
-***
+---
 
 ### fail()
 
@@ -506,7 +506,7 @@ Defined in: [runtime/jobActions.ts:11](https://github.com/camunda/orchestration-
 
 `Promise`\<`"JOB_ACTION_RECEIPT"`\>
 
-***
+---
 
 ### ignore()
 

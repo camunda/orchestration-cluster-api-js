@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignClientFromTenantResponses"
-sidebar_label: "UnassignClientFromTenantResponses"
+title: 'Type Alias: UnassignClientFromTenantResponses'
+sidebar_label: 'UnassignClientFromTenantResponses'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentSearchQuerySortRequest"
-sidebar_label: "IncidentSearchQuerySortRequest"
+title: 'Type Alias: IncidentSearchQuerySortRequest'
+sidebar_label: 'IncidentSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:3504](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "incidentKey"
   | "processDefinitionKey"
   | "processDefinitionId"
@@ -36,7 +36,7 @@ Defined in: [gen/types.gen.ts:3508](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

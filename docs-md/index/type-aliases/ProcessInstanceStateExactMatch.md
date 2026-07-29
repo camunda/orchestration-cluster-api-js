@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceStateExactMatch"
-sidebar_label: "ProcessInstanceStateExactMatch"
+title: 'Type Alias: ProcessInstanceStateExactMatch'
+sidebar_label: 'ProcessInstanceStateExactMatch'
 mdx:
   format: md
 ---

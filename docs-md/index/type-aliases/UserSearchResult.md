@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserSearchResult"
-sidebar_label: "UserSearchResult"
+title: 'Type Alias: UserSearchResult'
+sidebar_label: 'UserSearchResult'
 mdx:
   format: md
 ---

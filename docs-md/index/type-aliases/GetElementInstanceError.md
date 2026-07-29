@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetElementInstanceError"
-sidebar_label: "GetElementInstanceError"
+title: 'Type Alias: GetElementInstanceError'
+sidebar_label: 'GetElementInstanceError'
 mdx:
   format: md
 ---

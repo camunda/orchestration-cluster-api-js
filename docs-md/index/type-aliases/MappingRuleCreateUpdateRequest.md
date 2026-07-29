@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MappingRuleCreateUpdateRequest"
-sidebar_label: "MappingRuleCreateUpdateRequest"
+title: 'Type Alias: MappingRuleCreateUpdateRequest'
+sidebar_label: 'MappingRuleCreateUpdateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5166](https://github.com/camunda/orchestration-clu
 
 The name of the claim to map.
 
-***
+---
 
 ### claimValue
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5170](https://github.com/camunda/orchestration-clu
 
 The value of the claim to map.
 
-***
+---
 
 ### name
 

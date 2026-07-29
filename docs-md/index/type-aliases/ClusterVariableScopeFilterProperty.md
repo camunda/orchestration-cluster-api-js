@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ClusterVariableScopeFilterProperty"
-sidebar_label: "ClusterVariableScopeFilterProperty"
+title: 'Type Alias: ClusterVariableScopeFilterProperty'
+sidebar_label: 'ClusterVariableScopeFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ClusterVariableScopeFilterProperty
 
 ```ts
-type ClusterVariableScopeFilterProperty = 
+type ClusterVariableScopeFilterProperty =
   | ClusterVariableScopeExactMatch
   | AdvancedClusterVariableScopeFilter;
 ```

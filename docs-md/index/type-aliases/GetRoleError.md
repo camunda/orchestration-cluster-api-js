@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetRoleError"
-sidebar_label: "GetRoleError"
+title: 'Type Alias: GetRoleError'
+sidebar_label: 'GetRoleError'
 mdx:
   format: md
 ---

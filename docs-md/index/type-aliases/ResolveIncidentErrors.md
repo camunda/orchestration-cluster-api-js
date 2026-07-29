@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResolveIncidentErrors"
-sidebar_label: "ResolveIncidentErrors"
+title: 'Type Alias: ResolveIncidentErrors'
+sidebar_label: 'ResolveIncidentErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:11678](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:11682](https://github.com/camunda/orchestration-cl
 
 The incident with the incidentKey is not found.
 
-***
+---
 
 ### 409
 
@@ -50,7 +50,7 @@ Defined in: [gen/types.gen.ts:11688](https://github.com/camunda/orchestration-cl
 The incident cannot be resolved due to an invalid state.
 For example, the associated job may have no retries left.
 
-***
+---
 
 ### 500
 
@@ -62,7 +62,7 @@ Defined in: [gen/types.gen.ts:11692](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

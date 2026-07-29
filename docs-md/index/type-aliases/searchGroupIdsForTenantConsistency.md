@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchGroupIdsForTenantConsistency"
-sidebar_label: "searchGroupIdsForTenantConsistency"
+title: 'Type Alias: searchGroupIdsForTenantConsistency'
+sidebar_label: 'searchGroupIdsForTenantConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type searchGroupIdsForTenantConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:770](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L770)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

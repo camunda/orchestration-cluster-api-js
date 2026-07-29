@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceModificationInstruction"
-sidebar_label: "ProcessInstanceModificationInstruction"
+title: 'Type Alias: ProcessInstanceModificationInstruction'
+sidebar_label: 'ProcessInstanceModificationInstruction'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:6670](https://github.com/camunda/orchestration-clu
 
 Instructions describing which elements to activate in which scopes and which variables to create or update.
 
-***
+---
 
 ### moveInstructions?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:6674](https://github.com/camunda/orchestration-clu
 
 Instructions describing which elements to move from one scope to another.
 
-***
+---
 
 ### operationReference?
 
@@ -47,7 +47,7 @@ optional operationReference: OperationReference;
 
 Defined in: [gen/types.gen.ts:6666](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6666)
 
-***
+---
 
 ### terminateInstructions?
 

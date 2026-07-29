@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CompleteUserTaskErrors"
-sidebar_label: "CompleteUserTaskErrors"
+title: 'Type Alias: CompleteUserTaskErrors'
+sidebar_label: 'CompleteUserTaskErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:16313](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:16317](https://github.com/camunda/orchestration-cl
 
 The user task with the given key was not found.
 
-***
+---
 
 ### 409
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:16322](https://github.com/camunda/orchestration-cl
 
 The user task with the given key is in the wrong state currently. More details are provided in the response body.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:16326](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:16331](https://github.com/camunda/orchestration-cl
 
 The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
 
-***
+---
 
 ### 504
 

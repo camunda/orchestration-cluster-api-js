@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GlobalListenerBase"
-sidebar_label: "GlobalListenerBase"
+title: 'Type Alias: GlobalListenerBase'
+sidebar_label: 'GlobalListenerBase'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2962](https://github.com/camunda/orchestration-clu
 
 Whether the listener should run after model-level listeners.
 
-***
+---
 
 ### priority?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:2966](https://github.com/camunda/orchestration-clu
 
 The priority of the listener. Higher priority listeners are executed before lower priority ones.
 
-***
+---
 
 ### retries?
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:2958](https://github.com/camunda/orchestration-clu
 
 Number of retries for the listener job.
 
-***
+---
 
 ### type?
 

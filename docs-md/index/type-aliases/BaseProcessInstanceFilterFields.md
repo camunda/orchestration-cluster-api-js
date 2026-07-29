@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BaseProcessInstanceFilterFields"
-sidebar_label: "BaseProcessInstanceFilterFields"
+title: 'Type Alias: BaseProcessInstanceFilterFields'
+sidebar_label: 'BaseProcessInstanceFilterFields'
 mdx:
   format: md
 ---
@@ -30,7 +30,7 @@ The batch operation id.
 
 #### Deprecated
 
-***
+---
 
 ### batchOperationKey?
 
@@ -42,7 +42,7 @@ Defined in: [gen/types.gen.ts:6348](https://github.com/camunda/orchestration-clu
 
 The batch operation key.
 
-***
+---
 
 ### businessId?
 
@@ -54,7 +54,7 @@ Defined in: [gen/types.gen.ts:6377](https://github.com/camunda/orchestration-clu
 
 The business id associated with the process instance.
 
-***
+---
 
 ### elementId?
 
@@ -66,7 +66,7 @@ Defined in: [gen/types.gen.ts:6364](https://github.com/camunda/orchestration-clu
 
 The element id associated with the process instance.
 
-***
+---
 
 ### elementInstanceState?
 
@@ -78,7 +78,7 @@ Defined in: [gen/types.gen.ts:6360](https://github.com/camunda/orchestration-clu
 
 The state of the element instances associated with the process instance.
 
-***
+---
 
 ### endDate?
 
@@ -90,7 +90,7 @@ Defined in: [gen/types.gen.ts:6308](https://github.com/camunda/orchestration-clu
 
 The end date.
 
-***
+---
 
 ### errorMessage?
 
@@ -102,7 +102,7 @@ Defined in: [gen/types.gen.ts:6352](https://github.com/camunda/orchestration-clu
 
 The error message related to the process.
 
-***
+---
 
 ### hasElementInstanceIncident?
 
@@ -114,7 +114,7 @@ Defined in: [gen/types.gen.ts:6368](https://github.com/camunda/orchestration-clu
 
 Whether the element instance has an incident or not.
 
-***
+---
 
 ### hasIncident?
 
@@ -126,7 +126,7 @@ Defined in: [gen/types.gen.ts:6316](https://github.com/camunda/orchestration-clu
 
 Whether this process instance has a related incident or not.
 
-***
+---
 
 ### hasRetriesLeft?
 
@@ -138,7 +138,7 @@ Defined in: [gen/types.gen.ts:6356](https://github.com/camunda/orchestration-clu
 
 Whether the process has failed jobs with retries left.
 
-***
+---
 
 ### incidentErrorHashCode?
 
@@ -150,7 +150,7 @@ Defined in: [gen/types.gen.ts:6372](https://github.com/camunda/orchestration-clu
 
 The incident error hash code, associated with this process.
 
-***
+---
 
 ### parentElementInstanceKey?
 
@@ -162,7 +162,7 @@ Defined in: [gen/types.gen.ts:6336](https://github.com/camunda/orchestration-clu
 
 The parent element instance key.
 
-***
+---
 
 ### parentProcessInstanceKey?
 
@@ -174,7 +174,7 @@ Defined in: [gen/types.gen.ts:6332](https://github.com/camunda/orchestration-clu
 
 The parent process instance key.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -186,7 +186,7 @@ Defined in: [gen/types.gen.ts:6328](https://github.com/camunda/orchestration-clu
 
 The key of this process instance.
 
-***
+---
 
 ### startDate?
 
@@ -198,7 +198,7 @@ Defined in: [gen/types.gen.ts:6304](https://github.com/camunda/orchestration-clu
 
 The start date.
 
-***
+---
 
 ### state?
 
@@ -210,7 +210,7 @@ Defined in: [gen/types.gen.ts:6312](https://github.com/camunda/orchestration-clu
 
 The process instance state.
 
-***
+---
 
 ### tags?
 
@@ -220,7 +220,7 @@ optional tags: TagSet;
 
 Defined in: [gen/types.gen.ts:6373](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6373)
 
-***
+---
 
 ### tenantId?
 
@@ -232,7 +232,7 @@ Defined in: [gen/types.gen.ts:6320](https://github.com/camunda/orchestration-clu
 
 The tenant id.
 
-***
+---
 
 ### variables?
 

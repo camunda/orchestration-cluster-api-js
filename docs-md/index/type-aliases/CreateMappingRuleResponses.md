@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: CreateMappingRuleResponses"
-sidebar_label: "CreateMappingRuleResponses"
+title: 'Type Alias: CreateMappingRuleResponses'
+sidebar_label: 'CreateMappingRuleResponses'
 mdx:
   format: md
 ---

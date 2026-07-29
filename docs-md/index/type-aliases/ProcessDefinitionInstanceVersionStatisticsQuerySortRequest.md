@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionInstanceVersionStatisticsQuerySortRequest"
-sidebar_label: "ProcessDefinitionInstanceVersionStatisticsQuerySortRequest"
+title: 'Type Alias: ProcessDefinitionInstanceVersionStatisticsQuerySortRequest'
+sidebar_label: 'ProcessDefinitionInstanceVersionStatisticsQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,7 +18,7 @@ Defined in: [gen/types.gen.ts:6046](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: 
+field:
   | "processDefinitionId"
   | "processDefinitionKey"
   | "processDefinitionName"
@@ -31,7 +31,7 @@ Defined in: [gen/types.gen.ts:6050](https://github.com/camunda/orchestration-clu
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

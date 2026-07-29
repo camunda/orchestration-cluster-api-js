@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceModificationBatchOperationRequest"
-sidebar_label: "ProcessInstanceModificationBatchOperationRequest"
+title: 'Type Alias: ProcessInstanceModificationBatchOperationRequest'
+sidebar_label: 'ProcessInstanceModificationBatchOperationRequest'
 mdx:
   format: md
 ---
@@ -28,7 +28,7 @@ Defined in: [gen/types.gen.ts:1001](https://github.com/camunda/orchestration-clu
 
 The process instance filter.
 
-***
+---
 
 ### moveInstructions
 
@@ -40,7 +40,7 @@ Defined in: [gen/types.gen.ts:1005](https://github.com/camunda/orchestration-clu
 
 Instructions for moving tokens between elements.
 
-***
+---
 
 ### operationReference?
 

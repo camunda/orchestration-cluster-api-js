@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToUserData"
-sidebar_label: "AssignRoleToUserData"
+title: 'Type Alias: AssignRoleToUserData'
+sidebar_label: 'AssignRoleToUserData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:14612](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14612)
 
-***
+---
 
 ### path
 
@@ -49,7 +49,7 @@ username: Username;
 
 The user username.
 
-***
+---
 
 ### query?
 
@@ -59,12 +59,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:14623](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14623)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/roles/{roleId}/users/{username}";
+url: '/roles/{roleId}/users/{username}';
 ```
 
 Defined in: [gen/types.gen.ts:14624](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L14624)

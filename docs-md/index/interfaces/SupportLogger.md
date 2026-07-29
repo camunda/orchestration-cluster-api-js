@@ -1,6 +1,6 @@
 ---
-title: "Interface: SupportLogger"
-sidebar_label: "SupportLogger"
+title: 'Interface: SupportLogger'
+sidebar_label: 'SupportLogger'
 mdx:
   format: md
 ---

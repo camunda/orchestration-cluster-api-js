@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToMappingRuleErrors"
-sidebar_label: "AssignRoleToMappingRuleErrors"
+title: 'Type Alias: AssignRoleToMappingRuleErrors'
+sidebar_label: 'AssignRoleToMappingRuleErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14461](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:14465](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:14469](https://github.com/camunda/orchestration-cl
 
 The role or mapping rule with the given ID was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:14473](https://github.com/camunda/orchestration-cl
 
 The role is already assigned to the mapping rule with the given ID.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:14477](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

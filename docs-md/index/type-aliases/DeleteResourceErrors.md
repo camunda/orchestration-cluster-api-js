@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteResourceErrors"
-sidebar_label: "DeleteResourceErrors"
+title: 'Type Alias: DeleteResourceErrors'
+sidebar_label: 'DeleteResourceErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13776](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13780](https://github.com/camunda/orchestration-cl
 
 The resource is not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13784](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

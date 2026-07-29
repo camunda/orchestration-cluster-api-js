@@ -1,6 +1,6 @@
 ---
-title: "TypeScript SDK API Reference"
-sidebar_label: "Overview"
+title: 'TypeScript SDK API Reference'
+sidebar_label: 'Overview'
 sidebar_position: 0
 mdx:
   format: md
@@ -938,9 +938,11 @@ Notes:
 
 > **Peer dependency:** `fp-ts` is an optional peer dependency. If you use real `fp-ts` functions
 > (e.g. `pipe`, `TE.match`) alongside this subpath, install it separately:
+>
 > ```sh
 > npm install fp-ts
 > ```
+>
 > The `/fp` subpath works without `fp-ts` installed — it exposes structurally-compatible
 > `Either`/`TaskEither` shapes that interoperate with `fp-ts` but do not require it at runtime.
 

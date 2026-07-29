@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: PublishMessageError"
-sidebar_label: "PublishMessageError"
+title: 'Type Alias: PublishMessageError'
+sidebar_label: 'PublishMessageError'
 mdx:
   format: md
 ---

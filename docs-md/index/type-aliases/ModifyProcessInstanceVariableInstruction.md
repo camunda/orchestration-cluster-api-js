@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ModifyProcessInstanceVariableInstruction"
-sidebar_label: "ModifyProcessInstanceVariableInstruction"
+title: 'Type Alias: ModifyProcessInstanceVariableInstruction'
+sidebar_label: 'ModifyProcessInstanceVariableInstruction'
 mdx:
   format: md
 ---
@@ -28,7 +28,7 @@ Defined in: [gen/types.gen.ts:6720](https://github.com/camunda/orchestration-clu
 The id of the element in which scope the variables should be created.
 Leave empty to create the variables in the global scope of the process instance.
 
-***
+---
 
 ### variables
 

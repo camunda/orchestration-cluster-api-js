@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUserTaskFormData"
-sidebar_label: "GetUserTaskFormData"
+title: 'Type Alias: GetUserTaskFormData'
+sidebar_label: 'GetUserTaskFormData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:16414](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16414)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ userTaskKey: UserTaskKey;
 
 The user task key.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:16421](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16421)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/user-tasks/{userTaskKey}/form";
+url: '/user-tasks/{userTaskKey}/form';
 ```
 
 Defined in: [gen/types.gen.ts:16422](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L16422)

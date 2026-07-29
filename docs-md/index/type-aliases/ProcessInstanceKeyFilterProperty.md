@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceKeyFilterProperty"
-sidebar_label: "ProcessInstanceKeyFilterProperty"
+title: 'Type Alias: ProcessInstanceKeyFilterProperty'
+sidebar_label: 'ProcessInstanceKeyFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: ProcessInstanceKeyFilterProperty
 
 ```ts
-type ProcessInstanceKeyFilterProperty = 
+type ProcessInstanceKeyFilterProperty =
   | ProcessInstanceKeyExactMatch
   | AdvancedProcessInstanceKeyFilter;
 ```

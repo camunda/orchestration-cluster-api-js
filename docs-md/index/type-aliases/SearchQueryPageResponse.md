@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchQueryPageResponse"
-sidebar_label: "SearchQueryPageResponse"
+title: 'Type Alias: SearchQueryPageResponse'
+sidebar_label: 'SearchQueryPageResponse'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7207](https://github.com/camunda/orchestration-clu
 
 The cursor value for getting the next page of results. Use this in the `after` field of an ensuing request.
 
-***
+---
 
 ### hasMoreTotalItems
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:7199](https://github.com/camunda/orchestration-clu
 
 Indicates whether the `totalItems` value has been capped due to system limits. When true, `totalItems` is a lower bound and the actual number of matching items is greater than the reported value.
 
-***
+---
 
 ### startCursor
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:7203](https://github.com/camunda/orchestration-clu
 
 The cursor value for getting the previous page of results. Use this in the `before` field of an ensuing request.
 
-***
+---
 
 ### totalItems
 

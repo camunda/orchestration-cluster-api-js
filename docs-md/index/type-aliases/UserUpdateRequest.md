@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserUpdateRequest"
-sidebar_label: "UserUpdateRequest"
+title: 'Type Alias: UserUpdateRequest'
+sidebar_label: 'UserUpdateRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:7980](https://github.com/camunda/orchestration-clu
 
 The email of the user.
 
-***
+---
 
 ### name?
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:7976](https://github.com/camunda/orchestration-clu
 
 The name of the user.
 
-***
+---
 
 ### password?
 

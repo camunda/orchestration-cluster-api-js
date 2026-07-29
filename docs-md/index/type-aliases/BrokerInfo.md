@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BrokerInfo"
-sidebar_label: "BrokerInfo"
+title: 'Type Alias: BrokerInfo'
+sidebar_label: 'BrokerInfo'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1336](https://github.com/camunda/orchestration-clu
 
 The hostname for reaching the broker.
 
-***
+---
 
 ### nodeId
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1332](https://github.com/camunda/orchestration-clu
 
 The unique (within a cluster) node ID for the broker.
 
-***
+---
 
 ### partitions
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1344](https://github.com/camunda/orchestration-clu
 
 A list of partitions managed or replicated on this broker.
 
-***
+---
 
 ### port
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:1340](https://github.com/camunda/orchestration-clu
 
 The port for reaching the broker.
 
-***
+---
 
 ### version
 

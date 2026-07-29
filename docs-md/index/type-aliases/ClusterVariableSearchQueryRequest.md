@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ClusterVariableSearchQueryRequest"
-sidebar_label: "ClusterVariableSearchQueryRequest"
+title: 'Type Alias: ClusterVariableSearchQueryRequest'
+sidebar_label: 'ClusterVariableSearchQueryRequest'
 mdx:
   format: md
 ---

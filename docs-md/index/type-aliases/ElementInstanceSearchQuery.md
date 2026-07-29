@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ElementInstanceSearchQuery"
-sidebar_label: "ElementInstanceSearchQuery"
+title: 'Type Alias: ElementInstanceSearchQuery'
+sidebar_label: 'ElementInstanceSearchQuery'
 mdx:
   format: md
 ---

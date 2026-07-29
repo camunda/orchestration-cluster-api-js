@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskProperties"
-sidebar_label: "UserTaskProperties"
+title: 'Type Alias: UserTaskProperties'
+sidebar_label: 'UserTaskProperties'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:4094](https://github.com/camunda/orchestration-clu
 
 The action performed on the user task.
 
-***
+---
 
 ### assignee
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:4098](https://github.com/camunda/orchestration-clu
 
 The user assigned to the task.
 
-***
+---
 
 ### candidateGroups
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:4102](https://github.com/camunda/orchestration-clu
 
 The groups eligible to claim the task.
 
-***
+---
 
 ### candidateUsers
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:4106](https://github.com/camunda/orchestration-clu
 
 The users eligible to claim the task.
 
-***
+---
 
 ### changedAttributes
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:4110](https://github.com/camunda/orchestration-clu
 
 The attributes that were changed in the task.
 
-***
+---
 
 ### dueDate
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:4114](https://github.com/camunda/orchestration-clu
 
 The due date of the user task in ISO 8601 format.
 
-***
+---
 
 ### followUpDate
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:4118](https://github.com/camunda/orchestration-clu
 
 The follow-up date of the user task in ISO 8601 format.
 
-***
+---
 
 ### formKey
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:4122](https://github.com/camunda/orchestration-clu
 
 The key of the form associated with the user task.
 
-***
+---
 
 ### priority
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:4126](https://github.com/camunda/orchestration-clu
 
 The priority of the user task.
 
-***
+---
 
 ### userTaskKey
 

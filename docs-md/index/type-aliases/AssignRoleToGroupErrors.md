@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToGroupErrors"
-sidebar_label: "AssignRoleToGroupErrors"
+title: 'Type Alias: AssignRoleToGroupErrors'
+sidebar_label: 'AssignRoleToGroupErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:14304](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 403
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:14308](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:14312](https://github.com/camunda/orchestration-cl
 
 The role or group with the given ID was not found.
 
-***
+---
 
 ### 409
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:14316](https://github.com/camunda/orchestration-cl
 
 The role is already assigned to the group with the given ID.
 
-***
+---
 
 ### 500
 
@@ -73,7 +73,7 @@ Defined in: [gen/types.gen.ts:14320](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

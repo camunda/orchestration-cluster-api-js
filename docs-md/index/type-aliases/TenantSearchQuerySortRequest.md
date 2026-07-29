@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TenantSearchQuerySortRequest"
-sidebar_label: "TenantSearchQuerySortRequest"
+title: 'Type Alias: TenantSearchQuerySortRequest'
+sidebar_label: 'TenantSearchQuerySortRequest'
 mdx:
   format: md
 ---
@@ -18,14 +18,14 @@ Defined in: [gen/types.gen.ts:7375](https://github.com/camunda/orchestration-clu
 ### field
 
 ```ts
-field: "key" | "name" | "tenantId";
+field: 'key' | 'name' | 'tenantId';
 ```
 
 Defined in: [gen/types.gen.ts:7379](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7379)
 
 The field to sort by.
 
-***
+---
 
 ### order?
 

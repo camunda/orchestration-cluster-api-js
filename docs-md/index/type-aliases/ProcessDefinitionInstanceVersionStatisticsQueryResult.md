@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionInstanceVersionStatisticsQueryResult"
-sidebar_label: "ProcessDefinitionInstanceVersionStatisticsQueryResult"
+title: 'Type Alias: ProcessDefinitionInstanceVersionStatisticsQueryResult'
+sidebar_label: 'ProcessDefinitionInstanceVersionStatisticsQueryResult'
 mdx:
   format: md
 ---

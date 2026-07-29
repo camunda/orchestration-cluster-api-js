@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetDocumentData"
-sidebar_label: "GetDocumentData"
+title: 'Type Alias: GetDocumentData'
+sidebar_label: 'GetDocumentData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:10240](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10240)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ documentId: DocumentId;
 
 The ID of the document to download.
 
-***
+---
 
 ### query?
 
@@ -67,12 +67,12 @@ optional storeId: string;
 
 The ID of the document store to download the document from.
 
-***
+---
 
 ### url
 
 ```ts
-url: "/documents/{documentId}";
+url: '/documents/{documentId}';
 ```
 
 Defined in: [gen/types.gen.ts:10258](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10258)

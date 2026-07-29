@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstanceError"
-sidebar_label: "MigrateProcessInstanceError"
+title: 'Type Alias: MigrateProcessInstanceError'
+sidebar_label: 'MigrateProcessInstanceError'
 mdx:
   format: md
 ---

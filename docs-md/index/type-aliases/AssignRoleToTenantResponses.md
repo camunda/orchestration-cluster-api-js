@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignRoleToTenantResponses"
-sidebar_label: "AssignRoleToTenantResponses"
+title: 'Type Alias: AssignRoleToTenantResponses'
+sidebar_label: 'AssignRoleToTenantResponses'
 mdx:
   format: md
 ---

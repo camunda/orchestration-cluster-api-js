@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UserTaskFilter"
-sidebar_label: "UserTaskFilter"
+title: 'Type Alias: UserTaskFilter'
+sidebar_label: 'UserTaskFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7549](https://github.com/camunda/orchestration-clu
 
 The assignee of the user task.
 
-***
+---
 
 ### candidateGroup?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:7566](https://github.com/camunda/orchestration-clu
 
 The candidate group for this user task.
 
-***
+---
 
 ### candidateUser?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:7570](https://github.com/camunda/orchestration-clu
 
 The candidate user for this user task.
 
-***
+---
 
 ### completionDate?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:7586](https://github.com/camunda/orchestration-clu
 
 The user task completion date.
 
-***
+---
 
 ### creationDate?
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:7582](https://github.com/camunda/orchestration-clu
 
 The user task creation date.
 
-***
+---
 
 ### dueDate?
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:7594](https://github.com/camunda/orchestration-clu
 
 The user task due date.
 
-***
+---
 
 ### elementId?
 
@@ -99,7 +99,7 @@ Defined in: [gen/types.gen.ts:7557](https://github.com/camunda/orchestration-clu
 
 The element ID of the user task.
 
-***
+---
 
 ### elementInstanceKey?
 
@@ -111,7 +111,7 @@ Defined in: [gen/types.gen.ts:7618](https://github.com/camunda/orchestration-clu
 
 The key of the element instance.
 
-***
+---
 
 ### followUpDate?
 
@@ -123,7 +123,7 @@ Defined in: [gen/types.gen.ts:7590](https://github.com/camunda/orchestration-clu
 
 The user task follow-up date.
 
-***
+---
 
 ### localVariables?
 
@@ -135,7 +135,7 @@ Defined in: [gen/types.gen.ts:7602](https://github.com/camunda/orchestration-clu
 
 The local variables of the user task.
 
-***
+---
 
 ### name?
 
@@ -147,7 +147,7 @@ Defined in: [gen/types.gen.ts:7562](https://github.com/camunda/orchestration-clu
 
 The task name. This only works for data created with 8.8 and onwards. Instances from prior versions don't contain this data and cannot be found.
 
-***
+---
 
 ### priority?
 
@@ -159,7 +159,7 @@ Defined in: [gen/types.gen.ts:7553](https://github.com/camunda/orchestration-clu
 
 The priority of the user task.
 
-***
+---
 
 ### processDefinitionId?
 
@@ -171,7 +171,7 @@ Defined in: [gen/types.gen.ts:7578](https://github.com/camunda/orchestration-clu
 
 The ID of the process definition.
 
-***
+---
 
 ### processDefinitionKey?
 
@@ -183,7 +183,7 @@ Defined in: [gen/types.gen.ts:7610](https://github.com/camunda/orchestration-clu
 
 The key of the process definition.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -195,7 +195,7 @@ Defined in: [gen/types.gen.ts:7614](https://github.com/camunda/orchestration-clu
 
 The key of the process instance.
 
-***
+---
 
 ### processInstanceVariables?
 
@@ -207,7 +207,7 @@ Defined in: [gen/types.gen.ts:7598](https://github.com/camunda/orchestration-clu
 
 The variables of the process instance.
 
-***
+---
 
 ### state?
 
@@ -219,7 +219,7 @@ Defined in: [gen/types.gen.ts:7545](https://github.com/camunda/orchestration-clu
 
 The user task state.
 
-***
+---
 
 ### tags?
 
@@ -229,7 +229,7 @@ optional tags: TagSet;
 
 Defined in: [gen/types.gen.ts:7619](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L7619)
 
-***
+---
 
 ### tenantId?
 
@@ -241,7 +241,7 @@ Defined in: [gen/types.gen.ts:7574](https://github.com/camunda/orchestration-clu
 
 Tenant ID of this user task.
 
-***
+---
 
 ### userTaskKey?
 

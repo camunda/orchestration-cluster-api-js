@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetGlobalJobStatisticsResponses"
-sidebar_label: "GetGlobalJobStatisticsResponses"
+title: 'Type Alias: GetGlobalJobStatisticsResponses'
+sidebar_label: 'GetGlobalJobStatisticsResponses'
 mdx:
   format: md
 ---

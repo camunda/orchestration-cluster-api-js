@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageCorrelationRequest"
-sidebar_label: "MessageCorrelationRequest"
+title: 'Type Alias: MessageCorrelationRequest'
+sidebar_label: 'MessageCorrelationRequest'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:5285](https://github.com/camunda/orchestration-clu
 
 The correlation key of the message.
 
-***
+---
 
 ### name
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:5281](https://github.com/camunda/orchestration-clu
 
 The message name as defined in the BPMN process
 
-***
+---
 
 ### tenantId?
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:5295](https://github.com/camunda/orchestration-clu
 
 the tenant for which the message is published
 
-***
+---
 
 ### variables?
 

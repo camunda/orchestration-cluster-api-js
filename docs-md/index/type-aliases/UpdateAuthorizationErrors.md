@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateAuthorizationErrors"
-sidebar_label: "UpdateAuthorizationErrors"
+title: 'Type Alias: UpdateAuthorizationErrors'
+sidebar_label: 'UpdateAuthorizationErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:8784](https://github.com/camunda/orchestration-clu
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:8788](https://github.com/camunda/orchestration-clu
 
 The authorization with the authorizationKey was not found.
 
-***
+---
 
 ### 500
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:8792](https://github.com/camunda/orchestration-clu
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 

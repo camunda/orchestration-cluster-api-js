@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchUsersInput"
-sidebar_label: "searchUsersInput"
+title: 'Type Alias: searchUsersInput'
+sidebar_label: 'searchUsersInput'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: searchDecisionDefinitionsConsistency"
-sidebar_label: "searchDecisionDefinitionsConsistency"
+title: 'Type Alias: searchDecisionDefinitionsConsistency'
+sidebar_label: 'searchDecisionDefinitionsConsistency'
 mdx:
   format: md
 ---
@@ -13,7 +13,7 @@ type searchDecisionDefinitionsConsistency = object;
 
 Defined in: [gen/CamundaClient.ts:720](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L720)
 
-Management of eventual consistency *
+Management of eventual consistency \*
 
 ## Properties
 

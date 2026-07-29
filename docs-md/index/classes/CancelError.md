@@ -1,6 +1,6 @@
 ---
-title: "Class: CancelError"
-sidebar_label: "CancelError"
+title: 'Class: CancelError'
+sidebar_label: 'CancelError'
 mdx:
   format: md
 ---
@@ -30,5 +30,5 @@ Defined in: [gen/CamundaClient.ts:1107](https://github.com/camunda/orchestration
 #### Overrides
 
 ```ts
-Error.constructor
+Error.constructor;
 ```

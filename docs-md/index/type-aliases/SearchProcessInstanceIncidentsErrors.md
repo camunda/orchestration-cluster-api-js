@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchProcessInstanceIncidentsErrors"
-sidebar_label: "SearchProcessInstanceIncidentsErrors"
+title: 'Type Alias: SearchProcessInstanceIncidentsErrors'
+sidebar_label: 'SearchProcessInstanceIncidentsErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13484](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 401
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13488](https://github.com/camunda/orchestration-cl
 
 The request lacks valid authentication credentials.
 
-***
+---
 
 ### 403
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13492](https://github.com/camunda/orchestration-cl
 
 Forbidden. The request is not allowed.
 
-***
+---
 
 ### 404
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:13496](https://github.com/camunda/orchestration-cl
 
 The process instance with the given key was not found.
 
-***
+---
 
 ### 500
 

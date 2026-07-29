@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TenantClientSearchQueryRequest"
-sidebar_label: "TenantClientSearchQueryRequest"
+title: 'Type Alias: TenantClientSearchQueryRequest'
+sidebar_label: 'TenantClientSearchQueryRequest'
 mdx:
   format: md
 ---

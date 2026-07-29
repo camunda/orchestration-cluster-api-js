@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetStartProcessFormData"
-sidebar_label: "GetStartProcessFormData"
+title: 'Type Alias: GetStartProcessFormData'
+sidebar_label: 'GetStartProcessFormData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:12767](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12767)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ processDefinitionKey: ProcessDefinitionKey;
 
 The process key.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:12774](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12774)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/process-definitions/{processDefinitionKey}/form";
+url: '/process-definitions/{processDefinitionKey}/form';
 ```
 
 Defined in: [gen/types.gen.ts:12775](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L12775)

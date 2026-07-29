@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionEvaluationById"
-sidebar_label: "DecisionEvaluationById"
+title: 'Type Alias: DecisionEvaluationById'
+sidebar_label: 'DecisionEvaluationById'
 mdx:
   format: md
 ---
@@ -29,7 +29,7 @@ The ID of the decision to be evaluated.
 When using the decision ID, the latest
 deployed version of the decision is used.
 
-***
+---
 
 ### tenantId?
 
@@ -41,7 +41,7 @@ Defined in: [gen/types.gen.ts:1567](https://github.com/camunda/orchestration-clu
 
 The tenant ID of the decision.
 
-***
+---
 
 ### variables?
 

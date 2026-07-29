@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TopologyResponse"
-sidebar_label: "TopologyResponse"
+title: 'Type Alias: TopologyResponse'
+sidebar_label: 'TopologyResponse'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:1298](https://github.com/camunda/orchestration-clu
 
 A list of brokers that are part of this cluster.
 
-***
+---
 
 ### clusterId
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:1302](https://github.com/camunda/orchestration-clu
 
 The cluster Id.
 
-***
+---
 
 ### clusterSize
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:1306](https://github.com/camunda/orchestration-clu
 
 The number of brokers in the cluster.
 
-***
+---
 
 ### gatewayVersion
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:1318](https://github.com/camunda/orchestration-clu
 
 The version of the Zeebe Gateway.
 
-***
+---
 
 ### lastCompletedChangeId
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:1322](https://github.com/camunda/orchestration-clu
 
 ID of the last completed change
 
-***
+---
 
 ### partitionsCount
 
@@ -87,7 +87,7 @@ Defined in: [gen/types.gen.ts:1310](https://github.com/camunda/orchestration-clu
 
 The number of partitions are spread across the cluster.
 
-***
+---
 
 ### replicationFactor
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ResumeBatchOperationError"
-sidebar_label: "ResumeBatchOperationError"
+title: 'Type Alias: ResumeBatchOperationError'
+sidebar_label: 'ResumeBatchOperationError'
 mdx:
   format: md
 ---

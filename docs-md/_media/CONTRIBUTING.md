@@ -1,6 +1,6 @@
 ---
-title: "Contributing"
-sidebar_label: "Contributing"
+title: 'Contributing'
+sidebar_label: 'Contributing'
 mdx:
   format: md
 ---

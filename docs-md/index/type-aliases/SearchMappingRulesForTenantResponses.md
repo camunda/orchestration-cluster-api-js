@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchMappingRulesForTenantResponses"
-sidebar_label: "SearchMappingRulesForTenantResponses"
+title: 'Type Alias: SearchMappingRulesForTenantResponses'
+sidebar_label: 'SearchMappingRulesForTenantResponses'
 mdx:
   format: md
 ---

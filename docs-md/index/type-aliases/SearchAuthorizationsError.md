@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchAuthorizationsError"
-sidebar_label: "SearchAuthorizationsError"
+title: 'Type Alias: SearchAuthorizationsError'
+sidebar_label: 'SearchAuthorizationsError'
 mdx:
   format: md
 ---

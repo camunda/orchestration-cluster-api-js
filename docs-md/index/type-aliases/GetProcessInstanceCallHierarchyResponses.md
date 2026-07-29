@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetProcessInstanceCallHierarchyResponses"
-sidebar_label: "GetProcessInstanceCallHierarchyResponses"
+title: 'Type Alias: GetProcessInstanceCallHierarchyResponses'
+sidebar_label: 'GetProcessInstanceCallHierarchyResponses'
 mdx:
   format: md
 ---

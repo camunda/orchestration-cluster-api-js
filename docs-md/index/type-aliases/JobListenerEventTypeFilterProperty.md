@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobListenerEventTypeFilterProperty"
-sidebar_label: "JobListenerEventTypeFilterProperty"
+title: 'Type Alias: JobListenerEventTypeFilterProperty'
+sidebar_label: 'JobListenerEventTypeFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: JobListenerEventTypeFilterProperty
 
 ```ts
-type JobListenerEventTypeFilterProperty = 
+type JobListenerEventTypeFilterProperty =
   | JobListenerEventTypeExactMatch
   | AdvancedJobListenerEventTypeFilter;
 ```

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MessageSubscriptionStateFilterProperty"
-sidebar_label: "MessageSubscriptionStateFilterProperty"
+title: 'Type Alias: MessageSubscriptionStateFilterProperty'
+sidebar_label: 'MessageSubscriptionStateFilterProperty'
 mdx:
   format: md
 ---
@@ -8,7 +8,7 @@ mdx:
 # Type Alias: MessageSubscriptionStateFilterProperty
 
 ```ts
-type MessageSubscriptionStateFilterProperty = 
+type MessageSubscriptionStateFilterProperty =
   | MessageSubscriptionStateExactMatch
   | AdvancedMessageSubscriptionStateFilter;
 ```

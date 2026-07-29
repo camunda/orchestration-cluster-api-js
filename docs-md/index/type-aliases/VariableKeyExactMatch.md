@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: VariableKeyExactMatch"
-sidebar_label: "VariableKeyExactMatch"
+title: 'Type Alias: VariableKeyExactMatch'
+sidebar_label: 'VariableKeyExactMatch'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessDefinitionElementStatisticsQuery"
-sidebar_label: "ProcessDefinitionElementStatisticsQuery"
+title: 'Type Alias: ProcessDefinitionElementStatisticsQuery'
+sidebar_label: 'ProcessDefinitionElementStatisticsQuery'
 mdx:
   format: md
 ---

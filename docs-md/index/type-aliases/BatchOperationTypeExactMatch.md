@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationTypeExactMatch"
-sidebar_label: "BatchOperationTypeExactMatch"
+title: 'Type Alias: BatchOperationTypeExactMatch'
+sidebar_label: 'BatchOperationTypeExactMatch'
 mdx:
   format: md
 ---

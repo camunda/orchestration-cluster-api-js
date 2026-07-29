@@ -1,6 +1,6 @@
 ---
-title: "MessageKey"
-sidebar_label: "Overview"
+title: 'MessageKey'
+sidebar_label: 'Overview'
 mdx:
   format: md
 ---

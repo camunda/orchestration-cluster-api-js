@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobListenerEventTypeExactMatch"
-sidebar_label: "JobListenerEventTypeExactMatch"
+title: 'Type Alias: JobListenerEventTypeExactMatch'
+sidebar_label: 'JobListenerEventTypeExactMatch'
 mdx:
   format: md
 ---

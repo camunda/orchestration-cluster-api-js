@@ -1,6 +1,6 @@
 ---
-title: "Interface: JobWorker"
-sidebar_label: "JobWorker"
+title: 'Interface: JobWorker'
+sidebar_label: 'JobWorker'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [runtime/jobWorker.ts:105](https://github.com/camunda/orchestration-
 
 `number`
 
-***
+---
 
 ### name
 
@@ -41,7 +41,7 @@ Defined in: [runtime/jobWorker.ts:102](https://github.com/camunda/orchestration-
 
 `string`
 
-***
+---
 
 ### stopped
 
@@ -71,7 +71,7 @@ Defined in: [runtime/jobWorker.ts:112](https://github.com/camunda/orchestration-
 
 `void`
 
-***
+---
 
 ### stop()
 
@@ -85,7 +85,7 @@ Defined in: [runtime/jobWorker.ts:126](https://github.com/camunda/orchestration-
 
 `void`
 
-***
+---
 
 ### stopGracefully()
 
@@ -117,6 +117,6 @@ If timeout is reached, falls back to hard stop logic (cancels activation if stil
 #### Returns
 
 `Promise`\<\{
-  `remainingJobs`: `number`;
-  `timedOut`: `boolean`;
+`remainingJobs`: `number`;
+`timedOut`: `boolean`;
 \}\>

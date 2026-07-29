@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchClientsForGroupData"
-sidebar_label: "SearchClientsForGroupData"
+title: 'Type Alias: SearchClientsForGroupData'
+sidebar_label: 'SearchClientsForGroupData'
 mdx:
   format: md
 ---
@@ -33,7 +33,7 @@ optional sort: object[];
 
 Sort field criteria.
 
-***
+---
 
 ### path
 
@@ -51,7 +51,7 @@ groupId: string;
 
 The group ID.
 
-***
+---
 
 ### query?
 
@@ -61,12 +61,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:11047](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11047)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/groups/{groupId}/clients/search";
+url: '/groups/{groupId}/clients/search';
 ```
 
 Defined in: [gen/types.gen.ts:11048](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L11048)

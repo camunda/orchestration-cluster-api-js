@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UnassignUserTaskResponse"
-sidebar_label: "UnassignUserTaskResponse"
+title: 'Type Alias: UnassignUserTaskResponse'
+sidebar_label: 'UnassignUserTaskResponse'
 mdx:
   format: md
 ---

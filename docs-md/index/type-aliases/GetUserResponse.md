@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetUserResponse"
-sidebar_label: "GetUserResponse"
+title: 'Type Alias: GetUserResponse'
+sidebar_label: 'GetUserResponse'
 mdx:
   format: md
 ---

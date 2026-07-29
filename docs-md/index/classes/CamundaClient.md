@@ -1,6 +1,6 @@
 ---
-title: "Class: CamundaClient"
-sidebar_label: "CamundaClient"
+title: 'Class: CamundaClient'
+sidebar_label: 'CamundaClient'
 mdx:
   format: md
 ---
@@ -61,7 +61,7 @@ Internal accessor for support logger (no public API commitment yet).
 
 [`SupportLogger`](../interfaces/SupportLogger.md)
 
-***
+---
 
 ### \_invokeWithRetry()
 
@@ -101,14 +101,14 @@ Internal invocation helper to apply global backpressure gating + retry + normali
 
 ###### retryOverride?
 
-  \| `false`
-  \| `Partial`\<[`HttpRetryPolicy`](../interfaces/HttpRetryPolicy.md)\>
+\| `false`
+\| `Partial`\<[`HttpRetryPolicy`](../interfaces/HttpRetryPolicy.md)\>
 
 #### Returns
 
 `Promise`\<`T`\>
 
-***
+---
 
 ### activateAdHocSubProcessActivities()
 
@@ -124,7 +124,7 @@ Activates selected activities within an ad-hoc sub-process identified by element
 The provided element IDs must exist within the ad-hoc sub-process instance identified by the
 provided adHocSubProcessInstanceKey.
 
- *
+-
 
 #### Parameters
 
@@ -163,7 +163,7 @@ activateAdHocSubProcessActivities
 
 Ad-hoc sub-process
 
-***
+---
 
 ### activateJobs()
 
@@ -179,7 +179,7 @@ Activate jobs
 
 Iterate through all known partitions and activate jobs up to the requested maximum.
 
- *
+-
 
 #### Parameters
 
@@ -194,7 +194,7 @@ Iterate through all known partitions and activate jobs up to the requested maxim
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `jobs`: [`EnrichedActivatedJob`](../interfaces/EnrichedActivatedJob.md)[];
+`jobs`: [`EnrichedActivatedJob`](../interfaces/EnrichedActivatedJob.md)[];
 \}\>
 
 #### Example
@@ -226,7 +226,7 @@ activateJobs
 
 Job
 
-***
+---
 
 ### assignClientToGroup()
 
@@ -241,7 +241,7 @@ Assign a client to a group
 Assigns a client to a group, making it a member of the group.
 Members of the group inherit the group authorizations, roles, and tenant assignments.
 
- *
+-
 
 #### Parameters
 
@@ -278,7 +278,7 @@ assignClientToGroup
 
 Group
 
-***
+---
 
 ### assignClientToTenant()
 
@@ -293,7 +293,7 @@ Assign a client to a tenant
 Assign the client to the specified tenant.
 The client can then access tenant data and perform authorized actions.
 
- *
+-
 
 #### Parameters
 
@@ -330,7 +330,7 @@ assignClientToTenant
 
 Tenant
 
-***
+---
 
 ### assignGroupToTenant()
 
@@ -345,7 +345,7 @@ Assign a group to a tenant
 Assigns a group to a specified tenant.
 Group members (users, clients) can then access tenant data and perform authorized actions.
 
- *
+-
 
 #### Parameters
 
@@ -382,7 +382,7 @@ assignGroupToTenant
 
 Tenant
 
-***
+---
 
 ### assignMappingRuleToGroup()
 
@@ -395,7 +395,8 @@ Defined in: [gen/CamundaClient.ts:1929](https://github.com/camunda/orchestration
 Assign a mapping rule to a group
 
 Assigns a mapping rule to a group.
- *
+
+-
 
 #### Parameters
 
@@ -432,7 +433,7 @@ assignMappingRuleToGroup
 
 Group
 
-***
+---
 
 ### assignMappingRuleToTenant()
 
@@ -445,7 +446,8 @@ Defined in: [gen/CamundaClient.ts:1991](https://github.com/camunda/orchestration
 Assign a mapping rule to a tenant
 
 Assign a single mapping rule to a specified tenant.
- *
+
+-
 
 #### Parameters
 
@@ -482,7 +484,7 @@ assignMappingRuleToTenant
 
 Tenant
 
-***
+---
 
 ### assignRoleToClient()
 
@@ -495,7 +497,8 @@ Defined in: [gen/CamundaClient.ts:2053](https://github.com/camunda/orchestration
 Assign a role to a client
 
 Assigns the specified role to the client. The client will inherit the authorizations associated with this role.
- *
+
+-
 
 #### Parameters
 
@@ -532,7 +535,7 @@ assignRoleToClient
 
 Role
 
-***
+---
 
 ### assignRoleToGroup()
 
@@ -545,7 +548,8 @@ Defined in: [gen/CamundaClient.ts:2115](https://github.com/camunda/orchestration
 Assign a role to a group
 
 Assigns the specified role to the group. Every member of the group (user or client) will inherit the authorizations associated with this role.
- *
+
+-
 
 #### Parameters
 
@@ -582,7 +586,7 @@ assignRoleToGroup
 
 Role
 
-***
+---
 
 ### assignRoleToMappingRule()
 
@@ -595,7 +599,8 @@ Defined in: [gen/CamundaClient.ts:2177](https://github.com/camunda/orchestration
 Assign a role to a mapping rule
 
 Assigns a role to a mapping rule.
- *
+
+-
 
 #### Parameters
 
@@ -632,7 +637,7 @@ assignRoleToMappingRule
 
 Role
 
-***
+---
 
 ### assignRoleToTenant()
 
@@ -647,7 +652,7 @@ Assign a role to a tenant
 Assigns a role to a specified tenant.
 Users, Clients or Groups, that have the role assigned, will get access to the tenant's data and can perform actions according to their authorizations.
 
- *
+-
 
 #### Parameters
 
@@ -684,7 +689,7 @@ assignRoleToTenant
 
 Tenant
 
-***
+---
 
 ### assignRoleToUser()
 
@@ -697,7 +702,8 @@ Defined in: [gen/CamundaClient.ts:2303](https://github.com/camunda/orchestration
 Assign a role to a user
 
 Assigns the specified role to the user. The user will inherit the authorizations associated with this role.
- *
+
+-
 
 #### Parameters
 
@@ -734,7 +740,7 @@ assignRoleToUser
 
 Role
 
-***
+---
 
 ### assignUserTask()
 
@@ -748,7 +754,7 @@ Assign user task
 
 Assigns a user task with the given key to the given assignee. Assignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
 
- *
+-
 
 #### Parameters
 
@@ -788,7 +794,7 @@ assignUserTask
 
 User task
 
-***
+---
 
 ### assignUserToGroup()
 
@@ -803,7 +809,7 @@ Assign a user to a group
 Assigns a user to a group, making the user a member of the group.
 Group members inherit the group authorizations, roles, and tenant assignments.
 
- *
+-
 
 #### Parameters
 
@@ -840,7 +846,7 @@ assignUserToGroup
 
 Group
 
-***
+---
 
 ### assignUserToTenant()
 
@@ -853,7 +859,8 @@ Defined in: [gen/CamundaClient.ts:2494](https://github.com/camunda/orchestration
 Assign a user to a tenant
 
 Assign a single user to a specified tenant. The user can then access tenant data and perform authorized actions.
- *
+
+-
 
 #### Parameters
 
@@ -890,7 +897,7 @@ assignUserToTenant
 
 Tenant
 
-***
+---
 
 ### broadcastSignal()
 
@@ -903,7 +910,8 @@ Defined in: [gen/CamundaClient.ts:2556](https://github.com/camunda/orchestration
 Broadcast signal
 
 Broadcasts a signal.
- *
+
+-
 
 #### Parameters
 
@@ -944,7 +952,7 @@ broadcastSignal
 
 Signal
 
-***
+---
 
 ### cancelBatchOperation()
 
@@ -959,7 +967,7 @@ Cancel Batch operation
 Cancels a running batch operation.
 This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -997,7 +1005,7 @@ cancelBatchOperation
 
 Batch operation
 
-***
+---
 
 ### cancelProcessInstance()
 
@@ -1011,7 +1019,7 @@ Cancel process instance
 
 Cancels a running process instance. As a cancellation includes more than just the removal of the process instance resource, the cancellation resource must be posted. Cancellation can wait on listener-related processing; when that processing does not complete in time, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
 
- *
+-
 
 #### Parameters
 
@@ -1053,7 +1061,7 @@ cancelProcessInstance
 
 Process instance
 
-***
+---
 
 ### cancelProcessInstancesBatchOperation()
 
@@ -1070,7 +1078,7 @@ Since only ACTIVE root instances can be cancelled, any given filters for state a
 parentProcessInstanceKey are ignored and overridden during this batch operation.
 This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -1110,7 +1118,7 @@ cancelProcessInstancesBatchOperation
 
 Process instance
 
-***
+---
 
 ### clearAuthCache()
 
@@ -1136,7 +1144,7 @@ Defined in: [gen/CamundaClient.ts:1442](https://github.com/camunda/orchestration
 
 `void`
 
-***
+---
 
 ### completeJob()
 
@@ -1150,7 +1158,7 @@ Complete job
 
 Complete a job with the given payload, which allows completing the associated service task.
 
- *
+-
 
 #### Parameters
 
@@ -1192,7 +1200,7 @@ completeJob
 
 Job
 
-***
+---
 
 ### completeUserTask()
 
@@ -1206,7 +1214,7 @@ Complete user task
 
 Completes a user task with the given key. Completion waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
 
- *
+-
 
 #### Parameters
 
@@ -1248,7 +1256,7 @@ completeUserTask
 
 User task
 
-***
+---
 
 ### configure()
 
@@ -1268,7 +1276,7 @@ Defined in: [gen/CamundaClient.ts:1344](https://github.com/camunda/orchestration
 
 `void`
 
-***
+---
 
 ### correlateMessage()
 
@@ -1285,7 +1293,7 @@ If correlation is successful it will return the first process instance key the m
 The message is not buffered.
 Use the publish message endpoint to send messages that can be buffered.
 
- *
+-
 
 #### Parameters
 
@@ -1328,7 +1336,7 @@ correlateMessage
 
 Message
 
-***
+---
 
 ### createAdminUser()
 
@@ -1341,7 +1349,8 @@ Defined in: [gen/CamundaClient.ts:3019](https://github.com/camunda/orchestration
 Create admin user
 
 Creates a new user and assigns the admin role to it. This endpoint is only usable when users are managed in the Orchestration Cluster and while no user is assigned to the admin role.
- *
+
+-
 
 #### Parameters
 
@@ -1382,7 +1391,7 @@ createAdminUser
 
 Setup
 
-***
+---
 
 ### createAuthorization()
 
@@ -1395,7 +1404,8 @@ Defined in: [gen/CamundaClient.ts:3081](https://github.com/camunda/orchestration
 Create authorization
 
 Create the authorization.
- *
+
+-
 
 #### Parameters
 
@@ -1437,7 +1447,7 @@ createAuthorization
 
 Authorization
 
-***
+---
 
 ### createDeployment()
 
@@ -1452,7 +1462,7 @@ Deploy resources
 Deploys one or more resources (e.g. processes, decision models, or forms).
 This is an atomic call, i.e. either all resources are deployed or none of them are.
 
- *
+-
 
 #### Parameters
 
@@ -1497,7 +1507,7 @@ createDeployment
 
 Resource
 
-***
+---
 
 ### createDocument()
 
@@ -1513,7 +1523,7 @@ Upload a document to the Camunda 8 cluster.
 
 Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
 
- *
+-
 
 #### Parameters
 
@@ -1537,7 +1547,7 @@ createDocument
 
 Document
 
-***
+---
 
 ### createDocumentLink()
 
@@ -1553,7 +1563,7 @@ Create a link to a document in the Camunda 8 cluster.
 
 Note that this is currently supported for document stores of type: AWS, GCP
 
- *
+-
 
 #### Parameters
 
@@ -1594,7 +1604,7 @@ createDocumentLink
 
 Document
 
-***
+---
 
 ### createDocuments()
 
@@ -1622,7 +1632,7 @@ The client can choose to retry the whole batch or individual documents based on 
 
 Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
 
- *
+-
 
 #### Parameters
 
@@ -1646,7 +1656,7 @@ createDocuments
 
 Document
 
-***
+---
 
 ### createElementInstanceVariables()
 
@@ -1665,7 +1675,7 @@ request timeout, this endpoint can return 504. Other gateway timeout causes are 
 possible. Retry with backoff and inspect listener worker availability and logs when this
 repeats.
 
- *
+-
 
 #### Parameters
 
@@ -1704,7 +1714,7 @@ createElementInstanceVariables
 
 Element instance
 
-***
+---
 
 ### createGlobalClusterVariable()
 
@@ -1717,7 +1727,8 @@ Defined in: [gen/CamundaClient.ts:3508](https://github.com/camunda/orchestration
 Create a global-scoped cluster variable
 
 Create a global-scoped cluster variable.
- *
+
+-
 
 #### Parameters
 
@@ -1756,7 +1767,7 @@ createGlobalClusterVariable
 
 Cluster Variable
 
-***
+---
 
 ### createGlobalTaskListener()
 
@@ -1769,7 +1780,8 @@ Defined in: [gen/CamundaClient.ts:3570](https://github.com/camunda/orchestration
 Create global user task listener
 
 Create a new global user task listener.
- *
+
+-
 
 #### Parameters
 
@@ -1809,7 +1821,7 @@ createGlobalTaskListener
 
 Global listener
 
-***
+---
 
 ### createGroup()
 
@@ -1822,7 +1834,8 @@ Defined in: [gen/CamundaClient.ts:3632](https://github.com/camunda/orchestration
 Create group
 
 Create a new group.
- *
+
+-
 
 #### Parameters
 
@@ -1861,7 +1874,7 @@ createGroup
 
 Group
 
-***
+---
 
 ### createJobWorker()
 
@@ -1877,15 +1890,15 @@ Create a job worker that activates and processes jobs of the given type.
 
 ##### In
 
-`In` *extends* `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
+`In` _extends_ `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
 
 ##### Out
 
-`Out` *extends* `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
+`Out` _extends_ `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
 
 ##### Headers
 
-`Headers` *extends* `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
+`Headers` _extends_ `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
 
 #### Parameters
 
@@ -1946,7 +1959,7 @@ async function jobWorkerWithErrorHandlingExample() {
 }
 ```
 
-***
+---
 
 ### createMappingRule()
 
@@ -1960,7 +1973,7 @@ Create mapping rule
 
 Create a new mapping rule
 
- *
+-
 
 #### Parameters
 
@@ -2001,7 +2014,7 @@ createMappingRule
 
 Mapping rule
 
-***
+---
 
 ### createProcessInstance()
 
@@ -2020,7 +2033,7 @@ The process definition to use to create the instance can be specified either usi
 Waits for the completion of the process instance before returning a result
 when awaitCompletion is enabled.
 
- *
+-
 
 #### Parameters
 
@@ -2081,7 +2094,7 @@ createProcessInstance
 
 Process instance
 
-***
+---
 
 ### createRole()
 
@@ -2094,7 +2107,8 @@ Defined in: [gen/CamundaClient.ts:3831](https://github.com/camunda/orchestration
 Create role
 
 Create a new role.
- *
+
+-
 
 #### Parameters
 
@@ -2133,7 +2147,7 @@ createRole
 
 Role
 
-***
+---
 
 ### createTenant()
 
@@ -2146,7 +2160,8 @@ Defined in: [gen/CamundaClient.ts:3893](https://github.com/camunda/orchestration
 Create tenant
 
 Creates a new tenant.
- *
+
+-
 
 #### Parameters
 
@@ -2185,7 +2200,7 @@ createTenant
 
 Tenant
 
-***
+---
 
 ### createTenantClusterVariable()
 
@@ -2198,7 +2213,8 @@ Defined in: [gen/CamundaClient.ts:3955](https://github.com/camunda/orchestration
 Create a tenant-scoped cluster variable
 
 Create a new cluster variable for the given tenant.
- *
+
+-
 
 #### Parameters
 
@@ -2238,7 +2254,7 @@ createTenantClusterVariable
 
 Cluster Variable
 
-***
+---
 
 ### createThreadedJobWorker()
 
@@ -2259,15 +2275,15 @@ throughput for CPU-bound job handlers.
 
 ##### In
 
-`In` *extends* `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
+`In` _extends_ `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
 
 ##### Out
 
-`Out` *extends* `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
+`Out` _extends_ `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
 
 ##### Headers
 
-`Headers` *extends* `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
+`Headers` _extends_ `ZodType`\<`unknown`, `unknown`, `$ZodTypeInternals`\<`unknown`, `unknown`\>\> = `any`
 
 #### Parameters
 
@@ -2289,10 +2305,10 @@ const worker = client.createThreadedJobWorker({
   handlerModule: './my-handler.js',
   maxParallelJobs: 32,
   jobTimeoutMs: 30000,
-})
+});
 ```
 
-***
+---
 
 ### createUser()
 
@@ -2305,7 +2321,8 @@ Defined in: [gen/CamundaClient.ts:4019](https://github.com/camunda/orchestration
 Create user
 
 Create a new user.
- *
+
+-
 
 #### Parameters
 
@@ -2346,7 +2363,7 @@ createUser
 
 User
 
-***
+---
 
 ### deleteAuthorization()
 
@@ -2359,7 +2376,8 @@ Defined in: [gen/CamundaClient.ts:4081](https://github.com/camunda/orchestration
 Delete authorization
 
 Deletes the authorization with the given key.
- *
+
+-
 
 #### Parameters
 
@@ -2395,7 +2413,7 @@ deleteAuthorization
 
 Authorization
 
-***
+---
 
 ### deleteDecisionInstance()
 
@@ -2408,7 +2426,8 @@ Defined in: [gen/CamundaClient.ts:4143](https://github.com/camunda/orchestration
 Delete decision instance
 
 Delete all associated decision evaluations based on provided key.
- *
+
+-
 
 #### Parameters
 
@@ -2444,7 +2463,7 @@ deleteDecisionInstance
 
 Decision instance
 
-***
+---
 
 ### deleteDecisionInstancesBatchOperation()
 
@@ -2459,7 +2478,7 @@ Delete decision instances (batch)
 Delete multiple decision instances. This will delete the historic data from secondary storage.
 This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -2497,7 +2516,7 @@ deleteDecisionInstancesBatchOperation
 
 Decision instance
 
-***
+---
 
 ### deleteDocument()
 
@@ -2513,7 +2532,7 @@ Delete a document from the Camunda 8 cluster.
 
 Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
 
- *
+-
 
 #### Parameters
 
@@ -2549,7 +2568,7 @@ deleteDocument
 
 Document
 
-***
+---
 
 ### deleteGlobalClusterVariable()
 
@@ -2562,7 +2581,8 @@ Defined in: [gen/CamundaClient.ts:4338](https://github.com/camunda/orchestration
 Delete a global-scoped cluster variable
 
 Delete a global-scoped cluster variable.
- *
+
+-
 
 #### Parameters
 
@@ -2596,7 +2616,7 @@ deleteGlobalClusterVariable
 
 Cluster Variable
 
-***
+---
 
 ### deleteGlobalTaskListener()
 
@@ -2609,7 +2629,8 @@ Defined in: [gen/CamundaClient.ts:4400](https://github.com/camunda/orchestration
 Delete global user task listener
 
 Deletes a global user task listener.
- *
+
+-
 
 #### Parameters
 
@@ -2645,7 +2666,7 @@ deleteGlobalTaskListener
 
 Global listener
 
-***
+---
 
 ### deleteGroup()
 
@@ -2658,7 +2679,8 @@ Defined in: [gen/CamundaClient.ts:4462](https://github.com/camunda/orchestration
 Delete group
 
 Deletes the group with the given ID.
- *
+
+-
 
 #### Parameters
 
@@ -2692,7 +2714,7 @@ deleteGroup
 
 Group
 
-***
+---
 
 ### deleteMappingRule()
 
@@ -2706,7 +2728,7 @@ Delete a mapping rule
 
 Deletes the mapping rule with the given ID.
 
- *
+-
 
 #### Parameters
 
@@ -2740,7 +2762,7 @@ deleteMappingRule
 
 Mapping rule
 
-***
+---
 
 ### deleteProcessInstance()
 
@@ -2753,7 +2775,8 @@ Defined in: [gen/CamundaClient.ts:4587](https://github.com/camunda/orchestration
 Delete process instance
 
 Deletes a process instance. Only instances that are completed or terminated can be deleted.
- *
+
+-
 
 #### Parameters
 
@@ -2789,7 +2812,7 @@ deleteProcessInstance
 
 Process instance
 
-***
+---
 
 ### deleteProcessInstancesBatchOperation()
 
@@ -2805,7 +2828,7 @@ Delete multiple process instances. This will delete the historic data from secon
 Only process instances in a final state (COMPLETED or TERMINATED) can be deleted.
 This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -2845,7 +2868,7 @@ deleteProcessInstancesBatchOperation
 
 Process instance
 
-***
+---
 
 ### deleteResource()
 
@@ -2870,7 +2893,8 @@ to `true`. The historic data is deleted asynchronously via a batch operation. Th
 the created batch operation are included in the response. Note that history deletion is only
 supported for process resources; for other resource types this flag is ignored and no history
 will be deleted.
- *
+
+-
 
 #### Parameters
 
@@ -2909,7 +2933,7 @@ deleteResource
 
 Resource
 
-***
+---
 
 ### deleteRole()
 
@@ -2922,7 +2946,8 @@ Defined in: [gen/CamundaClient.ts:4792](https://github.com/camunda/orchestration
 Delete role
 
 Deletes the role with the given ID.
- *
+
+-
 
 #### Parameters
 
@@ -2956,7 +2981,7 @@ deleteRole
 
 Role
 
-***
+---
 
 ### deleteTenant()
 
@@ -2969,7 +2994,8 @@ Defined in: [gen/CamundaClient.ts:4854](https://github.com/camunda/orchestration
 Delete tenant
 
 Deletes an existing tenant.
- *
+
+-
 
 #### Parameters
 
@@ -3005,7 +3031,7 @@ deleteTenant
 
 Tenant
 
-***
+---
 
 ### deleteTenantClusterVariable()
 
@@ -3018,7 +3044,8 @@ Defined in: [gen/CamundaClient.ts:4916](https://github.com/camunda/orchestration
 Delete a tenant-scoped cluster variable
 
 Delete a tenant-scoped cluster variable.
- *
+
+-
 
 #### Parameters
 
@@ -3055,7 +3082,7 @@ deleteTenantClusterVariable
 
 Cluster Variable
 
-***
+---
 
 ### deleteUser()
 
@@ -3068,7 +3095,8 @@ Defined in: [gen/CamundaClient.ts:4978](https://github.com/camunda/orchestration
 Delete user
 
 Deletes a user.
- *
+
+-
 
 #### Parameters
 
@@ -3104,7 +3132,7 @@ deleteUser
 
 User
 
-***
+---
 
 ### deployResourcesFromFiles()
 
@@ -3138,7 +3166,7 @@ Optional: tenantId.
 
 ExtendedDeploymentResult
 
-***
+---
 
 ### emitSupportLogPreamble()
 
@@ -3156,7 +3184,7 @@ Useful when a custom supportLogger was injected and you still want the canonical
 
 `void`
 
-***
+---
 
 ### evaluateConditionals()
 
@@ -3172,7 +3200,7 @@ Evaluates root-level conditional start events for process definitions.
 If the evaluation is successful, it will return the keys of all created process instances, along with their associated process definition key.
 Multiple root-level conditional start events of the same process definition can trigger if their conditions evaluate to true.
 
- *
+-
 
 #### Parameters
 
@@ -3211,7 +3239,7 @@ evaluateConditionals
 
 Conditional
 
-***
+---
 
 ### evaluateDecision()
 
@@ -3228,7 +3256,7 @@ You specify the decision to evaluate either by using its unique key (as returned
 DeployResource), or using the decision ID. When using the decision ID, the latest deployed
 version of the decision is used.
 
- *
+-
 
 #### Parameters
 
@@ -3289,7 +3317,7 @@ evaluateDecision
 
 Decision definition
 
-***
+---
 
 ### evaluateExpression()
 
@@ -3302,7 +3330,8 @@ Defined in: [gen/CamundaClient.ts:5181](https://github.com/camunda/orchestration
 Evaluate an expression
 
 Evaluates a FEEL expression and returns the result. Supports references to tenant scoped cluster variables when a tenant ID is provided.
- *
+
+-
 
 #### Parameters
 
@@ -3341,7 +3370,7 @@ evaluateExpression
 
 Expression
 
-***
+---
 
 ### failJob()
 
@@ -3355,7 +3384,7 @@ Fail job
 
 Mark the job as failed.
 
- *
+-
 
 #### Parameters
 
@@ -3396,7 +3425,7 @@ failJob
 
 Job
 
-***
+---
 
 ### forceAuthRefresh()
 
@@ -3410,14 +3439,14 @@ Defined in: [gen/CamundaClient.ts:1439](https://github.com/camunda/orchestration
 
 `Promise`\<`string` \| `undefined`\>
 
-***
+---
 
 ### getAuditLog()
 
 ```ts
 getAuditLog(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<AuditLogResult>;
 ```
 
@@ -3426,7 +3455,8 @@ Defined in: [gen/CamundaClient.ts:5313](https://github.com/camunda/orchestration
 Get audit log
 
 Get an audit log entry by auditLogKey.
- *
+
+-
 
 #### Parameters
 
@@ -3473,7 +3503,7 @@ Audit Log
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getAuthentication()
 
@@ -3486,7 +3516,8 @@ Defined in: [gen/CamundaClient.ts:5379](https://github.com/camunda/orchestration
 Get current user
 
 Retrieves the current authenticated user.
- *
+
+-
 
 #### Parameters
 
@@ -3518,7 +3549,7 @@ getAuthentication
 
 Authentication
 
-***
+---
 
 ### getAuthHeaders()
 
@@ -3532,14 +3563,14 @@ Defined in: [gen/CamundaClient.ts:1436](https://github.com/camunda/orchestration
 
 `Promise`\<`Record`\<`string`, `string`\>\>
 
-***
+---
 
 ### getAuthorization()
 
 ```ts
 getAuthorization(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<AuthorizationResult>;
 ```
 
@@ -3548,7 +3579,8 @@ Defined in: [gen/CamundaClient.ts:5432](https://github.com/camunda/orchestration
 Get authorization
 
 Get authorization by the given key.
- *
+
+-
 
 #### Parameters
 
@@ -3597,12 +3629,12 @@ Authorization
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getBackpressureState()
 
 ```ts
-getBackpressureState(): 
+getBackpressureState():
   | {
   backoffMs: number;
   consecutive: number;
@@ -3626,30 +3658,30 @@ Public accessor for current backpressure adaptive limiter state (stable)
 
 #### Returns
 
-  \| \{
-  `backoffMs`: `number`;
-  `consecutive`: `number`;
-  `permitsCurrent`: `number`;
-  `permitsMax`: `number` \| `null`;
-  `severity`: [`BackpressureSeverity`](../type-aliases/BackpressureSeverity.md);
-  `waiters`: `number`;
+\| \{
+`backoffMs`: `number`;
+`consecutive`: `number`;
+`permitsCurrent`: `number`;
+`permitsMax`: `number` \| `null`;
+`severity`: [`BackpressureSeverity`](../type-aliases/BackpressureSeverity.md);
+`waiters`: `number`;
 \}
-  \| \{
-  `consecutive`: `number`;
-  `permitsCurrent`: `number`;
-  `permitsMax`: `null`;
-  `severity`: `string`;
-  `waiters`: `number`;
+\| \{
+`consecutive`: `number`;
+`permitsCurrent`: `number`;
+`permitsMax`: `null`;
+`severity`: `string`;
+`waiters`: `number`;
 \}
 
-***
+---
 
 ### getBatchOperation()
 
 ```ts
 getBatchOperation(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<BatchOperationResponse>;
 ```
 
@@ -3658,7 +3690,8 @@ Defined in: [gen/CamundaClient.ts:5499](https://github.com/camunda/orchestration
 Get batch operation
 
 Get batch operation by key.
- *
+
+-
 
 #### Parameters
 
@@ -3707,7 +3740,7 @@ Batch operation
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getConfig()
 
@@ -3724,14 +3757,14 @@ Use configure(...) to apply changes.
 
 `Readonly`\<[`CamundaConfig`](../interfaces/CamundaConfig.md)\>
 
-***
+---
 
 ### getDecisionDefinition()
 
 ```ts
 getDecisionDefinition(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<DecisionDefinitionResult>;
 ```
 
@@ -3740,7 +3773,8 @@ Defined in: [gen/CamundaClient.ts:5566](https://github.com/camunda/orchestration
 Get decision definition
 
 Returns a decision definition by key.
- *
+
+-
 
 #### Parameters
 
@@ -3790,14 +3824,14 @@ Decision definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getDecisionDefinitionXml()
 
 ```ts
 getDecisionDefinitionXml(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<string>;
 ```
 
@@ -3806,7 +3840,8 @@ Defined in: [gen/CamundaClient.ts:5631](https://github.com/camunda/orchestration
 Get decision definition XML
 
 Returns decision definition as XML.
- *
+
+-
 
 #### Parameters
 
@@ -3838,14 +3873,14 @@ Decision definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getDecisionInstance()
 
 ```ts
 getDecisionInstance(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<DecisionInstanceGetQueryResult>;
 ```
 
@@ -3854,7 +3889,8 @@ Defined in: [gen/CamundaClient.ts:5698](https://github.com/camunda/orchestration
 Get decision instance
 
 Returns a decision instance.
- *
+
+-
 
 #### Parameters
 
@@ -3904,14 +3940,14 @@ Decision instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getDecisionRequirements()
 
 ```ts
 getDecisionRequirements(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<DecisionRequirementsResult>;
 ```
 
@@ -3920,7 +3956,8 @@ Defined in: [gen/CamundaClient.ts:5765](https://github.com/camunda/orchestration
 Get decision requirements
 
 Returns Decision Requirements as JSON.
- *
+
+-
 
 #### Parameters
 
@@ -3969,14 +4006,14 @@ Decision requirements
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getDecisionRequirementsXml()
 
 ```ts
 getDecisionRequirementsXml(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<string>;
 ```
 
@@ -3985,7 +4022,8 @@ Defined in: [gen/CamundaClient.ts:5830](https://github.com/camunda/orchestration
 Get decision requirements XML
 
 Returns decision requirements as XML.
- *
+
+-
 
 #### Parameters
 
@@ -4017,7 +4055,7 @@ Decision requirements
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getDocument()
 
@@ -4033,7 +4071,7 @@ Download a document from the Camunda 8 cluster.
 
 Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
 
- *
+-
 
 #### Parameters
 
@@ -4057,14 +4095,14 @@ getDocument
 
 Document
 
-***
+---
 
 ### getElementInstance()
 
 ```ts
 getElementInstance(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ElementInstanceResult>;
 ```
 
@@ -4073,7 +4111,8 @@ Defined in: [gen/CamundaClient.ts:5962](https://github.com/camunda/orchestration
 Get element instance
 
 Returns element instance as JSON.
- *
+
+-
 
 #### Parameters
 
@@ -4122,7 +4161,7 @@ Element instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getErrorMode()
 
@@ -4138,14 +4177,14 @@ Internal accessor (read-only) for eventual consistency error mode.
 
 `"throw"` \| `"result"`
 
-***
+---
 
 ### getGlobalClusterVariable()
 
 ```ts
 getGlobalClusterVariable(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ClusterVariableResult>;
 ```
 
@@ -4154,7 +4193,8 @@ Defined in: [gen/CamundaClient.ts:6029](https://github.com/camunda/orchestration
 Get a global-scoped cluster variable
 
 Get a global-scoped cluster variable.
- *
+
+-
 
 #### Parameters
 
@@ -4201,14 +4241,14 @@ Cluster Variable
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getGlobalJobStatistics()
 
 ```ts
 getGlobalJobStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<GlobalJobStatisticsQueryResult>;
 ```
 
@@ -4218,7 +4258,7 @@ Global job statistics
 
 Returns global aggregated counts for jobs. Optionally filter by the creation time window and/or jobType.
 
- *
+-
 
 #### Parameters
 
@@ -4268,14 +4308,14 @@ Job
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getGlobalTaskListener()
 
 ```ts
 getGlobalTaskListener(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<GlobalTaskListenerResult>;
 ```
 
@@ -4284,7 +4324,8 @@ Defined in: [gen/CamundaClient.ts:6164](https://github.com/camunda/orchestration
 Get global user task listener
 
 Get a global user task listener by its id.
- *
+
+-
 
 #### Parameters
 
@@ -4331,14 +4372,14 @@ Global listener
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getGroup()
 
 ```ts
 getGroup(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<GroupResult>;
 ```
 
@@ -4347,7 +4388,8 @@ Defined in: [gen/CamundaClient.ts:6231](https://github.com/camunda/orchestration
 Get group
 
 Get a group by its ID.
- *
+
+-
 
 #### Parameters
 
@@ -4394,14 +4436,14 @@ Group
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getIncident()
 
 ```ts
 getIncident(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<IncidentResult>;
 ```
 
@@ -4411,7 +4453,7 @@ Get incident
 
 Returns incident as JSON.
 
- *
+-
 
 #### Parameters
 
@@ -4462,14 +4504,14 @@ Incident
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getJobErrorStatistics()
 
 ```ts
 getJobErrorStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<JobErrorStatisticsQueryResult>;
 ```
 
@@ -4479,7 +4521,7 @@ Get error metrics for a job type
 
 Returns aggregated metrics per error for the given jobType.
 
- *
+-
 
 #### Parameters
 
@@ -4534,14 +4576,14 @@ Job
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getJobTimeSeriesStatistics()
 
 ```ts
 getJobTimeSeriesStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<JobTimeSeriesStatisticsQueryResult>;
 ```
 
@@ -4553,7 +4595,7 @@ Returns a list of time-bucketed metrics ordered ascending by time.
 The `from` and `to` fields select the time window of interest.
 Each item in the response corresponds to one time bucket of the requested resolution.
 
- *
+-
 
 #### Parameters
 
@@ -4608,14 +4650,14 @@ Job
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getJobTypeStatistics()
 
 ```ts
 getJobTypeStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<JobTypeStatisticsQueryResult>;
 ```
 
@@ -4625,7 +4667,7 @@ Get job statistics by type
 
 Get statistics about jobs, grouped by job type.
 
- *
+-
 
 #### Parameters
 
@@ -4671,14 +4713,14 @@ Job
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getJobWorkerStatistics()
 
 ```ts
 getJobWorkerStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<JobWorkerStatisticsQueryResult>;
 ```
 
@@ -4688,7 +4730,7 @@ Get job statistics by worker
 
 Get statistics about jobs, grouped by worker, for a given job type.
 
- *
+-
 
 #### Parameters
 
@@ -4743,7 +4785,7 @@ Job
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getLicense()
 
@@ -4756,7 +4798,8 @@ Defined in: [gen/CamundaClient.ts:6639](https://github.com/camunda/orchestration
 Get license status
 
 Obtains the status of the current Camunda license.
- *
+
+-
 
 #### Parameters
 
@@ -4788,14 +4831,14 @@ getLicense
 
 License
 
-***
+---
 
 ### getMappingRule()
 
 ```ts
 getMappingRule(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<MappingRuleResult>;
 ```
 
@@ -4805,7 +4848,7 @@ Get a mapping rule
 
 Gets the mapping rule with the given ID.
 
- *
+-
 
 #### Parameters
 
@@ -4852,14 +4895,14 @@ Mapping rule
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessDefinition()
 
 ```ts
 getProcessDefinition(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessDefinitionResult>;
 ```
 
@@ -4868,7 +4911,8 @@ Defined in: [gen/CamundaClient.ts:6760](https://github.com/camunda/orchestration
 Get process definition
 
 Returns process definition as JSON.
- *
+
+-
 
 #### Parameters
 
@@ -4917,14 +4961,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessDefinitionInstanceStatistics()
 
 ```ts
 getProcessDefinitionInstanceStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessDefinitionInstanceStatisticsQueryResult>;
 ```
 
@@ -4934,7 +4978,7 @@ Get process instance statistics
 
 Get statistics about process instances, grouped by process definition and tenant.
 
- *
+-
 
 #### Parameters
 
@@ -4985,14 +5029,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessDefinitionInstanceVersionStatistics()
 
 ```ts
 getProcessDefinitionInstanceVersionStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessDefinitionInstanceVersionStatisticsQueryResult>;
 ```
 
@@ -5003,7 +5047,7 @@ Get process instance statistics by version
 Get statistics about process instances, grouped by version for a given process definition.
 The process definition ID must be provided as a required field in the request body filter.
 
- *
+-
 
 #### Parameters
 
@@ -5058,14 +5102,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessDefinitionMessageSubscriptionStatistics()
 
 ```ts
 getProcessDefinitionMessageSubscriptionStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessDefinitionMessageSubscriptionStatisticsQueryResult>;
 ```
 
@@ -5075,7 +5119,7 @@ Get message subscription statistics
 
 Get message subscription statistics, grouped by process definition.
 
- *
+-
 
 #### Parameters
 
@@ -5126,14 +5170,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessDefinitionStatistics()
 
 ```ts
 getProcessDefinitionStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessDefinitionElementStatisticsQueryResult>;
 ```
 
@@ -5142,7 +5186,8 @@ Defined in: [gen/CamundaClient.ts:7032](https://github.com/camunda/orchestration
 Get process definition statistics
 
 Get statistics about elements in currently running process instances by process definition key and search filter.
- *
+
+-
 
 #### Parameters
 
@@ -5193,14 +5238,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessDefinitionXml()
 
 ```ts
 getProcessDefinitionXml(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<string>;
 ```
 
@@ -5209,7 +5254,8 @@ Defined in: [gen/CamundaClient.ts:7099](https://github.com/camunda/orchestration
 Get process definition XML
 
 Returns process definition as XML.
- *
+
+-
 
 #### Parameters
 
@@ -5241,14 +5287,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessInstance()
 
 ```ts
 getProcessInstance(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessInstanceResult>;
 ```
 
@@ -5257,7 +5303,8 @@ Defined in: [gen/CamundaClient.ts:7166](https://github.com/camunda/orchestration
 Get process instance
 
 Get the process instance by the process instance key.
- *
+
+-
 
 #### Parameters
 
@@ -5307,14 +5354,14 @@ Process instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessInstanceCallHierarchy()
 
 ```ts
 getProcessInstanceCallHierarchy(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessInstanceCallHierarchyEntry[]>;
 ```
 
@@ -5323,7 +5370,8 @@ Defined in: [gen/CamundaClient.ts:7233](https://github.com/camunda/orchestration
 Get call hierarchy
 
 Returns the call hierarchy for a given process instance, showing its ancestry up to the root instance.
- *
+
+-
 
 #### Parameters
 
@@ -5372,14 +5420,14 @@ Process instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessInstanceSequenceFlows()
 
 ```ts
 getProcessInstanceSequenceFlows(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessInstanceSequenceFlowsQueryResult>;
 ```
 
@@ -5388,7 +5436,8 @@ Defined in: [gen/CamundaClient.ts:7300](https://github.com/camunda/orchestration
 Get sequence flows
 
 Get sequence flows taken by the process instance.
- *
+
+-
 
 #### Parameters
 
@@ -5439,14 +5488,14 @@ Process instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessInstanceStatistics()
 
 ```ts
 getProcessInstanceStatistics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessInstanceElementStatisticsQueryResult>;
 ```
 
@@ -5455,7 +5504,8 @@ Defined in: [gen/CamundaClient.ts:7367](https://github.com/camunda/orchestration
 Get element instance statistics
 
 Get statistics about elements by the process instance key.
- *
+
+-
 
 #### Parameters
 
@@ -5506,14 +5556,14 @@ Process instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessInstanceStatisticsByDefinition()
 
 ```ts
 getProcessInstanceStatisticsByDefinition(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<IncidentProcessInstanceStatisticsByDefinitionQueryResult>;
 ```
 
@@ -5525,7 +5575,7 @@ Returns statistics for active process instances with incidents, grouped by proce
 definition. The result set is scoped to a specific incident error hash code, which must be
 provided as a filter in the request body.
 
- *
+-
 
 #### Parameters
 
@@ -5580,14 +5630,14 @@ Incident
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getProcessInstanceStatisticsByError()
 
 ```ts
 getProcessInstanceStatisticsByError(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<IncidentProcessInstanceStatisticsByErrorQueryResult>;
 ```
 
@@ -5598,7 +5648,7 @@ Get process instance statistics by error
 Returns statistics for active process instances that currently have active incidents,
 grouped by incident error hash code.
 
- *
+-
 
 #### Parameters
 
@@ -5647,7 +5697,7 @@ Incident
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getResource()
 
@@ -5664,7 +5714,7 @@ Returns a deployed resource.
 Currently, this endpoint only supports RPA resources.
 :::
 
- *
+-
 
 #### Parameters
 
@@ -5702,7 +5752,7 @@ getResource
 
 Resource
 
-***
+---
 
 ### getResourceContent()
 
@@ -5719,7 +5769,7 @@ Returns the content of a deployed resource.
 Currently, this endpoint only supports RPA resources.
 :::
 
- *
+-
 
 #### Parameters
 
@@ -5757,14 +5807,14 @@ getResourceContent
 
 Resource
 
-***
+---
 
 ### getRole()
 
 ```ts
 getRole(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<RoleResult>;
 ```
 
@@ -5773,7 +5823,8 @@ Defined in: [gen/CamundaClient.ts:7705](https://github.com/camunda/orchestration
 Get role
 
 Get a role by its ID.
- *
+
+-
 
 #### Parameters
 
@@ -5820,14 +5871,14 @@ Role
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getStartProcessForm()
 
 ```ts
 getStartProcessForm(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<void | FormResult>;
 ```
 
@@ -5838,7 +5889,7 @@ Get process start form
 Get the start form of a process.
 Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
 
- *
+-
 
 #### Parameters
 
@@ -5889,7 +5940,7 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getStatus()
 
@@ -5902,7 +5953,8 @@ Defined in: [gen/CamundaClient.ts:7840](https://github.com/camunda/orchestration
 Get cluster status
 
 Checks the health status of the cluster by verifying if there's at least one partition with a healthy leader.
- *
+
+-
 
 #### Parameters
 
@@ -5934,7 +5986,7 @@ getStatus
 
 Cluster
 
-***
+---
 
 ### getSystemConfiguration()
 
@@ -5952,7 +6004,7 @@ that groups settings by feature area.
 This endpoint is an alpha feature and may be subject to change
 in future releases.
 
- *
+-
 
 #### Parameters
 
@@ -5984,14 +6036,14 @@ getSystemConfiguration
 
 System
 
-***
+---
 
 ### getTenant()
 
 ```ts
 getTenant(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<TenantResult>;
 ```
 
@@ -6000,7 +6052,8 @@ Defined in: [gen/CamundaClient.ts:7950](https://github.com/camunda/orchestration
 Get tenant
 
 Retrieves a single tenant by tenant ID.
- *
+
+-
 
 #### Parameters
 
@@ -6046,14 +6099,14 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getTenantClusterVariable()
 
 ```ts
 getTenantClusterVariable(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ClusterVariableResult>;
 ```
 
@@ -6062,7 +6115,8 @@ Defined in: [gen/CamundaClient.ts:8017](https://github.com/camunda/orchestration
 Get a tenant-scoped cluster variable
 
 Get a tenant-scoped cluster variable.
- *
+
+-
 
 #### Parameters
 
@@ -6112,7 +6166,7 @@ Cluster Variable
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getTopology()
 
@@ -6125,7 +6179,8 @@ Defined in: [gen/CamundaClient.ts:8083](https://github.com/camunda/orchestration
 Get cluster topology
 
 Obtains the current topology of the cluster the gateway is part of.
- *
+
+-
 
 #### Parameters
 
@@ -6161,14 +6216,14 @@ getTopology
 
 Cluster
 
-***
+---
 
 ### getUsageMetrics()
 
 ```ts
 getUsageMetrics(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<UsageMetricsResponse>;
 ```
 
@@ -6177,7 +6232,8 @@ Defined in: [gen/CamundaClient.ts:8136](https://github.com/camunda/orchestration
 Get usage metrics
 
 Retrieve the usage metrics based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -6227,14 +6283,14 @@ System
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getUser()
 
 ```ts
 getUser(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
    options?): CancelablePromise<{
   email: string | null;
   name: string | null;
@@ -6247,7 +6303,8 @@ Defined in: [gen/CamundaClient.ts:8203](https://github.com/camunda/orchestration
 Get user
 
 Get a user by its username.
- *
+
+-
 
 #### Parameters
 
@@ -6266,9 +6323,9 @@ Get a user by its username.
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `email`: `string` \| `null`;
-  `name`: `string` \| `null`;
-  `username`: [`Username`](../type-aliases/Username.md);
+`email`: `string` \| `null`;
+`name`: `string` \| `null`;
+`username`: [`Username`](../type-aliases/Username.md);
 \}\>
 
 #### Example
@@ -6297,14 +6354,14 @@ User
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getUserTask()
 
 ```ts
 getUserTask(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<UserTaskResult>;
 ```
 
@@ -6313,7 +6370,8 @@ Defined in: [gen/CamundaClient.ts:8270](https://github.com/camunda/orchestration
 Get user task
 
 Get the user task by the user task key.
- *
+
+-
 
 #### Parameters
 
@@ -6360,14 +6418,14 @@ User task
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getUserTaskForm()
 
 ```ts
 getUserTaskForm(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<void | FormResult>;
 ```
 
@@ -6378,7 +6436,7 @@ Get user task form
 Get the form of a user task.
 Note that this endpoint will only return linked forms. This endpoint does not support embedded forms.
 
- *
+-
 
 #### Parameters
 
@@ -6430,14 +6488,14 @@ User task
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getVariable()
 
 ```ts
 getVariable(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<VariableResult>;
 ```
 
@@ -6450,7 +6508,8 @@ Get a variable by its key.
 This endpoint returns both process-level and local (element-scoped) variables.
 The variable's scopeKey indicates whether it's a process-level variable or scoped to a
 specific element instance.
- *
+
+-
 
 #### Parameters
 
@@ -6499,7 +6558,7 @@ Variable
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### getWorkers()
 
@@ -6515,7 +6574,7 @@ Return a read-only snapshot of currently registered job workers.
 
 `any`[]
 
-***
+---
 
 ### logger()
 
@@ -6537,7 +6596,7 @@ Access a scoped logger (internal & future user emission).
 
 [`Logger`](../../logger/interfaces/Logger.md)
 
-***
+---
 
 ### migrateProcessInstance()
 
@@ -6557,7 +6616,7 @@ Use this to upgrade a process instance to a new version of a process or to
 a different process definition, e.g. to keep your running instances up-to-date with the
 latest process improvements.
 
- *
+-
 
 #### Parameters
 
@@ -6602,7 +6661,7 @@ migrateProcessInstance
 
 Process instance
 
-***
+---
 
 ### migrateProcessInstancesBatchOperation()
 
@@ -6619,7 +6678,7 @@ Since only process instances with ACTIVE state can be migrated, any given
 filters for state are ignored and overridden during this batch operation.
 This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -6668,7 +6727,7 @@ migrateProcessInstancesBatchOperation
 
 Process instance
 
-***
+---
 
 ### modifyProcessInstance()
 
@@ -6687,7 +6746,7 @@ to terminate an active instance of an element.
 Use this to repair a process instance that is stuck on an element or took an unintended path.
 For example, because an external system is not available or doesn't respond as expected.
 
- *
+-
 
 #### Parameters
 
@@ -6729,7 +6788,7 @@ modifyProcessInstance
 
 Process instance
 
-***
+---
 
 ### modifyProcessInstancesBatchOperation()
 
@@ -6748,7 +6807,7 @@ In contrast to single modification operation, it is not possible to add variable
 It is only possible to use the element id of the source and target.
 This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -6794,7 +6853,7 @@ modifyProcessInstancesBatchOperation
 
 Process instance
 
-***
+---
 
 ### onAuthHeaders()
 
@@ -6808,15 +6867,15 @@ Defined in: [gen/CamundaClient.ts:1445](https://github.com/camunda/orchestration
 
 ##### h
 
-(`headers`) => 
-  \| `Record`\<`string`, `string`\>
-  \| `Promise`\<`Record`\<`string`, `string`\>\>
+(`headers`) =>
+\| `Record`\<`string`, `string`\>
+\| `Promise`\<`Record`\<`string`, `string`\>\>
 
 #### Returns
 
 `void`
 
-***
+---
 
 ### pinClock()
 
@@ -6835,7 +6894,7 @@ To change the time, the clock must be pinned again with a new timestamp.
 This endpoint is an alpha feature and may be subject to change
 in future releases.
 
- *
+-
 
 #### Parameters
 
@@ -6873,7 +6932,7 @@ pinClock
 
 Clock
 
-***
+---
 
 ### publishMessage()
 
@@ -6891,7 +6950,7 @@ Messages can be buffered.
 The endpoint does not wait for a correlation result.
 Use the message correlation endpoint for such use cases.
 
- *
+-
 
 #### Parameters
 
@@ -6932,7 +6991,7 @@ publishMessage
 
 Message
 
-***
+---
 
 ### resetClock()
 
@@ -6951,7 +7010,7 @@ normal behavior after it has been pinned to a specific time.
 This endpoint is an alpha feature and may be subject to change
 in future releases.
 
- *
+-
 
 #### Parameters
 
@@ -6983,7 +7042,7 @@ resetClock
 
 Clock
 
-***
+---
 
 ### resolveIncident()
 
@@ -6998,7 +7057,7 @@ Resolve incident
 Marks the incident as resolved; most likely a call to Update job will be necessary
 to reset the job's retries, followed by this call.
 
- *
+-
 
 #### Parameters
 
@@ -7034,7 +7093,7 @@ resolveIncident
 
 Incident
 
-***
+---
 
 ### resolveIncidentsBatchOperation()
 
@@ -7051,7 +7110,7 @@ Since only process instances with ACTIVE state can have unresolved incidents, an
 filters for state are ignored and overridden during this batch operation.
 This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -7091,7 +7150,7 @@ resolveIncidentsBatchOperation
 
 Process instance
 
-***
+---
 
 ### resolveProcessInstanceIncidents()
 
@@ -7104,7 +7163,8 @@ Defined in: [gen/CamundaClient.ts:9080](https://github.com/camunda/orchestration
 Resolve related incidents
 
 Creates a batch operation to resolve multiple incidents of a process instance.
- *
+
+-
 
 #### Parameters
 
@@ -7142,7 +7202,7 @@ resolveProcessInstanceIncidents
 
 Process instance
 
-***
+---
 
 ### resumeBatchOperation()
 
@@ -7157,7 +7217,7 @@ Resume Batch operation
 Resumes a suspended batch operation.
 This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -7195,14 +7255,14 @@ resumeBatchOperation
 
 Batch operation
 
-***
+---
 
 ### searchAuditLogs()
 
 ```ts
 searchAuditLogs(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<AuditLogSearchQueryResult>;
 ```
 
@@ -7211,7 +7271,8 @@ Defined in: [gen/CamundaClient.ts:9209](https://github.com/camunda/orchestration
 Search audit logs
 
 Search for audit logs based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7262,14 +7323,14 @@ Audit Log
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchAuthorizations()
 
 ```ts
 searchAuthorizations(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<AuthorizationSearchResult>;
 ```
 
@@ -7278,7 +7339,8 @@ Defined in: [gen/CamundaClient.ts:9276](https://github.com/camunda/orchestration
 Search authorizations
 
 Search for authorizations based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7330,14 +7392,14 @@ Authorization
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchBatchOperationItems()
 
 ```ts
 searchBatchOperationItems(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<BatchOperationItemSearchQueryResult>;
 ```
 
@@ -7346,7 +7408,8 @@ Defined in: [gen/CamundaClient.ts:9343](https://github.com/camunda/orchestration
 Search batch operation items
 
 Search for batch operation items based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7397,14 +7460,14 @@ Batch operation
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchBatchOperations()
 
 ```ts
 searchBatchOperations(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<BatchOperationSearchQueryResult>;
 ```
 
@@ -7413,7 +7476,8 @@ Defined in: [gen/CamundaClient.ts:9410](https://github.com/camunda/orchestration
 Search batch operations
 
 Search for batch operations based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7464,14 +7528,14 @@ Batch operation
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchClientsForGroup()
 
 ```ts
 searchClientsForGroup(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -7480,7 +7544,8 @@ Defined in: [gen/CamundaClient.ts:9477](https://github.com/camunda/orchestration
 Search group clients
 
 Search clients assigned to a group.
- *
+
+-
 
 #### Parameters
 
@@ -7529,14 +7594,14 @@ Group
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchClientsForRole()
 
 ```ts
 searchClientsForRole(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -7545,7 +7610,8 @@ Defined in: [gen/CamundaClient.ts:9546](https://github.com/camunda/orchestration
 Search role clients
 
 Search clients with assigned role.
- *
+
+-
 
 #### Parameters
 
@@ -7594,14 +7660,14 @@ Role
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchClientsForTenant()
 
 ```ts
 searchClientsForTenant(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -7610,7 +7676,8 @@ Defined in: [gen/CamundaClient.ts:9615](https://github.com/camunda/orchestration
 Search clients for tenant
 
 Retrieves a filtered and sorted list of clients for a specified tenant.
- *
+
+-
 
 #### Parameters
 
@@ -7659,21 +7726,22 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchClusterVariables()
 
 ```ts
 searchClusterVariables(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ClusterVariableSearchQueryResult>;
 ```
 
 Defined in: [gen/CamundaClient.ts:9682](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/CamundaClient.ts#L9682)
 
 Search for cluster variables based on given criteria. By default, long variable values in the response are truncated.
- *
+
+-
 
 #### Parameters
 
@@ -7724,14 +7792,14 @@ Cluster Variable
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchCorrelatedMessageSubscriptions()
 
 ```ts
 searchCorrelatedMessageSubscriptions(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<CorrelatedMessageSubscriptionSearchQueryResult>;
 ```
 
@@ -7740,7 +7808,8 @@ Defined in: [gen/CamundaClient.ts:9751](https://github.com/camunda/orchestration
 Search correlated message subscriptions
 
 Search correlated message subscriptions based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7791,14 +7860,14 @@ Message subscription
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchDecisionDefinitions()
 
 ```ts
 searchDecisionDefinitions(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<DecisionDefinitionSearchQueryResult>;
 ```
 
@@ -7807,7 +7876,8 @@ Defined in: [gen/CamundaClient.ts:9818](https://github.com/camunda/orchestration
 Search decision definitions
 
 Search for decision definitions based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7858,14 +7928,14 @@ Decision definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchDecisionInstances()
 
 ```ts
 searchDecisionInstances(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<DecisionInstanceSearchQueryResult>;
 ```
 
@@ -7874,7 +7944,8 @@ Defined in: [gen/CamundaClient.ts:9885](https://github.com/camunda/orchestration
 Search decision instances
 
 Search for decision instances based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7925,14 +7996,14 @@ Decision instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchDecisionRequirements()
 
 ```ts
 searchDecisionRequirements(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<DecisionRequirementsSearchQueryResult>;
 ```
 
@@ -7941,7 +8012,8 @@ Defined in: [gen/CamundaClient.ts:9952](https://github.com/camunda/orchestration
 Search decision requirements
 
 Search for decision requirements based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -7992,14 +8064,14 @@ Decision requirements
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchElementInstanceIncidents()
 
 ```ts
 searchElementInstanceIncidents(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<IncidentSearchQueryResult>;
 ```
 
@@ -8015,7 +8087,7 @@ child element instances. This is useful, for example, if you want to isolate inc
 nested or subordinate elements within the given element instance while excluding incidents directly tied
 to the root element itself.
 
- *
+-
 
 #### Parameters
 
@@ -8066,14 +8138,14 @@ Element instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchElementInstances()
 
 ```ts
 searchElementInstances(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ElementInstanceSearchQueryResult>;
 ```
 
@@ -8082,7 +8154,8 @@ Defined in: [gen/CamundaClient.ts:10095](https://github.com/camunda/orchestratio
 Search element instances
 
 Search for element instances based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -8136,14 +8209,14 @@ Element instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchGlobalTaskListeners()
 
 ```ts
 searchGlobalTaskListeners(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<GlobalTaskListenerSearchQueryResult>;
 ```
 
@@ -8152,7 +8225,8 @@ Defined in: [gen/CamundaClient.ts:10162](https://github.com/camunda/orchestratio
 Search global user task listeners
 
 Search for global user task listeners based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -8203,14 +8277,14 @@ Global listener
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchGroupIdsForTenant()
 
 ```ts
 searchGroupIdsForTenant(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<TenantGroupSearchResult>;
 ```
 
@@ -8219,7 +8293,8 @@ Defined in: [gen/CamundaClient.ts:10229](https://github.com/camunda/orchestratio
 Search groups for tenant
 
 Retrieves a filtered and sorted list of groups for a specified tenant.
- *
+
+-
 
 #### Parameters
 
@@ -8268,14 +8343,14 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchGroups()
 
 ```ts
 searchGroups(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<GroupSearchQueryResult>;
 ```
 
@@ -8284,7 +8359,8 @@ Defined in: [gen/CamundaClient.ts:10298](https://github.com/camunda/orchestratio
 Search groups
 
 Search for groups based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -8335,14 +8411,14 @@ Group
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchGroupsForRole()
 
 ```ts
 searchGroupsForRole(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<RoleGroupSearchResult>;
 ```
 
@@ -8351,7 +8427,8 @@ Defined in: [gen/CamundaClient.ts:10365](https://github.com/camunda/orchestratio
 Search role groups
 
 Search groups with assigned role.
- *
+
+-
 
 #### Parameters
 
@@ -8400,14 +8477,14 @@ Role
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchIncidents()
 
 ```ts
 searchIncidents(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<IncidentSearchQueryResult>;
 ```
 
@@ -8417,7 +8494,7 @@ Search incidents
 
 Search for incidents based on given criteria.
 
- *
+-
 
 #### Parameters
 
@@ -8471,14 +8548,14 @@ Incident
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchJobs()
 
 ```ts
 searchJobs(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<JobSearchQueryResult>;
 ```
 
@@ -8487,7 +8564,8 @@ Defined in: [gen/CamundaClient.ts:10502](https://github.com/camunda/orchestratio
 Search jobs
 
 Search for jobs based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -8539,14 +8617,14 @@ Job
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchMappingRule()
 
 ```ts
 searchMappingRule(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -8556,7 +8634,7 @@ Search mapping rules
 
 Search for mapping rules based on given criteria.
 
- *
+-
 
 #### Parameters
 
@@ -8607,14 +8685,14 @@ Mapping rule
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchMappingRulesForGroup()
 
 ```ts
 searchMappingRulesForGroup(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -8623,7 +8701,8 @@ Defined in: [gen/CamundaClient.ts:10637](https://github.com/camunda/orchestratio
 Search group mapping rules
 
 Search mapping rules assigned to a group.
- *
+
+-
 
 #### Parameters
 
@@ -8672,14 +8751,14 @@ Group
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchMappingRulesForRole()
 
 ```ts
 searchMappingRulesForRole(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -8688,7 +8767,8 @@ Defined in: [gen/CamundaClient.ts:10706](https://github.com/camunda/orchestratio
 Search role mapping rules
 
 Search mapping rules with assigned role.
- *
+
+-
 
 #### Parameters
 
@@ -8737,14 +8817,14 @@ Role
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchMappingRulesForTenant()
 
 ```ts
 searchMappingRulesForTenant(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -8753,7 +8833,8 @@ Defined in: [gen/CamundaClient.ts:10775](https://github.com/camunda/orchestratio
 Search mapping rules for tenant
 
 Retrieves a filtered and sorted list of MappingRules for a specified tenant.
- *
+
+-
 
 #### Parameters
 
@@ -8802,14 +8883,14 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchMessageSubscriptions()
 
 ```ts
 searchMessageSubscriptions(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<MessageSubscriptionSearchQueryResult>;
 ```
 
@@ -8818,7 +8899,8 @@ Defined in: [gen/CamundaClient.ts:10844](https://github.com/camunda/orchestratio
 Search message subscriptions
 
 Search for message subscriptions based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -8869,14 +8951,14 @@ Message subscription
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchProcessDefinitions()
 
 ```ts
 searchProcessDefinitions(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessDefinitionSearchQueryResult>;
 ```
 
@@ -8885,7 +8967,8 @@ Defined in: [gen/CamundaClient.ts:10911](https://github.com/camunda/orchestratio
 Search process definitions
 
 Search for process definitions based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -8936,14 +9019,14 @@ Process definition
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchProcessInstanceIncidents()
 
 ```ts
 searchProcessInstanceIncidents(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<IncidentSearchQueryResult>;
 ```
 
@@ -8958,7 +9041,7 @@ you may also include a `processInstanceKey` within the filter object to narrow r
 child process instances. This is useful, for example, if you want to isolate incidents associated with
 subprocesses or called processes under the root instance while excluding incidents directly tied to the root.
 
- *
+-
 
 #### Parameters
 
@@ -9011,14 +9094,14 @@ Process instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchProcessInstances()
 
 ```ts
 searchProcessInstances(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<ProcessInstanceSearchQueryResult>;
 ```
 
@@ -9027,7 +9110,8 @@ Defined in: [gen/CamundaClient.ts:11053](https://github.com/camunda/orchestratio
 Search process instances
 
 Search for process instances based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -9081,14 +9165,14 @@ Process instance
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchRoles()
 
 ```ts
 searchRoles(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<RoleSearchQueryResult>;
 ```
 
@@ -9097,7 +9181,8 @@ Defined in: [gen/CamundaClient.ts:11120](https://github.com/camunda/orchestratio
 Search roles
 
 Search for roles based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -9148,14 +9233,14 @@ Role
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchRolesForGroup()
 
 ```ts
 searchRolesForGroup(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -9164,7 +9249,8 @@ Defined in: [gen/CamundaClient.ts:11187](https://github.com/camunda/orchestratio
 Search group roles
 
 Search roles assigned to a group.
- *
+
+-
 
 #### Parameters
 
@@ -9213,14 +9299,14 @@ Group
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchRolesForTenant()
 
 ```ts
 searchRolesForTenant(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -9229,7 +9315,8 @@ Defined in: [gen/CamundaClient.ts:11256](https://github.com/camunda/orchestratio
 Search roles for tenant
 
 Retrieves a filtered and sorted list of roles for a specified tenant.
- *
+
+-
 
 #### Parameters
 
@@ -9278,14 +9365,14 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchTenants()
 
 ```ts
 searchTenants(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<TenantSearchQueryResult>;
 ```
 
@@ -9294,7 +9381,8 @@ Defined in: [gen/CamundaClient.ts:11325](https://github.com/camunda/orchestratio
 Search tenants
 
 Retrieves a filtered and sorted list of tenants.
- *
+
+-
 
 #### Parameters
 
@@ -9345,14 +9433,14 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUsers()
 
 ```ts
 searchUsers(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -9361,7 +9449,8 @@ Defined in: [gen/CamundaClient.ts:11392](https://github.com/camunda/orchestratio
 Search users
 
 Search for users based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -9413,14 +9502,14 @@ User
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUsersForGroup()
 
 ```ts
 searchUsersForGroup(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -9429,7 +9518,8 @@ Defined in: [gen/CamundaClient.ts:11459](https://github.com/camunda/orchestratio
 Search group users
 
 Search users assigned to a group.
- *
+
+-
 
 #### Parameters
 
@@ -9478,14 +9568,14 @@ Group
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUsersForRole()
 
 ```ts
 searchUsersForRole(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -9494,7 +9584,8 @@ Defined in: [gen/CamundaClient.ts:11528](https://github.com/camunda/orchestratio
 Search role users
 
 Search users with assigned role.
- *
+
+-
 
 #### Parameters
 
@@ -9543,14 +9634,14 @@ Role
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUsersForTenant()
 
 ```ts
 searchUsersForTenant(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<SearchQueryResponse & object>;
 ```
 
@@ -9559,7 +9650,8 @@ Defined in: [gen/CamundaClient.ts:11597](https://github.com/camunda/orchestratio
 Search users for tenant
 
 Retrieves a filtered and sorted list of users for a specified tenant.
- *
+
+-
 
 #### Parameters
 
@@ -9608,14 +9700,14 @@ Tenant
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUserTaskAuditLogs()
 
 ```ts
 searchUserTaskAuditLogs(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<AuditLogSearchQueryResult>;
 ```
 
@@ -9624,7 +9716,8 @@ Defined in: [gen/CamundaClient.ts:11666](https://github.com/camunda/orchestratio
 Search user task audit logs
 
 Search for user task audit logs based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -9676,14 +9769,14 @@ User task
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUserTaskEffectiveVariables()
 
 ```ts
 searchUserTaskEffectiveVariables(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<VariableSearchQueryResult>;
 ```
 
@@ -9698,7 +9791,7 @@ to the user task) takes precedence. This is useful for retrieving the actual run
 of variables as seen by the user task. By default, long variable values in the response are
 truncated.
 
- *
+-
 
 #### Parameters
 
@@ -9730,14 +9823,14 @@ User task
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUserTasks()
 
 ```ts
 searchUserTasks(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<UserTaskSearchQueryResult>;
 ```
 
@@ -9746,7 +9839,8 @@ Defined in: [gen/CamundaClient.ts:11810](https://github.com/camunda/orchestratio
 Search user tasks
 
 Search for user tasks based on given criteria.
- *
+
+-
 
 #### Parameters
 
@@ -9799,14 +9893,14 @@ User task
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchUserTaskVariables()
 
 ```ts
 searchUserTaskVariables(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<VariableSearchQueryResult>;
 ```
 
@@ -9822,7 +9916,7 @@ variable is returned as a separate result. Use the
 where the innermost scope takes precedence. By default, long variable values in the response
 are truncated.
 
- *
+-
 
 #### Parameters
 
@@ -9874,14 +9968,14 @@ User task
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### searchVariables()
 
 ```ts
 searchVariables(
-   input, 
-   consistencyManagement, 
+   input,
+   consistencyManagement,
 options?): CancelablePromise<VariableSearchQueryResult>;
 ```
 
@@ -9898,7 +9992,8 @@ Variables can be process-level (scoped to the process instance) or local (scoped
 BPMN elements like tasks, subprocesses, etc.).
 
 By default, long variable values in the response are truncated.
- *
+
+-
 
 #### Parameters
 
@@ -9952,7 +10047,7 @@ Variable
 
 eventual - this endpoint is backed by data that is eventually consistent with the system state.
 
-***
+---
 
 ### stopAllWorkers()
 
@@ -9968,7 +10063,7 @@ Stop all registered job workers (best-effort) and terminate the shared thread po
 
 `void`
 
-***
+---
 
 ### suspendBatchOperation()
 
@@ -9983,7 +10078,7 @@ Suspend Batch operation
 Suspends a running batch operation.
 This is done asynchronously, the progress can be tracked using the batch operation status endpoint (/batch-operations/{batchOperationKey}).
 
- *
+-
 
 #### Parameters
 
@@ -10021,7 +10116,7 @@ suspendBatchOperation
 
 Batch operation
 
-***
+---
 
 ### throwJobError()
 
@@ -10035,7 +10130,7 @@ Throw error for job
 
 Reports a business error (i.e. non-technical) that occurs while processing a job.
 
- *
+-
 
 #### Parameters
 
@@ -10075,7 +10170,7 @@ throwJobError
 
 Job
 
-***
+---
 
 ### unassignClientFromGroup()
 
@@ -10090,7 +10185,7 @@ Unassign a client from a group
 Unassigns a client from a group.
 The client is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
 
- *
+-
 
 #### Parameters
 
@@ -10127,7 +10222,7 @@ unassignClientFromGroup
 
 Group
 
-***
+---
 
 ### unassignClientFromTenant()
 
@@ -10142,7 +10237,7 @@ Unassign a client from a tenant
 Unassigns the client from the specified tenant.
 The client can no longer access tenant data.
 
- *
+-
 
 #### Parameters
 
@@ -10179,7 +10274,7 @@ unassignClientFromTenant
 
 Tenant
 
-***
+---
 
 ### unassignGroupFromTenant()
 
@@ -10194,7 +10289,7 @@ Unassign a group from a tenant
 Unassigns a group from a specified tenant.
 Members of the group (users, clients) will no longer have access to the tenant's data - except they are assigned directly to the tenant.
 
- *
+-
 
 #### Parameters
 
@@ -10231,7 +10326,7 @@ unassignGroupFromTenant
 
 Tenant
 
-***
+---
 
 ### unassignMappingRuleFromGroup()
 
@@ -10244,7 +10339,8 @@ Defined in: [gen/CamundaClient.ts:12354](https://github.com/camunda/orchestratio
 Unassign a mapping rule from a group
 
 Unassigns a mapping rule from a group.
- *
+
+-
 
 #### Parameters
 
@@ -10281,7 +10377,7 @@ unassignMappingRuleFromGroup
 
 Group
 
-***
+---
 
 ### unassignMappingRuleFromTenant()
 
@@ -10294,7 +10390,8 @@ Defined in: [gen/CamundaClient.ts:12416](https://github.com/camunda/orchestratio
 Unassign a mapping rule from a tenant
 
 Unassigns a single mapping rule from a specified tenant without deleting the rule.
- *
+
+-
 
 #### Parameters
 
@@ -10331,7 +10428,7 @@ unassignMappingRuleFromTenant
 
 Tenant
 
-***
+---
 
 ### unassignRoleFromClient()
 
@@ -10344,7 +10441,8 @@ Defined in: [gen/CamundaClient.ts:12478](https://github.com/camunda/orchestratio
 Unassign a role from a client
 
 Unassigns the specified role from the client. The client will no longer inherit the authorizations associated with this role.
- *
+
+-
 
 #### Parameters
 
@@ -10381,7 +10479,7 @@ unassignRoleFromClient
 
 Role
 
-***
+---
 
 ### unassignRoleFromGroup()
 
@@ -10394,7 +10492,8 @@ Defined in: [gen/CamundaClient.ts:12540](https://github.com/camunda/orchestratio
 Unassign a role from a group
 
 Unassigns the specified role from the group. All group members (user or client) no longer inherit the authorizations associated with this role.
- *
+
+-
 
 #### Parameters
 
@@ -10431,7 +10530,7 @@ unassignRoleFromGroup
 
 Role
 
-***
+---
 
 ### unassignRoleFromMappingRule()
 
@@ -10444,7 +10543,8 @@ Defined in: [gen/CamundaClient.ts:12602](https://github.com/camunda/orchestratio
 Unassign a role from a mapping rule
 
 Unassigns a role from a mapping rule.
- *
+
+-
 
 #### Parameters
 
@@ -10481,7 +10581,7 @@ unassignRoleFromMappingRule
 
 Role
 
-***
+---
 
 ### unassignRoleFromTenant()
 
@@ -10497,7 +10597,7 @@ Unassigns a role from a specified tenant.
 Users, Clients or Groups, that have the role assigned, will no longer have access to the
 tenant's data - unless they are assigned directly to the tenant.
 
- *
+-
 
 #### Parameters
 
@@ -10534,7 +10634,7 @@ unassignRoleFromTenant
 
 Tenant
 
-***
+---
 
 ### unassignRoleFromUser()
 
@@ -10547,7 +10647,8 @@ Defined in: [gen/CamundaClient.ts:12729](https://github.com/camunda/orchestratio
 Unassign a role from a user
 
 Unassigns a role from a user. The user will no longer inherit the authorizations associated with this role.
- *
+
+-
 
 #### Parameters
 
@@ -10584,7 +10685,7 @@ unassignRoleFromUser
 
 Role
 
-***
+---
 
 ### unassignUserFromGroup()
 
@@ -10599,7 +10700,7 @@ Unassign a user from a group
 Unassigns a user from a group.
 The user is removed as a group member, with associated authorizations, roles, and tenant assignments no longer applied.
 
- *
+-
 
 #### Parameters
 
@@ -10636,7 +10737,7 @@ unassignUserFromGroup
 
 Group
 
-***
+---
 
 ### unassignUserFromTenant()
 
@@ -10651,7 +10752,7 @@ Unassign a user from a tenant
 Unassigns the user from the specified tenant.
 The user can no longer access tenant data.
 
- *
+-
 
 #### Parameters
 
@@ -10688,7 +10789,7 @@ unassignUserFromTenant
 
 Tenant
 
-***
+---
 
 ### unassignUserTask()
 
@@ -10702,7 +10803,7 @@ Unassign user task
 
 Removes the assignee of a task with the given key. Unassignment waits for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
 
- *
+-
 
 #### Parameters
 
@@ -10738,7 +10839,7 @@ unassignUserTask
 
 User task
 
-***
+---
 
 ### updateAuthorization()
 
@@ -10751,7 +10852,8 @@ Defined in: [gen/CamundaClient.ts:12982](https://github.com/camunda/orchestratio
 Update authorization
 
 Update the authorization with the given key.
- *
+
+-
 
 #### Parameters
 
@@ -10798,7 +10900,7 @@ updateAuthorization
 
 Authorization
 
-***
+---
 
 ### updateGlobalClusterVariable()
 
@@ -10813,7 +10915,7 @@ Update a global-scoped cluster variable
 Updates the value of an existing global cluster variable.
 The variable must exist, otherwise a 404 error is returned.
 
- *
+-
 
 #### Parameters
 
@@ -10850,7 +10952,7 @@ updateGlobalClusterVariable
 
 Cluster Variable
 
-***
+---
 
 ### updateGlobalTaskListener()
 
@@ -10863,7 +10965,8 @@ Defined in: [gen/CamundaClient.ts:13112](https://github.com/camunda/orchestratio
 Update global user task listener
 
 Updates a global user task listener.
- *
+
+-
 
 #### Parameters
 
@@ -10901,7 +11004,7 @@ updateGlobalTaskListener
 
 Global listener
 
-***
+---
 
 ### updateGroup()
 
@@ -10914,7 +11017,8 @@ Defined in: [gen/CamundaClient.ts:13176](https://github.com/camunda/orchestratio
 Update group
 
 Update a group with the given ID.
- *
+
+-
 
 #### Parameters
 
@@ -10951,7 +11055,7 @@ updateGroup
 
 Group
 
-***
+---
 
 ### updateJob()
 
@@ -10964,7 +11068,8 @@ Defined in: [gen/CamundaClient.ts:13240](https://github.com/camunda/orchestratio
 Update job
 
 Update a job with the given key.
- *
+
+-
 
 #### Parameters
 
@@ -11003,7 +11108,7 @@ updateJob
 
 Job
 
-***
+---
 
 ### updateMappingRule()
 
@@ -11017,7 +11122,7 @@ Update mapping rule
 
 Update a mapping rule.
 
- *
+-
 
 #### Parameters
 
@@ -11056,7 +11161,7 @@ updateMappingRule
 
 Mapping rule
 
-***
+---
 
 ### updateRole()
 
@@ -11069,7 +11174,8 @@ Defined in: [gen/CamundaClient.ts:13369](https://github.com/camunda/orchestratio
 Update role
 
 Update a role with the given ID.
- *
+
+-
 
 #### Parameters
 
@@ -11106,7 +11212,7 @@ updateRole
 
 Role
 
-***
+---
 
 ### updateTenant()
 
@@ -11119,7 +11225,8 @@ Defined in: [gen/CamundaClient.ts:13433](https://github.com/camunda/orchestratio
 Update tenant
 
 Updates an existing tenant.
- *
+
+-
 
 #### Parameters
 
@@ -11158,7 +11265,7 @@ updateTenant
 
 Tenant
 
-***
+---
 
 ### updateTenantClusterVariable()
 
@@ -11173,7 +11280,7 @@ Update a tenant-scoped cluster variable
 Updates the value of an existing tenant-scoped cluster variable.
 The variable must exist, otherwise a 404 error is returned.
 
- *
+-
 
 #### Parameters
 
@@ -11211,7 +11318,7 @@ updateTenantClusterVariable
 
 Cluster Variable
 
-***
+---
 
 ### updateUser()
 
@@ -11228,7 +11335,8 @@ Defined in: [gen/CamundaClient.ts:13563](https://github.com/camunda/orchestratio
 Update user
 
 Updates a user.
- *
+
+-
 
 #### Parameters
 
@@ -11243,9 +11351,9 @@ Updates a user.
 #### Returns
 
 [`CancelablePromise`](../interfaces/CancelablePromise.md)\<\{
-  `email`: `string` \| `null`;
-  `name`: `string` \| `null`;
-  `username`: [`Username`](../type-aliases/Username.md);
+`email`: `string` \| `null`;
+`name`: `string` \| `null`;
+`username`: [`Username`](../type-aliases/Username.md);
 \}\>
 
 #### Example
@@ -11272,7 +11380,7 @@ updateUser
 
 User
 
-***
+---
 
 ### updateUserTask()
 
@@ -11286,7 +11394,7 @@ Update user task
 
 Update a user task with the given key. Updates wait for blocking task listeners on this lifecycle transition. If listener processing is delayed beyond the request timeout, this endpoint can return 504. Other gateway timeout causes are also possible. Retry with backoff and inspect listener worker availability and logs when this repeats.
 
- *
+-
 
 #### Parameters
 
@@ -11330,7 +11438,7 @@ updateUserTask
 
 User task
 
-***
+---
 
 ### withCorrelation()
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: Loose<T>"
-sidebar_label: "Loose<T>"
+title: 'Type Alias: Loose<T>'
+sidebar_label: 'Loose<T>'
 mdx:
   format: md
 ---

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobTimeSeriesStatisticsItem"
-sidebar_label: "JobTimeSeriesStatisticsItem"
+title: 'Type Alias: JobTimeSeriesStatisticsItem'
+sidebar_label: 'JobTimeSeriesStatisticsItem'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ completed: StatusMetric;
 
 Defined in: [gen/types.gen.ts:3888](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3888)
 
-***
+---
 
 ### created
 
@@ -35,7 +35,7 @@ created: StatusMetric;
 
 Defined in: [gen/types.gen.ts:3887](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3887)
 
-***
+---
 
 ### failed
 
@@ -45,7 +45,7 @@ failed: StatusMetric;
 
 Defined in: [gen/types.gen.ts:3889](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3889)
 
-***
+---
 
 ### time
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: AssignClientToGroupResponses"
-sidebar_label: "AssignClientToGroupResponses"
+title: 'Type Alias: AssignClientToGroupResponses'
+sidebar_label: 'AssignClientToGroupResponses'
 mdx:
   format: md
 ---

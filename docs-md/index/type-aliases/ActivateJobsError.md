@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ActivateJobsError"
-sidebar_label: "ActivateJobsError"
+title: 'Type Alias: ActivateJobsError'
+sidebar_label: 'ActivateJobsError'
 mdx:
   format: md
 ---

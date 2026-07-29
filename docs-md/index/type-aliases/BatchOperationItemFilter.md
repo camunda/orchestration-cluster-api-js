@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: BatchOperationItemFilter"
-sidebar_label: "BatchOperationItemFilter"
+title: 'Type Alias: BatchOperationItemFilter'
+sidebar_label: 'BatchOperationItemFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:858](https://github.com/camunda/orchestration-clus
 
 The key (or operate legacy ID) of the batch operation.
 
-***
+---
 
 ### itemKey?
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:862](https://github.com/camunda/orchestration-clus
 
 The key of the item, e.g. a process instance key.
 
-***
+---
 
 ### operationType?
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:874](https://github.com/camunda/orchestration-clus
 
 The type of the batch operation.
 
-***
+---
 
 ### processInstanceKey?
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:866](https://github.com/camunda/orchestration-clus
 
 The process instance key of the processed item.
 
-***
+---
 
 ### state?
 

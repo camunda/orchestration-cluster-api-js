@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: updateGroupInput"
-sidebar_label: "updateGroupInput"
+title: 'Type Alias: updateGroupInput'
+sidebar_label: 'updateGroupInput'
 mdx:
   format: md
 ---

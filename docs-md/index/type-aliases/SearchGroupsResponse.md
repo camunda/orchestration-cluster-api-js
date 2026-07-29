@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchGroupsResponse"
-sidebar_label: "SearchGroupsResponse"
+title: 'Type Alias: SearchGroupsResponse'
+sidebar_label: 'SearchGroupsResponse'
 mdx:
   format: md
 ---

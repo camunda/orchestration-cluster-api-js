@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteUserError"
-sidebar_label: "DeleteUserError"
+title: 'Type Alias: DeleteUserError'
+sidebar_label: 'DeleteUserError'
 mdx:
   format: md
 ---

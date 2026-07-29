@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteMappingRuleError"
-sidebar_label: "DeleteMappingRuleError"
+title: 'Type Alias: DeleteMappingRuleError'
+sidebar_label: 'DeleteMappingRuleError'
 mdx:
   format: md
 ---

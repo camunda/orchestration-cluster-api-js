@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: deleteMappingRuleInput"
-sidebar_label: "deleteMappingRuleInput"
+title: 'Type Alias: deleteMappingRuleInput'
+sidebar_label: 'deleteMappingRuleInput'
 mdx:
   format: md
 ---

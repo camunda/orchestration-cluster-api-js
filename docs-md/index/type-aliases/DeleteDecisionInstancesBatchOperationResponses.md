@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteDecisionInstancesBatchOperationResponses"
-sidebar_label: "DeleteDecisionInstancesBatchOperationResponses"
+title: 'Type Alias: DeleteDecisionInstancesBatchOperationResponses'
+sidebar_label: 'DeleteDecisionInstancesBatchOperationResponses'
 mdx:
   format: md
 ---

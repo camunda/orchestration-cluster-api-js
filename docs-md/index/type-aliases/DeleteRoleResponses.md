@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteRoleResponses"
-sidebar_label: "DeleteRoleResponses"
+title: 'Type Alias: DeleteRoleResponses'
+sidebar_label: 'DeleteRoleResponses'
 mdx:
   format: md
 ---

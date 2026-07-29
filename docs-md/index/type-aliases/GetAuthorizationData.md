@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: GetAuthorizationData"
-sidebar_label: "GetAuthorizationData"
+title: 'Type Alias: GetAuthorizationData'
+sidebar_label: 'GetAuthorizationData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:8727](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8727)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ authorizationKey: AuthorizationKey;
 
 The key of the authorization to get.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:8734](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8734)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/authorizations/{authorizationKey}";
+url: '/authorizations/{authorizationKey}';
 ```
 
 Defined in: [gen/types.gen.ts:8735](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L8735)

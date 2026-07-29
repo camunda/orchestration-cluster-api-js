@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: TenantFilter"
-sidebar_label: "TenantFilter"
+title: 'Type Alias: TenantFilter'
+sidebar_label: 'TenantFilter'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:7405](https://github.com/camunda/orchestration-clu
 
 The name of the tenant.
 
-***
+---
 
 ### tenantId?
 

@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DeleteGroupData"
-sidebar_label: "DeleteGroupData"
+title: 'Type Alias: DeleteGroupData'
+sidebar_label: 'DeleteGroupData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ optional body: never;
 
 Defined in: [gen/types.gen.ts:10897](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10897)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ groupId: string;
 
 The group ID.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10904](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10904)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/groups/{groupId}";
+url: '/groups/{groupId}';
 ```
 
 Defined in: [gen/types.gen.ts:10905](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10905)

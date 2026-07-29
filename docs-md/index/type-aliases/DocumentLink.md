@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DocumentLink"
-sidebar_label: "DocumentLink"
+title: 'Type Alias: DocumentLink'
+sidebar_label: 'DocumentLink'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:2509](https://github.com/camunda/orchestration-clu
 
 The date and time when the link expires.
 
-***
+---
 
 ### url
 

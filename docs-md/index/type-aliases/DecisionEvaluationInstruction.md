@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: DecisionEvaluationInstruction"
-sidebar_label: "DecisionEvaluationInstruction"
+title: 'Type Alias: DecisionEvaluationInstruction'
+sidebar_label: 'DecisionEvaluationInstruction'
 mdx:
   format: md
 ---
@@ -8,9 +8,7 @@ mdx:
 # Type Alias: DecisionEvaluationInstruction
 
 ```ts
-type DecisionEvaluationInstruction = 
-  | DecisionEvaluationById
-  | DecisionEvaluationByKey;
+type DecisionEvaluationInstruction = DecisionEvaluationById | DecisionEvaluationByKey;
 ```
 
 Defined in: [gen/types.gen.ts:1545](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L1545)

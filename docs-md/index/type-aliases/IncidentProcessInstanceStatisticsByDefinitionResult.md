@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: IncidentProcessInstanceStatisticsByDefinitionResult"
-sidebar_label: "IncidentProcessInstanceStatisticsByDefinitionResult"
+title: 'Type Alias: IncidentProcessInstanceStatisticsByDefinitionResult'
+sidebar_label: 'IncidentProcessInstanceStatisticsByDefinitionResult'
 mdx:
   format: md
 ---
@@ -26,7 +26,7 @@ Defined in: [gen/types.gen.ts:3666](https://github.com/camunda/orchestration-clu
 The number of active process instances that currently have an incident
 with the specified error hash code.
 
-***
+---
 
 ### processDefinitionId
 
@@ -36,7 +36,7 @@ processDefinitionId: ProcessDefinitionId;
 
 Defined in: [gen/types.gen.ts:3650](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3650)
 
-***
+---
 
 ### processDefinitionKey
 
@@ -46,7 +46,7 @@ processDefinitionKey: ProcessDefinitionKey;
 
 Defined in: [gen/types.gen.ts:3651](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L3651)
 
-***
+---
 
 ### processDefinitionName
 
@@ -58,7 +58,7 @@ Defined in: [gen/types.gen.ts:3655](https://github.com/camunda/orchestration-clu
 
 The name of the process definition.
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -70,7 +70,7 @@ Defined in: [gen/types.gen.ts:3659](https://github.com/camunda/orchestration-clu
 
 The version of the process definition.
 
-***
+---
 
 ### tenantId
 

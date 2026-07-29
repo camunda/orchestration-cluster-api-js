@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ProcessInstanceResult"
-sidebar_label: "ProcessInstanceResult"
+title: 'Type Alias: ProcessInstanceResult'
+sidebar_label: 'ProcessInstanceResult'
 mdx:
   format: md
 ---
@@ -27,7 +27,7 @@ Defined in: [gen/types.gen.ts:6554](https://github.com/camunda/orchestration-clu
 
 The business id associated with this process instance.
 
-***
+---
 
 ### endDate
 
@@ -39,7 +39,7 @@ Defined in: [gen/types.gen.ts:6520](https://github.com/camunda/orchestration-clu
 
 The completion or termination time of the process instance.
 
-***
+---
 
 ### hasIncident
 
@@ -51,7 +51,7 @@ Defined in: [gen/types.gen.ts:6525](https://github.com/camunda/orchestration-clu
 
 Whether this process instance has a related incident or not.
 
-***
+---
 
 ### parentElementInstanceKey
 
@@ -63,7 +63,7 @@ Defined in: [gen/types.gen.ts:6542](https://github.com/camunda/orchestration-clu
 
 The parent element instance key.
 
-***
+---
 
 ### parentProcessInstanceKey
 
@@ -75,7 +75,7 @@ Defined in: [gen/types.gen.ts:6538](https://github.com/camunda/orchestration-clu
 
 The parent process instance key.
 
-***
+---
 
 ### processDefinitionId
 
@@ -85,7 +85,7 @@ processDefinitionId: ProcessDefinitionId;
 
 Defined in: [gen/types.gen.ts:6500](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6500)
 
-***
+---
 
 ### processDefinitionKey
 
@@ -97,7 +97,7 @@ Defined in: [gen/types.gen.ts:6534](https://github.com/camunda/orchestration-clu
 
 The process definition key.
 
-***
+---
 
 ### processDefinitionName
 
@@ -109,7 +109,7 @@ Defined in: [gen/types.gen.ts:6504](https://github.com/camunda/orchestration-clu
 
 The process definition name.
 
-***
+---
 
 ### processDefinitionVersion
 
@@ -121,7 +121,7 @@ Defined in: [gen/types.gen.ts:6508](https://github.com/camunda/orchestration-clu
 
 The process definition version.
 
-***
+---
 
 ### processDefinitionVersionTag
 
@@ -133,7 +133,7 @@ Defined in: [gen/types.gen.ts:6512](https://github.com/camunda/orchestration-clu
 
 The process definition version tag.
 
-***
+---
 
 ### processInstanceKey
 
@@ -145,7 +145,7 @@ Defined in: [gen/types.gen.ts:6530](https://github.com/camunda/orchestration-clu
 
 The key of this process instance.
 
-***
+---
 
 ### rootProcessInstanceKey
 
@@ -159,7 +159,7 @@ The key of the root process instance. The root process instance is the top-level
 ancestor in the process instance hierarchy. This field is only present for data
 belonging to process instance hierarchies created in version 8.9 or later.
 
-***
+---
 
 ### startDate
 
@@ -171,7 +171,7 @@ Defined in: [gen/types.gen.ts:6516](https://github.com/camunda/orchestration-clu
 
 The start time of the process instance.
 
-***
+---
 
 ### state
 
@@ -181,7 +181,7 @@ state: ProcessInstanceStateEnum;
 
 Defined in: [gen/types.gen.ts:6521](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6521)
 
-***
+---
 
 ### tags
 
@@ -191,7 +191,7 @@ tags: TagSet;
 
 Defined in: [gen/types.gen.ts:6550](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L6550)
 
-***
+---
 
 ### tenantId
 

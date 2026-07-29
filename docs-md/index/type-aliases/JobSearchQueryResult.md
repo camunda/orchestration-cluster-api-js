@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: JobSearchQueryResult"
-sidebar_label: "JobSearchQueryResult"
+title: 'Type Alias: JobSearchQueryResult'
+sidebar_label: 'JobSearchQueryResult'
 mdx:
   format: md
 ---

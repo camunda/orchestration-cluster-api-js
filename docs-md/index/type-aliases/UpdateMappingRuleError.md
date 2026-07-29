@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: UpdateMappingRuleError"
-sidebar_label: "UpdateMappingRuleError"
+title: 'Type Alias: UpdateMappingRuleError'
+sidebar_label: 'UpdateMappingRuleError'
 mdx:
   format: md
 ---

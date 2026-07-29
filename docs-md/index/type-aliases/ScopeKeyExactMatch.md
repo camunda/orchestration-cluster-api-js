@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: ScopeKeyExactMatch"
-sidebar_label: "ScopeKeyExactMatch"
+title: 'Type Alias: ScopeKeyExactMatch'
+sidebar_label: 'ScopeKeyExactMatch'
 mdx:
   format: md
 ---

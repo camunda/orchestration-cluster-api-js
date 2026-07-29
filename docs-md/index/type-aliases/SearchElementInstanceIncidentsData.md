@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: SearchElementInstanceIncidentsData"
-sidebar_label: "SearchElementInstanceIncidentsData"
+title: 'Type Alias: SearchElementInstanceIncidentsData'
+sidebar_label: 'SearchElementInstanceIncidentsData'
 mdx:
   format: md
 ---
@@ -23,7 +23,7 @@ body: IncidentSearchQuery;
 
 Defined in: [gen/types.gen.ts:10460](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10460)
 
-***
+---
 
 ### path
 
@@ -41,7 +41,7 @@ elementInstanceKey: ElementInstanceKey;
 
 The unique key of the element instance to search incidents for.
 
-***
+---
 
 ### query?
 
@@ -51,12 +51,12 @@ optional query: never;
 
 Defined in: [gen/types.gen.ts:10467](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10467)
 
-***
+---
 
 ### url
 
 ```ts
-url: "/element-instances/{elementInstanceKey}/incidents/search";
+url: '/element-instances/{elementInstanceKey}/incidents/search';
 ```
 
 Defined in: [gen/types.gen.ts:10468](https://github.com/camunda/orchestration-cluster-api-js/blob/686113e38ceaeea2abb1cc7d02a0ac8a78313121/src/gen/types.gen.ts#L10468)

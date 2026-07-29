@@ -1,6 +1,6 @@
 ---
-title: "Type Alias: MigrateProcessInstanceErrors"
-sidebar_label: "MigrateProcessInstanceErrors"
+title: 'Type Alias: MigrateProcessInstanceErrors'
+sidebar_label: 'MigrateProcessInstanceErrors'
 mdx:
   format: md
 ---
@@ -25,7 +25,7 @@ Defined in: [gen/types.gen.ts:13530](https://github.com/camunda/orchestration-cl
 
 The provided data is not valid.
 
-***
+---
 
 ### 404
 
@@ -37,7 +37,7 @@ Defined in: [gen/types.gen.ts:13534](https://github.com/camunda/orchestration-cl
 
 The process instance is not found.
 
-***
+---
 
 ### 409
 
@@ -49,7 +49,7 @@ Defined in: [gen/types.gen.ts:13539](https://github.com/camunda/orchestration-cl
 
 The process instance migration failed. More details are provided in the response body.
 
-***
+---
 
 ### 500
 
@@ -61,7 +61,7 @@ Defined in: [gen/types.gen.ts:13543](https://github.com/camunda/orchestration-cl
 
 An internal error occurred while processing the request.
 
-***
+---
 
 ### 503
 
