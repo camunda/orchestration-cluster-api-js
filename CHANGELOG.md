@@ -1,3 +1,12 @@
+## [9.1.3](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.2...v9.1.3) (2026-07-29)
+
+
+### Bug Fixes
+
+* **security:** harden generated buildClientParams against prototype pollution ([22f0f10](https://github.com/camunda/orchestration-cluster-api-js/commit/22f0f1045b7962a8c7bcd28b66818d48854c6abb))
+* **security:** harden generated buildClientParams against prototype pollution ([5028bfc](https://github.com/camunda/orchestration-cluster-api-js/commit/5028bfc9552ca2d0ff1bb3e7fda8d3f445272086))
+* **security:** scope the hardening check to the located initialiser ([57ebb73](https://github.com/camunda/orchestration-cluster-api-js/commit/57ebb731cfaf4b54155884f5debc6a761e8b9728))
+
 ## [9.1.2](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.1...v9.1.2) (2026-04-29)
 
 
