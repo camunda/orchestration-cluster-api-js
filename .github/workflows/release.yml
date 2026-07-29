@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MAJOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MAJOR'] }}" >> $GITHUB_ENV
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
@@ -161,7 +161,7 @@ jobs:
         run: |
           echo "CAMUNDA_SDK_CURRENT_STABLE_MAJOR=${{ vars['CAMUNDA_SDK_CURRENT_STABLE_MAJOR'] }}" >> $GITHUB_ENV
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
           registry-url: 'https://registry.npmjs.org'
@@ -263,7 +263,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 24.x
 
