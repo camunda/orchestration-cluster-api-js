@@ -1,3 +1,11 @@
+# [10.0.0-alpha.19](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.18...v10.0.0-alpha.19) (2026-07-31)
+
+
+### Features
+
+* add example coverage for getClusterStatus, getRestoreStatus ([ef02297](https://github.com/camunda/orchestration-cluster-api-js/commit/ef02297ee69b1da3346457ff12bbc82c12785332))
+* **examples:** add getClusterStatus and getRestoreStatus examples ([b633b00](https://github.com/camunda/orchestration-cluster-api-js/commit/b633b00f71c4960b5620c56bc109cb41c527213e))
+
 # [10.0.0-alpha.18](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.17...v10.0.0-alpha.18) (2026-07-27)
 
 
