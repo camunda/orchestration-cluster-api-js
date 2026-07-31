@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 214
+// Operations: 216
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -315,6 +315,8 @@ export type getBatchOperationConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getBatchOperation>> 
 };
+type getClusterStatusOptions = Parameters<typeof Sdk.getClusterStatus>[0];
+export type getClusterStatusInput = void;
 type getDecisionDefinitionOptions = Parameters<typeof Sdk.getDecisionDefinition>[0];
 type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
 export type getDecisionDefinitionInput = { decisionDefinitionKey: getDecisionDefinitionPathParam_decisionDefinitionKey };
@@ -589,6 +591,8 @@ export type getResourceContentBinaryConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getResourceContentBinary>> 
 };
+type getRestoreStatusOptions = Parameters<typeof Sdk.getRestoreStatus>[0];
+export type getRestoreStatusInput = void;
 type getRoleOptions = Parameters<typeof Sdk.getRole>[0];
 type getRolePathParam_roleId = (NonNullable<getRoleOptions> extends { path: { roleId: infer P } } ? P : any);
 export type getRoleInput = { roleId: getRolePathParam_roleId };
@@ -6982,6 +6986,66 @@ export class CamundaClient {
   }
 
   /**
+   * Get the status of the whole cluster
+   *
+   * Checks the health status of the whole cluster, aggregated over all physical tenants. Returns `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, and `DEGRADED` in every other case. No per-tenant detail is reported; use `GET /cluster/v2/topology` for that.
+    *
+   * @example Get cluster status
+   * ```ts
+   * async function getClusterStatusExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const status = await camunda.getClusterStatus();
+   * 
+   *   console.log(`Cluster status: ${status.status}`);
+   * }
+   * ```
+   * @operationId getClusterStatus
+   * @tags Cluster
+   */
+  getClusterStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterStatus>>;
+  getClusterStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getClusterStatus(opts as any);
+        let data = this._evaluateResponse(_raw, 'getClusterStatus', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetClusterStatusResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetClusterStatusResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getClusterStatus', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getClusterStatus', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get decision definition
    *
    * Returns a decision definition by key.
@@ -9805,6 +9869,71 @@ export class CamundaClient {
   }
 
   /**
+   * Get the status of the restore that is currently in progress
+   *
+   * Returns the status of the restore that is currently in progress, reported per broker and per partition. There is at most one restore in flight at any time. Once the restore has finished this endpoint returns 404; the per-partition detail is not retained after completion.
+    *
+   * @example Get restore status
+   * ```ts
+   * async function getRestoreStatusExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const status = await camunda.getRestoreStatus();
+   * 
+   *   console.log(`Restore status: ${status.status} (change ${status.changeId})`);
+   *   for (const broker of status.brokers) {
+   *     console.log(
+   *       `  Broker ${broker.brokerId}: ${broker.partitionsRestored}/${broker.partitionsToRestore} partitions restored`
+   *     );
+   *   }
+   * }
+   * ```
+   * @operationId getRestoreStatus
+   * @tags Recovery
+   */
+  getRestoreStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRestoreStatus>>;
+  getRestoreStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getRestoreStatus(opts as any);
+        let data = this._evaluateResponse(_raw, 'getRestoreStatus', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetRestoreStatusResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetRestoreStatusResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getRestoreStatus', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getRestoreStatus', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get role
    *
    * Get a role by its ID.
@@ -10107,7 +10236,7 @@ export class CamundaClient {
   /**
    * Get physical tenant status
    *
-   * Checks the health status of the default physical tenant by verifying if there's at least one partition of its group with a healthy leader. This endpoint is scoped to the default physical tenant only: it is available unprefixed and at `/physical-tenants/default/v2/status`, but not for any other physical tenant id (`/physical-tenants/{id}/v2/status` returns 404 for every other id, whether or not a physical tenant with that id exists). If the cluster has only a single physical tenant (the default), this endpoint is equivalent to `/cluster/v2/status`. Use `/cluster/v2/status` for the aggregated status of the whole cluster, or `/physical-tenants/{id}/v2/topology` for the health of a specific physical tenant's partitions.
+   * Checks the health status of the default physical tenant by verifying if there's at least one partition of its group with a healthy leader. This endpoint is scoped to the default physical tenant only: it is available unprefixed and at `/physical-tenants/default/v2/status`, but not for any other physical tenant id (`/physical-tenants/{id}/v2/status` returns 404 for every other id, whether or not a physical tenant with that id exists). On a cluster with only the default physical tenant this endpoint answers the same question as `/cluster/v2/status`, though not with the same response: `/cluster/v2/status` reports its status in a body and so also distinguishes a degraded tenant from a healthy one. Use `/cluster/v2/status` for the aggregated status of the whole cluster, or `/physical-tenants/{id}/v2/topology` for the health of a specific physical tenant's partitions.
     *
    * @example Check cluster status
    * ```ts
@@ -10922,6 +11051,22 @@ export class CamundaClient {
    * This endpoint is an alpha feature and may be subject to change in future releases.
    *
     *
+   * @example List secret references
+   * ```ts
+   * async function listSecretsExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // The request body is reserved for future filtering options and currently
+   *   // takes no properties.
+   *   const result = await camunda.listSecrets({});
+   * 
+   *   // Only the references are returned — never the secret values. Use
+   *   // `resolveSecrets` to fetch a value when one is actually needed.
+   *   for (const reference of result.references) {
+   *     console.log(`Secret available: ${reference}`);
+   *   }
+   * }
+   * ```
    * @operationId listSecrets
    * @tags Secret
    */
