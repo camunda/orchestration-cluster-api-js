@@ -4,7 +4,7 @@ export type CamundaKey< T extends string = string > = string & { readonly __bran
 // branding-plugin patch: applied primitive branding
 
 export type ClientOptions = {
-    baseUrl: '{schema}://{host}:{port}/v2' | (string & {});
+    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
 };
 
 export type AgentInstanceSearchQuerySortRequest = {
@@ -552,11 +552,10 @@ export type AgentInstanceHistoryItemResult = {
     jobLease: string;
     /**
      * The loopIteration this item belongs to. A loopIteration is one pass through the agent
-     * feedback loop: one LLM call, its tool dispatches, and their results. Null if not provided
-     * by the connector.
+     * feedback loop: one LLM call, its tool dispatches, and their results.
      *
      */
-    loopIteration: LoopIterationId | null;
+    loopIteration: LoopIterationId;
     /**
      * The role of this history item in the conversation.
      */
@@ -2637,6 +2636,16 @@ export type ClusterVariableSearchQueryResult = SearchQueryResponse & {
 };
 
 /**
+ * The aggregated status of the whole cluster.
+ */
+export type ClusterStatusResponse = {
+    /**
+     * `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.
+     */
+    status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+};
+
+/**
  * The operating mode of a cluster's partitions.
  */
 export type Mode = 'PROCESSING' | 'RECOVERING';
@@ -2776,6 +2785,72 @@ export type RestoreRequest = {
      * The IDs of the backups to restore from, one per partition.
      */
     backupIds?: Array<number> | null;
+};
+
+/**
+ * The status of the restore that is currently in progress.
+ */
+export type RestoreStatusResponse = {
+    /**
+     * The overall status of the restore.
+     */
+    status: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+    /**
+     * The ID of the cluster change that performs the restore.
+     */
+    changeId: string;
+    /**
+     * The time the restore started, as an ISO 8601 timestamp.
+     */
+    startedAt: string | null;
+    /**
+     * The per-broker restore status.
+     */
+    brokers: Array<RestoreBrokerStatus>;
+};
+
+/**
+ * The restore status of a single broker.
+ */
+export type RestoreBrokerStatus = {
+    /**
+     * The ID of the broker, including its zone if it belongs to one.
+     */
+    brokerId: string;
+    /**
+     * The number of the broker's partitions that have been restored so far.
+     */
+    partitionsRestored: number;
+    /**
+     * The total number of the broker's partitions to restore.
+     */
+    partitionsToRestore: number;
+    /**
+     * The per-partition restore status for this broker.
+     */
+    partitions: Array<RestorePartitionStatus>;
+};
+
+/**
+ * The restore status of a single partition on a broker.
+ */
+export type RestorePartitionStatus = {
+    /**
+     * The ID of the partition.
+     */
+    partitionId: number;
+    /**
+     * The restore state of the partition.
+     */
+    state: 'PENDING' | 'RESTORING' | 'RESTORED';
+    /**
+     * The IDs of the backups this partition is restored from.
+     */
+    backupIds: Array<number>;
+    /**
+     * The time the partition was restored, as an ISO 8601 timestamp; null unless the partition state is `RESTORED`.
+     */
+    completedAt: string | null;
 };
 
 export type ConditionalEvaluationInstruction = {
@@ -19184,6 +19259,31 @@ export type GetStatusResponses = {
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
 
+export type GetClusterStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/status';
+};
+
+export type GetClusterStatusErrors = {
+    /**
+     * The cluster is DOWN because no physical tenant can process work.
+     */
+    503: ClusterStatusResponse;
+};
+
+export type GetClusterStatusError = GetClusterStatusErrors[keyof GetClusterStatusErrors];
+
+export type GetClusterStatusResponses = {
+    /**
+     * The cluster can process work; the body reports whether it is fully healthy or degraded.
+     */
+    200: ClusterStatusResponse;
+};
+
+export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
+
 export type GetUsageMetricsData = {
     body?: never;
     path?: never;
@@ -20180,6 +20280,39 @@ export type ChangeClusterModeResponses = {
 
 export type ChangeClusterModeResponse = ChangeClusterModeResponses[keyof ChangeClusterModeResponses];
 
+export type GetRestoreStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/restore';
+};
+
+export type GetRestoreStatusErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * No restore is currently in progress.
+     */
+    404: unknown;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetRestoreStatusError = GetRestoreStatusErrors[keyof GetRestoreStatusErrors];
+
+export type GetRestoreStatusResponses = {
+    /**
+     * The status of the restore that is currently in progress.
+     */
+    200: RestoreStatusResponse;
+};
+
+export type GetRestoreStatusResponse = GetRestoreStatusResponses[keyof GetRestoreStatusResponses];
+
 export type RestoreData = {
     body: RestoreRequest;
     path?: never;
@@ -20984,7 +21117,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:a7939e6269dd779f0b706ea2869d62646eeec0b54b8f35cb0f8185da92e84a9d
+// specHash=sha256:f017493adcfd1d6f933879fc3cefc02ab23f2406cca0e5af6be135fdb564cffd
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

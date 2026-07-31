@@ -832,6 +832,21 @@ export const zUpdateClusterVariableRequest = z.object({
 });
 
 /**
+ * The aggregated status of the whole cluster.
+ */
+export const zClusterStatusResponse = z.object({
+    status: z.enum([
+        'HEALTHY',
+        'DEGRADED',
+        'DOWN'
+    ]).register(z.globalRegistry, {
+        description: '`HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The aggregated status of the whole cluster.'
+});
+
+/**
  * The operating mode of a cluster's partitions.
  */
 export const zMode = z.enum(['PROCESSING', 'RECOVERING']).register(z.globalRegistry, {
@@ -960,6 +975,71 @@ export const zRestoreRequest = z.object({
     backupIds: z.array(z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })).nullish()
 }).register(z.globalRegistry, {
     description: 'Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.'
+});
+
+/**
+ * The restore status of a single partition on a broker.
+ */
+export const zRestorePartitionStatus = z.object({
+    partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The ID of the partition.'
+    }),
+    state: z.enum([
+        'PENDING',
+        'RESTORING',
+        'RESTORED'
+    ]).register(z.globalRegistry, {
+        description: 'The restore state of the partition.'
+    }),
+    backupIds: z.array(z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })).register(z.globalRegistry, {
+        description: 'The IDs of the backups this partition is restored from.'
+    }),
+    completedAt: z.iso.datetime().nullable()
+}).register(z.globalRegistry, {
+    description: 'The restore status of a single partition on a broker.'
+});
+
+/**
+ * The restore status of a single broker.
+ */
+export const zRestoreBrokerStatus = z.object({
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the broker, including its zone if it belongs to one.'
+    }),
+    partitionsRestored: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The number of the broker\'s partitions that have been restored so far.'
+    }),
+    partitionsToRestore: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The total number of the broker\'s partitions to restore.'
+    }),
+    partitions: z.array(zRestorePartitionStatus).register(z.globalRegistry, {
+        description: 'The per-partition restore status for this broker.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The restore status of a single broker.'
+});
+
+/**
+ * The status of the restore that is currently in progress.
+ */
+export const zRestoreStatusResponse = z.object({
+    status: z.enum([
+        'IN_PROGRESS',
+        'COMPLETED',
+        'FAILED',
+        'CANCELLED'
+    ]).register(z.globalRegistry, {
+        description: 'The overall status of the restore.'
+    }),
+    changeId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the cluster change that performs the restore.'
+    }),
+    startedAt: z.iso.datetime().nullable(),
+    brokers: z.array(zRestoreBrokerStatus).register(z.globalRegistry, {
+        description: 'The per-broker restore status.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The status of the restore that is currently in progress.'
 });
 
 /**
@@ -3772,7 +3852,7 @@ export const zAgentInstanceHistoryItemResult = z.object({
     jobLease: z.string().register(z.globalRegistry, {
         description: 'The lease token of the activation that produced this item.'
     }),
-    loopIteration: zLoopIterationId.nullable(),
+    loopIteration: zLoopIterationId,
     role: zAgentInstanceHistoryRoleEnum,
     content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
         description: 'The content blocks of this history item.'
@@ -10709,6 +10789,11 @@ export const zGetStatusResponse = z.void().register(z.globalRegistry, {
     description: 'The default physical tenant is UP and has at least one partition with a healthy leader.'
 });
 
+/**
+ * The cluster can process work; the body reports whether it is fully healthy or degraded.
+ */
+export const zGetClusterStatusResponse = zClusterStatusResponse;
+
 export const zGetUsageMetricsQuery = z.object({
     startTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The start date for usage metrics, including this date. Value in ISO 8601 format.'
@@ -10968,6 +11053,11 @@ export const zChangeClusterModeQuery = z.object({
  * The mode change request was accepted; returns the planned cluster changes.
  */
 export const zChangeClusterModeResponse = zClusterModeChangeResponse;
+
+/**
+ * The status of the restore that is currently in progress.
+ */
+export const zGetRestoreStatusResponse = zRestoreStatusResponse;
 
 export const zRestoreBody = zRestoreRequest;
 
