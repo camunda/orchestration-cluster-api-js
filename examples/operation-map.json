@@ -1506,5 +1506,19 @@
       "region": "ResumeExporting",
       "label": "Resume exporting"
     }
+  ],
+  "getClusterStatus": [
+    {
+      "file": "admin-operations.ts",
+      "region": "GetClusterStatus",
+      "label": "Get cluster status"
+    }
+  ],
+  "getRestoreStatus": [
+    {
+      "file": "client.ts",
+      "region": "GetRestoreStatus",
+      "label": "Get restore status"
+    }
   ]
 }

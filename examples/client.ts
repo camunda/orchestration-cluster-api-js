@@ -103,6 +103,21 @@ async function restoreExample() {
 }
 //#endregion Restore
 
+//#region GetRestoreStatus
+async function getRestoreStatusExample() {
+  const camunda = createCamundaClient();
+
+  const status = await camunda.getRestoreStatus();
+
+  console.log(`Restore status: ${status.status} (change ${status.changeId})`);
+  for (const broker of status.brokers) {
+    console.log(
+      `  Broker ${broker.brokerId}: ${broker.partitionsRestored}/${broker.partitionsToRestore} partitions restored`
+    );
+  }
+}
+//#endregion GetRestoreStatus
+
 //#region ResultClient
 async function resultClientExample() {
   const camunda = createCamundaResultClient({
@@ -220,6 +235,7 @@ void createClientWithConfigExample;
 void createClientOAuthExample;
 void getTopologyExample;
 void changeClusterModeExample;
+void getRestoreStatusExample;
 void resultClientExample;
 void customFetchExample;
 void configExample;
