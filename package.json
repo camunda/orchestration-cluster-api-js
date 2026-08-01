@@ -66,6 +66,7 @@
     "docs:config": "tsx scripts/generate-config-doc.ts",
     "docs:md": "rm -rf docs-md && typedoc --options typedoc-md.json && node scripts/postprocess-md-docs.mjs docs-md",
     "test:dist": "npm run build --silent && node tests/dist-usage.smoke.mjs",
+    "test:cross-runtime": "node scripts/cross-runtime-smoke.mjs",
     "lint": "biome lint .",
     "lint:fix": "biome check . --write",
     "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
