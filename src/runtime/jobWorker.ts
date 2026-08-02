@@ -2,6 +2,7 @@ import type { z } from 'zod';
 import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses } from '../gen/types.gen';
 import type { EnrichedActivatedJob } from './jobActions';
+import { WorkerStartGate } from './workerStartGate';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 
@@ -100,6 +101,7 @@ export class JobWorker {
   private _pollTimer: any = null;
   private _inFlightActivation: any = null; // CancelablePromise-like
   private _log: ReturnType<CamundaClient['logger']>;
+  private _startGate: WorkerStartGate;
 
   constructor(client: CamundaClient, cfg: JobWorkerConfig) {
     this._client = client;
@@ -124,6 +126,14 @@ export class JobWorker {
         { maxBackoffTimeMs: cfg.maxBackoffTimeMs },
       ]);
     }
+    // The plain worker's transport (the HTTP client) is constructed synchronously,
+    // so its readiness signal is already-resolved. The gate is still required: it
+    // holds the first poll until after the tick in which the factory returns the
+    // handle, and it makes start() idempotent across the whole worker lifetime.
+    this._startGate = new WorkerStartGate(
+      () => Promise.resolve(),
+      () => this._stopped
+    );
     if (this._cfg.autoStart) this.start();
   }
 
@@ -137,10 +147,26 @@ export class JobWorker {
     return this._stopped;
   }
 
+  /**
+   * Begin polling for jobs. Safe to call at any point: the request is buffered
+   * until the transport is ready, and redundant calls (including an explicit
+   * call on an `autoStart` worker) are dropped rather than starting a second
+   * poll loop. Once the worker is stopped, `start()` is a no-op.
+   */
   start() {
     if (this._stopped) return;
-    if (this._pollTimer) return; // already running
+    const accepted = this._startGate.request(
+      () => this._beginPolling(),
+      (err) => this._log.error('worker.start.transportError', err)
+    );
+    if (!accepted) {
+      this._log.debug('worker.start.alreadyRequested');
+      return;
+    }
     this._log.info('worker.start');
+  }
+
+  private _beginPolling() {
     const jitterMax = this._cfg.startupJitterMaxSeconds ?? 0;
     if (jitterMax > 0) {
       const jitterMs = Math.floor(Math.random() * jitterMax * 1000);
