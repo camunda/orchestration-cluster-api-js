@@ -4,6 +4,7 @@ import type { ActivateJobsResponses } from '../gen/types.gen';
 import type { EnrichedActivatedJob } from './jobActions';
 import type { JobActionReceipt } from './jobWorker';
 import type { ThreadPool } from './threadPool';
+import { WorkerStartGate } from './workerStartGate';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 
@@ -130,6 +131,7 @@ export class ThreadedJobWorker {
   private _inFlightActivation: any = null;
   private _log: ReturnType<CamundaClient['logger']>;
   private _jobQueue: Array<{ raw: ActivatedJobResult & Partial<EnrichedActivatedJob> }> = [];
+  private _startGate: WorkerStartGate;
 
   constructor(client: CamundaClient, pool: ThreadPool, cfg: ThreadedJobWorkerConfig) {
     this._client = client;
@@ -153,6 +155,13 @@ export class ThreadedJobWorker {
     // Drain queued jobs when a thread becomes ready or idle
     this._pool.onThreadReady = () => this._drainQueue();
 
+    // The shared thread pool spawns its threads asynchronously, so the handle is
+    // returned before the transport can service a poll. Buffer start requests on
+    // the pool's readiness signal.
+    this._startGate = new WorkerStartGate(
+      () => this._pool.ready,
+      () => this._stopped
+    );
     if (this._cfg.autoStart) this.start();
   }
 
@@ -178,10 +187,26 @@ export class ThreadedJobWorker {
     return this._pool.ready;
   }
 
+  /**
+   * Begin polling for jobs. Safe to call at any point: the request is buffered
+   * until the shared thread pool is ready, and redundant calls (including an
+   * explicit call on an `autoStart` worker) are dropped rather than starting a
+   * second poll loop. Once the worker is stopped, `start()` is a no-op.
+   */
   start() {
     if (this._stopped) return;
-    if (this._pollTimer) return;
+    const accepted = this._startGate.request(
+      () => this._beginPolling(),
+      (err) => this._log.error('worker.start.transportError', err)
+    );
+    if (!accepted) {
+      this._log.debug('worker.start.alreadyRequested');
+      return;
+    }
     this._log.info('worker.start');
+  }
+
+  private _beginPolling() {
     const jitterMax = this._cfg.startupJitterMaxSeconds ?? 0;
     if (jitterMax > 0) {
       const jitterMs = Math.floor(Math.random() * jitterMax * 1000);
@@ -358,7 +383,8 @@ export class ThreadedJobWorker {
   private async _poll() {
     this._pollTimer = null;
     if (this._stopped) return;
-    // Ensure shared thread pool is ready before polling
+    // Belt and braces: the start gate already held the first poll until the pool
+    // was ready, so by here this resolves immediately.
     await this._pool.ready;
     if (this._activeJobs >= this._maxParallelJobs) {
       this._scheduleNext(this._cfg.pollIntervalMs);
