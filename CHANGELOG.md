@@ -1,3 +1,10 @@
+# [10.0.0-alpha.20](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.19...v10.0.0-alpha.20) (2026-08-02)
+
+
+### Bug Fixes
+
+* **runtime:** keep node:worker_threads out of the public type surface ([685ee15](https://github.com/camunda/orchestration-cluster-api-js/commit/685ee15d86982251eb2c02ec3c01d809fc2eb9a9))
+
 # [10.0.0-alpha.19](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.18...v10.0.0-alpha.19) (2026-07-31)
 
 
