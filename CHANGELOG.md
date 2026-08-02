@@ -1,3 +1,10 @@
+# [10.0.0-alpha.22](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.21...v10.0.0-alpha.22) (2026-08-02)
+
+
+### Bug Fixes
+
+* **runtime:** reject transport errors instead of silently swallowing them ([#406](https://github.com/camunda/orchestration-cluster-api-js/issues/406)) ([3f84418](https://github.com/camunda/orchestration-cluster-api-js/commit/3f844183442649cfe2a8b8673e3c819b81337553)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+
 # [10.0.0-alpha.21](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.20...v10.0.0-alpha.21) (2026-08-02)
 
 
