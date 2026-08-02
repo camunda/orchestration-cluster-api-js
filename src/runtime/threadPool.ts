@@ -11,8 +11,24 @@
 import type { CamundaClient } from '../gen/CamundaClient';
 import { installClientCallHandler } from './clientProxy';
 
+/**
+ * Minimal structural view of a `node:worker_threads` Worker — only the members the pool
+ * actually uses. Typing the public `PoolWorker.worker` field structurally (rather than as
+ * `import('node:worker_threads').Worker`) keeps `node:worker_threads` out of the published
+ * `.d.ts`, so downstream consumers do not need `@types/node` to typecheck against this
+ * package's types. A real Node `Worker` is structurally assignable to this. The runtime
+ * implementation still constructs and uses the genuine Node Worker internally.
+ */
+export interface WorkerHandle {
+  postMessage(value: unknown, transferList?: readonly unknown[]): void;
+  terminate(): Promise<number>;
+  on(event: 'message', listener: (msg: any) => void): this;
+  on(event: 'error', listener: (err: Error) => void): this;
+  on(event: 'exit', listener: (code: number) => void): this;
+}
+
 export interface PoolWorker {
-  worker: import('node:worker_threads').Worker;
+  worker: WorkerHandle;
   busy: boolean;
   ready: boolean;
   /** The taskId currently being processed by this worker (if busy). */
