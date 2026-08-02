@@ -1280,6 +1280,37 @@ export const zConditionWaitStateDetails = zBaseWaitStateDetails.and(z.object({
     })
 }));
 
+/**
+ * Exporting Status Code
+ *
+ * The exporting status of a physical tenant, aggregated over every replica of every one of
+ * its partitions:
+ * - `EXPORTING`: all replicas are exporting and committing their position.
+ * - `PAUSED`: all replicas are paused, nothing is being exported.
+ * - `SOFT_PAUSED`: all replicas keep exporting but do not commit their position.
+ * - `MIXED`: replicas report different phases, so the tenant is in no single phase.
+ *
+ */
+export const zExportingStatusCode = z.enum([
+    'EXPORTING',
+    'PAUSED',
+    'SOFT_PAUSED',
+    'MIXED'
+]).register(z.globalRegistry, {
+    description: 'The exporting status of a physical tenant, aggregated over every replica of every one of\nits partitions:\n- `EXPORTING`: all replicas are exporting and committing their position.\n- `PAUSED`: all replicas are paused, nothing is being exported.\n- `SOFT_PAUSED`: all replicas keep exporting but do not commit their position.\n- `MIXED`: replicas report different phases, so the tenant is in no single phase.\n'
+});
+
+/**
+ * ExportingStatusResponse
+ *
+ * Response body for the exporting status of a physical tenant.
+ */
+export const zExportingStatusResponse = z.object({
+    status: zExportingStatusCode
+}).register(z.globalRegistry, {
+    description: 'Response body for the exporting status of a physical tenant.'
+});
+
 export const zExpressionEvaluationWarningItem = z.object({
     message: z.string().register(z.globalRegistry, {
         description: 'The warning message'
@@ -5698,6 +5729,7 @@ export const zIncidentProcessInstanceStatisticsByDefinitionQuery = z.object({
 
 export const zJobSearchQuerySortRequest = z.object({
     field: z.enum([
+        'creationTime',
         'deadline',
         'deniedReason',
         'elementId',
@@ -6298,15 +6330,20 @@ export const zResolvedSecret = z.object({
  *
  * - `NOT_FOUND`: no secret exists for the reference.
  * - `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.
- * - `INVALID_REFERENCE`: the reference is malformed.
+ * - `INVALID_REFERENCE`: the reference is malformed, or the configured store rejected it as
+ * an invalid secret identifier.
+ * - `UNREADABLE`: the configured store could not return a value for the reference, for
+ * example because it rejected the cluster's own store credentials or the stored value could
+ * not be read. Whether the secret exists is not implied.
  *
  */
 export const zSecretErrorCode = z.enum([
     'NOT_FOUND',
     'ACCESS_DENIED',
-    'INVALID_REFERENCE'
+    'INVALID_REFERENCE',
+    'UNREADABLE'
 ]).register(z.globalRegistry, {
-    description: 'The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed.\n'
+    description: 'The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed, or the configured store rejected it as\n  an invalid secret identifier.\n- `UNREADABLE`: the configured store could not return a value for the reference, for\n  example because it rejected the cluster\'s own store credentials or the stored value could\n  not be read. Whether the secret exists is not implied.\n'
 });
 
 export const zSecretResolutionError = z.object({
@@ -6345,10 +6382,9 @@ export const zSecretListRequest = z.record(z.string(), z.never()).register(z.glo
 /**
  * The secret references the caller is authorized to see.
  *
- * Unbounded for now: Phase 1's backend is mocked with at most 3 references. Pagination is
- * expected to land here before GA, once a real secret store can return a tenant's full
- * enumeration in one response. This is an alpha endpoint, so that is not yet a
- * breaking-contract concern.
+ * Unbounded for now: the response carries the configured stores' full enumeration for the
+ * physical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,
+ * so that is not yet a breaking-contract concern.
  *
  */
 export const zSecretListResult = z.object({
@@ -6358,7 +6394,7 @@ export const zSecretListResult = z.object({
         description: 'The secret references, each of the form `camunda.secrets.<name>`.'
     })
 }).register(z.globalRegistry, {
-    description: 'The secret references the caller is authorized to see.\n\nUnbounded for now: Phase 1\'s backend is mocked with at most 3 references. Pagination is\nexpected to land here before GA, once a real secret store can return a tenant\'s full\nenumeration in one response. This is an alpha endpoint, so that is not yet a\nbreaking-contract concern.\n'
+    description: 'The secret references the caller is authorized to see.\n\nUnbounded for now: the response carries the configured stores\' full enumeration for the\nphysical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,\nso that is not yet a breaking-contract concern.\n'
 });
 
 export const zSignalBroadcastRequest = z.object({
@@ -9737,6 +9773,11 @@ export const zCreateElementInstanceVariablesPath = z.object({
 export const zCreateElementInstanceVariablesResponse = z.void().register(z.globalRegistry, {
     description: 'The variables were updated.'
 });
+
+/**
+ * The current exporting status of the physical tenant.
+ */
+export const zGetExportingStatusResponse = zExportingStatusResponse;
 
 export const zPauseExportingQuery = z.object({
     soft: z.boolean().register(z.globalRegistry, {

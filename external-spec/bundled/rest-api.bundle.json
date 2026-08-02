@@ -1133,8 +1133,8 @@
         "operationId": "takeRuntimeBackup",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "resourceType": "BACKUP",
+            "permissionType": "CREATE"
           }
         ],
         "security": [
@@ -1214,7 +1214,7 @@
         "operationId": "listRuntimeBackups",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
+            "resourceType": "BACKUP",
             "permissionType": "READ"
           }
         ],
@@ -1281,7 +1281,7 @@
         "operationId": "getRuntimeBackupState",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
+            "resourceType": "BACKUP",
             "permissionType": "READ"
           }
         ],
@@ -1329,8 +1329,8 @@
         "operationId": "deleteRuntimeBackupState",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "resourceType": "BACKUP",
+            "permissionType": "DELETE"
           }
         ],
         "security": [
@@ -1372,8 +1372,8 @@
         "operationId": "syncRuntimeBackupState",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "resourceType": "BACKUP",
+            "permissionType": "CREATE"
           }
         ],
         "security": [
@@ -1432,7 +1432,7 @@
         "operationId": "getRuntimeBackup",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
+            "resourceType": "BACKUP",
             "permissionType": "READ"
           }
         ],
@@ -1501,8 +1501,8 @@
         "operationId": "deleteRuntimeBackup",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "resourceType": "BACKUP",
+            "permissionType": "DELETE"
           }
         ],
         "security": [
@@ -4703,6 +4703,56 @@
         "x-added-in-version": "8.6"
       }
     },
+    "/exporting": {
+      "get": {
+        "x-eventually-consistent": false,
+        "tags": [
+          "Exporting"
+        ],
+        "operationId": "getExportingStatus",
+        "x-required-permissions": [
+          {
+            "resourceType": "EXPORTER",
+            "permissionType": "PAUSE"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          },
+          {
+            "basicAuth": []
+          }
+        ],
+        "summary": "Get exporting status",
+        "description": "Returns the exporting status of the physical tenant, aggregated over every replica of\nevery one of its partitions.\n\nBecause pause and resume are applied to all replicas, the status is only a single phase\nif every replica reports that phase; otherwise it is `MIXED`, which means a pause or\nresume is still in flight or was only partially applied. Backup tooling should treat\nonly `PAUSED` and `SOFT_PAUSED` as confirmation that exporting is paused.\n",
+        "responses": {
+          "200": {
+            "description": "The current exporting status of the physical tenant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportingStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1roles/post/responses/403"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          },
+          "503": {
+            "$ref": "#/paths/~1clock/put/responses/503"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
     "/exporting/pause": {
       "post": {
         "x-eventually-consistent": false,
@@ -4712,8 +4762,8 @@
         "operationId": "pauseExporting",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "resourceType": "EXPORTER",
+            "permissionType": "PAUSE"
           }
         ],
         "security": [
@@ -4767,8 +4817,8 @@
         "operationId": "resumeExporting",
         "x-required-permissions": [
           {
-            "resourceType": "SYSTEM",
-            "permissionType": "UPDATE"
+            "resourceType": "EXPORTER",
+            "permissionType": "PAUSE"
           }
         ],
         "security": [
@@ -12569,7 +12619,7 @@
           }
         ],
         "summary": "Resolve secrets (alpha)",
-        "description": "Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's\nphysical tenant in a single round-trip.\n\nEach reference is authorized and resolved independently. For valid requests, the endpoint\nalways responds with HTTP 200: successfully resolved references are returned in `resolved`,\nwhile references that could not be resolved (for example not found, malformed or over-long,\nor the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of\none reference never fails the others. Only structurally invalid requests are rejected with\nHTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n\nPhase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;\nevery other authorized, valid reference returns `NOT_FOUND`.\n",
+        "description": "Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's\nphysical tenant in a single round-trip.\n\nEach reference is authorized and resolved independently. For valid requests, the endpoint\nalways responds with HTTP 200: successfully resolved references are returned in `resolved`,\nwhile references that could not be resolved (for example not found, malformed or over-long,\nor the caller lacks `SECRET:REVEAL` on that reference) are returned in `errors`. A failure of\none reference never fails the others. Only structurally invalid requests are rejected with\nHTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.\n\nReferences are resolved against the secret stores configured for the caller's physical\ntenant, served from the gateway's secret cache when the value is already cached and read\nfrom the store otherwise.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -12630,7 +12680,7 @@
           }
         ],
         "summary": "List secrets (alpha)",
-        "description": "List the `camunda.secrets.*` references known for the caller's physical tenant.\n\nOnly references the caller holds `SECRET:READ` on are returned. This endpoint never\nreturns secret values, only the reference names.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n",
+        "description": "List the `camunda.secrets.*` references known for the caller's physical tenant.\n\nOnly references the caller holds `SECRET:READ` on are returned. This endpoint never\nreturns secret values, only the reference names.\n\nThe references are read from the secret stores configured for the caller's physical tenant.\nSecret names that cannot form a valid `camunda.secrets.<name>` reference (for example names\ncontaining a dot or a dash) are omitted, since they could neither be resolved nor be used in\na BPMN expression.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n",
         "requestBody": {
           "required": false,
           "content": {
@@ -25100,6 +25150,37 @@
           "elementId"
         ]
       },
+      "ExportingStatusCode": {
+        "title": "Exporting Status Code",
+        "description": "The exporting status of a physical tenant, aggregated over every replica of every one of\nits partitions:\n- `EXPORTING`: all replicas are exporting and committing their position.\n- `PAUSED`: all replicas are paused, nothing is being exported.\n- `SOFT_PAUSED`: all replicas keep exporting but do not commit their position.\n- `MIXED`: replicas report different phases, so the tenant is in no single phase.\n",
+        "type": "string",
+        "enum": [
+          "EXPORTING",
+          "PAUSED",
+          "SOFT_PAUSED",
+          "MIXED"
+        ],
+        "example": "PAUSED"
+      },
+      "ExportingStatusResponse": {
+        "title": "ExportingStatusResponse",
+        "description": "Response body for the exporting status of a physical tenant.",
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "The aggregated exporting status of the physical tenant.",
+            "readOnly": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ExportingStatusCode"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
       "ExpressionEvaluationRequest": {
         "type": "object",
         "required": [
@@ -28299,6 +28380,7 @@
             "description": "The field to sort by.",
             "type": "string",
             "enum": [
+              "creationTime",
               "deadline",
               "deniedReason",
               "elementId",
@@ -34962,11 +35044,12 @@
       },
       "SecretErrorCode": {
         "type": "string",
-        "description": "The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed.\n",
+        "description": "The typed reason a reference could not be resolved.\n\n- `NOT_FOUND`: no secret exists for the reference.\n- `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.\n- `INVALID_REFERENCE`: the reference is malformed, or the configured store rejected it as\n  an invalid secret identifier.\n- `UNREADABLE`: the configured store could not return a value for the reference, for\n  example because it rejected the cluster's own store credentials or the stored value could\n  not be read. Whether the secret exists is not implied.\n",
         "enum": [
           "NOT_FOUND",
           "ACCESS_DENIED",
-          "INVALID_REFERENCE"
+          "INVALID_REFERENCE",
+          "UNREADABLE"
         ]
       },
       "SecretListRequest": {
@@ -34979,7 +35062,7 @@
         "required": [
           "references"
         ],
-        "description": "The secret references the caller is authorized to see.\n\nUnbounded for now: Phase 1's backend is mocked with at most 3 references. Pagination is\nexpected to land here before GA, once a real secret store can return a tenant's full\nenumeration in one response. This is an alpha endpoint, so that is not yet a\nbreaking-contract concern.\n",
+        "description": "The secret references the caller is authorized to see.\n\nUnbounded for now: the response carries the configured stores' full enumeration for the\nphysical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,\nso that is not yet a breaking-contract concern.\n",
         "properties": {
           "references": {
             "type": "array",

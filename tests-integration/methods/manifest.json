@@ -1,6 +1,6 @@
 {
-  "operations": 216,
-  "tests": 218,
+  "operations": 217,
+  "tests": 219,
   "missing": [],
   "ignored": [],
   "files": [
@@ -80,6 +80,7 @@
     "getDecisionRequirementsXml.test.ts",
     "getDocument.test.ts",
     "getElementInstance.test.ts",
+    "getExportingStatus.test.ts",
     "getFormByKey.test.ts",
     "getGlobalClusterVariable.test.ts",
     "getGlobalJobStatistics.test.ts",

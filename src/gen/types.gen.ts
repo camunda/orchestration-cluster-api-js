@@ -4662,6 +4662,31 @@ export type AdHocSubProcessActivateActivityReference = {
     };
 };
 
+/**
+ * Exporting Status Code
+ *
+ * The exporting status of a physical tenant, aggregated over every replica of every one of
+ * its partitions:
+ * - `EXPORTING`: all replicas are exporting and committing their position.
+ * - `PAUSED`: all replicas are paused, nothing is being exported.
+ * - `SOFT_PAUSED`: all replicas keep exporting but do not commit their position.
+ * - `MIXED`: replicas report different phases, so the tenant is in no single phase.
+ *
+ */
+export type ExportingStatusCode = 'EXPORTING' | 'PAUSED' | 'SOFT_PAUSED' | 'MIXED';
+
+/**
+ * ExportingStatusResponse
+ *
+ * Response body for the exporting status of a physical tenant.
+ */
+export type ExportingStatusResponse = {
+    /**
+     * The aggregated exporting status of the physical tenant.
+     */
+    status: ExportingStatusCode;
+};
+
 export type ExpressionEvaluationRequest = {
     /**
      * The expression to evaluate (e.g., "=x + y")
@@ -6263,7 +6288,7 @@ export type JobSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'priority' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
+    field: 'creationTime' | 'deadline' | 'deniedReason' | 'elementId' | 'elementInstanceKey' | 'endTime' | 'errorCode' | 'errorMessage' | 'hasFailedWithRetriesLeft' | 'isDenied' | 'jobKey' | 'kind' | 'listenerEventType' | 'priority' | 'processDefinitionId' | 'processDefinitionKey' | 'processInstanceKey' | 'retries' | 'state' | 'tenantId' | 'type' | 'worker';
     order?: SortOrderEnum;
 };
 
@@ -9810,10 +9835,14 @@ export type SecretResolutionError = {
  *
  * - `NOT_FOUND`: no secret exists for the reference.
  * - `ACCESS_DENIED`: the caller lacks `SECRET:REVEAL` on the reference.
- * - `INVALID_REFERENCE`: the reference is malformed.
+ * - `INVALID_REFERENCE`: the reference is malformed, or the configured store rejected it as
+ * an invalid secret identifier.
+ * - `UNREADABLE`: the configured store could not return a value for the reference, for
+ * example because it rejected the cluster's own store credentials or the stored value could
+ * not be read. Whether the secret exists is not implied.
  *
  */
-export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE';
+export type SecretErrorCode = 'NOT_FOUND' | 'ACCESS_DENIED' | 'INVALID_REFERENCE' | 'UNREADABLE';
 
 /**
  * Reserved for future filtering options. Currently takes no properties. The request body is
@@ -9827,10 +9856,9 @@ export type SecretListRequest = {
 /**
  * The secret references the caller is authorized to see.
  *
- * Unbounded for now: Phase 1's backend is mocked with at most 3 references. Pagination is
- * expected to land here before GA, once a real secret store can return a tenant's full
- * enumeration in one response. This is an alpha endpoint, so that is not yet a
- * breaking-contract concern.
+ * Unbounded for now: the response carries the configured stores' full enumeration for the
+ * physical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,
+ * so that is not yet a breaking-contract concern.
  *
  */
 export type SecretListResult = {
@@ -14506,6 +14534,44 @@ export type CreateElementInstanceVariablesResponses = {
 };
 
 export type CreateElementInstanceVariablesResponse = CreateElementInstanceVariablesResponses[keyof CreateElementInstanceVariablesResponses];
+
+export type GetExportingStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/exporting';
+};
+
+export type GetExportingStatusErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetExportingStatusError = GetExportingStatusErrors[keyof GetExportingStatusErrors];
+
+export type GetExportingStatusResponses = {
+    /**
+     * The current exporting status of the physical tenant.
+     */
+    200: ExportingStatusResponse;
+};
+
+export type GetExportingStatusResponse = GetExportingStatusResponses[keyof GetExportingStatusResponses];
 
 export type PauseExportingData = {
     body?: never;
@@ -21117,7 +21183,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:f017493adcfd1d6f933879fc3cefc02ab23f2406cca0e5af6be135fdb564cffd
+// specHash=sha256:76fefd1a18156576292c4ab17ecb57ad528ca44e5eb3cb2d75fb3f436d0b0e8d
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

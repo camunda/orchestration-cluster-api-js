@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 216
+// Operations: 217
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -370,6 +370,8 @@ export type getElementInstanceConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getElementInstance>> 
 };
+type getExportingStatusOptions = Parameters<typeof Sdk.getExportingStatus>[0];
+export type getExportingStatusInput = void;
 type getFormByKeyOptions = Parameters<typeof Sdk.getFormByKey>[0];
 type getFormByKeyPathParam_formKey = (NonNullable<getFormByKeyOptions> extends { path: { formKey: infer P } } ? P : any);
 export type getFormByKeyInput = { formKey: getFormByKeyPathParam_formKey };
@@ -7585,6 +7587,75 @@ export class CamundaClient {
   }
 
   /**
+   * Get exporting status
+   *
+   * Returns the exporting status of the physical tenant, aggregated over every replica of
+   * every one of its partitions.
+   *
+   * Because pause and resume are applied to all replicas, the status is only a single phase
+   * if every replica reports that phase; otherwise it is `MIXED`, which means a pause or
+   * resume is still in flight or was only partially applied. Backup tooling should treat
+   * only `PAUSED` and `SOFT_PAUSED` as confirmation that exporting is paused.
+   *
+    *
+   * @example Get exporting status
+   * ```ts
+   * async function getExportingStatusExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Reports the aggregated exporting status of the physical tenant — useful to
+   *   // confirm exporting has actually paused before taking a backup, and that it
+   *   // has resumed afterwards.
+   *   const { status } = await camunda.getExportingStatus();
+   *   console.log(`Exporting status: ${status}`);
+   * }
+   * ```
+   * @operationId getExportingStatus
+   * @tags Exporting
+   */
+  getExportingStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getExportingStatus>>;
+  getExportingStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getExportingStatus(opts as any);
+        let data = this._evaluateResponse(_raw, 'getExportingStatus', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetExportingStatusResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetExportingStatusResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getExportingStatus', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getExportingStatus', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get form by key
    *
    * Get a form by its unique form key.
@@ -11048,6 +11119,11 @@ export class CamundaClient {
    * Only references the caller holds `SECRET:READ` on are returned. This endpoint never
    * returns secret values, only the reference names.
    *
+   * The references are read from the secret stores configured for the caller's physical tenant.
+   * Secret names that cannot form a valid `camunda.secrets.<name>` reference (for example names
+   * containing a dot or a dash) are omitted, since they could neither be resolved nor be used in
+   * a BPMN expression.
+   *
    * This endpoint is an alpha feature and may be subject to change in future releases.
    *
     *
@@ -12034,10 +12110,11 @@ export class CamundaClient {
    * one reference never fails the others. Only structurally invalid requests are rejected with
    * HTTP 400: a missing or non-array `references` field, more than 20 references, or a null entry.
    *
-   * This endpoint is an alpha feature and may be subject to change in future releases.
+   * References are resolved against the secret stores configured for the caller's physical
+   * tenant, served from the gateway's secret cache when the value is already cached and read
+   * from the store otherwise.
    *
-   * Phase 1: the secret backend is mocked. Only a fixed allow-list of references resolves;
-   * every other authorized, valid reference returns `NOT_FOUND`.
+   * This endpoint is an alpha feature and may be subject to change in future releases.
    *
     *
    * @example Resolve secrets

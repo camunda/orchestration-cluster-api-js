@@ -218,6 +218,11 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/exporting': {
+    'GET': {
+      '200': 1
+    }
+  },
   '/expression/evaluation': {
     'POST': {
       '200': 1
