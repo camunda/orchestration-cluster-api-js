@@ -12,6 +12,22 @@ export function evaluateSdkResponse(raw: any, opts: EvalOptions) {
   // Support nested problem payload under raw.error without top-level status
   const status = raw.status || raw.response?.status || raw.error?.status;
   if (!status) {
+    // No discernible HTTP status. Since the generated client wraps the `fetch`
+    // call in a try/catch (>= v10.0.0-alpha.18) and, with throwOnError:false,
+    // *returns* `{ error, response: undefined }` on a transport failure instead
+    // of rejecting, a status-less `raw` with an `error` and no `data` is a
+    // transport/connection error (DNS, ECONNREFUSED, unreachable host, TLS).
+    // It must surface as a rejection, not be unwrapped as success. See issue
+    // camunda/orchestration-cluster-api-js#405.
+    if (raw.error !== undefined && raw.data === undefined) {
+      const e = raw.error;
+      if (e instanceof Error) throw e;
+      const err: any = new Error(String(e?.message ?? e ?? `transport error [${opts.opId}]`));
+      err.name = 'TransportSdkError';
+      err.operationId = opts.opId;
+      err.cause = e;
+      throw err;
+    }
     // No discernible HTTP status: unwrap data if present
     return raw.data !== undefined ? raw.data : raw;
   }
