@@ -22,6 +22,19 @@ async function resumeExportingExample() {
 }
 //#endregion ResumeExporting
 
+//#region GetExportingStatus
+async function getExportingStatusExample() {
+  const camunda = createCamundaClient();
+
+  // Reports the aggregated exporting status of the physical tenant — useful to
+  // confirm exporting has actually paused before taking a backup, and that it
+  // has resumed afterwards.
+  const { status } = await camunda.getExportingStatus();
+  console.log(`Exporting status: ${status}`);
+}
+//#endregion GetExportingStatus
+
 // Suppress "declared but never read"
 void pauseExportingExample;
 void resumeExportingExample;
+void getExportingStatusExample;

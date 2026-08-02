@@ -1507,6 +1507,13 @@
       "label": "Resume exporting"
     }
   ],
+  "getExportingStatus": [
+    {
+      "file": "exporting.ts",
+      "region": "GetExportingStatus",
+      "label": "Get exporting status"
+    }
+  ],
   "getClusterStatus": [
     {
       "file": "admin-operations.ts",
