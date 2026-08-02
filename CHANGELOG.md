@@ -1,3 +1,11 @@
+# [10.0.0-alpha.21](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.20...v10.0.0-alpha.21) (2026-08-02)
+
+
+### Bug Fixes
+
+* **worker:** buffer start() until the transport is ready ([ad4d37f](https://github.com/camunda/orchestration-cluster-api-js/commit/ad4d37f6eeadffb89532af351bd80d404ffc2fde))
+* **worker:** buffer start() until the transport is ready ([708b544](https://github.com/camunda/orchestration-cluster-api-js/commit/708b544f79ffec9ef9060de0dea21ac8ecb2b207)), closes [#401](https://github.com/camunda/orchestration-cluster-api-js/issues/401)
+
 # [10.0.0-alpha.20](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.19...v10.0.0-alpha.20) (2026-08-02)
 
 
