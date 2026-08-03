@@ -38,8 +38,10 @@ env:
   # green lint or test run for a passing gate — and the two cannot drift apart.
   VERIFY_COMMANDS: |
     node scripts/check-example-coverage.cjs
+    node scripts/check-method-example-completeness.cjs
+    npm run format:check
     npm run typecheck
-
+    npm test
 # One agent run per issue at a time; a re-label must not race a running agent.
 concurrency:
   group: agent-example-coverage-${{ github.event.issue.number || inputs.issue-number }}
