@@ -11,74 +11,126 @@ import { describe, expect, it } from 'vitest';
 // regenerating the whole SDK on a runtime the generator does not support; it
 // stayed green only because npm's engine check is a warning by default.
 //
-// This test ties the three numbers together — the CI matrix, this package's
-// engines, and the generator's engines — so the next time a dev-tool raises its
-// Node floor, CI says so instead of silently running unsupported.
+// This test ties the numbers together — every Node version the workflow can
+// select, this package's engines, and the generator's engines — so the next
+// time a dev-tool raises its Node floor, CI says so instead of silently running
+// unsupported.
 
 const ROOT = path.resolve(__dirname, '..');
 const read = (p: string) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+const CI_PATH = '.github/workflows/ci.yml';
 
-/** Lowest major from a `node: [22.x, 24.x]` matrix line in the workflow. */
-function matrixNodeMajors(): number[] {
-  const ci = read('.github/workflows/ci.yml');
-  const m = /^\s*node:\s*\[([^\]]+)\]/m.exec(ci);
-  expect(m, 'could not find a `node: [...]` matrix in .github/workflows/ci.yml').toBeTruthy();
-  return (m as RegExpExecArray)[1]
-    .split(',')
-    .map((s) => Number.parseInt(s.trim(), 10))
-    .filter((n) => !Number.isNaN(n));
+/**
+ * A Node version as the workflow declares it. `minor: null` means the spec
+ * leaves the minor open (`22.x`, `22`), which setup-node resolves to the newest
+ * release in that major — so it satisfies any floor within the same major.
+ */
+interface VersionSpec {
+  raw: string;
+  major: number;
+  minor: number | null;
 }
 
-/** Major.minor floor from a `>=X.Y.Z` / `>=X` engines range. */
-function engineFloor(range: string | undefined): { major: number; minor: number } {
-  expect(range, 'missing engines.node').toBeTruthy();
+/** A `>=X.Y.Z` engines floor. */
+interface Floor {
+  major: number;
+  minor: number;
+}
+
+function parseVersionSpec(raw: string): VersionSpec | undefined {
+  const m = /^(\d+)(?:\.(\d+|x))?/.exec(raw.trim());
+  if (!m) return undefined; // `lts/*`, `node`, an expression — not comparable
+  return {
+    raw: raw.trim(),
+    major: Number.parseInt(m[1], 10),
+    minor: m[2] === undefined || m[2] === 'x' ? null : Number.parseInt(m[2], 10),
+  };
+}
+
+/**
+ * Every Node version the workflow can select: the `node: [...]` matrix plus the
+ * standalone `node-version:` scalars used by the jobs that are not matrixed
+ * (`quality` and `generation-drift` both run the generator too, so the floor
+ * applies to them as well).
+ */
+function workflowNodeVersions(): VersionSpec[] {
+  const ci = read(CI_PATH);
+  const raws: string[] = [];
+
+  for (const m of ci.matchAll(/^\s*node:\s*\[([^\]]+)\]/gm)) {
+    raws.push(...m[1].split(',').map((s) => s.trim()));
+  }
+  for (const m of ci.matchAll(/^\s*node-version:\s*(\S+)/gm)) {
+    // Skip matrix indirection (`${{ matrix.node }}`) — covered by the list above.
+    if (!m[1].includes('${{')) raws.push(m[1].trim());
+  }
+
+  return raws.map(parseVersionSpec).filter((v): v is VersionSpec => v !== undefined);
+}
+
+function engineFloor(range: string | undefined, label: string): Floor {
+  expect(range, `missing engines.node for ${label}`).toBeTruthy();
   const m = /(\d+)(?:\.(\d+))?/.exec(range as string);
-  expect(m, `could not parse a floor out of engines.node "${range}"`).toBeTruthy();
+  expect(m, `could not parse a floor out of ${label} engines.node "${range}"`).toBeTruthy();
   return {
     major: Number.parseInt((m as RegExpExecArray)[1], 10),
     minor: Number.parseInt((m as RegExpExecArray)[2] ?? '0', 10),
   };
 }
 
-describe('CI Node matrix stays within the toolchain floor (#405)', () => {
-  const majors = matrixNodeMajors();
+/**
+ * Whether a workflow version spec is guaranteed to resolve to a runtime that
+ * satisfies `floor`. An open minor (`22.x`) resolves to the newest release in
+ * that major, so it clears any floor in the same major; a pinned minor
+ * (`22.14.3`) has to be compared outright.
+ */
+function satisfies(spec: VersionSpec, floor: Floor): boolean {
+  if (spec.major !== floor.major) return spec.major > floor.major;
+  return spec.minor === null || spec.minor >= floor.minor;
+}
+
+const fmtFloor = (f: Floor) => `>=${f.major}.${f.minor}`;
+
+describe('CI Node versions stay within the toolchain floor (#405)', () => {
+  const versions = workflowNodeVersions();
   const pkg = JSON.parse(read('package.json'));
   const generator = JSON.parse(read('node_modules/@hey-api/openapi-ts/package.json'));
 
-  it('the matrix is non-empty (guard is not vacuous)', () => {
-    expect(majors.length).toBeGreaterThan(0);
-  });
-
-  it('every matrix Node satisfies this package engines.node', () => {
-    const floor = engineFloor(pkg.engines?.node);
-    for (const major of majors) {
-      expect(
-        major,
-        `CI runs Node ${major}.x but package.json requires >=${floor.major}`
-      ).toBeGreaterThanOrEqual(floor.major);
-    }
-  });
-
-  it('every matrix Node satisfies @hey-api/openapi-ts engines.node', () => {
-    // The `test` job regenerates via `npm run build`, so the generator's floor
-    // applies to every leg of the matrix, not just the `quality` job.
-    const floor = engineFloor(generator.engines?.node);
-    for (const major of majors) {
-      expect(
-        major,
-        `CI regenerates on Node ${major}.x but @hey-api/openapi-ts@${generator.version} ` +
-          `requires >=${floor.major}.${floor.minor}`
-      ).toBeGreaterThanOrEqual(floor.major);
-    }
-  });
-
-  it('this package does not claim to support a Node the generator cannot build on', () => {
-    const pkgFloor = engineFloor(pkg.engines?.node);
-    const genFloor = engineFloor(generator.engines?.node);
+  it('the workflow declares comparable Node versions (guard is not vacuous)', () => {
     expect(
-      pkgFloor.major,
-      `package.json engines.node >=${pkgFloor.major} but the generator requires ` +
-        `>=${genFloor.major}.${genFloor.minor}`
-    ).toBeGreaterThanOrEqual(genFloor.major);
+      versions.length,
+      `no parseable Node version found in ${CI_PATH} — the workflow shape may have changed`
+    ).toBeGreaterThan(0);
   });
+
+  it('every workflow Node satisfies this package engines.node', () => {
+    const floor = engineFloor(pkg.engines?.node, 'package.json');
+    for (const spec of versions) {
+      expect(
+        satisfies(spec, floor),
+        `${CI_PATH} runs Node ${spec.raw} but package.json requires ${fmtFloor(floor)}`
+      ).toBe(true);
+    }
+  });
+
+  it('every workflow Node satisfies @hey-api/openapi-ts engines.node', () => {
+    // `quality`, `generation-drift` and every leg of `test` all invoke the
+    // generator, so its floor applies to all of them — including the minor,
+    // which is what 0.96.0 actually raised (20.19.0 -> 22.18.0).
+    const floor = engineFloor(generator.engines?.node, '@hey-api/openapi-ts');
+    for (const spec of versions) {
+      expect(
+        satisfies(spec, floor),
+        `${CI_PATH} regenerates on Node ${spec.raw} but ` +
+          `@hey-api/openapi-ts@${generator.version} requires ${fmtFloor(floor)}`
+      ).toBe(true);
+    }
+  });
+
+  // Deliberately NOT asserted: that `package.json` engines.node clears the
+  // generator's floor. @hey-api/openapi-ts is a devDependency — consumers of the
+  // published package never run it — so propagating its floor (currently
+  // >=22.18.0) into engines.node would narrow the supported runtime for users
+  // for no reason. The generator's floor constrains CI and contributors, which
+  // is exactly what the workflow assertion above covers.
 });
