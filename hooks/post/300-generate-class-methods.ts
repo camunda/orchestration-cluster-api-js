@@ -353,20 +353,27 @@ export type ${o.opId}Consistency = {
         );
         methods.push('      }');
       }
-      // Request validation against the full envelope schema (lazy-loads zod schemas on first use).
+      // Request validation against the full envelope (lazy-loads zod schemas on first use).
       // hey-api 0.86 emits a single `z<OpId>Data` envelope schema; hey-api 0.96+ splits this into
       // `z<OpId>Body` / `z<OpId>Path` / `z<OpId>Query`. We emit different validation code per case:
-      //   * Data present  → validate the full envelope (path + query + body together).
-      //   * Body present  → validate `envelope.body` against the body schema and assign back.
-      //   * Neither       → no-op (gateRequest accepts an undefined schema).
-      // The Body fallback intentionally drops path/query validation so that backporting this
-      // generator-only patch to branches still pinned to hey-api 0.86 is safe (Data branch is
-      // taken there) while letting hey-api 0.96+ generators succeed without per-part composition.
+      //   * Data present     → validate the full envelope (path + query + body together).
+      //   * Per-part schemas → validate each present envelope slot against its own schema and
+      //                        assign the parsed value back, so strict-mode coercion and defaults
+      //                        still apply to path and query params, not just the body.
+      //   * Neither          → no-op (gateRequest accepts an undefined schema).
+      // Keeping the Data branch means this generator-only patch stays safe to backport to
+      // branches still pinned to hey-api 0.86. See issue #405 for the coverage regression that
+      // the per-part branch restores (0.96+ initially validated the body only, silently dropping
+      // path and query validation for every operation).
       const opCap = o.opId.charAt(0).toUpperCase() + o.opId.slice(1);
       const dataName = `z${opCap}Data`;
-      const bodyName = `z${opCap}Body`;
       const useDataEnvelope = availableSchemas.has(dataName);
-      const useBodyOnly = !useDataEnvelope && availableSchemas.has(bodyName);
+      // Envelope slot → per-part schema name, in the order the slots are assigned above.
+      const partSchemas: Array<{ slot: 'body' | 'path' | 'query'; schema: string }> = [];
+      for (const slot of ['body', 'path', 'query'] as const) {
+        const name = `z${opCap}${slot.charAt(0).toUpperCase()}${slot.slice(1)}`;
+        if (availableSchemas.has(name)) partSchemas.push({ slot, schema: name });
+      }
       methods.push(`      if (this._validation.settings.req !== 'none') {`);
       methods.push(`        const _schemas = await this._loadSchemas();`);
       if (useDataEnvelope) {
@@ -374,15 +381,18 @@ export type ${o.opId}Consistency = {
           `        const maybe = await this._validation.gateRequest('${o.originalOpId}', _schemas.${dataName}, envelope);`
         );
         methods.push(`        if (this._validation.settings.req === 'strict') envelope = maybe;`);
-      } else if (useBodyOnly) {
-        methods.push(`        if (envelope.body !== undefined) {`);
-        methods.push(
-          `          const maybeBody = await this._validation.gateRequest('${o.originalOpId}', _schemas.${bodyName}, envelope.body);`
-        );
-        methods.push(
-          `          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;`
-        );
-        methods.push(`        }`);
+      } else if (partSchemas.length) {
+        for (const { slot, schema } of partSchemas) {
+          const local = `maybe${slot.charAt(0).toUpperCase()}${slot.slice(1)}`;
+          methods.push(`        if (envelope.${slot} !== undefined) {`);
+          methods.push(
+            `          const ${local} = await this._validation.gateRequest('${o.originalOpId}', _schemas.${schema}, envelope.${slot});`
+          );
+          methods.push(
+            `          if (this._validation.settings.req === 'strict') envelope.${slot} = ${local};`
+          );
+          methods.push(`        }`);
+        }
       } else {
         methods.push(
           `        await this._validation.gateRequest('${o.originalOpId}', undefined, envelope);`
