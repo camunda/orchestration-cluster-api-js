@@ -1,3 +1,13 @@
+# [10.0.0-alpha.23](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.22...v10.0.0-alpha.23) (2026-08-03)
+
+
+### Bug Fixes
+
+* **ci:** align the agent verify gate with the CI gates ([957083c](https://github.com/camunda/orchestration-cluster-api-js/commit/957083c96e14ad9012a5514f59ef0e147a1a4eba))
+* **ci:** fail closed when the verify gate is empty ([35c6f05](https://github.com/camunda/orchestration-cluster-api-js/commit/35c6f059b021a4f688795e21994c9d9bac18da7c))
+* **ci:** stop interpolating the issue body into an unquoted heredoc ([631ee22](https://github.com/camunda/orchestration-cluster-api-js/commit/631ee22057402027b543fe91904c561f2826b303))
+* **ci:** tell the agent which commands actually gate its work ([de6e466](https://github.com/camunda/orchestration-cluster-api-js/commit/de6e4661794c6e3e2d80a7cf72efba76098c13f2))
+
 # [10.0.0-alpha.22](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.21...v10.0.0-alpha.22) (2026-08-02)
 
 
