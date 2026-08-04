@@ -20336,6 +20336,10 @@ export type ChangeClusterModeErrors = {
      */
     401: ProblemDetail;
     /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
      * An internal error occurred while processing the request.
      */
     500: ProblemDetail;
@@ -21189,7 +21193,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:76fefd1a18156576292c4ab17ecb57ad528ca44e5eb3cb2d75fb3f436d0b0e8d
+// specHash=sha256:c8ee62d8a55a30aacaf1db6423b9d5972ff50c85fb1aba89fd518abbd36014a1
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
