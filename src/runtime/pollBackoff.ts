@@ -21,7 +21,11 @@ export interface PollBackoffOptions {
   minMs: number;
   /** Maximum delay in ms; the backoff never exceeds this. */
   maxMs: number;
-  /** Injectable RNG in [0, 1) for deterministic tests. Defaults to Math.random. */
+  /**
+   * Injectable RNG for deterministic tests; defaults to `Math.random` (which
+   * yields `[0, 1)`). Any returned value is clamped to `[0, 1]`, so an injected
+   * `1` is accepted and maps to the inclusive upper bound of the jitter window.
+   */
   rng?: () => number;
 }
 
@@ -54,8 +58,8 @@ export function computePollBackoffMs(attempt: number, opts: PollBackoffOptions):
   const exponent = Math.min(safeAttempt - 1, 53);
   const cap = Math.min(max, min * 2 ** exponent);
   const half = cap / 2;
-  // An injected rng may return NaN or a value outside [0, 1); clamp it so the
-  // jitter can never push the delay negative or to NaN.
+  // An injected rng may return NaN or a value outside [0, 1]; clamp it to
+  // [0, 1] so the jitter can never push the delay negative or to NaN.
   const r = rng();
   const jitter = Number.isFinite(r) ? Math.min(1, Math.max(0, r)) : 0;
   return Math.round(half + jitter * half);
