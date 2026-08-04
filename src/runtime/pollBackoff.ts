@@ -39,14 +39,24 @@ export interface PollBackoffOptions {
  */
 export function computePollBackoffMs(attempt: number, opts: PollBackoffOptions): number {
   const rng = opts.rng ?? Math.random;
-  const min = Math.max(0, opts.minMs);
-  const max = Math.max(min, opts.maxMs);
-  const safeAttempt = Math.max(1, Math.floor(attempt));
+  // Defensively normalise every input. This helper is fed user-provided config
+  // (`pollBackoffMinMs`/`pollBackoffMaxMs`) and an injectable rng, any of which
+  // could be NaN, negative, or out of range. A NaN/negative delay would be
+  // coerced by setTimeout to 0, reintroducing the very tight retry loop this
+  // helper exists to prevent — so we clamp to guarantee a finite, non-negative
+  // integer result.
+  const min = Number.isFinite(opts.minMs) ? Math.max(0, opts.minMs) : 0;
+  const max = Number.isFinite(opts.maxMs) ? Math.max(min, opts.maxMs) : min;
+  const safeAttempt = Number.isFinite(attempt) ? Math.max(1, Math.floor(attempt)) : 1;
   // 2^(safeAttempt-1) can overflow to Infinity for absurd attempt counts; the
   // Math.min against `max` still yields a finite cap, so no explicit guard is
   // needed — but clamp the exponent anyway to avoid pointless huge intermediates.
   const exponent = Math.min(safeAttempt - 1, 53);
   const cap = Math.min(max, min * 2 ** exponent);
   const half = cap / 2;
-  return Math.round(half + rng() * half);
+  // An injected rng may return NaN or a value outside [0, 1); clamp it so the
+  // jitter can never push the delay negative or to NaN.
+  const r = rng();
+  const jitter = Number.isFinite(r) ? Math.min(1, Math.max(0, r)) : 0;
+  return Math.round(half + jitter * half);
 }

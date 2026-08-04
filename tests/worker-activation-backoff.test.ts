@@ -79,4 +79,44 @@ describe('job worker activation backoff', () => {
     expect(oneMsAfterReset).toBe(true);
     expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(3);
   });
+
+  it('falls back to pollIntervalMs on failure when backoff is disabled (pollBackoffMinMs=0)', async () => {
+    let calls = 0;
+    const fetchMock = vi.fn(async () => {
+      calls += 1;
+      // Every poll fails at the transport layer.
+      throw new Error(calls === 1 ? 'connect ECONNREFUSED' : 'UND_ERR_CONNECT_TIMEOUT');
+    });
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 },
+      fetch: fetchMock as any,
+    });
+    const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
+
+    const worker = client.createJobWorker({
+      jobType: 'backoff-disabled-test',
+      jobHandler: async () => 'JOB_ACTION_RECEIPT' as const,
+      maxParallelJobs: 1,
+      jobTimeoutMs: 1000,
+      pollIntervalMs: 5,
+      // Disabling backoff must NOT devolve into a 0ms tight retry loop; failures
+      // should schedule at pollIntervalMs instead.
+      pollBackoffMinMs: 0,
+      pollBackoffMaxMs: 0,
+    });
+
+    await vi.advanceTimersByTimeAsync(0); // start gate + poll #1 (fails)
+    await vi.advanceTimersByTimeAsync(5); // poll #2 (fails)
+    await vi.advanceTimersByTimeAsync(5); // poll #3 (fails)
+
+    worker.stop();
+
+    const delays = setTimeoutSpy.mock.calls.map((c) => c[1]);
+    // Failed polls must reschedule at the poll interval, never a 0ms tight loop.
+    expect(delays).toContain(5);
+    const failureDelays = delays.filter((d) => d !== 0);
+    expect(failureDelays.every((d) => d === 5)).toBe(true);
+    expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(2);
+  });
 });

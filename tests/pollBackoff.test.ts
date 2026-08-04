@@ -70,6 +70,23 @@ describe('computePollBackoffMs', () => {
     expect(computePollBackoffMs(-3, opts())).toBe(500);
   });
 
+  it('never returns NaN/negative for degenerate inputs', () => {
+    // NaN attempt → treated as the first step.
+    expect(computePollBackoffMs(Number.NaN, opts())).toBe(500);
+    // NaN min → treated as disabled (0), never NaN.
+    expect(computePollBackoffMs(1, opts({ minMs: Number.NaN }))).toBe(0);
+    // NaN max → falls back to min, still finite (default min 1000 → floor 500).
+    expect(computePollBackoffMs(1, opts({ maxMs: Number.NaN }))).toBe(500);
+    // An rng that returns NaN or values outside [0, 1) must be clamped so the
+    // delay stays within [cap/2, cap] and never goes NaN/negative.
+    for (const bad of [Number.NaN, -1, 2, Number.POSITIVE_INFINITY]) {
+      const d = computePollBackoffMs(2, opts({ rng: () => bad }));
+      expect(Number.isFinite(d)).toBe(true);
+      expect(d).toBeGreaterThanOrEqual(1000); // cap 2000 → floor 1000
+      expect(d).toBeLessThanOrEqual(2000);
+    }
+  });
+
   it('exposes sensible defaults', () => {
     expect(DEFAULT_POLL_BACKOFF_MIN_MS).toBe(1000);
     expect(DEFAULT_POLL_BACKOFF_MAX_MS).toBe(30_000);

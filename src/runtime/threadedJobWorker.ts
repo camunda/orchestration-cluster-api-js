@@ -64,7 +64,7 @@ export interface ThreadedJobWorkerConfig<
    * requests (connection refused, connect timeout, broker restart, LAN blip …).
    * The first retry waits ≈ this/2–this ms; subsequent consecutive failures
    * double the window up to {@link pollBackoffMaxMs}, with jitter, and reset to
-   * zero on the first successful poll. Default `1000`. Set to `0` to disable.
+   * zero on the first successful poll. Default `1000`. Set to `0` to disable backoff (failed polls then fall back to {@link pollIntervalMs} rather than retrying immediately).
    */
   pollBackoffMinMs?: number;
   /**
@@ -456,10 +456,17 @@ export class ThreadedJobWorker {
       // into a tight sub-millisecond retry loop that floods logs and hammers an
       // unreachable endpoint. Resets to the floor on the next successful poll.
       this._consecutiveActivationErrors += 1;
-      const delayMs = computePollBackoffMs(this._consecutiveActivationErrors, {
-        minMs: this._cfg.pollBackoffMinMs,
-        maxMs: this._cfg.pollBackoffMaxMs,
-      });
+      // When backoff is disabled (pollBackoffMinMs <= 0) fall back to the normal
+      // poll interval on failure. Otherwise computePollBackoffMs would return 0
+      // and _scheduleNext(0) would spin an even tighter retry loop than the old
+      // pollIntervalMs behaviour — the opposite of what "disable" should mean.
+      const delayMs =
+        this._cfg.pollBackoffMinMs > 0
+          ? computePollBackoffMs(this._consecutiveActivationErrors, {
+              minMs: this._cfg.pollBackoffMinMs,
+              maxMs: this._cfg.pollBackoffMaxMs,
+            })
+          : this._cfg.pollIntervalMs;
       this._log.error('activation.error', e);
       this._log.debug(() => [
         'activation.retry',
