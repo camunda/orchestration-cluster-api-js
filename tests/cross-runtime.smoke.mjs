@@ -12,11 +12,13 @@
 // specifier — exactly how a real consumer does.
 //
 // Behaviour is env-driven:
-//   - Always: import + construct + key-branding + Request-init sanitize checks.
+//   - Always: import + construct + key-branding checks.
 //   - When CAMUNDA_REST_ADDRESS (or ZEEBE_REST_ADDRESS) is set: a live
 //     `getTopology()` GET, plus a `createProcessInstance` POST when
-//     XR_PROCESS_ID names a deployed process. Auth is taken from the standard
-//     CAMUNDA_* environment.
+//     XR_PROCESS_ID names a deployed process. Issuing a request is what builds
+//     a `Request` and therefore exercises the Request-init sanitize path on
+//     spec-strict runtimes. Auth is taken from the standard CAMUNDA_*
+//     environment.
 
 import { createCamundaClient, ProcessDefinitionKey } from '@camunda8/orchestration-cluster-api';
 

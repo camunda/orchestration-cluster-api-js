@@ -37,7 +37,20 @@ function which(bin) {
 const ALL = [
   { name: 'node', bin: 'node', args: (f) => [f] },
   // Deno needs an explicit node_modules mode for a file:-installed npm package.
-  { name: 'deno', bin: 'deno', args: (f) => ['run', '--node-modules-dir=manual', '-A', f] },
+  // Scope permissions to what the smoke actually needs: env (read CAMUNDA_*),
+  // read (node_modules + script), and net (optional live REST I/O).
+  {
+    name: 'deno',
+    bin: 'deno',
+    args: (f) => [
+      'run',
+      '--node-modules-dir=manual',
+      '--allow-env',
+      '--allow-read',
+      '--allow-net',
+      f,
+    ],
+  },
   { name: 'bun', bin: 'bun', args: (f) => [f] },
 ];
 
@@ -51,6 +64,19 @@ const required = (process.env.XR_REQUIRE_RUNTIMES ?? '')
   .filter(Boolean);
 
 const selected = ALL.filter((r) => (only.length ? only.includes(r.name) : true));
+
+// A required runtime that the XR_RUNTIMES filter excludes (or that names an
+// unknown runtime) can never run, so treat that contradictory configuration as
+// a failure rather than silently dropping the requirement.
+const selectedNames = new Set(selected.map((r) => r.name));
+const excludedRequired = required.filter((name) => !selectedNames.has(name));
+if (excludedRequired.length) {
+  console.error(
+    `[cross-runtime] required runtime(s) not selectable: ${excludedRequired.join(', ')}` +
+      ' (excluded by XR_RUNTIMES or unknown)'
+  );
+  process.exit(1);
+}
 
 const log = (...a) => console.log('[cross-runtime]', ...a);
 
