@@ -1,3 +1,13 @@
+# [10.0.0-alpha.24](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.23...v10.0.0-alpha.24) (2026-08-04)
+
+
+### Bug Fixes
+
+* **client:** reject transport errors regardless of throwOnError ([c1df143](https://github.com/camunda/orchestration-cluster-api-js/commit/c1df143fb001e7b2fb3e928c9c218e52b400a5e1)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+* remaining regressions from the @hey-api/openapi-ts 0.86.12 to 0.99.0 upgrade ([37d00cd](https://github.com/camunda/orchestration-cluster-api-js/commit/37d00cd8211af5938fb1ed5ae3320fe25b837a68))
+* **types:** restore discriminators on JobResult and runtime instructions ([dcdf450](https://github.com/camunda/orchestration-cluster-api-js/commit/dcdf450a9ad6182ee6afdd5d5d12ab68b4a19253)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+* **validation:** validate path and query params, not just the request body ([5bc2c56](https://github.com/camunda/orchestration-cluster-api-js/commit/5bc2c56d92508cebef7bb43e04494d2f3972679e)), closes [#405](https://github.com/camunda/orchestration-cluster-api-js/issues/405)
+
 # [10.0.0-alpha.23](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.22...v10.0.0-alpha.23) (2026-08-03)
 
 
