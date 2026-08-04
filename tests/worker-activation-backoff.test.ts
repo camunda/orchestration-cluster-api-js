@@ -115,10 +115,15 @@ describe('job worker activation backoff', () => {
     worker.stop();
 
     const delays = setTimeoutSpy.mock.calls.map((c) => c[1]);
-    // Failed polls must reschedule at the poll interval, never a 0ms tight loop.
-    expect(delays).toContain(5);
-    const failureDelays = delays.filter((d) => d !== 0);
-    expect(failureDelays.every((d) => d === 5)).toBe(true);
+    // Only the initial start gate is permitted to schedule 0ms; every failure
+    // reschedule must land on pollIntervalMs. Filtering the 0s out (as an
+    // earlier revision did) would silently swallow a 0ms tight-loop regression
+    // during the failure streak, so assert the start gate is the sole 0 and
+    // that every subsequent reschedule is exactly pollIntervalMs.
+    expect(delays[0]).toBe(0);
+    const afterStartGate = delays.slice(1);
+    expect(afterStartGate.length).toBeGreaterThan(0);
+    expect(afterStartGate.every((d) => d === 5)).toBe(true);
     expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(2);
   });
 });

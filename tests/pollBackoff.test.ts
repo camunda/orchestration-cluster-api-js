@@ -119,7 +119,7 @@ describe('nextActivationRetryDelayMs', () => {
     expect(nextActivationRetryDelayMs(3, cfg(), rng)).toBe(2000);
   });
 
-  it('falls back to pollIntervalMs (never 0) when backoff is disabled', () => {
+  it('falls back to pollIntervalMs when backoff is disabled', () => {
     const disabled = cfg({ pollIntervalMs: 5, pollBackoffMinMs: 0, pollBackoffMaxMs: 0 });
     // Every attempt must reschedule at the poll interval, never a 0ms tight loop.
     expect(nextActivationRetryDelayMs(1, disabled)).toBe(5);
