@@ -3,9 +3,9 @@ import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses } from '../gen/types.gen';
 import type { EnrichedActivatedJob } from './jobActions';
 import {
-  computePollBackoffMs,
   DEFAULT_POLL_BACKOFF_MAX_MS,
   DEFAULT_POLL_BACKOFF_MIN_MS,
+  nextActivationRetryDelayMs,
 } from './pollBackoff';
 import { WorkerStartGate } from './workerStartGate';
 
@@ -313,22 +313,21 @@ export class JobWorker {
         this._scheduleNext(this._cfg.pollIntervalMs);
         return;
       }
-      // Transport/connectivity error: back off exponentially (with jitter) so a
-      // sustained outage — a broker restart, a LAN blip, DNS flap — does not turn
-      // into a tight sub-millisecond retry loop that floods logs and hammers an
-      // unreachable endpoint. Resets to the floor on the next successful poll.
+      // Any non-cancellation activation failure: back off exponentially (with
+      // jitter) so a sustained fault — a transport outage (broker restart, LAN
+      // blip, DNS flap) or a persistent server/auth/validation error — does not
+      // turn into a tight sub-millisecond retry loop that floods logs and hammers
+      // the endpoint. Transport outages are the motivating case, but backing off
+      // on *every* recurring failure is deliberate: it is the safe default that
+      // keeps the retry cadence bounded regardless of the error class. Resets to
+      // the floor on the next successful poll.
       this._consecutiveActivationErrors += 1;
-      // When backoff is disabled (pollBackoffMinMs <= 0) fall back to the normal
-      // poll interval on failure. Otherwise computePollBackoffMs would return 0
-      // and _scheduleNext(0) would spin an even tighter retry loop than the old
-      // pollIntervalMs behaviour — the opposite of what "disable" should mean.
-      const delayMs =
-        this._cfg.pollBackoffMinMs > 0
-          ? computePollBackoffMs(this._consecutiveActivationErrors, {
-              minMs: this._cfg.pollBackoffMinMs,
-              maxMs: this._cfg.pollBackoffMaxMs,
-            })
-          : this._cfg.pollIntervalMs;
+      // nextActivationRetryDelayMs is the single source of truth shared with
+      // ThreadedJobWorker so the two implementations cannot drift. When backoff
+      // is disabled (pollBackoffMinMs <= 0) it falls back to the normal poll
+      // interval rather than 0, which would spin an even tighter retry loop than
+      // the old behaviour — the opposite of what "disable" should mean.
+      const delayMs = nextActivationRetryDelayMs(this._consecutiveActivationErrors, this._cfg);
       this._log.error('activation.error', e);
       this._log.debug(() => [
         'activation.retry',

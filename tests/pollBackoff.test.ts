@@ -3,6 +3,7 @@ import {
   computePollBackoffMs,
   DEFAULT_POLL_BACKOFF_MAX_MS,
   DEFAULT_POLL_BACKOFF_MIN_MS,
+  nextActivationRetryDelayMs,
 } from '../src/runtime/pollBackoff';
 
 describe('computePollBackoffMs', () => {
@@ -90,5 +91,51 @@ describe('computePollBackoffMs', () => {
   it('exposes sensible defaults', () => {
     expect(DEFAULT_POLL_BACKOFF_MIN_MS).toBe(1000);
     expect(DEFAULT_POLL_BACKOFF_MAX_MS).toBe(30_000);
+  });
+});
+
+// The activation retry-delay decision is shared by JobWorker and
+// ThreadedJobWorker via this helper, so a single unit test guards both
+// implementations against drift without spawning worker threads.
+describe('nextActivationRetryDelayMs', () => {
+  const cfg = (
+    over: Partial<{
+      pollIntervalMs: number;
+      pollBackoffMinMs: number;
+      pollBackoffMaxMs: number;
+    }> = {}
+  ) => ({
+    pollIntervalMs: 1,
+    pollBackoffMinMs: 1000,
+    pollBackoffMaxMs: 30_000,
+    ...over,
+  });
+
+  it('applies capped exponential backoff while enabled', () => {
+    // rng() === 0 makes each step deterministic (== cap/2).
+    const rng = () => 0;
+    expect(nextActivationRetryDelayMs(1, cfg(), rng)).toBe(500);
+    expect(nextActivationRetryDelayMs(2, cfg(), rng)).toBe(1000);
+    expect(nextActivationRetryDelayMs(3, cfg(), rng)).toBe(2000);
+  });
+
+  it('falls back to pollIntervalMs (never 0) when backoff is disabled', () => {
+    const disabled = cfg({ pollIntervalMs: 5, pollBackoffMinMs: 0, pollBackoffMaxMs: 0 });
+    // Every attempt must reschedule at the poll interval, never a 0ms tight loop.
+    expect(nextActivationRetryDelayMs(1, disabled)).toBe(5);
+    expect(nextActivationRetryDelayMs(9, disabled)).toBe(5);
+  });
+
+  it('treats a negative backoff floor as disabled', () => {
+    const disabled = cfg({ pollIntervalMs: 7, pollBackoffMinMs: -1 });
+    expect(nextActivationRetryDelayMs(3, disabled)).toBe(7);
+  });
+
+  it('forwards the injected rng to the backoff computation', () => {
+    // rng → ~1 yields the full cap; matches computePollBackoffMs directly.
+    const rng = () => 0.999999;
+    expect(nextActivationRetryDelayMs(1, cfg(), rng)).toBe(
+      computePollBackoffMs(1, { minMs: 1000, maxMs: 30_000, rng })
+    );
   });
 });

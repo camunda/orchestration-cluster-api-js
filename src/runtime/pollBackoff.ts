@@ -64,3 +64,43 @@ export function computePollBackoffMs(attempt: number, opts: PollBackoffOptions):
   const jitter = Number.isFinite(r) ? Math.min(1, Math.max(0, r)) : 0;
   return Math.round(half + jitter * half);
 }
+
+/** Subset of worker config that governs activation-retry scheduling. */
+export interface ActivationRetryDelayConfig {
+  /** Normal poll cadence; also the fallback delay when backoff is disabled. */
+  pollIntervalMs: number;
+  /** Backoff floor. `<= 0` disables backoff (fall back to `pollIntervalMs`). */
+  pollBackoffMinMs: number;
+  /** Backoff ceiling. */
+  pollBackoffMaxMs: number;
+}
+
+/**
+ * Decide the delay (ms) before the next activation retry given a `attempt`-long
+ * streak of consecutive failures.
+ *
+ * This is the single source of truth shared by {@link JobWorker} and
+ * {@link ThreadedJobWorker} so their retry-scheduling behaviour cannot drift.
+ * When backoff is disabled (`pollBackoffMinMs <= 0`) it falls back to the normal
+ * poll interval rather than 0 — a 0ms reschedule would spin an even tighter
+ * retry loop than the old behaviour, the opposite of what "disable" should mean.
+ *
+ * @param attempt 1-based count of consecutive failures (1 = first failure).
+ * @param cfg worker retry-scheduling config.
+ * @param rng optional injectable RNG forwarded to {@link computePollBackoffMs}.
+ * @returns a non-negative delay in milliseconds.
+ */
+export function nextActivationRetryDelayMs(
+  attempt: number,
+  cfg: ActivationRetryDelayConfig,
+  rng?: () => number
+): number {
+  if (cfg.pollBackoffMinMs > 0) {
+    return computePollBackoffMs(attempt, {
+      minMs: cfg.pollBackoffMinMs,
+      maxMs: cfg.pollBackoffMaxMs,
+      rng,
+    });
+  }
+  return cfg.pollIntervalMs;
+}
