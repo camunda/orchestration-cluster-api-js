@@ -88,7 +88,7 @@ export interface ActivationRetryDelayConfig {
  * @param attempt 1-based count of consecutive failures (1 = first failure).
  * @param cfg worker retry-scheduling config.
  * @param rng optional injectable RNG forwarded to {@link computePollBackoffMs}.
- * @returns a non-negative delay in milliseconds.
+ * @returns a non-negative integer delay in milliseconds.
  */
 export function nextActivationRetryDelayMs(
   attempt: number,
@@ -102,5 +102,10 @@ export function nextActivationRetryDelayMs(
       rng,
     });
   }
-  return cfg.pollIntervalMs;
+  // Backoff disabled: fall back to the normal poll cadence. Defensively
+  // normalise it to a non-negative integer — `pollIntervalMs` is user-provided
+  // config that could be fractional/negative/NaN, any of which would violate
+  // this helper's documented contract and (for NaN/negative) be coerced by
+  // setTimeout to a 0ms delay, spinning the very tight retry loop we avoid.
+  return Number.isFinite(cfg.pollIntervalMs) ? Math.max(0, Math.round(cfg.pollIntervalMs)) : 0;
 }

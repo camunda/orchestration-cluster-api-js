@@ -131,6 +131,22 @@ describe('nextActivationRetryDelayMs', () => {
     expect(nextActivationRetryDelayMs(3, disabled)).toBe(7);
   });
 
+  it('normalises the disabled-branch fallback to a non-negative integer', () => {
+    // A fractional pollIntervalMs must round to an integer (contract: integer ms).
+    expect(nextActivationRetryDelayMs(1, cfg({ pollIntervalMs: 4.7, pollBackoffMinMs: 0 }))).toBe(
+      5
+    );
+    // Negative/NaN pollIntervalMs must never leak through to setTimeout as a
+    // value it coerces to 0ms; they clamp/normalise to a non-negative integer.
+    expect(nextActivationRetryDelayMs(1, cfg({ pollIntervalMs: -3, pollBackoffMinMs: 0 }))).toBe(0);
+    const nan = nextActivationRetryDelayMs(
+      1,
+      cfg({ pollIntervalMs: Number.NaN, pollBackoffMinMs: 0 })
+    );
+    expect(Number.isInteger(nan)).toBe(true);
+    expect(nan).toBeGreaterThanOrEqual(0);
+  });
+
   it('forwards the injected rng to the backoff computation', () => {
     // rng → ~1 yields the full cap; matches computePollBackoffMs directly.
     const rng = () => 0.999999;
