@@ -73,10 +73,12 @@ describe('job worker activation backoff', () => {
     const firstBackoffIdx = delays.indexOf(500);
     const secondBackoffIdx = delays.indexOf(1000);
     expect(firstBackoffIdx).toBeLessThan(secondBackoffIdx);
-    // A flat 1ms retry (the old buggy behaviour) must NOT have been used for a failure.
-    // After the success, however, scheduling returns to the 1ms poll interval.
-    const oneMsAfterReset = delays.slice(secondBackoffIdx + 1).some((d) => d === 1);
-    expect(oneMsAfterReset).toBe(true);
+    // A flat 1ms retry (the old buggy behaviour) must NOT have been used for a
+    // failure: the *first* 1ms poll-interval reschedule must appear only AFTER
+    // both failure backoffs, i.e. it is the post-success reset and no 1ms retry
+    // ever leaked into the failure streak.
+    const firstOneMsIdx = delays.indexOf(1);
+    expect(firstOneMsIdx).toBeGreaterThan(secondBackoffIdx);
     expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(3);
   });
 
