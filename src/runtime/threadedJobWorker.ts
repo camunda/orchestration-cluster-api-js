@@ -3,6 +3,11 @@ import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses } from '../gen/types.gen';
 import type { EnrichedActivatedJob } from './jobActions';
 import type { JobActionReceipt } from './jobWorker';
+import {
+  DEFAULT_POLL_BACKOFF_MAX_MS,
+  DEFAULT_POLL_BACKOFF_MIN_MS,
+  nextActivationRetryDelayMs,
+} from './pollBackoff';
 import type { ThreadPool } from './threadPool';
 import { WorkerStartGate } from './workerStartGate';
 
@@ -54,6 +59,18 @@ export interface ThreadedJobWorkerConfig<
   customHeadersSchema?: Headers;
   /** Backoff between polls - default 1ms */
   pollIntervalMs?: number;
+  /**
+   * Floor (ms) of the exponential backoff applied between *failed* activation
+   * requests (connection refused, connect timeout, broker restart, LAN blip …).
+   * The first retry waits ≈ this/2–this ms; subsequent consecutive failures
+   * double the window up to {@link pollBackoffMaxMs}, with jitter, and reset to
+   * zero on the first successful poll. Default `1000`. Set to `0` to disable backoff (failed polls then fall back to {@link pollIntervalMs} rather than retrying immediately).
+   */
+  pollBackoffMinMs?: number;
+  /**
+   * Ceiling (ms) of the between-failed-poll exponential backoff. Default `30000`.
+   */
+  pollBackoffMaxMs?: number;
   /** Immediately start polling for work - default `true` */
   autoStart?: boolean;
   /** Concurrency limit — default `10`. Overridden by CAMUNDA_WORKER_MAX_CONCURRENT_JOBS env var. */
@@ -100,6 +117,8 @@ export interface ThreadedJobWorkerConfig<
  */
 type ResolvedThreadedJobWorkerConfig = ThreadedJobWorkerConfig & {
   pollIntervalMs: number;
+  pollBackoffMinMs: number;
+  pollBackoffMaxMs: number;
   autoStart: boolean;
   validateSchemas: boolean;
   maxParallelJobs: number;
@@ -129,6 +148,8 @@ export class ThreadedJobWorker {
   private _stopped = false;
   private _pollTimer: any = null;
   private _inFlightActivation: any = null;
+  /** Consecutive failed activation requests; drives the retry backoff, reset on success. */
+  private _consecutiveActivationErrors = 0;
   private _log: ReturnType<CamundaClient['logger']>;
   private _jobQueue: Array<{ raw: ActivatedJobResult & Partial<EnrichedActivatedJob> }> = [];
   private _startGate: WorkerStartGate;
@@ -142,6 +163,8 @@ export class ThreadedJobWorker {
     this._cfg = {
       ...cfg,
       pollIntervalMs: cfg.pollIntervalMs ?? 1,
+      pollBackoffMinMs: cfg.pollBackoffMinMs ?? DEFAULT_POLL_BACKOFF_MIN_MS,
+      pollBackoffMaxMs: cfg.pollBackoffMaxMs ?? DEFAULT_POLL_BACKOFF_MAX_MS,
       autoStart: cfg.autoStart ?? true,
       validateSchemas: cfg.validateSchemas ?? false,
       maxParallelJobs: cfg.maxParallelJobs ?? 10,
@@ -414,17 +437,41 @@ export class ThreadedJobWorker {
       this._inFlightActivation = this._client.activateJobs(body);
       const activation = await this._inFlightActivation;
       this._inFlightActivation = null;
+      // A successful poll (jobs or an empty long-poll) proves connectivity —
+      // clear the failure streak so the next error starts backoff from the floor.
+      this._consecutiveActivationErrors = 0;
       result = activation?.jobs || [];
       this._log.debug(() => ['activation.response', { jobs: result.length }]);
     } catch (e) {
       this._inFlightActivation = null;
       if (this._stopped) return;
+      // Suppress logging + backoff for intentional cancellation (user-initiated stop).
       if ((e as any)?.name === 'CancelSdkError') {
         this._log.debug('activation.cancelled');
-      } else {
-        this._log.error('activation.error', e);
+        this._scheduleNext(this._cfg.pollIntervalMs);
+        return;
       }
-      this._scheduleNext(this._cfg.pollIntervalMs);
+      // Any non-cancellation activation failure: back off exponentially (with
+      // jitter) so a sustained fault — a transport outage (broker restart, LAN
+      // blip, DNS flap) or a persistent server/auth/validation error — does not
+      // turn into a tight sub-millisecond retry loop that floods logs and hammers
+      // the endpoint. Transport outages are the motivating case, but backing off
+      // on *every* recurring failure is deliberate: it is the safe default that
+      // keeps the retry cadence bounded regardless of the error class. Resets to
+      // the floor on the next successful poll.
+      this._consecutiveActivationErrors += 1;
+      // nextActivationRetryDelayMs is the single source of truth shared with
+      // JobWorker so the two implementations cannot drift. When backoff is
+      // disabled (pollBackoffMinMs <= 0) it falls back to the normal poll interval
+      // rather than 0, which would spin an even tighter retry loop than the old
+      // behaviour — the opposite of what "disable" should mean.
+      const delayMs = nextActivationRetryDelayMs(this._consecutiveActivationErrors, this._cfg);
+      this._log.error('activation.error', e);
+      this._log.debug(() => [
+        'activation.retry',
+        { attempt: this._consecutiveActivationErrors, retryInMs: delayMs },
+      ]);
+      this._scheduleNext(delayMs);
       return;
     }
     if (!result || result.length === 0) {
