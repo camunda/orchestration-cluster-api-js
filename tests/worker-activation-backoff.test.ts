@@ -41,6 +41,10 @@ describe('job worker activation backoff', () => {
     // deterministic and isolates the worker-level backoff under test.
     const client = createCamundaClient({
       config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 },
+      // Isolate from ambient CAMUNDA_WORKER_* env vars (e.g. startup jitter),
+      // which hydrateConfig would otherwise pull from process.env and perturb
+      // the deterministic timer schedule under test.
+      env: {},
       fetch: fetchMock as any,
     });
     const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
@@ -92,6 +96,10 @@ describe('job worker activation backoff', () => {
 
     const client = createCamundaClient({
       config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 },
+      // Isolate from ambient CAMUNDA_WORKER_* env vars (e.g. startup jitter),
+      // which hydrateConfig would otherwise pull from process.env and perturb
+      // the deterministic timer schedule under test.
+      env: {},
       fetch: fetchMock as any,
     });
     const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
