@@ -1,3 +1,10 @@
+# [10.0.0-alpha.25](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.24...v10.0.0-alpha.25) (2026-08-04)
+
+
+### Bug Fixes
+
+* **runtime:** back off job-worker activation retries on transport errors ([#411](https://github.com/camunda/orchestration-cluster-api-js/issues/411)) ([bccaabe](https://github.com/camunda/orchestration-cluster-api-js/commit/bccaabeffc995b30fcb83488538928e57c8de953))
+
 # [10.0.0-alpha.24](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.23...v10.0.0-alpha.24) (2026-08-04)
 
 
