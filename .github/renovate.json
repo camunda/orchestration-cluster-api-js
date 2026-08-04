@@ -34,6 +34,15 @@
       "description": "Auto-merge minor and patch updates once CI is green.",
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "description": "Code-generator bumps must never auto-merge. A @hey-api/* bump touches only package.json and the lockfile, but rewrites thousands of lines of committed output under src/gen — including runtime behaviour of the generated fetch client. Issue #405 (transport errors silently swallowed) shipped exactly that way: the bump PR showed no generated diff and the behavioural change landed in the release commit that regenerates. The blocking `generation-drift` CI job now fails until the regenerated output is committed into the PR, so a human reviews the generated diff. Listed last so it wins over the automerge rule above.",
+      "matchPackageNames": ["@hey-api/**"],
+      "automerge": false,
+      "addLabels": ["generator-upgrade", "needs-regeneration"],
+      "prBodyNotes": [
+        "⚠️ **Generator bump — regeneration required.** This PR changes only `package.json` and the lockfile; the committed code under `src/gen` still reflects the previous generator. Run `npm run generate:local`, review the diff (pay particular attention to `src/gen/client/`, `src/gen/CamundaClient.ts` and `src/gen/zod.gen.ts` — these carry runtime behaviour, not just types), and commit it here. The `generation-drift` check stays red until you do."
+      ]
     }
   ],
   "vulnerabilityAlerts": {

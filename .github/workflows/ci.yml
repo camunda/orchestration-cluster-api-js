@@ -41,12 +41,84 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+  # Blocking guard: regenerating from the spec COMMITTED IN THIS BRANCH must
+  # reproduce the committed `src/gen` / `src/facade` byte-for-byte.
+  #
+  # This is deliberately *not* `npm run generate`, which re-bundles the spec from
+  # camunda/camunda@main. Pinning to the committed bundle makes the check
+  # deterministic and attributable to the PR: an unrelated upstream spec change
+  # can no longer turn it red, but a change to the generator version or to the
+  # hooks in `hooks/` must land together with its regenerated output.
+  #
+  # Why it is blocking: a Renovate bump of @hey-api/openapi-ts touches only
+  # package.json and the lockfile, so the several-thousand-line behavioural
+  # change it makes to the generated client used to land unreviewed in the
+  # release commit that regenerates. That is how the transport-error regression
+  # in issue #405 shipped. Failing here forces the regenerated diff into the PR.
+  generation-drift:
+    name: Generation Drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Regenerate from the committed spec bundle
+        run: npx tsx scripts/run-pipeline.ts --no-test
+      - name: Fail if regeneration changed committed output
+        id: drift
+        run: |
+          # --porcelain (not `git diff`) so newly *created* generated files —
+          # e.g. a test scaffold for a new operation — also count as drift.
+          if [ -z "$(git status --porcelain)" ]; then
+            echo 'No generation drift.'
+            exit 0
+          fi
+          git add -A
+          git diff --cached > _generation-drift.patch
+          {
+            echo '### Generation drift detected'
+            echo ''
+            echo 'Regenerating from the spec bundle committed in this branch produced changes,'
+            echo 'so the committed generated code no longer matches the toolchain in this PR.'
+            echo ''
+            echo 'Fix: run `npm run generate:local` locally, review the diff (especially'
+            echo '`src/gen/client/`, `src/gen/CamundaClient.ts` and `src/gen/zod.gen.ts` — these'
+            echo 'carry runtime behaviour, not just types), and commit it in this PR.'
+            echo ''
+            echo 'Changed files:'
+            echo '```'
+            git diff --cached --name-status
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+          echo '::error::Generation drift: committed generated code does not match this PR'"'"'s generator and hooks. See the job summary.'
+          git diff --cached --name-status | sed 's/^/DRIFT: /'
+          exit 1
+      - name: Upload Drift Patch
+        if: failure() && steps.drift.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: generation-drift
+          path: _generation-drift.patch
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       matrix:
-        node: [20.x, 22.x, 24.x]
+        # Must stay within `engines.node` of both this package (>=22) and
+        # @hey-api/openapi-ts (>=22.18.0 since 0.96.0) — this job runs
+        # `npm run build`, which regenerates via the generator. Node 20 was left
+        # here after the 0.86.12 -> 0.99.0 upgrade raised the generator's floor,
+        # so that leg was generating on an unsupported runtime. Guarded by
+        # tests/toolchain-node-support.test.ts.
+        node: [22.x, 24.x]
         stack: [simple]
         include:
           - node: 22.x
@@ -69,24 +141,30 @@ jobs:
         run: node scripts/check-example-coverage.cjs
       - name: Check Method Example Completeness
         run: node scripts/check-method-example-completeness.cjs
-      - name: Detect Generation Drift (non-blocking)
+      # This job builds via `npm run build`, which re-bundles the spec from
+      # camunda/camunda@main. Any diff here therefore reflects *upstream spec*
+      # movement, which is not this PR's responsibility — hence non-blocking.
+      # Toolchain-attributable drift is caught by the blocking `generation-drift`
+      # job, which regenerates from the committed spec bundle instead.
+      - name: Detect Upstream Spec Drift (non-blocking)
         id: drift
         run: |
           if ! git diff --quiet; then
             echo 'drift=true' >> $GITHUB_OUTPUT
-            echo 'Generation produced changes (reporting only).' >&2
+            echo 'Upstream spec produced changes (reporting only).' >&2
             git diff --name-only | sed 's/^/CHANGED: /'
-            git diff > _generation-drift.patch || true
+            git diff > _upstream-spec-drift.patch || true
           else
             echo 'drift=false' >> $GITHUB_OUTPUT
           fi
-      - name: Upload Drift Patch
-        # Only upload a single canonical drift patch from Node 20.x to avoid artifact 409 conflicts
-        if: steps.drift.outputs.drift == 'true' && matrix.node == '20.x' && matrix.stack == 'simple'
+      - name: Upload Upstream Spec Drift Patch
+        # Only upload a single canonical drift patch from the lowest supported
+        # Node to avoid artifact 409 conflicts
+        if: steps.drift.outputs.drift == 'true' && matrix.node == '22.x' && matrix.stack == 'simple'
         uses: actions/upload-artifact@v7
         with:
-          name: generation-drift
-          path: _generation-drift.patch
+          name: upstream-spec-drift
+          path: _upstream-spec-drift.patch
       - name: Unit Tests
         run: npm test
 
@@ -122,9 +200,9 @@ jobs:
             echo "### Node ${{ matrix.node }} (${{ matrix.stack }}) Summary";
             echo "- Status: ${status}";
             if [ "${driftFlag}" = "true" ]; then
-              echo "- Generation Drift: detected";
+              echo "- Upstream Spec Drift: detected";
             else
-              echo "- Generation Drift: none";
+              echo "- Upstream Spec Drift: none";
             fi
             echo "";
           } >> $GITHUB_STEP_SUMMARY

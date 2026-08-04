@@ -6590,7 +6590,11 @@ export type JobCompletionRequest = {
  * The result of the completed job as determined by the worker.
  *
  */
-export type JobResult = JobResultUserTask | JobResultAdHocSubProcess;
+export type JobResult = ({
+    type: 'userTask';
+} & JobResultUserTask) | ({
+    type: 'adHocSubProcess';
+} & JobResultAdHocSubProcess);
 
 /**
  * Job result details for a user task completion, optionally including a denial reason and corrected task properties.
@@ -8728,7 +8732,9 @@ export type ProcessInstanceCreationStartInstruction = {
     elementId: ElementId;
 };
 
-export type ProcessInstanceCreationRuntimeInstruction = ProcessInstanceCreationTerminateInstruction;
+export type ProcessInstanceCreationRuntimeInstruction = ({
+    type: 'TERMINATE_PROCESS_INSTANCE';
+} & ProcessInstanceCreationTerminateInstruction);
 
 /**
  * Terminates the process instance after a specific BPMN element is completed or terminated.

@@ -84,6 +84,25 @@ function stripExpressionValidators(
 // Removing it prevents sdk.gen.ts from eagerly loading the 10K-line zod schema module.
 code = code.replace(/^import\s*\{[^}]*\}\s*from\s*'\.\/zod\.gen';\s*\n/m, '');
 
+// hey-api 0.96+ additionally emits a bare `import * as z from 'zod';` (used by the
+// inline validators we just neutralized). Once the validators are gone the import is
+// dead, but it still pulls zod into sdk.gen.ts's module graph. Drop it — but only when
+// nothing else in the file references the namespace, so a future template change that
+// genuinely uses `z` doesn't get silently broken.
+const zodNamespaceImportRe = /^import\s*\*\s*as\s*z\s*from\s*'zod';\s*\n/m;
+if (zodNamespaceImportRe.test(code)) {
+  const withoutImport = code.replace(zodNamespaceImportRe, '');
+  if (/\bz\s*\./.test(withoutImport)) {
+    console.error(
+      "[strip-validation] `import * as z from 'zod'` is still referenced in sdk.gen.ts — " +
+        'leaving it in place. The @hey-api/sdk template may have changed; review this hook.'
+    );
+  } else {
+    code = withoutImport;
+    console.log("[strip-validation] Removed dead `import * as z from 'zod'` from sdk.gen.ts");
+  }
+}
+
 // Ensure at least one Options export still follows imports (no change expected) – no action.
 
 fs.writeFileSync(sdkPath, code, 'utf8');

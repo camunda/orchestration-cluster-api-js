@@ -2601,8 +2601,12 @@ export const zJobResultAdHocSubProcess = z.object({
  *
  */
 export const zJobResult = z.union([
-    zJobResultUserTask,
-    zJobResultAdHocSubProcess
+    z.object({
+        type: z.literal('userTask')
+    }).and(zJobResultUserTask),
+    z.object({
+        type: z.literal('adHocSubProcess')
+    }).and(zJobResultAdHocSubProcess)
 ]);
 
 export const zJobCompletionRequest = z.object({
@@ -4739,7 +4743,9 @@ export const zProcessInstanceCreationTerminateInstruction = z.object({
     description: 'Terminates the process instance after a specific BPMN element is completed or terminated.\n'
 });
 
-export const zProcessInstanceCreationRuntimeInstruction = zProcessInstanceCreationTerminateInstruction;
+export const zProcessInstanceCreationRuntimeInstruction = z.object({
+        type: z.literal('TERMINATE_PROCESS_INSTANCE')
+    }).and(zProcessInstanceCreationTerminateInstruction);
 
 /**
  * Process creation by id

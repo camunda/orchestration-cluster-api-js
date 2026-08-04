@@ -100,6 +100,11 @@ export const createClient = (config: Config = {}): Client => {
 
     let request: Request | undefined;
     let response: Response | undefined;
+    // Set immediately before the one throw that represents an HTTP error
+    // *response*; `throwOnError` gates that case only. Any other failure
+    // (transport, abort, interceptor, parse) must reject unconditionally.
+    // Injected by hooks/post/640-fix-transport-error-rejection.ts.
+    let __isHttpErrorResponse = false;
 
     try {
       const { opts, url } = await beforeRequest(options);
@@ -218,6 +223,7 @@ export const createClient = (config: Config = {}): Client => {
         // noop
       }
 
+      __isHttpErrorResponse = true;
       throw jsonError ?? textError;
     } catch (error) {
       let finalError = error;
@@ -230,7 +236,7 @@ export const createClient = (config: Config = {}): Client => {
 
       finalError = finalError || {};
 
-      if (throwOnError) {
+      if (throwOnError || !__isHttpErrorResponse) {
         throw finalError;
       }
 
