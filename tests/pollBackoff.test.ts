@@ -88,6 +88,30 @@ describe('computePollBackoffMs', () => {
     }
   });
 
+  it('never exceeds the cap for fractional min/max windows', () => {
+    // A fractional cap (e.g. 1000.5) rounded to an integer must not overshoot
+    // the user-provided ceiling: round(1000.5) === 1001 would break the
+    // documented "<= cap" contract, so min/max are normalised to integers.
+    const o = opts({ minMs: 1000.5, maxMs: 1000.5, rng: () => 1 });
+    const d = computePollBackoffMs(1, o);
+    expect(Number.isInteger(d)).toBe(true);
+    expect(d).toBeLessThanOrEqual(1000.5);
+    expect(d).toBe(1000);
+  });
+
+  it('clamps an overflowing maxMs to a safe setTimeout ceiling', () => {
+    // A maxMs beyond the 32-bit signed setTimeout limit (2^31 - 1 ms) would be
+    // silently coerced to a ~1ms timeout by the runtime, reintroducing the tight
+    // retry loop this helper exists to prevent. The result must stay finite and
+    // within the safe timer range.
+    const SAFE_MAX = 2_147_483_647;
+    const o = opts({ minMs: 1000, maxMs: 1e21, rng: () => 1 });
+    const d = computePollBackoffMs(50, o);
+    expect(Number.isFinite(d)).toBe(true);
+    expect(d).toBeLessThanOrEqual(SAFE_MAX);
+    expect(d).toBeGreaterThan(0);
+  });
+
   it('exposes sensible defaults', () => {
     expect(DEFAULT_POLL_BACKOFF_MIN_MS).toBe(1000);
     expect(DEFAULT_POLL_BACKOFF_MAX_MS).toBe(30_000);

@@ -16,6 +16,15 @@ export const DEFAULT_POLL_BACKOFF_MIN_MS = 1000;
 /** Default ceiling of the backoff window. */
 export const DEFAULT_POLL_BACKOFF_MAX_MS = 30_000;
 
+/**
+ * Largest delay a browser/Node `setTimeout` can hold without overflow: the
+ * 32-bit signed millisecond ceiling (2^31 - 1 ≈ 24.8 days). A larger delay is
+ * silently coerced to ~1ms by the runtime, so we clamp the backoff window to
+ * this bound to keep the "delay never exceeds the cap" contract meaningful and
+ * avoid reintroducing the tight retry loop this helper exists to prevent.
+ */
+const MAX_SAFE_TIMEOUT_MS = 2_147_483_647;
+
 export interface PollBackoffOptions {
   /** Base delay in ms; the first retry's cap. */
   minMs: number;
@@ -45,12 +54,16 @@ export function computePollBackoffMs(attempt: number, opts: PollBackoffOptions):
   const rng = opts.rng ?? Math.random;
   // Defensively normalise every input. This helper is fed user-provided config
   // (`pollBackoffMinMs`/`pollBackoffMaxMs`) and an injectable rng, any of which
-  // could be NaN, negative, or out of range. A NaN/negative delay would be
-  // coerced by setTimeout to 0, reintroducing the very tight retry loop this
-  // helper exists to prevent — so we clamp to guarantee a finite, non-negative
-  // integer result.
-  const min = Number.isFinite(opts.minMs) ? Math.max(0, opts.minMs) : 0;
-  const max = Number.isFinite(opts.maxMs) ? Math.max(min, opts.maxMs) : min;
+  // could be NaN, negative, fractional, or absurdly large. Normalise min/max to
+  // non-negative integers within the safe setTimeout range so the rounded delay
+  // can never overshoot the caller's ceiling and a huge maxMs can never overflow
+  // setTimeout into a ~1ms tight retry loop — the very thing this helper avoids.
+  const min = Number.isFinite(opts.minMs)
+    ? Math.min(MAX_SAFE_TIMEOUT_MS, Math.max(0, Math.floor(opts.minMs)))
+    : 0;
+  const max = Number.isFinite(opts.maxMs)
+    ? Math.min(MAX_SAFE_TIMEOUT_MS, Math.max(min, Math.floor(opts.maxMs)))
+    : min;
   const safeAttempt = Number.isFinite(attempt) ? Math.max(1, Math.floor(attempt)) : 1;
   // 2^(safeAttempt-1) can overflow to Infinity for absurd attempt counts; the
   // Math.min against `max` still yields a finite cap, so no explicit guard is
