@@ -184,6 +184,24 @@ jobs:
           docker logs camunda-engine 2>&1 | tail -200
       - name: Integration Tests
         run: npm run test:integration
+      - name: Set up Deno (cross-runtime live REST)
+        if: matrix.node == '22.x' && matrix.stack == 'simple'
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Set up Bun (cross-runtime live REST)
+        if: matrix.node == '22.x' && matrix.stack == 'simple'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Cross-runtime live REST (Node + Deno + Bun vs broker)
+        if: matrix.node == '22.x' && matrix.stack == 'simple'
+        env:
+          # Unprotected docker broker: defaults to auth NONE at localhost:8080.
+          # Setting the address switches the smoke from construct-only to live I/O.
+          CAMUNDA_REST_ADDRESS: http://localhost:8080
+          XR_REQUIRE_RUNTIMES: node,deno,bun
+        run: npm run test:cross-runtime
       - name: Stop Integration Stack
         if: always()
         uses: camunda/sdk-infra/actions/stop-camunda@v1
@@ -206,3 +224,32 @@ jobs:
             fi
             echo "";
           } >> $GITHUB_STEP_SUMMARY
+
+  cross-runtime:
+    name: Cross-runtime (Node + Deno + Bun)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package.json
+      - name: Install deps
+        run: npm ci
+      - name: Generate & Build
+        run: npm run build
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Cross-runtime smoke (packed package, all runtimes)
+        env:
+          XR_REQUIRE_RUNTIMES: node,deno,bun
+        run: npm run test:cross-runtime
