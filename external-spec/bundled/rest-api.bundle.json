@@ -795,6 +795,54 @@
         "x-added-in-version": "8.8"
       }
     },
+    "/authentication/me/authorizations/search": {
+      "post": {
+        "x-eventually-consistent": true,
+        "tags": [
+          "Authentication"
+        ],
+        "operationId": "searchOwnAuthorizations",
+        "x-required-permissions": [],
+        "summary": "Search own authorizations",
+        "description": "Search for the current authenticated principal's own authorization records — including authorizations granted directly to the user or client, as well as those granted via a group, role, or mapping rule the principal belongs to.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizationSearchQuery"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The authorization search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthorizationSearchResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/paths/~1clock/put/responses/400"
+          },
+          "401": {
+            "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "500": {
+            "$ref": "#/paths/~1clock/put/responses/500"
+          }
+        },
+        "x-added-in-version": "8.10"
+      }
+    },
     "/authorizations": {
       "post": {
         "x-eventually-consistent": false,
@@ -14870,7 +14918,12 @@
           "Recovery"
         ],
         "operationId": "restore",
-        "x-required-permissions": [],
+        "x-required-permissions": [
+          {
+            "resourceType": "BACKUP",
+            "permissionType": "RESTORE"
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -14908,6 +14961,9 @@
           "401": {
             "$ref": "#/paths/~1mode/patch/responses/401"
           },
+          "403": {
+            "$ref": "#/paths/~1mode/patch/responses/403"
+          },
           "409": {
             "description": "The cluster is not in recovery mode, so the restore cannot be accepted."
           },
@@ -14923,7 +14979,12 @@
           "Recovery"
         ],
         "operationId": "getRestoreStatus",
-        "x-required-permissions": [],
+        "x-required-permissions": [
+          {
+            "resourceType": "BACKUP",
+            "permissionType": "RESTORE"
+          }
+        ],
         "security": [
           {
             "bearerAuth": []
@@ -14947,6 +15008,9 @@
           },
           "401": {
             "$ref": "#/paths/~1mode/patch/responses/401"
+          },
+          "403": {
+            "$ref": "#/paths/~1mode/patch/responses/403"
           },
           "404": {
             "description": "No restore is currently in progress."
@@ -32111,10 +32175,11 @@
             "type": "boolean"
           },
           "state": {
-            "description": "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n",
+            "description": "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).\nSet to `DRAINING` to return only definitions that are being deleted but still have\nactive process instances draining.\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n",
             "type": "string",
             "enum": [
               "ACTIVE",
+              "DRAINING",
               "DELETED"
             ]
           }
@@ -32202,10 +32267,11 @@
             "type": "boolean"
           },
           "state": {
-            "description": "The state of this process definition.",
+            "description": "The state of this process definition.\n`DRAINING` indicates the definition is being deleted but still has active process\ninstances draining before it is removed.\n",
             "type": "string",
             "enum": [
               "ACTIVE",
+              "DRAINING",
               "DELETED"
             ]
           }

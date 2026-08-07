@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 217
+// Operations: 218
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -976,6 +976,14 @@ export type searchMessageSubscriptionsInput = searchMessageSubscriptionsBody;
 export type searchMessageSubscriptionsConsistency = { 
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchMessageSubscriptions>> 
+};
+type searchOwnAuthorizationsOptions = Parameters<typeof Sdk.searchOwnAuthorizations>[0];
+type searchOwnAuthorizationsBody = (NonNullable<searchOwnAuthorizationsOptions> extends { body?: infer B } ? B : never);
+export type searchOwnAuthorizationsInput = searchOwnAuthorizationsBody;
+/** Management of eventual consistency **/
+export type searchOwnAuthorizationsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchOwnAuthorizations>> 
 };
 type searchProcessDefinitionsOptions = Parameters<typeof Sdk.searchProcessDefinitions>[0];
 type searchProcessDefinitionsBody = (NonNullable<searchProcessDefinitionsOptions> extends { body?: infer B } ? B : never);
@@ -15314,6 +15322,73 @@ export class CamundaClient {
       };
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('searchMessageSubscriptions', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
+    });
+  }
+
+  /**
+   * Search own authorizations
+   *
+   * Search for the current authenticated principal's own authorization records — including authorizations granted directly to the user or client, as well as those granted via a group, role, or mapping rule the principal belongs to.
+    *
+   * @operationId searchOwnAuthorizations
+   * @tags Authentication
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchOwnAuthorizations(input: searchOwnAuthorizationsInput, /** Management of eventual consistency **/ consistencyManagement: searchOwnAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchOwnAuthorizations>>;
+  searchOwnAuthorizations(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchOwnAuthorizationsConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchOwnAuthorizations', _schemas.zSearchOwnAuthorizationsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchOwnAuthorizations(opts);
+        let data = this._evaluateResponse(_raw, 'searchOwnAuthorizations', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchOwnAuthorizationsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSearchOwnAuthorizationsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchOwnAuthorizations', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchOwnAuthorizations', false, invoke, { ...useConsistency, logger: this._log });
       return invoke();
     });
   }

@@ -4584,8 +4584,12 @@ export const zProcessDefinitionFilter = z.object({
     hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
     }).optional(),
-    state: z.enum(['ACTIVE', 'DELETED']).register(z.globalRegistry, {
-        description: 'Filter by the process definition\'s state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n'
+    state: z.enum([
+        'ACTIVE',
+        'DRAINING',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: 'Filter by the process definition\'s state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).\nSet to `DRAINING` to return only definitions that are being deleted but still have\nactive process instances draining.\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n'
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -4606,8 +4610,12 @@ export const zProcessDefinitionResult = z.object({
     hasStartForm: z.boolean().register(z.globalRegistry, {
         description: 'Indicates whether the start event of the process has an associated Form Key.'
     }),
-    state: z.enum(['ACTIVE', 'DELETED']).register(z.globalRegistry, {
-        description: 'The state of this process definition.'
+    state: z.enum([
+        'ACTIVE',
+        'DRAINING',
+        'DELETED'
+    ]).register(z.globalRegistry, {
+        description: 'The state of this process definition.\n`DRAINING` indicates the definition is being deleted but still has active process\ninstances draining before it is removed.\n'
     })
 });
 
@@ -9223,6 +9231,13 @@ export const zGetAuditLogResponse = zAuditLogResult;
  * The current user is successfully returned.
  */
 export const zGetAuthenticationResponse = zCamundaUserResult;
+
+export const zSearchOwnAuthorizationsBody = zAuthorizationSearchQuery;
+
+/**
+ * The authorization search result.
+ */
+export const zSearchOwnAuthorizationsResponse = zAuthorizationSearchResult;
 
 export const zCreateAuthorizationBody = zAuthorizationRequest;
 

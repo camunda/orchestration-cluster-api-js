@@ -8262,12 +8262,14 @@ export type ProcessDefinitionFilter = {
     /**
      * Filter by the process definition's state.
      * When not set, process definitions in any state are returned.
-     * Set to `ACTIVE` to exclude deleted definitions (recommended for most use cases).
+     * Set to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).
+     * Set to `DRAINING` to return only definitions that are being deleted but still have
+     * active process instances draining.
      * Set to `DELETED` to return only definitions that have been deleted but are still
      * retained in secondary storage.
      *
      */
-    state?: 'ACTIVE' | 'DELETED';
+    state?: 'ACTIVE' | 'DRAINING' | 'DELETED';
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -8312,8 +8314,11 @@ export type ProcessDefinitionResult = {
     hasStartForm: boolean;
     /**
      * The state of this process definition.
+     * `DRAINING` indicates the definition is being deleted but still has active process
+     * instances draining before it is removed.
+     *
      */
-    state: 'ACTIVE' | 'DELETED';
+    state: 'ACTIVE' | 'DRAINING' | 'DELETED';
 };
 
 /**
@@ -12233,6 +12238,39 @@ export type GetAuthenticationResponses = {
 };
 
 export type GetAuthenticationResponse = GetAuthenticationResponses[keyof GetAuthenticationResponses];
+
+export type SearchOwnAuthorizationsData = {
+    body?: AuthorizationSearchQuery;
+    path?: never;
+    query?: never;
+    url: '/authentication/me/authorizations/search';
+};
+
+export type SearchOwnAuthorizationsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchOwnAuthorizationsError = SearchOwnAuthorizationsErrors[keyof SearchOwnAuthorizationsErrors];
+
+export type SearchOwnAuthorizationsResponses = {
+    /**
+     * The authorization search result.
+     */
+    200: AuthorizationSearchResult;
+};
+
+export type SearchOwnAuthorizationsResponse = SearchOwnAuthorizationsResponses[keyof SearchOwnAuthorizationsResponses];
 
 export type CreateAuthorizationData = {
     body: AuthorizationRequest;
@@ -20369,6 +20407,10 @@ export type GetRestoreStatusErrors = {
      */
     401: ProblemDetail;
     /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
      * No restore is currently in progress.
      */
     404: unknown;
@@ -20405,6 +20447,10 @@ export type RestoreErrors = {
      * The request lacks valid authentication credentials.
      */
     401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
     /**
      * The cluster is not in recovery mode, so the restore cannot be accepted.
      */
@@ -21193,7 +21239,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:c8ee62d8a55a30aacaf1db6423b9d5972ff50c85fb1aba89fd518abbd36014a1
+// specHash=sha256:ed03fb7059852ba4f59282babd463497f5bf0026535924629b2ed15019e08be9
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

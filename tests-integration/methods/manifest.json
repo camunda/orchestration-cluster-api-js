@@ -1,6 +1,6 @@
 {
-  "operations": 217,
-  "tests": 219,
+  "operations": 218,
+  "tests": 220,
   "missing": [],
   "ignored": [],
   "files": [
@@ -173,6 +173,7 @@
     "searchMappingRulesForTenant.test.ts",
     "searchMappingsForTenant.test.ts",
     "searchMessageSubscriptions.test.ts",
+    "searchOwnAuthorizations.test.ts",
     "searchProcessDefinitionVariableNames.test.ts",
     "searchProcessDefinitions.test.ts",
     "searchProcessInstanceIncidents.test.ts",
