@@ -43,6 +43,11 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/authentication/me/authorizations/search': {
+    'POST': {
+      '200': 1
+    }
+  },
   '/authorizations': {
     'POST': {
       '201': 1
