@@ -15331,6 +15331,24 @@ export class CamundaClient {
    *
    * Search for the current authenticated principal's own authorization records — including authorizations granted directly to the user or client, as well as those granted via a group, role, or mapping rule the principal belongs to.
     *
+   * @example Search own authorizations
+   * ```ts
+   * async function searchOwnAuthorizationsExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.searchOwnAuthorizations(
+   *     {
+   *       filter: { resourceType: 'PROCESS_DEFINITION' },
+   *       page: { limit: 10 },
+   *     },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const auth of result.items ?? []) {
+   *     console.log(`${auth.resourceId}: ${auth.permissionTypes?.join(', ')}`);
+   *   }
+   * }
+   * ```
    * @operationId searchOwnAuthorizations
    * @tags Authentication
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
