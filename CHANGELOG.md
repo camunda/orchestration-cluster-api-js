@@ -1,3 +1,10 @@
+# [10.0.0-alpha.26](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.25...v10.0.0-alpha.26) (2026-08-10)
+
+
+### Features
+
+* **examples:** add searchOwnAuthorizations example coverage ([a3749c3](https://github.com/camunda/orchestration-cluster-api-js/commit/a3749c392e725957ad22d7627b2161a6a4866165))
+
 # [10.0.0-alpha.25](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.24...v10.0.0-alpha.25) (2026-08-04)
 
 
