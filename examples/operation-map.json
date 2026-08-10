@@ -1527,5 +1527,12 @@
       "region": "GetRestoreStatus",
       "label": "Get restore status"
     }
+  ],
+  "searchOwnAuthorizations": [
+    {
+      "file": "authorization.ts",
+      "region": "SearchOwnAuthorizations",
+      "label": "Search own authorizations"
+    }
   ]
 }

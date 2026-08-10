@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:c8ee62d8a55a30aacaf1db6423b9d5972ff50c85fb1aba89fd518abbd36014a1",
+  "specHash": "sha256:ed03fb7059852ba4f59282babd463497f5bf0026535924629b2ed15019e08be9",
   "semanticKeys": [
     {
       "name": "AgentHistoryItemKey",
@@ -2308,6 +2308,14 @@
       ]
     },
     {
+      "operationId": "searchOwnAuthorizations",
+      "path": "/authentication/me/authorizations/search",
+      "method": "post",
+      "tags": [
+        "Authentication"
+      ]
+    },
+    {
       "operationId": "searchAuthorizations",
       "path": "/authorizations/search",
       "method": "post",
@@ -3325,6 +3333,36 @@
         "x-eventually-consistent": false,
         "x-required-permissions": [],
         "x-added-in-version": "8.8"
+      }
+    },
+    {
+      "operationId": "searchOwnAuthorizations",
+      "path": "/authentication/me/authorizations/search",
+      "method": "post",
+      "tags": [
+        "Authentication"
+      ],
+      "summary": "Search own authorizations",
+      "description": "Search for the current authenticated principal's own authorization records — including authorizations granted directly to the user or client, as well as those granted via a group, role, or mapping rule the principal belongs to.",
+      "eventuallyConsistent": true,
+      "hasRequestBody": true,
+      "requestBodyUnion": false,
+      "bodyOnly": true,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "authentication.yaml",
+      "requestBodyContentTypes": [
+        "application/json"
+      ],
+      "requestBodySchemaRef": "AuthorizationSearchQuery",
+      "successResponseSchemaRef": "AuthorizationSearchResult",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": true,
+        "x-required-permissions": [],
+        "x-added-in-version": "8.10"
       }
     },
     {
@@ -10861,7 +10899,12 @@
       "successStatus": 200,
       "vendorExtensions": {
         "x-eventually-consistent": false,
-        "x-required-permissions": [],
+        "x-required-permissions": [
+          {
+            "resourceType": "BACKUP",
+            "permissionType": "RESTORE"
+          }
+        ],
         "x-added-in-version": "8.10"
       }
     },
@@ -10891,7 +10934,12 @@
       "successStatus": 202,
       "vendorExtensions": {
         "x-eventually-consistent": false,
-        "x-required-permissions": [],
+        "x-required-permissions": [
+          {
+            "resourceType": "BACKUP",
+            "permissionType": "RESTORE"
+          }
+        ],
         "x-added-in-version": "8.10"
       }
     },
@@ -11835,8 +11883,8 @@
   "integrity": {
     "totalSemanticKeys": 41,
     "totalUnions": 65,
-    "totalOperations": 217,
-    "totalEventuallyConsistent": 92,
+    "totalOperations": 218,
+    "totalEventuallyConsistent": 93,
     "totalDeprecatedEnumSchemas": 2,
     "totalSemanticProviders": 23
   }
