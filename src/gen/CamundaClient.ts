@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 218
+// Operations: 220
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -281,6 +281,14 @@ type failJobOptions = Parameters<typeof Sdk.failJob>[0];
 type failJobBody = (NonNullable<failJobOptions> extends { body?: infer B } ? B : never);
 type failJobPathParam_jobKey = (NonNullable<failJobOptions> extends { path: { jobKey: infer P } } ? P : any);
 export type failJobInput = failJobBody & { jobKey: failJobPathParam_jobKey };
+type getAgentDefinitionOptions = Parameters<typeof Sdk.getAgentDefinition>[0];
+type getAgentDefinitionPathParam_agentDefinitionKey = (NonNullable<getAgentDefinitionOptions> extends { path: { agentDefinitionKey: infer P } } ? P : any);
+export type getAgentDefinitionInput = { agentDefinitionKey: getAgentDefinitionPathParam_agentDefinitionKey };
+/** Management of eventual consistency **/
+export type getAgentDefinitionConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.getAgentDefinition>> 
+};
 type getAgentInstanceOptions = Parameters<typeof Sdk.getAgentInstance>[0];
 type getAgentInstancePathParam_agentInstanceKey = (NonNullable<getAgentInstanceOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
 export type getAgentInstanceInput = { agentInstanceKey: getAgentInstancePathParam_agentInstanceKey };
@@ -742,6 +750,14 @@ export type resumeProcessInstanceInput = resumeProcessInstanceBody & { processIn
 type resumeProcessInstancesBatchOperationOptions = Parameters<typeof Sdk.resumeProcessInstancesBatchOperation>[0];
 type resumeProcessInstancesBatchOperationBody = (NonNullable<resumeProcessInstancesBatchOperationOptions> extends { body?: infer B } ? B : never);
 export type resumeProcessInstancesBatchOperationInput = resumeProcessInstancesBatchOperationBody;
+type searchAgentDefinitionsOptions = Parameters<typeof Sdk.searchAgentDefinitions>[0];
+type searchAgentDefinitionsBody = (NonNullable<searchAgentDefinitionsOptions> extends { body?: infer B } ? B : never);
+export type searchAgentDefinitionsInput = searchAgentDefinitionsBody;
+/** Management of eventual consistency **/
+export type searchAgentDefinitionsConsistency = { 
+/** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
+    consistency: ConsistencyOptions<_DataOf<typeof Sdk.searchAgentDefinitions>> 
+};
 type searchAgentInstanceHistoryOptions = Parameters<typeof Sdk.searchAgentInstanceHistory>[0];
 type searchAgentInstanceHistoryBody = (NonNullable<searchAgentInstanceHistoryOptions> extends { body?: infer B } ? B : never);
 type searchAgentInstanceHistoryPathParam_agentInstanceKey = (NonNullable<searchAgentInstanceHistoryOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
@@ -1265,7 +1281,7 @@ type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
-const VOID_RESPONSES = new Set(['zUpdateAgentInstanceResponse', 'zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
+const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
@@ -6774,6 +6790,73 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'failJob', exempt: true, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Get agent definition
+   *
+   * Returns an agent definition by key.
+    *
+   * @operationId getAgentDefinition
+   * @tags Agent definition
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  getAgentDefinition(input: getAgentDefinitionInput, /** Management of eventual consistency **/ consistencyManagement: getAgentDefinitionConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getAgentDefinition>>;
+  getAgentDefinition(arg: any, /** Management of eventual consistency **/ consistencyManagement: getAgentDefinitionConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const { agentDefinitionKey } = arg || {};
+      let envelope: any = {};
+      envelope.path = { agentDefinitionKey };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.path !== undefined) {
+          const maybePath = await this._validation.gateRequest('getAgentDefinition', _schemas.zGetAgentDefinitionPath, envelope.path);
+          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getAgentDefinition(opts);
+        let data = this._evaluateResponse(_raw, 'getAgentDefinition', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetAgentDefinitionResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetAgentDefinitionResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getAgentDefinition', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('getAgentDefinition', true, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -12537,6 +12620,10 @@ export class CamundaClient {
           const maybeBody = await this._validation.gateRequest('restore', _schemas.zRestoreBody, envelope.body);
           if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
         }
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('restore', _schemas.zRestoreQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
       if (envelope.body !== undefined) opts.body = envelope.body;
@@ -12873,6 +12960,73 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'resumeProcessInstancesBatchOperation', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Search agent definitions
+   *
+   * Search for agent definitions based on given criteria.
+    *
+   * @operationId searchAgentDefinitions
+   * @tags Agent definition
+   * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
+   */
+  searchAgentDefinitions(input: searchAgentDefinitionsInput, /** Management of eventual consistency **/ consistencyManagement: searchAgentDefinitionsConsistency, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.searchAgentDefinitions>>;
+  searchAgentDefinitions(arg: any, /** Management of eventual consistency **/ consistencyManagement: searchAgentDefinitionsConsistency, options?: OperationOptions): CancelablePromise<any> {
+    if (!consistencyManagement) throw new Error("Missing consistencyManagement parameter for eventually consistent endpoint");
+    const useConsistency = consistencyManagement.consistency;
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('searchAgentDefinitions', _schemas.zSearchAgentDefinitionsBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.searchAgentDefinitions(opts);
+        let data = this._evaluateResponse(_raw, 'searchAgentDefinitions', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSearchAgentDefinitionsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSearchAgentDefinitionsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('searchAgentDefinitions', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      const invoke = () => toCancelable(()=>call());
+      if (useConsistency) return eventualPoll('searchAgentDefinitions', false, invoke, { ...useConsistency, logger: this._log });
+      return invoke();
     });
   }
 
@@ -18455,9 +18609,11 @@ export class CamundaClient {
   /**
    * Update agent instance
    *
-   * Updates the mutable fields of an agent instance: status, metric counters, and
-   * tools. Metric values are treated as deltas and applied immediately to the
-   * aggregate counters. Tool updates replace the existing tool list.
+   * Updates the mutable fields of an agent instance (status, metric counters, and
+   * tools) and appends a batch of history items to its conversation history. Metric
+   * values are treated as deltas and applied immediately to the aggregate counters.
+   * Tool updates replace the existing tool list. Each history item created for this
+   * request is echoed back in the response.
    *
     *
    * @example Update an agent instance

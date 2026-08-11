@@ -7,6 +7,165 @@ export type ClientOptions = {
     baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
 };
 
+export type AgentDefinitionSearchQuerySortRequest = {
+    /**
+     * The field to sort by.
+     */
+    field: 'agentDefinitionKey' | 'agentType' | 'name' | 'elementId' | 'processDefinitionId' | 'processDefinitionKey' | 'processDefinitionVersion' | 'processDefinitionVersionTag' | 'tenantId';
+    order?: SortOrderEnum;
+};
+
+/**
+ * Agent definition search request.
+ */
+export type AgentDefinitionSearchQuery = SearchQueryRequest & {
+    /**
+     * Sort field criteria.
+     */
+    sort?: Array<AgentDefinitionSearchQuerySortRequest>;
+    /**
+     * The agent definition search filters.
+     */
+    filter?: AgentDefinitionFilter;
+};
+
+/**
+ * Agent definition search filter.
+ */
+export type AgentDefinitionFilter = {
+    /**
+     * The unique key of the agent definition.
+     */
+    agentDefinitionKey?: AgentDefinitionKeyFilterProperty;
+    /**
+     * The kind of agent this agent definition describes.
+     */
+    agentType?: AgentDefinitionTypeFilterProperty;
+    /**
+     * The human-readable name of the process element that owns the agent definition.
+     */
+    name?: StringFilterProperty;
+    /**
+     * The BPMN element ID of the process element that owns the agent definition.
+     */
+    elementId?: ElementIdFilterProperty;
+    /**
+     * The BPMN process ID of the process definition that owns the agent definition.
+     */
+    processDefinitionId?: ProcessDefinitionIdFilterProperty;
+    /**
+     * The key of the process definition that owns the agent definition.
+     */
+    processDefinitionKey?: ProcessDefinitionKeyFilterProperty;
+    /**
+     * The version of the process definition that owns the agent definition.
+     */
+    processDefinitionVersion?: IntegerFilterProperty;
+    /**
+     * The version tag of the process definition that owns the agent definition.
+     */
+    processDefinitionVersionTag?: StringFilterProperty;
+    /**
+     * The tenant ID of the agent definition.
+     */
+    tenantId?: StringFilterProperty;
+};
+
+/**
+ * Agent definition search response.
+ */
+export type AgentDefinitionSearchQueryResult = SearchQueryResponse & {
+    /**
+     * The matching agent definitions.
+     */
+    items: Array<AgentDefinitionResult>;
+};
+
+/**
+ * An agent definition, created at deploy time for the process element it belongs to.
+ */
+export type AgentDefinitionResult = {
+    /**
+     * The unique key for this agent definition. Unique across process definition versions.
+     *
+     */
+    agentDefinitionKey: AgentDefinitionKey;
+    agentType: AgentDefinitionTypeEnum;
+    /**
+     * The human-readable name of the process element that owns the agent definition. Falls
+     * back to elementId when the element has no BPMN name configured.
+     *
+     */
+    name: string;
+    /**
+     * The BPMN element ID of the process element that owns the agent definition.
+     */
+    elementId: ElementId;
+    /**
+     * The BPMN process ID of the process definition that owns the agent definition.
+     */
+    processDefinitionId: ProcessDefinitionId;
+    /**
+     * The key of the process definition that owns the agent definition.
+     */
+    processDefinitionKey: ProcessDefinitionKey;
+    /**
+     * The version of the process definition that owns the agent definition.
+     */
+    processDefinitionVersion: number;
+    /**
+     * The version tag of the process definition that owns the agent definition.
+     */
+    processDefinitionVersionTag: string | null;
+    /**
+     * The tenant ID of this agent definition.
+     */
+    tenantId: TenantId;
+};
+
+/**
+ * The kind of agent an agent definition describes.
+ */
+export const AgentDefinitionTypeEnum = {
+  AI_AGENT_SUB_PROCESS: 'AI_AGENT_SUB_PROCESS',
+  AI_AGENT_TASK: 'AI_AGENT_TASK',
+  EXTERNAL_AGENT: 'EXTERNAL_AGENT',
+} as const;
+export type AgentDefinitionTypeEnum = (typeof AgentDefinitionTypeEnum)[keyof typeof AgentDefinitionTypeEnum];
+/**
+ * AgentDefinitionTypeEnum property with full advanced search capabilities.
+ */
+export type AgentDefinitionTypeFilterProperty = AgentDefinitionTypeExactMatch | AdvancedAgentDefinitionTypeFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentDefinitionTypeEnum filter.
+ */
+export type AdvancedAgentDefinitionTypeFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentDefinitionTypeEnum;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentDefinitionTypeEnum;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentDefinitionTypeEnum>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AgentDefinitionTypeEnum>;
+    $like?: LikeFilter;
+};
+
 export type AgentInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
@@ -366,6 +525,65 @@ export type AgentInstanceUpdateRequest = {
      *
      */
     tools?: Array<AgentTool> | null;
+    /**
+     * The key of the job activation during which this update is being made.
+     * Required whenever history is provided.
+     *
+     */
+    jobKey?: JobKey | null;
+    /**
+     * Opaque lease token received from the job activation response. Disambiguates
+     * this activation from any other activation of the same job: if the job is
+     * later retried, history items submitted under a superseded lease are discarded
+     * rather than committed.
+     *
+     */
+    jobLease?: string | null;
+    /**
+     * A batch of history items to append to the agent instance's conversation
+     * history, in request order. Each created item is echoed back in the
+     * response's createdHistory, positionally correlated.
+     *
+     */
+    history?: Array<AgentInstanceHistoryItem> | null;
+};
+
+/**
+ * Response returned after successfully updating an agent instance.
+ */
+export type AgentInstanceUpdateResult = {
+    /**
+     * One entry per history item submitted in the request, in request order.
+     * Empty when no history items were submitted.
+     *
+     */
+    createdHistory: Array<AgentInstanceCreatedHistoryItem>;
+};
+
+/**
+ * The outcome of appending a single history item from an update request's
+ * history batch.
+ *
+ */
+export type AgentInstanceCreatedHistoryItem = {
+    /**
+     * The historyItemId of the corresponding item in the request, echoed back
+     * so callers can correlate response entries with request items by id.
+     *
+     */
+    historyItemId: string;
+    /**
+     * The system-generated key for the history item. When isDuplicate is true,
+     * this is the key of the original entry, not a new one.
+     *
+     */
+    historyItemKey: AgentHistoryItemKey;
+    /**
+     * True if this item had already been recorded and no new AGENT_HISTORY event
+     * was created for it; false if a new event was created.
+     *
+     */
+    isDuplicate: boolean;
 };
 
 /**
@@ -416,9 +634,8 @@ export type AgentInstanceHistoryItemRequest = {
      */
     jobLease: string;
     /**
-     * The loopIteration this item belongs to. A loopIteration is one pass through the agent
-     * feedback loop: one LLM call, its tool dispatches, and their results. Omit if not grouping
-     * items by loopIteration.
+     * The loop iteration this item belongs to. Omit if not grouping items by
+     * loopIteration.
      *
      */
     loopIteration?: LoopIterationId | null;
@@ -432,8 +649,8 @@ export type AgentInstanceHistoryItemRequest = {
     content: Array<AgentInstanceMessageContent>;
     /**
      * Tool calls associated with this history item.
-     * For ASSISTANT items: tool calls dispatched by this LLM response, with arguments populated.
-     * For TOOL_RESULT items: single-entry array referencing the originating tool call, with arguments null.
+     * For ASSISTANT items: tool calls dispatched by this LLM response.
+     * For TOOL_RESULT items: single-entry array referencing the originating tool call.
      * Omit for USER items.
      *
      */
@@ -443,7 +660,51 @@ export type AgentInstanceHistoryItemRequest = {
      */
     metrics?: AgentInstanceHistoryItemMetrics | null;
     /**
-     * The connector-side timestamp of when this message was produced.
+     * The agent-side timestamp of when this message was produced.
+     */
+    producedAt: string;
+};
+
+/**
+ * A single history item to append to the agent instance's conversation history,
+ * submitted as part of the batch on an agent instance update request.
+ *
+ */
+export type AgentInstanceHistoryItem = {
+    /**
+     * Caller-assigned identifier used to detect and dedupe retries of the same
+     * item. For example, when a retried job activation resubmits history items
+     * it already sent in an earlier attempt, those items are not rejected; they
+     * are flagged via isDuplicate in the response instead. Must be non-blank.
+     *
+     */
+    historyItemId: string;
+    /**
+     * The loop iteration this item belongs to.
+     */
+    loopIteration: LoopIterationId;
+    /**
+     * The role of this history item in the conversation.
+     */
+    role: AgentInstanceHistoryRoleEnum;
+    /**
+     * The content blocks of this history item.
+     */
+    content: Array<AgentInstanceMessageContent>;
+    /**
+     * Tool calls associated with this history item.
+     * For ASSISTANT items: tool calls dispatched by this LLM response.
+     * For TOOL_RESULT items: single-entry array referencing the originating tool call.
+     * Omit for USER items.
+     *
+     */
+    toolCalls?: Array<AgentInstanceToolCall> | null;
+    /**
+     * Per-call token and latency metrics. Present on ASSISTANT items only.
+     */
+    metrics?: AgentInstanceHistoryItemMetrics | null;
+    /**
+     * The agent-side timestamp of when this message was produced.
      */
     producedAt: string;
 };
@@ -501,7 +762,7 @@ export type AgentInstanceHistoryFilter = {
      */
     jobKey?: JobKeyFilterProperty;
     /**
-     * Filter by loopIteration number. A loopIteration is one pass through the agent feedback loop (one LLM call, its tool dispatches, and their results).
+     * Filter by loop iteration number.
      */
     loopIteration?: IntegerFilterProperty;
     /**
@@ -535,6 +796,12 @@ export type AgentInstanceHistoryItemResult = {
      */
     historyItemKey: AgentHistoryItemKey;
     /**
+     * The client-supplied identifier this item was created with. Empty for items that don't
+     * carry one.
+     *
+     */
+    historyItemId: string;
+    /**
      * The key of the agent instance this item belongs to.
      */
     agentInstanceKey: AgentInstanceKey;
@@ -551,9 +818,7 @@ export type AgentInstanceHistoryItemResult = {
      */
     jobLease: string;
     /**
-     * The loopIteration this item belongs to. A loopIteration is one pass through the agent
-     * feedback loop: one LLM call, its tool dispatches, and their results.
-     *
+     * The loop iteration this item belongs to.
      */
     loopIteration: LoopIterationId;
     /**
@@ -566,8 +831,8 @@ export type AgentInstanceHistoryItemResult = {
     content: Array<AgentInstanceMessageContent>;
     /**
      * Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.
-     * ASSISTANT items: dispatched tool calls with arguments populated.
-     * TOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).
+     * ASSISTANT items: dispatched tool calls.
+     * TOOL_RESULT items: single-entry array referencing the originating tool call.
      *
      */
     toolCalls: Array<AgentInstanceToolCall>;
@@ -580,9 +845,38 @@ export type AgentInstanceHistoryItemResult = {
      */
     commitStatus: AgentInstanceHistoryCommitStatusEnum;
     /**
-     * The connector-side timestamp of when this message was produced.
+     * The agent-side timestamp of when this message was produced.
      */
     producedAt: string;
+    /**
+     * The complete list of tools available to the agent as of this entry. CONFIGURATION
+     * items only; empty for other roles.
+     *
+     */
+    tools: Array<AgentTool>;
+    /**
+     * The LLM model identifier as of this entry. CONFIGURATION items only; null for other
+     * roles.
+     *
+     */
+    model: string | null;
+    /**
+     * The LLM provider as of this entry. CONFIGURATION items only; null for other roles.
+     *
+     */
+    provider: string | null;
+    /**
+     * The operational limits as of this entry. CONFIGURATION items only; -1 on any field
+     * means "no limit configured" for other roles.
+     *
+     */
+    limits: AgentInstanceLimits;
+    /**
+     * The system prompt, as content blocks, as of this entry. CONFIGURATION items only;
+     * empty for other roles.
+     *
+     */
+    systemPrompt: Array<AgentInstanceMessageContent>;
 };
 
 /**
@@ -592,6 +886,7 @@ export const AgentInstanceHistoryRoleEnum = {
   USER: 'USER',
   ASSISTANT: 'ASSISTANT',
   TOOL_RESULT: 'TOOL_RESULT',
+  CONFIGURATION: 'CONFIGURATION',
 } as const;
 export type AgentInstanceHistoryRoleEnum = (typeof AgentInstanceHistoryRoleEnum)[keyof typeof AgentInstanceHistoryRoleEnum];
 /**
@@ -681,7 +976,6 @@ export const AgentInstanceMessageContentTypeEnum = {
 export type AgentInstanceMessageContentTypeEnum = (typeof AgentInstanceMessageContentTypeEnum)[keyof typeof AgentInstanceMessageContentTypeEnum];
 /**
  * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
- * ASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.
  *
  */
 export type AgentInstanceToolCall = {
@@ -698,7 +992,9 @@ export type AgentInstanceToolCall = {
      */
     elementId: string | null;
     /**
-     * The tool call arguments as provided by the LLM. Null on TOOL_RESULT items.
+     * The tool call arguments as provided by the LLM. May be null or populated on
+     * any item, including TOOL_RESULT.
+     *
      */
     arguments: {
         [key: string]: unknown;
@@ -5370,9 +5666,12 @@ export type TagSet = Array<Tag> & { readonly length: 0 | 1 | 2 | 3 | 4 | 5 | 6 |
 export type BusinessId = CamundaKey<'BusinessId'>;
 
 /**
- * A client-provided sequential integer identifying one pass through the agent
- * feedback loop: one LLM call, its tool dispatches, and their results. Must be
- * a positive integer, increasing with each loopIteration. Established by the
+ * A client-provided sequential integer identifying a loop iteration: one pass
+ * through an AI agent's loop, during which the model reasons, selects tools,
+ * evaluates the result, and decides whether to continue. One iteration covers
+ * the input for the LLM call, the call itself, and the tools it dispatches;
+ * the results of those tool calls are input to the next iteration. Must be a
+ * positive integer, increasing with each loopIteration. Established by the
  * connector when appending the first history item of a loopIteration.
  *
  */
@@ -6980,6 +7279,11 @@ export type BatchOperationKey = CamundaKey<'BatchOperationKey'>;
 export type OperationReference = number;
 
 /**
+ * System-generated key for an agent definition.
+ */
+export type AgentDefinitionKey = CamundaKey<'AgentDefinitionKey'>;
+
+/**
  * System-generated key for an agent instance.
  */
 export type AgentInstanceKey = CamundaKey<'AgentInstanceKey'>;
@@ -7258,6 +7562,39 @@ export type AdvancedDecisionEvaluationInstanceKeyFilter = {
      * Checks if the property matches none of the provided values.
      */
     $notIn?: Array<DecisionEvaluationInstanceKey>;
+};
+
+/**
+ * AgentDefinitionKey property with full advanced search capabilities.
+ */
+export type AgentDefinitionKeyFilterProperty = AgentDefinitionKeyExactMatch | AdvancedAgentDefinitionKeyFilter;
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentDefinitionKey filter.
+ */
+export type AdvancedAgentDefinitionKeyFilter = {
+    /**
+     * Checks for equality with the provided value.
+     */
+    $eq?: AgentDefinitionKey;
+    /**
+     * Checks for inequality with the provided value.
+     */
+    $neq?: AgentDefinitionKey;
+    /**
+     * Checks if the current property exists.
+     */
+    $exists?: boolean;
+    /**
+     * Checks if the property matches any of the provided values.
+     */
+    $in?: Array<AgentDefinitionKey>;
+    /**
+     * Checks if the property matches none of the provided values.
+     */
+    $notIn?: Array<AgentDefinitionKey>;
 };
 
 /**
@@ -11011,6 +11348,13 @@ export type SetVariableRequest = {
  *
  * Matches the value exactly.
  */
+export type AgentDefinitionTypeExactMatch = AgentDefinitionTypeEnum;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AgentInstanceStatusExactMatch = AgentInstanceStatusEnum;
 
 /**
@@ -11270,6 +11614,13 @@ export type DecisionEvaluationInstanceKeyExactMatch = DecisionEvaluationInstance
  *
  * Matches the value exactly.
  */
+export type AgentDefinitionKeyExactMatch = AgentDefinitionKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AgentInstanceKeyExactMatch = AgentInstanceKey;
 
 /**
@@ -11470,6 +11821,11 @@ export type DecisionRequirementsKeyWritable = LongKey;
 export type DecisionInstanceKeyWritable = LongKey;
 
 /**
+ * System-generated key for an agent definition.
+ */
+export type AgentDefinitionKeyWritable = LongKey;
+
+/**
  * System-generated key for an agent instance.
  */
 export type AgentInstanceKeyWritable = LongKey;
@@ -11498,6 +11854,13 @@ export type MessageKeyWritable = LongKey;
  * System-generated key for an signal.
  */
 export type SignalKeyWritable = LongKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export type AgentDefinitionTypeExactMatchWritable = AgentDefinitionTypeEnum;
 
 /**
  * Exact match
@@ -11763,6 +12126,13 @@ export type DecisionEvaluationInstanceKeyExactMatchWritable = DecisionEvaluation
  *
  * Matches the value exactly.
  */
+export type AgentDefinitionKeyExactMatchWritable = AgentDefinitionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export type AgentInstanceKeyExactMatchWritable = AgentInstanceKeyWritable;
 
 /**
@@ -11834,6 +12204,90 @@ export type ProcessInstanceStateExactMatchWritable = ProcessInstanceStateEnum;
  * Matches the value exactly.
  */
 export type UserTaskStateExactMatchWritable = UserTaskStateEnum;
+
+export type GetAgentDefinitionData = {
+    body?: never;
+    path: {
+        /**
+         * The assigned key of the agent definition, which acts as a unique identifier for this agent definition.
+         */
+        agentDefinitionKey: AgentDefinitionKeyWritable;
+    };
+    query?: never;
+    url: '/agent-definitions/{agentDefinitionKey}';
+};
+
+export type GetAgentDefinitionErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * The agent definition with the given key was not found. More details are provided in the response body.
+     *
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetAgentDefinitionError = GetAgentDefinitionErrors[keyof GetAgentDefinitionErrors];
+
+export type GetAgentDefinitionResponses = {
+    /**
+     * The agent definition is successfully returned.
+     */
+    200: AgentDefinitionResult;
+};
+
+export type GetAgentDefinitionResponse = GetAgentDefinitionResponses[keyof GetAgentDefinitionResponses];
+
+export type SearchAgentDefinitionsData = {
+    body?: AgentDefinitionSearchQuery;
+    path?: never;
+    query?: never;
+    url: '/agent-definitions/search';
+};
+
+export type SearchAgentDefinitionsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type SearchAgentDefinitionsError = SearchAgentDefinitionsErrors[keyof SearchAgentDefinitionsErrors];
+
+export type SearchAgentDefinitionsResponses = {
+    /**
+     * The agent definition search result.
+     */
+    200: AgentDefinitionSearchQueryResult;
+};
+
+export type SearchAgentDefinitionsResponse = SearchAgentDefinitionsResponses[keyof SearchAgentDefinitionsResponses];
 
 export type CreateAgentInstanceData = {
     body: AgentInstanceCreationRequest;
@@ -11983,7 +12437,7 @@ export type UpdateAgentInstanceResponses = {
     /**
      * The agent instance was updated successfully.
      */
-    204: void;
+    200: AgentInstanceUpdateResult;
 };
 
 export type UpdateAgentInstanceResponse = UpdateAgentInstanceResponses[keyof UpdateAgentInstanceResponses];
@@ -20434,7 +20888,12 @@ export type GetRestoreStatusResponse = GetRestoreStatusResponses[keyof GetRestor
 export type RestoreData = {
     body: RestoreRequest;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.
+         */
+        dryRun?: boolean;
+    };
     url: '/restore';
 };
 
@@ -21239,13 +21698,27 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:e5409e756373e35ebaad932216c4cb7c562be0187a06dea6bde62c1dc57423d1
+// specHash=sha256:d21a56ff57b5ac9ea382b871b283d90eb8c93ab92b9ee1e490e616137f7909c5
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
 `);
   if (typeof c.minLength === "number" && value.length < c.minLength) throw new Error(`Value too short for ${label}`);
   if (typeof c.maxLength === "number" && value.length > c.maxLength) throw new Error(`Value too long for ${label}`);
+}
+// System-generated key for an agent definition.
+export namespace AgentDefinitionKey {
+  export function assumeExists(value: string): AgentDefinitionKey {
+    assertConstraint(value, 'AgentDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+    return value as any;
+  }
+  export function getValue(key: AgentDefinitionKey): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'AgentDefinitionKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
 }
 // System-generated key for an agent history item.
 export namespace AgentHistoryItemKey {
