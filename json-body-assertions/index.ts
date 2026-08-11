@@ -3,6 +3,16 @@ import {validateResponseShape as _baseValidateResponseShape, validateResponse as
 import type {PlaywrightAPIResponse} from 'assert-json-body';
 
 export const RESPONSE_INDEX = {
+  '/agent-definitions/{agentDefinitionKey}': {
+    'GET': {
+      '200': 1
+    }
+  },
+  '/agent-definitions/search': {
+    'POST': {
+      '200': 1
+    }
+  },
   '/agent-instances': {
     'POST': {
       '200': 1
@@ -10,6 +20,9 @@ export const RESPONSE_INDEX = {
   },
   '/agent-instances/{agentInstanceKey}': {
     'GET': {
+      '200': 1
+    },
+    'PATCH': {
       '200': 1
     }
   },
