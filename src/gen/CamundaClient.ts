@@ -6798,6 +6798,21 @@ export class CamundaClient {
    *
    * Returns an agent definition by key.
     *
+   * @example Get an agent definition
+   * ```ts
+   * async function getAgentDefinitionExample(agentDefinitionKey: AgentDefinitionKey) {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const definition = await camunda.getAgentDefinition(
+   *     { agentDefinitionKey },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   console.log(`Name: ${definition.name}`);
+   *   console.log(`Type: ${definition.agentType}`);
+   *   console.log(`Element: ${definition.elementId}`);
+   * }
+   * ```
    * @operationId getAgentDefinition
    * @tags Agent definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
@@ -12968,6 +12983,26 @@ export class CamundaClient {
    *
    * Search for agent definitions based on given criteria.
     *
+   * @example Search agent definitions
+   * ```ts
+   * async function searchAgentDefinitionsExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.searchAgentDefinitions(
+   *     {
+   *       filter: { agentType: { $eq: 'AI_AGENT_TASK' } },
+   *       sort: [{ field: 'name', order: 'ASC' }],
+   *       page: { limit: 10 },
+   *     },
+   *     { consistency: { waitUpToMs: 5000 } }
+   *   );
+   * 
+   *   for (const definition of result.items ?? []) {
+   *     console.log(`${definition.agentDefinitionKey}: ${definition.name} (${definition.agentType})`);
+   *   }
+   *   console.log(`Total: ${result.page.totalItems}`);
+   * }
+   * ```
    * @operationId searchAgentDefinitions
    * @tags Agent definition
    * @consistency eventual - this endpoint is backed by data that is eventually consistent with the system state.
