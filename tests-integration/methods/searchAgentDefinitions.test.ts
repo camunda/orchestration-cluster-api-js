@@ -3,7 +3,7 @@ import { describe, it } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 describe('searchAgentDefinitions', () => {
-  it.todo('scaffold', () => {
+  it.skip('scaffold', () => {
     const _camunda = createCamundaClient();
     void _camunda;
     // TODO: implement searchAgentDefinitions test logic
