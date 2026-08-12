@@ -1,3 +1,17 @@
+# [10.0.0-alpha.27](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.26...v10.0.0-alpha.27) (2026-08-12)
+
+
+### Bug Fixes
+
+* mark agent-definition test scaffolds as todo with void unused local ([5ec2940](https://github.com/camunda/orchestration-cluster-api-js/commit/5ec2940b008314794b3f2a2263fa5f57d07a1ca8))
+* use it.skip instead of it.todo with a callback in test scaffolds ([f96e189](https://github.com/camunda/orchestration-cluster-api-js/commit/f96e189710b86fe4ecc414803d1bed507a89626f))
+
+
+### Features
+
+* add example coverage for getAgentDefinition, searchAgentDefinitions ([e596713](https://github.com/camunda/orchestration-cluster-api-js/commit/e5967130f963939762d6ccf7508fac94e0c2fe76))
+* **examples:** add agent definition examples for getAgentDefinition and searchAgentDefinitions ([d613ac1](https://github.com/camunda/orchestration-cluster-api-js/commit/d613ac1069dbb253c6a91f900cb39ee94cef1eb7))
+
 # [10.0.0-alpha.26](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.25...v10.0.0-alpha.26) (2026-08-10)
 
 
