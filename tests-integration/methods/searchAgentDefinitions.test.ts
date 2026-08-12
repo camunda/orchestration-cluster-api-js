@@ -3,8 +3,9 @@ import { describe, it } from 'vitest';
 import { createCamundaClient } from '../../dist';
 
 describe('searchAgentDefinitions', () => {
-  it('scaffold', () => {
+  it.todo('scaffold', () => {
     const _camunda = createCamundaClient();
+    void _camunda;
     // TODO: implement searchAgentDefinitions test logic
   });
 });
