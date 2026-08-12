@@ -1,6 +1,6 @@
 {
-  "operations": 218,
-  "tests": 220,
+  "operations": 220,
+  "tests": 222,
   "missing": [],
   "ignored": [],
   "files": [
@@ -67,6 +67,7 @@
     "evaluateDecision.test.ts",
     "evaluateExpression.test.ts",
     "failJob.test.ts",
+    "getAgentDefinition.test.ts",
     "getAgentInstance.test.ts",
     "getAuditLog.test.ts",
     "getAuthentication.test.ts",
@@ -144,6 +145,7 @@
     "resumeExporting.test.ts",
     "resumeProcessInstance.test.ts",
     "resumeProcessInstancesBatchOperation.test.ts",
+    "searchAgentDefinitions.test.ts",
     "searchAgentInstanceHistory.test.ts",
     "searchAgentInstances.test.ts",
     "searchAuditLogs.test.ts",

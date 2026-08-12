@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:e5409e756373e35ebaad932216c4cb7c562be0187a06dea6bde62c1dc57423d1",
+  "specHash": "sha256:d21a56ff57b5ac9ea382b871b283d90eb8c93ab92b9ee1e490e616137f7909c5",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -10,6 +10,48 @@
     "namespaceFactories": true
   },
   "keys": [
+    {
+      "name": "AgentDefinitionKey",
+      "semanticType": "AgentDefinitionKey",
+      "category": "system-key",
+      "description": "System-generated key for an agent definition.",
+      "composition": {
+        "schemaKind": "allOf",
+        "refs": [
+          "LongKey"
+        ],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "pattern": "^-?[0-9]+$",
+        "minLength": 1,
+        "maxLength": 25
+      },
+      "examples": [
+        "2251799813691958"
+      ],
+      "extensions": {
+        "x-semantic-type": "AgentDefinitionKey"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": true,
+        "deprecated": false
+      },
+      "stableId": "agent-definition-key",
+      "brand": {
+        "tsType": "CamundaKey<'AgentDefinitionKey'>"
+      },
+      "zod": {
+        "schemaName": "zAgentDefinitionKey",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentDefinitionKey"
+      }
+    },
     {
       "name": "AgentHistoryItemKey",
       "semanticType": "AgentHistoryItemKey",
@@ -1683,6 +1725,52 @@
   ],
   "unions": [
     {
+      "name": "AgentDefinitionKeyFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentDefinitionKey property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentDefinitionKeyExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentDefinitionKeyFilter"
+        }
+      ],
+      "stableId": "agent-definition-key-filter-property",
+      "tsType": "AgentDefinitionKeyExactMatch | AdvancedAgentDefinitionKeyFilter",
+      "zod": {
+        "schemaName": "zAgentDefinitionKeyFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentDefinitionKeyFilterProperty"
+      }
+    },
+    {
+      "name": "AgentDefinitionTypeFilterProperty",
+      "kind": "union-wrapper",
+      "description": "AgentDefinitionTypeEnum property with full advanced search capabilities.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "AgentDefinitionTypeExactMatch"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "AdvancedAgentDefinitionTypeFilter"
+        }
+      ],
+      "stableId": "agent-definition-type-filter-property",
+      "tsType": "AgentDefinitionTypeExactMatch | AdvancedAgentDefinitionTypeFilter",
+      "zod": {
+        "schemaName": "zAgentDefinitionTypeFilterProperty"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/AgentDefinitionTypeFilterProperty"
+      }
+    },
+    {
       "name": "AgentHistoryItemKeyFilterProperty",
       "kind": "union-wrapper",
       "description": "AgentHistoryItemKey property with full advanced search capabilities.",
@@ -3228,8 +3316,8 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 41,
-    "totalUnionWrappers": 65,
+    "totalPrimaryKeys": 42,
+    "totalUnionWrappers": 67,
     "implicitCamundaKeys": []
   }
 }

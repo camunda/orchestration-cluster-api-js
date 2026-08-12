@@ -2,11 +2,151 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-08-10T01:04:07.596Z",
+    "generatedAt": "2026-08-12T02:01:49.277Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "c0b2dd059426af4a15c03bc1d8c882586371a54594999f31f155cec6e501c90a"
+    "specSha256": "174fc048fb20b9caff8ff2f767fd33ef4e0e6324d8823768dddb09b607b409c3"
   },
   "responses": [
+    {
+      "path": "/agent-definitions/{agentDefinitionKey}",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "agentDefinitionKey",
+            "type": "string"
+          },
+          {
+            "name": "agentType",
+            "type": "string",
+            "enumValues": [
+              "AI_AGENT_SUB_PROCESS",
+              "AI_AGENT_TASK",
+              "EXTERNAL_AGENT"
+            ]
+          },
+          {
+            "name": "elementId",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionId",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionKey",
+            "type": "string"
+          },
+          {
+            "name": "processDefinitionVersion",
+            "type": "number"
+          },
+          {
+            "name": "processDefinitionVersionTag",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "tenantId",
+            "type": "string"
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/agent-definitions/search",
+      "method": "POST",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "items",
+            "type": "array<schema>",
+            "children": {
+              "required": [
+                {
+                  "name": "agentDefinitionKey",
+                  "type": "string"
+                },
+                {
+                  "name": "agentType",
+                  "type": "string",
+                  "enumValues": [
+                    "AI_AGENT_SUB_PROCESS",
+                    "AI_AGENT_TASK",
+                    "EXTERNAL_AGENT"
+                  ]
+                },
+                {
+                  "name": "elementId",
+                  "type": "string"
+                },
+                {
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "name": "processDefinitionId",
+                  "type": "string"
+                },
+                {
+                  "name": "processDefinitionKey",
+                  "type": "string"
+                },
+                {
+                  "name": "processDefinitionVersion",
+                  "type": "number"
+                },
+                {
+                  "name": "processDefinitionVersionTag",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "tenantId",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "page",
+            "type": "object",
+            "children": {
+              "required": [
+                {
+                  "name": "endCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "hasMoreTotalItems",
+                  "type": "boolean"
+                },
+                {
+                  "name": "startCursor",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "totalItems",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
     {
       "path": "/agent-instances",
       "method": "POST",
@@ -179,6 +319,37 @@
                 {
                   "name": "name",
                   "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/agent-instances/{agentInstanceKey}",
+      "method": "PATCH",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "createdHistory",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "historyItemId",
+                  "type": "string"
+                },
+                {
+                  "name": "historyItemKey",
+                  "type": "string"
+                },
+                {
+                  "name": "isDuplicate",
+                  "type": "boolean"
                 }
               ],
               "optional": []
@@ -438,6 +609,10 @@
                   "type": "string"
                 },
                 {
+                  "name": "historyItemId",
+                  "type": "string"
+                },
+                {
                   "name": "historyItemKey",
                   "type": "string"
                 },
@@ -448,6 +623,27 @@
                 {
                   "name": "jobLease",
                   "type": "string"
+                },
+                {
+                  "name": "limits",
+                  "type": "0",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "maxModelCalls",
+                        "type": "number"
+                      },
+                      {
+                        "name": "maxTokens",
+                        "type": "number"
+                      },
+                      {
+                        "name": "maxToolCalls",
+                        "type": "number"
+                      }
+                    ],
+                    "optional": []
+                  }
                 },
                 {
                   "name": "loopIteration",
@@ -479,12 +675,26 @@
                   }
                 },
                 {
+                  "name": "model",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
                   "name": "producedAt",
                   "type": "string"
                 },
                 {
+                  "name": "provider",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
                   "name": "role",
                   "type": "string"
+                },
+                {
+                  "name": "systemPrompt",
+                  "type": "array<object|object|object>"
                 },
                 {
                   "name": "toolCalls",
@@ -507,6 +717,29 @@
                       },
                       {
                         "name": "toolName",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "tools",
+                  "type": "array<items>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "description",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "elementId",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "name",
                         "type": "string"
                       }
                     ],

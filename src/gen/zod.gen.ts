@@ -5,6 +5,17 @@ import { __zodAugmentApplied } from '../zod-augment';
 void __zodAugmentApplied; // ensure module retained for prototype patch // branding-plugin zod augmentation
 
 /**
+ * The kind of agent an agent definition describes.
+ */
+export const zAgentDefinitionTypeEnum = z.enum([
+    'AI_AGENT_SUB_PROCESS',
+    'AI_AGENT_TASK',
+    'EXTERNAL_AGENT'
+]).register(z.globalRegistry, {
+    description: 'The kind of agent an agent definition describes.'
+});
+
+/**
  * The static definition of an agent instance, set once at creation.
  */
 export const zAgentInstanceDefinition = z.object({
@@ -128,7 +139,8 @@ export const zAgentInstanceMetricsDelta = z.object({
 export const zAgentInstanceHistoryRoleEnum = z.enum([
     'USER',
     'ASSISTANT',
-    'TOOL_RESULT'
+    'TOOL_RESULT',
+    'CONFIGURATION'
 ]).register(z.globalRegistry, {
     description: 'The role of a history item in the agent conversation.'
 });
@@ -197,7 +209,6 @@ export const zAgentInstanceMessageContentTypeEnum = z.enum([
 
 /**
  * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
- * ASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.
  *
  */
 export const zAgentInstanceToolCall = z.object({
@@ -210,7 +221,7 @@ export const zAgentInstanceToolCall = z.object({
     elementId: z.string().nullable(),
     arguments: z.record(z.string(), z.unknown()).nullable()
 }).register(z.globalRegistry, {
-    description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\nASSISTANT items carry arguments; TOOL_RESULT items carry arguments as null.\n'
+    description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\n'
 });
 
 /**
@@ -1347,6 +1358,28 @@ export const zLikeFilter = z.string().register(z.globalRegistry, {
 /**
  * Advanced filter
  *
+ * Advanced AgentDefinitionTypeEnum filter.
+ */
+export const zAdvancedAgentDefinitionTypeFilter = z.object({
+    $eq: zAgentDefinitionTypeEnum.optional(),
+    $neq: zAgentDefinitionTypeEnum.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    }).optional(),
+    $in: z.array(zAgentDefinitionTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $notIn: z.array(zAgentDefinitionTypeEnum).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }).optional(),
+    $like: zLikeFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentDefinitionTypeEnum filter.'
+});
+
+/**
+ * Advanced filter
+ *
  * Advanced AgentInstanceStatusEnum filter.
  */
 export const zAdvancedAgentInstanceStatusFilter = z.object({
@@ -2186,14 +2219,17 @@ export const zBusinessId = z.string().min(1).max(256).register(z.globalRegistry,
 });
 
 /**
- * A client-provided sequential integer identifying one pass through the agent
- * feedback loop: one LLM call, its tool dispatches, and their results. Must be
- * a positive integer, increasing with each loopIteration. Established by the
+ * A client-provided sequential integer identifying a loop iteration: one pass
+ * through an AI agent's loop, during which the model reasons, selects tools,
+ * evaluates the result, and decides whether to continue. One iteration covers
+ * the input for the LLM call, the call itself, and the tools it dispatches;
+ * the results of those tool calls are input to the next iteration. Must be a
+ * positive integer, increasing with each loopIteration. Established by the
  * connector when appending the first history item of a loopIteration.
  *
  */
 export const zLoopIterationId = z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-    description: 'A client-provided sequential integer identifying one pass through the agent\nfeedback loop: one LLM call, its tool dispatches, and their results. Must be\na positive integer, increasing with each loopIteration. Established by the\nconnector when appending the first history item of a loopIteration.\n'
+    description: 'A client-provided sequential integer identifying a loop iteration: one pass\nthrough an AI agent\'s loop, during which the model reasons, selects tools,\nevaluates the result, and decides whether to continue. One iteration covers\nthe input for the LLM call, the call itself, and the tools it dispatches;\nthe results of those tool calls are input to the next iteration. Must be a\npositive integer, increasing with each loopIteration. Established by the\nconnector when appending the first history item of a loopIteration.\n'
 });
 
 /**
@@ -2915,6 +2951,29 @@ export const zAgentInstanceMessageContent = z.discriminatedUnion('contentType', 
     zAgentInstanceObjectContent.extend({ contentType: z.literal('OBJECT') })
 ]);
 
+/**
+ * A single history item to append to the agent instance's conversation history,
+ * submitted as part of the batch on an agent instance update request.
+ *
+ */
+export const zAgentInstanceHistoryItem = z.object({
+    historyItemId: z.string().register(z.globalRegistry, {
+        description: 'Caller-assigned identifier used to detect and dedupe retries of the same\nitem. For example, when a retried job activation resubmits history items\nit already sent in an earlier attempt, those items are not rejected; they\nare flagged via isDuplicate in the response instead. Must be non-blank.\n'
+    }),
+    loopIteration: zLoopIterationId,
+    role: zAgentInstanceHistoryRoleEnum,
+    content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The content blocks of this history item.'
+    }),
+    toolCalls: z.array(zAgentInstanceToolCall).nullish(),
+    metrics: zAgentInstanceHistoryItemMetrics.nullish(),
+    producedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'The agent-side timestamp of when this message was produced.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A single history item to append to the agent instance\'s conversation history,\nsubmitted as part of the batch on an agent instance update request.\n'
+});
+
 export const zDocumentCreationBatchResponse = z.object({
     failedDocuments: z.array(zDocumentCreationFailureDetail).register(z.globalRegistry, {
         description: 'Documents that were successfully created.'
@@ -2996,19 +3055,6 @@ export const zAgentInstanceCreationRequest = z.object({
     limits: zAgentInstanceLimits.optional()
 }).register(z.globalRegistry, {
     description: 'Request to create a new agent instance.'
-});
-
-/**
- * Request to update the mutable state of an agent instance.
- *
- */
-export const zAgentInstanceUpdateRequest = z.object({
-    elementInstanceKey: zElementInstanceKey,
-    status: zAgentInstanceUpdateStatusEnum.optional(),
-    metrics: zAgentInstanceMetricsDelta.optional(),
-    tools: z.array(zAgentTool).nullish()
-}).register(z.globalRegistry, {
-    description: 'Request to update the mutable state of an agent instance.\n'
 });
 
 /**
@@ -3174,6 +3220,22 @@ export const zElementInstanceResult = z.object({
 export const zJobKey = zLongKey;
 
 /**
+ * Request to update the mutable state of an agent instance.
+ *
+ */
+export const zAgentInstanceUpdateRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    status: zAgentInstanceUpdateStatusEnum.optional(),
+    metrics: zAgentInstanceMetricsDelta.optional(),
+    tools: z.array(zAgentTool).nullish(),
+    jobKey: zJobKey.nullish(),
+    jobLease: z.string().nullish(),
+    history: z.array(zAgentInstanceHistoryItem).nullish()
+}).register(z.globalRegistry, {
+    description: 'Request to update the mutable state of an agent instance.\n'
+});
+
+/**
  * Request to append a single history item to an agent instance's conversation history.
  */
 export const zAgentInstanceHistoryItemRequest = z.object({
@@ -3190,7 +3252,7 @@ export const zAgentInstanceHistoryItemRequest = z.object({
     toolCalls: z.array(zAgentInstanceToolCall).nullish(),
     metrics: zAgentInstanceHistoryItemMetrics.nullish(),
     producedAt: z.iso.datetime().register(z.globalRegistry, {
-        description: 'The connector-side timestamp of when this message was produced.'
+        description: 'The agent-side timestamp of when this message was produced.'
     })
 }).register(z.globalRegistry, {
     description: 'Request to append a single history item to an agent instance\'s conversation history.'
@@ -3818,6 +3880,32 @@ export const zJobUpdateRequest = z.object({
 });
 
 /**
+ * System-generated key for an agent definition.
+ */
+export const zAgentDefinitionKey = zLongKey;
+
+/**
+ * An agent definition, created at deploy time for the process element it belongs to.
+ */
+export const zAgentDefinitionResult = z.object({
+    agentDefinitionKey: zAgentDefinitionKey,
+    agentType: zAgentDefinitionTypeEnum,
+    name: z.string().register(z.globalRegistry, {
+        description: 'The human-readable name of the process element that owns the agent definition. Falls\nback to elementId when the element has no BPMN name configured.\n'
+    }),
+    elementId: zElementId,
+    processDefinitionId: zProcessDefinitionId,
+    processDefinitionKey: zProcessDefinitionKey,
+    processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The version of the process definition that owns the agent definition.'
+    }),
+    processDefinitionVersionTag: z.string().nullable(),
+    tenantId: zTenantId
+}).register(z.globalRegistry, {
+    description: 'An agent definition, created at deploy time for the process element it belongs to.'
+});
+
+/**
  * System-generated key for an agent instance.
  */
 export const zAgentInstanceKey = zLongKey;
@@ -3868,6 +3956,34 @@ export const zAgentInstanceCreationResult = z.object({
 export const zAgentHistoryItemKey = zLongKey;
 
 /**
+ * The outcome of appending a single history item from an update request's
+ * history batch.
+ *
+ */
+export const zAgentInstanceCreatedHistoryItem = z.object({
+    historyItemId: z.string().register(z.globalRegistry, {
+        description: 'The historyItemId of the corresponding item in the request, echoed back\nso callers can correlate response entries with request items by id.\n'
+    }),
+    historyItemKey: zAgentHistoryItemKey,
+    isDuplicate: z.boolean().register(z.globalRegistry, {
+        description: 'True if this item had already been recorded and no new AGENT_HISTORY event\nwas created for it; false if a new event was created.\n'
+    })
+}).register(z.globalRegistry, {
+    description: 'The outcome of appending a single history item from an update request\'s\nhistory batch.\n'
+});
+
+/**
+ * Response returned after successfully updating an agent instance.
+ */
+export const zAgentInstanceUpdateResult = z.object({
+    createdHistory: z.array(zAgentInstanceCreatedHistoryItem).register(z.globalRegistry, {
+        description: 'One entry per history item submitted in the request, in request order.\nEmpty when no history items were submitted.\n'
+    })
+}).register(z.globalRegistry, {
+    description: 'Response returned after successfully updating an agent instance.'
+});
+
+/**
  * Response returned after successfully appending a history item.
  */
 export const zAgentInstanceHistoryItemCreationResult = z.object({
@@ -3881,6 +3997,9 @@ export const zAgentInstanceHistoryItemCreationResult = z.object({
  */
 export const zAgentInstanceHistoryItemResult = z.object({
     historyItemKey: zAgentHistoryItemKey,
+    historyItemId: z.string().register(z.globalRegistry, {
+        description: 'The client-supplied identifier this item was created with. Empty for items that don\'t\ncarry one.\n'
+    }),
     agentInstanceKey: zAgentInstanceKey,
     elementInstanceKey: zElementInstanceKey,
     jobKey: zJobKey,
@@ -3893,12 +4012,21 @@ export const zAgentInstanceHistoryItemResult = z.object({
         description: 'The content blocks of this history item.'
     }),
     toolCalls: z.array(zAgentInstanceToolCall).register(z.globalRegistry, {
-        description: 'Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls with arguments populated.\nTOOL_RESULT items: single-entry array referencing the originating tool call (arguments null).\n'
+        description: 'Tool calls for this item. Empty for USER items and ASSISTANT items with no tool dispatches.\nASSISTANT items: dispatched tool calls.\nTOOL_RESULT items: single-entry array referencing the originating tool call.\n'
     }),
     metrics: zAgentInstanceHistoryItemMetrics.nullable(),
     commitStatus: zAgentInstanceHistoryCommitStatusEnum,
     producedAt: z.iso.datetime().register(z.globalRegistry, {
-        description: 'The connector-side timestamp of when this message was produced.'
+        description: 'The agent-side timestamp of when this message was produced.'
+    }),
+    tools: z.array(zAgentTool).register(z.globalRegistry, {
+        description: 'The complete list of tools available to the agent as of this entry. CONFIGURATION\nitems only; empty for other roles.\n'
+    }),
+    model: z.string().nullable(),
+    provider: z.string().nullable(),
+    limits: zAgentInstanceLimits,
+    systemPrompt: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The system prompt, as content blocks, as of this entry. CONFIGURATION items only;\nempty for other roles.\n'
     })
 }).register(z.globalRegistry, {
     description: 'A single conversation history item belonging to an agent instance.'
@@ -4118,6 +4246,27 @@ export const zAdvancedDecisionEvaluationInstanceKeyFilter = z.object({
     }).optional()
 }).register(z.globalRegistry, {
     description: 'Advanced DecisionEvaluationInstanceKey filter.'
+});
+
+/**
+ * Advanced filter
+ *
+ * Advanced AgentDefinitionKey filter.
+ */
+export const zAdvancedAgentDefinitionKeyFilter = z.object({
+    $eq: zAgentDefinitionKey.optional(),
+    $neq: zAgentDefinitionKey.optional(),
+    $exists: z.boolean().register(z.globalRegistry, {
+        description: 'Checks if the current property exists.'
+    }).optional(),
+    $in: z.array(zAgentDefinitionKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches any of the provided values.'
+    }).optional(),
+    $notIn: z.array(zAgentDefinitionKey).register(z.globalRegistry, {
+        description: 'Checks if the property matches none of the provided values.'
+    }).optional()
+}).register(z.globalRegistry, {
+    description: 'Advanced AgentDefinitionKey filter.'
 });
 
 /**
@@ -5394,6 +5543,23 @@ export const zSortOrderEnum = z.enum(['ASC', 'DESC']).register(z.globalRegistry,
     description: 'The order in which to sort the related field.'
 }).default('ASC');
 
+export const zAgentDefinitionSearchQuerySortRequest = z.object({
+    field: z.enum([
+        'agentDefinitionKey',
+        'agentType',
+        'name',
+        'elementId',
+        'processDefinitionId',
+        'processDefinitionKey',
+        'processDefinitionVersion',
+        'processDefinitionVersionTag',
+        'tenantId'
+    ]).register(z.globalRegistry, {
+        description: 'The field to sort by.'
+    }),
+    order: zSortOrderEnum.optional()
+});
+
 export const zAgentInstanceSearchQuerySortRequest = z.object({
     field: z.enum([
         'agentInstanceKey',
@@ -5996,6 +6162,17 @@ export const zSearchQueryPageResponse = z.object({
 export const zSearchQueryResponse = z.object({
     page: zSearchQueryPageResponse
 });
+
+/**
+ * Agent definition search response.
+ */
+export const zAgentDefinitionSearchQueryResult = zSearchQueryResponse.and(z.object({
+    items: z.array(zAgentDefinitionResult).register(z.globalRegistry, {
+        description: 'The matching agent definitions.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Agent definition search response.'
+}));
 
 /**
  * Agent instance search response.
@@ -7127,6 +7304,21 @@ export const zSetVariableRequest = z.object({
  *
  * Matches the value exactly.
  */
+export const zAgentDefinitionTypeExactMatch = zAgentDefinitionTypeEnum;
+
+/**
+ * AgentDefinitionTypeEnum property with full advanced search capabilities.
+ */
+export const zAgentDefinitionTypeFilterProperty = z.union([
+    zAgentDefinitionTypeExactMatch,
+    zAdvancedAgentDefinitionTypeFilter
+]);
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zAgentInstanceStatusExactMatch = zAgentInstanceStatusEnum;
 
 /**
@@ -8060,6 +8252,50 @@ export const zDecisionEvaluationInstanceKeyFilterProperty = z.union([
  *
  * Matches the value exactly.
  */
+export const zAgentDefinitionKeyExactMatch = zAgentDefinitionKey;
+
+/**
+ * AgentDefinitionKey property with full advanced search capabilities.
+ */
+export const zAgentDefinitionKeyFilterProperty = z.union([
+    zAgentDefinitionKeyExactMatch,
+    zAdvancedAgentDefinitionKeyFilter
+]);
+
+/**
+ * Agent definition search filter.
+ */
+export const zAgentDefinitionFilter = z.object({
+    agentDefinitionKey: zAgentDefinitionKeyFilterProperty.optional(),
+    agentType: zAgentDefinitionTypeFilterProperty.optional(),
+    name: zStringFilterProperty.optional(),
+    elementId: zElementIdFilterProperty.optional(),
+    processDefinitionId: zProcessDefinitionIdFilterProperty.optional(),
+    processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional(),
+    processDefinitionVersion: zIntegerFilterProperty.optional(),
+    processDefinitionVersionTag: zStringFilterProperty.optional(),
+    tenantId: zStringFilterProperty.optional()
+}).register(z.globalRegistry, {
+    description: 'Agent definition search filter.'
+});
+
+/**
+ * Agent definition search request.
+ */
+export const zAgentDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
+    sort: z.array(zAgentDefinitionSearchQuerySortRequest).register(z.globalRegistry, {
+        description: 'Sort field criteria.'
+    }).optional(),
+    filter: zAgentDefinitionFilter.optional()
+}).register(z.globalRegistry, {
+    description: 'Agent definition search request.'
+}));
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zAgentInstanceKeyExactMatch = zAgentInstanceKey;
 
 /**
@@ -8788,6 +9024,11 @@ export const zResourceKeyWritable = z.union([
 export const zDecisionInstanceKeyWritable = zLongKey;
 
 /**
+ * System-generated key for an agent definition.
+ */
+export const zAgentDefinitionKeyWritable = zLongKey;
+
+/**
  * System-generated key for an agent instance.
  */
 export const zAgentInstanceKeyWritable = zLongKey;
@@ -8816,6 +9057,13 @@ export const zMessageKeyWritable = zLongKey;
  * System-generated key for an signal.
  */
 export const zSignalKeyWritable = zLongKey;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
+export const zAgentDefinitionTypeExactMatchWritable = zAgentDefinitionTypeEnum;
 
 /**
  * Exact match
@@ -9081,6 +9329,13 @@ export const zDecisionEvaluationInstanceKeyExactMatchWritable = zDecisionEvaluat
  *
  * Matches the value exactly.
  */
+export const zAgentDefinitionKeyExactMatchWritable = zAgentDefinitionKeyWritable;
+
+/**
+ * Exact match
+ *
+ * Matches the value exactly.
+ */
 export const zAgentInstanceKeyExactMatchWritable = zAgentInstanceKeyWritable;
 
 /**
@@ -9153,6 +9408,22 @@ export const zProcessInstanceStateExactMatchWritable = zProcessInstanceStateEnum
  */
 export const zUserTaskStateExactMatchWritable = zUserTaskStateEnum;
 
+export const zGetAgentDefinitionPath = z.object({
+    agentDefinitionKey: zAgentDefinitionKeyWritable
+});
+
+/**
+ * The agent definition is successfully returned.
+ */
+export const zGetAgentDefinitionResponse = zAgentDefinitionResult;
+
+export const zSearchAgentDefinitionsBody = zAgentDefinitionSearchQuery;
+
+/**
+ * The agent definition search result.
+ */
+export const zSearchAgentDefinitionsResponse = zAgentDefinitionSearchQueryResult;
+
 export const zCreateAgentInstanceBody = zAgentInstanceCreationRequest;
 
 /**
@@ -9178,9 +9449,7 @@ export const zUpdateAgentInstancePath = z.object({
 /**
  * The agent instance was updated successfully.
  */
-export const zUpdateAgentInstanceResponse = z.void().register(z.globalRegistry, {
-    description: 'The agent instance was updated successfully.'
-});
+export const zUpdateAgentInstanceResponse = zAgentInstanceUpdateResult;
 
 export const zSearchAgentInstancesBody = zAgentInstanceSearchQuery;
 
@@ -11122,6 +11391,12 @@ export const zChangeClusterModeResponse = zClusterModeChangeResponse;
 export const zGetRestoreStatusResponse = zRestoreStatusResponse;
 
 export const zRestoreBody = zRestoreRequest;
+
+export const zRestoreQuery = z.object({
+    dryRun: z.boolean().register(z.globalRegistry, {
+        description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
+    }).optional().default(false)
+});
 
 /**
  * The restore request was accepted; returns the planned cluster changes.

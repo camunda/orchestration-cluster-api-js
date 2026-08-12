@@ -57,7 +57,13 @@ for (const op of operations) {
     // NOTE: keep the two imports adjacent — a blank line between them makes
     // Biome's `assist/source/organizeImports` fail on the freshly generated
     // scaffold, which breaks CI whenever a new operation appears in the spec.
-    const content = `// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.\nimport { describe, it } from 'vitest';\nimport { createCamundaClient } from '../../dist';\n\ndescribe('${op}', () => {\n  it('scaffold', () => {\n    const _camunda = createCamundaClient();\n    // TODO: implement ${op} test logic\n  });\n});\n`;
+    // Use `it.skip` (not `it`) so the scaffold doesn't report as a passing test
+    // while exercising nothing — `it.todo` is a Vitest placeholder that only
+    // accepts a test name and does NOT accept a callback, so `it.todo(name, fn)`
+    // is invalid and breaks the integration test run. `void _camunda;` prevents
+    // the unused local from tripping `noUnusedLocals`/lint before the test body
+    // is fleshed out.
+    const content = `// AUTO-GENERATED SCAFFOLD. You can flesh out the test body; file will not be overwritten once it exists.\nimport { describe, it } from 'vitest';\nimport { createCamundaClient } from '../../dist';\n\ndescribe('${op}', () => {\n  it.skip('scaffold', () => {\n    const _camunda = createCamundaClient();\n    void _camunda;\n    // TODO: implement ${op} test logic\n  });\n});\n`;
     fs.writeFileSync(path.join(TEST_DIR, fileName), content, 'utf8');
     created.push(fileName);
   }

@@ -1534,5 +1534,19 @@
       "region": "SearchOwnAuthorizations",
       "label": "Search own authorizations"
     }
+  ],
+  "getAgentDefinition": [
+    {
+      "file": "agent-definition.ts",
+      "region": "GetAgentDefinition",
+      "label": "Get an agent definition"
+    }
+  ],
+  "searchAgentDefinitions": [
+    {
+      "file": "agent-definition.ts",
+      "region": "SearchAgentDefinitions",
+      "label": "Search agent definitions"
+    }
   ]
 }
