@@ -817,6 +817,21 @@ export const zClockPinRequest = z.object({
 });
 
 /**
+ * The aggregated status of the whole cluster.
+ */
+export const zClusterStatusResponse = z.object({
+    status: z.enum([
+        'HEALTHY',
+        'DEGRADED',
+        'DOWN'
+    ]).register(z.globalRegistry, {
+        description: '`HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The aggregated status of the whole cluster.'
+});
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const zClusterVariableKindEnum = z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
@@ -840,21 +855,6 @@ export const zUpdateClusterVariableRequest = z.object({
     ])).register(z.globalRegistry, {
         description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
     }).optional()
-});
-
-/**
- * The aggregated status of the whole cluster.
- */
-export const zClusterStatusResponse = z.object({
-    status: z.enum([
-        'HEALTHY',
-        'DEGRADED',
-        'DOWN'
-    ]).register(z.globalRegistry, {
-        description: '`HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The aggregated status of the whole cluster.'
 });
 
 /**
@@ -964,14 +964,26 @@ export const zClusterModeChangeOperation = z.object({
 });
 
 /**
+ * The operations of a cluster mode change that apply to one physical tenant.
+ */
+export const zClusterModeChangePlannedChange = z.object({
+    physicalTenantId: z.string().nullable(),
+    operations: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
+        description: 'The ordered list of operations that will be applied to the physical tenant.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The operations of a cluster mode change that apply to one physical tenant.'
+});
+
+/**
  * The planned changes resulting from a cluster mode transition request.
  */
 export const zClusterModeChangeResponse = z.object({
     changeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the cluster change that was triggered by the request.'
     }),
-    plannedChanges: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
-        description: 'The ordered list of operations that will be applied to complete the change.'
+    plannedChanges: z.array(zClusterModeChangePlannedChange).register(z.globalRegistry, {
+        description: 'The operations that will be applied to complete the change, grouped by the physical tenant they belong to. Groups are transitioned in parallel; the operations within a group are applied in the given order.'
     })
 }).register(z.globalRegistry, {
     description: 'The planned changes resulting from a cluster mode transition request.'
@@ -11120,11 +11132,6 @@ export const zGetStatusResponse = z.void().register(z.globalRegistry, {
     description: 'The default physical tenant is UP and has at least one partition with a healthy leader.'
 });
 
-/**
- * The cluster can process work; the body reports whether it is fully healthy or degraded.
- */
-export const zGetClusterStatusResponse = zClusterStatusResponse;
-
 export const zGetUsageMetricsQuery = z.object({
     startTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The start date for usage metrics, including this date. Value in ISO 8601 format.'
@@ -11402,6 +11409,26 @@ export const zRestoreQuery = z.object({
  * The restore request was accepted; returns the planned cluster changes.
  */
 export const zRestoreResponse = zClusterModeChangeResponse;
+
+export const zChangeClusterModeAsClusterAdminQuery = z.object({
+    mode: zMode,
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.'
+    }).optional(),
+    dryRun: z.boolean().register(z.globalRegistry, {
+        description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
+    }).optional().default(false)
+});
+
+/**
+ * The mode change request was accepted; returns the planned cluster change covering every requested physical tenant.
+ */
+export const zChangeClusterModeAsClusterAdminResponse = zClusterModeChangeResponse;
+
+/**
+ * The cluster can process work; the body reports whether it is fully healthy or degraded.
+ */
+export const zGetClusterStatusResponse = zClusterStatusResponse;
 
 export const zCreateUserBody = zUserRequest;
 

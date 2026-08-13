@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:d21a56ff57b5ac9ea382b871b283d90eb8c93ab92b9ee1e490e616137f7909c5",
+  "specHash": "sha256:75896c815e2696b3505939ae50ad7a9a88b229541d461cb6e35545e8c5cd957c",
   "semanticKeys": [
     {
       "name": "AgentDefinitionKey",
@@ -9914,33 +9914,6 @@
       }
     },
     {
-      "operationId": "getClusterStatus",
-      "path": "/cluster/v2/status",
-      "method": "get",
-      "tags": [
-        "Cluster"
-      ],
-      "summary": "Get the status of the whole cluster",
-      "description": "Checks the health status of the whole cluster, aggregated over all physical tenants. Returns `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, and `DEGRADED` in every other case. No per-tenant detail is reported; use `GET /cluster/v2/topology` for that.",
-      "eventuallyConsistent": false,
-      "hasRequestBody": false,
-      "requestBodyUnion": false,
-      "bodyOnly": false,
-      "pathParams": [],
-      "queryParams": [],
-      "requestBodyUnionRefs": [],
-      "optionalTenantIdInBody": false,
-      "sourceFile": "cluster.yaml",
-      "requestBodyContentTypes": [],
-      "successResponseSchemaRef": "ClusterStatusResponse",
-      "successStatus": 200,
-      "vendorExtensions": {
-        "x-eventually-consistent": false,
-        "x-required-permissions": [],
-        "x-added-in-version": "8.10"
-      }
-    },
-    {
       "operationId": "getUsageMetrics",
       "path": "/system/usage-metrics",
       "method": "get",
@@ -11094,6 +11067,65 @@
       }
     },
     {
+      "operationId": "changeClusterModeAsClusterAdmin",
+      "path": "/cluster/v2/mode",
+      "method": "patch",
+      "tags": [
+        "Recovery"
+      ],
+      "summary": "Change the cluster mode of one or every physical tenant",
+      "description": "Transitions physical tenants between processing and recovery mode.\n\nIf the `physicalTenantId` parameter is not provided, all available physical tenants are transitioned individually.\n\nRequires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.",
+      "eventuallyConsistent": false,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [],
+      "queryParams": [
+        {
+          "name": "physicalTenantId",
+          "required": false
+        }
+      ],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "cluster-admin.yaml",
+      "requestBodyContentTypes": [],
+      "successResponseSchemaRef": "ClusterModeChangeResponse",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
+      "operationId": "getClusterStatus",
+      "path": "/cluster/v2/status",
+      "method": "get",
+      "tags": [
+        "Cluster"
+      ],
+      "summary": "Get the status of the whole cluster",
+      "description": "Checks the health status of the whole cluster, aggregated over all physical tenants. Returns `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, and `DEGRADED` in every other case. No per-tenant detail is reported; use `GET /cluster/v2/topology` for that.\n\nThis endpoint is public and requires no authentication, unlike `PATCH /cluster/v2/mode` below, which needs cluster-admin credentials.",
+      "eventuallyConsistent": false,
+      "hasRequestBody": false,
+      "requestBodyUnion": false,
+      "bodyOnly": false,
+      "pathParams": [],
+      "queryParams": [],
+      "requestBodyUnionRefs": [],
+      "optionalTenantIdInBody": false,
+      "sourceFile": "cluster-admin.yaml",
+      "requestBodyContentTypes": [],
+      "successResponseSchemaRef": "ClusterStatusResponse",
+      "successStatus": 200,
+      "vendorExtensions": {
+        "x-eventually-consistent": false,
+        "x-required-permissions": [],
+        "x-added-in-version": "8.10"
+      }
+    },
+    {
       "operationId": "createUser",
       "path": "/users",
       "method": "post",
@@ -12035,7 +12067,7 @@
   "integrity": {
     "totalSemanticKeys": 42,
     "totalUnions": 67,
-    "totalOperations": 220,
+    "totalOperations": 221,
     "totalEventuallyConsistent": 95,
     "totalDeprecatedEnumSchemas": 2,
     "totalSemanticProviders": 23

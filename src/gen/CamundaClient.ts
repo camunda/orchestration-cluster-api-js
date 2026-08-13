@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 220
+// Operations: 221
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -139,6 +139,9 @@ type changeClusterModeOptions = Parameters<typeof Sdk.changeClusterMode>[0];
 type changeClusterModeQueryParam_mode = (NonNullable<changeClusterModeOptions> extends { query?: { mode?: infer Q } } ? Q : any);
 type changeClusterModeQueryParam_dryRun = (NonNullable<changeClusterModeOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
 export type changeClusterModeInput = { mode: changeClusterModeQueryParam_mode; dryRun?: changeClusterModeQueryParam_dryRun };
+type changeClusterModeAsClusterAdminOptions = Parameters<typeof Sdk.changeClusterModeAsClusterAdmin>[0];
+type changeClusterModeAsClusterAdminQueryParam_physicalTenantId = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type changeClusterModeAsClusterAdminInput = { physicalTenantId?: changeClusterModeAsClusterAdminQueryParam_physicalTenantId };
 type completeJobOptions = Parameters<typeof Sdk.completeJob>[0];
 type completeJobBody = (NonNullable<completeJobOptions> extends { body?: infer B } ? B : never);
 type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends { path: { jobKey: infer P } } ? P : any);
@@ -3357,8 +3360,12 @@ export class CamundaClient {
    *   });
    * 
    *   console.log(`Cluster change ${change.changeId}:`);
-   *   for (const op of change.plannedChanges) {
-   *     console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *   for (const tenantChange of change.plannedChanges) {
+   *     for (const op of tenantChange.operations) {
+   *       console.log(
+   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+   *       );
+   *     }
    *   }
    * }
    * ```
@@ -3416,6 +3423,95 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'changeClusterMode', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Change the cluster mode of one or every physical tenant
+   *
+   * Transitions physical tenants between processing and recovery mode.
+   *
+   * If the `physicalTenantId` parameter is not provided, all available physical tenants are transitioned individually.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+    *
+   * @example Change cluster mode (cluster admin)
+   * ```ts
+   * async function changeClusterModeAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Transitions one physical tenant (or all, if physicalTenantId is omitted)
+   *   // into recovery mode using cluster-admin credentials. Requires a separate
+   *   // cluster-admin security chain — Orchestration Cluster user credentials are
+   *   // NOT accepted by this endpoint.
+   *   const change = await camunda.changeClusterModeAsClusterAdmin({
+   *     physicalTenantId: 'default',
+   *   });
+   * 
+   *   console.log(`Cluster change ${change.changeId}:`);
+   *   for (const tenantChange of change.plannedChanges) {
+   *     for (const op of tenantChange.operations) {
+   *       console.log(
+   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+   *       );
+   *     }
+   *   }
+   * }
+   * ```
+   * @operationId changeClusterModeAsClusterAdmin
+   * @tags Recovery
+   */
+  changeClusterModeAsClusterAdmin(input: changeClusterModeAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.changeClusterModeAsClusterAdmin>>;
+  changeClusterModeAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('changeClusterModeAsClusterAdmin', _schemas.zChangeClusterModeAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.changeClusterModeAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'changeClusterModeAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zChangeClusterModeAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zChangeClusterModeAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('changeClusterModeAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'changeClusterModeAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -7257,6 +7353,8 @@ export class CamundaClient {
    * Get the status of the whole cluster
    *
    * Checks the health status of the whole cluster, aggregated over all physical tenants. Returns `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, and `DEGRADED` in every other case. No per-tenant detail is reported; use `GET /cluster/v2/topology` for that.
+   *
+   * This endpoint is public and requires no authentication, unlike `PATCH /cluster/v2/mode` below, which needs cluster-admin credentials.
     *
    * @example Get cluster status
    * ```ts
@@ -12615,8 +12713,12 @@ export class CamundaClient {
    *   });
    * 
    *   console.log(`Cluster change ${change.changeId}:`);
-   *   for (const op of change.plannedChanges) {
-   *     console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *   for (const tenantChange of change.plannedChanges) {
+   *     for (const op of tenantChange.operations) {
+   *       console.log(
+   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+   *       );
+   *     }
    *   }
    * }
    * ```

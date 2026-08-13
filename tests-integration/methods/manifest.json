@@ -1,6 +1,6 @@
 {
-  "operations": 220,
-  "tests": 222,
+  "operations": 221,
+  "tests": 223,
   "missing": [],
   "ignored": [],
   "files": [
@@ -25,6 +25,7 @@
     "cancelProcessInstance.test.ts",
     "cancelProcessInstancesBatchOperation.test.ts",
     "changeClusterMode.test.ts",
+    "changeClusterModeAsClusterAdmin.test.ts",
     "completeJob.test.ts",
     "completeUserTask.test.ts",
     "correlateMessage.test.ts",

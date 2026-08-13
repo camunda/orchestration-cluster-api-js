@@ -4,7 +4,7 @@ export type CamundaKey< T extends string = string > = string & { readonly __bran
 // branding-plugin patch: applied primitive branding
 
 export type ClientOptions = {
-    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
+    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | (string & {});
 };
 
 export type AgentDefinitionSearchQuerySortRequest = {
@@ -2665,6 +2665,16 @@ export type ClockPinRequest = {
 };
 
 /**
+ * The aggregated status of the whole cluster.
+ */
+export type ClusterStatusResponse = {
+    /**
+     * `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.
+     */
+    status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+};
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const ClusterVariableKindEnum = {
@@ -2932,16 +2942,6 @@ export type ClusterVariableSearchQueryResult = SearchQueryResponse & {
 };
 
 /**
- * The aggregated status of the whole cluster.
- */
-export type ClusterStatusResponse = {
-    /**
-     * `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.
-     */
-    status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
-};
-
-/**
  * The operating mode of a cluster's partitions.
  */
 export type Mode = 'PROCESSING' | 'RECOVERING';
@@ -3046,9 +3046,23 @@ export type ClusterModeChangeResponse = {
      */
     changeId: string;
     /**
-     * The ordered list of operations that will be applied to complete the change.
+     * The operations that will be applied to complete the change, grouped by the physical tenant they belong to. Groups are transitioned in parallel; the operations within a group are applied in the given order.
      */
-    plannedChanges: Array<ClusterModeChangeOperation>;
+    plannedChanges: Array<ClusterModeChangePlannedChange>;
+};
+
+/**
+ * The operations of a cluster mode change that apply to one physical tenant.
+ */
+export type ClusterModeChangePlannedChange = {
+    /**
+     * The physical tenant the operations apply to; null for operations that are not scoped to a single physical tenant, such as broker lifecycle operations.
+     */
+    physicalTenantId: string | null;
+    /**
+     * The ordered list of operations that will be applied to the physical tenant.
+     */
+    operations: Array<ClusterModeChangeOperation>;
 };
 
 /**
@@ -19823,31 +19837,6 @@ export type GetStatusResponses = {
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
 
-export type GetClusterStatusData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/cluster/v2/status';
-};
-
-export type GetClusterStatusErrors = {
-    /**
-     * The cluster is DOWN because no physical tenant can process work.
-     */
-    503: ClusterStatusResponse;
-};
-
-export type GetClusterStatusError = GetClusterStatusErrors[keyof GetClusterStatusErrors];
-
-export type GetClusterStatusResponses = {
-    /**
-     * The cluster can process work; the body reports whether it is fully healthy or degraded.
-     */
-    200: ClusterStatusResponse;
-};
-
-export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
-
 export type GetUsageMetricsData = {
     body?: never;
     path?: never;
@@ -20931,6 +20920,85 @@ export type RestoreResponses = {
 
 export type RestoreResponse = RestoreResponses[keyof RestoreResponses];
 
+export type ChangeClusterModeAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * The target cluster mode.
+         */
+        mode: Mode;
+        /**
+         * The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+        /**
+         * If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.
+         */
+        dryRun?: boolean;
+    };
+    url: '/cluster/v2/mode';
+};
+
+export type ChangeClusterModeAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * The mode change conflicts with the cluster state, for example because another configuration change is in progress.
+     */
+    409: unknown;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type ChangeClusterModeAsClusterAdminError = ChangeClusterModeAsClusterAdminErrors[keyof ChangeClusterModeAsClusterAdminErrors];
+
+export type ChangeClusterModeAsClusterAdminResponses = {
+    /**
+     * The mode change request was accepted; returns the planned cluster change covering every requested physical tenant.
+     */
+    200: ClusterModeChangeResponse;
+};
+
+export type ChangeClusterModeAsClusterAdminResponse = ChangeClusterModeAsClusterAdminResponses[keyof ChangeClusterModeAsClusterAdminResponses];
+
+export type GetClusterStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/status';
+};
+
+export type GetClusterStatusErrors = {
+    /**
+     * The cluster is DOWN because no physical tenant can process work.
+     */
+    503: ClusterStatusResponse;
+};
+
+export type GetClusterStatusError = GetClusterStatusErrors[keyof GetClusterStatusErrors];
+
+export type GetClusterStatusResponses = {
+    /**
+     * The cluster can process work; the body reports whether it is fully healthy or degraded.
+     */
+    200: ClusterStatusResponse;
+};
+
+export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
+
 export type CreateUserData = {
     body: UserRequest;
     path?: never;
@@ -21698,7 +21766,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:d21a56ff57b5ac9ea382b871b283d90eb8c93ab92b9ee1e490e616137f7909c5
+// specHash=sha256:75896c815e2696b3505939ae50ad7a9a88b229541d461cb6e35545e8c5cd957c
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
