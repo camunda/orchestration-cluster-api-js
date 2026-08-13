@@ -1548,5 +1548,12 @@
       "region": "SearchAgentDefinitions",
       "label": "Search agent definitions"
     }
+  ],
+  "changeClusterModeAsClusterAdmin": [
+    {
+      "file": "client.ts",
+      "region": "ChangeClusterModeAsClusterAdmin",
+      "label": "Change cluster mode (cluster admin)"
+    }
   ]
 }

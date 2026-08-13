@@ -79,11 +79,38 @@ async function changeClusterModeExample() {
   });
 
   console.log(`Cluster change ${change.changeId}:`);
-  for (const op of change.plannedChanges) {
-    console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+  for (const tenantChange of change.plannedChanges) {
+    for (const op of tenantChange.operations) {
+      console.log(
+        `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
+      );
+    }
   }
 }
 //#endregion ChangeClusterMode
+
+//#region ChangeClusterModeAsClusterAdmin
+async function changeClusterModeAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // Transitions one physical tenant (or all, if physicalTenantId is omitted)
+  // into recovery mode using cluster-admin credentials. Requires a separate
+  // cluster-admin security chain — Orchestration Cluster user credentials are
+  // NOT accepted by this endpoint.
+  const change = await camunda.changeClusterModeAsClusterAdmin({
+    physicalTenantId: 'default',
+  });
+
+  console.log(`Cluster change ${change.changeId}:`);
+  for (const tenantChange of change.plannedChanges) {
+    for (const op of tenantChange.operations) {
+      console.log(
+        `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
+      );
+    }
+  }
+}
+//#endregion ChangeClusterModeAsClusterAdmin
 
 //#region Restore
 async function restoreExample() {
@@ -97,8 +124,12 @@ async function restoreExample() {
   });
 
   console.log(`Cluster change ${change.changeId}:`);
-  for (const op of change.plannedChanges) {
-    console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+  for (const tenantChange of change.plannedChanges) {
+    for (const op of tenantChange.operations) {
+      console.log(
+        `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
+      );
+    }
   }
 }
 //#endregion Restore
@@ -235,6 +266,8 @@ void createClientWithConfigExample;
 void createClientOAuthExample;
 void getTopologyExample;
 void changeClusterModeExample;
+void changeClusterModeAsClusterAdminExample;
+void restoreExample;
 void getRestoreStatusExample;
 void resultClientExample;
 void customFetchExample;
