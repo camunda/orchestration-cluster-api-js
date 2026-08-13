@@ -3363,7 +3363,7 @@ export class CamundaClient {
    *   for (const tenantChange of change.plannedChanges) {
    *     for (const op of tenantChange.operations) {
    *       console.log(
-   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
    *       );
    *     }
    *   }
@@ -3452,7 +3452,7 @@ export class CamundaClient {
    *   for (const tenantChange of change.plannedChanges) {
    *     for (const op of tenantChange.operations) {
    *       console.log(
-   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
    *       );
    *     }
    *   }
@@ -12716,7 +12716,7 @@ export class CamundaClient {
    *   for (const tenantChange of change.plannedChanges) {
    *     for (const op of tenantChange.operations) {
    *       console.log(
-   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+   *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
    *       );
    *     }
    *   }

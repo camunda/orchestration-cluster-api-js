@@ -1325,7 +1325,7 @@ type _restore_Body = RestoreData extends { body?: infer B } ? B : never;
  *   for (const tenantChange of change.plannedChanges) {
  *     for (const op of tenantChange.operations) {
  *       console.log(
- *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+ *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
  *       );
  *     }
  *   }
@@ -2851,7 +2851,7 @@ export function cancelProcessInstance(options?: Parameters<typeof _cancelProcess
  *   for (const tenantChange of change.plannedChanges) {
  *     for (const op of tenantChange.operations) {
  *       console.log(
- *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+ *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
  *       );
  *     }
  *   }
@@ -2890,7 +2890,7 @@ export function changeClusterMode(options?: Parameters<typeof _changeClusterMode
  *   for (const tenantChange of change.plannedChanges) {
  *     for (const op of tenantChange.operations) {
  *       console.log(
- *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`,
+ *         `  [${tenantChange.physicalTenantId ?? 'cluster'}] ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`
  *       );
  *     }
  *   }
