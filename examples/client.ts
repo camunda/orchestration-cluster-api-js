@@ -78,9 +78,14 @@ async function changeClusterModeExample() {
     dryRun: true,
   });
 
+  // Operations are grouped by physical tenant; a null tenant means the operation
+  // is not scoped to one, such as a broker lifecycle operation.
   console.log(`Cluster change ${change.changeId}:`);
-  for (const op of change.plannedChanges) {
-    console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+  for (const group of change.plannedChanges) {
+    console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+    for (const op of group.operations) {
+      console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+    }
   }
 }
 //#endregion ChangeClusterMode
@@ -97,8 +102,11 @@ async function restoreExample() {
   });
 
   console.log(`Cluster change ${change.changeId}:`);
-  for (const op of change.plannedChanges) {
-    console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+  for (const group of change.plannedChanges) {
+    console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+    for (const op of group.operations) {
+      console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+    }
   }
 }
 //#endregion Restore
