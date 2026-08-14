@@ -1,3 +1,16 @@
+# [10.0.0-alpha.28](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.27...v10.0.0-alpha.28) (2026-08-14)
+
+
+### Bug Fixes
+
+* **examples:** group plannedChanges by physical tenant ([d494ce7](https://github.com/camunda/orchestration-cluster-api-js/commit/d494ce716fa83a6ef4d406dd77d9e0ffc0797f35))
+* **examples:** group plannedChanges by physical tenant ([525c176](https://github.com/camunda/orchestration-cluster-api-js/commit/525c1760c6f9fe6f7ef0efb06fd6eefa95f2cc8d))
+
+
+### Features
+
+* **examples:** add cluster admin and history backup example coverage ([185071c](https://github.com/camunda/orchestration-cluster-api-js/commit/185071c9a62eb7d8cf24f903ca36d66342c4e2bf))
+
 # [10.0.0-alpha.27](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.26...v10.0.0-alpha.27) (2026-08-12)
 
 
