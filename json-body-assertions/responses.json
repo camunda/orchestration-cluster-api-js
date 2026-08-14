@@ -2,9 +2,9 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-08-12T04:49:50.653Z",
+    "generatedAt": "2026-08-14T01:51:32.525Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "174fc048fb20b9caff8ff2f767fd33ef4e0e6324d8823768dddb09b607b409c3"
+    "specSha256": "5fe09a0a6c0b5620e639c931feec09d3ec7975a30ef054c27be5410878675ae0"
   },
   "responses": [
     {
@@ -167,6 +167,10 @@
       "status": "200",
       "schema": {
         "required": [
+          {
+            "name": "agentDefinitionKey",
+            "type": "string"
+          },
           {
             "name": "agentInstanceKey",
             "type": "string"
@@ -370,6 +374,10 @@
             "type": "array<schema>",
             "children": {
               "required": [
+                {
+                  "name": "agentDefinitionKey",
+                  "type": "string"
+                },
                 {
                   "name": "agentInstanceKey",
                   "type": "string"
@@ -2076,6 +2084,90 @@
               "FAILED",
               "INCOMPLETE",
               "DELETED"
+            ]
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/backups/history",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [],
+        "optional": []
+      }
+    },
+    {
+      "path": "/backups/history",
+      "method": "POST",
+      "status": "202",
+      "schema": {
+        "required": [
+          {
+            "name": "backupId",
+            "type": "number"
+          },
+          {
+            "name": "scheduledSnapshots",
+            "type": "array<string>"
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/backups/history/{backupId}",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "backupId",
+            "type": "number"
+          },
+          {
+            "name": "details",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "failures",
+                  "type": "array<string>"
+                },
+                {
+                  "name": "snapshotName",
+                  "type": "string"
+                },
+                {
+                  "name": "startTime",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "state",
+                  "type": "string",
+                  "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "failureReason",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enumValues": [
+              "IN_PROGRESS",
+              "COMPLETED",
+              "FAILED",
+              "INCOMPLETE",
+              "INCOMPATIBLE"
             ]
           }
         ],
@@ -8756,44 +8848,6 @@
       }
     },
     {
-      "path": "/cluster/v2/status",
-      "method": "GET",
-      "status": "200",
-      "schema": {
-        "required": [
-          {
-            "name": "status",
-            "type": "string",
-            "enumValues": [
-              "HEALTHY",
-              "DEGRADED",
-              "DOWN"
-            ]
-          }
-        ],
-        "optional": []
-      }
-    },
-    {
-      "path": "/cluster/v2/status",
-      "method": "GET",
-      "status": "503",
-      "schema": {
-        "required": [
-          {
-            "name": "status",
-            "type": "string",
-            "enumValues": [
-              "HEALTHY",
-              "DEGRADED",
-              "DOWN"
-            ]
-          }
-        ],
-        "optional": []
-      }
-    },
-    {
       "path": "/system/usage-metrics",
       "method": "GET",
       "status": "200",
@@ -9456,13 +9510,27 @@
             "children": {
               "required": [
                 {
-                  "name": "mode",
-                  "type": "string",
-                  "nullable": true
+                  "name": "operations",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "mode",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "operation",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
                 },
                 {
-                  "name": "operation",
-                  "type": "string"
+                  "name": "physicalTenantId",
+                  "type": "string",
+                  "nullable": true
                 }
               ],
               "optional": []
@@ -9569,17 +9637,115 @@
             "children": {
               "required": [
                 {
-                  "name": "mode",
-                  "type": "string",
-                  "nullable": true
+                  "name": "operations",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "mode",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "operation",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
                 },
                 {
-                  "name": "operation",
-                  "type": "string"
+                  "name": "physicalTenantId",
+                  "type": "string",
+                  "nullable": true
                 }
               ],
               "optional": []
             }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/mode",
+      "method": "PATCH",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "changeId",
+            "type": "string"
+          },
+          {
+            "name": "plannedChanges",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "operations",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "mode",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "operation",
+                        "type": "string"
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "physicalTenantId",
+                  "type": "string",
+                  "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/status",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "status",
+            "type": "string",
+            "enumValues": [
+              "HEALTHY",
+              "DEGRADED",
+              "DOWN"
+            ]
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/status",
+      "method": "GET",
+      "status": "503",
+      "schema": {
+        "required": [
+          {
+            "name": "status",
+            "type": "string",
+            "enumValues": [
+              "HEALTHY",
+              "DEGRADED",
+              "DOWN"
+            ]
           }
         ],
         "optional": []

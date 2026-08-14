@@ -78,12 +78,39 @@ async function changeClusterModeExample() {
     dryRun: true,
   });
 
+  // Operations are grouped by physical tenant; a null tenant means the operation
+  // is not scoped to one, such as a broker lifecycle operation.
   console.log(`Cluster change ${change.changeId}:`);
-  for (const op of change.plannedChanges) {
-    console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+  for (const group of change.plannedChanges) {
+    console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+    for (const op of group.operations) {
+      console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+    }
   }
 }
 //#endregion ChangeClusterMode
+
+//#region ChangeClusterModeAsClusterAdmin
+async function changeClusterModeAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // The cluster-admin variant can target a single physical tenant. Omit
+  // `physicalTenantId` to apply the change to every physical tenant.
+  const change = await camunda.changeClusterModeAsClusterAdmin({
+    mode: 'RECOVERING',
+    physicalTenantId: 'default',
+    dryRun: true,
+  });
+
+  console.log(`Cluster change ${change.changeId}:`);
+  for (const group of change.plannedChanges) {
+    console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+    for (const op of group.operations) {
+      console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+    }
+  }
+}
+//#endregion ChangeClusterModeAsClusterAdmin
 
 //#region Restore
 async function restoreExample() {
@@ -97,8 +124,11 @@ async function restoreExample() {
   });
 
   console.log(`Cluster change ${change.changeId}:`);
-  for (const op of change.plannedChanges) {
-    console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+  for (const group of change.plannedChanges) {
+    console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+    for (const op of group.operations) {
+      console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+    }
   }
 }
 //#endregion Restore
@@ -235,6 +265,7 @@ void createClientWithConfigExample;
 void createClientOAuthExample;
 void getTopologyExample;
 void changeClusterModeExample;
+void changeClusterModeAsClusterAdminExample;
 void getRestoreStatusExample;
 void resultClientExample;
 void customFetchExample;

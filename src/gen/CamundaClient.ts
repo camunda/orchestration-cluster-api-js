@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 220
+// Operations: 225
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -139,6 +139,11 @@ type changeClusterModeOptions = Parameters<typeof Sdk.changeClusterMode>[0];
 type changeClusterModeQueryParam_mode = (NonNullable<changeClusterModeOptions> extends { query?: { mode?: infer Q } } ? Q : any);
 type changeClusterModeQueryParam_dryRun = (NonNullable<changeClusterModeOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
 export type changeClusterModeInput = { mode: changeClusterModeQueryParam_mode; dryRun?: changeClusterModeQueryParam_dryRun };
+type changeClusterModeAsClusterAdminOptions = Parameters<typeof Sdk.changeClusterModeAsClusterAdmin>[0];
+type changeClusterModeAsClusterAdminQueryParam_mode = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { mode?: infer Q } } ? Q : any);
+type changeClusterModeAsClusterAdminQueryParam_physicalTenantId = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+type changeClusterModeAsClusterAdminQueryParam_dryRun = (NonNullable<changeClusterModeAsClusterAdminOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
+export type changeClusterModeAsClusterAdminInput = { mode: changeClusterModeAsClusterAdminQueryParam_mode; physicalTenantId?: changeClusterModeAsClusterAdminQueryParam_physicalTenantId; dryRun?: changeClusterModeAsClusterAdminQueryParam_dryRun };
 type completeJobOptions = Parameters<typeof Sdk.completeJob>[0];
 type completeJobBody = (NonNullable<completeJobOptions> extends { body?: infer B } ? B : never);
 type completeJobPathParam_jobKey = (NonNullable<completeJobOptions> extends { path: { jobKey: infer P } } ? P : any);
@@ -236,6 +241,9 @@ export type deleteGlobalTaskListenerInput = { id: deleteGlobalTaskListenerPathPa
 type deleteGroupOptions = Parameters<typeof Sdk.deleteGroup>[0];
 type deleteGroupPathParam_groupId = (NonNullable<deleteGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 export type deleteGroupInput = { groupId: deleteGroupPathParam_groupId };
+type deleteHistoryBackupOptions = Parameters<typeof Sdk.deleteHistoryBackup>[0];
+type deleteHistoryBackupPathParam_backupId = (NonNullable<deleteHistoryBackupOptions> extends { path: { backupId: infer P } } ? P : any);
+export type deleteHistoryBackupInput = { backupId: deleteHistoryBackupPathParam_backupId };
 type deleteMappingRuleOptions = Parameters<typeof Sdk.deleteMappingRule>[0];
 type deleteMappingRulePathParam_mappingRuleId = (NonNullable<deleteMappingRuleOptions> extends { path: { mappingRuleId: infer P } } ? P : any);
 export type deleteMappingRuleInput = { mappingRuleId: deleteMappingRulePathParam_mappingRuleId };
@@ -422,6 +430,9 @@ export type getGroupConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getGroup>> 
 };
+type getHistoryBackupOptions = Parameters<typeof Sdk.getHistoryBackup>[0];
+type getHistoryBackupPathParam_backupId = (NonNullable<getHistoryBackupOptions> extends { path: { backupId: infer P } } ? P : any);
+export type getHistoryBackupInput = { backupId: getHistoryBackupPathParam_backupId };
 type getIncidentOptions = Parameters<typeof Sdk.getIncident>[0];
 type getIncidentPathParam_incidentKey = (NonNullable<getIncidentOptions> extends { path: { incidentKey: infer P } } ? P : any);
 export type getIncidentInput = { incidentKey: getIncidentPathParam_incidentKey };
@@ -690,6 +701,10 @@ export type getVariableConsistency = {
 /** Management of eventual consistency tolerance. Set waitUpToMs to 0 to ignore eventual consistency. pollInterval is 500ms by default. */
     consistency: ConsistencyOptions<_DataOf<typeof Sdk.getVariable>> 
 };
+type listHistoryBackupsOptions = Parameters<typeof Sdk.listHistoryBackups>[0];
+type listHistoryBackupsQueryParam_prefix = (NonNullable<listHistoryBackupsOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
+type listHistoryBackupsQueryParam_verbose = (NonNullable<listHistoryBackupsOptions> extends { query?: { verbose?: infer Q } } ? Q : any);
+export type listHistoryBackupsInput = { prefix?: listHistoryBackupsQueryParam_prefix; verbose?: listHistoryBackupsQueryParam_verbose };
 type listRuntimeBackupsOptions = Parameters<typeof Sdk.listRuntimeBackups>[0];
 type listRuntimeBackupsQueryParam_prefix = (NonNullable<listRuntimeBackupsOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
 export type listRuntimeBackupsInput = { prefix?: listRuntimeBackupsQueryParam_prefix };
@@ -736,7 +751,8 @@ type resolveSecretsBody = (NonNullable<resolveSecretsOptions> extends { body?: i
 export type resolveSecretsInput = resolveSecretsBody;
 type restoreOptions = Parameters<typeof Sdk.restore>[0];
 type restoreBody = (NonNullable<restoreOptions> extends { body?: infer B } ? B : never);
-export type restoreInput = restoreBody;
+type restoreQueryParam_dryRun = (NonNullable<restoreOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
+export type restoreInput = restoreBody & { dryRun?: restoreQueryParam_dryRun };
 type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0];
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
@@ -1171,6 +1187,9 @@ type suspendProcessInstancesBatchOperationBody = (NonNullable<suspendProcessInst
 export type suspendProcessInstancesBatchOperationInput = suspendProcessInstancesBatchOperationBody;
 type syncRuntimeBackupStateOptions = Parameters<typeof Sdk.syncRuntimeBackupState>[0];
 export type syncRuntimeBackupStateInput = void;
+type takeHistoryBackupOptions = Parameters<typeof Sdk.takeHistoryBackup>[0];
+type takeHistoryBackupBody = (NonNullable<takeHistoryBackupOptions> extends { body?: infer B } ? B : never);
+export type takeHistoryBackupInput = takeHistoryBackupBody;
 type takeRuntimeBackupOptions = Parameters<typeof Sdk.takeRuntimeBackup>[0];
 type takeRuntimeBackupBody = (NonNullable<takeRuntimeBackupOptions> extends { body?: infer B } ? B : never);
 export type takeRuntimeBackupInput = takeRuntimeBackupBody;
@@ -1281,7 +1300,7 @@ type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
-const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
+const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zDeleteHistoryBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
@@ -3356,9 +3375,14 @@ export class CamundaClient {
    *     dryRun: true,
    *   });
    * 
+   *   // Operations are grouped by physical tenant; a null tenant means the operation
+   *   // is not scoped to one, such as a broker lifecycle operation.
    *   console.log(`Cluster change ${change.changeId}:`);
-   *   for (const op of change.plannedChanges) {
-   *     console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *   for (const group of change.plannedChanges) {
+   *     console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+   *     for (const op of group.operations) {
+   *       console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *     }
    *   }
    * }
    * ```
@@ -3416,6 +3440,94 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'changeClusterMode', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Change the cluster mode of one or every physical tenant
+   *
+   * Transitions physical tenants between processing and recovery mode.
+   *
+   * If the `physicalTenantId` parameter is not provided, all available physical tenants are transitioned individually.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+    *
+   * @example Change cluster mode as cluster admin
+   * ```ts
+   * async function changeClusterModeAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // The cluster-admin variant can target a single physical tenant. Omit
+   *   // `physicalTenantId` to apply the change to every physical tenant.
+   *   const change = await camunda.changeClusterModeAsClusterAdmin({
+   *     mode: 'RECOVERING',
+   *     physicalTenantId: 'default',
+   *     dryRun: true,
+   *   });
+   * 
+   *   console.log(`Cluster change ${change.changeId}:`);
+   *   for (const group of change.plannedChanges) {
+   *     console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+   *     for (const op of group.operations) {
+   *       console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *     }
+   *   }
+   * }
+   * ```
+   * @operationId changeClusterModeAsClusterAdmin
+   * @tags Recovery
+   */
+  changeClusterModeAsClusterAdmin(input: changeClusterModeAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.changeClusterModeAsClusterAdmin>>;
+  changeClusterModeAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { mode, physicalTenantId, dryRun } = arg || {};
+      let envelope: any = {};
+      envelope.query = { mode, physicalTenantId, dryRun };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('changeClusterModeAsClusterAdmin', _schemas.zChangeClusterModeAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.changeClusterModeAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'changeClusterModeAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zChangeClusterModeAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zChangeClusterModeAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('changeClusterModeAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'changeClusterModeAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -5709,6 +5821,80 @@ export class CamundaClient {
   }
 
   /**
+   * Delete history backup
+   *
+   * Deletes the history backup with the given id, by deleting every snapshot that makes it
+   * up.
+   *
+   * Only available on clusters whose secondary storage is Elasticsearch or OpenSearch.
+   *
+    *
+   * @example Delete a history backup
+   * ```ts
+   * async function deleteHistoryBackupExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   await camunda.deleteHistoryBackup({ backupId: 100 });
+   * }
+   * ```
+   * @operationId deleteHistoryBackup
+   * @tags Backup
+   */
+  deleteHistoryBackup(input: deleteHistoryBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteHistoryBackup>>;
+  deleteHistoryBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { backupId } = arg || {};
+      let envelope: any = {};
+      envelope.path = { backupId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.path !== undefined) {
+          const maybePath = await this._validation.gateRequest('deleteHistoryBackup', _schemas.zDeleteHistoryBackupPath, envelope.path);
+          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteHistoryBackup(opts);
+        let data = this._evaluateResponse(_raw, 'deleteHistoryBackup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteHistoryBackupResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zDeleteHistoryBackupResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteHistoryBackup', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteHistoryBackup', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Delete a mapping rule
    *
    * Deletes the mapping rule with the given ID.
@@ -5948,10 +6134,15 @@ export class CamundaClient {
    *
    * By default, only the resource itself is deleted from the runtime state. To also delete the
    * historic data associated with a resource, set the `deleteHistory` flag in the request body
-   * to `true`. The historic data is deleted asynchronously via a batch operation. The details of
-   * the created batch operation are included in the response. Note that history deletion is only
-   * supported for process resources; for other resource types this flag is ignored and no history
-   * will be deleted.
+   * to `true`. History deletion is supported for process definitions and decision requirements
+   * definitions; for other resource types (forms, generic resources) the flag is ignored and no
+   * history is deleted.
+   *
+   * The two supported types differ in how the history is removed. For a decision requirements
+   * definition the history is deleted asynchronously via a batch operation whose details are
+   * returned in the `batchOperation` field of the response. For a process definition the
+   * definition first drains its running instances and its history is deleted asynchronously once
+   * the definition is fully removed cluster-wide; no batch operation is returned in the response.
     *
    * @example Delete a resource
    * ```ts
@@ -7257,6 +7448,8 @@ export class CamundaClient {
    * Get the status of the whole cluster
    *
    * Checks the health status of the whole cluster, aggregated over all physical tenants. Returns `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, and `DEGRADED` in every other case. No per-tenant detail is reported; use `GET /cluster/v2/topology` for that.
+   *
+   * This endpoint is public and requires no authentication, unlike `PATCH /cluster/v2/mode` below, which needs cluster-admin credentials.
     *
    * @example Get cluster status
    * ```ts
@@ -8347,6 +8540,82 @@ export class CamundaClient {
       const invoke = () => toCancelable(()=>call());
       if (useConsistency) return eventualPoll('getGroup', true, invoke, { ...useConsistency, logger: this._log });
       return invoke();
+    });
+  }
+
+  /**
+   * Get history backup
+   *
+   * Returns detailed status of the history backup with the given id.
+   *
+   * Only available on clusters whose secondary storage is Elasticsearch or OpenSearch.
+   *
+    *
+   * @example Get a history backup
+   * ```ts
+   * async function getHistoryBackupExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const backup = await camunda.getHistoryBackup({ backupId: 100 });
+   * 
+   *   // The aggregated state is derived from the state of every expected snapshot.
+   *   console.log(`History backup ${backup.backupId}: ${backup.state}`);
+   * }
+   * ```
+   * @operationId getHistoryBackup
+   * @tags Backup
+   */
+  getHistoryBackup(input: getHistoryBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getHistoryBackup>>;
+  getHistoryBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { backupId } = arg || {};
+      let envelope: any = {};
+      envelope.path = { backupId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.path !== undefined) {
+          const maybePath = await this._validation.gateRequest('getHistoryBackup', _schemas.zGetHistoryBackupPath, envelope.path);
+          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getHistoryBackup(opts);
+        let data = this._evaluateResponse(_raw, 'getHistoryBackup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetHistoryBackupResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetHistoryBackupResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getHistoryBackup', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getHistoryBackup', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11414,6 +11683,85 @@ export class CamundaClient {
   }
 
   /**
+   * List history backups
+   *
+   * Returns a list of all available history backups of the physical tenant, with their state
+   * and additional info, most recent first by snapshot start time.
+   *
+   * Only available on clusters whose secondary storage is Elasticsearch or OpenSearch.
+   *
+    *
+   * @example List history backups
+   * ```ts
+   * async function listHistoryBackupsExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // `prefix` must end in a single '*'. Omit it to list every history backup.
+   *   const backups = await camunda.listHistoryBackups({ prefix: '10*' });
+   * 
+   *   for (const backup of backups) {
+   *     console.log(`History backup ${backup.backupId}: ${backup.state}`);
+   *   }
+   * }
+   * ```
+   * @operationId listHistoryBackups
+   * @tags Backup
+   */
+  listHistoryBackups(input: listHistoryBackupsInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listHistoryBackups>>;
+  listHistoryBackups(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { prefix, verbose } = arg || {};
+      let envelope: any = {};
+      envelope.query = { prefix, verbose };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('listHistoryBackups', _schemas.zListHistoryBackupsQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.listHistoryBackups(opts);
+        let data = this._evaluateResponse(_raw, 'listHistoryBackups', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zListHistoryBackupsResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zListHistoryBackupsResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('listHistoryBackups', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'listHistoryBackups', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * List runtime backups
    *
    * Returns a list of all available runtime backups of the physical tenant, with their
@@ -12615,8 +12963,11 @@ export class CamundaClient {
    *   });
    * 
    *   console.log(`Cluster change ${change.changeId}:`);
-   *   for (const op of change.plannedChanges) {
-   *     console.log(`  ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *   for (const group of change.plannedChanges) {
+   *     console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+   *     for (const op of group.operations) {
+   *       console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *     }
    *   }
    * }
    * ```
@@ -12626,8 +12977,9 @@ export class CamundaClient {
   restore(input: restoreInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.restore>>;
   restore(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
-      const _body = arg;
+      const { dryRun, ..._body } = arg || {};
       let envelope: any = {};
+      envelope.query = { dryRun };
       envelope.body = _body;
       if (this._validation.settings.req !== 'none') {
         const _schemas = await this._loadSchemas();
@@ -12641,6 +12993,7 @@ export class CamundaClient {
         }
       }
       const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
       if (envelope.body !== undefined) opts.body = envelope.body;
       const call = async () => {
         try {
@@ -17514,6 +17867,90 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Take a history backup
+   *
+   * Triggers a backup of the physical tenant's history, by scheduling a snapshot of every
+   * secondary storage index it owns.
+   *
+   * Unlike runtime backups, history backups have no generated-id mode: `backupId` is always
+   * required.
+   *
+   * Only available on clusters whose secondary storage is Elasticsearch or OpenSearch.
+   *
+    *
+   * @example Take a history backup
+   * ```ts
+   * async function takeHistoryBackupExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Backups are logically ordered by id, so each successive backup must use a
+   *   // higher id than the previous one.
+   *   const backup = await camunda.takeHistoryBackup({ backupId: 100 });
+   * 
+   *   console.log(`Scheduled history backup ${backup.backupId}`);
+   *   for (const snapshot of backup.scheduledSnapshots) {
+   *     console.log(`  ${snapshot}`);
+   *   }
+   * }
+   * ```
+   * @operationId takeHistoryBackup
+   * @tags Backup
+   */
+  takeHistoryBackup(input: takeHistoryBackupInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeHistoryBackup>>;
+  takeHistoryBackup(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const _body = arg;
+      let envelope: any = {};
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('takeHistoryBackup', _schemas.zTakeHistoryBackupBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.takeHistoryBackup(opts);
+        let data = this._evaluateResponse(_raw, 'takeHistoryBackup', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zTakeHistoryBackupResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zTakeHistoryBackupResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('takeHistoryBackup', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'takeHistoryBackup', exempt: false, retryOverride: options?.retry });
     });
   }
 

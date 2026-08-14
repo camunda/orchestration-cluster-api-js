@@ -91,6 +91,53 @@ async function deleteRuntimeBackupStateExample() {
 }
 //#endregion DeleteRuntimeBackupState
 
+//#region TakeHistoryBackup
+async function takeHistoryBackupExample() {
+  const camunda = createCamundaClient();
+
+  // Backups are logically ordered by id, so each successive backup must use a
+  // higher id than the previous one.
+  const backup = await camunda.takeHistoryBackup({ backupId: 100 });
+
+  console.log(`Scheduled history backup ${backup.backupId}`);
+  for (const snapshot of backup.scheduledSnapshots) {
+    console.log(`  ${snapshot}`);
+  }
+}
+//#endregion TakeHistoryBackup
+
+//#region ListHistoryBackups
+async function listHistoryBackupsExample() {
+  const camunda = createCamundaClient();
+
+  // `prefix` must end in a single '*'. Omit it to list every history backup.
+  const backups = await camunda.listHistoryBackups({ prefix: '10*' });
+
+  for (const backup of backups) {
+    console.log(`History backup ${backup.backupId}: ${backup.state}`);
+  }
+}
+//#endregion ListHistoryBackups
+
+//#region GetHistoryBackup
+async function getHistoryBackupExample() {
+  const camunda = createCamundaClient();
+
+  const backup = await camunda.getHistoryBackup({ backupId: 100 });
+
+  // The aggregated state is derived from the state of every expected snapshot.
+  console.log(`History backup ${backup.backupId}: ${backup.state}`);
+}
+//#endregion GetHistoryBackup
+
+//#region DeleteHistoryBackup
+async function deleteHistoryBackupExample() {
+  const camunda = createCamundaClient();
+
+  await camunda.deleteHistoryBackup({ backupId: 100 });
+}
+//#endregion DeleteHistoryBackup
+
 // Suppress "declared but never read"
 void takeRuntimeBackupExample;
 void listRuntimeBackupsExample;
@@ -99,3 +146,7 @@ void deleteRuntimeBackupExample;
 void getRuntimeBackupStateExample;
 void syncRuntimeBackupStateExample;
 void deleteRuntimeBackupStateExample;
+void takeHistoryBackupExample;
+void listHistoryBackupsExample;
+void getHistoryBackupExample;
+void deleteHistoryBackupExample;

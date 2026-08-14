@@ -750,6 +750,95 @@ export const zRuntimeBackupState = z.object({
     description: 'Information about the checkpoint and backup state of the physical tenant.'
 });
 
+/**
+ * History Backup State
+ *
+ * The aggregated state of a history backup, computed from the state of each of its
+ * snapshots.
+ *
+ */
+export const zHistoryBackupStateCode = z.enum([
+    'IN_PROGRESS',
+    'COMPLETED',
+    'FAILED',
+    'INCOMPLETE',
+    'INCOMPATIBLE'
+]).register(z.globalRegistry, {
+    description: 'The aggregated state of a history backup, computed from the state of each of its\nsnapshots.\n'
+});
+
+/**
+ * TakeHistoryBackupRequest
+ *
+ * Request body for taking a history backup.
+ */
+export const zTakeHistoryBackupRequest = z.object({
+    backupId: zBackupId
+}).register(z.globalRegistry, {
+    description: 'Request body for taking a history backup.'
+});
+
+/**
+ * TakeHistoryBackupResponse
+ *
+ * Response body for taking a history backup.
+ */
+export const zTakeHistoryBackupResponse = z.object({
+    backupId: zBackupId,
+    scheduledSnapshots: z.array(z.string().register(z.globalRegistry, {
+        description: 'The name of a scheduled snapshot.'
+    })).register(z.globalRegistry, {
+        description: 'The names of the snapshots that have been scheduled for this backup.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Response body for taking a history backup.'
+});
+
+/**
+ * History Backup Snapshot Info
+ *
+ * Detailed info of a single snapshot making up a history backup.
+ */
+export const zHistoryBackupSnapshotInfo = z.object({
+    snapshotName: z.string().register(z.globalRegistry, {
+        description: 'The name of the snapshot.'
+    }).readonly(),
+    state: z.string().readonly().nullable(),
+    startTime: z.iso.datetime().readonly().nullable(),
+    failures: z.array(z.string().register(z.globalRegistry, {
+        description: 'A failure reported by the secondary storage for this snapshot.'
+    })).register(z.globalRegistry, {
+        description: 'The failures reported for this snapshot. Empty if there were none.'
+    }).readonly()
+}).register(z.globalRegistry, {
+    description: 'Detailed info of a single snapshot making up a history backup.'
+});
+
+/**
+ * History Backup Info
+ *
+ * Detailed status of a history backup. The aggregated state is computed from the state of
+ * each of its snapshots as:
+ * - If every expected snapshot exists and all are complete, the overall state is
+ * 'COMPLETED'.
+ * - If one snapshot failed or is partial, the overall state is 'FAILED'.
+ * - Otherwise, if one snapshot is incompatible, the overall state is 'INCOMPATIBLE'.
+ * - Otherwise, if one snapshot is still running, the overall state is 'IN_PROGRESS'.
+ * - Otherwise, if snapshots are missing and the backup has not progressed within the
+ * configured timeout, the overall state is 'INCOMPLETE'.
+ *
+ */
+export const zHistoryBackupInfo = z.object({
+    backupId: zBackupId,
+    state: zHistoryBackupStateCode,
+    failureReason: z.string().nullable(),
+    details: z.array(zHistoryBackupSnapshotInfo).register(z.globalRegistry, {
+        description: 'Detailed status of the backup per snapshot. Always lists every snapshot found for\nthe backup; when the backup was read without snapshot detail, each entry carries\nonly its name.\n'
+    }).readonly()
+}).register(z.globalRegistry, {
+    description: 'Detailed status of a history backup. The aggregated state is computed from the state of\neach of its snapshots as:\n- If every expected snapshot exists and all are complete, the overall state is\n  \'COMPLETED\'.\n- If one snapshot failed or is partial, the overall state is \'FAILED\'.\n- Otherwise, if one snapshot is incompatible, the overall state is \'INCOMPATIBLE\'.\n- Otherwise, if one snapshot is still running, the overall state is \'IN_PROGRESS\'.\n- Otherwise, if snapshots are missing and the backup has not progressed within the\n  configured timeout, the overall state is \'INCOMPLETE\'.\n'
+});
+
 export const zBatchOperationError = z.object({
     partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The partition ID where the error occurred.'
@@ -817,6 +906,21 @@ export const zClockPinRequest = z.object({
 });
 
 /**
+ * The aggregated status of the whole cluster.
+ */
+export const zClusterStatusResponse = z.object({
+    status: z.enum([
+        'HEALTHY',
+        'DEGRADED',
+        'DOWN'
+    ]).register(z.globalRegistry, {
+        description: '`HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The aggregated status of the whole cluster.'
+});
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const zClusterVariableKindEnum = z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
@@ -840,21 +944,6 @@ export const zUpdateClusterVariableRequest = z.object({
     ])).register(z.globalRegistry, {
         description: 'A generic key-value metadata bag attached to the cluster variable. Values must be strings or numbers. Limited to 100 entries and a configurable maximum serialized size (default: 100 entries at max key length of a cluster variable name (256 chars) plus the maximum value length, 8192 characters).'
     }).optional()
-});
-
-/**
- * The aggregated status of the whole cluster.
- */
-export const zClusterStatusResponse = z.object({
-    status: z.enum([
-        'HEALTHY',
-        'DEGRADED',
-        'DOWN'
-    ]).register(z.globalRegistry, {
-        description: '`HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The aggregated status of the whole cluster.'
 });
 
 /**
@@ -964,14 +1053,26 @@ export const zClusterModeChangeOperation = z.object({
 });
 
 /**
+ * The operations of a cluster mode change that apply to one physical tenant.
+ */
+export const zClusterModeChangePlannedChange = z.object({
+    physicalTenantId: z.string().nullable(),
+    operations: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
+        description: 'The ordered list of operations that will be applied to the physical tenant.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The operations of a cluster mode change that apply to one physical tenant.'
+});
+
+/**
  * The planned changes resulting from a cluster mode transition request.
  */
 export const zClusterModeChangeResponse = z.object({
     changeId: z.string().register(z.globalRegistry, {
         description: 'The ID of the cluster change that was triggered by the request.'
     }),
-    plannedChanges: z.array(zClusterModeChangeOperation).register(z.globalRegistry, {
-        description: 'The ordered list of operations that will be applied to complete the change.'
+    plannedChanges: z.array(zClusterModeChangePlannedChange).register(z.globalRegistry, {
+        description: 'The operations that will be applied to complete the change, grouped by the physical tenant they belong to. Groups are transitioned in parallel; the operations within a group are applied in the given order.'
     })
 }).register(z.globalRegistry, {
     description: 'The planned changes resulting from a cluster mode transition request.'
@@ -3865,7 +3966,7 @@ export const zDeleteDecisionInstanceRequest = z.object({
 export const zDeleteResourceRequest = z.object({
     operationReference: zOperationReference.optional(),
     deleteHistory: z.boolean().register(z.globalRegistry, {
-        description: 'Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n'
+        description: 'Indicates if the historic data associated with the resource should also be deleted\nasynchronously.\n\nThis flag is effective for process definitions and decision requirements definitions.\nFor other resource types (forms, generic resources) it is ignored and no history is\ndeleted. For a decision requirements definition the `batchOperation` field in the\nresponse carries the created batch operation. For a process definition the history is\ndeleted as part of the definition\'s draining/deletion lifecycle and no batch operation is\nreturned.\n'
     }).optional().default(false)
 }).nullable();
 
@@ -3912,6 +4013,7 @@ export const zAgentInstanceKey = zLongKey;
 
 export const zAgentInstanceResult = z.object({
     agentInstanceKey: zAgentInstanceKey,
+    agentDefinitionKey: zAgentDefinitionKey,
     status: zAgentInstanceStatusEnum,
     definition: zAgentInstanceDefinition,
     metrics: zAgentInstanceMetrics,
@@ -8920,6 +9022,26 @@ export const zPartitionBackupInfoWritable = z.object({
 });
 
 /**
+ * History Backup Info
+ *
+ * Detailed status of a history backup. The aggregated state is computed from the state of
+ * each of its snapshots as:
+ * - If every expected snapshot exists and all are complete, the overall state is
+ * 'COMPLETED'.
+ * - If one snapshot failed or is partial, the overall state is 'FAILED'.
+ * - Otherwise, if one snapshot is incompatible, the overall state is 'INCOMPATIBLE'.
+ * - Otherwise, if one snapshot is still running, the overall state is 'IN_PROGRESS'.
+ * - Otherwise, if snapshots are missing and the backup has not progressed within the
+ * configured timeout, the overall state is 'INCOMPLETE'.
+ *
+ */
+export const zHistoryBackupInfoWritable = z.object({
+    failureReason: z.string().nullable()
+}).register(z.globalRegistry, {
+    description: 'Detailed status of a history backup. The aggregated state is computed from the state of\neach of its snapshots as:\n- If every expected snapshot exists and all are complete, the overall state is\n  \'COMPLETED\'.\n- If one snapshot failed or is partial, the overall state is \'FAILED\'.\n- Otherwise, if one snapshot is incompatible, the overall state is \'INCOMPATIBLE\'.\n- Otherwise, if one snapshot is still running, the overall state is \'IN_PROGRESS\'.\n- Otherwise, if snapshots are missing and the backup has not progressed within the\n  configured timeout, the overall state is \'INCOMPLETE\'.\n'
+});
+
+/**
  * System-generated key for a conditional evaluation.
  */
 export const zConditionalEvaluationKeyWritable = zLongKey;
@@ -9609,6 +9731,47 @@ export const zGetRuntimeBackupPath = z.object({
  * The runtime backup.
  */
 export const zGetRuntimeBackupResponse = zBackupInfo;
+
+export const zListHistoryBackupsQuery = z.object({
+    prefix: zBackupIdPrefix.optional(),
+    verbose: z.boolean().register(z.globalRegistry, {
+        description: 'Whether to ask the secondary storage for snapshot-level detail. Setting this to\n`false` makes the query cheaper, but the store then reports neither snapshot state\nnor start time, so both the per-snapshot `details` and the aggregated `state` are\nincomplete and the listing order is unspecified.\n'
+    }).optional().default(true)
+});
+
+/**
+ * The list of history backups.
+ */
+export const zListHistoryBackupsResponse = z.array(zHistoryBackupInfo).register(z.globalRegistry, {
+    description: 'The list of history backups.'
+});
+
+export const zTakeHistoryBackupBody = zTakeHistoryBackupRequest;
+
+/**
+ * The backup has been successfully scheduled.
+ */
+export const zTakeHistoryBackupResponse2 = zTakeHistoryBackupResponse;
+
+export const zDeleteHistoryBackupPath = z.object({
+    backupId: zBackupId
+});
+
+/**
+ * The backup has been successfully deleted.
+ */
+export const zDeleteHistoryBackupResponse = z.void().register(z.globalRegistry, {
+    description: 'The backup has been successfully deleted.'
+});
+
+export const zGetHistoryBackupPath = z.object({
+    backupId: zBackupId
+});
+
+/**
+ * The history backup.
+ */
+export const zGetHistoryBackupResponse = zHistoryBackupInfo;
 
 export const zSearchBatchOperationItemsBody = zBatchOperationItemSearchQuery;
 
@@ -11120,11 +11283,6 @@ export const zGetStatusResponse = z.void().register(z.globalRegistry, {
     description: 'The default physical tenant is UP and has at least one partition with a healthy leader.'
 });
 
-/**
- * The cluster can process work; the body reports whether it is fully healthy or degraded.
- */
-export const zGetClusterStatusResponse = zClusterStatusResponse;
-
 export const zGetUsageMetricsQuery = z.object({
     startTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The start date for usage metrics, including this date. Value in ISO 8601 format.'
@@ -11402,6 +11560,26 @@ export const zRestoreQuery = z.object({
  * The restore request was accepted; returns the planned cluster changes.
  */
 export const zRestoreResponse = zClusterModeChangeResponse;
+
+export const zChangeClusterModeAsClusterAdminQuery = z.object({
+    mode: zMode,
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.'
+    }).optional(),
+    dryRun: z.boolean().register(z.globalRegistry, {
+        description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
+    }).optional().default(false)
+});
+
+/**
+ * The mode change request was accepted; returns the planned cluster change covering every requested physical tenant.
+ */
+export const zChangeClusterModeAsClusterAdminResponse = zClusterModeChangeResponse;
+
+/**
+ * The cluster can process work; the body reports whether it is fully healthy or degraded.
+ */
+export const zGetClusterStatusResponse = zClusterStatusResponse;
 
 export const zCreateUserBody = zUserRequest;
 

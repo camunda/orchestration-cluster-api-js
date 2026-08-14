@@ -99,6 +99,19 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/backups/history': {
+    'GET': {
+      '200': 1
+    },
+    'POST': {
+      '202': 1
+    }
+  },
+  '/backups/history/{backupId}': {
+    'GET': {
+      '200': 1
+    }
+  },
   '/batch-operation-items/search': {
     'POST': {
       '200': 1
@@ -603,12 +616,6 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
-  '/cluster/v2/status': {
-    'GET': {
-      '200': 1,
-      '503': 1
-    }
-  },
   '/system/usage-metrics': {
     'GET': {
       '200': 1
@@ -678,6 +685,17 @@ export const RESPONSE_INDEX = {
     },
     'POST': {
       '202': 1
+    }
+  },
+  '/cluster/v2/mode': {
+    'PATCH': {
+      '200': 1
+    }
+  },
+  '/cluster/v2/status': {
+    'GET': {
+      '200': 1,
+      '503': 1
     }
   },
   '/users': {

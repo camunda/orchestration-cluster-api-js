@@ -4,7 +4,7 @@ export type CamundaKey< T extends string = string > = string & { readonly __bran
 // branding-plugin patch: applied primitive branding
 
 export type ClientOptions = {
-    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
+    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | (string & {});
 };
 
 export type AgentDefinitionSearchQuerySortRequest = {
@@ -269,6 +269,10 @@ export type AgentInstanceResult = {
      * The unique key for this agent instance.
      */
     agentInstanceKey: AgentInstanceKey;
+    /**
+     * The key of the agent definition this agent instance runs on.
+     */
+    agentDefinitionKey: AgentDefinitionKey;
     status: AgentInstanceStatusEnum;
     /**
      * The static definition of the agent, including model, provider, and system prompt.
@@ -2171,6 +2175,109 @@ export type RuntimeBackupState = {
 };
 
 /**
+ * History Backup State
+ *
+ * The aggregated state of a history backup, computed from the state of each of its
+ * snapshots.
+ *
+ */
+export type HistoryBackupStateCode = 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'INCOMPLETE' | 'INCOMPATIBLE';
+
+/**
+ * TakeHistoryBackupRequest
+ *
+ * Request body for taking a history backup.
+ */
+export type TakeHistoryBackupRequest = {
+    /**
+     * The id of the backup to take.
+     */
+    backupId: BackupId;
+};
+
+/**
+ * TakeHistoryBackupResponse
+ *
+ * Response body for taking a history backup.
+ */
+export type TakeHistoryBackupResponse = {
+    /**
+     * The id of the backup that has been scheduled.
+     */
+    backupId: BackupId;
+    /**
+     * The names of the snapshots that have been scheduled for this backup.
+     */
+    scheduledSnapshots: Array<string>;
+};
+
+/**
+ * History Backup Info
+ *
+ * Detailed status of a history backup. The aggregated state is computed from the state of
+ * each of its snapshots as:
+ * - If every expected snapshot exists and all are complete, the overall state is
+ * 'COMPLETED'.
+ * - If one snapshot failed or is partial, the overall state is 'FAILED'.
+ * - Otherwise, if one snapshot is incompatible, the overall state is 'INCOMPATIBLE'.
+ * - Otherwise, if one snapshot is still running, the overall state is 'IN_PROGRESS'.
+ * - Otherwise, if snapshots are missing and the backup has not progressed within the
+ * configured timeout, the overall state is 'INCOMPLETE'.
+ *
+ */
+export type HistoryBackupInfo = {
+    /**
+     * The id of the backup.
+     */
+    backupId: BackupId;
+    /**
+     * The aggregated state of the backup.
+     */
+    state: HistoryBackupStateCode;
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * Detailed status of the backup per snapshot. Always lists every snapshot found for
+     * the backup; when the backup was read without snapshot detail, each entry carries
+     * only its name.
+     *
+     */
+    readonly details: Array<HistoryBackupSnapshotInfo>;
+};
+
+/**
+ * History Backup Snapshot Info
+ *
+ * Detailed info of a single snapshot making up a history backup.
+ */
+export type HistoryBackupSnapshotInfo = {
+    /**
+     * The name of the snapshot.
+     */
+    readonly snapshotName: string;
+    /**
+     * The state of the snapshot, reported verbatim by the secondary storage (for example
+     * 'SUCCESS', 'IN_PROGRESS' or 'PARTIAL'). Deliberately not a closed set: Elasticsearch
+     * and OpenSearch report different vocabularies. Not reported when the backup was
+     * listed without snapshot detail.
+     *
+     */
+    readonly state: string | null;
+    /**
+     * The timestamp at which the snapshot was started. Not reported when the backup was
+     * listed without snapshot detail.
+     *
+     */
+    readonly startTime: string | null;
+    /**
+     * The failures reported for this snapshot. Empty if there were none.
+     */
+    readonly failures: Array<string>;
+};
+
+/**
  * The created batch operation.
  */
 export type BatchOperationCreatedResult = {
@@ -2665,6 +2772,16 @@ export type ClockPinRequest = {
 };
 
 /**
+ * The aggregated status of the whole cluster.
+ */
+export type ClusterStatusResponse = {
+    /**
+     * `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.
+     */
+    status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+};
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const ClusterVariableKindEnum = {
@@ -2932,16 +3049,6 @@ export type ClusterVariableSearchQueryResult = SearchQueryResponse & {
 };
 
 /**
- * The aggregated status of the whole cluster.
- */
-export type ClusterStatusResponse = {
-    /**
-     * `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.
-     */
-    status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
-};
-
-/**
  * The operating mode of a cluster's partitions.
  */
 export type Mode = 'PROCESSING' | 'RECOVERING';
@@ -3046,9 +3153,23 @@ export type ClusterModeChangeResponse = {
      */
     changeId: string;
     /**
-     * The ordered list of operations that will be applied to complete the change.
+     * The operations that will be applied to complete the change, grouped by the physical tenant they belong to. Groups are transitioned in parallel; the operations within a group are applied in the given order.
      */
-    plannedChanges: Array<ClusterModeChangeOperation>;
+    plannedChanges: Array<ClusterModeChangePlannedChange>;
+};
+
+/**
+ * The operations of a cluster mode change that apply to one physical tenant.
+ */
+export type ClusterModeChangePlannedChange = {
+    /**
+     * The physical tenant the operations apply to; null for operations that are not scoped to a single physical tenant, such as broker lifecycle operations.
+     */
+    physicalTenantId: string | null;
+    /**
+     * The ordered list of operations that will be applied to the physical tenant.
+     */
+    operations: Array<ClusterModeChangeOperation>;
 };
 
 /**
@@ -4047,13 +4168,15 @@ export type DeploymentResourceResult = {
 export type DeleteResourceRequest = {
     operationReference?: OperationReference;
     /**
-     * Indicates if the historic data of a process resource should be deleted via a
-     * batch operation asynchronously.
+     * Indicates if the historic data associated with the resource should also be deleted
+     * asynchronously.
      *
-     * This flag is only effective for process resources. For other resource types
-     * (decisions, forms, generic resources), this flag is ignored and no history
-     * will be deleted. In those cases, the `batchOperation` field in the response
-     * will not be populated.
+     * This flag is effective for process definitions and decision requirements definitions.
+     * For other resource types (forms, generic resources) it is ignored and no history is
+     * deleted. For a decision requirements definition the `batchOperation` field in the
+     * response carries the created batch operation. For a process definition the history is
+     * deleted as part of the definition's draining/deletion lifecycle and no batch operation is
+     * returned.
      *
      */
     deleteHistory?: boolean;
@@ -4067,9 +4190,14 @@ export type DeleteResourceResponse = {
     /**
      * The batch operation created for asynchronously deleting the historic data.
      *
-     * This field is only populated when the request `deleteHistory` is set to `true` and the resource
-     * is a process definition. For other resource types (decisions, forms, generic resources),
-     * this field will be `null`.
+     * Populated when `deleteHistory` is `true` and either the resource is a decision
+     * requirements definition, or the resource is a process definition that is already fully
+     * deleted from the runtime state (its history is purged directly by a batch operation).
+     *
+     * For a process definition that still exists in the runtime state, deletion first drains
+     * the definition and its history is removed asynchronously as part of that lifecycle, so no
+     * batch operation is returned and this field is `null`. It is also `null` for forms and
+     * generic resources.
      *
      */
     batchOperation: BatchOperationCreatedResult | null;
@@ -11729,6 +11857,27 @@ export type PartitionBackupInfoWritable = {
 };
 
 /**
+ * History Backup Info
+ *
+ * Detailed status of a history backup. The aggregated state is computed from the state of
+ * each of its snapshots as:
+ * - If every expected snapshot exists and all are complete, the overall state is
+ * 'COMPLETED'.
+ * - If one snapshot failed or is partial, the overall state is 'FAILED'.
+ * - Otherwise, if one snapshot is incompatible, the overall state is 'INCOMPATIBLE'.
+ * - Otherwise, if one snapshot is still running, the overall state is 'IN_PROGRESS'.
+ * - Otherwise, if snapshots are missing and the backup has not progressed within the
+ * configured timeout, the overall state is 'INCOMPLETE'.
+ *
+ */
+export type HistoryBackupInfoWritable = {
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+};
+
+/**
  * System-generated key for a conditional evaluation.
  */
 export type ConditionalEvaluationKeyWritable = LongKey;
@@ -13243,6 +13392,224 @@ export type GetRuntimeBackupResponses = {
 };
 
 export type GetRuntimeBackupResponse = GetRuntimeBackupResponses[keyof GetRuntimeBackupResponses];
+
+export type ListHistoryBackupsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * A prefix that backup ids must match, ending in a single '*'. If omitted, all
+         * backups are returned.
+         *
+         */
+        prefix?: BackupIdPrefix;
+        /**
+         * Whether to ask the secondary storage for snapshot-level detail. Setting this to
+         * `false` makes the query cheaper, but the store then reports neither snapshot state
+         * nor start time, so both the per-snapshot `details` and the aggregated `state` are
+         * incomplete and the listing order is unspecified.
+         *
+         */
+        verbose?: boolean;
+    };
+    url: '/backups/history';
+};
+
+export type ListHistoryBackupsErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The request is forbidden, either because the authenticated caller lacks the required
+     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
+     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
+     * of the two applies.
+     *
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ListHistoryBackupsError = ListHistoryBackupsErrors[keyof ListHistoryBackupsErrors];
+
+export type ListHistoryBackupsResponses = {
+    /**
+     * The list of history backups.
+     */
+    200: Array<HistoryBackupInfo>;
+};
+
+export type ListHistoryBackupsResponse = ListHistoryBackupsResponses[keyof ListHistoryBackupsResponses];
+
+export type TakeHistoryBackupData = {
+    body: TakeHistoryBackupRequest;
+    path?: never;
+    query?: never;
+    url: '/backups/history';
+};
+
+export type TakeHistoryBackupErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The request is forbidden, either because the authenticated caller lacks the required
+     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
+     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
+     * of the two applies.
+     *
+     */
+    403: ProblemDetail;
+    /**
+     * A backup with the given id already exists, or another backup is already running.
+     *
+     * The "already running" check is best-effort and node-local: it only observes backups
+     * started by the gateway that serves the request. Two concurrent requests reaching
+     * different gateways are narrowed by the duplicate-id check alone.
+     *
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type TakeHistoryBackupError = TakeHistoryBackupErrors[keyof TakeHistoryBackupErrors];
+
+export type TakeHistoryBackupResponses = {
+    /**
+     * The backup has been successfully scheduled.
+     */
+    202: TakeHistoryBackupResponse;
+};
+
+export type TakeHistoryBackupResponse2 = TakeHistoryBackupResponses[keyof TakeHistoryBackupResponses];
+
+export type DeleteHistoryBackupData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: never;
+    url: '/backups/history/{backupId}';
+};
+
+export type DeleteHistoryBackupErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The request is forbidden, either because the authenticated caller lacks the required
+     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
+     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
+     * of the two applies.
+     *
+     */
+    403: ProblemDetail;
+    /**
+     * A backup with the given id does not exist.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteHistoryBackupError = DeleteHistoryBackupErrors[keyof DeleteHistoryBackupErrors];
+
+export type DeleteHistoryBackupResponses = {
+    /**
+     * The backup has been successfully deleted.
+     */
+    204: void;
+};
+
+export type DeleteHistoryBackupResponse = DeleteHistoryBackupResponses[keyof DeleteHistoryBackupResponses];
+
+export type GetHistoryBackupData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: never;
+    url: '/backups/history/{backupId}';
+};
+
+export type GetHistoryBackupErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The request is forbidden, either because the authenticated caller lacks the required
+     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
+     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
+     * of the two applies.
+     *
+     */
+    403: ProblemDetail;
+    /**
+     * A backup with the given id does not exist.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetHistoryBackupError = GetHistoryBackupErrors[keyof GetHistoryBackupErrors];
+
+export type GetHistoryBackupResponses = {
+    /**
+     * The history backup.
+     */
+    200: HistoryBackupInfo;
+};
+
+export type GetHistoryBackupResponse = GetHistoryBackupResponses[keyof GetHistoryBackupResponses];
 
 export type SearchBatchOperationItemsData = {
     body?: BatchOperationItemSearchQuery;
@@ -19823,31 +20190,6 @@ export type GetStatusResponses = {
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
 
-export type GetClusterStatusData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/cluster/v2/status';
-};
-
-export type GetClusterStatusErrors = {
-    /**
-     * The cluster is DOWN because no physical tenant can process work.
-     */
-    503: ClusterStatusResponse;
-};
-
-export type GetClusterStatusError = GetClusterStatusErrors[keyof GetClusterStatusErrors];
-
-export type GetClusterStatusResponses = {
-    /**
-     * The cluster can process work; the body reports whether it is fully healthy or degraded.
-     */
-    200: ClusterStatusResponse;
-};
-
-export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
-
 export type GetUsageMetricsData = {
     body?: never;
     path?: never;
@@ -20931,6 +21273,85 @@ export type RestoreResponses = {
 
 export type RestoreResponse = RestoreResponses[keyof RestoreResponses];
 
+export type ChangeClusterModeAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * The target cluster mode.
+         */
+        mode: Mode;
+        /**
+         * The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+        /**
+         * If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.
+         */
+        dryRun?: boolean;
+    };
+    url: '/cluster/v2/mode';
+};
+
+export type ChangeClusterModeAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * The mode change conflicts with the cluster state, for example because another configuration change is in progress.
+     */
+    409: unknown;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type ChangeClusterModeAsClusterAdminError = ChangeClusterModeAsClusterAdminErrors[keyof ChangeClusterModeAsClusterAdminErrors];
+
+export type ChangeClusterModeAsClusterAdminResponses = {
+    /**
+     * The mode change request was accepted; returns the planned cluster change covering every requested physical tenant.
+     */
+    200: ClusterModeChangeResponse;
+};
+
+export type ChangeClusterModeAsClusterAdminResponse = ChangeClusterModeAsClusterAdminResponses[keyof ChangeClusterModeAsClusterAdminResponses];
+
+export type GetClusterStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/status';
+};
+
+export type GetClusterStatusErrors = {
+    /**
+     * The cluster is DOWN because no physical tenant can process work.
+     */
+    503: ClusterStatusResponse;
+};
+
+export type GetClusterStatusError = GetClusterStatusErrors[keyof GetClusterStatusErrors];
+
+export type GetClusterStatusResponses = {
+    /**
+     * The cluster can process work; the body reports whether it is fully healthy or degraded.
+     */
+    200: ClusterStatusResponse;
+};
+
+export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
+
 export type CreateUserData = {
     body: UserRequest;
     path?: never;
@@ -21698,7 +22119,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:d21a56ff57b5ac9ea382b871b283d90eb8c93ab92b9ee1e490e616137f7909c5
+// specHash=sha256:2d638fa54edfff38ce1e05e76f1b26575927ac261d240dc8e35843dfe5326846
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
