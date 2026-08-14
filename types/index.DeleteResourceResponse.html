@@ -13,7 +13,7 @@
 <h1>Type Alias DeleteResourceResponse</h1></div>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">DeleteResourceResponse</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#batchoperation">batchOperation</a><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationCreatedResult.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationCreatedResult</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#resourcekey">resourceKey</a><span class="tsd-signature-symbol">:</span> <a href="index.ResourceKey.html" class="tsd-signature-type tsd-kind-type-alias">ResourceKey</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/daa04bd65608908e483606bbb7da81452d0a861b/src/gen/types.gen.ts#L4062">gen/types.gen.ts:4062</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/c6db9905519d1e73ced393cf86e7236e413c486f/src/gen/types.gen.ts#L4185">gen/types.gen.ts:4185</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -31,19 +31,23 @@
 <h3 class="tsd-anchor-link" id="batchoperation"><span>batch<wbr/>Operation</span><a href="#batchoperation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">batchOperation</span><span class="tsd-signature-symbol">:</span> <a href="index.BatchOperationCreatedResult.html" class="tsd-signature-type tsd-kind-type-alias">BatchOperationCreatedResult</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>The batch operation created for asynchronously deleting the historic data.</p>
-<p>This field is only populated when the request <code>deleteHistory</code> is set to <code>true</code> and the resource
-is a process definition. For other resource types (decisions, forms, generic resources),
-this field will be <code>null</code>.</p>
+<p>Populated when <code>deleteHistory</code> is <code>true</code> and either the resource is a decision
+requirements definition, or the resource is a process definition that is already fully
+deleted from the runtime state (its history is purged directly by a batch operation).</p>
+<p>For a process definition that still exists in the runtime state, deletion first drains
+the definition and its history is removed asynchronously as part of that lifecycle, so no
+batch operation is returned and this field is <code>null</code>. It is also <code>null</code> for forms and
+generic resources.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/daa04bd65608908e483606bbb7da81452d0a861b/src/gen/types.gen.ts#L4075">gen/types.gen.ts:4075</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/c6db9905519d1e73ced393cf86e7236e413c486f/src/gen/types.gen.ts#L4203">gen/types.gen.ts:4203</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resourcekey"><span>resource<wbr/>Key</span><a href="#resourcekey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resourceKey</span><span class="tsd-signature-symbol">:</span> <a href="index.ResourceKey.html" class="tsd-signature-type tsd-kind-type-alias">ResourceKey</a></div>
 <div class="tsd-comment tsd-typography"><p>The system-assigned key for this resource, requested to be deleted.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/daa04bd65608908e483606bbb7da81452d0a861b/src/gen/types.gen.ts#L4066">gen/types.gen.ts:4066</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/c6db9905519d1e73ced393cf86e7236e413c486f/src/gen/types.gen.ts#L4189">gen/types.gen.ts:4189</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
