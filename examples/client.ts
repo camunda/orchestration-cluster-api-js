@@ -90,6 +90,28 @@ async function changeClusterModeExample() {
 }
 //#endregion ChangeClusterMode
 
+//#region ChangeClusterModeAsClusterAdmin
+async function changeClusterModeAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // The cluster-admin variant can target a single physical tenant. Omit
+  // `physicalTenantId` to apply the change to every physical tenant.
+  const change = await camunda.changeClusterModeAsClusterAdmin({
+    mode: 'RECOVERING',
+    physicalTenantId: 'default',
+    dryRun: true,
+  });
+
+  console.log(`Cluster change ${change.changeId}:`);
+  for (const group of change.plannedChanges) {
+    console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+    for (const op of group.operations) {
+      console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+    }
+  }
+}
+//#endregion ChangeClusterModeAsClusterAdmin
+
 //#region Restore
 async function restoreExample() {
   const camunda = createCamundaClient();
@@ -243,6 +265,7 @@ void createClientWithConfigExample;
 void createClientOAuthExample;
 void getTopologyExample;
 void changeClusterModeExample;
+void changeClusterModeAsClusterAdminExample;
 void getRestoreStatusExample;
 void resultClientExample;
 void customFetchExample;

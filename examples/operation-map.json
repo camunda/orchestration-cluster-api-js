@@ -55,6 +55,13 @@
       "label": "Change cluster mode"
     }
   ],
+  "changeClusterModeAsClusterAdmin": [
+    {
+      "file": "client.ts",
+      "region": "ChangeClusterModeAsClusterAdmin",
+      "label": "Change cluster mode as cluster admin"
+    }
+  ],
   "restore": [
     {
       "file": "client.ts",
@@ -1470,6 +1477,34 @@
       "file": "backup.ts",
       "region": "DeleteRuntimeBackup",
       "label": "Delete a runtime backup"
+    }
+  ],
+  "takeHistoryBackup": [
+    {
+      "file": "backup.ts",
+      "region": "TakeHistoryBackup",
+      "label": "Take a history backup"
+    }
+  ],
+  "listHistoryBackups": [
+    {
+      "file": "backup.ts",
+      "region": "ListHistoryBackups",
+      "label": "List history backups"
+    }
+  ],
+  "getHistoryBackup": [
+    {
+      "file": "backup.ts",
+      "region": "GetHistoryBackup",
+      "label": "Get a history backup"
+    }
+  ],
+  "deleteHistoryBackup": [
+    {
+      "file": "backup.ts",
+      "region": "DeleteHistoryBackup",
+      "label": "Delete a history backup"
     }
   ],
   "getRuntimeBackupState": [
