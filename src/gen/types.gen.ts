@@ -4,7 +4,7 @@ export type CamundaKey< T extends string = string > = string & { readonly __bran
 // branding-plugin patch: applied primitive branding
 
 export type ClientOptions = {
-    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | (string & {});
+    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | (string & {});
 };
 
 export type AgentDefinitionSearchQuerySortRequest = {
@@ -170,7 +170,7 @@ export type AgentInstanceSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'agentInstanceKey' | 'status' | 'elementId' | 'processInstanceKey' | 'rootProcessInstanceKey' | 'processDefinitionKey' | 'tenantId' | 'creationDate' | 'lastUpdatedDate' | 'completionDate';
+    field: 'agentInstanceKey' | 'agentDefinitionKey' | 'status' | 'elementId' | 'processInstanceKey' | 'rootProcessInstanceKey' | 'processDefinitionKey' | 'tenantId' | 'creationDate' | 'lastUpdatedDate' | 'completionDate';
     order?: SortOrderEnum;
 };
 
@@ -196,6 +196,10 @@ export type AgentInstanceFilter = {
      * The unique key of the agent instance.
      */
     agentInstanceKey?: AgentInstanceKeyFilterProperty;
+    /**
+     * The key of the agent definition this agent instance is an instance of.
+     */
+    agentDefinitionKey?: AgentDefinitionKeyFilterProperty;
     /**
      * The current status of the agent instance.
      */
@@ -270,7 +274,7 @@ export type AgentInstanceResult = {
      */
     agentInstanceKey: AgentInstanceKey;
     /**
-     * The key of the agent definition this agent instance runs on.
+     * The key of the agent definition this agent instance is an instance of.
      */
     agentDefinitionKey: AgentDefinitionKey;
     status: AgentInstanceStatusEnum;
@@ -2782,6 +2786,108 @@ export type ClusterStatusResponse = {
 };
 
 /**
+ * Describes a restore request issued by a cluster admin. The backup selection at the top level applies to every targeted physical tenant, except for the ones listed in `overrides`.
+ */
+export type ClusterRestoreRequest = RestoreRequest & {
+    /**
+     * The backup selection to apply to individual physical tenants, keyed by physical tenant id. Only allowed for a cluster-wide restore, that is when no `physicalTenantId` parameter is given.
+     */
+    overrides?: {
+        [key: string]: RestoreRequest;
+    } | null;
+};
+
+/**
+ * The topology of the whole cluster, aggregated over all physical tenants.
+ */
+export type ClusterTopologyResponse = {
+    /**
+     * The brokers that are part of this cluster, across all physical tenants.
+     */
+    brokers: Array<ClusterBrokerInfo>;
+    /**
+     * The cluster Id.
+     */
+    clusterId: string | null;
+    /**
+     * The number of brokers in the cluster.
+     */
+    clusterSize: number;
+    /**
+     * The version of the Orchestration Cluster Gateway.
+     */
+    gatewayVersion: string | null;
+    /**
+     * The topology of each physical tenant of this cluster.
+     */
+    physicalTenants: Array<PhysicalTenantTopology>;
+};
+
+/**
+ * Provides information on a broker node, independent of any physical tenant.
+ */
+export type ClusterBrokerInfo = {
+    /**
+     * The unique (within a cluster) broker identifier. When the cluster is not zoned, then it's a string that represents the nodeId (an integer). When the cluster is zoned, instead, it's of the form "$zoneName_$nodeId", providing uniqueness even across zones.
+     *
+     */
+    brokerId: string;
+    /**
+     * The hostname for reaching the broker.
+     */
+    host: string;
+    /**
+     * The port for reaching the broker.
+     */
+    port: number;
+    /**
+     * The broker version.
+     */
+    version: string;
+};
+
+/**
+ * The topology of a single physical tenant.
+ */
+export type PhysicalTenantTopology = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The number of partitions spread across this physical tenant.
+     */
+    partitionsCount: number;
+    /**
+     * The configured replication factor for this physical tenant.
+     */
+    replicationFactor: number;
+    /**
+     * ID of the last completed change of this physical tenant.
+     */
+    lastCompletedChangeId: string;
+    /**
+     * The brokers holding partitions of this physical tenant.
+     */
+    brokers: Array<PhysicalTenantBrokerTopology>;
+};
+
+/**
+ * The partitions of one physical tenant that one broker manages or replicates.
+ */
+export type PhysicalTenantBrokerTopology = {
+    /**
+     * The unique (within a cluster) identifier of the broker, as reported in the cluster-level broker list.
+     *
+     */
+    brokerId: string;
+    /**
+     * The partitions of this physical tenant managed or replicated on this broker.
+     */
+    partitions: Array<Partition>;
+};
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const ClusterVariableKindEnum = {
@@ -3184,6 +3290,139 @@ export type ClusterModeChangeOperation = {
      * The target mode of the operation, if applicable.
      */
     mode: string | null;
+};
+
+/**
+ * The planned changes resulting from a restore request.
+ */
+export type ClusterRestoreResponse = {
+    /**
+     * The ID of the cluster change that was triggered by the request.
+     */
+    changeId: string;
+    /**
+     * The operations that will be applied to complete the restore, grouped by the physical tenant they belong to. Groups are restored in parallel; the operations within a group are applied in the given order.
+     */
+    plannedChanges: Array<ClusterRestorePlannedChange>;
+};
+
+/**
+ * The operations of a restore that apply to one physical tenant.
+ */
+export type ClusterRestorePlannedChange = {
+    /**
+     * The physical tenant the operations apply to; null for operations that are not scoped to a single physical tenant, such as broker lifecycle operations.
+     */
+    physicalTenantId: string | null;
+    /**
+     * The ordered list of operations that will be applied to the physical tenant.
+     */
+    operations: Array<ClusterRestoreOperation>;
+};
+
+/**
+ * A single operation that is part of a restore. Every operation names the broker that applies it; the rest of its properties depend on what the operation does, so it is reported as one of the variants below, distinguished by `operation`. A property a variant does not declare is absent from the response rather than reported as null.
+ */
+export type ClusterRestoreOperation = ({
+    operation: 'UpdateIncarnationNumberOperation';
+} & ClusterRestoreBrokerOperation) | ({
+    operation: 'PartitionPreRestoreOperation';
+} & ClusterRestorePartitionOperation) | ({
+    operation: 'PartitionRestoreOperation';
+} & ClusterRestorePartitionRestoreOperation) | ({
+    operation: 'ModeChangeOperation';
+} & ClusterRestoreModeChangeOperation) | ({
+    operation: 'AwaitModeChangeOperation';
+} & ClusterRestoreAwaitModeChangeOperation);
+
+/**
+ * A restore operation that applies to a broker as a whole, such as the one that updates its incarnation number.
+ */
+export type ClusterRestoreBrokerOperation = {
+    /**
+     * The type of the operation.
+     */
+    operation: string;
+    /**
+     * The ID of the broker that applies the operation, including its zone if it belongs to one.
+     */
+    brokerId: string;
+};
+
+/**
+ * A restore operation that targets a single partition without restoring it, such as the one that prepares the partition for its restore.
+ */
+export type ClusterRestorePartitionOperation = {
+    /**
+     * The type of the operation.
+     */
+    operation: string;
+    /**
+     * The ID of the broker that applies the operation, including its zone if it belongs to one.
+     */
+    brokerId: string;
+    /**
+     * The partition the operation applies to.
+     */
+    partitionId: number;
+};
+
+/**
+ * The operation that restores a single partition from the backups resolved for it.
+ */
+export type ClusterRestorePartitionRestoreOperation = {
+    /**
+     * The type of the operation.
+     */
+    operation: string;
+    /**
+     * The ID of the broker that applies the operation, including its zone if it belongs to one.
+     */
+    brokerId: string;
+    /**
+     * The partition the operation restores.
+     */
+    partitionId: number;
+    /**
+     * The IDs of the backups the partition is restored from.
+     */
+    backupIds: Array<number>;
+};
+
+/**
+ * The operation that transitions a broker to a mode once its partitions are restored.
+ */
+export type ClusterRestoreModeChangeOperation = {
+    /**
+     * The type of the operation.
+     */
+    operation: string;
+    /**
+     * The ID of the broker that applies the operation, including its zone if it belongs to one.
+     */
+    brokerId: string;
+    /**
+     * The mode the broker is transitioned to.
+     */
+    mode: string;
+};
+
+/**
+ * The operation that awaits the transition of a broker to a mode.
+ */
+export type ClusterRestoreAwaitModeChangeOperation = {
+    /**
+     * The type of the operation.
+     */
+    operation: string;
+    /**
+     * The ID of the broker that applies the operation, including its zone if it belongs to one.
+     */
+    brokerId: string;
+    /**
+     * The mode the broker is awaited to have transitioned to.
+     */
+    mode: string;
 };
 
 /**
@@ -21268,7 +21507,7 @@ export type RestoreResponses = {
     /**
      * The restore request was accepted; returns the planned cluster changes.
      */
-    202: ClusterModeChangeResponse;
+    202: ClusterRestoreResponse;
 };
 
 export type RestoreResponse = RestoreResponses[keyof RestoreResponses];
@@ -21327,6 +21566,56 @@ export type ChangeClusterModeAsClusterAdminResponses = {
 
 export type ChangeClusterModeAsClusterAdminResponse = ChangeClusterModeAsClusterAdminResponses[keyof ChangeClusterModeAsClusterAdminResponses];
 
+export type RestoreAsClusterAdminData = {
+    body: ClusterRestoreRequest;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+        /**
+         * If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.
+         */
+        dryRun?: boolean;
+    };
+    url: '/cluster/v2/restore';
+};
+
+export type RestoreAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId`, or a physical tenant named in `overrides`, does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * A targeted physical tenant is not in recovery mode, so the restore cannot be accepted.
+     */
+    409: unknown;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type RestoreAsClusterAdminError = RestoreAsClusterAdminErrors[keyof RestoreAsClusterAdminErrors];
+
+export type RestoreAsClusterAdminResponses = {
+    /**
+     * The restore request was accepted; returns the planned cluster change covering every requested physical tenant.
+     */
+    202: ClusterRestoreResponse;
+};
+
+export type RestoreAsClusterAdminResponse = RestoreAsClusterAdminResponses[keyof RestoreAsClusterAdminResponses];
+
 export type GetClusterStatusData = {
     body?: never;
     path?: never;
@@ -21351,6 +21640,39 @@ export type GetClusterStatusResponses = {
 };
 
 export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
+
+export type GetClusterTopologyData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/topology';
+};
+
+export type GetClusterTopologyErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+};
+
+export type GetClusterTopologyError = GetClusterTopologyErrors[keyof GetClusterTopologyErrors];
+
+export type GetClusterTopologyResponses = {
+    /**
+     * The topology of the whole cluster, aggregated over all physical tenants.
+     */
+    200: ClusterTopologyResponse;
+};
+
+export type GetClusterTopologyResponse = GetClusterTopologyResponses[keyof GetClusterTopologyResponses];
 
 export type CreateUserData = {
     body: UserRequest;
@@ -22119,7 +22441,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:2d638fa54edfff38ce1e05e76f1b26575927ac261d240dc8e35843dfe5326846
+// specHash=sha256:6a56d9ac9e4888c0656e3c1598323af30a0da57cbe85c5aca97a67f7cf3105fe
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

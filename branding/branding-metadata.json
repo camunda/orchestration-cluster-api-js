@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:2d638fa54edfff38ce1e05e76f1b26575927ac261d240dc8e35843dfe5326846",
+  "specHash": "sha256:6a56d9ac9e4888c0656e3c1598323af30a0da57cbe85c5aca97a67f7cf3105fe",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -2169,6 +2169,41 @@
       }
     },
     {
+      "name": "ClusterRestoreOperation",
+      "kind": "union-wrapper",
+      "description": "A single operation that is part of a restore. Every operation names the broker that applies it; the rest of its properties depend on what the operation does, so it is reported as one of the variants below, distinguished by `operation`. A property a variant does not declare is absent from the response rather than reported as null.",
+      "branches": [
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterRestoreBrokerOperation"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterRestorePartitionOperation"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterRestorePartitionRestoreOperation"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterRestoreModeChangeOperation"
+        },
+        {
+          "branchType": "branded-ref",
+          "ref": "ClusterRestoreAwaitModeChangeOperation"
+        }
+      ],
+      "stableId": "cluster-restore-operation",
+      "tsType": "ClusterRestoreBrokerOperation | ClusterRestorePartitionOperation | ClusterRestorePartitionRestoreOperation | ClusterRestoreModeChangeOperation | ClusterRestoreAwaitModeChangeOperation",
+      "zod": {
+        "schemaName": "zClusterRestoreOperation"
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/ClusterRestoreOperation"
+      }
+    },
+    {
       "name": "ClusterVariableKindFilterProperty",
       "kind": "union-wrapper",
       "description": "ClusterVariableKindEnum property with full advanced search capabilities.",
@@ -3317,7 +3352,7 @@
   ],
   "integrity": {
     "totalPrimaryKeys": 42,
-    "totalUnionWrappers": 67,
+    "totalUnionWrappers": 68,
     "implicitCamundaKeys": []
   }
 }
