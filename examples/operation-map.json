@@ -48,6 +48,13 @@
       "label": "Get cluster topology"
     }
   ],
+  "getClusterTopology": [
+    {
+      "file": "client.ts",
+      "region": "GetClusterTopology",
+      "label": "Get cluster topology (v2)"
+    }
+  ],
   "changeClusterMode": [
     {
       "file": "client.ts",
@@ -67,6 +74,13 @@
       "file": "client.ts",
       "region": "Restore",
       "label": "Restore from a backup"
+    }
+  ],
+  "restoreAsClusterAdmin": [
+    {
+      "file": "client.ts",
+      "region": "RestoreAsClusterAdmin",
+      "label": "Restore from a backup as cluster admin"
     }
   ],
   "createProcessInstance": [
