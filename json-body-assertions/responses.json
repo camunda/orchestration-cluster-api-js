@@ -2,9 +2,9 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-08-14T02:09:16.790Z",
+    "generatedAt": "2026-08-17T07:29:15.591Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "5fe09a0a6c0b5620e639c931feec09d3ec7975a30ef054c27be5410878675ae0"
+    "specSha256": "e8f9402c230cd72a9f8b093c0258f078ca84f099c2a16ee2887027dd83ff4345"
   },
   "responses": [
     {
@@ -9638,21 +9638,7 @@
               "required": [
                 {
                   "name": "operations",
-                  "type": "array<object>",
-                  "children": {
-                    "required": [
-                      {
-                        "name": "mode",
-                        "type": "string",
-                        "nullable": true
-                      },
-                      {
-                        "name": "operation",
-                        "type": "string"
-                      }
-                    ],
-                    "optional": []
-                  }
+                  "type": "array<object|object|object|object|object>"
                 },
                 {
                   "name": "physicalTenantId",
@@ -9714,6 +9700,38 @@
       }
     },
     {
+      "path": "/cluster/v2/restore",
+      "method": "POST",
+      "status": "202",
+      "schema": {
+        "required": [
+          {
+            "name": "changeId",
+            "type": "string"
+          },
+          {
+            "name": "plannedChanges",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "operations",
+                  "type": "array<object|object|object|object|object>"
+                },
+                {
+                  "name": "physicalTenantId",
+                  "type": "string",
+                  "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
       "path": "/cluster/v2/status",
       "method": "GET",
       "status": "200",
@@ -9746,6 +9764,135 @@
               "DEGRADED",
               "DOWN"
             ]
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/topology",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "brokers",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "brokerId",
+                  "type": "string"
+                },
+                {
+                  "name": "host",
+                  "type": "string"
+                },
+                {
+                  "name": "port",
+                  "type": "number"
+                },
+                {
+                  "name": "version",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "clusterId",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "clusterSize",
+            "type": "number"
+          },
+          {
+            "name": "gatewayVersion",
+            "type": "string",
+            "nullable": true
+          },
+          {
+            "name": "physicalTenants",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "brokers",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "brokerId",
+                        "type": "string"
+                      },
+                      {
+                        "name": "partitions",
+                        "type": "array<items>",
+                        "children": {
+                          "required": [
+                            {
+                              "name": "health",
+                              "type": "string",
+                              "enumValues": [
+                                "healthy",
+                                "unhealthy",
+                                "dead"
+                              ]
+                            },
+                            {
+                              "name": "partitionId",
+                              "type": "number"
+                            },
+                            {
+                              "name": "role",
+                              "type": "string",
+                              "enumValues": [
+                                "leader",
+                                "follower",
+                                "inactive"
+                              ]
+                            },
+                            {
+                              "name": "state",
+                              "type": "string",
+                              "enumValues": [
+                                "unknown",
+                                "joining",
+                                "active",
+                                "leaving",
+                                "recovering"
+                              ]
+                            }
+                          ],
+                          "optional": []
+                        }
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "lastCompletedChangeId",
+                  "type": "string"
+                },
+                {
+                  "name": "partitionsCount",
+                  "type": "number"
+                },
+                {
+                  "name": "physicalTenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "replicationFactor",
+                  "type": "number"
+                }
+              ],
+              "optional": []
+            }
           }
         ],
         "optional": []

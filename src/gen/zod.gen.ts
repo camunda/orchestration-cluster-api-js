@@ -921,6 +921,26 @@ export const zClusterStatusResponse = z.object({
 });
 
 /**
+ * Provides information on a broker node, independent of any physical tenant.
+ */
+export const zClusterBrokerInfo = z.object({
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The unique (within a cluster) broker identifier. When the cluster is not zoned, then it\'s a string that represents the nodeId (an integer). When the cluster is zoned, instead, it\'s of the form "$zoneName_$nodeId", providing uniqueness even across zones.\n'
+    }),
+    host: z.string().register(z.globalRegistry, {
+        description: 'The hostname for reaching the broker.'
+    }),
+    port: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The port for reaching the broker.'
+    }),
+    version: z.string().register(z.globalRegistry, {
+        description: 'The broker version.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Provides information on a broker node, independent of any physical tenant.'
+});
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const zClusterVariableKindEnum = z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
@@ -985,6 +1005,62 @@ export const zPartition = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Provides information on a partition within a broker node.'
+});
+
+/**
+ * The partitions of one physical tenant that one broker manages or replicates.
+ */
+export const zPhysicalTenantBrokerTopology = z.object({
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The unique (within a cluster) identifier of the broker, as reported in the cluster-level broker list.\n'
+    }),
+    partitions: z.array(zPartition).register(z.globalRegistry, {
+        description: 'The partitions of this physical tenant managed or replicated on this broker.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The partitions of one physical tenant that one broker manages or replicates.'
+});
+
+/**
+ * The topology of a single physical tenant.
+ */
+export const zPhysicalTenantTopology = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    partitionsCount: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The number of partitions spread across this physical tenant.'
+    }),
+    replicationFactor: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The configured replication factor for this physical tenant.'
+    }),
+    lastCompletedChangeId: z.string().register(z.globalRegistry, {
+        description: 'ID of the last completed change of this physical tenant.'
+    }),
+    brokers: z.array(zPhysicalTenantBrokerTopology).register(z.globalRegistry, {
+        description: 'The brokers holding partitions of this physical tenant.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The topology of a single physical tenant.'
+});
+
+/**
+ * The topology of the whole cluster, aggregated over all physical tenants.
+ */
+export const zClusterTopologyResponse = z.object({
+    brokers: z.array(zClusterBrokerInfo).register(z.globalRegistry, {
+        description: 'The brokers that are part of this cluster, across all physical tenants.'
+    }),
+    clusterId: z.string().nullable(),
+    clusterSize: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The number of brokers in the cluster.'
+    }),
+    gatewayVersion: z.string().nullable(),
+    physicalTenants: z.array(zPhysicalTenantTopology).register(z.globalRegistry, {
+        description: 'The topology of each physical tenant of this cluster.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The topology of the whole cluster, aggregated over all physical tenants.'
 });
 
 /**
@@ -1079,6 +1155,128 @@ export const zClusterModeChangeResponse = z.object({
 });
 
 /**
+ * A restore operation that applies to a broker as a whole, such as the one that updates its incarnation number.
+ */
+export const zClusterRestoreBrokerOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the broker that applies the operation, including its zone if it belongs to one.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A restore operation that applies to a broker as a whole, such as the one that updates its incarnation number.'
+});
+
+/**
+ * A restore operation that targets a single partition without restoring it, such as the one that prepares the partition for its restore.
+ */
+export const zClusterRestorePartitionOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the broker that applies the operation, including its zone if it belongs to one.'
+    }),
+    partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The partition the operation applies to.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A restore operation that targets a single partition without restoring it, such as the one that prepares the partition for its restore.'
+});
+
+/**
+ * The operation that restores a single partition from the backups resolved for it.
+ */
+export const zClusterRestorePartitionRestoreOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the broker that applies the operation, including its zone if it belongs to one.'
+    }),
+    partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The partition the operation restores.'
+    }),
+    backupIds: z.array(z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })).register(z.globalRegistry, {
+        description: 'The IDs of the backups the partition is restored from.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The operation that restores a single partition from the backups resolved for it.'
+});
+
+/**
+ * The operation that transitions a broker to a mode once its partitions are restored.
+ */
+export const zClusterRestoreModeChangeOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the broker that applies the operation, including its zone if it belongs to one.'
+    }),
+    mode: z.string().register(z.globalRegistry, {
+        description: 'The mode the broker is transitioned to.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The operation that transitions a broker to a mode once its partitions are restored.'
+});
+
+/**
+ * The operation that awaits the transition of a broker to a mode.
+ */
+export const zClusterRestoreAwaitModeChangeOperation = z.object({
+    operation: z.string().register(z.globalRegistry, {
+        description: 'The type of the operation.'
+    }),
+    brokerId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the broker that applies the operation, including its zone if it belongs to one.'
+    }),
+    mode: z.string().register(z.globalRegistry, {
+        description: 'The mode the broker is awaited to have transitioned to.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The operation that awaits the transition of a broker to a mode.'
+});
+
+/**
+ * A single operation that is part of a restore. Every operation names the broker that applies it; the rest of its properties depend on what the operation does, so it is reported as one of the variants below, distinguished by `operation`. A property a variant does not declare is absent from the response rather than reported as null.
+ */
+export const zClusterRestoreOperation = z.discriminatedUnion('operation', [
+    zClusterRestoreBrokerOperation.extend({ operation: z.literal('UpdateIncarnationNumberOperation') }),
+    zClusterRestorePartitionOperation.extend({ operation: z.literal('PartitionPreRestoreOperation') }),
+    zClusterRestorePartitionRestoreOperation.extend({ operation: z.literal('PartitionRestoreOperation') }),
+    zClusterRestoreModeChangeOperation.extend({ operation: z.literal('ModeChangeOperation') }),
+    zClusterRestoreAwaitModeChangeOperation.extend({ operation: z.literal('AwaitModeChangeOperation') })
+]);
+
+/**
+ * The operations of a restore that apply to one physical tenant.
+ */
+export const zClusterRestorePlannedChange = z.object({
+    physicalTenantId: z.string().nullable(),
+    operations: z.array(zClusterRestoreOperation).register(z.globalRegistry, {
+        description: 'The ordered list of operations that will be applied to the physical tenant.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The operations of a restore that apply to one physical tenant.'
+});
+
+/**
+ * The planned changes resulting from a restore request.
+ */
+export const zClusterRestoreResponse = z.object({
+    changeId: z.string().register(z.globalRegistry, {
+        description: 'The ID of the cluster change that was triggered by the request.'
+    }),
+    plannedChanges: z.array(zClusterRestorePlannedChange).register(z.globalRegistry, {
+        description: 'The operations that will be applied to complete the restore, grouped by the physical tenant they belong to. Groups are restored in parallel; the operations within a group are applied in the given order.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The planned changes resulting from a restore request.'
+});
+
+/**
  * Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.
  */
 export const zRestoreRequest = z.object({
@@ -1087,6 +1285,15 @@ export const zRestoreRequest = z.object({
     backupIds: z.array(z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' })).nullish()
 }).register(z.globalRegistry, {
     description: 'Describes a restore request. Provide either a list of backup IDs or a time range (`from`/`to`) that selects the backups to restore; the two are mutually exclusive.'
+});
+
+/**
+ * Describes a restore request issued by a cluster admin. The backup selection at the top level applies to every targeted physical tenant, except for the ones listed in `overrides`.
+ */
+export const zClusterRestoreRequest = zRestoreRequest.and(z.object({
+    overrides: z.record(z.string(), zRestoreRequest).nullish()
+})).register(z.globalRegistry, {
+    description: 'Describes a restore request issued by a cluster admin. The backup selection at the top level applies to every targeted physical tenant, except for the ones listed in `overrides`.'
 });
 
 /**
@@ -2289,9 +2496,9 @@ export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.obj
     isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Cluster variable search response item.'
-}));
+});
 
 /**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
@@ -5634,9 +5841,9 @@ export const zSearchQueryRequest = z.object({
  */
 export const zProcessDefinitionVariableNameSearchQuery = zSearchQueryRequest.and(z.object({
     filter: zProcessDefinitionVariableNameFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process definition variable name search query request.'
-}));
+});
 
 /**
  * The order in which to sort the related field.
@@ -5665,6 +5872,7 @@ export const zAgentDefinitionSearchQuerySortRequest = z.object({
 export const zAgentInstanceSearchQuerySortRequest = z.object({
     field: z.enum([
         'agentInstanceKey',
+        'agentDefinitionKey',
         'status',
         'elementId',
         'processInstanceKey',
@@ -5927,9 +6135,9 @@ export const zGroupSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zGroupFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Group search request.'
-}));
+});
 
 export const zGroupUserSearchQuerySortRequest = z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
@@ -6202,9 +6410,9 @@ export const zRoleSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zRoleFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Role search request.'
-}));
+});
 
 export const zRoleUserSearchQuerySortRequest = z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
@@ -6272,9 +6480,9 @@ export const zAgentDefinitionSearchQueryResult = zSearchQueryResponse.and(z.obje
     items: z.array(zAgentDefinitionResult).register(z.globalRegistry, {
         description: 'The matching agent definitions.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent definition search response.'
-}));
+});
 
 /**
  * Agent instance search response.
@@ -6283,9 +6491,9 @@ export const zAgentInstanceSearchQueryResult = zSearchQueryResponse.and(z.object
     items: z.array(zAgentInstanceResult).register(z.globalRegistry, {
         description: 'The matching agent instances.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance search response.'
-}));
+});
 
 /**
  * Agent instance history search response.
@@ -6294,9 +6502,9 @@ export const zAgentInstanceHistorySearchQueryResult = zSearchQueryResponse.and(z
     items: z.array(zAgentInstanceHistoryItemResult).register(z.globalRegistry, {
         description: 'The matching history items.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance history search response.'
-}));
+});
 
 /**
  * Audit log search response.
@@ -6305,9 +6513,9 @@ export const zAuditLogSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zAuditLogResult).register(z.globalRegistry, {
         description: 'The matching audit logs.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Audit log search response.'
-}));
+});
 
 export const zAuthorizationSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zAuthorizationResult).register(z.globalRegistry, {
@@ -6322,9 +6530,9 @@ export const zBatchOperationSearchQueryResult = zSearchQueryResponse.and(z.objec
     items: z.array(zBatchOperationResponse).register(z.globalRegistry, {
         description: 'The matching batch operations.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'The batch operation search query result.'
-}));
+});
 
 export const zBatchOperationItemSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zBatchOperationItemResponse).register(z.globalRegistry, {
@@ -6339,9 +6547,9 @@ export const zClusterVariableSearchQueryResult = zSearchQueryResponse.and(z.obje
     items: z.array(zClusterVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching cluster variables.'
     }).default([])
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Cluster variable search query response.'
-}));
+});
 
 export const zDecisionDefinitionSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zDecisionDefinitionResult).register(z.globalRegistry, {
@@ -6386,9 +6594,9 @@ export const zGlobalTaskListenerSearchQueryResult = zSearchQueryResponse.and(z.o
     items: z.array(zGlobalTaskListenerResult).register(z.globalRegistry, {
         description: 'The matching global listeners.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Global listener search query response.'
-}));
+});
 
 /**
  * Group search response.
@@ -6397,9 +6605,9 @@ export const zGroupSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zGroupResult).register(z.globalRegistry, {
         description: 'The matching groups.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Group search response.'
-}));
+});
 
 export const zGroupUserSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zGroupUserResult).register(z.globalRegistry, {
@@ -6451,9 +6659,9 @@ export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
         description: 'The list of job type statistics items.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
-}));
+});
 
 /**
  * Job worker statistics query result.
@@ -6463,9 +6671,9 @@ export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object
         description: 'The list of per-worker statistics items.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job worker statistics query result.'
-}));
+});
 
 /**
  * Job time-series statistics query result.
@@ -6475,9 +6683,9 @@ export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.ob
         description: 'The list of time-bucketed statistics items, ordered ascending by time.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job time-series statistics query result.'
-}));
+});
 
 /**
  * Job error statistics query result.
@@ -6487,9 +6695,9 @@ export const zJobErrorStatisticsQueryResult = zSearchQueryResponse.and(z.object(
         description: 'The list of per-error statistics items.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job error statistics query result.'
-}));
+});
 
 /**
  * Job search response.
@@ -6498,9 +6706,9 @@ export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zJobSearchResult).register(z.globalRegistry, {
         description: 'The matching jobs.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job search response.'
-}));
+});
 
 export const zMappingRuleSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zMappingRuleResult).register(z.globalRegistry, {
@@ -6533,9 +6741,9 @@ export const zProcessDefinitionVariableNameSearchQueryResult = zSearchQueryRespo
     items: z.array(zProcessDefinitionVariableNameSearchResult).register(z.globalRegistry, {
         description: 'The matching variable names.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process definition variable name search query response.'
-}));
+});
 
 export const zProcessDefinitionMessageSubscriptionStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionMessageSubscriptionStatisticsResult).register(z.globalRegistry, {
@@ -6562,9 +6770,9 @@ export const zProcessInstanceSearchQueryResult = zSearchQueryResponse.and(z.obje
     items: z.array(zProcessInstanceResult).register(z.globalRegistry, {
         description: 'The matching process instances.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process instance search response.'
-}));
+});
 
 /**
  * Role search response.
@@ -6573,9 +6781,9 @@ export const zRoleSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zRoleResult).register(z.globalRegistry, {
         description: 'The matching roles.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Role search response.'
-}));
+});
 
 export const zRoleUserSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zRoleUserResult).register(z.globalRegistry, {
@@ -6946,9 +7154,9 @@ export const zTenantSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zTenantFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Tenant search request'
-}));
+});
 
 /**
  * Tenant search response.
@@ -6957,9 +7165,9 @@ export const zTenantSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zTenantResult).register(z.globalRegistry, {
         description: 'The matching tenants.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Tenant search response.'
-}));
+});
 
 export const zTenantUserResult = z.object({
     username: zUsername
@@ -7182,9 +7390,9 @@ export const zUserTaskSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zUserTaskResult).register(z.globalRegistry, {
         description: 'The matching user tasks.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query response.'
-}));
+});
 
 /**
  * The user task variable search filters.
@@ -7203,9 +7411,9 @@ export const zUserTaskVariableSearchQueryRequest = zSearchQueryRequest.and(z.obj
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskVariableFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query request.'
-}));
+});
 
 /**
  * User task effective variable search query request. Uses offset-based pagination only.
@@ -7358,9 +7566,9 @@ export const zVariableSearchResult = zVariableResultBase.and(z.object({
     isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search response item.'
-}));
+});
 
 /**
  * Variable search query response.
@@ -7369,9 +7577,9 @@ export const zVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching variables.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search query response.'
-}));
+});
 
 /**
  * Variable search response item.
@@ -7380,9 +7588,9 @@ export const zVariableResult = zVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
         description: 'Full value of this variable.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search response item.'
-}));
+});
 
 export const zVariableValueFilterProperty = z.object({
     name: z.string().register(z.globalRegistry, {
@@ -7572,9 +7780,9 @@ export const zUserTaskAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.obj
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskAuditLogFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -7627,9 +7835,9 @@ export const zBatchOperationSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zBatchOperationFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Batch operation search request.'
-}));
+});
 
 /**
  * Exact match
@@ -7703,9 +7911,9 @@ export const zClusterVariableSearchQueryRequest = zSearchQueryRequest.and(z.obje
         description: 'Sort field criteria.'
     }).optional(),
     filter: zClusterVariableSearchQueryFilterRequest.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Cluster variable search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -7876,9 +8084,9 @@ export const zGlobalTaskListenerSearchQueryRequest = zSearchQueryRequest.and(z.o
         description: 'Sort field criteria.'
     }).optional(),
     filter: zGlobalTaskListenerSearchQueryFilterRequest.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Global listener search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -7969,9 +8177,9 @@ export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zElementInstanceFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Element instance search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8114,9 +8322,9 @@ export const zBatchOperationItemSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zBatchOperationItemFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Batch operation item search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8155,9 +8363,9 @@ export const zElementInstanceWaitStateQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zElementInstanceWaitStateFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Element instance inspection request.'
-}));
+});
 
 /**
  * Exact match
@@ -8242,9 +8450,9 @@ export const zJobSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zJobFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job search request.'
-}));
+});
 
 /**
  * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
@@ -8330,9 +8538,9 @@ export const zVariableSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zVariableFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -8389,9 +8597,9 @@ export const zAgentDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentDefinitionFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent definition search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8413,6 +8621,7 @@ export const zAgentInstanceKeyFilterProperty = z.union([
  */
 export const zAgentInstanceFilter = z.object({
     agentInstanceKey: zAgentInstanceKeyFilterProperty.optional(),
+    agentDefinitionKey: zAgentDefinitionKeyFilterProperty.optional(),
     status: zAgentInstanceStatusFilterProperty.optional(),
     elementId: zElementIdFilterProperty.optional(),
     processInstanceKey: zProcessInstanceKeyFilterProperty.optional(),
@@ -8440,9 +8649,9 @@ export const zAgentInstanceSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentInstanceFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8482,9 +8691,9 @@ export const zAgentInstanceHistorySearchQuery = zSearchQueryRequest.and(z.object
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentInstanceHistoryFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance history search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8593,9 +8802,9 @@ export const zAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAuditLogFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Audit log search request.'
-}));
+});
 
 /**
  * Decision instance search filter.
@@ -8832,9 +9041,9 @@ export const zProcessInstanceFilterFields = zBaseProcessInstanceFilterFields.and
     processDefinitionVersion: zIntegerFilterProperty.optional(),
     processDefinitionVersionTag: zStringFilterProperty.optional(),
     processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process instance search filter.'
-}));
+});
 
 /**
  * Process instance search filter.
@@ -8924,9 +9133,9 @@ export const zProcessInstanceSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zProcessInstanceFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process instance search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8984,9 +9193,9 @@ export const zUserTaskSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query request.'
-}));
+});
 
 /**
  * System-generated key for an authorization.
@@ -11559,7 +11768,7 @@ export const zRestoreQuery = z.object({
 /**
  * The restore request was accepted; returns the planned cluster changes.
  */
-export const zRestoreResponse = zClusterModeChangeResponse;
+export const zRestoreResponse = zClusterRestoreResponse;
 
 export const zChangeClusterModeAsClusterAdminQuery = z.object({
     mode: zMode,
@@ -11576,10 +11785,31 @@ export const zChangeClusterModeAsClusterAdminQuery = z.object({
  */
 export const zChangeClusterModeAsClusterAdminResponse = zClusterModeChangeResponse;
 
+export const zRestoreAsClusterAdminBody = zClusterRestoreRequest;
+
+export const zRestoreAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.'
+    }).optional(),
+    dryRun: z.boolean().register(z.globalRegistry, {
+        description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
+    }).optional().default(false)
+});
+
+/**
+ * The restore request was accepted; returns the planned cluster change covering every requested physical tenant.
+ */
+export const zRestoreAsClusterAdminResponse = zClusterRestoreResponse;
+
 /**
  * The cluster can process work; the body reports whether it is fully healthy or degraded.
  */
 export const zGetClusterStatusResponse = zClusterStatusResponse;
+
+/**
+ * The topology of the whole cluster, aggregated over all physical tenants.
+ */
+export const zGetClusterTopologyResponse = zClusterTopologyResponse;
 
 export const zCreateUserBody = zUserRequest;
 

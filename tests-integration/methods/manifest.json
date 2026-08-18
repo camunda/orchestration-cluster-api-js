@@ -1,6 +1,6 @@
 {
-  "operations": 225,
-  "tests": 227,
+  "operations": 227,
+  "tests": 229,
   "missing": [],
   "ignored": [],
   "files": [
@@ -76,6 +76,7 @@
     "getAuthorization.test.ts",
     "getBatchOperation.test.ts",
     "getClusterStatus.test.ts",
+    "getClusterTopology.test.ts",
     "getDecisionDefinition.test.ts",
     "getDecisionDefinitionXml.test.ts",
     "getDecisionInstance.test.ts",
@@ -145,6 +146,7 @@
     "resolveProcessInstanceIncidents.test.ts",
     "resolveSecrets.test.ts",
     "restore.test.ts",
+    "restoreAsClusterAdmin.test.ts",
     "resumeBatchOperation.test.ts",
     "resumeExporting.test.ts",
     "resumeProcessInstance.test.ts",

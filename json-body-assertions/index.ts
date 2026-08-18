@@ -692,10 +692,20 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/cluster/v2/restore': {
+    'POST': {
+      '202': 1
+    }
+  },
   '/cluster/v2/status': {
     'GET': {
       '200': 1,
       '503': 1
+    }
+  },
+  '/cluster/v2/topology': {
+    'GET': {
+      '200': 1
     }
   },
   '/users': {
