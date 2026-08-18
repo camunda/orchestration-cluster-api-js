@@ -1,3 +1,10 @@
+# [10.0.0-alpha.29](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.28...v10.0.0-alpha.29) (2026-08-18)
+
+
+### Features
+
+* add example coverage for restoreAsClusterAdmin, getClusterTopology ([#433](https://github.com/camunda/orchestration-cluster-api-js/issues/433)) ([fab79dc](https://github.com/camunda/orchestration-cluster-api-js/commit/fab79dc97b29c9dcc0c95f30833c832c690a0d6a)), closes [#432](https://github.com/camunda/orchestration-cluster-api-js/issues/432)
+
 # [10.0.0-alpha.28](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.27...v10.0.0-alpha.28) (2026-08-14)
 
 
