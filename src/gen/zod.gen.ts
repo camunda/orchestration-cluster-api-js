@@ -1292,9 +1292,9 @@ export const zRestoreRequest = z.object({
  */
 export const zClusterRestoreRequest = zRestoreRequest.and(z.object({
     overrides: z.record(z.string(), zRestoreRequest).nullish()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Describes a restore request issued by a cluster admin. The backup selection at the top level applies to every targeted physical tenant, except for the ones listed in `overrides`.'
-}));
+});
 
 /**
  * The restore status of a single partition on a broker.
@@ -2496,9 +2496,9 @@ export const zClusterVariableSearchResult = zClusterVariableResultBase.and(z.obj
     isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Cluster variable search response item.'
-}));
+});
 
 /**
  * A tag. Needs to start with a letter; then alphanumerics, `_`, `-`, `:`, or `.`; length ≤ 100.
@@ -5841,9 +5841,9 @@ export const zSearchQueryRequest = z.object({
  */
 export const zProcessDefinitionVariableNameSearchQuery = zSearchQueryRequest.and(z.object({
     filter: zProcessDefinitionVariableNameFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process definition variable name search query request.'
-}));
+});
 
 /**
  * The order in which to sort the related field.
@@ -6135,9 +6135,9 @@ export const zGroupSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zGroupFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Group search request.'
-}));
+});
 
 export const zGroupUserSearchQuerySortRequest = z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
@@ -6410,9 +6410,9 @@ export const zRoleSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zRoleFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Role search request.'
-}));
+});
 
 export const zRoleUserSearchQuerySortRequest = z.object({
     field: z.enum(['username']).register(z.globalRegistry, {
@@ -6480,9 +6480,9 @@ export const zAgentDefinitionSearchQueryResult = zSearchQueryResponse.and(z.obje
     items: z.array(zAgentDefinitionResult).register(z.globalRegistry, {
         description: 'The matching agent definitions.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent definition search response.'
-}));
+});
 
 /**
  * Agent instance search response.
@@ -6491,9 +6491,9 @@ export const zAgentInstanceSearchQueryResult = zSearchQueryResponse.and(z.object
     items: z.array(zAgentInstanceResult).register(z.globalRegistry, {
         description: 'The matching agent instances.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance search response.'
-}));
+});
 
 /**
  * Agent instance history search response.
@@ -6502,9 +6502,9 @@ export const zAgentInstanceHistorySearchQueryResult = zSearchQueryResponse.and(z
     items: z.array(zAgentInstanceHistoryItemResult).register(z.globalRegistry, {
         description: 'The matching history items.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance history search response.'
-}));
+});
 
 /**
  * Audit log search response.
@@ -6513,9 +6513,9 @@ export const zAuditLogSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zAuditLogResult).register(z.globalRegistry, {
         description: 'The matching audit logs.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Audit log search response.'
-}));
+});
 
 export const zAuthorizationSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zAuthorizationResult).register(z.globalRegistry, {
@@ -6530,9 +6530,9 @@ export const zBatchOperationSearchQueryResult = zSearchQueryResponse.and(z.objec
     items: z.array(zBatchOperationResponse).register(z.globalRegistry, {
         description: 'The matching batch operations.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'The batch operation search query result.'
-}));
+});
 
 export const zBatchOperationItemSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zBatchOperationItemResponse).register(z.globalRegistry, {
@@ -6547,9 +6547,9 @@ export const zClusterVariableSearchQueryResult = zSearchQueryResponse.and(z.obje
     items: z.array(zClusterVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching cluster variables.'
     }).default([])
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Cluster variable search query response.'
-}));
+});
 
 export const zDecisionDefinitionSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zDecisionDefinitionResult).register(z.globalRegistry, {
@@ -6594,9 +6594,9 @@ export const zGlobalTaskListenerSearchQueryResult = zSearchQueryResponse.and(z.o
     items: z.array(zGlobalTaskListenerResult).register(z.globalRegistry, {
         description: 'The matching global listeners.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Global listener search query response.'
-}));
+});
 
 /**
  * Group search response.
@@ -6605,9 +6605,9 @@ export const zGroupSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zGroupResult).register(z.globalRegistry, {
         description: 'The matching groups.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Group search response.'
-}));
+});
 
 export const zGroupUserSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zGroupUserResult).register(z.globalRegistry, {
@@ -6659,9 +6659,9 @@ export const zJobTypeStatisticsQueryResult = zSearchQueryResponse.and(z.object({
         description: 'The list of job type statistics items.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job type statistics query result.'
-}));
+});
 
 /**
  * Job worker statistics query result.
@@ -6671,9 +6671,9 @@ export const zJobWorkerStatisticsQueryResult = zSearchQueryResponse.and(z.object
         description: 'The list of per-worker statistics items.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job worker statistics query result.'
-}));
+});
 
 /**
  * Job time-series statistics query result.
@@ -6683,9 +6683,9 @@ export const zJobTimeSeriesStatisticsQueryResult = zSearchQueryResponse.and(z.ob
         description: 'The list of time-bucketed statistics items, ordered ascending by time.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job time-series statistics query result.'
-}));
+});
 
 /**
  * Job error statistics query result.
@@ -6695,9 +6695,9 @@ export const zJobErrorStatisticsQueryResult = zSearchQueryResponse.and(z.object(
         description: 'The list of per-error statistics items.'
     }),
     page: zSearchQueryPageResponse
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job error statistics query result.'
-}));
+});
 
 /**
  * Job search response.
@@ -6706,9 +6706,9 @@ export const zJobSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zJobSearchResult).register(z.globalRegistry, {
         description: 'The matching jobs.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job search response.'
-}));
+});
 
 export const zMappingRuleSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zMappingRuleResult).register(z.globalRegistry, {
@@ -6741,9 +6741,9 @@ export const zProcessDefinitionVariableNameSearchQueryResult = zSearchQueryRespo
     items: z.array(zProcessDefinitionVariableNameSearchResult).register(z.globalRegistry, {
         description: 'The matching variable names.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process definition variable name search query response.'
-}));
+});
 
 export const zProcessDefinitionMessageSubscriptionStatisticsQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zProcessDefinitionMessageSubscriptionStatisticsResult).register(z.globalRegistry, {
@@ -6770,9 +6770,9 @@ export const zProcessInstanceSearchQueryResult = zSearchQueryResponse.and(z.obje
     items: z.array(zProcessInstanceResult).register(z.globalRegistry, {
         description: 'The matching process instances.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process instance search response.'
-}));
+});
 
 /**
  * Role search response.
@@ -6781,9 +6781,9 @@ export const zRoleSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zRoleResult).register(z.globalRegistry, {
         description: 'The matching roles.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Role search response.'
-}));
+});
 
 export const zRoleUserSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zRoleUserResult).register(z.globalRegistry, {
@@ -7154,9 +7154,9 @@ export const zTenantSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zTenantFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Tenant search request'
-}));
+});
 
 /**
  * Tenant search response.
@@ -7165,9 +7165,9 @@ export const zTenantSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zTenantResult).register(z.globalRegistry, {
         description: 'The matching tenants.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Tenant search response.'
-}));
+});
 
 export const zTenantUserResult = z.object({
     username: zUsername
@@ -7390,9 +7390,9 @@ export const zUserTaskSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zUserTaskResult).register(z.globalRegistry, {
         description: 'The matching user tasks.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query response.'
-}));
+});
 
 /**
  * The user task variable search filters.
@@ -7411,9 +7411,9 @@ export const zUserTaskVariableSearchQueryRequest = zSearchQueryRequest.and(z.obj
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskVariableFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query request.'
-}));
+});
 
 /**
  * User task effective variable search query request. Uses offset-based pagination only.
@@ -7566,9 +7566,9 @@ export const zVariableSearchResult = zVariableResultBase.and(z.object({
     isTruncated: z.boolean().register(z.globalRegistry, {
         description: 'Whether the value is truncated or not.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search response item.'
-}));
+});
 
 /**
  * Variable search query response.
@@ -7577,9 +7577,9 @@ export const zVariableSearchQueryResult = zSearchQueryResponse.and(z.object({
     items: z.array(zVariableSearchResult).register(z.globalRegistry, {
         description: 'The matching variables.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search query response.'
-}));
+});
 
 /**
  * Variable search response item.
@@ -7588,9 +7588,9 @@ export const zVariableResult = zVariableResultBase.and(z.object({
     value: z.string().register(z.globalRegistry, {
         description: 'Full value of this variable.'
     })
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search response item.'
-}));
+});
 
 export const zVariableValueFilterProperty = z.object({
     name: z.string().register(z.globalRegistry, {
@@ -7780,9 +7780,9 @@ export const zUserTaskAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.obj
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskAuditLogFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -7835,9 +7835,9 @@ export const zBatchOperationSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zBatchOperationFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Batch operation search request.'
-}));
+});
 
 /**
  * Exact match
@@ -7911,9 +7911,9 @@ export const zClusterVariableSearchQueryRequest = zSearchQueryRequest.and(z.obje
         description: 'Sort field criteria.'
     }).optional(),
     filter: zClusterVariableSearchQueryFilterRequest.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Cluster variable search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -8084,9 +8084,9 @@ export const zGlobalTaskListenerSearchQueryRequest = zSearchQueryRequest.and(z.o
         description: 'Sort field criteria.'
     }).optional(),
     filter: zGlobalTaskListenerSearchQueryFilterRequest.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Global listener search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -8177,9 +8177,9 @@ export const zElementInstanceSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zElementInstanceFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Element instance search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8322,9 +8322,9 @@ export const zBatchOperationItemSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zBatchOperationItemFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Batch operation item search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8363,9 +8363,9 @@ export const zElementInstanceWaitStateQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zElementInstanceWaitStateFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Element instance inspection request.'
-}));
+});
 
 /**
  * Exact match
@@ -8450,9 +8450,9 @@ export const zJobSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zJobFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Job search request.'
-}));
+});
 
 /**
  * The filter and changeset for a batch job update operation. The filter defines which jobs are updated; the changeset defines what to update. At least one changeset field must be non-null.
@@ -8538,9 +8538,9 @@ export const zVariableSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zVariableFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Variable search query request.'
-}));
+});
 
 /**
  * Exact match
@@ -8597,9 +8597,9 @@ export const zAgentDefinitionSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentDefinitionFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent definition search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8649,9 +8649,9 @@ export const zAgentInstanceSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentInstanceFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8691,9 +8691,9 @@ export const zAgentInstanceHistorySearchQuery = zSearchQueryRequest.and(z.object
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAgentInstanceHistoryFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Agent instance history search request.'
-}));
+});
 
 /**
  * Exact match
@@ -8802,9 +8802,9 @@ export const zAuditLogSearchQueryRequest = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zAuditLogFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Audit log search request.'
-}));
+});
 
 /**
  * Decision instance search filter.
@@ -9041,9 +9041,9 @@ export const zProcessInstanceFilterFields = zBaseProcessInstanceFilterFields.and
     processDefinitionVersion: zIntegerFilterProperty.optional(),
     processDefinitionVersionTag: zStringFilterProperty.optional(),
     processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process instance search filter.'
-}));
+});
 
 /**
  * Process instance search filter.
@@ -9133,9 +9133,9 @@ export const zProcessInstanceSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zProcessInstanceFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'Process instance search request.'
-}));
+});
 
 /**
  * Exact match
@@ -9193,9 +9193,9 @@ export const zUserTaskSearchQuery = zSearchQueryRequest.and(z.object({
         description: 'Sort field criteria.'
     }).optional(),
     filter: zUserTaskFilter.optional()
-}).register(z.globalRegistry, {
+})).register(z.globalRegistry, {
     description: 'User task search query request.'
-}));
+});
 
 /**
  * System-generated key for an authorization.

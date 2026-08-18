@@ -4,7 +4,7 @@ export type CamundaKey< T extends string = string > = string & { readonly __bran
 // branding-plugin patch: applied primitive branding
 
 export type ClientOptions = {
-    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | '{schema}://{host}:{port}' | (string & {});
+    baseUrl: '{schema}://{host}:{port}/v2' | '{schema}://{host}:{port}' | (string & {});
 };
 
 export type AgentDefinitionSearchQuerySortRequest = {
