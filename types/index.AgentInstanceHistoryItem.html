@@ -17,7 +17,7 @@ submitted as part of the batch on an agent instance update request.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">AgentInstanceHistoryItem</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#content">content</a><span class="tsd-signature-symbol">:</span> <a href="index.AgentInstanceMessageContent.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceMessageContent</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#historyitemid">historyItemId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#loopiteration">loopIteration</a><span class="tsd-signature-symbol">:</span> <a href="index.LoopIterationId.html" class="tsd-signature-type tsd-kind-type-alias">LoopIterationId</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#metrics">metrics</a><span class="tsd-signature-symbol">?:</span> <a href="index.AgentInstanceHistoryItemMetrics.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceHistoryItemMetrics</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#producedat">producedAt</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#role">role</a><span class="tsd-signature-symbol">:</span> <a href="index.AgentInstanceHistoryRoleEnum.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceHistoryRoleEnum</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#toolcalls">toolCalls</a><span class="tsd-signature-symbol">?:</span> <a href="index.AgentInstanceToolCall.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceToolCall</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L681">gen/types.gen.ts:681</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L681">gen/types.gen.ts:681</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -42,7 +42,7 @@ submitted as part of the batch on an agent instance update request.</p>
 <div class="tsd-comment tsd-typography"><p>The content blocks of this history item.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L701">gen/types.gen.ts:701</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L701">gen/types.gen.ts:701</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="historyitemid"><span>history<wbr/>Item<wbr/>Id</span><a href="#historyitemid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">historyItemId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
@@ -52,35 +52,35 @@ it already sent in an earlier attempt, those items are not rejected; they
 are flagged via isDuplicate in the response instead. Must be non-blank.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L689">gen/types.gen.ts:689</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L689">gen/types.gen.ts:689</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="loopiteration"><span>loop<wbr/>Iteration</span><a href="#loopiteration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">loopIteration</span><span class="tsd-signature-symbol">:</span> <a href="index.LoopIterationId.html" class="tsd-signature-type tsd-kind-type-alias">LoopIterationId</a></div>
 <div class="tsd-comment tsd-typography"><p>The loop iteration this item belongs to.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L693">gen/types.gen.ts:693</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L693">gen/types.gen.ts:693</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="metrics"><code class="tsd-tag">Optional</code><span>metrics</span><a href="#metrics" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">metrics</span><span class="tsd-signature-symbol">?:</span> <a href="index.AgentInstanceHistoryItemMetrics.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceHistoryItemMetrics</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>Per-call token and latency metrics. Present on ASSISTANT items only.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L713">gen/types.gen.ts:713</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L713">gen/types.gen.ts:713</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="producedat"><span>produced<wbr/>At</span><a href="#producedat" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">producedAt</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The agent-side timestamp of when this message was produced.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L717">gen/types.gen.ts:717</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L717">gen/types.gen.ts:717</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="role"><span>role</span><a href="#role" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">role</span><span class="tsd-signature-symbol">:</span> <a href="index.AgentInstanceHistoryRoleEnum.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceHistoryRoleEnum</a></div>
 <div class="tsd-comment tsd-typography"><p>The role of this history item in the conversation.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L697">gen/types.gen.ts:697</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L697">gen/types.gen.ts:697</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="toolcalls"><code class="tsd-tag">Optional</code><span>tool<wbr/>Calls</span><a href="#toolcalls" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">toolCalls</span><span class="tsd-signature-symbol">?:</span> <a href="index.AgentInstanceToolCall.html" class="tsd-signature-type tsd-kind-type-alias">AgentInstanceToolCall</a><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
@@ -90,7 +90,7 @@ For TOOL_RESULT items: single-entry array referencing the originating tool call.
 Omit for USER items.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6c0d2f2229808ab2dd338ec9892bd3aa45274e2f/src/gen/types.gen.ts#L709">gen/types.gen.ts:709</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/29671758732102a28d3f1c6b796b967a5a5eab37/src/gen/types.gen.ts#L709">gen/types.gen.ts:709</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
