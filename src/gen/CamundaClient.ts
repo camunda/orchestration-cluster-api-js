@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 225
+// Operations: 227
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -333,6 +333,8 @@ export type getBatchOperationConsistency = {
 };
 type getClusterStatusOptions = Parameters<typeof Sdk.getClusterStatus>[0];
 export type getClusterStatusInput = void;
+type getClusterTopologyOptions = Parameters<typeof Sdk.getClusterTopology>[0];
+export type getClusterTopologyInput = void;
 type getDecisionDefinitionOptions = Parameters<typeof Sdk.getDecisionDefinition>[0];
 type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
 export type getDecisionDefinitionInput = { decisionDefinitionKey: getDecisionDefinitionPathParam_decisionDefinitionKey };
@@ -753,6 +755,11 @@ type restoreOptions = Parameters<typeof Sdk.restore>[0];
 type restoreBody = (NonNullable<restoreOptions> extends { body?: infer B } ? B : never);
 type restoreQueryParam_dryRun = (NonNullable<restoreOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
 export type restoreInput = restoreBody & { dryRun?: restoreQueryParam_dryRun };
+type restoreAsClusterAdminOptions = Parameters<typeof Sdk.restoreAsClusterAdmin>[0];
+type restoreAsClusterAdminBody = (NonNullable<restoreAsClusterAdminOptions> extends { body?: infer B } ? B : never);
+type restoreAsClusterAdminQueryParam_physicalTenantId = (NonNullable<restoreAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+type restoreAsClusterAdminQueryParam_dryRun = (NonNullable<restoreAsClusterAdminOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
+export type restoreAsClusterAdminInput = restoreAsClusterAdminBody & { physicalTenantId?: restoreAsClusterAdminQueryParam_physicalTenantId; dryRun?: restoreAsClusterAdminQueryParam_dryRun };
 type resumeBatchOperationOptions = Parameters<typeof Sdk.resumeBatchOperation>[0];
 type resumeBatchOperationBody = (NonNullable<resumeBatchOperationOptions> extends { body?: infer B } ? B : never);
 type resumeBatchOperationPathParam_batchOperationKey = (NonNullable<resumeBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
@@ -7507,6 +7514,80 @@ export class CamundaClient {
   }
 
   /**
+   * Get the topology of the whole cluster
+   *
+   * Obtains the topology of the whole cluster, aggregated over all physical tenants. Cluster-level information is reported once; partition layout, replication and per-partition role, health and state are reported per physical tenant.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `GET /v2/topology` for the topology of a single physical tenant.
+    *
+   * @example Get cluster topology (v2)
+   * ```ts
+   * async function getClusterTopologyExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Returns the full cluster topology: brokers, physical tenants (in a
+   *   // multi-tenant cluster), cluster size, and gateway version.
+   *   const topology = await camunda.getClusterTopology();
+   * 
+   *   console.log(
+   *     `Cluster ${topology.clusterId} — ${topology.clusterSize} broker(s), gateway ${topology.gatewayVersion}`
+   *   );
+   *   for (const broker of topology.brokers) {
+   *     console.log(`  Broker ${broker.brokerId}: ${broker.host}:${broker.port} (${broker.version})`);
+   *   }
+   *   for (const tenant of topology.physicalTenants) {
+   *     console.log(
+   *       `  Physical tenant ${tenant.physicalTenantId}: ${tenant.partitionsCount} partition(s), replication ${tenant.replicationFactor}`
+   *     );
+   *   }
+   * }
+   * ```
+   * @operationId getClusterTopology
+   * @tags Cluster
+   */
+  getClusterTopology(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterTopology>>;
+  getClusterTopology(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getClusterTopology(opts as any);
+        let data = this._evaluateResponse(_raw, 'getClusterTopology', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetClusterTopologyResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetClusterTopologyResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getClusterTopology', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getClusterTopology', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get decision definition
    *
    * Returns a decision definition by key.
@@ -12966,7 +13047,8 @@ export class CamundaClient {
    *   for (const group of change.plannedChanges) {
    *     console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
    *     for (const op of group.operations) {
-   *       console.log(`    ${op.operation}${op.mode ? ` -> ${op.mode}` : ''}`);
+   *       const mode = 'mode' in op ? op.mode : undefined;
+   *       console.log(`    ${op.operation}${mode ? ` -> ${mode}` : ''}`);
    *     }
    *   }
    * }
@@ -13031,6 +13113,105 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'restore', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Restore one or every physical tenant from a backup
+   *
+   * Restores physical tenants from backups. The restore is described either by a list of backup IDs or by a time range (`from`/`to`) that selects the backups to restore. Restores are only accepted while the targeted physical tenants are in recovery mode; requests are rejected otherwise. The request is validated and acknowledged, but the restore itself is performed asynchronously.
+   *
+   * If the `physicalTenantId` parameter is provided, only that physical tenant is restored and `overrides` must be omitted.
+   *
+   * If it is not provided, every physical tenant of the cluster is restored: those named in `overrides` with their own backup selection, all others with the selection at the top level of the request body.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+    *
+   * @example Restore from a backup as cluster admin
+   * ```ts
+   * async function restoreAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // The cluster-admin variant can target a specific physical tenant and supports
+   *   // per-tenant overrides. Omit `physicalTenantId` to restore every physical
+   *   // tenant. Provide either backup IDs (one per partition) or a time range
+   *   // (`from`/`to`), but not both.
+   *   const change = await camunda.restoreAsClusterAdmin({
+   *     backupIds: [200, 201],
+   *     physicalTenantId: 'default',
+   *     dryRun: true,
+   *   });
+   * 
+   *   console.log(`Cluster change ${change.changeId}:`);
+   *   for (const group of change.plannedChanges) {
+   *     console.log(`  ${group.physicalTenantId ?? 'cluster-wide'}:`);
+   *     for (const op of group.operations) {
+   *       const mode = 'mode' in op ? op.mode : undefined;
+   *       console.log(`    ${op.operation}${mode ? ` -> ${mode}` : ''}`);
+   *     }
+   *   }
+   * }
+   * ```
+   * @operationId restoreAsClusterAdmin
+   * @tags Recovery
+   */
+  restoreAsClusterAdmin(input: restoreAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.restoreAsClusterAdmin>>;
+  restoreAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId, dryRun, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId, dryRun };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('restoreAsClusterAdmin', _schemas.zRestoreAsClusterAdminBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('restoreAsClusterAdmin', _schemas.zRestoreAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.restoreAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'restoreAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zRestoreAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zRestoreAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('restoreAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'restoreAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 
