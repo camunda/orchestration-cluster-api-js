@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>classifyDomainError | @camunda8/orchestration-cluster-api</title><meta name="description" content="Documentation for @camunda8/orchestration-cluster-api"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>layer | @camunda8/orchestration-cluster-api</title><meta name="description" content="Documentation for @camunda8/orchestration-cluster-api"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container"><a href="../index.html" class="title">@camunda8/orchestration-cluster-api</a>
 <div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
 <ul role="listbox" id="tsd-search-results"></ul>
@@ -8,21 +8,25 @@
 <div class="col-content">
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb" aria-label="Breadcrumb">
-<li><a href="../modules/fp.html">fp</a></li>
-<li><a href="" aria-current="page">classifyDomainError</a></li></ul>
-<h1>Function classifyDomainError</h1></div>
+<li><a href="../modules/effect.html">effect</a></li>
+<li><a href="" aria-current="page">layer</a></li></ul>
+<h1>Function layer</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="classifydomainerror"><span class="tsd-kind-call-signature">classifyDomainError</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">err</span><span class="tsd-signature-symbol">:</span> <a href="../types/fp.DomainError.html" class="tsd-signature-type tsd-kind-type-alias">DomainError</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/fp.DomainErrorTag.html" class="tsd-signature-type tsd-kind-type-alias">DomainErrorTag</a><a href="#classifydomainerror" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="layer"><span class="tsd-kind-call-signature">layer</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <a href="../interfaces/index.CamundaOptions.html" class="tsd-signature-type tsd-kind-interface">CamundaOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Layer</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/effect.CamundaEffect.html" class="tsd-signature-type tsd-kind-class">CamundaEffect</a><span class="tsd-signature-symbol">&gt;</span><a href="#layer" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>A <code>Layer</code> that constructs a <a href="../types/effect.CamundaEffectClient.html" class="tsd-kind-type-alias">CamundaEffectClient</a> and provides it as the
+<a href="../classes/effect.CamundaEffect.html" class="tsd-kind-class">CamundaEffect</a> service. Swap in a test double by providing a different
+<code>Layer</code> for the same tag.</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">err</span>: <a href="../types/fp.DomainError.html" class="tsd-signature-type tsd-kind-type-alias">DomainError</a></span></li></ul></div>
-<h4 class="tsd-returns-title">Returns <a href="../types/fp.DomainErrorTag.html" class="tsd-signature-type tsd-kind-type-alias">DomainErrorTag</a></h4><aside class="tsd-sources">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <a href="../interfaces/index.CamundaOptions.html" class="tsd-signature-type tsd-kind-interface">CamundaOptions</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Layer</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/effect.CamundaEffect.html" class="tsd-signature-type tsd-kind-class">CamundaEffect</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/205adf19700b86095c2a5c8c1660d3da5c730c08/src/fp-ts.ts#L42">fp-ts.ts:42</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b9470b3041a2da0606928308d2a233d8fb51da9b/src/effect.ts#L295">src/effect.ts:295</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
