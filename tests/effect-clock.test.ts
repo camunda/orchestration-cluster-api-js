@@ -1,4 +1,4 @@
-import { Effect, Exit, Fiber, Option } from 'effect';
+import { Duration, Effect, Exit, Fiber, Option } from 'effect';
 import { TestClock } from 'effect/testing';
 import { describe, expect, it } from 'vitest';
 import { EventualConsistencyTimeout, eventually, withTimeout } from '../src/effect';
@@ -62,5 +62,48 @@ describe('effect combinators are bounded by virtual time (TestClock)', () => {
     }
     // 60s of virtual sleep never ran in real time.
     expect(realElapsed).toBeLessThan(5000);
+  });
+});
+
+// Guards the message-formatting defect class: `Duration.Input` accepts non-string
+// forms (millis-numbers, `[seconds, nanos]` tuples, `Duration` values). Building
+// error text with `String(input)` degrades those to `[object Object]`; the
+// combinators must render them human-readably via `Duration.format` instead.
+describe('timeout messages render non-string durations human-readably (not [object Object])', () => {
+  const messageOf = async (
+    program: Effect.Effect<Exit.Exit<unknown, EventualConsistencyTimeout>>
+  ) => {
+    const exit = await Effect.runPromise(program.pipe(Effect.provide(TestClock.layer())));
+    expect(Exit.isFailure(exit)).toBe(true);
+    const failure = Exit.isFailure(exit) ? Exit.findErrorOption(exit) : Option.none();
+    expect(Option.isSome(failure)).toBe(true);
+    const err = Option.getOrThrow(failure);
+    expect(err).toBeInstanceOf(EventualConsistencyTimeout);
+    return (err as EventualConsistencyTimeout).message;
+  };
+
+  it('withTimeout: object-form (Duration value) renders as a readable unit, not [object Object]', async () => {
+    const program = Effect.gen(function* () {
+      // A `Duration` value — `String(Duration.seconds(5))` is literally
+      // "[object Object]", the exact degradation this guards against.
+      const fiber = yield* Effect.forkChild(withTimeout(Effect.never, Duration.seconds(5)));
+      yield* TestClock.adjust('5 seconds');
+      return yield* Fiber.await(fiber);
+    });
+    const msg = await messageOf(program);
+    expect(msg).toContain('5s');
+    expect(msg).not.toContain('[object Object]');
+  });
+
+  it('eventually: numeric (millis) waitUpTo renders as a readable unit', async () => {
+    const program = Effect.gen(function* () {
+      const poll = eventually(Effect.succeed(0), (n) => n > 0, { waitUpTo: 30000, interval: 1000 });
+      const fiber = yield* Effect.forkChild(poll);
+      yield* TestClock.adjust('30 seconds');
+      return yield* Fiber.await(fiber);
+    });
+    const msg = await messageOf(program);
+    expect(msg).toContain('30s');
+    expect(msg).not.toContain('[object Object]');
   });
 });

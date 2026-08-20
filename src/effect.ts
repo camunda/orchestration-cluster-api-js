@@ -9,7 +9,7 @@
 // subpath) is the only way to pull `effect` into the runtime graph. The main `.`
 // entry never imports it, so Promise-first users are never forced to adopt Effect.
 
-import { Context, Data, type Duration, Effect, Layer, Schedule } from 'effect';
+import { Context, Data, Duration, Effect, Layer, Schedule } from 'effect';
 import { type CamundaClient, type CamundaOptions, createCamundaClient } from './gen/CamundaClient';
 import {
   EventualConsistencyTimeoutError as RuntimeEventualConsistencyTimeoutError,
@@ -135,12 +135,20 @@ export function createCamundaEffectClient(options?: CamundaOptions): CamundaEffe
 
   function wrap(fn: (...a: any[]) => any) {
     return (...args: any[]) =>
-      Effect.tryPromise({
-        try: async () => {
-          const r = fn.apply(base, args);
-          return isPromiseLike(r) ? await r : r;
-        },
-        catch: (e) => toDomainError(e),
+      Effect.suspend(() => {
+        const r = fn.apply(base, args);
+        if (!isPromiseLike(r)) return Effect.succeed(r);
+        return Effect.callback<any, DomainError>((resume) => {
+          r.then(
+            (a: unknown) => resume(Effect.succeed(a)),
+            (e: unknown) => resume(Effect.fail(toDomainError(e)))
+          );
+          // Honour Effect interruption: if the fiber is interrupted (e.g. by
+          // `withTimeout` or a parent), cancel the underlying `CancelablePromise`
+          // so the in-flight HTTP request is aborted instead of leaking.
+          const cancel = (r as { cancel?: () => void }).cancel;
+          return typeof cancel === 'function' ? Effect.sync(() => cancel.call(r)) : undefined;
+        });
       });
   }
 
@@ -163,6 +171,15 @@ export function createCamundaEffectClient(options?: CamundaOptions): CamundaEffe
 }
 
 // --- Combinators (Effect-native) ------------------------------------------------
+
+/**
+ * Human-readable rendering of a `Duration.Input` for error messages. `String()`
+ * degrades to `[object Object]` for non-string inputs (millis-numbers, `Duration`
+ * values, `[seconds, nanos]` tuples); this normalises them via `Duration.format`.
+ */
+function formatDuration(d: Duration.Input): string {
+  return Duration.format(Duration.fromInputUnsafe(d));
+}
 
 /**
  * Retry an effect with exponential backoff (+ jitter), capped attempts, and an
@@ -203,7 +220,7 @@ export function withTimeout<A, E, R>(
         onTimeout
           ? onTimeout()
           : new EventualConsistencyTimeout({
-              message: `Timed out after ${String(duration)}`,
+              message: `Timed out after ${formatDuration(duration)}`,
             })
       ),
   });
@@ -239,7 +256,7 @@ export function eventually<A, E, R>(
     opts.waitUpTo,
     () =>
       new EventualConsistencyTimeout({
-        message: `Eventual consistency timeout after ${String(opts.waitUpTo)}`,
+        message: `Eventual consistency timeout after ${formatDuration(opts.waitUpTo)}`,
       })
   );
 }
