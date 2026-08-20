@@ -187,7 +187,14 @@ export function createCamundaEffectClient(options?: CamundaOptions): CamundaEffe
  * values, `[seconds, nanos]` tuples); this normalises them via `Duration.format`.
  */
 function formatDuration(d: Duration.Input): string {
-  return Duration.format(Duration.fromInputUnsafe(d));
+  // Only used to build error messages. `fromInputUnsafe` throws on a malformed
+  // (but statically typed) Duration.Input, so guard it — a formatting failure
+  // must never turn a typed timeout failure into an unexpected defect.
+  try {
+    return Duration.format(Duration.fromInputUnsafe(d));
+  } catch {
+    return String(d);
+  }
 }
 
 /**
