@@ -2,9 +2,9 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-08-18T01:28:04.267Z",
+    "generatedAt": "2026-08-20T05:40:05.340Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "e8f9402c230cd72a9f8b093c0258f078ca84f099c2a16ee2887027dd83ff4345"
+    "specSha256": "31e326cdeeb5a055ae1f033a06c6e36fafd3d02678f180132c553c90c76dca28"
   },
   "responses": [
     {
@@ -4774,6 +4774,23 @@
           {
             "name": "expression",
             "type": "string"
+          },
+          {
+            "name": "referencedSecrets",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "secretName",
+                  "type": "string"
+                },
+                {
+                  "name": "storeId",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
           },
           {
             "name": "result",
@@ -9644,6 +9661,137 @@
                   "name": "physicalTenantId",
                   "type": "string",
                   "nullable": true
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/exporting",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "status",
+            "type": "string",
+            "enumValues": [
+              "EXPORTING",
+              "PAUSED",
+              "SOFT_PAUSED",
+              "MIXED"
+            ]
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/backups/history",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/backups/history",
+      "method": "POST",
+      "status": "202",
+      "schema": {
+        "required": [
+          {
+            "name": "backupId",
+            "type": "number"
+          },
+          {
+            "name": "physicalTenants",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "physicalTenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "scheduledSnapshots",
+                  "type": "array<string>"
+                }
+              ],
+              "optional": []
+            }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/backups/history/{backupId}",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "backupId",
+            "type": "number"
+          },
+          {
+            "name": "physicalTenants",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "details",
+                  "type": "array<items>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "failures",
+                        "type": "array<string>"
+                      },
+                      {
+                        "name": "snapshotName",
+                        "type": "string"
+                      },
+                      {
+                        "name": "startTime",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "state",
+                        "type": "string",
+                        "nullable": true
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "failureReason",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "physicalTenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "state",
+                  "type": "string",
+                  "enumValues": [
+                    "IN_PROGRESS",
+                    "COMPLETED",
+                    "FAILED",
+                    "INCOMPLETE",
+                    "INCOMPATIBLE",
+                    "NOT_FOUND"
+                  ]
                 }
               ],
               "optional": []

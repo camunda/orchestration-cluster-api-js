@@ -1597,5 +1597,54 @@
       "region": "SearchAgentDefinitions",
       "label": "Search agent definitions"
     }
+  ],
+  "takeHistoryBackupAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "TakeHistoryBackupAsClusterAdmin",
+      "label": "Take a history backup (cluster admin)"
+    }
+  ],
+  "listHistoryBackupsAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "ListHistoryBackupsAsClusterAdmin",
+      "label": "List history backups (cluster admin)"
+    }
+  ],
+  "getHistoryBackupAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "GetHistoryBackupAsClusterAdmin",
+      "label": "Get a history backup (cluster admin)"
+    }
+  ],
+  "deleteHistoryBackupAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "DeleteHistoryBackupAsClusterAdmin",
+      "label": "Delete a history backup (cluster admin)"
+    }
+  ],
+  "pauseClusterExporting": [
+    {
+      "file": "exporting.ts",
+      "region": "PauseClusterExporting",
+      "label": "Pause cluster exporting"
+    }
+  ],
+  "resumeClusterExporting": [
+    {
+      "file": "exporting.ts",
+      "region": "ResumeClusterExporting",
+      "label": "Resume cluster exporting"
+    }
+  ],
+  "getClusterExportingStatus": [
+    {
+      "file": "exporting.ts",
+      "region": "GetClusterExportingStatus",
+      "label": "Get cluster exporting status"
+    }
   ]
 }

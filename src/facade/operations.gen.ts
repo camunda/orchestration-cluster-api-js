@@ -1,6 +1,6 @@
 // @generated ergonomic operation wrappers
 // DO NOT EDIT MANUALLY – run npm run generate
-import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignProcessInstanceBusinessId as _assignProcessInstanceBusinessId, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, changeClusterMode as _changeClusterMode, changeClusterModeAsClusterAdmin as _changeClusterModeAsClusterAdmin, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAgentInstance as _createAgentInstance, createAgentInstanceHistoryItem as _createAgentInstanceHistoryItem, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteHistoryBackup as _deleteHistoryBackup, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteRuntimeBackup as _deleteRuntimeBackup, deleteRuntimeBackupState as _deleteRuntimeBackupState, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAgentDefinition as _getAgentDefinition, getAgentInstance as _getAgentInstance, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getClusterStatus as _getClusterStatus, getClusterTopology as _getClusterTopology, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getExportingStatus as _getExportingStatus, getFormByKey as _getFormByKey, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getHistoryBackup as _getHistoryBackup, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getProcessInstanceWaitStateStatistics as _getProcessInstanceWaitStateStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getResourceContentBinary as _getResourceContentBinary, getRestoreStatus as _getRestoreStatus, getRole as _getRole, getRuntimeBackup as _getRuntimeBackup, getRuntimeBackupState as _getRuntimeBackupState, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, listHistoryBackups as _listHistoryBackups, listRuntimeBackups as _listRuntimeBackups, listSecrets as _listSecrets, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pauseExporting as _pauseExporting, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resolveSecrets as _resolveSecrets, restore as _restore, restoreAsClusterAdmin as _restoreAsClusterAdmin, resumeBatchOperation as _resumeBatchOperation, resumeExporting as _resumeExporting, resumeProcessInstance as _resumeProcessInstance, resumeProcessInstancesBatchOperation as _resumeProcessInstancesBatchOperation, searchAgentDefinitions as _searchAgentDefinitions, searchAgentInstanceHistory as _searchAgentInstanceHistory, searchAgentInstances as _searchAgentInstances, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchElementInstanceWaitStates as _searchElementInstanceWaitStates, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchOwnAuthorizations as _searchOwnAuthorizations, searchProcessDefinitions as _searchProcessDefinitions, searchProcessDefinitionVariableNames as _searchProcessDefinitionVariableNames, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchResources as _searchResources, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, suspendProcessInstance as _suspendProcessInstance, suspendProcessInstancesBatchOperation as _suspendProcessInstancesBatchOperation, syncRuntimeBackupState as _syncRuntimeBackupState, takeHistoryBackup as _takeHistoryBackup, takeRuntimeBackup as _takeRuntimeBackup, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAgentInstance as _updateAgentInstance, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateJobsBatchOperation as _updateJobsBatchOperation, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
+import { /* underlying */ activateAdHocSubProcessActivities as _activateAdHocSubProcessActivities, activateJobs as _activateJobs, assignClientToGroup as _assignClientToGroup, assignClientToTenant as _assignClientToTenant, assignGroupToTenant as _assignGroupToTenant, assignMappingRuleToGroup as _assignMappingRuleToGroup, assignMappingRuleToTenant as _assignMappingRuleToTenant, assignProcessInstanceBusinessId as _assignProcessInstanceBusinessId, assignRoleToClient as _assignRoleToClient, assignRoleToGroup as _assignRoleToGroup, assignRoleToMappingRule as _assignRoleToMappingRule, assignRoleToTenant as _assignRoleToTenant, assignRoleToUser as _assignRoleToUser, assignUserTask as _assignUserTask, assignUserToGroup as _assignUserToGroup, assignUserToTenant as _assignUserToTenant, broadcastSignal as _broadcastSignal, cancelBatchOperation as _cancelBatchOperation, cancelProcessInstance as _cancelProcessInstance, cancelProcessInstancesBatchOperation as _cancelProcessInstancesBatchOperation, changeClusterMode as _changeClusterMode, changeClusterModeAsClusterAdmin as _changeClusterModeAsClusterAdmin, completeJob as _completeJob, completeUserTask as _completeUserTask, correlateMessage as _correlateMessage, createAdminUser as _createAdminUser, createAgentInstance as _createAgentInstance, createAgentInstanceHistoryItem as _createAgentInstanceHistoryItem, createAuthorization as _createAuthorization, createDeployment as _createDeployment, createDocument as _createDocument, createDocumentLink as _createDocumentLink, createDocuments as _createDocuments, createElementInstanceVariables as _createElementInstanceVariables, createGlobalClusterVariable as _createGlobalClusterVariable, createGlobalTaskListener as _createGlobalTaskListener, createGroup as _createGroup, createMappingRule as _createMappingRule, createProcessInstance as _createProcessInstance, createRole as _createRole, createTenant as _createTenant, createTenantClusterVariable as _createTenantClusterVariable, createUser as _createUser, deleteAuthorization as _deleteAuthorization, deleteDecisionInstance as _deleteDecisionInstance, deleteDecisionInstancesBatchOperation as _deleteDecisionInstancesBatchOperation, deleteDocument as _deleteDocument, deleteGlobalClusterVariable as _deleteGlobalClusterVariable, deleteGlobalTaskListener as _deleteGlobalTaskListener, deleteGroup as _deleteGroup, deleteHistoryBackup as _deleteHistoryBackup, deleteHistoryBackupAsClusterAdmin as _deleteHistoryBackupAsClusterAdmin, deleteMappingRule as _deleteMappingRule, deleteProcessInstance as _deleteProcessInstance, deleteProcessInstancesBatchOperation as _deleteProcessInstancesBatchOperation, deleteResource as _deleteResource, deleteRole as _deleteRole, deleteRuntimeBackup as _deleteRuntimeBackup, deleteRuntimeBackupState as _deleteRuntimeBackupState, deleteTenant as _deleteTenant, deleteTenantClusterVariable as _deleteTenantClusterVariable, deleteUser as _deleteUser, evaluateConditionals as _evaluateConditionals, evaluateDecision as _evaluateDecision, evaluateExpression as _evaluateExpression, failJob as _failJob, getAgentDefinition as _getAgentDefinition, getAgentInstance as _getAgentInstance, getAuditLog as _getAuditLog, getAuthentication as _getAuthentication, getAuthorization as _getAuthorization, getBatchOperation as _getBatchOperation, getClusterExportingStatus as _getClusterExportingStatus, getClusterStatus as _getClusterStatus, getClusterTopology as _getClusterTopology, getDecisionDefinition as _getDecisionDefinition, getDecisionDefinitionXml as _getDecisionDefinitionXml, getDecisionInstance as _getDecisionInstance, getDecisionRequirements as _getDecisionRequirements, getDecisionRequirementsXml as _getDecisionRequirementsXml, getDocument as _getDocument, getElementInstance as _getElementInstance, getExportingStatus as _getExportingStatus, getFormByKey as _getFormByKey, getGlobalClusterVariable as _getGlobalClusterVariable, getGlobalJobStatistics as _getGlobalJobStatistics, getGlobalTaskListener as _getGlobalTaskListener, getGroup as _getGroup, getHistoryBackup as _getHistoryBackup, getHistoryBackupAsClusterAdmin as _getHistoryBackupAsClusterAdmin, getIncident as _getIncident, getJobErrorStatistics as _getJobErrorStatistics, getJobTimeSeriesStatistics as _getJobTimeSeriesStatistics, getJobTypeStatistics as _getJobTypeStatistics, getJobWorkerStatistics as _getJobWorkerStatistics, getLicense as _getLicense, getMappingRule as _getMappingRule, getProcessDefinition as _getProcessDefinition, getProcessDefinitionInstanceStatistics as _getProcessDefinitionInstanceStatistics, getProcessDefinitionInstanceVersionStatistics as _getProcessDefinitionInstanceVersionStatistics, getProcessDefinitionMessageSubscriptionStatistics as _getProcessDefinitionMessageSubscriptionStatistics, getProcessDefinitionStatistics as _getProcessDefinitionStatistics, getProcessDefinitionXml as _getProcessDefinitionXml, getProcessInstance as _getProcessInstance, getProcessInstanceCallHierarchy as _getProcessInstanceCallHierarchy, getProcessInstanceSequenceFlows as _getProcessInstanceSequenceFlows, getProcessInstanceStatistics as _getProcessInstanceStatistics, getProcessInstanceStatisticsByDefinition as _getProcessInstanceStatisticsByDefinition, getProcessInstanceStatisticsByError as _getProcessInstanceStatisticsByError, getProcessInstanceWaitStateStatistics as _getProcessInstanceWaitStateStatistics, getResource as _getResource, getResourceContent as _getResourceContent, getResourceContentBinary as _getResourceContentBinary, getRestoreStatus as _getRestoreStatus, getRole as _getRole, getRuntimeBackup as _getRuntimeBackup, getRuntimeBackupState as _getRuntimeBackupState, getStartProcessForm as _getStartProcessForm, getStatus as _getStatus, getSystemConfiguration as _getSystemConfiguration, getTenant as _getTenant, getTenantClusterVariable as _getTenantClusterVariable, getTopology as _getTopology, getUsageMetrics as _getUsageMetrics, getUser as _getUser, getUserTask as _getUserTask, getUserTaskForm as _getUserTaskForm, getVariable as _getVariable, listHistoryBackups as _listHistoryBackups, listHistoryBackupsAsClusterAdmin as _listHistoryBackupsAsClusterAdmin, listRuntimeBackups as _listRuntimeBackups, listSecrets as _listSecrets, migrateProcessInstance as _migrateProcessInstance, migrateProcessInstancesBatchOperation as _migrateProcessInstancesBatchOperation, modifyProcessInstance as _modifyProcessInstance, modifyProcessInstancesBatchOperation as _modifyProcessInstancesBatchOperation, pauseClusterExporting as _pauseClusterExporting, pauseExporting as _pauseExporting, pinClock as _pinClock, publishMessage as _publishMessage, resetClock as _resetClock, resolveIncident as _resolveIncident, resolveIncidentsBatchOperation as _resolveIncidentsBatchOperation, resolveProcessInstanceIncidents as _resolveProcessInstanceIncidents, resolveSecrets as _resolveSecrets, restore as _restore, restoreAsClusterAdmin as _restoreAsClusterAdmin, resumeBatchOperation as _resumeBatchOperation, resumeClusterExporting as _resumeClusterExporting, resumeExporting as _resumeExporting, resumeProcessInstance as _resumeProcessInstance, resumeProcessInstancesBatchOperation as _resumeProcessInstancesBatchOperation, searchAgentDefinitions as _searchAgentDefinitions, searchAgentInstanceHistory as _searchAgentInstanceHistory, searchAgentInstances as _searchAgentInstances, searchAuditLogs as _searchAuditLogs, searchAuthorizations as _searchAuthorizations, searchBatchOperationItems as _searchBatchOperationItems, searchBatchOperations as _searchBatchOperations, searchClientsForGroup as _searchClientsForGroup, searchClientsForRole as _searchClientsForRole, searchClientsForTenant as _searchClientsForTenant, searchClusterVariables as _searchClusterVariables, searchCorrelatedMessageSubscriptions as _searchCorrelatedMessageSubscriptions, searchDecisionDefinitions as _searchDecisionDefinitions, searchDecisionInstances as _searchDecisionInstances, searchDecisionRequirements as _searchDecisionRequirements, searchElementInstanceIncidents as _searchElementInstanceIncidents, searchElementInstances as _searchElementInstances, searchElementInstanceWaitStates as _searchElementInstanceWaitStates, searchGlobalTaskListeners as _searchGlobalTaskListeners, searchGroupIdsForTenant as _searchGroupIdsForTenant, searchGroups as _searchGroups, searchGroupsForRole as _searchGroupsForRole, searchIncidents as _searchIncidents, searchJobs as _searchJobs, searchMappingRule as _searchMappingRule, searchMappingRulesForGroup as _searchMappingRulesForGroup, searchMappingRulesForRole as _searchMappingRulesForRole, searchMappingRulesForTenant as _searchMappingRulesForTenant, searchMessageSubscriptions as _searchMessageSubscriptions, searchOwnAuthorizations as _searchOwnAuthorizations, searchProcessDefinitions as _searchProcessDefinitions, searchProcessDefinitionVariableNames as _searchProcessDefinitionVariableNames, searchProcessInstanceIncidents as _searchProcessInstanceIncidents, searchProcessInstances as _searchProcessInstances, searchResources as _searchResources, searchRoles as _searchRoles, searchRolesForGroup as _searchRolesForGroup, searchRolesForTenant as _searchRolesForTenant, searchTenants as _searchTenants, searchUsers as _searchUsers, searchUsersForGroup as _searchUsersForGroup, searchUsersForRole as _searchUsersForRole, searchUsersForTenant as _searchUsersForTenant, searchUserTaskAuditLogs as _searchUserTaskAuditLogs, searchUserTaskEffectiveVariables as _searchUserTaskEffectiveVariables, searchUserTasks as _searchUserTasks, searchUserTaskVariables as _searchUserTaskVariables, searchVariables as _searchVariables, suspendBatchOperation as _suspendBatchOperation, suspendProcessInstance as _suspendProcessInstance, suspendProcessInstancesBatchOperation as _suspendProcessInstancesBatchOperation, syncRuntimeBackupState as _syncRuntimeBackupState, takeHistoryBackup as _takeHistoryBackup, takeHistoryBackupAsClusterAdmin as _takeHistoryBackupAsClusterAdmin, takeRuntimeBackup as _takeRuntimeBackup, throwJobError as _throwJobError, unassignClientFromGroup as _unassignClientFromGroup, unassignClientFromTenant as _unassignClientFromTenant, unassignGroupFromTenant as _unassignGroupFromTenant, unassignMappingRuleFromGroup as _unassignMappingRuleFromGroup, unassignMappingRuleFromTenant as _unassignMappingRuleFromTenant, unassignRoleFromClient as _unassignRoleFromClient, unassignRoleFromGroup as _unassignRoleFromGroup, unassignRoleFromMappingRule as _unassignRoleFromMappingRule, unassignRoleFromTenant as _unassignRoleFromTenant, unassignRoleFromUser as _unassignRoleFromUser, unassignUserFromGroup as _unassignUserFromGroup, unassignUserFromTenant as _unassignUserFromTenant, unassignUserTask as _unassignUserTask, updateAgentInstance as _updateAgentInstance, updateAuthorization as _updateAuthorization, updateGlobalClusterVariable as _updateGlobalClusterVariable, updateGlobalTaskListener as _updateGlobalTaskListener, updateGroup as _updateGroup, updateJob as _updateJob, updateJobsBatchOperation as _updateJobsBatchOperation, updateMappingRule as _updateMappingRule, updateRole as _updateRole, updateTenant as _updateTenant, updateTenantClusterVariable as _updateTenantClusterVariable, updateUser as _updateUser, updateUserTask as _updateUserTask } from '../gen/sdk.gen';
 import { ActivateJobsData, BroadcastSignalData, CancelProcessInstancesBatchOperationData, CorrelateMessageData, CreateAdminUserData, CreateAgentInstanceData, CreateAuthorizationData, CreateDeploymentData, CreateGlobalClusterVariableData, CreateGlobalTaskListenerData, CreateGroupData, CreateMappingRuleData, CreateProcessInstanceData, CreateRoleData, CreateTenantData, CreateUserData, DeleteDecisionInstancesBatchOperationData, DeleteProcessInstancesBatchOperationData, EvaluateConditionalsData, EvaluateDecisionData, EvaluateExpressionData, GetJobErrorStatisticsData, GetJobTimeSeriesStatisticsData, GetJobTypeStatisticsData, GetJobWorkerStatisticsData, GetProcessDefinitionInstanceStatisticsData, GetProcessDefinitionInstanceVersionStatisticsData, GetProcessDefinitionMessageSubscriptionStatisticsData, GetProcessInstanceStatisticsByDefinitionData, GetProcessInstanceStatisticsByErrorData, ListSecretsData, MigrateProcessInstancesBatchOperationData, ModifyProcessInstancesBatchOperationData, PinClockData, PublishMessageData, ResolveIncidentsBatchOperationData, ResolveSecretsData, ResumeProcessInstancesBatchOperationData, SearchAgentDefinitionsData, SearchAgentInstancesData, SearchAuditLogsData, SearchAuthorizationsData, SearchBatchOperationItemsData, SearchBatchOperationsData, SearchCorrelatedMessageSubscriptionsData, SearchDecisionDefinitionsData, SearchDecisionInstancesData, SearchDecisionRequirementsData, SearchElementInstancesData, SearchElementInstanceWaitStatesData, SearchGlobalTaskListenersData, SearchGroupsData, SearchIncidentsData, SearchJobsData, SearchMappingRuleData, SearchMessageSubscriptionsData, SearchOwnAuthorizationsData, SearchProcessDefinitionsData, SearchProcessInstancesData, SearchResourcesData, SearchRolesData, SearchTenantsData, SearchUsersData, SearchUserTasksData, SuspendProcessInstancesBatchOperationData, TakeHistoryBackupData, TakeRuntimeBackupData, UpdateJobsBatchOperationData } from '../gen/types.gen';
 import { eventualPoll, ConsistencyOptions } from '../runtime/eventual';
 
@@ -3304,6 +3304,32 @@ export function deleteHistoryBackup(options?: Parameters<typeof _deleteHistoryBa
 }
 
 /**
+ * Delete a history backup across physical tenants
+ *
+ * Deletes the history backup with the given id from every physical tenant of the cluster, or from the one named by `physicalTenantId`. A tenant that does not hold the backup has already reached the requested end state, so it counts as deleted rather than as a failure.
+ *
+ * The request is all-or-nothing: a physical tenant the backup cannot be deleted from fails the whole request, and the deletions that already succeeded on other tenants are not undone. Narrow the request with `physicalTenantId` to delete from the tenants that can still be reached.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Only available on clusters whose secondary storage is Elasticsearch or OpenSearch. Use `DELETE /v2/backups/history/{backupId}` to act as a single physical tenant.
+  *
+ * @example Delete a history backup (cluster admin)
+ * ```ts
+ * async function deleteHistoryBackupAsClusterAdminExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Deletion fans out to every physical tenant (or a single one when
+ *   // `physicalTenantId` is given) and is not undone if a later tenant fails.
+ *   await camunda.deleteHistoryBackupAsClusterAdmin({ backupId: 100 });
+ * }
+ * ```
+ * @operationId deleteHistoryBackupAsClusterAdmin
+ * @tags Backup
+ */
+export function deleteHistoryBackupAsClusterAdmin(options?: Parameters<typeof _deleteHistoryBackupAsClusterAdmin>[0]): CancelablePromise<_DataOf<typeof _deleteHistoryBackupAsClusterAdmin>> {
+  return toCancelable(signal => _deleteHistoryBackupAsClusterAdmin({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Delete a mapping rule
  *
  * Deletes the mapping rule with the given ID.
@@ -3703,6 +3729,31 @@ export function getBatchOperation(options: Parameters<typeof _getBatchOperation>
   if (!ec || !ec.consistency) throw new Error('Missing consistency options (mandatory for eventually consistent endpoint)');
   const invoke = () => toCancelable(signal => _getBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
   return eventualPoll('getBatchOperation', true, invoke, ec.consistency);
+}
+
+/**
+ * Get exporting status of the whole cluster
+ *
+ * Returns the exporting status of the whole cluster, folded over the exporting status of every physical tenant. Only `PAUSED` and `SOFT_PAUSED` confirm that exporting is paused cluster-wide; every other value means at least one physical tenant is not paused, so callers should keep polling. A physical tenant that itself reports `MIXED` makes the whole cluster `MIXED`.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+  *
+ * @example Get cluster exporting status
+ * ```ts
+ * async function getClusterExportingStatusExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Reports the aggregated exporting status of the whole cluster — useful to
+ *   // confirm exporting has paused everywhere before taking a cluster-wide backup.
+ *   const { status } = await camunda.getClusterExportingStatus();
+ *   console.log(`Cluster exporting status: ${status}`);
+ * }
+ * ```
+ * @operationId getClusterExportingStatus
+ * @tags Exporting
+ */
+export function getClusterExportingStatus(options?: Parameters<typeof _getClusterExportingStatus>[0]): CancelablePromise<_DataOf<typeof _getClusterExportingStatus>> {
+  return toCancelable(signal => _getClusterExportingStatus({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -4175,6 +4226,38 @@ export function getGroup(options: Parameters<typeof _getGroup>[0] | undefined, e
  */
 export function getHistoryBackup(options?: Parameters<typeof _getHistoryBackup>[0]): CancelablePromise<_DataOf<typeof _getHistoryBackup>> {
   return toCancelable(signal => _getHistoryBackup({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Get a history backup across physical tenants
+ *
+ * Reports what every physical tenant of the cluster, or the one named by `physicalTenantId`, holds for the given backup id. There is no aggregated cluster-level state: a tenant that was reached and does not hold this backup reports `NOT_FOUND`, which is a successful observation rather than a failure.
+ *
+ * The request is all-or-nothing: a physical tenant whose state cannot be read fails the whole request. Narrow the request with `physicalTenantId` to read the tenants that can still be reached.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Only available on clusters whose secondary storage is Elasticsearch or OpenSearch. Use `GET /v2/backups/history/{backupId}` to act as a single physical tenant.
+  *
+ * @example Get a history backup (cluster admin)
+ * ```ts
+ * async function getHistoryBackupAsClusterAdminExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Looking a backup id up directly lists every targeted physical tenant,
+ *   // including the ones reporting `NOT_FOUND` — a backup that only some tenants
+ *   // hold is a supported outcome.
+ *   const backup = await camunda.getHistoryBackupAsClusterAdmin({ backupId: 100 });
+ * 
+ *   console.log(`Cluster history backup ${backup.backupId}:`);
+ *   for (const tenant of backup.physicalTenants) {
+ *     console.log(`  [${tenant.physicalTenantId}] ${tenant.state}`);
+ *   }
+ * }
+ * ```
+ * @operationId getHistoryBackupAsClusterAdmin
+ * @tags Backup
+ */
+export function getHistoryBackupAsClusterAdmin(options?: Parameters<typeof _getHistoryBackupAsClusterAdmin>[0]): CancelablePromise<_DataOf<typeof _getHistoryBackupAsClusterAdmin>> {
+  return toCancelable(signal => _getHistoryBackupAsClusterAdmin({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -5080,6 +5163,40 @@ export function listHistoryBackups(options?: Parameters<typeof _listHistoryBacku
 }
 
 /**
+ * List history backups across physical tenants
+ *
+ * Lists the history backups of every physical tenant of the cluster, or of the one named by `physicalTenantId`, grouped by backup id. A backup id that only some physical tenants hold is a supported outcome rather than a degraded one, so only the tenants that hold it are listed under it.
+ *
+ * The request is all-or-nothing: a physical tenant whose backups cannot be read fails the whole request rather than silently dropping out of the listing. Narrow the request with `physicalTenantId` to list the backups of the tenants that can still be read.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Only available on clusters whose secondary storage is Elasticsearch or OpenSearch. Use `GET /v2/backups/history` to act as a single physical tenant.
+  *
+ * @example List history backups (cluster admin)
+ * ```ts
+ * async function listHistoryBackupsAsClusterAdminExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // `prefix` must end in a single '*'. Omit `physicalTenantId` to span every
+ *   // physical tenant of the cluster — results are grouped by backup id, and each
+ *   // group lists only the tenants that hold that id.
+ *   const backups = await camunda.listHistoryBackupsAsClusterAdmin({ prefix: '10*' });
+ * 
+ *   for (const backup of backups) {
+ *     console.log(`Cluster history backup ${backup.backupId}:`);
+ *     for (const tenant of backup.physicalTenants) {
+ *       console.log(`  [${tenant.physicalTenantId}] ${tenant.state}`);
+ *     }
+ *   }
+ * }
+ * ```
+ * @operationId listHistoryBackupsAsClusterAdmin
+ * @tags Backup
+ */
+export function listHistoryBackupsAsClusterAdmin(options?: Parameters<typeof _listHistoryBackupsAsClusterAdmin>[0]): CancelablePromise<_DataOf<typeof _listHistoryBackupsAsClusterAdmin>> {
+  return toCancelable(signal => _listHistoryBackupsAsClusterAdmin({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * List runtime backups
  *
  * Returns a list of all available runtime backups of the physical tenant, with their
@@ -5179,6 +5296,31 @@ export function migrateProcessInstance(options?: Parameters<typeof _migrateProce
  */
 export function modifyProcessInstance(options?: Parameters<typeof _modifyProcessInstance>[0]): CancelablePromise<_DataOf<typeof _modifyProcessInstance>> {
   return toCancelable(signal => _modifyProcessInstance({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Pause exporting across the whole cluster
+ *
+ * Pauses exporting on every physical tenant of the cluster in one call. With `soft=true`, every physical tenant is soft-paused instead.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+  *
+ * @example Pause cluster exporting
+ * ```ts
+ * async function pauseClusterExportingExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Cluster-admin variant: pauses exporting on every physical tenant of the
+ *   // cluster. With `soft: true` exporting keeps running but its position is not
+ *   // committed, so the log is still not compacted.
+ *   await camunda.pauseClusterExporting({ soft: true });
+ * }
+ * ```
+ * @operationId pauseClusterExporting
+ * @tags Exporting
+ */
+export function pauseClusterExporting(options?: Parameters<typeof _pauseClusterExporting>[0]): CancelablePromise<_DataOf<typeof _pauseClusterExporting>> {
+  return toCancelable(signal => _pauseClusterExporting({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -5380,6 +5522,28 @@ export function restoreAsClusterAdmin(options?: Parameters<typeof _restoreAsClus
  */
 export function resumeBatchOperation(options?: Parameters<typeof _resumeBatchOperation>[0]): CancelablePromise<_DataOf<typeof _resumeBatchOperation>> {
   return toCancelable(signal => _resumeBatchOperation({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
+ * Resume exporting across the whole cluster
+ *
+ * Resumes exporting on every physical tenant of the cluster in one call, after a pause or soft pause.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+  *
+ * @example Resume cluster exporting
+ * ```ts
+ * async function resumeClusterExportingExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   await camunda.resumeClusterExporting();
+ * }
+ * ```
+ * @operationId resumeClusterExporting
+ * @tags Exporting
+ */
+export function resumeClusterExporting(options?: Parameters<typeof _resumeClusterExporting>[0]): CancelablePromise<_DataOf<typeof _resumeClusterExporting>> {
+  return toCancelable(signal => _resumeClusterExporting({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
 /**
@@ -6230,6 +6394,41 @@ export function syncRuntimeBackupState(options?: Parameters<typeof _syncRuntimeB
 }
 
 /**
+ * Take a history backup on one or every physical tenant
+ *
+ * Triggers a history backup on every physical tenant of the cluster, or on the one named by `physicalTenantId`. Every targeted tenant uses the same caller-supplied `backupId`, but the backups are independent: they are neither coordinated nor rolled back together.
+ *
+ * The request is all-or-nothing: the `backupId` is checked on every targeted tenant before any snapshot is scheduled, so a tenant that already holds this id, or that cannot be reached, fails the whole request and no backup is started anywhere. There is no aggregated cluster-level state in the response.
+ *
+ * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Only available on clusters whose secondary storage is Elasticsearch or OpenSearch. Use `POST /v2/backups/history` to act as a single physical tenant.
+  *
+ * @example Take a history backup (cluster admin)
+ * ```ts
+ * async function takeHistoryBackupAsClusterAdminExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   // Cluster-admin variant: fans the backup out to every physical tenant of the
+ *   // cluster (or a single one when `physicalTenantId` is given). Requires a
+ *   // separate cluster-admin security chain — Orchestration Cluster user
+ *   // credentials are NOT accepted. Each backup must use a higher id than the last.
+ *   const backup = await camunda.takeHistoryBackupAsClusterAdmin({ backupId: 100 });
+ * 
+ *   console.log(`Scheduled cluster history backup ${backup.backupId}`);
+ *   for (const tenant of backup.physicalTenants) {
+ *     console.log(
+ *       `  [${tenant.physicalTenantId}] scheduled ${tenant.scheduledSnapshots.length} snapshots`
+ *     );
+ *   }
+ * }
+ * ```
+ * @operationId takeHistoryBackupAsClusterAdmin
+ * @tags Backup
+ */
+export function takeHistoryBackupAsClusterAdmin(options?: Parameters<typeof _takeHistoryBackupAsClusterAdmin>[0]): CancelablePromise<_DataOf<typeof _takeHistoryBackupAsClusterAdmin>> {
+  return toCancelable(signal => _takeHistoryBackupAsClusterAdmin({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
+}
+
+/**
  * Throw error for job
  *
  * Reports a business error (i.e. non-technical) that occurs while processing a job.
@@ -6882,4 +7081,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=db8c54d301e23a42 totalWrappers=227 elements=1423 physicalLines=3627
+// SENTINEL_FACADE_PREWRITE hash=fab9a5fff02596c8 totalWrappers=234 elements=1458 physicalLines=3733
