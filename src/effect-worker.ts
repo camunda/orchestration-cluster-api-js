@@ -82,7 +82,7 @@ export type JobHandler<A extends CompleteVars, R> = (job: Job) => Effect.Effect<
 // --- Configuration --------------------------------------------------------------
 
 export interface ActivateJobsStreamOptions<R = never> {
-  /** Worker name recorded on the activation request. Defaults to `effect-worker-<type>`. */
+  /** Worker name recorded on the activation request. Defaults to `effect-worker-<type>-<n>`, where `<n>` is an incrementing per-process counter. */
   readonly workerName?: string;
   /** Max jobs to activate per poll (the activation batch size). Default `10`. */
   readonly maxJobsToActivate?: number;
