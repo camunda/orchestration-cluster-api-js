@@ -281,6 +281,33 @@ function releaseLease(job: Job): Effect.Effect<void, never, CamundaEffect> {
   }).pipe(Effect.ignore);
 }
 
+// An unexpected handler *defect* (an untyped throw / `Effect.die`, not a typed
+// `JobError`) is a bug, not a modelled outcome. Rather than let it be swallowed by the
+// worker-loop cause handler — which would leave the job unacknowledged until its
+// server-side lock expires (risking duplicate delivery) and hide the bug — translate it
+// into a best-effort `failJob` with `retries - 1`, matching the Promise worker
+// (`src/runtime/jobWorker.ts`). The defect is logged first so the handler bug stays
+// visible. This raises a `DomainError` on the ack channel if `failJob` itself fails,
+// which the worker loop then logs-and-continues like any other ack failure.
+function failJobOnDefect(
+  job: Job,
+  defect: unknown
+): Effect.Effect<void, DomainError, CamundaEffect> {
+  return Effect.gen(function* () {
+    const camunda = yield* CamundaEffect;
+    yield* Effect.logError(
+      `effect-worker: handler for job ${job.jobKey} threw an unexpected defect; failing job with retries - 1`,
+      defect
+    );
+    yield* camunda.failJob({
+      jobKey: job.jobKey,
+      errorMessage: defect instanceof Error ? defect.message : 'Handler error',
+      retries: Math.max(0, (job.retries ?? 1) - 1),
+      ...(job.leaseToken != null ? { leaseToken: job.leaseToken } : {}),
+    });
+  });
+}
+
 function processJob<A extends CompleteVars, R>(
   config: EffectWorkerConfig<A, R>,
   job: Job
@@ -296,6 +323,9 @@ function processJob<A extends CompleteVars, R>(
     Effect.flatMap((vars) => completeJob(job, vars)),
     Effect.catchTag('RetryableJobError', (e) => failJobRetryable(job, e)),
     Effect.catchTag('TerminalJobError', (e) => raiseIncident(job, e)),
+    // Interruption is re-raised (not a defect) by `onInterrupt` below; only genuine
+    // handler defects reach here and are converted to a best-effort failJob.
+    Effect.catchDefect((defect) => failJobOnDefect(job, defect)),
     Effect.onInterrupt(() => releaseLease(job))
   );
 }
@@ -326,15 +356,18 @@ export function runWorkerLoop<A extends CompleteVars, R = never>(
         // `DomainError`) must not tear down the worker: a transient ack outage on one job
         // would otherwise fail `Stream.runDrain` and stop all processing. Log it and keep
         // going so `join` ends only on a fatal activation error (its documented contract),
-        // matching the Promise worker which swallows per-job ack failures. A pure
-        // interruption (scope close / `interrupt`) is re-raised so shutdown — and the
-        // best-effort lease release in `processJob` — still propagate.
+        // matching the Promise worker which swallows per-job ack failures. Two causes are
+        // re-raised instead of swallowed: a pure interruption (scope close / `interrupt`),
+        // so shutdown and the best-effort lease release in `processJob` still propagate;
+        // and a genuine defect (`die`), so an unexpected bug surfaces rather than hiding —
+        // note handler defects are already converted to a best-effort failJob inside
+        // `processJob`, so only truly unexpected defects reach here.
         // NOTE: `Effect.catchAll` is avoided deliberately — under the effect 4.0.0-rc it
         // suppresses `Stream.mapEffect` emission even on the success path; `catchCause`
         // does not.
         processJob(config, job).pipe(
           Effect.catchCause((cause) =>
-            Cause.hasInterruptsOnly(cause)
+            Cause.hasInterruptsOnly(cause) || Cause.hasDies(cause)
               ? Effect.failCause(cause)
               : Effect.logError(
                   `effect-worker[${config.type}]: acknowledging job ${job.jobKey} failed; continuing`,
