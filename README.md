@@ -1286,8 +1286,14 @@ const program = Effect.gen(function* () {
     processDefinitionKey: deployment.processes[0].processDefinitionKey,
   });
   // Poll on the Effect Clock until the instance is searchable, timing out deterministically.
+  // waitUpToMs: 0 asks the SDK for the latest available state without its own wall-clock
+  // wait, so the Effect `eventually` combinator owns the predicate + timeout horizon —
+  // making the eventual-consistency wait deterministic under TestClock.
   const search = yield* eventually(
-    camunda.searchProcessInstances({ filter: { processInstanceKey } }),
+    camunda.searchProcessInstances(
+      { filter: { processInstanceKey } },
+      { consistency: { waitUpToMs: 0 } }
+    ),
     (s) => s.items.some((i) => i.processInstanceKey === processInstanceKey),
     { waitUpTo: '30 seconds', interval: '750 millis' }
   );

@@ -18,7 +18,13 @@ describe('effect client', () => {
       });
 
       const search = yield* eventually(
-        camunda.searchProcessInstances({ filter: { processInstanceKey } }),
+        // waitUpToMs: 0 disables the SDK's own wall-clock consistency polling —
+        // the Effect `eventually` combinator below drives the predicate + timeout
+        // on the Effect Clock instead, so the wait is deterministic under TestClock.
+        camunda.searchProcessInstances(
+          { filter: { processInstanceKey } },
+          { consistency: { waitUpToMs: 0 } }
+        ),
         (s) => s.items.some((i: any) => i.processInstanceKey === processInstanceKey),
         { waitUpTo: '30 seconds', interval: '750 millis' }
       );
