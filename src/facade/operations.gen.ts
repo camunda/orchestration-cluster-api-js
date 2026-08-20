@@ -1036,9 +1036,14 @@ type _listSecrets_Body = ListSecretsData extends { body?: infer B } ? B : never;
  * returns secret values, only the reference names.
  *
  * The references are read from the secret stores configured for the caller's physical tenant.
- * Secret names that cannot form a valid `camunda.secrets.<name>` reference (for example names
- * containing a dot or a dash) are omitted, since they could neither be resolved nor be used in
- * a BPMN expression.
+ * A store may hold names outside the reference name charset (for example one containing a
+ * dot); those are omitted, since `/secrets/resolve` would reject them and no permission can
+ * be granted on them.
+ *
+ * A returned reference is usable verbatim with `/secrets/resolve`. In a FEEL expression,
+ * however, a name that is not a bare identifier has to be backtick-escaped, since FEEL reads
+ * a bare dash as the minus operator: a listed `camunda.secrets.db-password` is written
+ * `` =camunda.secrets.`db-password` `` in a BPMN input mapping.
  *
  * This endpoint is an alpha feature and may be subject to change in future releases.
  *
@@ -7081,4 +7086,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=fab9a5fff02596c8 totalWrappers=234 elements=1458 physicalLines=3733
+// SENTINEL_FACADE_PREWRITE hash=f35f6692e9cc7484 totalWrappers=234 elements=1458 physicalLines=3738

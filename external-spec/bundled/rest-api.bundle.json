@@ -13152,7 +13152,7 @@
           }
         ],
         "summary": "List secrets (alpha)",
-        "description": "List the `camunda.secrets.*` references known for the caller's physical tenant.\n\nOnly references the caller holds `SECRET:READ` on are returned. This endpoint never\nreturns secret values, only the reference names.\n\nThe references are read from the secret stores configured for the caller's physical tenant.\nSecret names that cannot form a valid `camunda.secrets.<name>` reference (for example names\ncontaining a dot or a dash) are omitted, since they could neither be resolved nor be used in\na BPMN expression.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n",
+        "description": "List the `camunda.secrets.*` references known for the caller's physical tenant.\n\nOnly references the caller holds `SECRET:READ` on are returned. This endpoint never\nreturns secret values, only the reference names.\n\nThe references are read from the secret stores configured for the caller's physical tenant.\nA store may hold names outside the reference name charset (for example one containing a\ndot); those are omitted, since `/secrets/resolve` would reject them and no permission can\nbe granted on them.\n\nA returned reference is usable verbatim with `/secrets/resolve`. In a FEEL expression,\nhowever, a name that is not a bare identifier has to be backtick-escaped, since FEEL reads\na bare dash as the minus operator: a listed `camunda.secrets.db-password` is written\n`` =camunda.secrets.`db-password` `` in a BPMN input mapping.\n\nThis endpoint is an alpha feature and may be subject to change in future releases.\n",
         "requestBody": {
           "required": false,
           "content": {
@@ -37731,7 +37731,7 @@
             "items": {
               "type": "string",
               "maxLength": 256,
-              "description": "A secret reference of the form `camunda.secrets.<name>`."
+              "description": "A secret reference of the form `camunda.secrets.<name>`, where `<name>` is a\nnon-empty token of letters, digits, `_` and `-`. A reference outside that form is\nreported in `errors` with `INVALID_REFERENCE` rather than failing the request.\n"
             }
           }
         }

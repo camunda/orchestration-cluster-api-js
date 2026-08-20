@@ -6904,7 +6904,7 @@ export const zRoleMappingRuleSearchResult = zSearchQueryResponse.and(z.object({
 
 export const zSecretResolveRequest = z.object({
     references: z.array(z.string().max(256).register(z.globalRegistry, {
-        description: 'A secret reference of the form `camunda.secrets.<name>`.'
+        description: 'A secret reference of the form `camunda.secrets.<name>`, where `<name>` is a\nnon-empty token of letters, digits, `_` and `-`. A reference outside that form is\nreported in `errors` with `INVALID_REFERENCE` rather than failing the request.\n'
     })).max(20).register(z.globalRegistry, {
         description: 'The secret references to resolve, each of the form `camunda.secrets.<name>`.\nDuplicate references are deduplicated by the server and resolved once.\nAt most 20 references may be requested in a single batch.\n'
     })
