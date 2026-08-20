@@ -273,7 +273,7 @@ For hand-written methods (not in the operation map, like `createJobWorker`), add
 - `jsDocCompatibility.exampleTag: false` — required for `{@includeCode}` inline tags to resolve inside `@example` blocks (TSDoc mode)
 - Custom `blockTags`: `@operationId`, `@tags`, `@consistency`, `@description` (in addition to TSDoc defaults)
 - `intentionallyNotExported`: internal utility types (`IsBrandedKey`, `InferOrUnknown`)
-- Entry points: `src/index.ts`, `src/logger.ts`, `src/fp/index.ts`
+- Entry points: `src/index.ts`, `src/logger.ts`, `src/effect/index.ts`
 
 Generate API docs: `npm run docs:api`. Output goes to `docs/`.
 
@@ -336,7 +336,7 @@ The SDK exports three subpath entry points (configured in `package.json` `export
 | ---------- | ----------------- | ------------------------------------------------------------------- |
 | `.`        | `src/index.ts`    | Main entry: `CamundaClient`, all types, result client, loose client |
 | `./logger` | `src/logger.ts`   | Standalone logger utilities                                         |
-| `./fp`     | `src/fp/index.ts` | Functional programming client (`fp-ts` Either-based)                |
+| `./effect` | `src/effect/index.ts` | Effect client (opt-in, `effect` optional peer)                  |
 
 ---
 
@@ -497,7 +497,7 @@ The PR branch is version-scoped, so backport and next-version syncs can coexist.
 | Branding metadata empty                 | Spec path mismatch or no markers          | Confirm `external-spec/bundled/spec-metadata.json` has content                        |
 | Validation modes ignored                | Env var mis-specified                     | Use lowercase or explicit `req:`, `res:` pairs                                        |
 | TypeDoc warnings for unknown tags       | Custom block tag not registered           | Add to `blockTags` array in `typedoc.json`                                            |
-| TypeDoc "not included in documentation" | Type not exported from entry point        | Export from `src/index.ts` or `src/fp/index.ts`, or add to `intentionallyNotExported` |
+| TypeDoc "not included in documentation" | Type not exported from entry point        | Export from `src/index.ts` or `src/effect/index.ts`, or add to `intentionallyNotExported` |
 | Example type-check fails                | Upstream spec changed type contracts      | Fix example code in `examples/` to match new types                                    |
 
 ---
