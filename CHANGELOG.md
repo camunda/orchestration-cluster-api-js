@@ -1,3 +1,10 @@
+# [10.0.0-alpha.32](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.31...v10.0.0-alpha.32) (2026-08-20)
+
+
+### Features
+
+* **effect:** Effect-native job-worker surface ([#444](https://github.com/camunda/orchestration-cluster-api-js/issues/444)) ([754c096](https://github.com/camunda/orchestration-cluster-api-js/commit/754c09625a930ff6507e7a5f0e6f0a050f80175e)), closes [#437](https://github.com/camunda/orchestration-cluster-api-js/issues/437) [#438](https://github.com/camunda/orchestration-cluster-api-js/issues/438)
+
 # [10.0.0-alpha.31](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.30...v10.0.0-alpha.31) (2026-08-20)
 
 
