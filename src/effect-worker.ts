@@ -117,8 +117,10 @@ export interface EffectWorkerConfig<A extends CompleteVars, R = never>
   readonly handler: JobHandler<A, R>;
   /**
    * Max jobs processed concurrently (handler parallelism / backpressure). The
-   * activation loop will not pull faster than handlers drain. Default: the value
-   * of {@link ActivateJobsStreamOptions.maxJobsToActivate} (or `10`).
+   * activation loop will not pull faster than handlers drain, and the activation
+   * batch is capped to this value (when it is a finite number) so the worker never
+   * leases more jobs than it can process at once. Default: the value of
+   * {@link ActivateJobsStreamOptions.maxJobsToActivate} (or `10`).
    */
   readonly concurrency?: number | 'unbounded';
   /**
@@ -297,7 +299,17 @@ export function runWorkerLoop<A extends CompleteVars, R = never>(
   config: EffectWorkerConfig<A, R>
 ): Effect.Effect<void, DomainError, CamundaEffect | R> {
   const concurrency = config.concurrency ?? config.maxJobsToActivate ?? DEFAULT_MAX_JOBS;
-  return activateJobsStream<R>(config.type, config).pipe(
+  // Never lease more jobs per poll than we can process concurrently. Jobs activated
+  // beyond `concurrency` would sit buffered in the stream while their server-side lock
+  // timeout counts down, risking lock expiry / duplicate delivery (and stale-lease
+  // rejections). Cap the activation batch to `concurrency` when it is a finite number,
+  // matching the Promise worker's headroom-bounded activation. When `concurrency` is
+  // `'unbounded'`, leave the batch as configured.
+  const maxJobsToActivate =
+    typeof concurrency === 'number'
+      ? Math.min(config.maxJobsToActivate ?? DEFAULT_MAX_JOBS, concurrency)
+      : config.maxJobsToActivate;
+  return activateJobsStream<R>(config.type, { ...config, maxJobsToActivate }).pipe(
     Stream.mapEffect((job) => processJob(config, job), { concurrency }),
     Stream.runDrain
   );
