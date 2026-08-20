@@ -1,3 +1,10 @@
+# [10.0.0-alpha.30](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.29...v10.0.0-alpha.30) (2026-08-20)
+
+
+### Features
+
+* **examples:** add coverage for 7 cluster-admin backup/exporting ops ([#442](https://github.com/camunda/orchestration-cluster-api-js/issues/442)) ([fdc805d](https://github.com/camunda/orchestration-cluster-api-js/commit/fdc805d2877e02b3cb7c89038e05ac9325d76c6a)), closes [#429](https://github.com/camunda/orchestration-cluster-api-js/issues/429) [#441](https://github.com/camunda/orchestration-cluster-api-js/issues/441)
+
 # [10.0.0-alpha.29](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.28...v10.0.0-alpha.29) (2026-08-18)
 
 
