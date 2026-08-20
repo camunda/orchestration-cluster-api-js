@@ -1,3 +1,17 @@
+# [10.0.0-alpha.31](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.30...v10.0.0-alpha.31) (2026-08-20)
+
+
+### Features
+
+* **effect:** first-class Effect v4 surface, clean cut from experimental /fp ([#440](https://github.com/camunda/orchestration-cluster-api-js/issues/440)) ([04d2bd1](https://github.com/camunda/orchestration-cluster-api-js/commit/04d2bd1452e9196fb337deb2ecf50b3c5d179bf4)), closes [#437](https://github.com/camunda/orchestration-cluster-api-js/issues/437) [#437](https://github.com/camunda/orchestration-cluster-api-js/issues/437)
+
+
+### BREAKING CHANGES
+
+* **effect:** the experimental `/fp` subpath and its `fp-ts` optional peer are
+removed. Migrate to `./effect` and install the optional `effect` (v4) peer; the
+main `.` entry and its Promise-based API are unchanged.
+
 # [10.0.0-alpha.30](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.29...v10.0.0-alpha.30) (2026-08-20)
 
 
