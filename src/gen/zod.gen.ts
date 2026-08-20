@@ -941,6 +941,78 @@ export const zClusterBrokerInfo = z.object({
 });
 
 /**
+ * The snapshots scheduled on a single physical tenant. Only successfully scheduled tenants are reported: the request fails as a whole if any targeted tenant could not schedule the backup.
+ */
+export const zClusterHistoryBackupTakeResult = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    scheduledSnapshots: z.array(z.string().register(z.globalRegistry, {
+        description: 'The name of a scheduled snapshot.'
+    })).register(z.globalRegistry, {
+        description: 'The names of the snapshots scheduled on this physical tenant.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The snapshots scheduled on a single physical tenant. Only successfully scheduled tenants are reported: the request fails as a whole if any targeted tenant could not schedule the backup.'
+});
+
+/**
+ * The snapshots scheduled on every targeted physical tenant. No cluster-level state is aggregated from the per-tenant outcomes.
+ */
+export const zClusterTakeHistoryBackupResponse = z.object({
+    backupId: zBackupId,
+    physicalTenants: z.array(zClusterHistoryBackupTakeResult).register(z.globalRegistry, {
+        description: 'The outcome for each targeted physical tenant, ordered by physical tenant id.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The snapshots scheduled on every targeted physical tenant. No cluster-level state is aggregated from the per-tenant outcomes.'
+});
+
+/**
+ * Cluster History Backup Tenant State
+ *
+ * What a physical tenant reports for a history backup id: the per-tenant `HistoryBackupStateCode` extended with `NOT_FOUND` for a tenant that was read and does not hold the backup. `NOT_FOUND` is a successful observation, not a failure — a backup that only some physical tenants hold is a supported outcome. There is no state for a tenant that could not be read at all, because such a tenant fails the whole request.
+ */
+export const zClusterHistoryBackupTenantState = z.enum([
+    'IN_PROGRESS',
+    'COMPLETED',
+    'FAILED',
+    'INCOMPLETE',
+    'INCOMPATIBLE',
+    'NOT_FOUND'
+]).register(z.globalRegistry, {
+    description: 'What a physical tenant reports for a history backup id: the per-tenant `HistoryBackupStateCode` extended with `NOT_FOUND` for a tenant that was read and does not hold the backup. `NOT_FOUND` is a successful observation, not a failure — a backup that only some physical tenants hold is a supported outcome. There is no state for a tenant that could not be read at all, because such a tenant fails the whole request.'
+});
+
+/**
+ * What a single physical tenant reports for a history backup id.
+ */
+export const zClusterHistoryBackupTenantInfo = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    state: zClusterHistoryBackupTenantState,
+    failureReason: z.string().nullable(),
+    details: z.array(zHistoryBackupSnapshotInfo).register(z.globalRegistry, {
+        description: 'Detailed status of the backup per snapshot on this physical tenant. Empty when the tenant does not hold the backup.'
+    })
+}).register(z.globalRegistry, {
+    description: 'What a single physical tenant reports for a history backup id.'
+});
+
+/**
+ * A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.
+ */
+export const zClusterHistoryBackupInfo = z.object({
+    backupId: zBackupId,
+    physicalTenants: z.array(zClusterHistoryBackupTenantInfo).register(z.globalRegistry, {
+        description: 'What each physical tenant reports for this backup id, ordered by physical tenant id. When looking a backup id up directly, every targeted tenant is listed, including the ones reporting `NOT_FOUND`. Within a listing, only the tenants that hold the id are listed.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.'
+});
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const zClusterVariableKindEnum = z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
@@ -1630,6 +1702,15 @@ export const zExportingStatusResponse = z.object({
     description: 'Response body for the exporting status of a physical tenant.'
 });
 
+export const zExpressionSecretReferenceItem = z.object({
+    storeId: z.string().register(z.globalRegistry, {
+        description: 'The identifier of the secret store that holds the referenced secret'
+    }),
+    secretName: z.string().register(z.globalRegistry, {
+        description: 'The secret name, e.g. "token" for "camunda.secrets.token"'
+    })
+});
+
 export const zExpressionEvaluationWarningItem = z.object({
     message: z.string().register(z.globalRegistry, {
         description: 'The warning message'
@@ -1645,6 +1726,9 @@ export const zExpressionEvaluationResult = z.object({
     }),
     warnings: z.array(zExpressionEvaluationWarningItem).register(z.globalRegistry, {
         description: 'List of warnings generated during expression evaluation'
+    }),
+    referencedSecrets: z.array(zExpressionSecretReferenceItem).register(z.globalRegistry, {
+        description: 'The secret references resolved from trusted sources while evaluating the expression: a\n`camunda.secrets.<name>` reference used directly in the expression, or a reference\ncarried by a `SECRET_REFERENCE`-kind cluster variable the expression read. References\nappearing only in request-body variables or plain cluster variables are excluded.\nCallers use this to know which `camunda.secrets.<name>` occurrences in the result they\nmay safely resolve.\n'
     })
 });
 
@@ -3277,7 +3361,16 @@ export const zAgentInstanceHistoryItem = z.object({
     metrics: zAgentInstanceHistoryItemMetrics.nullish(),
     producedAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'The agent-side timestamp of when this message was produced.'
-    })
+    }),
+    tools: z.array(zAgentTool).nullish(),
+    model: z.string().register(z.globalRegistry, {
+        description: 'The LLM model identifier as of this entry. CONFIGURATION items only; omit for other\nroles.\n'
+    }).optional(),
+    provider: z.string().register(z.globalRegistry, {
+        description: 'The LLM provider as of this entry. CONFIGURATION items only; omit for other roles.\n'
+    }).optional(),
+    limits: zAgentInstanceLimits.optional(),
+    systemPrompt: z.array(zAgentInstanceMessageContent).nullish()
 }).register(z.globalRegistry, {
     description: 'A single history item to append to the agent instance\'s conversation history,\nsubmitted as part of the batch on an agent instance update request.\n'
 });
@@ -9251,6 +9344,34 @@ export const zHistoryBackupInfoWritable = z.object({
 });
 
 /**
+ * What a single physical tenant reports for a history backup id.
+ */
+export const zClusterHistoryBackupTenantInfoWritable = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    state: zClusterHistoryBackupTenantState,
+    failureReason: z.string().nullable(),
+    details: z.array(z.unknown()).register(z.globalRegistry, {
+        description: 'Detailed status of the backup per snapshot on this physical tenant. Empty when the tenant does not hold the backup.'
+    })
+}).register(z.globalRegistry, {
+    description: 'What a single physical tenant reports for a history backup id.'
+});
+
+/**
+ * A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.
+ */
+export const zClusterHistoryBackupInfoWritable = z.object({
+    backupId: zBackupId,
+    physicalTenants: z.array(zClusterHistoryBackupTenantInfoWritable).register(z.globalRegistry, {
+        description: 'What each physical tenant reports for this backup id, ordered by physical tenant id. When looking a backup id up directly, every targeted tenant is listed, including the ones reporting `NOT_FOUND`. Within a listing, only the tenants that hold the id are listed.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.'
+});
+
+/**
  * System-generated key for a conditional evaluation.
  */
 export const zConditionalEvaluationKeyWritable = zLongKey;
@@ -11770,10 +11891,97 @@ export const zRestoreQuery = z.object({
  */
 export const zRestoreResponse = zClusterRestoreResponse;
 
+/**
+ * The aggregated exporting status of the whole cluster.
+ */
+export const zGetClusterExportingStatusResponse = zExportingStatusResponse;
+
+export const zPauseClusterExportingQuery = z.object({
+    soft: z.boolean().register(z.globalRegistry, {
+        description: 'If true, soft-pauses exporting instead of a hard pause.'
+    }).optional().default(false)
+});
+
+/**
+ * Exporting was successfully paused on every physical tenant.
+ */
+export const zPauseClusterExportingResponse = z.void().register(z.globalRegistry, {
+    description: 'Exporting was successfully paused on every physical tenant.'
+});
+
+/**
+ * Exporting was successfully resumed on every physical tenant.
+ */
+export const zResumeClusterExportingResponse = z.void().register(z.globalRegistry, {
+    description: 'Exporting was successfully resumed on every physical tenant.'
+});
+
+export const zListHistoryBackupsAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional(),
+    prefix: zBackupIdPrefix.optional(),
+    verbose: z.boolean().register(z.globalRegistry, {
+        description: 'Whether to ask the secondary storage for snapshot-level detail. Setting this to\n`false` makes the query cheaper, but the store then reports neither snapshot state\nnor start time, so both the per-snapshot `details` and the per-tenant `state` are\nincomplete and the listing order is unspecified.\n'
+    }).optional().default(true)
+});
+
+/**
+ * The history backups of every targeted physical tenant, grouped by backup id and ordered by backup id, descending. Deliberately not the per-physical-tenant endpoint's order, which is by snapshot start time: start times are per tenant, so a group spanning several tenants has no single one to sort on. Descending id is only recency for ids that ascend with time. Empty when every targeted tenant was read and none of them holds a matching backup.
+ */
+export const zListHistoryBackupsAsClusterAdminResponse = z.array(zClusterHistoryBackupInfo).register(z.globalRegistry, {
+    description: 'The history backups of every targeted physical tenant, grouped by backup id and ordered by backup id, descending. Deliberately not the per-physical-tenant endpoint\'s order, which is by snapshot start time: start times are per tenant, so a group spanning several tenants has no single one to sort on. Descending id is only recency for ids that ascend with time. Empty when every targeted tenant was read and none of them holds a matching backup.'
+});
+
+export const zTakeHistoryBackupAsClusterAdminBody = zTakeHistoryBackupRequest;
+
+export const zTakeHistoryBackupAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * The backup has been scheduled on every targeted physical tenant.
+ */
+export const zTakeHistoryBackupAsClusterAdminResponse = zClusterTakeHistoryBackupResponse;
+
+export const zDeleteHistoryBackupAsClusterAdminPath = z.object({
+    backupId: zBackupId
+});
+
+export const zDeleteHistoryBackupAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * No targeted physical tenant holds the backup any more, because it was deleted from every tenant that held it. At least one tenant held it.
+ */
+export const zDeleteHistoryBackupAsClusterAdminResponse = z.void().register(z.globalRegistry, {
+    description: 'No targeted physical tenant holds the backup any more, because it was deleted from every tenant that held it. At least one tenant held it.'
+});
+
+export const zGetHistoryBackupAsClusterAdminPath = z.object({
+    backupId: zBackupId
+});
+
+export const zGetHistoryBackupAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * Every targeted physical tenant was read. Each one reports either the backup or `NOT_FOUND`; at least one holds the backup.
+ */
+export const zGetHistoryBackupAsClusterAdminResponse = zClusterHistoryBackupInfo;
+
 export const zChangeClusterModeAsClusterAdminQuery = z.object({
     mode: zMode,
     physicalTenantId: z.string().register(z.globalRegistry, {
-        description: 'The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.'
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional(),
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'
@@ -11789,7 +11997,7 @@ export const zRestoreAsClusterAdminBody = zClusterRestoreRequest;
 
 export const zRestoreAsClusterAdminQuery = z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
-        description: 'The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.'
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
     }).optional(),
     dryRun: z.boolean().register(z.globalRegistry, {
         description: 'If true, the requested change is only validated and the resulting plan is returned, without applying it to the cluster.'

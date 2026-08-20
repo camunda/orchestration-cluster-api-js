@@ -687,6 +687,24 @@ export const RESPONSE_INDEX = {
       '202': 1
     }
   },
+  '/cluster/v2/exporting': {
+    'GET': {
+      '200': 1
+    }
+  },
+  '/cluster/v2/backups/history': {
+    'GET': {
+      '200': 1
+    },
+    'POST': {
+      '202': 1
+    }
+  },
+  '/cluster/v2/backups/history/{backupId}': {
+    'GET': {
+      '200': 1
+    }
+  },
   '/cluster/v2/mode': {
     'PATCH': {
       '200': 1

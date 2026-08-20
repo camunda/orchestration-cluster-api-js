@@ -138,6 +138,69 @@ async function deleteHistoryBackupExample() {
 }
 //#endregion DeleteHistoryBackup
 
+//#region TakeHistoryBackupAsClusterAdmin
+async function takeHistoryBackupAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // Cluster-admin variant: fans the backup out to every physical tenant of the
+  // cluster (or a single one when `physicalTenantId` is given). Requires a
+  // separate cluster-admin security chain — Orchestration Cluster user
+  // credentials are NOT accepted. Each backup must use a higher id than the last.
+  const backup = await camunda.takeHistoryBackupAsClusterAdmin({ backupId: 100 });
+
+  console.log(`Scheduled cluster history backup ${backup.backupId}`);
+  for (const tenant of backup.physicalTenants) {
+    console.log(
+      `  [${tenant.physicalTenantId}] scheduled ${tenant.scheduledSnapshots.length} snapshots`
+    );
+  }
+}
+//#endregion TakeHistoryBackupAsClusterAdmin
+
+//#region ListHistoryBackupsAsClusterAdmin
+async function listHistoryBackupsAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // `prefix` must end in a single '*'. Omit `physicalTenantId` to span every
+  // physical tenant of the cluster — results are grouped by backup id, and each
+  // group lists only the tenants that hold that id.
+  const backups = await camunda.listHistoryBackupsAsClusterAdmin({ prefix: '10*' });
+
+  for (const backup of backups) {
+    console.log(`Cluster history backup ${backup.backupId}:`);
+    for (const tenant of backup.physicalTenants) {
+      console.log(`  [${tenant.physicalTenantId}] ${tenant.state}`);
+    }
+  }
+}
+//#endregion ListHistoryBackupsAsClusterAdmin
+
+//#region GetHistoryBackupAsClusterAdmin
+async function getHistoryBackupAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // Looking a backup id up directly lists every targeted physical tenant,
+  // including the ones reporting `NOT_FOUND` — a backup that only some tenants
+  // hold is a supported outcome.
+  const backup = await camunda.getHistoryBackupAsClusterAdmin({ backupId: 100 });
+
+  console.log(`Cluster history backup ${backup.backupId}:`);
+  for (const tenant of backup.physicalTenants) {
+    console.log(`  [${tenant.physicalTenantId}] ${tenant.state}`);
+  }
+}
+//#endregion GetHistoryBackupAsClusterAdmin
+
+//#region DeleteHistoryBackupAsClusterAdmin
+async function deleteHistoryBackupAsClusterAdminExample() {
+  const camunda = createCamundaClient();
+
+  // Deletion fans out to every physical tenant (or a single one when
+  // `physicalTenantId` is given) and is not undone if a later tenant fails.
+  await camunda.deleteHistoryBackupAsClusterAdmin({ backupId: 100 });
+}
+//#endregion DeleteHistoryBackupAsClusterAdmin
+
 // Suppress "declared but never read"
 void takeRuntimeBackupExample;
 void listRuntimeBackupsExample;
@@ -150,3 +213,7 @@ void takeHistoryBackupExample;
 void listHistoryBackupsExample;
 void getHistoryBackupExample;
 void deleteHistoryBackupExample;
+void takeHistoryBackupAsClusterAdminExample;
+void listHistoryBackupsAsClusterAdminExample;
+void getHistoryBackupAsClusterAdminExample;
+void deleteHistoryBackupAsClusterAdminExample;

@@ -715,6 +715,37 @@ export type AgentInstanceHistoryItem = {
      * The agent-side timestamp of when this message was produced.
      */
     producedAt: string;
+    /**
+     * The complete list of tools available to the agent as of this entry. CONFIGURATION
+     * items only; omit for other roles. Omit to leave the tool list unchanged; send an
+     * empty array to clear it.
+     *
+     */
+    tools?: Array<AgentTool> | null;
+    /**
+     * The LLM model identifier as of this entry. CONFIGURATION items only; omit for other
+     * roles.
+     *
+     */
+    model?: string;
+    /**
+     * The LLM provider as of this entry. CONFIGURATION items only; omit for other roles.
+     *
+     */
+    provider?: string;
+    /**
+     * The operational limits as of this entry. CONFIGURATION items only; omit for other
+     * roles.
+     *
+     */
+    limits?: AgentInstanceLimits;
+    /**
+     * The system prompt, as content blocks, as of this entry. CONFIGURATION items only;
+     * omit for other roles. Omit to leave the system prompt unchanged; when present, must
+     * be non-empty.
+     *
+     */
+    systemPrompt?: Array<AgentInstanceMessageContent> | null;
 };
 
 /**
@@ -2886,6 +2917,77 @@ export type PhysicalTenantBrokerTopology = {
      */
     partitions: Array<Partition>;
 };
+
+/**
+ * The snapshots scheduled on every targeted physical tenant. No cluster-level state is aggregated from the per-tenant outcomes.
+ */
+export type ClusterTakeHistoryBackupResponse = {
+    /**
+     * The id requested for the backup on every targeted physical tenant.
+     */
+    backupId: BackupId;
+    /**
+     * The outcome for each targeted physical tenant, ordered by physical tenant id.
+     */
+    physicalTenants: Array<ClusterHistoryBackupTakeResult>;
+};
+
+/**
+ * The snapshots scheduled on a single physical tenant. Only successfully scheduled tenants are reported: the request fails as a whole if any targeted tenant could not schedule the backup.
+ */
+export type ClusterHistoryBackupTakeResult = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The names of the snapshots scheduled on this physical tenant.
+     */
+    scheduledSnapshots: Array<string>;
+};
+
+/**
+ * A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.
+ */
+export type ClusterHistoryBackupInfo = {
+    /**
+     * The id of the backup.
+     */
+    backupId: BackupId;
+    /**
+     * What each physical tenant reports for this backup id, ordered by physical tenant id. When looking a backup id up directly, every targeted tenant is listed, including the ones reporting `NOT_FOUND`. Within a listing, only the tenants that hold the id are listed.
+     */
+    physicalTenants: Array<ClusterHistoryBackupTenantInfo>;
+};
+
+/**
+ * What a single physical tenant reports for a history backup id.
+ */
+export type ClusterHistoryBackupTenantInfo = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The state of the backup on this physical tenant.
+     */
+    state: ClusterHistoryBackupTenantState;
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * Detailed status of the backup per snapshot on this physical tenant. Empty when the tenant does not hold the backup.
+     */
+    details: Array<HistoryBackupSnapshotInfo>;
+};
+
+/**
+ * Cluster History Backup Tenant State
+ *
+ * What a physical tenant reports for a history backup id: the per-tenant `HistoryBackupStateCode` extended with `NOT_FOUND` for a tenant that was read and does not hold the backup. `NOT_FOUND` is a successful observation, not a failure — a backup that only some physical tenants hold is a supported outcome. There is no state for a tenant that could not be read at all, because such a tenant fails the whole request.
+ */
+export type ClusterHistoryBackupTenantState = 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'INCOMPLETE' | 'INCOMPATIBLE' | 'NOT_FOUND';
 
 /**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
@@ -5389,6 +5491,27 @@ export type ExpressionEvaluationResult = {
      * List of warnings generated during expression evaluation
      */
     warnings: Array<ExpressionEvaluationWarningItem>;
+    /**
+     * The secret references resolved from trusted sources while evaluating the expression: a
+     * `camunda.secrets.<name>` reference used directly in the expression, or a reference
+     * carried by a `SECRET_REFERENCE`-kind cluster variable the expression read. References
+     * appearing only in request-body variables or plain cluster variables are excluded.
+     * Callers use this to know which `camunda.secrets.<name>` occurrences in the result they
+     * may safely resolve.
+     *
+     */
+    referencedSecrets: Array<ExpressionSecretReferenceItem>;
+};
+
+export type ExpressionSecretReferenceItem = {
+    /**
+     * The identifier of the secret store that holds the referenced secret
+     */
+    storeId: string;
+    /**
+     * The secret name, e.g. "token" for "camunda.secrets.token"
+     */
+    secretName: string;
 };
 
 export type ExpressionEvaluationWarningItem = {
@@ -12117,6 +12240,42 @@ export type HistoryBackupInfoWritable = {
 };
 
 /**
+ * A history backup id and what each physical tenant reports for it. No cluster-level state is aggregated from the per-tenant states.
+ */
+export type ClusterHistoryBackupInfoWritable = {
+    /**
+     * The id of the backup.
+     */
+    backupId: BackupId;
+    /**
+     * What each physical tenant reports for this backup id, ordered by physical tenant id. When looking a backup id up directly, every targeted tenant is listed, including the ones reporting `NOT_FOUND`. Within a listing, only the tenants that hold the id are listed.
+     */
+    physicalTenants: Array<ClusterHistoryBackupTenantInfoWritable>;
+};
+
+/**
+ * What a single physical tenant reports for a history backup id.
+ */
+export type ClusterHistoryBackupTenantInfoWritable = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The state of the backup on this physical tenant.
+     */
+    state: ClusterHistoryBackupTenantState;
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * Detailed status of the backup per snapshot on this physical tenant. Empty when the tenant does not hold the backup.
+     */
+    details: Array<unknown>;
+};
+
+/**
  * System-generated key for a conditional evaluation.
  */
 export type ConditionalEvaluationKeyWritable = LongKey;
@@ -13664,10 +13823,12 @@ export type ListHistoryBackupsErrors = {
      */
     401: ProblemDetail;
     /**
-     * The request is forbidden, either because the authenticated caller lacks the required
-     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
-     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
-     * of the two applies.
+     * The request is forbidden for one of three reasons: the authenticated caller lacks the
+     * required `BACKUP` permission; the cluster's secondary storage is neither Elasticsearch nor
+     * OpenSearch and therefore cannot serve history backups; or the physical tenant's snapshot
+     * repository is absent from the store — configured under a name the store does not have, or
+     * not configured at all. The problem detail says which applies. The latter two are deployment
+     * faults the caller cannot correct by changing its request.
      *
      */
     403: ProblemDetail;
@@ -13710,10 +13871,12 @@ export type TakeHistoryBackupErrors = {
      */
     401: ProblemDetail;
     /**
-     * The request is forbidden, either because the authenticated caller lacks the required
-     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
-     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
-     * of the two applies.
+     * The request is forbidden for one of three reasons: the authenticated caller lacks the
+     * required `BACKUP` permission; the cluster's secondary storage is neither Elasticsearch nor
+     * OpenSearch and therefore cannot serve history backups; or the physical tenant's snapshot
+     * repository is absent from the store — configured under a name the store does not have, or
+     * not configured at all. The problem detail says which applies. The latter two are deployment
+     * faults the caller cannot correct by changing its request.
      *
      */
     403: ProblemDetail;
@@ -13766,10 +13929,12 @@ export type DeleteHistoryBackupErrors = {
      */
     401: ProblemDetail;
     /**
-     * The request is forbidden, either because the authenticated caller lacks the required
-     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
-     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
-     * of the two applies.
+     * The request is forbidden for one of three reasons: the authenticated caller lacks the
+     * required `BACKUP` permission; the cluster's secondary storage is neither Elasticsearch nor
+     * OpenSearch and therefore cannot serve history backups; or the physical tenant's snapshot
+     * repository is absent from the store — configured under a name the store does not have, or
+     * not configured at all. The problem detail says which applies. The latter two are deployment
+     * faults the caller cannot correct by changing its request.
      *
      */
     403: ProblemDetail;
@@ -13817,10 +13982,12 @@ export type GetHistoryBackupErrors = {
      */
     401: ProblemDetail;
     /**
-     * The request is forbidden, either because the authenticated caller lacks the required
-     * `BACKUP` permission, or because the cluster's secondary storage is neither Elasticsearch
-     * nor OpenSearch and therefore cannot serve history backups. The problem detail says which
-     * of the two applies.
+     * The request is forbidden for one of three reasons: the authenticated caller lacks the
+     * required `BACKUP` permission; the cluster's secondary storage is neither Elasticsearch nor
+     * OpenSearch and therefore cannot serve history backups; or the physical tenant's snapshot
+     * repository is absent from the store — configured under a name the store does not have, or
+     * not configured at all. The problem detail says which applies. The latter two are deployment
+     * faults the caller cannot correct by changing its request.
      *
      */
     403: ProblemDetail;
@@ -21512,6 +21679,357 @@ export type RestoreResponses = {
 
 export type RestoreResponse = RestoreResponses[keyof RestoreResponses];
 
+export type GetClusterExportingStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/exporting';
+};
+
+export type GetClusterExportingStatusErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetClusterExportingStatusError = GetClusterExportingStatusErrors[keyof GetClusterExportingStatusErrors];
+
+export type GetClusterExportingStatusResponses = {
+    /**
+     * The aggregated exporting status of the whole cluster.
+     */
+    200: ExportingStatusResponse;
+};
+
+export type GetClusterExportingStatusResponse = GetClusterExportingStatusResponses[keyof GetClusterExportingStatusResponses];
+
+export type PauseClusterExportingData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * If true, soft-pauses exporting instead of a hard pause.
+         */
+        soft?: boolean;
+    };
+    url: '/cluster/v2/exporting/pause';
+};
+
+export type PauseClusterExportingErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type PauseClusterExportingError = PauseClusterExportingErrors[keyof PauseClusterExportingErrors];
+
+export type PauseClusterExportingResponses = {
+    /**
+     * Exporting was successfully paused on every physical tenant.
+     */
+    204: void;
+};
+
+export type PauseClusterExportingResponse = PauseClusterExportingResponses[keyof PauseClusterExportingResponses];
+
+export type ResumeClusterExportingData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/exporting/resume';
+};
+
+export type ResumeClusterExportingErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * Forbidden. The request is not allowed.
+     */
+    403: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ResumeClusterExportingError = ResumeClusterExportingErrors[keyof ResumeClusterExportingErrors];
+
+export type ResumeClusterExportingResponses = {
+    /**
+     * Exporting was successfully resumed on every physical tenant.
+     */
+    204: void;
+};
+
+export type ResumeClusterExportingResponse = ResumeClusterExportingResponses[keyof ResumeClusterExportingResponses];
+
+export type ListHistoryBackupsAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+        /**
+         * A prefix that backup ids must match, ending in a single '*'. If omitted, all
+         * backups are returned.
+         *
+         */
+        prefix?: BackupIdPrefix;
+        /**
+         * Whether to ask the secondary storage for snapshot-level detail. Setting this to
+         * `false` makes the query cheaper, but the store then reports neither snapshot state
+         * nor start time, so both the per-snapshot `details` and the per-tenant `state` are
+         * incomplete and the listing order is unspecified.
+         *
+         */
+        verbose?: boolean;
+    };
+    url: '/cluster/v2/backups/history';
+};
+
+export type ListHistoryBackupsAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The cluster's secondary storage is neither Elasticsearch nor OpenSearch and therefore cannot serve history backups, or a targeted physical tenant's snapshot repository is absent from the store — configured under a name the store does not have, or not configured at all. Both are deployment faults the caller cannot correct by changing its request; narrow the request with `physicalTenantId` to work with the tenants whose repository is usable. Unlike the per-physical-tenant backup endpoints, the cluster-admin surface performs no fine-grained authorization, so a missing `BACKUP` permission is never the reason.
+     */
+    403: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ListHistoryBackupsAsClusterAdminError = ListHistoryBackupsAsClusterAdminErrors[keyof ListHistoryBackupsAsClusterAdminErrors];
+
+export type ListHistoryBackupsAsClusterAdminResponses = {
+    /**
+     * The history backups of every targeted physical tenant, grouped by backup id and ordered by backup id, descending. Deliberately not the per-physical-tenant endpoint's order, which is by snapshot start time: start times are per tenant, so a group spanning several tenants has no single one to sort on. Descending id is only recency for ids that ascend with time. Empty when every targeted tenant was read and none of them holds a matching backup.
+     */
+    200: Array<ClusterHistoryBackupInfo>;
+};
+
+export type ListHistoryBackupsAsClusterAdminResponse = ListHistoryBackupsAsClusterAdminResponses[keyof ListHistoryBackupsAsClusterAdminResponses];
+
+export type TakeHistoryBackupAsClusterAdminData = {
+    body: TakeHistoryBackupRequest;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/history';
+};
+
+export type TakeHistoryBackupAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The cluster's secondary storage is neither Elasticsearch nor OpenSearch and therefore cannot serve history backups, or a targeted physical tenant's snapshot repository is absent from the store — configured under a name the store does not have, or not configured at all. Both are deployment faults the caller cannot correct by changing its request; narrow the request with `physicalTenantId` to work with the tenants whose repository is usable. Unlike the per-physical-tenant backup endpoints, the cluster-admin surface performs no fine-grained authorization, so a missing `BACKUP` permission is never the reason.
+     */
+    403: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * At least one targeted physical tenant already holds a backup with this id, or already has another backup running. The check that precedes the fan-out normally rejects the request before anything is scheduled; a tenant that takes the id in between rejects it during the fan-out instead, which can leave snapshots behind on the tenants already reached, so delete this backup id before retrying.
+     */
+    409: ProblemDetail;
+    /**
+     * The backup could not be scheduled on every targeted physical tenant, because one of them hit an internal error. The check that precedes the fan-out rejects the request before anything is scheduled, but a failure during the fan-out itself can leave snapshots behind on the tenants already reached, so delete this backup id before retrying.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type TakeHistoryBackupAsClusterAdminError = TakeHistoryBackupAsClusterAdminErrors[keyof TakeHistoryBackupAsClusterAdminErrors];
+
+export type TakeHistoryBackupAsClusterAdminResponses = {
+    /**
+     * The backup has been scheduled on every targeted physical tenant.
+     */
+    202: ClusterTakeHistoryBackupResponse;
+};
+
+export type TakeHistoryBackupAsClusterAdminResponse = TakeHistoryBackupAsClusterAdminResponses[keyof TakeHistoryBackupAsClusterAdminResponses];
+
+export type DeleteHistoryBackupAsClusterAdminData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/history/{backupId}';
+};
+
+export type DeleteHistoryBackupAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The cluster's secondary storage cannot serve history backups, or a targeted physical tenant's snapshot repository is absent from the store. Unlike the per-physical-tenant backup endpoints, the cluster-admin surface performs no fine-grained authorization, so a missing `BACKUP` permission is never the reason. Deletion fans out with no preceding check, so an absent repository is found only once that tenant is reached, by which time the backup may already be deleted from the others; those deletions are not undone. Narrow the request with `physicalTenantId` to work with the tenants whose repository is usable.
+     */
+    403: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster, or every targeted physical tenant was reached and none of them holds a backup with the given id.
+     */
+    404: ProblemDetail;
+    /**
+     * The backup could not be deleted from every targeted physical tenant, because one of them hit an internal error, so it may still exist on some of them. The deletions that already succeeded are not undone, so a retry has only the remaining tenants left to reach.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteHistoryBackupAsClusterAdminError = DeleteHistoryBackupAsClusterAdminErrors[keyof DeleteHistoryBackupAsClusterAdminErrors];
+
+export type DeleteHistoryBackupAsClusterAdminResponses = {
+    /**
+     * No targeted physical tenant holds the backup any more, because it was deleted from every tenant that held it. At least one tenant held it.
+     */
+    204: void;
+};
+
+export type DeleteHistoryBackupAsClusterAdminResponse = DeleteHistoryBackupAsClusterAdminResponses[keyof DeleteHistoryBackupAsClusterAdminResponses];
+
+export type GetHistoryBackupAsClusterAdminData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/history/{backupId}';
+};
+
+export type GetHistoryBackupAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The cluster's secondary storage is neither Elasticsearch nor OpenSearch and therefore cannot serve history backups, or a targeted physical tenant's snapshot repository is absent from the store — configured under a name the store does not have, or not configured at all. Both are deployment faults the caller cannot correct by changing its request; narrow the request with `physicalTenantId` to work with the tenants whose repository is usable. Unlike the per-physical-tenant backup endpoints, the cluster-admin surface performs no fine-grained authorization, so a missing `BACKUP` permission is never the reason.
+     */
+    403: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster, or every targeted physical tenant was read and none of them holds a backup with the given id.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetHistoryBackupAsClusterAdminError = GetHistoryBackupAsClusterAdminErrors[keyof GetHistoryBackupAsClusterAdminErrors];
+
+export type GetHistoryBackupAsClusterAdminResponses = {
+    /**
+     * Every targeted physical tenant was read. Each one reports either the backup or `NOT_FOUND`; at least one holds the backup.
+     */
+    200: ClusterHistoryBackupInfo;
+};
+
+export type GetHistoryBackupAsClusterAdminResponse = GetHistoryBackupAsClusterAdminResponses[keyof GetHistoryBackupAsClusterAdminResponses];
+
 export type ChangeClusterModeAsClusterAdminData = {
     body?: never;
     path?: never;
@@ -21521,7 +22039,7 @@ export type ChangeClusterModeAsClusterAdminData = {
          */
         mode: Mode;
         /**
-         * The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
          */
         physicalTenantId?: string;
         /**
@@ -21571,7 +22089,7 @@ export type RestoreAsClusterAdminData = {
     path?: never;
     query?: {
         /**
-         * The physical tenant to apply the change to. When omitted, the change is applied to every physical tenant of the cluster.
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
          */
         physicalTenantId?: string;
         /**
@@ -22441,7 +22959,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:6a56d9ac9e4888c0656e3c1598323af30a0da57cbe85c5aca97a67f7cf3105fe
+// specHash=sha256:4ba199d92d10b223190403430f33a7572fd43cd8c9c4005f90a8d225a981c1f0
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
