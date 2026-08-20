@@ -218,7 +218,7 @@ function createCategoryFiles(dir) {
 /**
  * Add an opt-in admonition banner after the first heading in Effect module pages.
  */
-function addTechnicalPreviewBanner(filePath) {
+function addOptInSubpathBanner(filePath) {
   const rel = filePath.replace(/\\/g, '/'); // normalise for Windows
   // Match files under the effect/ directory
   if (!rel.includes('/effect/') && !rel.endsWith('/effect/index.md')) return;
@@ -253,7 +253,7 @@ function processDirectory(dir) {
       addFrontmatter(fullPath);
       cleanHtml(fullPath);
       rewriteMediaLinks(fullPath);
-      addTechnicalPreviewBanner(fullPath);
+      addOptInSubpathBanner(fullPath);
       count++;
     }
   }

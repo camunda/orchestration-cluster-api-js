@@ -6,13 +6,14 @@ import { pathToFileURL } from 'node:url';
 
 // Assert the main `.` entry pulls in ZERO Effect at runtime: `effect` is an
 // OPTIONAL peer dependency reachable only via the `./effect` subpath. We walk the
-// static import graph reachable from dist/index.js and fail if any module imports
+// static import graph reachable from the main entry and fail if any module imports
 // the bare `effect` package (or an `effect/...` subpath). This guards the hard
 // constraint from #437: the `.` entry's runtime graph contains no `effect`.
-async function assertNoEffectInMainEntry(root) {
-  const distDir = path.join(root, 'dist');
-  const entry = path.join(distDir, 'index.js');
-
+//
+// The package publishes BOTH ESM (`dist/index.js`) and CJS (`dist/index.cjs`)
+// builds (`--format esm,cjs`), so we walk each entry's graph independently —
+// missing the CJS graph would let it import Effect undetected.
+async function assertNoEffectInEntryGraph(root, entry) {
   // Match module specifiers in ESM output: `from '...'`, bare `import '...'`,
   // `require('...')`, and dynamic `import('...')`.
   const specRe = /(?:\bfrom\s*|\bimport\s*|\brequire\s*\(\s*|\bimport\s*\(\s*)['"]([^'"]+)['"]/g;
@@ -43,12 +44,23 @@ async function assertNoEffectInMainEntry(root) {
       // Follow only relative specifiers (stay inside dist/).
       if (spec.startsWith('./') || spec.startsWith('../')) {
         const resolved = path.resolve(path.dirname(file), spec);
-        // tsup emits extensionless relative imports pointing at .js chunks.
-        const candidates = resolved.endsWith('.js') ? [resolved] : [`${resolved}.js`, resolved];
+        // tsup emits extensionless relative imports pointing at chunks; the CJS
+        // build (`index.cjs`) references `.cjs` chunks, the ESM build `.js`.
+        const hasKnownExt = resolved.endsWith('.js') || resolved.endsWith('.cjs');
+        const candidates = hasKnownExt
+          ? [resolved]
+          : [`${resolved}.js`, `${resolved}.cjs`, resolved];
         queue.push(...candidates);
       }
     }
   }
+}
+
+// Walk both published main entries: ESM (`dist/index.js`) and CJS (`dist/index.cjs`).
+async function assertNoEffectInMainEntry(root) {
+  const distDir = path.join(root, 'dist');
+  await assertNoEffectInEntryGraph(root, path.join(distDir, 'index.js'));
+  await assertNoEffectInEntryGraph(root, path.join(distDir, 'index.cjs'));
 }
 
 async function main() {
