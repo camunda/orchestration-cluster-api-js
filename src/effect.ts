@@ -136,10 +136,19 @@ export function createCamundaEffectClient(options?: CamundaOptions): CamundaEffe
   function wrap(fn: (...a: any[]) => any) {
     return (...args: any[]) =>
       Effect.suspend(() => {
-        const r = fn.apply(base, args);
+        // The generated client can throw *synchronously* (e.g. an eventual
+        // endpoint invoked without `consistencyManagement`). Map those to the
+        // tagged error channel too, rather than letting them escape as a defect.
+        let r: unknown;
+        try {
+          r = fn.apply(base, args);
+        } catch (e) {
+          return Effect.fail(toDomainError(e));
+        }
         if (!isPromiseLike(r)) return Effect.succeed(r);
+        const promise = r;
         return Effect.callback<any, DomainError>((resume) => {
-          r.then(
+          promise.then(
             (a: unknown) => resume(Effect.succeed(a)),
             (e: unknown) => resume(Effect.fail(toDomainError(e)))
           );
