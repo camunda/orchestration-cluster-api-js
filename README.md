@@ -1330,6 +1330,78 @@ Exports available from `.../effect`:
 **Clock-class win:** `eventually` / `withTimeout` run on the Effect `Clock`, so `TestClock.adjust`
 advances eventual/timeout deterministically in tests — no real-clock burn.
 
+### Effect Job Workers
+
+The same subpath also exposes an **Effect-native job worker** — the long-running
+`activateJobs` → handle → `completeJob`/`failJob` loop, modelled as Effect. A handler is
+`(job) => Effect.Effect<CompleteVars, JobError, R>` with a **typed failure channel**: a
+`RetryableJobError` becomes `failJob` with `retries - 1` (plus an optional server-side backoff),
+and a `TerminalJobError` becomes `throwJobError` (caught by a BPMN error boundary, or an incident if
+uncaught). Success completes the job with the returned variables. It composes over the same
+activation/backpressure runtime the Promise worker uses — it does not reimplement activation.
+
+<!-- snippet-exempt: uses SDK /effect subpath + optional effect peer not available in examples project -->
+```ts
+import { Effect, Schedule } from 'effect';
+import {
+  createCamundaEffectWorker,
+  layer,
+  RetryableJobError,
+  TerminalJobError,
+} from '@camunda8/orchestration-cluster-api/effect';
+
+const program = Effect.gen(function* () {
+  // Forked into the current Scope: interrupted (with a best-effort lease release) when
+  // the scope closes.
+  yield* createCamundaEffectWorker<{ ok: boolean }>({
+    type: 'payment-processing',
+    maxJobsToActivate: 10, // activation batch size
+    concurrency: 10, // max jobs handled in parallel (backpressure)
+    pollInterval: '1 second', // between empty polls, on the Effect Clock
+    // Optional: retry the handler in-process on a RetryableJobError before failing the job.
+    handlerRetrySchedule: Schedule.spaced('2 seconds'),
+    handler: (job) =>
+      Effect.gen(function* () {
+        if (!job.variables.amount) {
+          // Terminal → raise a BPMN error / incident.
+          return yield* Effect.fail(
+            new TerminalJobError({ code: 'INVALID_INPUT', message: 'amount is required' })
+          );
+        }
+        if (yield* isServiceDown()) {
+          // Retryable → failJob(retries - 1) with a re-activation backoff.
+          return yield* Effect.fail(
+            new RetryableJobError({ message: 'downstream unavailable', retryBackoff: '5 seconds' })
+          );
+        }
+        return { ok: true }; // success → completeJob(variables)
+      }),
+  });
+
+  // ... the worker runs for the lifetime of this scope.
+  yield* Effect.never;
+}).pipe(
+  Effect.scoped,
+  Effect.provide(layer()) // provides the `/effect` client the worker depends on
+);
+
+void program;
+```
+
+Worker exports from `.../effect`:
+
+- `createCamundaEffectWorker(config)` – forks the worker into the current `Scope` and returns a
+  handle (`{ type, join, interrupt }`); provide the client `layer()` as its dependency.
+- `activateJobsStream(type, options)` – the lower-level `Stream.Stream<Job, DomainError, …>` of
+  activated jobs, polling on the Effect `Clock`.
+- `workerLayer(config)` – a `Layer` that runs a worker for the layer's lifetime.
+- Tagged job failures: `RetryableJobError` (→ `failJob`), `TerminalJobError` (→ `throwJobError`),
+  together the `JobError` channel.
+
+**Clock-class win:** the activation poll interval and the handler-retry `Schedule` run on the Effect
+`Clock`, so `TestClock.adjust` bounds activation/retry timing in virtual time — the whole loop is
+deterministic in tests, with no real-clock burn.
+
 ## Eventual Consistency Polling
 
 Some endpoints accept consistency management options. Pass a `consistency` block (where supported) with `waitUpToMs` and optional `pollIntervalMs` (default 500). If the condition is not met within timeout an `EventualConsistencyTimeoutError` is thrown.

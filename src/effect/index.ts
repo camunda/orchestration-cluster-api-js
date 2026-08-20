@@ -17,3 +17,18 @@ export {
   retryWithBackoff,
   withTimeout,
 } from '../effect';
+export {
+  type ActivateJobsStreamOptions,
+  activateJobsStream,
+  type CamundaEffectWorkerHandle,
+  type CompleteVars,
+  createCamundaEffectWorker,
+  type EffectWorkerConfig,
+  type Job,
+  type JobError,
+  type JobHandler,
+  RetryableJobError,
+  runWorkerLoop,
+  TerminalJobError,
+  workerLayer,
+} from '../effect-worker';
