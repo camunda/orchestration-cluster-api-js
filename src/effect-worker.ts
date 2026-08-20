@@ -21,7 +21,17 @@
 // `./effect` subpath) is the only way to pull `effect` into the runtime graph. The
 // main `.` (Promise) worker API is untouched.
 
-import { Data, Duration, Effect, Fiber, Layer, type Schedule, type Scope, Stream } from 'effect';
+import {
+  Cause,
+  Data,
+  Duration,
+  Effect,
+  Fiber,
+  Layer,
+  type Schedule,
+  type Scope,
+  Stream,
+} from 'effect';
 import { CamundaEffect, type DomainError } from './effect';
 import type { ActivatedJobResult } from './gen/types.gen';
 
@@ -310,7 +320,30 @@ export function runWorkerLoop<A extends CompleteVars, R = never>(
       ? Math.min(config.maxJobsToActivate ?? DEFAULT_MAX_JOBS, concurrency)
       : config.maxJobsToActivate;
   return activateJobsStream<R>(config.type, { ...config, maxJobsToActivate }).pipe(
-    Stream.mapEffect((job) => processJob(config, job), { concurrency }),
+    Stream.mapEffect(
+      (job) =>
+        // A per-job acknowledgement failure (completeJob/failJob/throwJobError raising a
+        // `DomainError`) must not tear down the worker: a transient ack outage on one job
+        // would otherwise fail `Stream.runDrain` and stop all processing. Log it and keep
+        // going so `join` ends only on a fatal activation error (its documented contract),
+        // matching the Promise worker which swallows per-job ack failures. A pure
+        // interruption (scope close / `interrupt`) is re-raised so shutdown — and the
+        // best-effort lease release in `processJob` — still propagate.
+        // NOTE: `Effect.catchAll` is avoided deliberately — under the effect 4.0.0-rc it
+        // suppresses `Stream.mapEffect` emission even on the success path; `catchCause`
+        // does not.
+        processJob(config, job).pipe(
+          Effect.catchCause((cause) =>
+            Cause.hasInterruptsOnly(cause)
+              ? Effect.failCause(cause)
+              : Effect.logError(
+                  `effect-worker[${config.type}]: acknowledging job ${job.jobKey} failed; continuing`,
+                  cause
+                )
+          )
+        ),
+      { concurrency }
+    ),
     Stream.runDrain
   );
 }
