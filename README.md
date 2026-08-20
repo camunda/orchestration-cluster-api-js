@@ -1316,8 +1316,8 @@ Exports available from `.../effect`:
   `HttpError`, `CamundaGenericError` — together the `DomainError` union. Discriminate with
   `Effect.catchTag` / `Effect.catchTags`.
 - Combinators: `retryWithBackoff` (`Effect.retry` + `Schedule.exponential` + jitter), `withTimeout`
-  (`Effect.timeout` with real interruption), `eventually` (`Schedule`-driven poll on the Effect
-  `Clock`, timing out to `EventualConsistencyTimeout`).
+  (`Effect.timeoutOrElse` with real interruption), `eventually` (a recursive `Effect.sleep` poll on
+  the Effect `Clock`, timing out to `EventualConsistencyTimeout`).
 - Dependency injection: `CamundaEffect` (`Context.Service`) + `layer(options?)` (`Layer`) so worker /
   orchestration code composes via `Layer` and swaps a test double trivially.
 
