@@ -19,11 +19,11 @@
       "require": "./dist/logger.cjs",
       "default": "./dist/logger.js"
     },
-    "./fp": {
-      "types": "./dist/fp/index.d.ts",
-      "import": "./dist/fp/index.js",
-      "require": "./dist/fp/index.cjs",
-      "default": "./dist/fp/index.js"
+    "./effect": {
+      "types": "./dist/effect/index.d.ts",
+      "import": "./dist/effect/index.js",
+      "require": "./dist/effect/index.cjs",
+      "default": "./dist/effect/index.js"
     }
   },
   "author": "josh.wulf@camunda.com",
@@ -59,8 +59,8 @@
     "bundle:spec": "camunda-schema-bundler --ref ${SPEC_REF:-main} --output-spec external-spec/bundled/rest-api.bundle.json --output-metadata external-spec/bundled/spec-metadata.json",
     "bundle:spec:local": "camunda-schema-bundler --spec-dir external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2 --output-spec external-spec/bundled/rest-api.bundle.json --output-metadata external-spec/bundled/spec-metadata.json",
     "version:sync": "tsx scripts/write-version-constant.ts",
-    "build": "npm run generate && npm run docs:config && npm run sync-readme:check && npm run format && npm run version:sync && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist && tsup src/runtime/threadWorkerEntry.ts --format esm,cjs --sourcemap --out-dir dist --no-splitting",
-    "build:local": "npm run generate:local && npm run docs:config && npm run sync-readme:check && npm run version:sync && tsup src/index.ts src/logger.ts src/fp/index.ts --dts --format esm,cjs --sourcemap --out-dir dist && tsup src/runtime/threadWorkerEntry.ts --format esm,cjs --sourcemap --out-dir dist --no-splitting",
+    "build": "npm run generate && npm run docs:config && npm run sync-readme:check && npm run format && npm run version:sync && tsup src/index.ts src/logger.ts src/effect/index.ts --dts --format esm,cjs --sourcemap --out-dir dist && tsup src/runtime/threadWorkerEntry.ts --format esm,cjs --sourcemap --out-dir dist --no-splitting",
+    "build:local": "npm run generate:local && npm run docs:config && npm run sync-readme:check && npm run version:sync && tsup src/index.ts src/logger.ts src/effect/index.ts --dts --format esm,cjs --sourcemap --out-dir dist && tsup src/runtime/threadWorkerEntry.ts --format esm,cjs --sourcemap --out-dir dist --no-splitting",
     "test": "CAMUNDA_SDK_INTEGRATION=0 vitest run --passWithNoTests --exclude 'tests-integration/' --exclude 'camundacon/**'",
     "test:integration": "CAMUNDA_SDK_INTEGRATION=1 vitest run tests-integration",
     "docs:config": "tsx scripts/generate-config-doc.ts",
@@ -102,10 +102,10 @@
     "zod": "^4"
   },
   "peerDependencies": {
-    "fp-ts": "^2.16.11"
+    "effect": ">=4.0.0-rc.110 <5.0.0"
   },
   "peerDependenciesMeta": {
-    "fp-ts": {
+    "effect": {
       "optional": true
     }
   },
@@ -122,7 +122,7 @@
     "assert-json-body": "^1.8.1",
     "camunda-schema-bundler": "^2.4.3",
     "chalk": "^5.6.2",
-    "fp-ts": "^2.16.11",
+    "effect": "4.0.0-rc.110",
     "husky": "^9.0.11",
     "rimraf": "^6.1.3",
     "semantic-release": "^25.0.5",

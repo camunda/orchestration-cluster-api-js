@@ -1,6 +1,7 @@
+import { Effect, Exit } from 'effect';
 import { describe, expect, it, vi } from 'vitest';
 import { createCamundaClient } from '../src';
-import { createCamundaFpClient, isLeft } from '../src/fp';
+import { createCamundaEffectClient } from '../src/effect';
 import { evaluateSdkResponse } from '../src/runtime/responseEvaluation';
 
 // Regression guard for camunda/orchestration-cluster-api-js#405.
@@ -94,12 +95,15 @@ describe('transport-error rejection contract (#405)', () => {
     });
   });
 
-  describe('public surface: the fp client yields a Left (never a Right of nothing) on a transport failure', () => {
+  describe('public surface: the effect client yields a failure (never a success of nothing) on a transport failure', () => {
     it.each(OPERATIONS)('$name', async ({ call }) => {
       const fetchMock = failingFetch();
-      const fp = createCamundaFpClient({ config: CONFIG as any, fetch: fetchMock as any } as any);
-      const either = await (call(fp) as any)();
-      expect(isLeft(either)).toBe(true);
+      const eff = createCamundaEffectClient({
+        config: CONFIG as any,
+        fetch: fetchMock as any,
+      } as any);
+      const exit = await Effect.runPromiseExit(call(eff) as any);
+      expect(Exit.isFailure(exit)).toBe(true);
       expect(fetchMock).toHaveBeenCalled();
     });
   });

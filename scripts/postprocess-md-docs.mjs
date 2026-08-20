@@ -40,7 +40,7 @@ const CATEGORY_LABELS = {
   functions: 'Functions',
   namespaces: 'Namespaces',
   index: 'Core',
-  fp: 'Functional Programming (Technical Preview)',
+  effect: 'Effect (Opt-In Subpath)',
   logger: 'Logger',
 };
 
@@ -48,7 +48,7 @@ const CATEGORY_LABELS = {
 const CATEGORY_POSITIONS = {
   index: 1,
   logger: 2,
-  fp: 3,
+  effect: 3,
 };
 
 /** Module-level entry page overrides. */
@@ -216,16 +216,16 @@ function createCategoryFiles(dir) {
 }
 
 /**
- * Add a Technical Preview admonition banner after the first heading in FP module pages.
+ * Add an opt-in admonition banner after the first heading in Effect module pages.
  */
-function addTechnicalPreviewBanner(filePath) {
+function addOptInSubpathBanner(filePath) {
   const rel = filePath.replace(/\\/g, '/'); // normalise for Windows
-  // Match files under the fp/ directory
-  if (!rel.includes('/fp/') && !rel.endsWith('/fp/index.md')) return;
+  // Match files under the effect/ directory
+  if (!rel.includes('/effect/') && !rel.endsWith('/effect/index.md')) return;
 
   const content = readFileSync(filePath, 'utf-8');
   const banner =
-    '\n:::caution Technical Preview\nThe Functional Programming API is a **technical preview**. Its surface may change in future releases without following semver.\n:::\n';
+    '\n:::info Opt-In Subpath\nThe Effect API is an **opt-in subpath** (`@camunda8/orchestration-cluster-api/effect`) and requires the optional `effect` peer dependency. The main `.` entry stays Promise-based and pulls in zero Effect at runtime.\n:::\n';
 
   // Insert after first H1
   const h1End = content.match(/^#\s+.+$/m);
@@ -253,7 +253,7 @@ function processDirectory(dir) {
       addFrontmatter(fullPath);
       cleanHtml(fullPath);
       rewriteMediaLinks(fullPath);
-      addTechnicalPreviewBanner(fullPath);
+      addOptInSubpathBanner(fullPath);
       count++;
     }
   }

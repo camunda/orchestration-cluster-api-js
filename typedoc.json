@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["src/index.ts", "src/logger.ts", "src/fp/index.ts"],
+  "entryPoints": ["src/index.ts", "src/logger.ts", "src/effect/index.ts"],
   "out": "docs",
   "jsDocCompatibility": {
     "exampleTag": false
