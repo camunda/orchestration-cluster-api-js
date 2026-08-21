@@ -40,7 +40,11 @@ export type PaginationMode = 'auto' | 'cursor' | 'offset';
 export interface PaginateOptions {
   /** Abort between pages; a fired signal stops further fetches. */
   signal?: AbortSignal;
-  /** Safety cap on pages fetched (default: unbounded). */
+  /**
+   * Safety cap on pages fetched (default: unbounded). A non-positive value
+   * (`0` or negative) fetches no pages at all — the cap is enforced *before*
+   * the first request, so it is always honoured exactly.
+   */
   maxPages?: number;
   /** How to advance. `auto` prefers a cursor, falls back to offset. */
   mode?: PaginationMode;
@@ -130,13 +134,14 @@ export function paginate<TItem, TBody extends SearchBody>(
     let fetched = 0;
 
     while (true) {
+      // Enforce the page cap *before* fetching so a non-positive `maxPages`
+      // (0 or negative) fetches nothing, and a positive cap is never exceeded.
+      if (fetched >= maxPages) return;
       if (signal?.aborted) throw abortError();
 
       const response = await fetchPage(current, signal);
       yield response;
       fetched += 1;
-
-      if (fetched >= maxPages) return;
 
       const next = nextPageRequest(current, response, mode);
       if (next === null) return;

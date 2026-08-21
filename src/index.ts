@@ -25,7 +25,26 @@ export type { EnrichedActivatedJob } from './runtime/jobActions';
 export type { Job, JobActionReceipt, JobWorker, JobWorkerConfig } from './runtime/jobWorker';
 export { JobActionReceipt as JobActionReceiptSymbol } from './runtime/jobWorker';
 export type { CreateLoggerOptions } from './runtime/logger';
+// Pagination engine: the low-level escape hatch (`nextPageRequest`, `paginate`)
+// plus the public types describing `.paginate(...)` on every search operation.
+export {
+  type FetchPage,
+  nextPageRequest,
+  type PaginateOptions,
+  type PaginationMode,
+  type Paginator,
+  paginate,
+  type SearchBody,
+  type SearchPageRequest,
+  type SearchPageResponse,
+  type SearchResponse,
+} from './runtime/pagination';
 export type { HttpRetryPolicy, OperationOptions } from './runtime/retry';
+export type {
+  SearchPaginateOptions,
+  SearchPaginationApi,
+  WithSearchPagination,
+} from './runtime/searchPagination';
 export type { SupportLogger } from './runtime/supportLogger';
 export type { TelemetryHooks } from './runtime/telemetry';
 export type {

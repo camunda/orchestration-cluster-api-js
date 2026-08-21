@@ -130,11 +130,11 @@ export interface CamundaOptions {
   supportLogger?: SupportLogger;
 }
 
-export function createCamundaClient(options?: CamundaOptions): WithSearchPagination<CamundaClient> {
-  return new CamundaClient(options) as WithSearchPagination<CamundaClient>;
+export function createCamundaClient(options?: CamundaOptions): CamundaClient {
+  return new CamundaClient(options);
 }
 
-export class CamundaClient {
+class CamundaClientBase {
   private _client: Client;
   private _config: Readonly<CamundaConfig>;
   private _auth: ReturnType<typeof createAuthFacade> = createAuthFacade({
@@ -771,3 +771,21 @@ export class CamundaClient {
     });
   }
 }
+
+/**
+ * Public Camunda client type: the base class augmented with `.paginate(...)` on
+ * every `search*` operation. The `.paginate` methods are installed at runtime by
+ * the constructor (via `installSearchPagination`), so both construction paths —
+ * the `createCamundaClient` factory *and* direct `new CamundaClient()` — yield a
+ * value whose static type matches the runtime shape.
+ *
+ * This is expressed as a separate type + value pair rather than
+ * declaration-merging an interface onto the class because
+ * `SearchPaginationApi<CamundaClient>` is self-referential (it maps over
+ * `keyof CamundaClient`), which TypeScript rejects as an interface `extends`
+ * clause ("recursively references itself as a base type").
+ */
+export type CamundaClient = WithSearchPagination<CamundaClientBase>;
+export const CamundaClient = CamundaClientBase as unknown as {
+  new (options?: CamundaOptions): CamundaClient;
+} & typeof CamundaClientBase;

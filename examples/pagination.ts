@@ -32,8 +32,9 @@ async function incidentsByPageExample() {
 //#endregion PaginatePages
 
 //#region PaginateBounded
-// Bound the stream with an AbortSignal and a hard page cap, and forward
-// eventual-consistency options to each underlying page request.
+// Bound the stream with an AbortSignal and a hard page cap. A non-zero
+// `consistency` window is applied to the first page only, so freshly-written
+// data can be waited for without the terminal empty page timing out.
 async function boundedPaginationExample(processDefinitionId: ProcessDefinitionId) {
   const camunda = createCamundaClient();
   const ac = new AbortController();

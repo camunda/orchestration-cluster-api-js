@@ -19,28 +19,40 @@ import {
   type SearchBody,
   type SearchResponse,
 } from './pagination';
-import type { OperationOptions } from './retry';
 
 /** Options for `search*.paginate(...)`: page controls + per-call forwarding. */
 export interface SearchPaginateOptions<TData> extends PaginateOptions {
   /**
    * Eventual-consistency controls forwarded to the underlying search call.
    * Defaults to `{ waitUpToMs: 0 }` (ignore eventual consistency) when omitted.
+   *
+   * Only the **first** page honours this window: once paging is under way an
+   * empty page is a legitimate end-of-results, not a not-yet-consistent read,
+   * so subsequent (and exhaustion-probe) fetches always use `{ waitUpToMs: 0 }`.
+   * Waiting on those would make the terminal fetch of an exactly-full or empty
+   * result set block for the whole window and then throw.
    */
   consistency?: ConsistencyOptions<TData>;
-  /** Low-level per-request options (retry, etc.) forwarded to each page call. */
-  request?: OperationOptions;
 }
+
+/**
+ * `search*` prototype members that match the `search[A-Z]` naming contract but
+ * are hand-written helpers rather than generated search operations — they have
+ * a different call shape and must never be wrapped with `.paginate`.
+ */
+const NON_PAGINATED_SEARCH_METHODS = new Set<string>(['searchVariablesAsDto']);
 
 /**
  * Attach a `.paginate` method to every `search*` operation on `client`.
  * Idempotent and enumeration-free: matches methods by the `search<Capital>`
- * naming contract on the prototype.
+ * naming contract on the prototype, excluding hand-written helpers whose call
+ * shape is not `(body, consistency, options)`.
  */
 export function installSearchPagination(client: object): void {
   const proto = Object.getPrototypeOf(client) as Record<string, unknown>;
   for (const name of Object.getOwnPropertyNames(proto)) {
     if (!/^search[A-Z]/.test(name)) continue;
+    if (NON_PAGINATED_SEARCH_METHODS.has(name)) continue;
     const method = proto[name];
     if (typeof method !== 'function') continue;
 
@@ -53,10 +65,35 @@ export function installSearchPagination(client: object): void {
     };
 
     wrapper.paginate = (body: SearchBody, opts: SearchPaginateOptions<unknown> = {}) => {
-      const { consistency, request, ...pageOpts } = opts;
-      const consistencyArg = { consistency: consistency ?? { waitUpToMs: 0 } };
-      const fetchPage = (b: SearchBody) =>
-        call(b, consistencyArg, request) as Promise<SearchResponse<unknown>>;
+      const { consistency, ...pageOpts } = opts;
+      let firstCall = true;
+      const fetchPage = (b: SearchBody, signal?: AbortSignal) => {
+        // Eventual-consistency waiting only makes sense for the initial query:
+        // once we are paging forward an empty page means end-of-results, not an
+        // inconsistency, so waiting (and its terminal timeout error) must not
+        // apply to subsequent or exhaustion-probe fetches.
+        const consistencyArg = {
+          consistency: firstCall ? (consistency ?? { waitUpToMs: 0 }) : { waitUpToMs: 0 },
+        };
+        firstCall = false;
+        const p = call(b, consistencyArg) as Promise<SearchResponse<unknown>> & {
+          cancel?: () => void;
+        };
+        // Honour mid-flight cancellation: the underlying call is a
+        // CancelablePromise, so abort the in-flight page (not just between
+        // pages) and clean the listener up once the page settles.
+        if (signal) {
+          const onAbort = () => p.cancel?.();
+          if (signal.aborted) {
+            p.cancel?.();
+          } else {
+            signal.addEventListener('abort', onAbort, { once: true });
+            const cleanup = () => signal.removeEventListener('abort', onAbort);
+            p.then(cleanup, cleanup);
+          }
+        }
+        return p as Promise<SearchResponse<unknown>>;
+      };
       return paginate(fetchPage, body, pageOpts);
     };
 

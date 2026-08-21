@@ -110,6 +110,24 @@ describe('paginate (spike)', () => {
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
+  // Regression: a non-positive `maxPages` must fetch NOTHING — the cap is
+  // enforced before the first request, not after it (any page count <= 0).
+  it('fetches nothing for a non-positive maxPages', async () => {
+    for (const cap of [0, -1, -100]) {
+      const fetch = cursorFetcher(100, 10);
+      const pages: number[] = [];
+      for await (const page of paginate(
+        fetch,
+        { page: { limit: 10 } },
+        { maxPages: cap }
+      ).pages()) {
+        pages.push(page.items.length);
+      }
+      expect(pages).toEqual([]);
+      expect(fetch).toHaveBeenCalledTimes(0);
+    }
+  });
+
   it('aborts between pages via AbortSignal', async () => {
     const fetch = cursorFetcher(100, 10);
     const ac = new AbortController();
@@ -171,6 +189,11 @@ describe('installSearchPagination', () => {
     getThing() {
       return 'thing';
     }
+    // Hand-written helper that matches the `search[A-Z]` naming contract but is
+    // NOT a generated search operation (different call shape). Must be excluded.
+    searchVariablesAsDto(_schema: unknown, _options: unknown) {
+      return Promise.resolve(new Map());
+    }
   }
 
   it('attaches .paginate to search* methods only', () => {
@@ -178,6 +201,15 @@ describe('installSearchPagination', () => {
     installSearchPagination(c);
     expect(typeof c.searchThings.paginate).toBe('function');
     expect((c.getThing as any).paginate).toBeUndefined();
+  });
+
+  // Regression: `searchVariablesAsDto` matches `/^search[A-Z]/` but is a
+  // hand-written helper with a `(schema, options)` shape — wrapping it with
+  // `.paginate` would expose a broken method, so it must be excluded.
+  it('does not attach .paginate to the searchVariablesAsDto helper', () => {
+    const c = new FakeClient() as any;
+    installSearchPagination(c);
+    expect((c.searchVariablesAsDto as any).paginate).toBeUndefined();
   });
 
   it('.paginate streams pages and forwards a default consistency arg', async () => {
@@ -205,6 +237,57 @@ describe('installSearchPagination', () => {
     expect((c as FakeClient).calls[0]?.args[1]).toEqual({
       consistency: { waitUpToMs: 5000 },
     });
+  });
+
+  // Regression: eventual-consistency waiting must apply to the FIRST page only.
+  // On later (and exhaustion-probe) fetches an empty page is a legitimate
+  // end-of-results, so forwarding a non-zero window there makes the terminal
+  // fetch block for the whole window and then throw a timeout.
+  it('.paginate applies caller consistency to the first page only', async () => {
+    const c = new FakeClient() as any;
+    installSearchPagination(c);
+    for await (const _ of c.searchThings
+      .paginate({ page: { limit: 1 } }, { consistency: { waitUpToMs: 5000 } })
+      .items()) {
+      // drain to exhaustion
+    }
+    const calls = (c as FakeClient).calls;
+    expect(calls.length).toBeGreaterThan(1);
+    expect(calls[0]?.args[1]).toEqual({ consistency: { waitUpToMs: 5000 } });
+    for (const call of calls.slice(1)) {
+      expect(call.args[1]).toEqual({ consistency: { waitUpToMs: 0 } });
+    }
+  });
+
+  // Regression: cancellation must abort the in-flight HTTP page, not just take
+  // effect between completed pages. The underlying call is a CancelablePromise,
+  // so an abort during a page must invoke its `.cancel()`.
+  it('cancels the in-flight page when the signal aborts', async () => {
+    class SlowClient {
+      cancelled = false;
+      searchSlow(_input: SearchBody, _consistency: unknown) {
+        const p = new Promise<SearchResponse<Item>>(() => {}) as Promise<SearchResponse<Item>> & {
+          cancel: () => void;
+        };
+        p.cancel = () => {
+          this.cancelled = true;
+        };
+        return p;
+      }
+    }
+    const c = new SlowClient() as any;
+    installSearchPagination(c);
+    const ac = new AbortController();
+    // Kick off the first page (runs synchronously up to the fetch await, so the
+    // abort listener is registered) then abort mid-flight.
+    void c.searchSlow
+      .paginate({ page: { limit: 1 } }, { signal: ac.signal })
+      .pages()
+      .next();
+    await Promise.resolve();
+    ac.abort();
+    await Promise.resolve();
+    expect((c as SlowClient).cancelled).toBe(true);
   });
 
   it('preserves the original callable behaviour', async () => {

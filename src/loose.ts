@@ -3,6 +3,7 @@
 
 import type { CancelablePromise } from './gen/CamundaClient';
 import { createCamundaClient } from './gen/CamundaClient';
+import type { WithSearchPagination } from './runtime/searchPagination';
 
 // Detect a branded string of the form string & { readonly __brand: ... }
 type IsBrandedKey<T> = T extends string & { readonly __brand: infer _B } ? true : false;
@@ -38,12 +39,18 @@ export type Loose<T> =
  * Create a client where all branded key types are widened to string.
  * Use when integrating with external systems or when dynamic string keys are common and brand friction is unwanted.
  * For maximum type safety prefer the strict createCamundaClient.
+ *
+ * `Loose<T>` rebuilds callable types and drops properties attached to them, which
+ * would strip the `.paginate` methods installed on every `search*` operation. We
+ * re-apply `WithSearchPagination` on top of the loosened client so loose clients
+ * keep `.paginate` in their static type (recomputed from the loosened search
+ * signatures), matching the runtime wrappers the constructor installs.
  */
 export function createCamundaClientLoose(
   ...args: Parameters<typeof createCamundaClient>
-): Loose<ReturnType<typeof createCamundaClient>> {
+): WithSearchPagination<Loose<ReturnType<typeof createCamundaClient>>> {
   const strict = createCamundaClient(...args);
-  return strict as unknown as Loose<ReturnType<typeof createCamundaClient>>;
+  return strict as unknown as WithSearchPagination<Loose<ReturnType<typeof createCamundaClient>>>;
 }
 
 export type CamundaClientLoose = ReturnType<typeof createCamundaClientLoose>;
