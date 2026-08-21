@@ -5359,8 +5359,9 @@ export function listRuntimeBackups(options?: Parameters<typeof _listRuntimeBacku
  *   const camunda = createCamundaClient();
  * 
  *   // `prefix` must end in a single '*'. Omit `physicalTenantId` to span every
- *   // physical tenant — results are grouped by backup id, and each group lists only
- *   // the tenants that hold that id.
+ *   // physical tenant — results are grouped by backup id, and each group reports
+ *   // every targeted tenant, including ones holding nothing for that id (reported
+ *   // as `DOES_NOT_EXIST`).
  *   const backups = await camunda.listRuntimeBackupsAsClusterAdmin({ prefix: '10*' });
  * 
  *   for (const backup of backups) {
@@ -6631,8 +6632,10 @@ export function takeHistoryBackupAsClusterAdmin(options?: Parameters<typeof _tak
  *   // Cluster-admin variant: triggers a runtime backup on every physical tenant of
  *   // the cluster (or a single one when `physicalTenantId` is given). Requires the
  *   // separate cluster-admin security chain — Orchestration Cluster user
- *   // credentials are NOT accepted. In generated-id mode each tenant reports its
- *   // own id, so the outcome is listed per physical tenant rather than cluster-wide.
+ *   // credentials are NOT accepted. Passing an explicit `backupId` is manual-id
+ *   // mode: every targeted tenant must share that id (omit it for generated-id
+ *   // mode, where each tenant generates its own). Either way the response lists the
+ *   // outcome per physical tenant rather than cluster-wide.
  *   const backup = await camunda.takeRuntimeBackupAsClusterAdmin({ backupId: 100 });
  * 
  *   for (const tenant of backup.physicalTenants) {
