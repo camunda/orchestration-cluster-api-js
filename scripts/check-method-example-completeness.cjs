@@ -49,7 +49,14 @@ if (genStartIdx !== -1 && genEndIdx !== -1) {
 
 // Template methods live between the class body start and the AUTO-GENERATED marker.
 // We find the class declaration, then parse only within the class body.
-const classStartMatch = clientSource.match(/^export class CamundaClient\s*\{/m);
+// The class is emitted as `class CamundaClientBase { ... }` (search pagination
+// mixes its methods onto the instance and re-exports it as `CamundaClient`), and
+// historically as `export class CamundaClient { ... }`. Match either, so the
+// scan is anchored to the real class body — otherwise `classBodyStart` falls
+// back to 0 and the whole file (imports, top-level helpers like `deepFreeze`,
+// the `CancelablePromise` interface) is parsed, yielding false positives such as
+// `if` and `cancel`.
+const classStartMatch = clientSource.match(/^(?:export\s+)?class CamundaClient(?:Base)?\s*\{/m);
 const classBodyStart = classStartMatch ? classStartMatch.index + classStartMatch[0].length : 0;
 
 const templateSection =
