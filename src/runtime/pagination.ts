@@ -124,7 +124,25 @@ export function nextPageRequest<TItem, TBody extends SearchBody>(
   if (limit !== undefined && count < limit) return null;
 
   const endCursor = response.page?.endCursor ?? null;
-  const useCursor = mode === 'cursor' || (mode === 'auto' && endCursor !== null);
+
+  // Decide cursor vs offset. In `auto` mode, pin the choice to the pagination
+  // style the *request* already uses whenever it uses exactly one: a request
+  // carrying only `after`/`before` is cursor pagination and must NOT fall back to
+  // an offset (`from`) request just because a full page returned
+  // `endCursor: null`; a request carrying only `from` is offset pagination and
+  // must NOT flip to a cursor request just because a response happened to include
+  // an `endCursor`. Either flip would mix mutually-exclusive fields, which the
+  // server's `SearchQueryPageRequest` contract forbids. When the request pins
+  // neither style (typically the first page) — or, pathologically, carries both —
+  // fall back to response cursor presence.
+  const hasCursor = body.page?.after !== undefined || body.page?.before !== undefined;
+  const hasFrom = typeof body.page?.from === 'number';
+  let useCursor: boolean;
+  if (mode === 'cursor') useCursor = true;
+  else if (mode === 'offset') useCursor = false;
+  else if (hasCursor && !hasFrom) useCursor = true;
+  else if (hasFrom && !hasCursor) useCursor = false;
+  else useCursor = endCursor !== null;
 
   if (useCursor) {
     if (endCursor === null) return null;
@@ -170,10 +188,15 @@ export function paginate<TItem, TBody extends SearchBody>(
       if (signal?.aborted) throw abortError();
 
       const response = await fetchPage(current, signal, fetched === 0);
+      // Compute the next request BEFORE yielding. A page consumer that mutates
+      // the yielded `response.items` (e.g. clears or splices it) while it holds
+      // the page must not be able to shorten `count` or otherwise alter the
+      // cursor/offset we derive for traversal — generated `items` arrays are
+      // ordinary mutable arrays, so snapshot our traversal decision first.
+      const next = nextPageRequest(current, response, mode);
       yield response;
       fetched += 1;
 
-      const next = nextPageRequest(current, response, mode);
       if (next === null) return;
       current = next;
     }

@@ -43,6 +43,27 @@ export interface SearchPaginateOptions<TData> extends PaginateOptions {
 const NON_PAGINATED_SEARCH_METHODS = new Set<string>(['searchVariablesAsDto']);
 
 /**
+ * Combine the paginator's abort signal with any caller-supplied
+ * `consistency.abortSignal` so that aborting the paginator also propagates into
+ * the eventual-consistency layer. Returns `outer` unchanged when there is no
+ * caller signal to preserve.
+ */
+function mergeAbortSignals(outer: AbortSignal, inner?: AbortSignal): AbortSignal {
+  if (!inner) return outer;
+  const anyFn = (AbortSignal as { any?: (signals: AbortSignal[]) => AbortSignal }).any;
+  if (typeof anyFn === 'function') return anyFn([outer, inner]);
+  const ac = new AbortController();
+  if (outer.aborted || inner.aborted) {
+    ac.abort();
+    return ac.signal;
+  }
+  const onAbort = () => ac.abort();
+  outer.addEventListener('abort', onAbort, { once: true });
+  inner.addEventListener('abort', onAbort, { once: true });
+  return ac.signal;
+}
+
+/**
  * Attach a `.paginate` method to every `search*` operation on `client`.
  * Idempotent and enumeration-free: matches methods by the `search<Capital>`
  * naming contract on the prototype, excluding hand-written helpers whose call
@@ -83,9 +104,26 @@ export function installSearchPagination(client: object): void {
           // apply to subsequent or exhaustion-probe fetches. `isFirstPage` is
           // supplied per iterator run by the engine, so reusing the paginator
           // does not leak the first-page window across iterators.
-          const consistencyArg = {
-            consistency: isFirstPage ? (consistency ?? { waitUpToMs: 0 }) : { waitUpToMs: 0 },
-          };
+          const baseConsistency = isFirstPage
+            ? (consistency ?? { waitUpToMs: 0 })
+            : { waitUpToMs: 0 };
+          // Thread the paginator's abort signal into the eventual-consistency
+          // options. Cancelling the returned promise (below) aborts the in-flight
+          // HTTP request, but when `waitUpToMs > 0` the search returns an
+          // `eventualPoll` wrapper whose own retry timer keeps issuing polls until
+          // its window elapses unless it sees an abort signal. Forwarding the
+          // signal here stops that poller too; any caller-supplied
+          // `consistency.abortSignal` is preserved.
+          const consistencyValue = signal
+            ? {
+                ...baseConsistency,
+                abortSignal: mergeAbortSignals(
+                  signal,
+                  (baseConsistency as { abortSignal?: AbortSignal }).abortSignal
+                ),
+              }
+            : baseConsistency;
+          const consistencyArg = { consistency: consistencyValue };
           const p = call(b, consistencyArg) as Promise<SearchResponse<unknown>> & {
             cancel?: () => void;
           };

@@ -129,6 +129,22 @@ describe('paginate (spike)', () => {
     }
   });
 
+  // Regression (defect class: consumer mutation of a yielded page corrupting
+  // traversal). `items` arrays are ordinary mutable arrays, so the next request
+  // is derived BEFORE the page is yielded. A hostile consumer that clears/edits
+  // `page.items` after reading it must not be able to shorten `count` and
+  // terminate the stream early or alter the cursor.
+  it('derives the next page before yielding, immune to consumer mutation', async () => {
+    const fetch = cursorFetcher(23, 10);
+    const sizes: number[] = [];
+    for await (const page of paginate(fetch, { page: { limit: 10 } }).pages()) {
+      sizes.push(page.items.length);
+      page.items.length = 0; // hostile consumer empties the page after reading
+    }
+    expect(sizes).toEqual([10, 10, 3]);
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
+
   it('aborts between pages via AbortSignal', async () => {
     const fetch = cursorFetcher(100, 10);
     const ac = new AbortController();
@@ -196,6 +212,29 @@ describe('nextPageRequest (spike)', () => {
     expect(next?.page).toEqual({ limit: 2, from: 2 });
     expect(next?.page).not.toHaveProperty('after');
     expect(next?.page).not.toHaveProperty('before');
+  });
+
+  // Regression (defect class: auto-mode switching pagination style mid-stream).
+  // A request already paginating by cursor (`after`/`before` present) must not
+  // fall back to an offset (`from`) request when a full page returns
+  // `endCursor: null` — that would mix mutually-exclusive page fields. Auto mode
+  // pins to the pagination style the request already uses.
+  it('auto: a cursor request with a null endCursor ends, never switches to offset', () => {
+    const fullNullCursor: SearchResponse<Item> = {
+      items: [{ id: 0 }, { id: 1 }],
+      page: { totalItems: 9, hasMoreTotalItems: false, startCursor: null, endCursor: null },
+    };
+    expect(nextPageRequest({ page: { limit: 2, after: '2' } }, fullNullCursor)).toBeNull();
+  });
+
+  it('auto: an offset request keeps advancing by `from` even when a cursor appears', () => {
+    const fullWithCursor: SearchResponse<Item> = {
+      items: [{ id: 0 }, { id: 1 }],
+      page: { totalItems: 9, hasMoreTotalItems: false, startCursor: null, endCursor: '2' },
+    };
+    const next = nextPageRequest({ page: { limit: 2, from: 0 } }, fullWithCursor);
+    expect(next?.page).toEqual({ limit: 2, from: 2 });
+    expect(next?.page).not.toHaveProperty('after');
   });
 });
 
@@ -315,6 +354,54 @@ describe('installSearchPagination', () => {
     ac.abort();
     await Promise.resolve();
     expect((c as SlowClient).cancelled).toBe(true);
+  });
+
+  // Regression (defect class: paginator abort not reaching the eventual-
+  // consistency poller). When the first page uses a non-zero consistency window
+  // the search returns an `eventualPoll` wrapper whose own retry timer keeps
+  // polling until the window elapses; cancelling the returned promise aborts the
+  // in-flight HTTP request but not that timer. The paginator's abort signal must
+  // be forwarded into the consistency options so aborting the paginator stops the
+  // poller too.
+  it('forwards the paginator abort signal into the first-page consistency window', async () => {
+    const c = new FakeClient() as any;
+    installSearchPagination(c);
+    const ac = new AbortController();
+    await c.searchThings
+      .paginate({ page: { limit: 1 } }, { signal: ac.signal, consistency: { waitUpToMs: 5000 } })
+      .pages()
+      .next();
+    const firstConsistency = (c as FakeClient).calls[0]?.args[1] as {
+      consistency: { waitUpToMs: number; abortSignal?: AbortSignal };
+    };
+    expect(firstConsistency.consistency.waitUpToMs).toBe(5000);
+    const forwarded = firstConsistency.consistency.abortSignal;
+    expect(forwarded).toBeInstanceOf(AbortSignal);
+    expect(forwarded?.aborted).toBe(false);
+    ac.abort();
+    expect(forwarded?.aborted).toBe(true);
+  });
+
+  it('merges a caller-supplied consistency.abortSignal with the paginator signal', async () => {
+    const c = new FakeClient() as any;
+    installSearchPagination(c);
+    const pagAc = new AbortController();
+    const callerAc = new AbortController();
+    await c.searchThings
+      .paginate(
+        { page: { limit: 1 } },
+        { signal: pagAc.signal, consistency: { waitUpToMs: 5000, abortSignal: callerAc.signal } }
+      )
+      .pages()
+      .next();
+    const firstCall = (c as FakeClient).calls[0];
+    if (!firstCall) throw new Error('expected a search call to have been made');
+    const merged = (firstCall.args[1] as { consistency: { abortSignal?: AbortSignal } }).consistency
+      .abortSignal as AbortSignal;
+    expect(merged.aborted).toBe(false);
+    // Either source aborting must abort the merged signal.
+    callerAc.abort();
+    expect(merged.aborted).toBe(true);
   });
 
   // Regression (defect class: first-page state shared across iterators). The
