@@ -1,3 +1,10 @@
+# [10.0.0-alpha.34](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.33...v10.0.0-alpha.34) (2026-08-21)
+
+
+### Features
+
+* **runtime:** add .paginate() to every search operation ([#3](https://github.com/camunda/orchestration-cluster-api-js/issues/3)) ([#446](https://github.com/camunda/orchestration-cluster-api-js/issues/446)) ([fddb27c](https://github.com/camunda/orchestration-cluster-api-js/commit/fddb27c16410787912416309aa9de4e36057bf2c)), closes [Magikcraft/nano-bpm#954](https://github.com/Magikcraft/nano-bpm/issues/954)
+
 # [10.0.0-alpha.33](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.32...v10.0.0-alpha.33) (2026-08-21)
 
 
