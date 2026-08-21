@@ -967,7 +967,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthorizationSearchResult"
+                  "$ref": "#/components/schemas/OwnAuthorizationSearchResult"
                 }
               }
             }
@@ -18882,10 +18882,10 @@
             "$ref": "#/components/schemas/AgentInstanceStatusEnum"
           },
           "definition": {
-            "description": "The static definition of the agent, including model, provider, and system prompt.",
+            "description": "The definition of the agent, including model, provider, and system prompt. Set at\ncreation, but can change later via a CONFIGURATION history item.\n",
             "allOf": [
               {
-                "$ref": "#/components/schemas/AgentInstanceDefinition"
+                "$ref": "#/components/schemas/AgentInstanceDefinitionResult"
               }
             ]
           },
@@ -19000,7 +19000,7 @@
         }
       },
       "AgentInstanceDefinition": {
-        "description": "The static definition of an agent instance, set once at creation.",
+        "description": "The definition of an agent instance, as submitted at creation. The systemPrompt is a plain\nstring here for backwards compatibility with existing create requests; the read side\n(AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side\nstring is deprecated and will be removed as part of #58795.\n",
         "type": "object",
         "required": [
           "model",
@@ -19019,6 +19019,32 @@
           "systemPrompt": {
             "type": "string",
             "description": "The system prompt configured for this agent instance."
+          }
+        }
+      },
+      "AgentInstanceDefinitionResult": {
+        "description": "The definition of an agent instance. Set at creation, but can change later via a\nCONFIGURATION history item.\n",
+        "type": "object",
+        "required": [
+          "model",
+          "provider",
+          "systemPrompt"
+        ],
+        "properties": {
+          "model": {
+            "type": "string",
+            "description": "The LLM model identifier (for example, gpt-4o)."
+          },
+          "provider": {
+            "type": "string",
+            "description": "The LLM provider (for example, openai or anthropic)."
+          },
+          "systemPrompt": {
+            "description": "The system prompt configured for this agent instance, as content blocks.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceMessageContent"
+            }
           }
         }
       },
@@ -19132,7 +19158,6 @@
         "description": "Request to create a new agent instance.",
         "type": "object",
         "required": [
-          "definition",
           "elementInstanceKey"
         ],
         "properties": {
@@ -19145,7 +19170,7 @@
             ]
           },
           "definition": {
-            "description": "Static definition set once at creation.",
+            "description": "The agent's initial definition; model, provider, and systemPrompt can\nall be changed later via a CONFIGURATION history item. Required when\nhistory is empty or omitted. Must be omitted when history is\nnon-empty — supply model, provider, and systemPrompt through a\nCONFIGURATION item in history instead.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AgentInstanceDefinition"
@@ -19153,12 +19178,34 @@
             ]
           },
           "limits": {
-            "description": "Limits for the agent execution. When omitted, all limits default to -1\n(no limit).\n",
+            "description": "Limits for the agent execution. When omitted, all limits default to -1\n(no limit). Must be omitted when history is non-empty — supply limits\nthrough a CONFIGURATION item in history instead, if needed.\n",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AgentInstanceLimits"
               }
             ]
+          },
+          "jobKey": {
+            "description": "The key of the job activation during which this creation is being made.\nRequired whenever history is non-empty.\n",
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JobKey"
+              }
+            ]
+          },
+          "jobLease": {
+            "description": "Opaque lease token received from the job activation response. Disambiguates\nthis activation from any other activation of the same job: if the job is\nlater retried, history items submitted under a superseded lease are discarded\nrather than committed.\n",
+            "nullable": true,
+            "type": "string"
+          },
+          "history": {
+            "description": "A batch of history items to append to the agent instance's conversation\nhistory, in request order. Each created item is echoed back in the\nresponse's createdHistory, positionally correlated. When non-empty,\nmodel, provider, and systemPrompt (and, if needed, limits) must be\nestablished through a CONFIGURATION item in this batch instead of the\ntop-level definition/limits, which must then be omitted.\n",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceHistoryItem"
+            }
           }
         }
       },
@@ -19169,7 +19216,8 @@
           "agentInstanceKey"
         ],
         "required": [
-          "agentInstanceKey"
+          "agentInstanceKey",
+          "createdHistory"
         ],
         "properties": {
           "agentInstanceKey": {
@@ -19179,6 +19227,13 @@
                 "$ref": "#/components/schemas/AgentInstanceKey"
               }
             ]
+          },
+          "createdHistory": {
+            "description": "One entry per history item submitted in the request, in request order.\nEmpty when no history items were submitted.\n",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgentInstanceCreatedHistoryItem"
+            }
           }
         }
       },
@@ -21116,6 +21171,23 @@
           },
           "$like": {
             "$ref": "#/components/schemas/LikeFilter"
+          }
+        }
+      },
+      "OwnAuthorizationSearchResult": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AuthorizationSearchResult"
+          }
+        ],
+        "required": [
+          "authorizationsEnabled"
+        ],
+        "properties": {
+          "authorizationsEnabled": {
+            "description": "Indicates whether authorization checks are enabled for the cluster.",
+            "type": "boolean"
           }
         }
       },

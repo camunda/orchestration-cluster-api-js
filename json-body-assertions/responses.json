@@ -2,9 +2,9 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-08-21T03:03:20.304Z",
+    "generatedAt": "2026-08-21T04:41:19.514Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "5f2c18220e29dddd1964d11f1e381b09ead8b1e3f2552cf59c73bec7ee7495b8"
+    "specSha256": "fc020dfae8601c47f9a30389943e9d1bf902627cac539d4ae39c5505e06dd3e1"
   },
   "responses": [
     {
@@ -156,6 +156,27 @@
           {
             "name": "agentInstanceKey",
             "type": "string"
+          },
+          {
+            "name": "createdHistory",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "historyItemId",
+                  "type": "string"
+                },
+                {
+                  "name": "historyItemKey",
+                  "type": "string"
+                },
+                {
+                  "name": "isDuplicate",
+                  "type": "boolean"
+                }
+              ],
+              "optional": []
+            }
           }
         ],
         "optional": []
@@ -186,7 +207,7 @@
           },
           {
             "name": "definition",
-            "type": "0",
+            "type": "object",
             "children": {
               "required": [
                 {
@@ -199,7 +220,7 @@
                 },
                 {
                   "name": "systemPrompt",
-                  "type": "string"
+                  "type": "array<object|object|object>"
                 }
               ],
               "optional": []
@@ -340,7 +361,7 @@
         "required": [
           {
             "name": "createdHistory",
-            "type": "array<object>",
+            "type": "array<items>",
             "children": {
               "required": [
                 {
@@ -393,7 +414,7 @@
                 },
                 {
                   "name": "definition",
-                  "type": "0",
+                  "type": "object",
                   "children": {
                     "required": [
                       {
@@ -406,7 +427,7 @@
                       },
                       {
                         "name": "systemPrompt",
-                        "type": "string"
+                        "type": "array<object|object|object>"
                       }
                     ],
                     "optional": []
@@ -1334,6 +1355,10 @@
       "status": "200",
       "schema": {
         "required": [
+          {
+            "name": "authorizationsEnabled",
+            "type": "boolean"
+          },
           {
             "name": "items",
             "type": "array<schema>",

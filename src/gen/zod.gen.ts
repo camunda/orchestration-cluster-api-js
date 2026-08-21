@@ -16,7 +16,11 @@ export const zAgentDefinitionTypeEnum = z.enum([
 });
 
 /**
- * The static definition of an agent instance, set once at creation.
+ * The definition of an agent instance, as submitted at creation. The systemPrompt is a plain
+ * string here for backwards compatibility with existing create requests; the read side
+ * (AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side
+ * string is deprecated and will be removed as part of #58795.
+ *
  */
 export const zAgentInstanceDefinition = z.object({
     model: z.string().register(z.globalRegistry, {
@@ -29,7 +33,7 @@ export const zAgentInstanceDefinition = z.object({
         description: 'The system prompt configured for this agent instance.'
     })
 }).register(z.globalRegistry, {
-    description: 'The static definition of an agent instance, set once at creation.'
+    description: 'The definition of an agent instance, as submitted at creation. The systemPrompt is a plain\nstring here for backwards compatibility with existing create requests; the read side\n(AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side\nstring is deprecated and will be removed as part of #58795.\n'
 });
 
 /**
@@ -3435,6 +3439,25 @@ export const zAgentInstanceMessageContent = z.discriminatedUnion('contentType', 
 ]);
 
 /**
+ * The definition of an agent instance. Set at creation, but can change later via a
+ * CONFIGURATION history item.
+ *
+ */
+export const zAgentInstanceDefinitionResult = z.object({
+    model: z.string().register(z.globalRegistry, {
+        description: 'The LLM model identifier (for example, gpt-4o).'
+    }),
+    provider: z.string().register(z.globalRegistry, {
+        description: 'The LLM provider (for example, openai or anthropic).'
+    }),
+    systemPrompt: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
+        description: 'The system prompt configured for this agent instance, as content blocks.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The definition of an agent instance. Set at creation, but can change later via a\nCONFIGURATION history item.\n'
+});
+
+/**
  * A single history item to append to the agent instance's conversation history,
  * submitted as part of the batch on an agent instance update request.
  *
@@ -3537,17 +3560,6 @@ export const zIncidentProcessInstanceStatisticsByDefinitionResult = z.object({
  * System-generated key for a element instance.
  */
 export const zElementInstanceKey = zLongKey;
-
-/**
- * Request to create a new agent instance.
- */
-export const zAgentInstanceCreationRequest = z.object({
-    elementInstanceKey: zElementInstanceKey,
-    definition: zAgentInstanceDefinition,
-    limits: zAgentInstanceLimits.optional()
-}).register(z.globalRegistry, {
-    description: 'Request to create a new agent instance.'
-});
 
 /**
  * System-generated key for a user task.
@@ -3710,6 +3722,20 @@ export const zElementInstanceResult = z.object({
  * System-generated key for a job.
  */
 export const zJobKey = zLongKey;
+
+/**
+ * Request to create a new agent instance.
+ */
+export const zAgentInstanceCreationRequest = z.object({
+    elementInstanceKey: zElementInstanceKey,
+    definition: zAgentInstanceDefinition.optional(),
+    limits: zAgentInstanceLimits.optional(),
+    jobKey: zJobKey.nullish(),
+    jobLease: z.string().nullish(),
+    history: z.array(zAgentInstanceHistoryItem).nullish()
+}).register(z.globalRegistry, {
+    description: 'Request to create a new agent instance.'
+});
 
 /**
  * Request to update the mutable state of an agent instance.
@@ -4406,7 +4432,7 @@ export const zAgentInstanceResult = z.object({
     agentInstanceKey: zAgentInstanceKey,
     agentDefinitionKey: zAgentDefinitionKey,
     status: zAgentInstanceStatusEnum,
-    definition: zAgentInstanceDefinition,
+    definition: zAgentInstanceDefinitionResult,
     metrics: zAgentInstanceMetrics,
     limits: zAgentInstanceLimits,
     tools: z.array(zAgentTool).register(z.globalRegistry, {
@@ -4435,15 +4461,6 @@ export const zAgentInstanceResult = z.object({
 });
 
 /**
- * Response returned after successfully creating an agent instance.
- */
-export const zAgentInstanceCreationResult = z.object({
-    agentInstanceKey: zAgentInstanceKey
-}).register(z.globalRegistry, {
-    description: 'Response returned after successfully creating an agent instance.'
-});
-
-/**
  * System-generated key for an agent history item.
  */
 export const zAgentHistoryItemKey = zLongKey;
@@ -4463,6 +4480,18 @@ export const zAgentInstanceCreatedHistoryItem = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'The outcome of appending a single history item from an update request\'s\nhistory batch.\n'
+});
+
+/**
+ * Response returned after successfully creating an agent instance.
+ */
+export const zAgentInstanceCreationResult = z.object({
+    agentInstanceKey: zAgentInstanceKey,
+    createdHistory: z.array(zAgentInstanceCreatedHistoryItem).register(z.globalRegistry, {
+        description: 'One entry per history item submitted in the request, in request order.\nEmpty when no history items were submitted.\n'
+    })
+}).register(z.globalRegistry, {
+    description: 'Response returned after successfully creating an agent instance.'
 });
 
 /**
@@ -6704,6 +6733,12 @@ export const zAuditLogSearchQueryResult = zSearchQueryResponse.and(z.object({
 export const zAuthorizationSearchResult = zSearchQueryResponse.and(z.object({
     items: z.array(zAuthorizationResult).register(z.globalRegistry, {
         description: 'The matching authorizations.'
+    })
+}));
+
+export const zOwnAuthorizationSearchResult = zAuthorizationSearchResult.and(z.object({
+    authorizationsEnabled: z.boolean().register(z.globalRegistry, {
+        description: 'Indicates whether authorization checks are enabled for the cluster.'
     })
 }));
 
@@ -10079,7 +10114,7 @@ export const zSearchOwnAuthorizationsBody = zAuthorizationSearchQuery;
 /**
  * The authorization search result.
  */
-export const zSearchOwnAuthorizationsResponse = zAuthorizationSearchResult;
+export const zSearchOwnAuthorizationsResponse = zOwnAuthorizationSearchResult;
 
 export const zCreateAuthorizationBody = zAuthorizationRequest;
 

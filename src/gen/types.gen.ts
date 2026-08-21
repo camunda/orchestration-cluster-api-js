@@ -279,9 +279,11 @@ export type AgentInstanceResult = {
     agentDefinitionKey: AgentDefinitionKey;
     status: AgentInstanceStatusEnum;
     /**
-     * The static definition of the agent, including model, provider, and system prompt.
+     * The definition of the agent, including model, provider, and system prompt. Set at
+     * creation, but can change later via a CONFIGURATION history item.
+     *
      */
-    definition: AgentInstanceDefinition;
+    definition: AgentInstanceDefinitionResult;
     /**
      * Aggregated metrics across all loopIterations of this agent instance.
      */
@@ -347,7 +349,11 @@ export type AgentInstanceResult = {
 };
 
 /**
- * The static definition of an agent instance, set once at creation.
+ * The definition of an agent instance, as submitted at creation. The systemPrompt is a plain
+ * string here for backwards compatibility with existing create requests; the read side
+ * (AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side
+ * string is deprecated and will be removed as part of #58795.
+ *
  */
 export type AgentInstanceDefinition = {
     /**
@@ -362,6 +368,26 @@ export type AgentInstanceDefinition = {
      * The system prompt configured for this agent instance.
      */
     systemPrompt: string;
+};
+
+/**
+ * The definition of an agent instance. Set at creation, but can change later via a
+ * CONFIGURATION history item.
+ *
+ */
+export type AgentInstanceDefinitionResult = {
+    /**
+     * The LLM model identifier (for example, gpt-4o).
+     */
+    model: string;
+    /**
+     * The LLM provider (for example, openai or anthropic).
+     */
+    provider: string;
+    /**
+     * The system prompt configured for this agent instance, as content blocks.
+     */
+    systemPrompt: Array<AgentInstanceMessageContent>;
 };
 
 /**
@@ -458,15 +484,45 @@ export type AgentInstanceCreationRequest = {
      */
     elementInstanceKey: ElementInstanceKey;
     /**
-     * Static definition set once at creation.
+     * The agent's initial definition; model, provider, and systemPrompt can
+     * all be changed later via a CONFIGURATION history item. Required when
+     * history is empty or omitted. Must be omitted when history is
+     * non-empty — supply model, provider, and systemPrompt through a
+     * CONFIGURATION item in history instead.
+     *
      */
-    definition: AgentInstanceDefinition;
+    definition?: AgentInstanceDefinition;
     /**
      * Limits for the agent execution. When omitted, all limits default to -1
-     * (no limit).
+     * (no limit). Must be omitted when history is non-empty — supply limits
+     * through a CONFIGURATION item in history instead, if needed.
      *
      */
     limits?: AgentInstanceLimits;
+    /**
+     * The key of the job activation during which this creation is being made.
+     * Required whenever history is non-empty.
+     *
+     */
+    jobKey?: JobKey | null;
+    /**
+     * Opaque lease token received from the job activation response. Disambiguates
+     * this activation from any other activation of the same job: if the job is
+     * later retried, history items submitted under a superseded lease are discarded
+     * rather than committed.
+     *
+     */
+    jobLease?: string | null;
+    /**
+     * A batch of history items to append to the agent instance's conversation
+     * history, in request order. Each created item is echoed back in the
+     * response's createdHistory, positionally correlated. When non-empty,
+     * model, provider, and systemPrompt (and, if needed, limits) must be
+     * established through a CONFIGURATION item in this batch instead of the
+     * top-level definition/limits, which must then be omitted.
+     *
+     */
+    history?: Array<AgentInstanceHistoryItem> | null;
 };
 
 /**
@@ -477,6 +533,12 @@ export type AgentInstanceCreationResult = {
      * The system-generated key for the created agent instance.
      */
     agentInstanceKey: AgentInstanceKey;
+    /**
+     * One entry per history item submitted in the request, in request order.
+     * Empty when no history items were submitted.
+     *
+     */
+    createdHistory: Array<AgentInstanceCreatedHistoryItem>;
 };
 
 /**
@@ -1664,6 +1726,13 @@ export type AdvancedActorTypeFilter = {
      */
     $in?: Array<AuditLogActorTypeEnum>;
     $like?: LikeFilter;
+};
+
+export type OwnAuthorizationSearchResult = AuthorizationSearchResult & {
+    /**
+     * Indicates whether authorization checks are enabled for the cluster.
+     */
+    authorizationsEnabled: boolean;
 };
 
 export type CamundaUserResult = {
@@ -13419,7 +13488,7 @@ export type SearchOwnAuthorizationsResponses = {
     /**
      * The authorization search result.
      */
-    200: AuthorizationSearchResult;
+    200: OwnAuthorizationSearchResult;
 };
 
 export type SearchOwnAuthorizationsResponse = SearchOwnAuthorizationsResponses[keyof SearchOwnAuthorizationsResponses];
@@ -23458,7 +23527,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:3e30b4a290874f27a7e358aa2880e4c878361171cc546520e168750f735aaead
+// specHash=sha256:c0b61c0be7d3114128f8b5494ffe8ed1661155f6b0aa6e46177f686a19019ea1
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
