@@ -25,8 +25,9 @@ export default defineConfig(() => {
             globalSetup: './tests-integration/setup/global-setup.ts',
           }
         : {}),
-      // For integration tests, run tests in the same thread (no isolate) and sequentially (no concurrency).
-      // This ensures that shared resources (e.g., the Camunda Platform instance) are not hit with parallel requests.
+      // Integration tests disable cross-file parallelism (via `fileParallelism`
+      // above) so that shared resources (e.g., the Camunda Platform instance)
+      // are not hit by concurrent test files.
     },
   };
 });
