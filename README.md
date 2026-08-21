@@ -1715,7 +1715,56 @@ Notes:
 
 ## Pagination
 
-Search endpoints expose typed request bodies that include pagination fields. Provide the desired page object; auto‑pagination is not (yet) bundled.
+Every `search*` operation exposes a `.paginate(body, options?)` method that returns a lazy,
+cancelable async stream over **all** matching results. Cursors (or offsets) are advanced
+internally, so you never hand-write next-page bookkeeping.
+
+<!-- snippet-source: examples/pagination.ts | regions: PaginateItems -->
+
+```ts
+// Stream every matching process instance across all pages. Cursors are advanced
+// internally; the loop stops when the server runs out of pages.
+async function everyActiveInstanceExample() {
+  const camunda = createCamundaClient();
+
+  const stream = camunda.searchProcessInstances.paginate({
+    filter: { state: 'ACTIVE' },
+    page: { limit: 100 },
+  });
+
+  for await (const instance of stream.items()) {
+    console.log(instance.processInstanceKey);
+  }
+}
+```
+
+Iterate a page at a time with `.pages()`, or drain a bounded result set into an array with
+`.toArray()`. Bound long streams with a `maxPages` cap and/or an `AbortSignal`:
+
+<!-- snippet-source: examples/pagination.ts | regions: PaginateBounded -->
+
+```ts
+// Bound the stream with an AbortSignal and a hard page cap. A non-zero
+// `consistency` window is applied to the first page only, so freshly-written
+// data can be waited for without the terminal empty page timing out.
+async function boundedPaginationExample(processDefinitionId: ProcessDefinitionId) {
+  const camunda = createCamundaClient();
+  const ac = new AbortController();
+  setTimeout(() => ac.abort(), 30_000);
+
+  const stream = camunda.searchProcessInstances.paginate(
+    { filter: { processDefinitionId }, page: { limit: 100 } },
+    { signal: ac.signal, maxPages: 10, consistency: { waitUpToMs: 5000 } }
+  );
+
+  for await (const instance of stream.items()) {
+    console.log(instance.processInstanceKey);
+  }
+}
+```
+
+For advanced use, the low-level `nextPageRequest()` / `paginate()` primitives are also exported
+from the package entry point.
 
 ## Configuration Reference
 

@@ -41,6 +41,7 @@ import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
 import { ThreadPool } from '../runtime/threadPool';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
+import { installSearchPagination, type WithSearchPagination } from '../runtime/searchPagination';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -129,11 +130,11 @@ export interface CamundaOptions {
   supportLogger?: SupportLogger;
 }
 
-export function createCamundaClient(options?: CamundaOptions) {
+export function createCamundaClient(options?: CamundaOptions): CamundaClient {
   return new CamundaClient(options);
 }
 
-export class CamundaClient {
+class CamundaClientBase {
   private _client: Client;
   private _config: Readonly<CamundaConfig>;
   private _auth: ReturnType<typeof createAuthFacade> = createAuthFacade({
@@ -282,6 +283,9 @@ export class CamundaClient {
         return ['config.hydrated'];
       }
     });
+    // Attach `.paginate` to every search* operation (issue #3). One well-known
+    // wiring point; discovers search methods generically (no per-op list).
+    installSearchPagination(this);
   }
 
   get config(): Readonly<CamundaConfig> {
@@ -767,3 +771,21 @@ export class CamundaClient {
     });
   }
 }
+
+/**
+ * Public Camunda client type: the base class augmented with `.paginate(...)` on
+ * every `search*` operation. The `.paginate` methods are installed at runtime by
+ * the constructor (via `installSearchPagination`), so both construction paths —
+ * the `createCamundaClient` factory *and* direct `new CamundaClient()` — yield a
+ * value whose static type matches the runtime shape.
+ *
+ * This is expressed as a separate type + value pair rather than
+ * declaration-merging an interface onto the class because
+ * `SearchPaginationApi<CamundaClient>` is self-referential (it maps over
+ * `keyof CamundaClient`), which TypeScript rejects as an interface `extends`
+ * clause ("recursively references itself as a base type").
+ */
+export type CamundaClient = WithSearchPagination<CamundaClientBase>;
+export const CamundaClient = CamundaClientBase as unknown as {
+  new (options?: CamundaOptions): CamundaClient;
+} & typeof CamundaClientBase;
