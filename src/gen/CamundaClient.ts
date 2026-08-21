@@ -41,6 +41,7 @@ import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions'
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
 import { ThreadPool } from '../runtime/threadPool';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
+import { installSearchPagination, type WithSearchPagination } from '../runtime/searchPagination';
 
 // Internal deep-freeze to make exposed config immutable for consumers.
 function deepFreeze<T>(obj: T): T {
@@ -1439,8 +1440,8 @@ export interface CamundaOptions {
   supportLogger?: SupportLogger;
 }
 
-export function createCamundaClient(options?: CamundaOptions) {
-  return new CamundaClient(options);
+export function createCamundaClient(options?: CamundaOptions): WithSearchPagination<CamundaClient> {
+  return new CamundaClient(options) as WithSearchPagination<CamundaClient>;
 }
 
 export class CamundaClient {
@@ -1592,6 +1593,9 @@ export class CamundaClient {
         return ['config.hydrated'];
       }
     });
+    // Attach `.paginate` to every search* operation (issue #3). One well-known
+    // wiring point; discovers search methods generically (no per-op list).
+    installSearchPagination(this);
   }
 
   get config(): Readonly<CamundaConfig> {
