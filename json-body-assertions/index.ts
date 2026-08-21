@@ -692,6 +692,35 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/cluster/v2/backups/runtime': {
+    'GET': {
+      '200': 1
+    },
+    'POST': {
+      '202': 1,
+      '400': 1,
+      '409': 1,
+      '500': 1,
+      '502': 1,
+      '503': 1,
+      '504': 1
+    }
+  },
+  '/cluster/v2/backups/runtime/state': {
+    'GET': {
+      '200': 1
+    }
+  },
+  '/cluster/v2/backups/runtime/state/sync': {
+    'POST': {
+      '200': 1
+    }
+  },
+  '/cluster/v2/backups/runtime/{backupId}': {
+    'GET': {
+      '200': 1
+    }
+  },
   '/cluster/v2/backups/history': {
     'GET': {
       '200': 1
