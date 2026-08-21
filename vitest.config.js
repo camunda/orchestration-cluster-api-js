@@ -16,8 +16,15 @@ export default defineConfig(() => {
       // parallel behavior — so omit the key entirely instead.
       ...(isIntegrationRun ? { fileParallelism: false } : {}),
       // Only run cleanup (or environment provisioning) for integration runs.
-      setupFiles: isIntegrationRun ? './tests-integration/setup/cleanup.ts' : undefined,
-      globalSetup: isIntegrationRun ? './tests-integration/setup/global-setup.ts' : undefined,
+      // As with `fileParallelism`, omit these keys entirely for unit runs
+      // rather than setting them to `undefined`, so vitest never sees an
+      // explicit override.
+      ...(isIntegrationRun
+        ? {
+            setupFiles: './tests-integration/setup/cleanup.ts',
+            globalSetup: './tests-integration/setup/global-setup.ts',
+          }
+        : {}),
       // For integration tests, run tests in the same thread (no isolate) and sequentially (no concurrency).
       // This ensures that shared resources (e.g., the Camunda Platform instance) are not hit with parallel requests.
     },
