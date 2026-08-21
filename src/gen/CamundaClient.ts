@@ -55,7 +55,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 234
+// Operations: 241
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -268,8 +268,15 @@ export type deleteRoleInput = { roleId: deleteRolePathParam_roleId };
 type deleteRuntimeBackupOptions = Parameters<typeof Sdk.deleteRuntimeBackup>[0];
 type deleteRuntimeBackupPathParam_backupId = (NonNullable<deleteRuntimeBackupOptions> extends { path: { backupId: infer P } } ? P : any);
 export type deleteRuntimeBackupInput = { backupId: deleteRuntimeBackupPathParam_backupId };
+type deleteRuntimeBackupAsClusterAdminOptions = Parameters<typeof Sdk.deleteRuntimeBackupAsClusterAdmin>[0];
+type deleteRuntimeBackupAsClusterAdminPathParam_backupId = (NonNullable<deleteRuntimeBackupAsClusterAdminOptions> extends { path: { backupId: infer P } } ? P : any);
+type deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteRuntimeBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type deleteRuntimeBackupAsClusterAdminInput = { backupId: deleteRuntimeBackupAsClusterAdminPathParam_backupId; physicalTenantId?: deleteRuntimeBackupAsClusterAdminQueryParam_physicalTenantId };
 type deleteRuntimeBackupStateOptions = Parameters<typeof Sdk.deleteRuntimeBackupState>[0];
 export type deleteRuntimeBackupStateInput = void;
+type deleteRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof Sdk.deleteRuntimeBackupStateAsClusterAdmin>[0];
+type deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<deleteRuntimeBackupStateAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type deleteRuntimeBackupStateAsClusterAdminInput = { physicalTenantId?: deleteRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId };
 type deleteTenantOptions = Parameters<typeof Sdk.deleteTenant>[0];
 type deleteTenantPathParam_tenantId = (NonNullable<deleteTenantOptions> extends { path: { tenantId: infer P } } ? P : any);
 export type deleteTenantInput = { tenantId: deleteTenantPathParam_tenantId };
@@ -637,8 +644,15 @@ export type getRoleConsistency = {
 type getRuntimeBackupOptions = Parameters<typeof Sdk.getRuntimeBackup>[0];
 type getRuntimeBackupPathParam_backupId = (NonNullable<getRuntimeBackupOptions> extends { path: { backupId: infer P } } ? P : any);
 export type getRuntimeBackupInput = { backupId: getRuntimeBackupPathParam_backupId };
+type getRuntimeBackupAsClusterAdminOptions = Parameters<typeof Sdk.getRuntimeBackupAsClusterAdmin>[0];
+type getRuntimeBackupAsClusterAdminPathParam_backupId = (NonNullable<getRuntimeBackupAsClusterAdminOptions> extends { path: { backupId: infer P } } ? P : any);
+type getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getRuntimeBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type getRuntimeBackupAsClusterAdminInput = { backupId: getRuntimeBackupAsClusterAdminPathParam_backupId; physicalTenantId?: getRuntimeBackupAsClusterAdminQueryParam_physicalTenantId };
 type getRuntimeBackupStateOptions = Parameters<typeof Sdk.getRuntimeBackupState>[0];
 export type getRuntimeBackupStateInput = void;
+type getRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof Sdk.getRuntimeBackupStateAsClusterAdmin>[0];
+type getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<getRuntimeBackupStateAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type getRuntimeBackupStateAsClusterAdminInput = { physicalTenantId?: getRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId };
 type getStartProcessFormOptions = Parameters<typeof Sdk.getStartProcessForm>[0];
 type getStartProcessFormPathParam_processDefinitionKey = (NonNullable<getStartProcessFormOptions> extends { path: { processDefinitionKey: infer P } } ? P : any);
 export type getStartProcessFormInput = { processDefinitionKey: getStartProcessFormPathParam_processDefinitionKey };
@@ -725,6 +739,10 @@ export type listHistoryBackupsAsClusterAdminInput = { physicalTenantId?: listHis
 type listRuntimeBackupsOptions = Parameters<typeof Sdk.listRuntimeBackups>[0];
 type listRuntimeBackupsQueryParam_prefix = (NonNullable<listRuntimeBackupsOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
 export type listRuntimeBackupsInput = { prefix?: listRuntimeBackupsQueryParam_prefix };
+type listRuntimeBackupsAsClusterAdminOptions = Parameters<typeof Sdk.listRuntimeBackupsAsClusterAdmin>[0];
+type listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId = (NonNullable<listRuntimeBackupsAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+type listRuntimeBackupsAsClusterAdminQueryParam_prefix = (NonNullable<listRuntimeBackupsAsClusterAdminOptions> extends { query?: { prefix?: infer Q } } ? Q : any);
+export type listRuntimeBackupsAsClusterAdminInput = { physicalTenantId?: listRuntimeBackupsAsClusterAdminQueryParam_physicalTenantId; prefix?: listRuntimeBackupsAsClusterAdminQueryParam_prefix };
 type listSecretsOptions = Parameters<typeof Sdk.listSecrets>[0];
 type listSecretsBody = (NonNullable<listSecretsOptions> extends { body?: infer B } ? B : never);
 export type listSecretsInput = listSecretsBody;
@@ -1214,6 +1232,9 @@ type suspendProcessInstancesBatchOperationBody = (NonNullable<suspendProcessInst
 export type suspendProcessInstancesBatchOperationInput = suspendProcessInstancesBatchOperationBody;
 type syncRuntimeBackupStateOptions = Parameters<typeof Sdk.syncRuntimeBackupState>[0];
 export type syncRuntimeBackupStateInput = void;
+type syncRuntimeBackupStateAsClusterAdminOptions = Parameters<typeof Sdk.syncRuntimeBackupStateAsClusterAdmin>[0];
+type syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId = (NonNullable<syncRuntimeBackupStateAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type syncRuntimeBackupStateAsClusterAdminInput = { physicalTenantId?: syncRuntimeBackupStateAsClusterAdminQueryParam_physicalTenantId };
 type takeHistoryBackupOptions = Parameters<typeof Sdk.takeHistoryBackup>[0];
 type takeHistoryBackupBody = (NonNullable<takeHistoryBackupOptions> extends { body?: infer B } ? B : never);
 export type takeHistoryBackupInput = takeHistoryBackupBody;
@@ -1224,6 +1245,10 @@ export type takeHistoryBackupAsClusterAdminInput = takeHistoryBackupAsClusterAdm
 type takeRuntimeBackupOptions = Parameters<typeof Sdk.takeRuntimeBackup>[0];
 type takeRuntimeBackupBody = (NonNullable<takeRuntimeBackupOptions> extends { body?: infer B } ? B : never);
 export type takeRuntimeBackupInput = takeRuntimeBackupBody;
+type takeRuntimeBackupAsClusterAdminOptions = Parameters<typeof Sdk.takeRuntimeBackupAsClusterAdmin>[0];
+type takeRuntimeBackupAsClusterAdminBody = (NonNullable<takeRuntimeBackupAsClusterAdminOptions> extends { body?: infer B } ? B : never);
+type takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId = (NonNullable<takeRuntimeBackupAsClusterAdminOptions> extends { query?: { physicalTenantId?: infer Q } } ? Q : any);
+export type takeRuntimeBackupAsClusterAdminInput = takeRuntimeBackupAsClusterAdminBody & { physicalTenantId?: takeRuntimeBackupAsClusterAdminQueryParam_physicalTenantId };
 type throwJobErrorOptions = Parameters<typeof Sdk.throwJobError>[0];
 type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
 type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
@@ -1331,7 +1356,7 @@ type updateUserTaskOptions = Parameters<typeof Sdk.updateUserTask>[0];
 type updateUserTaskBody = (NonNullable<updateUserTaskOptions> extends { body?: infer B } ? B : never);
 type updateUserTaskPathParam_userTaskKey = (NonNullable<updateUserTaskOptions> extends { path: { userTaskKey: infer P } } ? P : any);
 export type updateUserTaskInput = updateUserTaskBody & { userTaskKey: updateUserTaskPathParam_userTaskKey };
-const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zDeleteHistoryBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zPauseClusterExportingResponse', 'zResumeClusterExportingResponse', 'zDeleteHistoryBackupAsClusterAdminResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
+const VOID_RESPONSES = new Set(['zDeleteAuthorizationResponse', 'zUpdateAuthorizationResponse', 'zDeleteRuntimeBackupStateResponse', 'zDeleteRuntimeBackupResponse', 'zDeleteHistoryBackupResponse', 'zCancelBatchOperationResponse', 'zResumeBatchOperationResponse', 'zSuspendBatchOperationResponse', 'zPinClockResponse', 'zResetClockResponse', 'zDeleteGlobalClusterVariableResponse', 'zDeleteTenantClusterVariableResponse', 'zDeleteDecisionInstanceResponse', 'zDeleteDocumentResponse', 'zActivateAdHocSubProcessActivitiesResponse', 'zCreateElementInstanceVariablesResponse', 'zPauseExportingResponse', 'zResumeExportingResponse', 'zDeleteGlobalTaskListenerResponse', 'zDeleteGroupResponse', 'zUnassignClientFromGroupResponse', 'zAssignClientToGroupResponse', 'zUnassignMappingRuleFromGroupResponse', 'zAssignMappingRuleToGroupResponse', 'zUnassignUserFromGroupResponse', 'zAssignUserToGroupResponse', 'zResolveIncidentResponse', 'zUpdateJobResponse', 'zCompleteJobResponse', 'zThrowJobErrorResponse', 'zFailJobResponse', 'zDeleteMappingRuleResponse', 'zAssignProcessInstanceBusinessIdResponse', 'zCancelProcessInstanceResponse', 'zDeleteProcessInstanceResponse', 'zMigrateProcessInstanceResponse', 'zModifyProcessInstanceResponse', 'zResumeProcessInstanceResponse', 'zSuspendProcessInstanceResponse', 'zDeleteRoleResponse', 'zUnassignRoleFromClientResponse', 'zAssignRoleToClientResponse', 'zUnassignRoleFromGroupResponse', 'zAssignRoleToGroupResponse', 'zUnassignRoleFromMappingRuleResponse', 'zAssignRoleToMappingRuleResponse', 'zUnassignRoleFromUserResponse', 'zAssignRoleToUserResponse', 'zGetStatusResponse', 'zDeleteTenantResponse', 'zUnassignClientFromTenantResponse', 'zAssignClientToTenantResponse', 'zUnassignGroupFromTenantResponse', 'zAssignGroupToTenantResponse', 'zUnassignMappingRuleFromTenantResponse', 'zAssignMappingRuleToTenantResponse', 'zUnassignRoleFromTenantResponse', 'zAssignRoleToTenantResponse', 'zUnassignUserFromTenantResponse', 'zAssignUserToTenantResponse', 'zPauseClusterExportingResponse', 'zResumeClusterExportingResponse', 'zDeleteRuntimeBackupStateAsClusterAdminResponse', 'zDeleteRuntimeBackupAsClusterAdminResponse', 'zDeleteHistoryBackupAsClusterAdminResponse', 'zDeleteUserResponse', 'zUpdateUserTaskResponse', 'zUnassignUserTaskResponse', 'zAssignUserTaskResponse', 'zCompleteUserTaskResponse']);
 /** Extended deployment result with typed buckets for direct access to deployed artifacts. */
 export interface ExtendedDeploymentResult extends _DataOf<typeof Sdk.createDeployment> {
   processes: Array<NonNullable<_DataOf<typeof Sdk.createDeployment>["deployments"][number]["processDefinition"]>>;
@@ -6472,6 +6497,88 @@ export class CamundaClient {
   }
 
   /**
+   * Delete a runtime backup across physical tenants
+   *
+   * Deletes the runtime backup with the given id from every physical tenant of the cluster, or from the one named by `physicalTenantId`. A tenant that does not hold the backup has already reached the requested end state, so it counts as deleted rather than as a failure — the same as deleting an unknown backup id through the per-physical-tenant endpoint.
+   *
+   * The request is all-or-nothing: a physical tenant the backup cannot be deleted from fails the whole request, and the deletions that already succeeded on other tenants are not undone. Narrow the request with `physicalTenantId` to delete from the tenants that can still be reached.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `DELETE /v2/backups/runtime/{backupId}` to act as a single physical tenant.
+    *
+   * @example Delete a runtime backup (cluster admin)
+   * ```ts
+   * async function deleteRuntimeBackupAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Deletion fans out to every physical tenant (or a single one when
+   *   // `physicalTenantId` is given) and is not undone if a later tenant fails.
+   *   await camunda.deleteRuntimeBackupAsClusterAdmin({ backupId: 100 });
+   * }
+   * ```
+   * @operationId deleteRuntimeBackupAsClusterAdmin
+   * @tags Backup
+   */
+  deleteRuntimeBackupAsClusterAdmin(input: deleteRuntimeBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupAsClusterAdmin>>;
+  deleteRuntimeBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { backupId, physicalTenantId } = arg || {};
+      let envelope: any = {};
+      envelope.path = { backupId };
+      envelope.query = { physicalTenantId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.path !== undefined) {
+          const maybePath = await this._validation.gateRequest('deleteRuntimeBackupAsClusterAdmin', _schemas.zDeleteRuntimeBackupAsClusterAdminPath, envelope.path);
+          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
+        }
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('deleteRuntimeBackupAsClusterAdmin', _schemas.zDeleteRuntimeBackupAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteRuntimeBackupAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackupAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteRuntimeBackupAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zDeleteRuntimeBackupAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteRuntimeBackupAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Delete runtime backup state
    *
    * Resets the runtime backup state of every partition of the physical tenant, clearing
@@ -6531,6 +6638,83 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Delete runtime backup state across physical tenants
+   *
+   * Resets the runtime backup state of every partition of every physical tenant of the cluster, or of the one named by `physicalTenantId`, clearing all checkpoint info, backup info, checkpoint metadata, and backup ranges. Used when switching backup stores.
+   *
+   * The request is all-or-nothing: a physical tenant whose state cannot be reset fails the whole request, and the resets that already succeeded on other tenants are not undone. Narrow the request with `physicalTenantId` to reset the tenants that can still be reached.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `DELETE /v2/backups/runtime/state` to act as a single physical tenant.
+    *
+   * @example Delete the runtime backup state (cluster admin)
+   * ```ts
+   * async function deleteRuntimeBackupStateAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Clears all checkpoint info, backup info, checkpoint metadata, and backup
+   *   // ranges on every partition of every targeted physical tenant (or a single one
+   *   // when `physicalTenantId` is given). Used when switching backup stores.
+   *   await camunda.deleteRuntimeBackupStateAsClusterAdmin({});
+   * }
+   * ```
+   * @operationId deleteRuntimeBackupStateAsClusterAdmin
+   * @tags Backup
+   */
+  deleteRuntimeBackupStateAsClusterAdmin(input: deleteRuntimeBackupStateAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.deleteRuntimeBackupStateAsClusterAdmin>>;
+  deleteRuntimeBackupStateAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('deleteRuntimeBackupStateAsClusterAdmin', _schemas.zDeleteRuntimeBackupStateAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.deleteRuntimeBackupStateAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'deleteRuntimeBackupStateAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zDeleteRuntimeBackupStateAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zDeleteRuntimeBackupStateAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('deleteRuntimeBackupStateAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'deleteRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -11110,6 +11294,94 @@ export class CamundaClient {
   }
 
   /**
+   * Get a runtime backup across physical tenants
+   *
+   * Reports what every physical tenant of the cluster, or the one named by `physicalTenantId`, holds for the given backup id, plus the state aggregated over all of them. A tenant that was reached and does not hold this backup reports `DOES_NOT_EXIST`, which is a successful observation rather than a failure — so a backup only some tenants hold aggregates to `INCOMPLETE`, the same way a backup only some partitions hold does within one tenant.
+   *
+   * The request is all-or-nothing: a physical tenant whose state cannot be read fails the whole request. Narrow the request with `physicalTenantId` to read the tenants that can still be reached.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `GET /v2/backups/runtime/{backupId}` to act as a single physical tenant.
+    *
+   * @example Get a runtime backup (cluster admin)
+   * ```ts
+   * async function getRuntimeBackupAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Looking a backup id up directly lists every targeted physical tenant,
+   *   // including the ones reporting `DOES_NOT_EXIST` — a backup that only some
+   *   // tenants hold is a supported outcome.
+   *   const backup = await camunda.getRuntimeBackupAsClusterAdmin({ backupId: 100 });
+   * 
+   *   console.log(`Cluster runtime backup ${backup.backupId}: ${backup.state}`);
+   *   for (const tenant of backup.physicalTenants) {
+   *     console.log(`  [${tenant.physicalTenantId}] ${tenant.state}`);
+   *   }
+   * }
+   * ```
+   * @operationId getRuntimeBackupAsClusterAdmin
+   * @tags Backup
+   */
+  getRuntimeBackupAsClusterAdmin(input: getRuntimeBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupAsClusterAdmin>>;
+  getRuntimeBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { backupId, physicalTenantId } = arg || {};
+      let envelope: any = {};
+      envelope.path = { backupId };
+      envelope.query = { physicalTenantId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.path !== undefined) {
+          const maybePath = await this._validation.gateRequest('getRuntimeBackupAsClusterAdmin', _schemas.zGetRuntimeBackupAsClusterAdminPath, envelope.path);
+          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
+        }
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('getRuntimeBackupAsClusterAdmin', _schemas.zGetRuntimeBackupAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.path) opts.path = envelope.path;
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getRuntimeBackupAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'getRuntimeBackupAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetRuntimeBackupAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetRuntimeBackupAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getRuntimeBackupAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get runtime backup state
    *
    * Returns the current checkpoint and backup state of every partition of the physical
@@ -11179,6 +11451,87 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupState', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Get runtime backup state across physical tenants
+   *
+   * Reports the checkpoint and backup state of every partition of every physical tenant of the cluster, or of the one named by `physicalTenantId`, grouped by physical tenant. Checkpoint ids and log positions only mean anything within one physical tenant's partitions, so nothing is aggregated across tenants.
+   *
+   * The request is all-or-nothing: a physical tenant whose state cannot be read fails the whole request rather than contributing an empty section, which an operator making a delete or restore decision could not tell apart from "nothing to report yet". Narrow the request with `physicalTenantId` to read the tenants that can still be reached.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `GET /v2/backups/runtime/state` to act as a single physical tenant.
+    *
+   * @example Get the runtime backup state (cluster admin)
+   * ```ts
+   * async function getRuntimeBackupStateAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Returns the checkpoint and backup state of every targeted physical tenant.
+   *   // Nothing is aggregated across tenants — checkpoint ids and log positions only
+   *   // mean anything within one tenant's partitions.
+   *   const clusterState = await camunda.getRuntimeBackupStateAsClusterAdmin({});
+   * 
+   *   for (const tenant of clusterState.physicalTenants) {
+   *     console.log(`[${tenant.physicalTenantId}] ${tenant.state.checkpointStates.length} checkpoints`);
+   *   }
+   * }
+   * ```
+   * @operationId getRuntimeBackupStateAsClusterAdmin
+   * @tags Backup
+   */
+  getRuntimeBackupStateAsClusterAdmin(input: getRuntimeBackupStateAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getRuntimeBackupStateAsClusterAdmin>>;
+  getRuntimeBackupStateAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('getRuntimeBackupStateAsClusterAdmin', _schemas.zGetRuntimeBackupStateAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getRuntimeBackupStateAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'getRuntimeBackupStateAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetRuntimeBackupStateAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetRuntimeBackupStateAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getRuntimeBackupStateAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -12257,6 +12610,90 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'listRuntimeBackups', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * List runtime backups across physical tenants
+   *
+   * Lists the runtime backups of every physical tenant of the cluster, or of the one named by `physicalTenantId`, grouped by backup id. Every group reports every targeted tenant, including the ones holding nothing for that id, so a backup only some tenants hold aggregates to `INCOMPLETE` here exactly as it does when looked up directly — the state of a listed group can be trusted to say whether the cluster can be restored from it. A backup id that only some physical tenants hold is a supported outcome rather than a degraded one; tenants that generate their own backup ids never share one, so in that mode each backup forms its own group and the other tenants report `DOES_NOT_EXIST` under it.
+   *
+   * The request is all-or-nothing: a physical tenant whose backups cannot be read fails the whole request rather than silently dropping out of the listing. Narrow the request with `physicalTenantId` to list the backups of the tenants that can still be read.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `GET /v2/backups/runtime` to act as a single physical tenant.
+    *
+   * @example List runtime backups (cluster admin)
+   * ```ts
+   * async function listRuntimeBackupsAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // `prefix` must end in a single '*'. Omit `physicalTenantId` to span every
+   *   // physical tenant — results are grouped by backup id, and each group lists only
+   *   // the tenants that hold that id.
+   *   const backups = await camunda.listRuntimeBackupsAsClusterAdmin({ prefix: '10*' });
+   * 
+   *   for (const backup of backups) {
+   *     console.log(`Cluster runtime backup ${backup.backupId}: ${backup.state}`);
+   *     for (const tenant of backup.physicalTenants) {
+   *       console.log(`  [${tenant.physicalTenantId}] ${tenant.state}`);
+   *     }
+   *   }
+   * }
+   * ```
+   * @operationId listRuntimeBackupsAsClusterAdmin
+   * @tags Backup
+   */
+  listRuntimeBackupsAsClusterAdmin(input: listRuntimeBackupsAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.listRuntimeBackupsAsClusterAdmin>>;
+  listRuntimeBackupsAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId, prefix } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId, prefix };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('listRuntimeBackupsAsClusterAdmin', _schemas.zListRuntimeBackupsAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.listRuntimeBackupsAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'listRuntimeBackupsAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zListRuntimeBackupsAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zListRuntimeBackupsAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('listRuntimeBackupsAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'listRuntimeBackupsAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -18533,6 +18970,85 @@ export class CamundaClient {
   }
 
   /**
+   * Force-write runtime backup state across physical tenants
+   *
+   * Force-writes the checkpoint and backup metadata of every partition of every physical tenant of the cluster, or of the one named by `physicalTenantId`, to that tenant's backup store, independent of any backup being taken or confirmed, and returns the updated state per physical tenant.
+   *
+   * The request is all-or-nothing: a physical tenant whose metadata cannot be written fails the whole request, and the writes that already succeeded on other tenants are not undone. The operation is idempotent, so retrying the same call is the correct remedy. Narrow the request with `physicalTenantId` to write the tenants that can still be reached.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `POST /v2/backups/runtime/state/sync` to act as a single physical tenant.
+    *
+   * @example Force-write the runtime backup state (cluster admin)
+   * ```ts
+   * async function syncRuntimeBackupStateAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Force-writes checkpoint and backup metadata of every partition to the backup
+   *   // store on every targeted physical tenant, independent of any backup being
+   *   // taken, and returns the updated per-tenant state.
+   *   const clusterState = await camunda.syncRuntimeBackupStateAsClusterAdmin({});
+   * 
+   *   console.log(`Synced ${clusterState.physicalTenants.length} physical tenants`);
+   * }
+   * ```
+   * @operationId syncRuntimeBackupStateAsClusterAdmin
+   * @tags Backup
+   */
+  syncRuntimeBackupStateAsClusterAdmin(input: syncRuntimeBackupStateAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.syncRuntimeBackupStateAsClusterAdmin>>;
+  syncRuntimeBackupStateAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId };
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('syncRuntimeBackupStateAsClusterAdmin', _schemas.zSyncRuntimeBackupStateAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.syncRuntimeBackupStateAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'syncRuntimeBackupStateAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zSyncRuntimeBackupStateAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zSyncRuntimeBackupStateAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('syncRuntimeBackupStateAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'syncRuntimeBackupStateAsClusterAdmin', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Take a history backup
    *
    * Triggers a backup of the physical tenant's history, by scheduling a snapshot of every
@@ -18784,6 +19300,97 @@ export class CamundaClient {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackup', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Take a runtime backup on one or every physical tenant
+   *
+   * Triggers a runtime backup on every physical tenant of the cluster, or on the one named by `physicalTenantId`. A cluster-wide backup is a set of independent per-tenant backups, not an atomic snapshot of the cluster: they are neither coordinated nor rolled back together, and each tenant stores its own, so the same `backupId` can be used for all of them.
+   *
+   * Every targeted physical tenant must be in the same backup-id mode. `backupId` must be omitted when every targeted tenant generates its own ids (because continuous backups and/or a backup or checkpoint schedule is enabled for it), and is required when none of them does. A cluster whose targeted tenants mix the two modes is rejected with 400 and has to be driven one tenant at a time through `POST /v2/backups/runtime`. In generated-id mode each tenant generates its own id, so the response reports an id per physical tenant rather than one for the cluster.
+   *
+   * The trigger is all-or-error, and never silent about a partial trigger: if any targeted tenant cannot be triggered the response carries an error status, but its body still lists every targeted tenant — which ones were triggered, under which `backupId` to monitor or delete them, and why the others failed. Nothing is rolled back, so the backups that were triggered keep running and have to be deleted explicitly. A request rejected before any tenant was triggered answers with a problem detail instead, and nothing is running.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here. Use `POST /v2/backups/runtime` to act as a single physical tenant.
+    *
+   * @example Take a runtime backup (cluster admin)
+   * ```ts
+   * async function takeRuntimeBackupAsClusterAdminExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   // Cluster-admin variant: triggers a runtime backup on every physical tenant of
+   *   // the cluster (or a single one when `physicalTenantId` is given). Requires the
+   *   // separate cluster-admin security chain — Orchestration Cluster user
+   *   // credentials are NOT accepted. In generated-id mode each tenant reports its
+   *   // own id, so the outcome is listed per physical tenant rather than cluster-wide.
+   *   const backup = await camunda.takeRuntimeBackupAsClusterAdmin({ backupId: 100 });
+   * 
+   *   for (const tenant of backup.physicalTenants) {
+   *     console.log(`[${tenant.physicalTenantId}] ${tenant.outcome} (backupId ${tenant.backupId})`);
+   *   }
+   * }
+   * ```
+   * @operationId takeRuntimeBackupAsClusterAdmin
+   * @tags Backup
+   */
+  takeRuntimeBackupAsClusterAdmin(input: takeRuntimeBackupAsClusterAdminInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.takeRuntimeBackupAsClusterAdmin>>;
+  takeRuntimeBackupAsClusterAdmin(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { physicalTenantId, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.query = { physicalTenantId };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('takeRuntimeBackupAsClusterAdmin', _schemas.zTakeRuntimeBackupAsClusterAdminBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('takeRuntimeBackupAsClusterAdmin', _schemas.zTakeRuntimeBackupAsClusterAdminQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.takeRuntimeBackupAsClusterAdmin(opts);
+        let data = this._evaluateResponse(_raw, 'takeRuntimeBackupAsClusterAdmin', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zTakeRuntimeBackupAsClusterAdminResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zTakeRuntimeBackupAsClusterAdminResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('takeRuntimeBackupAsClusterAdmin', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'takeRuntimeBackupAsClusterAdmin', exempt: false, retryOverride: options?.retry });
     });
   }
 

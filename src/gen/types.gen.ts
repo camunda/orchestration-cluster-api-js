@@ -2919,6 +2919,113 @@ export type PhysicalTenantBrokerTopology = {
 };
 
 /**
+ * The outcome of triggering a runtime backup on every targeted physical tenant. Returned both when every tenant was triggered and when only some were, so a partial trigger is never silent: the status code says whether the request succeeded, the body says what is running.
+ */
+export type ClusterTakeRuntimeBackupResponse = {
+    /**
+     * The outcome for each targeted physical tenant, ordered by physical tenant id. Carries no cluster-level backup id: in generated-id mode each tenant generates its own.
+     */
+    physicalTenants: Array<ClusterRuntimeBackupTakeResult>;
+};
+
+/**
+ * Whether one physical tenant's runtime backup was triggered, and under which id it can be monitored and deleted.
+ */
+export type ClusterRuntimeBackupTakeResult = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The id to monitor or delete this physical tenant's backup by: the id it is running under when `TRIGGERED` — the requested one, or the one the tenant generated when ids are generated — and the requested id to check when `UNKNOWN`. Null when the tenant is known to be running no backup, and also when an `UNKNOWN` tenant generates its own ids, because the id it may be running under was never reported; list that tenant's backups to find it.
+     */
+    backupId: BackupId | null;
+    /**
+     * What this physical tenant did with the trigger.
+     */
+    outcome: ClusterRuntimeBackupTakeOutcome;
+    /**
+     * Why this physical tenant reported no triggered backup. Null when it was triggered.
+     */
+    reason: string | null;
+};
+
+/**
+ * Cluster Runtime Backup Take Outcome
+ *
+ * What a physical tenant did with the trigger. `TRIGGERED` says the backup is running, not that it completed — poll `GET /cluster/v2/backups/runtime/{backupId}` for that. A `FAILED` tenant is running no backup for this request and needs no cleanup. `UNKNOWN` means the broker may or may not have accepted the request — the connection was cut mid-flight, or the gateway timed out waiting — so that tenant's backups have to be checked before retrying; it is reported separately from `FAILED` precisely because calling it failed would claim nothing is running there. Tenants that were triggered are never rolled back.
+ */
+export type ClusterRuntimeBackupTakeOutcome = 'TRIGGERED' | 'FAILED' | 'UNKNOWN';
+
+/**
+ * A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.
+ */
+export type ClusterRuntimeBackupInfo = {
+    /**
+     * The id of the backup.
+     */
+    backupId: BackupId;
+    /**
+     * The state aggregated over every targeted physical tenant, whether the backup id was looked up directly or listed. A tenant holding nothing for this id counts as `DOES_NOT_EXIST`, so the aggregate is `INCOMPLETE` unless every targeted tenant holds the backup.
+     */
+    state: StateCode;
+    /**
+     * Reason for failure if the aggregated state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * What each physical tenant reports for this backup id, ordered by physical tenant id. Every targeted tenant is listed, including the ones reporting `DOES_NOT_EXIST`.
+     */
+    physicalTenants: Array<ClusterRuntimeBackupTenantInfo>;
+};
+
+/**
+ * What a single physical tenant reports for a runtime backup id.
+ */
+export type ClusterRuntimeBackupTenantInfo = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The state of the backup on this physical tenant, aggregated over its partitions.
+     */
+    state: StateCode;
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * Detailed status of the backup per partition of this physical tenant. Contains every partition of the tenant when the backup id was looked up directly, including for a tenant that holds no such backup. Empty for a tenant that holds nothing for a listed id: a listing asks each tenant for the backups it has, so there is nothing to report per partition for one it does not.
+     */
+    details: Array<PartitionBackupInfo>;
+};
+
+/**
+ * The checkpoint and backup state of each physical tenant. Nothing is aggregated across tenants: checkpoint ids and log positions only mean anything within one tenant's partitions.
+ */
+export type ClusterRuntimeBackupState = {
+    /**
+     * The runtime backup state of each targeted physical tenant, ordered by physical tenant id.
+     */
+    physicalTenants: Array<ClusterRuntimeBackupTenantState>;
+};
+
+/**
+ * The checkpoint and backup state of one physical tenant.
+ */
+export type ClusterRuntimeBackupTenantState = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The checkpoint and backup state of this physical tenant's partitions.
+     */
+    state: RuntimeBackupState;
+};
+
+/**
  * The snapshots scheduled on every targeted physical tenant. No cluster-level state is aggregated from the per-tenant outcomes.
  */
 export type ClusterTakeHistoryBackupResponse = {
@@ -12237,6 +12344,50 @@ export type HistoryBackupInfoWritable = {
      * Reason for failure if the state is 'FAILED'.
      */
     failureReason: string | null;
+};
+
+/**
+ * A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.
+ */
+export type ClusterRuntimeBackupInfoWritable = {
+    /**
+     * The id of the backup.
+     */
+    backupId: BackupId;
+    /**
+     * The state aggregated over every targeted physical tenant, whether the backup id was looked up directly or listed. A tenant holding nothing for this id counts as `DOES_NOT_EXIST`, so the aggregate is `INCOMPLETE` unless every targeted tenant holds the backup.
+     */
+    state: StateCode;
+    /**
+     * Reason for failure if the aggregated state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * What each physical tenant reports for this backup id, ordered by physical tenant id. Every targeted tenant is listed, including the ones reporting `DOES_NOT_EXIST`.
+     */
+    physicalTenants: Array<ClusterRuntimeBackupTenantInfoWritable>;
+};
+
+/**
+ * What a single physical tenant reports for a runtime backup id.
+ */
+export type ClusterRuntimeBackupTenantInfoWritable = {
+    /**
+     * The id of the physical tenant.
+     */
+    physicalTenantId: string;
+    /**
+     * The state of the backup on this physical tenant, aggregated over its partitions.
+     */
+    state: StateCode;
+    /**
+     * Reason for failure if the state is 'FAILED'.
+     */
+    failureReason: string | null;
+    /**
+     * Detailed status of the backup per partition of this physical tenant. Contains every partition of the tenant when the backup id was looked up directly, including for a tenant that holds no such backup. Empty for a tenant that holds nothing for a listed id: a listing asks each tenant for the backups it has, so there is nothing to report per partition for one it does not.
+     */
+    details: Array<PartitionBackupInfoWritable>;
 };
 
 /**
@@ -21798,6 +21949,354 @@ export type ResumeClusterExportingResponses = {
 
 export type ResumeClusterExportingResponse = ResumeClusterExportingResponses[keyof ResumeClusterExportingResponses];
 
+export type ListRuntimeBackupsAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+        /**
+         * A prefix that backup ids must match, ending in a single '*'. If omitted, all
+         * backups are returned.
+         *
+         */
+        prefix?: BackupIdPrefix;
+    };
+    url: '/cluster/v2/backups/runtime';
+};
+
+export type ListRuntimeBackupsAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type ListRuntimeBackupsAsClusterAdminError = ListRuntimeBackupsAsClusterAdminErrors[keyof ListRuntimeBackupsAsClusterAdminErrors];
+
+export type ListRuntimeBackupsAsClusterAdminResponses = {
+    /**
+     * The runtime backups of every targeted physical tenant, grouped by backup id and sorted in descending order of backup id, as the per-physical-tenant listing is. Empty when every targeted tenant was read and none of them holds a matching backup.
+     */
+    200: Array<ClusterRuntimeBackupInfo>;
+};
+
+export type ListRuntimeBackupsAsClusterAdminResponse = ListRuntimeBackupsAsClusterAdminResponses[keyof ListRuntimeBackupsAsClusterAdminResponses];
+
+export type TakeRuntimeBackupAsClusterAdminData = {
+    body?: TakeRuntimeBackupRequest;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/runtime';
+};
+
+export type TakeRuntimeBackupAsClusterAdminErrors = {
+    /**
+     * The request names a `backupId` while at least one targeted physical tenant generates its own ids, or omits it while at least one does not, or the id is not a positive number. No tenant was triggered. A targeted tenant that rejects the request as invalid during the fan-out answers with the same status but the cluster body, listing the tenants that were triggered.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster, so no tenant was triggered.
+     */
+    404: ProblemDetail;
+    /**
+     * At least one targeted physical tenant already holds a backup with this id or a higher one. Backups are triggered without a preceding check, so the tenants that accepted the id are listed in the body and keep running; delete them before retrying.
+     */
+    409: ClusterTakeRuntimeBackupResponse;
+    /**
+     * At least one targeted physical tenant could not be triggered, and the failures do not agree on a single status. The body lists the tenants that were triggered and keep running.
+     */
+    500: ClusterTakeRuntimeBackupResponse;
+    /**
+     * The connection to the broker was cut mid-flight on at least one targeted physical tenant, which may or may not have accepted the request. Those tenants are reported as `UNKNOWN` with the id to check them under, and the tenants that were triggered keep running.
+     */
+    502: ClusterTakeRuntimeBackupResponse;
+    /**
+     * At least one targeted physical tenant could not be reached. The body lists the tenants that were triggered and keep running.
+     */
+    503: ClusterTakeRuntimeBackupResponse;
+    /**
+     * The request from gateway to broker timed out on at least one targeted physical tenant, which may or may not have accepted it. Those tenants are reported as `UNKNOWN` with the id to check them under, and the tenants that were triggered keep running.
+     */
+    504: ClusterTakeRuntimeBackupResponse;
+};
+
+export type TakeRuntimeBackupAsClusterAdminError = TakeRuntimeBackupAsClusterAdminErrors[keyof TakeRuntimeBackupAsClusterAdminErrors];
+
+export type TakeRuntimeBackupAsClusterAdminResponses = {
+    /**
+     * The backup was triggered on every targeted physical tenant.
+     */
+    202: ClusterTakeRuntimeBackupResponse;
+};
+
+export type TakeRuntimeBackupAsClusterAdminResponse = TakeRuntimeBackupAsClusterAdminResponses[keyof TakeRuntimeBackupAsClusterAdminResponses];
+
+export type DeleteRuntimeBackupStateAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/runtime/state';
+};
+
+export type DeleteRuntimeBackupStateAsClusterAdminErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * The state could not be reset on every targeted physical tenant, so it may still be set on some of them. The resets that already succeeded are not undone, so a retry has only the remaining tenants left to reach.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteRuntimeBackupStateAsClusterAdminError = DeleteRuntimeBackupStateAsClusterAdminErrors[keyof DeleteRuntimeBackupStateAsClusterAdminErrors];
+
+export type DeleteRuntimeBackupStateAsClusterAdminResponses = {
+    /**
+     * The runtime backup state was reset on every targeted physical tenant.
+     */
+    204: void;
+};
+
+export type DeleteRuntimeBackupStateAsClusterAdminResponse = DeleteRuntimeBackupStateAsClusterAdminResponses[keyof DeleteRuntimeBackupStateAsClusterAdminResponses];
+
+export type GetRuntimeBackupStateAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/runtime/state';
+};
+
+export type GetRuntimeBackupStateAsClusterAdminErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetRuntimeBackupStateAsClusterAdminError = GetRuntimeBackupStateAsClusterAdminErrors[keyof GetRuntimeBackupStateAsClusterAdminErrors];
+
+export type GetRuntimeBackupStateAsClusterAdminResponses = {
+    /**
+     * The runtime backup state of every targeted physical tenant, ordered by physical tenant id.
+     */
+    200: ClusterRuntimeBackupState;
+};
+
+export type GetRuntimeBackupStateAsClusterAdminResponse = GetRuntimeBackupStateAsClusterAdminResponses[keyof GetRuntimeBackupStateAsClusterAdminResponses];
+
+export type SyncRuntimeBackupStateAsClusterAdminData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/runtime/state/sync';
+};
+
+export type SyncRuntimeBackupStateAsClusterAdminErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+    /**
+     * The request from gateway to broker timed out on at least one targeted physical tenant.
+     */
+    504: ProblemDetail;
+};
+
+export type SyncRuntimeBackupStateAsClusterAdminError = SyncRuntimeBackupStateAsClusterAdminErrors[keyof SyncRuntimeBackupStateAsClusterAdminErrors];
+
+export type SyncRuntimeBackupStateAsClusterAdminResponses = {
+    /**
+     * The updated runtime backup state of every targeted physical tenant, ordered by physical tenant id.
+     */
+    200: ClusterRuntimeBackupState;
+};
+
+export type SyncRuntimeBackupStateAsClusterAdminResponse = SyncRuntimeBackupStateAsClusterAdminResponses[keyof SyncRuntimeBackupStateAsClusterAdminResponses];
+
+export type DeleteRuntimeBackupAsClusterAdminData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/runtime/{backupId}';
+};
+
+export type DeleteRuntimeBackupAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster.
+     */
+    404: ProblemDetail;
+    /**
+     * The backup could not be deleted from every targeted physical tenant, so it may still exist on some of them. The deletions that already succeeded are not undone, so a retry has only the remaining tenants left to reach.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type DeleteRuntimeBackupAsClusterAdminError = DeleteRuntimeBackupAsClusterAdminErrors[keyof DeleteRuntimeBackupAsClusterAdminErrors];
+
+export type DeleteRuntimeBackupAsClusterAdminResponses = {
+    /**
+     * No targeted physical tenant holds the backup any more.
+     */
+    204: void;
+};
+
+export type DeleteRuntimeBackupAsClusterAdminResponse = DeleteRuntimeBackupAsClusterAdminResponses[keyof DeleteRuntimeBackupAsClusterAdminResponses];
+
+export type GetRuntimeBackupAsClusterAdminData = {
+    body?: never;
+    path: {
+        /**
+         * The id of the backup.
+         */
+        backupId: BackupId;
+    };
+    query?: {
+        /**
+         * The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.
+         */
+        physicalTenantId?: string;
+    };
+    url: '/cluster/v2/backups/runtime/{backupId}';
+};
+
+export type GetRuntimeBackupAsClusterAdminErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * The requested `physicalTenantId` does not exist in this cluster, or every targeted physical tenant was read and none of them holds a backup with the given id.
+     */
+    404: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
+     *
+     */
+    503: ProblemDetail;
+};
+
+export type GetRuntimeBackupAsClusterAdminError = GetRuntimeBackupAsClusterAdminErrors[keyof GetRuntimeBackupAsClusterAdminErrors];
+
+export type GetRuntimeBackupAsClusterAdminResponses = {
+    /**
+     * Every targeted physical tenant was read, and at least one holds the backup. Each tenant reports either the backup or `DOES_NOT_EXIST`.
+     */
+    200: ClusterRuntimeBackupInfo;
+};
+
+export type GetRuntimeBackupAsClusterAdminResponse = GetRuntimeBackupAsClusterAdminResponses[keyof GetRuntimeBackupAsClusterAdminResponses];
+
 export type ListHistoryBackupsAsClusterAdminData = {
     body?: never;
     path?: never;
@@ -22959,7 +23458,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:26f148434b44532d51a65c5cedc96032ac6c39ef3f8733f1b76d51dbe7e9055d
+// specHash=sha256:3e30b4a290874f27a7e358aa2880e4c878361171cc546520e168750f735aaead
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

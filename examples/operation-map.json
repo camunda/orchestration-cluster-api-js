@@ -1626,6 +1626,55 @@
       "label": "Delete a history backup (cluster admin)"
     }
   ],
+  "takeRuntimeBackupAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "TakeRuntimeBackupAsClusterAdmin",
+      "label": "Take a runtime backup (cluster admin)"
+    }
+  ],
+  "listRuntimeBackupsAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "ListRuntimeBackupsAsClusterAdmin",
+      "label": "List runtime backups (cluster admin)"
+    }
+  ],
+  "getRuntimeBackupAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "GetRuntimeBackupAsClusterAdmin",
+      "label": "Get a runtime backup (cluster admin)"
+    }
+  ],
+  "deleteRuntimeBackupAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "DeleteRuntimeBackupAsClusterAdmin",
+      "label": "Delete a runtime backup (cluster admin)"
+    }
+  ],
+  "getRuntimeBackupStateAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "GetRuntimeBackupStateAsClusterAdmin",
+      "label": "Get the runtime backup state (cluster admin)"
+    }
+  ],
+  "syncRuntimeBackupStateAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "SyncRuntimeBackupStateAsClusterAdmin",
+      "label": "Force-write the runtime backup state (cluster admin)"
+    }
+  ],
+  "deleteRuntimeBackupStateAsClusterAdmin": [
+    {
+      "file": "backup.ts",
+      "region": "DeleteRuntimeBackupStateAsClusterAdmin",
+      "label": "Delete the runtime backup state (cluster admin)"
+    }
+  ],
   "pauseClusterExporting": [
     {
       "file": "exporting.ts",

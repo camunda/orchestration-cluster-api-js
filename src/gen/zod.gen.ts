@@ -941,6 +941,97 @@ export const zClusterBrokerInfo = z.object({
 });
 
 /**
+ * Cluster Runtime Backup Take Outcome
+ *
+ * What a physical tenant did with the trigger. `TRIGGERED` says the backup is running, not that it completed — poll `GET /cluster/v2/backups/runtime/{backupId}` for that. A `FAILED` tenant is running no backup for this request and needs no cleanup. `UNKNOWN` means the broker may or may not have accepted the request — the connection was cut mid-flight, or the gateway timed out waiting — so that tenant's backups have to be checked before retrying; it is reported separately from `FAILED` precisely because calling it failed would claim nothing is running there. Tenants that were triggered are never rolled back.
+ */
+export const zClusterRuntimeBackupTakeOutcome = z.enum([
+    'TRIGGERED',
+    'FAILED',
+    'UNKNOWN'
+]).register(z.globalRegistry, {
+    description: 'What a physical tenant did with the trigger. `TRIGGERED` says the backup is running, not that it completed — poll `GET /cluster/v2/backups/runtime/{backupId}` for that. A `FAILED` tenant is running no backup for this request and needs no cleanup. `UNKNOWN` means the broker may or may not have accepted the request — the connection was cut mid-flight, or the gateway timed out waiting — so that tenant\'s backups have to be checked before retrying; it is reported separately from `FAILED` precisely because calling it failed would claim nothing is running there. Tenants that were triggered are never rolled back.'
+});
+
+/**
+ * Whether one physical tenant's runtime backup was triggered, and under which id it can be monitored and deleted.
+ */
+export const zClusterRuntimeBackupTakeResult = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    backupId: zBackupId.nullable(),
+    outcome: zClusterRuntimeBackupTakeOutcome,
+    reason: z.string().nullable()
+}).register(z.globalRegistry, {
+    description: 'Whether one physical tenant\'s runtime backup was triggered, and under which id it can be monitored and deleted.'
+});
+
+/**
+ * The outcome of triggering a runtime backup on every targeted physical tenant. Returned both when every tenant was triggered and when only some were, so a partial trigger is never silent: the status code says whether the request succeeded, the body says what is running.
+ */
+export const zClusterTakeRuntimeBackupResponse = z.object({
+    physicalTenants: z.array(zClusterRuntimeBackupTakeResult).register(z.globalRegistry, {
+        description: 'The outcome for each targeted physical tenant, ordered by physical tenant id. Carries no cluster-level backup id: in generated-id mode each tenant generates its own.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The outcome of triggering a runtime backup on every targeted physical tenant. Returned both when every tenant was triggered and when only some were, so a partial trigger is never silent: the status code says whether the request succeeded, the body says what is running.'
+});
+
+/**
+ * What a single physical tenant reports for a runtime backup id.
+ */
+export const zClusterRuntimeBackupTenantInfo = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    state: zStateCode,
+    failureReason: z.string().nullable(),
+    details: z.array(zPartitionBackupInfo).register(z.globalRegistry, {
+        description: 'Detailed status of the backup per partition of this physical tenant. Contains every partition of the tenant when the backup id was looked up directly, including for a tenant that holds no such backup. Empty for a tenant that holds nothing for a listed id: a listing asks each tenant for the backups it has, so there is nothing to report per partition for one it does not.'
+    })
+}).register(z.globalRegistry, {
+    description: 'What a single physical tenant reports for a runtime backup id.'
+});
+
+/**
+ * A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.
+ */
+export const zClusterRuntimeBackupInfo = z.object({
+    backupId: zBackupId,
+    state: zStateCode,
+    failureReason: z.string().nullable(),
+    physicalTenants: z.array(zClusterRuntimeBackupTenantInfo).register(z.globalRegistry, {
+        description: 'What each physical tenant reports for this backup id, ordered by physical tenant id. Every targeted tenant is listed, including the ones reporting `DOES_NOT_EXIST`.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.'
+});
+
+/**
+ * The checkpoint and backup state of one physical tenant.
+ */
+export const zClusterRuntimeBackupTenantState = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    state: zRuntimeBackupState
+}).register(z.globalRegistry, {
+    description: 'The checkpoint and backup state of one physical tenant.'
+});
+
+/**
+ * The checkpoint and backup state of each physical tenant. Nothing is aggregated across tenants: checkpoint ids and log positions only mean anything within one tenant's partitions.
+ */
+export const zClusterRuntimeBackupState = z.object({
+    physicalTenants: z.array(zClusterRuntimeBackupTenantState).register(z.globalRegistry, {
+        description: 'The runtime backup state of each targeted physical tenant, ordered by physical tenant id.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The checkpoint and backup state of each physical tenant. Nothing is aggregated across tenants: checkpoint ids and log positions only mean anything within one tenant\'s partitions.'
+});
+
+/**
  * The snapshots scheduled on a single physical tenant. Only successfully scheduled tenants are reported: the request fails as a whole if any targeted tenant could not schedule the backup.
  */
 export const zClusterHistoryBackupTakeResult = z.object({
@@ -9344,6 +9435,36 @@ export const zHistoryBackupInfoWritable = z.object({
 });
 
 /**
+ * What a single physical tenant reports for a runtime backup id.
+ */
+export const zClusterRuntimeBackupTenantInfoWritable = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The id of the physical tenant.'
+    }),
+    state: zStateCode,
+    failureReason: z.string().nullable(),
+    details: z.array(zPartitionBackupInfoWritable).register(z.globalRegistry, {
+        description: 'Detailed status of the backup per partition of this physical tenant. Contains every partition of the tenant when the backup id was looked up directly, including for a tenant that holds no such backup. Empty for a tenant that holds nothing for a listed id: a listing asks each tenant for the backups it has, so there is nothing to report per partition for one it does not.'
+    })
+}).register(z.globalRegistry, {
+    description: 'What a single physical tenant reports for a runtime backup id.'
+});
+
+/**
+ * A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.
+ */
+export const zClusterRuntimeBackupInfoWritable = z.object({
+    backupId: zBackupId,
+    state: zStateCode,
+    failureReason: z.string().nullable(),
+    physicalTenants: z.array(zClusterRuntimeBackupTenantInfoWritable).register(z.globalRegistry, {
+        description: 'What each physical tenant reports for this backup id, ordered by physical tenant id. Every targeted tenant is listed, including the ones reporting `DOES_NOT_EXIST`.'
+    })
+}).register(z.globalRegistry, {
+    description: 'A runtime backup id, what each physical tenant reports for it, and the state aggregated over every targeted tenant — folded from the per-tenant states by the same rules a per-tenant state is folded from its partitions.'
+});
+
+/**
  * What a single physical tenant reports for a history backup id.
  */
 export const zClusterHistoryBackupTenantInfoWritable = z.object({
@@ -11915,6 +12036,100 @@ export const zPauseClusterExportingResponse = z.void().register(z.globalRegistry
 export const zResumeClusterExportingResponse = z.void().register(z.globalRegistry, {
     description: 'Exporting was successfully resumed on every physical tenant.'
 });
+
+export const zListRuntimeBackupsAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional(),
+    prefix: zBackupIdPrefix.optional()
+});
+
+/**
+ * The runtime backups of every targeted physical tenant, grouped by backup id and sorted in descending order of backup id, as the per-physical-tenant listing is. Empty when every targeted tenant was read and none of them holds a matching backup.
+ */
+export const zListRuntimeBackupsAsClusterAdminResponse = z.array(zClusterRuntimeBackupInfo).register(z.globalRegistry, {
+    description: 'The runtime backups of every targeted physical tenant, grouped by backup id and sorted in descending order of backup id, as the per-physical-tenant listing is. Empty when every targeted tenant was read and none of them holds a matching backup.'
+});
+
+export const zTakeRuntimeBackupAsClusterAdminBody = zTakeRuntimeBackupRequest;
+
+export const zTakeRuntimeBackupAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * The backup was triggered on every targeted physical tenant.
+ */
+export const zTakeRuntimeBackupAsClusterAdminResponse = zClusterTakeRuntimeBackupResponse;
+
+export const zDeleteRuntimeBackupStateAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * The runtime backup state was reset on every targeted physical tenant.
+ */
+export const zDeleteRuntimeBackupStateAsClusterAdminResponse = z.void().register(z.globalRegistry, {
+    description: 'The runtime backup state was reset on every targeted physical tenant.'
+});
+
+export const zGetRuntimeBackupStateAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * The runtime backup state of every targeted physical tenant, ordered by physical tenant id.
+ */
+export const zGetRuntimeBackupStateAsClusterAdminResponse = zClusterRuntimeBackupState;
+
+export const zSyncRuntimeBackupStateAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * The updated runtime backup state of every targeted physical tenant, ordered by physical tenant id.
+ */
+export const zSyncRuntimeBackupStateAsClusterAdminResponse = zClusterRuntimeBackupState;
+
+export const zDeleteRuntimeBackupAsClusterAdminPath = z.object({
+    backupId: zBackupId
+});
+
+export const zDeleteRuntimeBackupAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * No targeted physical tenant holds the backup any more.
+ */
+export const zDeleteRuntimeBackupAsClusterAdminResponse = z.void().register(z.globalRegistry, {
+    description: 'No targeted physical tenant holds the backup any more.'
+});
+
+export const zGetRuntimeBackupAsClusterAdminPath = z.object({
+    backupId: zBackupId
+});
+
+export const zGetRuntimeBackupAsClusterAdminQuery = z.object({
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The physical tenant to apply the change to. When omitted, or when passed with an empty value, the change is applied to every physical tenant of the cluster.'
+    }).optional()
+});
+
+/**
+ * Every targeted physical tenant was read, and at least one holds the backup. Each tenant reports either the backup or `DOES_NOT_EXIST`.
+ */
+export const zGetRuntimeBackupAsClusterAdminResponse = zClusterRuntimeBackupInfo;
 
 export const zListHistoryBackupsAsClusterAdminQuery = z.object({
     physicalTenantId: z.string().register(z.globalRegistry, {
