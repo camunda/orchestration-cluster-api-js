@@ -1,3 +1,15 @@
+# [10.0.0-alpha.33](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.32...v10.0.0-alpha.33) (2026-08-21)
+
+
+### Features
+
+* **examples:** add coverage for 7 runtime backup cluster-admin ops ([#448](https://github.com/camunda/orchestration-cluster-api-js/issues/448)) ([504821d](https://github.com/camunda/orchestration-cluster-api-js/commit/504821d3bc2b7edd69efe5ded47df0e0a926a275))
+
+
+### Performance Improvements
+
+* **test:** parallelize unit test files (~4x faster) ([#447](https://github.com/camunda/orchestration-cluster-api-js/issues/447)) ([0138e07](https://github.com/camunda/orchestration-cluster-api-js/commit/0138e0708ff29836cb96593fed7fed622d78eeab))
+
 # [10.0.0-alpha.32](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.31...v10.0.0-alpha.32) (2026-08-20)
 
 
