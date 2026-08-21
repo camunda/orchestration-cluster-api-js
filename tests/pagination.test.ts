@@ -3,6 +3,7 @@
  * Pure unit tests with a mock page-fetcher — no network, no live client.
  */
 import { describe, expect, it, vi } from 'vitest';
+import { createCamundaClient } from '../src';
 import {
   nextPageRequest,
   paginate,
@@ -170,6 +171,32 @@ describe('nextPageRequest (spike)', () => {
   it('no-progress guard: same cursor stops the loop', () => {
     expect(nextPageRequest({ page: { limit: 2, after: '2' } }, full)).toBeNull();
   });
+
+  // Regression (defect class: mixing incompatible pagination fields). The
+  // server's SearchQueryPageRequest forbids combining offset (`from`) and
+  // cursor (`after`/`before`) fields, so advancing must strip the fields that
+  // don't belong to the mode we're moving in — never leak them via the spread.
+  it('drops offset/backward fields when advancing with a forward cursor', () => {
+    const next = nextPageRequest({ page: { limit: 2, from: 10, before: 'x' } }, full);
+    expect(next).not.toBeNull();
+    expect(next?.page).toEqual({ limit: 2, after: '2' });
+    expect(next?.page).not.toHaveProperty('from');
+    expect(next?.page).not.toHaveProperty('before');
+  });
+
+  it('drops cursor fields when advancing an offset page', () => {
+    const offsetFull: SearchResponse<Item> = {
+      items: [{ id: 0 }, { id: 1 }],
+      page: { totalItems: 9, hasMoreTotalItems: false, startCursor: null, endCursor: null },
+    };
+    const next = nextPageRequest(
+      { page: { limit: 2, from: 0, after: 'stale', before: 'x' } },
+      offsetFull
+    );
+    expect(next?.page).toEqual({ limit: 2, from: 2 });
+    expect(next?.page).not.toHaveProperty('after');
+    expect(next?.page).not.toHaveProperty('before');
+  });
 });
 
 describe('installSearchPagination', () => {
@@ -290,10 +317,90 @@ describe('installSearchPagination', () => {
     expect((c as SlowClient).cancelled).toBe(true);
   });
 
+  // Regression (defect class: first-page state shared across iterators). The
+  // eventual-consistency window must apply to the first page of EACH iterator
+  // run — reusing a paginator (or consuming two views) must not send the second
+  // iterator's first request with `{ waitUpToMs: 0 }` because a closure flag was
+  // already consumed by the first.
+  it('.paginate applies first-page consistency per iterator, not once per paginator', async () => {
+    const c = new FakeClient() as any;
+    installSearchPagination(c);
+    const p = c.searchThings.paginate(
+      { page: { limit: 1 } },
+      { consistency: { waitUpToMs: 5000 } }
+    );
+    // First iterator run: first call gets the caller window.
+    await p.pages().next();
+    // Second iterator run over the SAME paginator: its first call must ALSO get
+    // the caller window, not the leaked `{ waitUpToMs: 0 }` from the first run.
+    await p.pages().next();
+    const calls = (c as FakeClient).calls;
+    expect(calls[0]?.args[1]).toEqual({ consistency: { waitUpToMs: 5000 } });
+    const secondRunFirstCall = calls[calls.length - 1];
+    expect(secondRunFirstCall?.args[1]).toEqual({ consistency: { waitUpToMs: 5000 } });
+  });
+
+  // Regression (defect class: prototype-chain discovery). A subclass of a client
+  // whose constructor installs pagination must still gain `.paginate` on the
+  // generated `search*` methods it inherits from the base prototype.
+  it('attaches .paginate to inherited search* methods on a subclass', () => {
+    class SubClient extends FakeClient {
+      extra() {
+        return 1;
+      }
+    }
+    const c = new SubClient() as any;
+    installSearchPagination(c);
+    expect(typeof c.searchThings.paginate).toBe('function');
+    expect((c.searchVariablesAsDto as any).paginate).toBeUndefined();
+  });
+
   it('preserves the original callable behaviour', async () => {
     const c = new FakeClient() as any;
     installSearchPagination(c);
     const res = await c.searchThings({ page: {} }, { consistency: { waitUpToMs: 0 } });
     expect(res.items).toEqual([{ id: 0 }]);
+  });
+});
+
+// Regression (defect class: discovery tested only against a hand-written fake).
+// A generator or prototype-layout change could leave real `search*` methods
+// without `.paginate` while the FakeClient suite stays green. Construct the
+// actual generated client (offline — no network) and assert every generated
+// search operation gains `.paginate`, while the hand-written `searchVariablesAsDto`
+// helper stays excluded.
+describe('installSearchPagination on the generated client', () => {
+  const client = createCamundaClient({
+    config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+    fetch: (async () => new Response('{}', { status: 200 })) as any,
+  }) as any;
+
+  const generatedSearchMethods = (() => {
+    const names = new Set<string>();
+    let proto = Object.getPrototypeOf(client);
+    while (proto && proto !== Object.prototype) {
+      for (const name of Object.getOwnPropertyNames(proto)) {
+        if (/^search[A-Z]/.test(name) && name !== 'searchVariablesAsDto') names.add(name);
+      }
+      proto = Object.getPrototypeOf(proto);
+    }
+    return [...names];
+  })();
+
+  it('discovers a representative set of generated search operations', () => {
+    expect(generatedSearchMethods).toEqual(
+      expect.arrayContaining(['searchProcessInstances', 'searchUserTasks', 'searchVariables'])
+    );
+    expect(generatedSearchMethods.length).toBeGreaterThan(20);
+  });
+
+  it('attaches .paginate to every generated search operation', () => {
+    for (const name of generatedSearchMethods) {
+      expect(typeof client[name]?.paginate, `${name}.paginate`).toBe('function');
+    }
+  });
+
+  it('excludes the hand-written searchVariablesAsDto helper', () => {
+    expect(client.searchVariablesAsDto?.paginate).toBeUndefined();
   });
 });

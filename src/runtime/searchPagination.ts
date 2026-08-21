@@ -49,60 +49,71 @@ const NON_PAGINATED_SEARCH_METHODS = new Set<string>(['searchVariablesAsDto']);
  * shape is not `(body, consistency, options)`.
  */
 export function installSearchPagination(client: object): void {
-  const proto = Object.getPrototypeOf(client) as Record<string, unknown>;
-  for (const name of Object.getOwnPropertyNames(proto)) {
-    if (!/^search[A-Z]/.test(name)) continue;
-    if (NON_PAGINATED_SEARCH_METHODS.has(name)) continue;
-    const method = proto[name];
-    if (typeof method !== 'function') continue;
+  const seen = new Set<string>();
+  // Walk the prototype chain (stopping before Object.prototype) so a subclass
+  // of the generated client still gains `.paginate` on the generated `search*`
+  // methods it inherits — `Object.getPrototypeOf(client)` alone would only see
+  // the subclass's own prototype and skip every inherited search operation.
+  let proto = Object.getPrototypeOf(client) as Record<string, unknown> | null;
+  while (proto && proto !== Object.prototype) {
+    for (const name of Object.getOwnPropertyNames(proto)) {
+      if (seen.has(name)) continue;
+      if (!/^search[A-Z]/.test(name)) continue;
+      if (NON_PAGINATED_SEARCH_METHODS.has(name)) continue;
+      const method = proto[name];
+      if (typeof method !== 'function') continue;
+      seen.add(name);
 
-    const call = (method as (...a: unknown[]) => unknown).bind(client);
+      const call = (method as (...a: unknown[]) => unknown).bind(client);
 
-    // Preserve the original callable (and its CancelablePromise return); add
-    // `.paginate` alongside it as a non-enumerable own property.
-    const wrapper = ((...args: unknown[]) => call(...args)) as ((...args: unknown[]) => unknown) & {
-      paginate?: (body: SearchBody, opts?: SearchPaginateOptions<unknown>) => Paginator<unknown>;
-    };
+      // Preserve the original callable (and its CancelablePromise return); add
+      // `.paginate` alongside it as a non-enumerable own property.
+      const wrapper = ((...args: unknown[]) => call(...args)) as ((
+        ...args: unknown[]
+      ) => unknown) & {
+        paginate?: (body: SearchBody, opts?: SearchPaginateOptions<unknown>) => Paginator<unknown>;
+      };
 
-    wrapper.paginate = (body: SearchBody, opts: SearchPaginateOptions<unknown> = {}) => {
-      const { consistency, ...pageOpts } = opts;
-      let firstCall = true;
-      const fetchPage = (b: SearchBody, signal?: AbortSignal) => {
-        // Eventual-consistency waiting only makes sense for the initial query:
-        // once we are paging forward an empty page means end-of-results, not an
-        // inconsistency, so waiting (and its terminal timeout error) must not
-        // apply to subsequent or exhaustion-probe fetches.
-        const consistencyArg = {
-          consistency: firstCall ? (consistency ?? { waitUpToMs: 0 }) : { waitUpToMs: 0 },
-        };
-        firstCall = false;
-        const p = call(b, consistencyArg) as Promise<SearchResponse<unknown>> & {
-          cancel?: () => void;
-        };
-        // Honour mid-flight cancellation: the underlying call is a
-        // CancelablePromise, so abort the in-flight page (not just between
-        // pages) and clean the listener up once the page settles.
-        if (signal) {
-          const onAbort = () => p.cancel?.();
-          if (signal.aborted) {
-            p.cancel?.();
-          } else {
+      wrapper.paginate = (body: SearchBody, opts: SearchPaginateOptions<unknown> = {}) => {
+        const { consistency, ...pageOpts } = opts;
+        const fetchPage = (b: SearchBody, signal?: AbortSignal, isFirstPage = false) => {
+          // Eventual-consistency waiting only makes sense for the initial query:
+          // once we are paging forward an empty page means end-of-results, not an
+          // inconsistency, so waiting (and its terminal timeout error) must not
+          // apply to subsequent or exhaustion-probe fetches. `isFirstPage` is
+          // supplied per iterator run by the engine, so reusing the paginator
+          // does not leak the first-page window across iterators.
+          const consistencyArg = {
+            consistency: isFirstPage ? (consistency ?? { waitUpToMs: 0 }) : { waitUpToMs: 0 },
+          };
+          const p = call(b, consistencyArg) as Promise<SearchResponse<unknown>> & {
+            cancel?: () => void;
+          };
+          // Honour mid-flight cancellation: the underlying call is a
+          // CancelablePromise, so abort the in-flight page (not just between
+          // pages) and clean the listener up once the page settles. Register the
+          // listener *before* re-checking `signal.aborted` so an abort that fires
+          // between the check and the subscription is not missed.
+          if (signal) {
+            const onAbort = () => p.cancel?.();
             signal.addEventListener('abort', onAbort, { once: true });
             const cleanup = () => signal.removeEventListener('abort', onAbort);
             p.then(cleanup, cleanup);
+            if (signal.aborted) p.cancel?.();
           }
-        }
-        return p as Promise<SearchResponse<unknown>>;
+          return p as Promise<SearchResponse<unknown>>;
+        };
+        return paginate(fetchPage, body, pageOpts);
       };
-      return paginate(fetchPage, body, pageOpts);
-    };
 
-    Object.defineProperty(client, name, {
-      value: wrapper,
-      writable: true,
-      enumerable: false,
-      configurable: true,
-    });
+      Object.defineProperty(client, name, {
+        value: wrapper,
+        writable: true,
+        enumerable: false,
+        configurable: true,
+      });
+    }
+    proto = Object.getPrototypeOf(proto) as Record<string, unknown> | null;
   }
 }
 

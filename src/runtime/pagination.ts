@@ -26,6 +26,8 @@ export interface SearchResponse<TItem> {
 export interface SearchPageRequest {
   /** Cursor-forward: `endCursor` of the previous page. */
   after?: string;
+  /** Cursor-backward: `startCursor` of the previous page (mutually exclusive with `after`/`from`). */
+  before?: string;
   /** Offset: index to start from. */
   from?: number;
   limit?: number;
@@ -50,10 +52,19 @@ export interface PaginateOptions {
   mode?: PaginationMode;
 }
 
-/** Fetches one page for a given body. Decoupled from the facade's `ec` arg. */
+/**
+ * Fetches one page for a given body. Decoupled from the facade's `ec` arg.
+ *
+ * `isFirstPage` is `true` only for the initial fetch of *this* iteration run
+ * (each `pages()`/`items()`/`toArray()` call starts a fresh run). Adapters that
+ * carry per-first-page state (e.g. an eventual-consistency window) must key off
+ * this flag rather than closure state so that reusing a paginator, or consuming
+ * two views concurrently, does not leak first-page behaviour across iterators.
+ */
 export type FetchPage<TItem, TBody extends SearchBody> = (
   body: TBody,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  isFirstPage?: boolean
 ) => Promise<SearchResponse<TItem>>;
 
 export interface Paginator<TItem> extends AsyncIterable<SearchResponse<TItem>> {
@@ -74,6 +85,25 @@ function abortError(): Error {
 function limitOf(body: SearchBody): number | undefined {
   const l = body.page?.limit;
   return typeof l === 'number' ? l : undefined;
+}
+
+/**
+ * Build the next `page` block, keeping caller fields (e.g. `limit`) but dropping
+ * pagination fields incompatible with the mode we're advancing in. The server's
+ * `SearchQueryPageRequest` contract forbids mixing offset (`from`) and cursor
+ * (`after`/`before`) fields, so we strip the ones that don't belong before
+ * adding our own — otherwise spreading the previous `page` would leak an
+ * offset/backward field into a forward-cursor request (or vice versa).
+ */
+function advancePage(
+  prev: SearchPageRequest | undefined,
+  advance: { after: string } | { from: number }
+): SearchPageRequest {
+  const rest: SearchPageRequest = { ...(prev ?? {}) };
+  delete rest.after;
+  delete rest.from;
+  delete rest.before;
+  return { ...rest, ...advance };
 }
 
 /**
@@ -102,7 +132,7 @@ export function nextPageRequest<TItem, TBody extends SearchBody>(
     if (body.page?.after === endCursor) return null;
     return {
       ...body,
-      page: { ...(body.page ?? {}), after: endCursor },
+      page: advancePage(body.page, { after: endCursor }),
     } as TBody;
   }
 
@@ -110,7 +140,7 @@ export function nextPageRequest<TItem, TBody extends SearchBody>(
   const prevFrom = typeof body.page?.from === 'number' ? body.page.from : 0;
   return {
     ...body,
-    page: { ...(body.page ?? {}), from: prevFrom + count },
+    page: advancePage(body.page, { from: prevFrom + count }),
   } as TBody;
 }
 
@@ -139,7 +169,7 @@ export function paginate<TItem, TBody extends SearchBody>(
       if (fetched >= maxPages) return;
       if (signal?.aborted) throw abortError();
 
-      const response = await fetchPage(current, signal);
+      const response = await fetchPage(current, signal, fetched === 0);
       yield response;
       fetched += 1;
 
