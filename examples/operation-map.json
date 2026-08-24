@@ -1695,5 +1695,26 @@
       "region": "GetClusterExportingStatus",
       "label": "Get cluster exporting status"
     }
+  ],
+  "triggerClusterRebalance": [
+    {
+      "file": "admin-operations.ts",
+      "region": "TriggerClusterRebalance",
+      "label": "Trigger a cluster-wide leadership rebalance"
+    }
+  ],
+  "getClusterRebalance": [
+    {
+      "file": "admin-operations.ts",
+      "region": "GetClusterRebalance",
+      "label": "Get cluster rebalance status"
+    }
+  ],
+  "cancelClusterRebalance": [
+    {
+      "file": "admin-operations.ts",
+      "region": "CancelClusterRebalance",
+      "label": "Cancel the running cluster rebalance"
+    }
   ]
 }
