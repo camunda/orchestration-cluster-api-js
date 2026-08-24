@@ -248,10 +248,8 @@ async function triggerClusterRebalanceExample() {
   const camunda = createCamundaClient();
 
   const balance = await camunda.triggerClusterRebalance({
-    body: {
-      replicationLagThreshold: 10_000_000,
-      maxTransferAttempts: 3,
-    },
+    replicationLagThreshold: 10_000_000,
+    maxTransferAttempts: 3,
   });
 
   console.log(`Cluster balance state: ${balance.state}`);
