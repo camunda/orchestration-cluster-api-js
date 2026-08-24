@@ -3166,6 +3166,162 @@ export type ClusterHistoryBackupTenantInfo = {
 export type ClusterHistoryBackupTenantState = 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'INCOMPLETE' | 'INCOMPATIBLE' | 'NOT_FOUND';
 
 /**
+ * The settings to run a given rebalance with. Every setting is optional; an absent request body is equivalent to a body with every field absent, and means "use the configured settings".
+ */
+export type ClusterRebalanceRequest = {
+    /**
+     * The highest replication lag (in bytes) that a desired leader may have for its transfer to be accepted.
+     */
+    replicationLagThreshold?: number;
+    /**
+     * How long a partition may stay frozen waiting for its desired leader to catch up (as a positive ISO-8601 duration).
+     */
+    replicationTimeout?: string;
+    /**
+     * How many times a current leader may prompt the desired leader to take over leadership before giving up.
+     */
+    maxTransferAttempts?: number;
+    /**
+     * How long the coordinator waits for a partition without a leader to acquire one before reporting `NO_LEADER` and moving on (as a positive ISO-8601 duration).
+     */
+    leaderWaitTimeout?: string;
+};
+
+/**
+ * The cluster's current per-partition balance state, the running rebalance, and the last completed rebalance.
+ */
+export type ClusterBalanceResponse = {
+    /**
+     * The cluster's aggregate balance state as of the time of the request.
+     */
+    state: 'BALANCED' | 'BALANCING' | 'UNBALANCED';
+    /**
+     * The balance state of each partition as of the time of the request.
+     */
+    partitions: Array<ClusterRebalancePartition>;
+    /**
+     * Normally the rebalance currently running, or absent if no rebalance is running. For a dry-run response, this is instead the unexecuted plan of that dry run.
+     */
+    runningRebalance: ClusterRunningRebalance | null;
+    /**
+     * The last completed non-dry-run rebalance this coordinator finished.
+     */
+    lastCompletedRebalance: ClusterCompletedRebalance | null;
+};
+
+/**
+ * One partition's leadership/balance status - its current leader, its desired leader, and whether a rebalance is currently moving it.
+ */
+export type ClusterRebalancePartition = {
+    /**
+     * The unique ID of this partition, within its physical tenant.
+     */
+    partitionId: number;
+    /**
+     * The partition group this partition belongs to. Partition IDs are unique only within a group, so this is needed to identify the partition.
+     */
+    physicalTenantId: string;
+    /**
+     * The broker ID currently leading this partition, or absent if it has no leader.
+     */
+    currentLeader: string | null;
+    /**
+     * The broker ID the current configuration wants to lead this partition.
+     */
+    desiredLeader: string;
+    /**
+     * Whether this partition is being actively transferred, unbalanced, or balanced.
+     */
+    state: 'TRANSFERRING' | 'UNBALANCED' | 'BALANCED';
+};
+
+/**
+ * The fields common to a running and a completed rebalance.
+ */
+export type ClusterRebalance = {
+    /**
+     * The ID of this rebalance.
+     */
+    rebalanceId: number;
+    /**
+     * Every partition in the rebalance plan and its progress within this rebalance.
+     */
+    partitions: Array<ClusterRebalanceOperationPartition>;
+    /**
+     * When this rebalance was created.
+     */
+    startedAt: string;
+};
+
+/**
+ * The rebalance currently running.
+ */
+export type ClusterRunningRebalance = ClusterRebalance & {
+    /**
+     * Whether this rebalance is a dry run.
+     */
+    dryRun: boolean;
+    /**
+     * Whether cancellation has been requested.
+     */
+    cancelRequested: boolean;
+};
+
+/**
+ * One partition's plan, progress, and outcome within a rebalance.
+ */
+export type ClusterRebalanceOperationPartition = {
+    /**
+     * The unique ID of this partition, within its physical tenant.
+     */
+    partitionId: number;
+    /**
+     * The partition group this partition belongs to.
+     */
+    physicalTenantId: string;
+    /**
+     * The leader last observed by this rebalance, or absent if there was no leader.
+     */
+    currentLeader: string | null;
+    /**
+     * The leader selected when this rebalance was planned.
+     */
+    desiredLeader: string;
+    /**
+     * Where this rebalance has reached for the partition.
+     */
+    progress: 'PENDING' | 'TRANSFERRING' | 'COMPLETED';
+    /**
+     * The terminal outcome, present only when progress is COMPLETED.
+     */
+    result: 'TRANSFERRED' | 'ALREADY_LEADER' | 'NOT_MEMBER' | 'NOT_REPLICATING' | 'UNREACHABLE' | 'NOT_COORDINATOR' | 'STALE_CONFIGURATION' | 'TRANSFER_IN_PROGRESS' | 'LAG_TOO_HIGH' | 'LEADER_INITIALIZING' | 'CONFIGURATION_CHANGE_IN_PROGRESS' | 'PAUSE_FAILED' | 'REPLICATION_TIMED_OUT' | 'TIMEOUT_NOW_EXHAUSTED' | 'LEADER_CHANGED' | 'NO_LEADER' | 'NO_RESPONSE' | 'CANCELLED';
+};
+
+/**
+ * The last completed rebalance.
+ */
+export type ClusterCompletedRebalance = ClusterRebalance & {
+    /**
+     * When this rebalance finished.
+     */
+    finishedAt: string;
+    /**
+     * How the rebalance ended.
+     */
+    result: 'COMPLETED' | 'CANCELLED' | 'FAILED';
+};
+
+/**
+ * Response to a rebalance cancellation request.
+ */
+export type RebalanceCancellationResponse = {
+    /**
+     * Whether there was a rebalance to stop.
+     */
+    wasRunning: boolean;
+};
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const ClusterVariableKindEnum = {
@@ -22652,6 +22808,142 @@ export type ChangeClusterModeAsClusterAdminResponses = {
 
 export type ChangeClusterModeAsClusterAdminResponse = ChangeClusterModeAsClusterAdminResponses[keyof ChangeClusterModeAsClusterAdminResponses];
 
+export type CancelClusterRebalanceData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/rebalance';
+};
+
+export type CancelClusterRebalanceErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The coordinator was reached, but its response was absent or unusable.
+     */
+    502: ProblemDetail;
+    /**
+     * No coordinator is currently available or reachable.
+     */
+    503: ProblemDetail;
+    /**
+     * The coordinator did not answer before the request timeout.
+     */
+    504: ProblemDetail;
+};
+
+export type CancelClusterRebalanceError = CancelClusterRebalanceErrors[keyof CancelClusterRebalanceErrors];
+
+export type CancelClusterRebalanceResponses = {
+    /**
+     * The cancellation was accepted.
+     */
+    200: RebalanceCancellationResponse;
+};
+
+export type CancelClusterRebalanceResponse = CancelClusterRebalanceResponses[keyof CancelClusterRebalanceResponses];
+
+export type GetClusterRebalanceData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/rebalance';
+};
+
+export type GetClusterRebalanceErrors = {
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The coordinator was reached, but its response was absent or unusable.
+     */
+    502: ProblemDetail;
+    /**
+     * No coordinator is currently available or reachable.
+     */
+    503: ProblemDetail;
+    /**
+     * The coordinator did not answer before the request timeout.
+     */
+    504: ProblemDetail;
+};
+
+export type GetClusterRebalanceError = GetClusterRebalanceErrors[keyof GetClusterRebalanceErrors];
+
+export type GetClusterRebalanceResponses = {
+    /**
+     * The cluster's current leadership balance.
+     */
+    200: ClusterBalanceResponse;
+};
+
+export type GetClusterRebalanceResponse = GetClusterRebalanceResponses[keyof GetClusterRebalanceResponses];
+
+export type TriggerClusterRebalanceData = {
+    body?: ClusterRebalanceRequest;
+    path?: never;
+    query?: {
+        /**
+         * If true, report the plan the rebalance would carry out without pausing any partition or transferring any leadership.
+         */
+        dryRun?: boolean;
+    };
+    url: '/cluster/v2/rebalance';
+};
+
+export type TriggerClusterRebalanceErrors = {
+    /**
+     * The provided data is not valid.
+     */
+    400: ProblemDetail;
+    /**
+     * The request lacks valid authentication credentials.
+     */
+    401: ProblemDetail;
+    /**
+     * A rebalance or cluster configuration change is already in progress, so there is no settled configuration to plan a rebalance against.
+     */
+    409: ProblemDetail;
+    /**
+     * An internal error occurred while processing the request.
+     */
+    500: ProblemDetail;
+    /**
+     * The coordinator was reached, but its response was absent or unusable.
+     */
+    502: ProblemDetail;
+    /**
+     * No coordinator is currently available or reachable.
+     */
+    503: ProblemDetail;
+    /**
+     * The coordinator did not answer before the request timeout.
+     */
+    504: ProblemDetail;
+};
+
+export type TriggerClusterRebalanceError = TriggerClusterRebalanceErrors[keyof TriggerClusterRebalanceErrors];
+
+export type TriggerClusterRebalanceResponses = {
+    /**
+     * The rebalance was accepted, and its status is reported as it starts.
+     */
+    202: ClusterBalanceResponse;
+};
+
+export type TriggerClusterRebalanceResponse = TriggerClusterRebalanceResponses[keyof TriggerClusterRebalanceResponses];
+
 export type RestoreAsClusterAdminData = {
     body: ClusterRestoreRequest;
     path?: never;
@@ -23527,7 +23819,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:c0b61c0be7d3114128f8b5494ffe8ed1661155f6b0aa6e46177f686a19019ea1
+// specHash=sha256:b4a2f42cc11049ba7a3afb7e2bafd332b5c8160b7a4350814a1a9beac8e1f1d3
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

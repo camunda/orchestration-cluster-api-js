@@ -1108,6 +1108,174 @@ export const zClusterHistoryBackupInfo = z.object({
 });
 
 /**
+ * The settings to run a given rebalance with. Every setting is optional; an absent request body is equivalent to a body with every field absent, and means "use the configured settings".
+ */
+export const zClusterRebalanceRequest = z.object({
+    replicationLagThreshold: z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'The highest replication lag (in bytes) that a desired leader may have for its transfer to be accepted.'
+    }).optional(),
+    replicationTimeout: z.string().register(z.globalRegistry, {
+        description: 'How long a partition may stay frozen waiting for its desired leader to catch up (as a positive ISO-8601 duration).'
+    }).optional(),
+    maxTransferAttempts: z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'How many times a current leader may prompt the desired leader to take over leadership before giving up.'
+    }).optional(),
+    leaderWaitTimeout: z.string().register(z.globalRegistry, {
+        description: 'How long the coordinator waits for a partition without a leader to acquire one before reporting `NO_LEADER` and moving on (as a positive ISO-8601 duration).'
+    }).optional()
+}).register(z.globalRegistry, {
+    description: 'The settings to run a given rebalance with. Every setting is optional; an absent request body is equivalent to a body with every field absent, and means "use the configured settings".'
+});
+
+/**
+ * One partition's leadership/balance status - its current leader, its desired leader, and whether a rebalance is currently moving it.
+ */
+export const zClusterRebalancePartition = z.object({
+    partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The unique ID of this partition, within its physical tenant.'
+    }),
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The partition group this partition belongs to. Partition IDs are unique only within a group, so this is needed to identify the partition.'
+    }),
+    currentLeader: z.string().nullable(),
+    desiredLeader: z.string().register(z.globalRegistry, {
+        description: 'The broker ID the current configuration wants to lead this partition.'
+    }),
+    state: z.enum([
+        'TRANSFERRING',
+        'UNBALANCED',
+        'BALANCED'
+    ]).register(z.globalRegistry, {
+        description: 'Whether this partition is being actively transferred, unbalanced, or balanced.'
+    })
+}).register(z.globalRegistry, {
+    description: 'One partition\'s leadership/balance status - its current leader, its desired leader, and whether a rebalance is currently moving it.'
+});
+
+/**
+ * One partition's plan, progress, and outcome within a rebalance.
+ */
+export const zClusterRebalanceOperationPartition = z.object({
+    partitionId: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+        description: 'The unique ID of this partition, within its physical tenant.'
+    }),
+    physicalTenantId: z.string().register(z.globalRegistry, {
+        description: 'The partition group this partition belongs to.'
+    }),
+    currentLeader: z.string().nullable(),
+    desiredLeader: z.string().register(z.globalRegistry, {
+        description: 'The leader selected when this rebalance was planned.'
+    }),
+    progress: z.enum([
+        'PENDING',
+        'TRANSFERRING',
+        'COMPLETED'
+    ]).register(z.globalRegistry, {
+        description: 'Where this rebalance has reached for the partition.'
+    }),
+    result: z.enum([
+        'TRANSFERRED',
+        'ALREADY_LEADER',
+        'NOT_MEMBER',
+        'NOT_REPLICATING',
+        'UNREACHABLE',
+        'NOT_COORDINATOR',
+        'STALE_CONFIGURATION',
+        'TRANSFER_IN_PROGRESS',
+        'LAG_TOO_HIGH',
+        'LEADER_INITIALIZING',
+        'CONFIGURATION_CHANGE_IN_PROGRESS',
+        'PAUSE_FAILED',
+        'REPLICATION_TIMED_OUT',
+        'TIMEOUT_NOW_EXHAUSTED',
+        'LEADER_CHANGED',
+        'NO_LEADER',
+        'NO_RESPONSE',
+        'CANCELLED'
+    ]).register(z.globalRegistry, {
+        description: 'The terminal outcome, present only when progress is COMPLETED.'
+    })
+}).register(z.globalRegistry, {
+    description: 'One partition\'s plan, progress, and outcome within a rebalance.'
+});
+
+/**
+ * The fields common to a running and a completed rebalance.
+ */
+export const zClusterRebalance = z.object({
+    rebalanceId: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'The ID of this rebalance.'
+    }),
+    partitions: z.array(zClusterRebalanceOperationPartition).register(z.globalRegistry, {
+        description: 'Every partition in the rebalance plan and its progress within this rebalance.'
+    }),
+    startedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'When this rebalance was created.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The fields common to a running and a completed rebalance.'
+});
+
+/**
+ * The rebalance currently running.
+ */
+export const zClusterRunningRebalance = zClusterRebalance.and(z.object({
+    dryRun: z.boolean().register(z.globalRegistry, {
+        description: 'Whether this rebalance is a dry run.'
+    }),
+    cancelRequested: z.boolean().register(z.globalRegistry, {
+        description: 'Whether cancellation has been requested.'
+    })
+}));
+
+/**
+ * The last completed rebalance.
+ */
+export const zClusterCompletedRebalance = zClusterRebalance.and(z.object({
+    finishedAt: z.iso.datetime().register(z.globalRegistry, {
+        description: 'When this rebalance finished.'
+    }),
+    result: z.enum([
+        'COMPLETED',
+        'CANCELLED',
+        'FAILED'
+    ]).register(z.globalRegistry, {
+        description: 'How the rebalance ended.'
+    })
+}));
+
+/**
+ * The cluster's current per-partition balance state, the running rebalance, and the last completed rebalance.
+ */
+export const zClusterBalanceResponse = z.object({
+    state: z.enum([
+        'BALANCED',
+        'BALANCING',
+        'UNBALANCED'
+    ]).register(z.globalRegistry, {
+        description: 'The cluster\'s aggregate balance state as of the time of the request.'
+    }),
+    partitions: z.array(zClusterRebalancePartition).register(z.globalRegistry, {
+        description: 'The balance state of each partition as of the time of the request.'
+    }),
+    runningRebalance: zClusterRunningRebalance.nullable(),
+    lastCompletedRebalance: zClusterCompletedRebalance.nullable()
+}).register(z.globalRegistry, {
+    description: 'The cluster\'s current per-partition balance state, the running rebalance, and the last completed rebalance.'
+});
+
+/**
+ * Response to a rebalance cancellation request.
+ */
+export const zRebalanceCancellationResponse = z.object({
+    wasRunning: z.boolean().register(z.globalRegistry, {
+        description: 'Whether there was a rebalance to stop.'
+    })
+}).register(z.globalRegistry, {
+    description: 'Response to a rebalance cancellation request.'
+});
+
+/**
  * The kind of a cluster variable. JSON is the default. SECRET_REFERENCE allows the value to contain camunda.secrets.X references that are resolved at job activation time.
  */
 export const zClusterVariableKindEnum = z.enum(['JSON', 'SECRET_REFERENCE']).register(z.globalRegistry, {
@@ -12242,6 +12410,29 @@ export const zChangeClusterModeAsClusterAdminQuery = z.object({
  * The mode change request was accepted; returns the planned cluster change covering every requested physical tenant.
  */
 export const zChangeClusterModeAsClusterAdminResponse = zClusterModeChangeResponse;
+
+/**
+ * The cancellation was accepted.
+ */
+export const zCancelClusterRebalanceResponse = zRebalanceCancellationResponse;
+
+/**
+ * The cluster's current leadership balance.
+ */
+export const zGetClusterRebalanceResponse = zClusterBalanceResponse;
+
+export const zTriggerClusterRebalanceBody = zClusterRebalanceRequest;
+
+export const zTriggerClusterRebalanceQuery = z.object({
+    dryRun: z.boolean().register(z.globalRegistry, {
+        description: 'If true, report the plan the rebalance would carry out without pausing any partition or transferring any leadership.'
+    }).optional().default(false)
+});
+
+/**
+ * The rebalance was accepted, and its status is reported as it starts.
+ */
+export const zTriggerClusterRebalanceResponse = zClusterBalanceResponse;
 
 export const zRestoreAsClusterAdminBody = zClusterRestoreRequest;
 
