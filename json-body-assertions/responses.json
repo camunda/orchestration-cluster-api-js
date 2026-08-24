@@ -2,9 +2,9 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-08-21T05:03:48.658Z",
+    "generatedAt": "2026-08-24T01:32:07.338Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
-    "specSha256": "fc020dfae8601c47f9a30389943e9d1bf902627cac539d4ae39c5505e06dd3e1"
+    "specSha256": "048de6a5e761a29a967478bfb29d98f151fe9d43f9d0c171f339b064369e8b27"
   },
   "responses": [
     {
@@ -10662,6 +10662,482 @@
               ],
               "optional": []
             }
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/rebalance",
+      "method": "GET",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "lastCompletedRebalance",
+            "type": "0",
+            "nullable": true,
+            "children": {
+              "required": [
+                {
+                  "name": "finishedAt",
+                  "type": "string"
+                },
+                {
+                  "name": "partitions",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "currentLeader",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "desiredLeader",
+                        "type": "string"
+                      },
+                      {
+                        "name": "partitionId",
+                        "type": "number"
+                      },
+                      {
+                        "name": "physicalTenantId",
+                        "type": "string"
+                      },
+                      {
+                        "name": "progress",
+                        "type": "string",
+                        "enumValues": [
+                          "PENDING",
+                          "TRANSFERRING",
+                          "COMPLETED"
+                        ]
+                      },
+                      {
+                        "name": "result",
+                        "type": "string",
+                        "enumValues": [
+                          "TRANSFERRED",
+                          "ALREADY_LEADER",
+                          "NOT_MEMBER",
+                          "NOT_REPLICATING",
+                          "UNREACHABLE",
+                          "NOT_COORDINATOR",
+                          "STALE_CONFIGURATION",
+                          "TRANSFER_IN_PROGRESS",
+                          "LAG_TOO_HIGH",
+                          "LEADER_INITIALIZING",
+                          "CONFIGURATION_CHANGE_IN_PROGRESS",
+                          "PAUSE_FAILED",
+                          "REPLICATION_TIMED_OUT",
+                          "TIMEOUT_NOW_EXHAUSTED",
+                          "LEADER_CHANGED",
+                          "NO_LEADER",
+                          "NO_RESPONSE",
+                          "CANCELLED"
+                        ],
+                        "nullable": true
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "rebalanceId",
+                  "type": "number"
+                },
+                {
+                  "name": "result",
+                  "type": "string",
+                  "enumValues": [
+                    "COMPLETED",
+                    "CANCELLED",
+                    "FAILED"
+                  ]
+                },
+                {
+                  "name": "startedAt",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "partitions",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "currentLeader",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "desiredLeader",
+                  "type": "string"
+                },
+                {
+                  "name": "partitionId",
+                  "type": "number"
+                },
+                {
+                  "name": "physicalTenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "state",
+                  "type": "string",
+                  "enumValues": [
+                    "TRANSFERRING",
+                    "UNBALANCED",
+                    "BALANCED"
+                  ]
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "runningRebalance",
+            "type": "object",
+            "nullable": true,
+            "children": {
+              "required": [
+                {
+                  "name": "cancelRequested",
+                  "type": "boolean"
+                },
+                {
+                  "name": "dryRun",
+                  "type": "boolean"
+                },
+                {
+                  "name": "partitions",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "currentLeader",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "desiredLeader",
+                        "type": "string"
+                      },
+                      {
+                        "name": "partitionId",
+                        "type": "number"
+                      },
+                      {
+                        "name": "physicalTenantId",
+                        "type": "string"
+                      },
+                      {
+                        "name": "progress",
+                        "type": "string",
+                        "enumValues": [
+                          "PENDING",
+                          "TRANSFERRING",
+                          "COMPLETED"
+                        ]
+                      },
+                      {
+                        "name": "result",
+                        "type": "string",
+                        "enumValues": [
+                          "TRANSFERRED",
+                          "ALREADY_LEADER",
+                          "NOT_MEMBER",
+                          "NOT_REPLICATING",
+                          "UNREACHABLE",
+                          "NOT_COORDINATOR",
+                          "STALE_CONFIGURATION",
+                          "TRANSFER_IN_PROGRESS",
+                          "LAG_TOO_HIGH",
+                          "LEADER_INITIALIZING",
+                          "CONFIGURATION_CHANGE_IN_PROGRESS",
+                          "PAUSE_FAILED",
+                          "REPLICATION_TIMED_OUT",
+                          "TIMEOUT_NOW_EXHAUSTED",
+                          "LEADER_CHANGED",
+                          "NO_LEADER",
+                          "NO_RESPONSE",
+                          "CANCELLED"
+                        ],
+                        "nullable": true
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "rebalanceId",
+                  "type": "number"
+                },
+                {
+                  "name": "startedAt",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enumValues": [
+              "BALANCED",
+              "BALANCING",
+              "UNBALANCED"
+            ]
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/rebalance",
+      "method": "POST",
+      "status": "202",
+      "schema": {
+        "required": [
+          {
+            "name": "lastCompletedRebalance",
+            "type": "0",
+            "nullable": true,
+            "children": {
+              "required": [
+                {
+                  "name": "finishedAt",
+                  "type": "string"
+                },
+                {
+                  "name": "partitions",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "currentLeader",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "desiredLeader",
+                        "type": "string"
+                      },
+                      {
+                        "name": "partitionId",
+                        "type": "number"
+                      },
+                      {
+                        "name": "physicalTenantId",
+                        "type": "string"
+                      },
+                      {
+                        "name": "progress",
+                        "type": "string",
+                        "enumValues": [
+                          "PENDING",
+                          "TRANSFERRING",
+                          "COMPLETED"
+                        ]
+                      },
+                      {
+                        "name": "result",
+                        "type": "string",
+                        "enumValues": [
+                          "TRANSFERRED",
+                          "ALREADY_LEADER",
+                          "NOT_MEMBER",
+                          "NOT_REPLICATING",
+                          "UNREACHABLE",
+                          "NOT_COORDINATOR",
+                          "STALE_CONFIGURATION",
+                          "TRANSFER_IN_PROGRESS",
+                          "LAG_TOO_HIGH",
+                          "LEADER_INITIALIZING",
+                          "CONFIGURATION_CHANGE_IN_PROGRESS",
+                          "PAUSE_FAILED",
+                          "REPLICATION_TIMED_OUT",
+                          "TIMEOUT_NOW_EXHAUSTED",
+                          "LEADER_CHANGED",
+                          "NO_LEADER",
+                          "NO_RESPONSE",
+                          "CANCELLED"
+                        ],
+                        "nullable": true
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "rebalanceId",
+                  "type": "number"
+                },
+                {
+                  "name": "result",
+                  "type": "string",
+                  "enumValues": [
+                    "COMPLETED",
+                    "CANCELLED",
+                    "FAILED"
+                  ]
+                },
+                {
+                  "name": "startedAt",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "partitions",
+            "type": "array<object>",
+            "children": {
+              "required": [
+                {
+                  "name": "currentLeader",
+                  "type": "string",
+                  "nullable": true
+                },
+                {
+                  "name": "desiredLeader",
+                  "type": "string"
+                },
+                {
+                  "name": "partitionId",
+                  "type": "number"
+                },
+                {
+                  "name": "physicalTenantId",
+                  "type": "string"
+                },
+                {
+                  "name": "state",
+                  "type": "string",
+                  "enumValues": [
+                    "TRANSFERRING",
+                    "UNBALANCED",
+                    "BALANCED"
+                  ]
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "runningRebalance",
+            "type": "object",
+            "nullable": true,
+            "children": {
+              "required": [
+                {
+                  "name": "cancelRequested",
+                  "type": "boolean"
+                },
+                {
+                  "name": "dryRun",
+                  "type": "boolean"
+                },
+                {
+                  "name": "partitions",
+                  "type": "array<object>",
+                  "children": {
+                    "required": [
+                      {
+                        "name": "currentLeader",
+                        "type": "string",
+                        "nullable": true
+                      },
+                      {
+                        "name": "desiredLeader",
+                        "type": "string"
+                      },
+                      {
+                        "name": "partitionId",
+                        "type": "number"
+                      },
+                      {
+                        "name": "physicalTenantId",
+                        "type": "string"
+                      },
+                      {
+                        "name": "progress",
+                        "type": "string",
+                        "enumValues": [
+                          "PENDING",
+                          "TRANSFERRING",
+                          "COMPLETED"
+                        ]
+                      },
+                      {
+                        "name": "result",
+                        "type": "string",
+                        "enumValues": [
+                          "TRANSFERRED",
+                          "ALREADY_LEADER",
+                          "NOT_MEMBER",
+                          "NOT_REPLICATING",
+                          "UNREACHABLE",
+                          "NOT_COORDINATOR",
+                          "STALE_CONFIGURATION",
+                          "TRANSFER_IN_PROGRESS",
+                          "LAG_TOO_HIGH",
+                          "LEADER_INITIALIZING",
+                          "CONFIGURATION_CHANGE_IN_PROGRESS",
+                          "PAUSE_FAILED",
+                          "REPLICATION_TIMED_OUT",
+                          "TIMEOUT_NOW_EXHAUSTED",
+                          "LEADER_CHANGED",
+                          "NO_LEADER",
+                          "NO_RESPONSE",
+                          "CANCELLED"
+                        ],
+                        "nullable": true
+                      }
+                    ],
+                    "optional": []
+                  }
+                },
+                {
+                  "name": "rebalanceId",
+                  "type": "number"
+                },
+                {
+                  "name": "startedAt",
+                  "type": "string"
+                }
+              ],
+              "optional": []
+            }
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enumValues": [
+              "BALANCED",
+              "BALANCING",
+              "UNBALANCED"
+            ]
+          }
+        ],
+        "optional": []
+      }
+    },
+    {
+      "path": "/cluster/v2/rebalance",
+      "method": "DELETE",
+      "status": "200",
+      "schema": {
+        "required": [
+          {
+            "name": "wasRunning",
+            "type": "boolean"
           }
         ],
         "optional": []

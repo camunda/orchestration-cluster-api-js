@@ -1,6 +1,6 @@
 {
-  "operations": 241,
-  "tests": 243,
+  "operations": 244,
+  "tests": 246,
   "missing": [],
   "ignored": [],
   "files": [
@@ -22,6 +22,7 @@
     "assignUserToTenant.test.ts",
     "broadcastSignal.test.ts",
     "cancelBatchOperation.test.ts",
+    "cancelClusterRebalance.test.ts",
     "cancelProcessInstance.test.ts",
     "cancelProcessInstancesBatchOperation.test.ts",
     "changeClusterMode.test.ts",
@@ -79,6 +80,7 @@
     "getAuthorization.test.ts",
     "getBatchOperation.test.ts",
     "getClusterExportingStatus.test.ts",
+    "getClusterRebalance.test.ts",
     "getClusterStatus.test.ts",
     "getClusterTopology.test.ts",
     "getDecisionDefinition.test.ts",
@@ -221,6 +223,7 @@
     "takeRuntimeBackup.test.ts",
     "takeRuntimeBackupAsClusterAdmin.test.ts",
     "throwJobError.test.ts",
+    "triggerClusterRebalance.test.ts",
     "unassignClientFromGroup.test.ts",
     "unassignClientFromTenant.test.ts",
     "unassignGroupFromTenant.test.ts",

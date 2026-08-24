@@ -56,7 +56,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 241
+// Operations: 244
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -129,6 +129,8 @@ type cancelBatchOperationOptions = Parameters<typeof Sdk.cancelBatchOperation>[0
 type cancelBatchOperationBody = (NonNullable<cancelBatchOperationOptions> extends { body?: infer B } ? B : never);
 type cancelBatchOperationPathParam_batchOperationKey = (NonNullable<cancelBatchOperationOptions> extends { path: { batchOperationKey: infer P } } ? P : any);
 export type cancelBatchOperationInput = cancelBatchOperationBody & { batchOperationKey: cancelBatchOperationPathParam_batchOperationKey };
+type cancelClusterRebalanceOptions = Parameters<typeof Sdk.cancelClusterRebalance>[0];
+export type cancelClusterRebalanceInput = void;
 type cancelProcessInstanceOptions = Parameters<typeof Sdk.cancelProcessInstance>[0];
 type cancelProcessInstanceBody = (NonNullable<cancelProcessInstanceOptions> extends { body?: infer B } ? B : never);
 type cancelProcessInstancePathParam_processInstanceKey = (NonNullable<cancelProcessInstanceOptions> extends { path: { processInstanceKey: infer P } } ? P : any);
@@ -345,6 +347,8 @@ export type getBatchOperationConsistency = {
 };
 type getClusterExportingStatusOptions = Parameters<typeof Sdk.getClusterExportingStatus>[0];
 export type getClusterExportingStatusInput = void;
+type getClusterRebalanceOptions = Parameters<typeof Sdk.getClusterRebalance>[0];
+export type getClusterRebalanceInput = void;
 type getClusterStatusOptions = Parameters<typeof Sdk.getClusterStatus>[0];
 export type getClusterStatusInput = void;
 type getClusterTopologyOptions = Parameters<typeof Sdk.getClusterTopology>[0];
@@ -1254,6 +1258,10 @@ type throwJobErrorOptions = Parameters<typeof Sdk.throwJobError>[0];
 type throwJobErrorBody = (NonNullable<throwJobErrorOptions> extends { body?: infer B } ? B : never);
 type throwJobErrorPathParam_jobKey = (NonNullable<throwJobErrorOptions> extends { path: { jobKey: infer P } } ? P : any);
 export type throwJobErrorInput = throwJobErrorBody & { jobKey: throwJobErrorPathParam_jobKey };
+type triggerClusterRebalanceOptions = Parameters<typeof Sdk.triggerClusterRebalance>[0];
+type triggerClusterRebalanceBody = (NonNullable<triggerClusterRebalanceOptions> extends { body?: infer B } ? B : never);
+type triggerClusterRebalanceQueryParam_dryRun = (NonNullable<triggerClusterRebalanceOptions> extends { query?: { dryRun?: infer Q } } ? Q : any);
+export type triggerClusterRebalanceInput = triggerClusterRebalanceBody & { dryRun?: triggerClusterRebalanceQueryParam_dryRun };
 type unassignClientFromGroupOptions = Parameters<typeof Sdk.unassignClientFromGroup>[0];
 type unassignClientFromGroupPathParam_groupId = (NonNullable<unassignClientFromGroupOptions> extends { path: { groupId: infer P } } ? P : any);
 type unassignClientFromGroupPathParam_clientId = (NonNullable<unassignClientFromGroupOptions> extends { path: { clientId: infer P } } ? P : any);
@@ -3247,6 +3255,70 @@ class CamundaClientBase {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'cancelBatchOperation', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Stop the running rebalance
+   *
+   * Asks the running rebalance to stop once the transfer in flight has finished. Partitions already transferred keep their new leaders, and those the rebalance had not yet reached keep their current ones.
+   *
+   * Cancellation requests are idempotent and always accepted. The `wasRunning` response field can be used to distinguish a cancellation that found a running rebalance from one that did not.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+    *
+   * @example Cancel the running cluster rebalance
+   * ```ts
+   * async function cancelClusterRebalanceExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const result = await camunda.cancelClusterRebalance();
+   * 
+   *   console.log(`Cancel requested; was a rebalance running? ${result.wasRunning}`);
+   * }
+   * ```
+   * @operationId cancelClusterRebalance
+   * @tags Cluster
+   */
+  cancelClusterRebalance(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.cancelClusterRebalance>>;
+  cancelClusterRebalance(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.cancelClusterRebalance(opts as any);
+        let data = this._evaluateResponse(_raw, 'cancelClusterRebalance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zCancelClusterRebalanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zCancelClusterRebalanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('cancelClusterRebalance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'cancelClusterRebalance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -6282,9 +6354,12 @@ class CamundaClientBase {
    *
    * The two supported types differ in how the history is removed. For a decision requirements
    * definition the history is deleted asynchronously via a batch operation whose details are
-   * returned in the `batchOperation` field of the response. For a process definition the
-   * definition first drains its running instances and its history is deleted asynchronously once
-   * the definition is fully removed cluster-wide; no batch operation is returned in the response.
+   * returned in the `batchOperation` field of the response. For a process definition that still
+   * exists in the runtime state, the definition first drains its running instances and its
+   * history is deleted asynchronously once the definition is fully removed cluster-wide; no batch
+   * operation is returned in the response. If the process definition has already been removed
+   * from the runtime state and the deletion is later re-triggered with `deleteHistory` set to
+   * `true`, a batch operation is created immediately and returned in the `batchOperation` field.
     *
    * @example Delete a resource
    * ```ts
@@ -7805,6 +7880,76 @@ class CamundaClientBase {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'getClusterExportingStatus', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Report the cluster's current leadership balance
+   *
+   * Reports whether the cluster is currently balanced, the current leadership state of every partition, and what became of the last rebalance to finish. The last completed rebalance is held in memory by the coordinating broker, so none will be reported if the coordinator has moved or restarted since the last rebalance.
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+    *
+   * @example Get cluster rebalance status
+   * ```ts
+   * async function getClusterRebalanceExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const balance = await camunda.getClusterRebalance();
+   * 
+   *   console.log(`Cluster balance state: ${balance.state}`);
+   *   for (const partition of balance.partitions) {
+   *     console.log(
+   *       `  Partition ${partition.partitionId}: state=${partition.state}, currentLeader=${partition.currentLeader}, desiredLeader=${partition.desiredLeader}`
+   *     );
+   *   }
+   *   if (balance.runningRebalance) {
+   *     console.log(`Running rebalance id=${balance.runningRebalance.rebalanceId}`);
+   *   }
+   * }
+   * ```
+   * @operationId getClusterRebalance
+   * @tags Cluster
+   */
+  getClusterRebalance(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterRebalance>>;
+  getClusterRebalance(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getClusterRebalance(opts as any);
+        let data = this._evaluateResponse(_raw, 'getClusterRebalance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetClusterRebalanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetClusterRebalanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getClusterRebalance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getClusterRebalance', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -19479,6 +19624,94 @@ class CamundaClientBase {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'throwJobError', exempt: true, retryOverride: options?.retry });
+    });
+  }
+
+  /**
+   * Trigger a cluster-wide leadership rebalance
+   *
+   * Transfers leadership of every partition that is not led by its highest-priority replica towards that replica, one partition at a time. Returns as soon as the rebalance has been accepted (poll `GET /cluster/v2/rebalance` to monitor progress).
+   *
+   * Each rebalance can specify overrides for the configured rebalance settings (e.g. maximum replication lag to allow). An absent request body means "use the configured settings".
+   *
+   * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
+    *
+   * @example Trigger a cluster-wide leadership rebalance
+   * ```ts
+   * async function triggerClusterRebalanceExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const balance = await camunda.triggerClusterRebalance({
+   *     replicationLagThreshold: 10_000_000,
+   *     maxTransferAttempts: 3,
+   *   });
+   * 
+   *   console.log(`Cluster balance state: ${balance.state}`);
+   *   if (balance.runningRebalance) {
+   *     console.log(`Rebalance started: id=${balance.runningRebalance.rebalanceId}`);
+   *   }
+   * }
+   * ```
+   * @operationId triggerClusterRebalance
+   * @tags Cluster
+   */
+  triggerClusterRebalance(input: triggerClusterRebalanceInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.triggerClusterRebalance>>;
+  triggerClusterRebalance(arg: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const { dryRun, ..._body } = arg || {};
+      let envelope: any = {};
+      envelope.query = { dryRun };
+      envelope.body = _body;
+      if (this._validation.settings.req !== 'none') {
+        const _schemas = await this._loadSchemas();
+        if (envelope.body !== undefined) {
+          const maybeBody = await this._validation.gateRequest('triggerClusterRebalance', _schemas.zTriggerClusterRebalanceBody, envelope.body);
+          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
+        }
+        if (envelope.query !== undefined) {
+          const maybeQuery = await this._validation.gateRequest('triggerClusterRebalance', _schemas.zTriggerClusterRebalanceQuery, envelope.query);
+          if (this._validation.settings.req === 'strict') envelope.query = maybeQuery;
+        }
+      }
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      if (envelope.query) opts.query = envelope.query;
+      if (envelope.body !== undefined) opts.body = envelope.body;
+      const call = async () => {
+        try {
+        const _raw = await Sdk.triggerClusterRebalance(opts);
+        let data = this._evaluateResponse(_raw, 'triggerClusterRebalance', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zTriggerClusterRebalanceResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zTriggerClusterRebalanceResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('triggerClusterRebalance', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          // Defer normalization to outer executeWithHttpRetry boundary
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'triggerClusterRebalance', exempt: false, retryOverride: options?.retry });
     });
   }
 

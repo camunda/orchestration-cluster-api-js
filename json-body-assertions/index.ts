@@ -739,6 +739,17 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
+  '/cluster/v2/rebalance': {
+    'GET': {
+      '200': 1
+    },
+    'POST': {
+      '202': 1
+    },
+    'DELETE': {
+      '200': 1
+    }
+  },
   '/cluster/v2/restore': {
     'POST': {
       '202': 1
