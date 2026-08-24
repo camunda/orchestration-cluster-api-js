@@ -1,0 +1,39 @@
+# This repo checks example coverage against the upstream spec bundled fresh on every
+# CI run (inside `npm run build`), so a new operation landing in camunda/camunda turns
+# every open pull request red at once — including lockfile-only dependency bumps that
+# never touched an example.
+#
+# That failure belongs to `main`, not to the branch that happened to run CI next. So
+# rather than pushing a fix onto someone else's pull request, this asks the central
+# detector to file the gap against `main`; the example-coverage agent then opens a
+# single pull request that clears every blocked branch at once.
+#
+# The detector is otherwise a weekday-only 07:00 UTC cron, which leaves an upstream
+# change landing on a Friday blocking every pull request until Monday.
+
+name: Coverage gap dispatch
+
+on:
+  workflow_run:
+    workflows: ["PR & Branch CI"]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  coverage-gap:
+    # Most CI runs pass, and `workflow_run` fires on every one of them. The reusable
+    # re-checks this itself, but gating here avoids allocating a runner to do nothing.
+    if: github.event.workflow_run.conclusion == 'failure'
+    permissions:
+      contents: read
+      actions: read        # read the failing run's per-step conclusions
+      id-token: write      # Vault JWT auth
+      pull-requests: read  # resolve the pull request behind the run
+      issues: write        # the one-time explanatory comment
+    uses: camunda/sdk-infra/.github/workflows/sdk-coverage-gap-dispatch.yml@v1
+    secrets:
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      VAULT_JWT_PATH: ${{ secrets.VAULT_JWT_PATH }}
+      VAULT_JWT_ROLE: ${{ secrets.VAULT_JWT_ROLE }}
+      VAULT_JWT_AUDIENCE: ${{ secrets.VAULT_JWT_AUDIENCE }}
