@@ -1,3 +1,10 @@
+# [10.0.0-alpha.35](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.34...v10.0.0-alpha.35) (2026-08-24)
+
+
+### Features
+
+* add example coverage for triggerClusterRebalance, getClusterRebalance, cancelClusterRebalance ([#455](https://github.com/camunda/orchestration-cluster-api-js/issues/455)) ([fe956ab](https://github.com/camunda/orchestration-cluster-api-js/commit/fe956ab6b42f8a2b7c44654b3434dcc22de3642d)), closes [#454](https://github.com/camunda/orchestration-cluster-api-js/issues/454)
+
 # [10.0.0-alpha.34](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.33...v10.0.0-alpha.34) (2026-08-21)
 
 
