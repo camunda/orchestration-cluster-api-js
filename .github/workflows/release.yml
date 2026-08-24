@@ -89,11 +89,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # A read that dies mid-response (curl 56) is the registry having a bad
+          # moment, not the credentials being wrong, so it must not fail a release.
+          RETRY="--retry 5 --retry-all-errors --retry-delay 3 --connect-timeout 10 --max-time 60"
           REG=$(npm -s config get registry||:); REG=${REG%/}; : "${REG:=https://registry.npmjs.org}"
           HOST=${REG#*://}; HOST=${HOST%%/*}
-          ID=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
+          # shellcheck disable=SC2086  # $RETRY is a deliberately word-split flag list
+          ID=$(curl -fsS $RETRY -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=npm:${HOST}" | jq -er .value)
           PKG=$(jq -r '.name|@uri' package.json)
-          RESP=$(curl -fsS -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d "")
+          # shellcheck disable=SC2086  # $RETRY is a deliberately word-split flag list
+          RESP=$(curl -fsS $RETRY -H "Authorization: Bearer $ID" "$REG/-/npm/v1/oidc/token/exchange/package/$PKG" -d "")
           TOKEN=$(echo "$RESP" | jq -er '.token')
           echo "::add-mask::$TOKEN"
           [ -n "$TOKEN" ]
