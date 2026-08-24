@@ -2814,6 +2814,16 @@ export function cancelBatchOperation(options?: Parameters<typeof _cancelBatchOpe
  *
  * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
   *
+ * @example Cancel the running cluster rebalance
+ * ```ts
+ * async function cancelClusterRebalanceExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const result = await camunda.cancelClusterRebalance();
+ * 
+ *   console.log(`Cancel requested; was a rebalance running? ${result.wasRunning}`);
+ * }
+ * ```
  * @operationId cancelClusterRebalance
  * @tags Cluster
  */
@@ -3840,6 +3850,24 @@ export function getClusterExportingStatus(options?: Parameters<typeof _getCluste
  *
  * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
   *
+ * @example Get cluster rebalance status
+ * ```ts
+ * async function getClusterRebalanceExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const balance = await camunda.getClusterRebalance();
+ * 
+ *   console.log(`Cluster balance state: ${balance.state}`);
+ *   for (const partition of balance.partitions) {
+ *     console.log(
+ *       `  Partition ${partition.partitionId}: state=${partition.state}, currentLeader=${partition.currentLeader}, desiredLeader=${partition.desiredLeader}`
+ *     );
+ *   }
+ *   if (balance.runningRebalance) {
+ *     console.log(`Running rebalance id=${balance.runningRebalance.rebalanceId}`);
+ *   }
+ * }
+ * ```
  * @operationId getClusterRebalance
  * @tags Cluster
  */
@@ -6717,6 +6745,22 @@ export function throwJobError(options?: Parameters<typeof _throwJobError>[0]): C
  *
  * Requires the cluster-admin security chain. Although this operation lists `bearerAuth` / `basicAuth` like the rest of the Orchestration Cluster API, it does not accept an Orchestration Cluster user's credentials — only the separate cluster-admin credentials are valid here.
   *
+ * @example Trigger a cluster-wide leadership rebalance
+ * ```ts
+ * async function triggerClusterRebalanceExample() {
+ *   const camunda = createCamundaClient();
+ * 
+ *   const balance = await camunda.triggerClusterRebalance({
+ *     replicationLagThreshold: 10_000_000,
+ *     maxTransferAttempts: 3,
+ *   });
+ * 
+ *   console.log(`Cluster balance state: ${balance.state}`);
+ *   if (balance.runningRebalance) {
+ *     console.log(`Rebalance started: id=${balance.runningRebalance.rebalanceId}`);
+ *   }
+ * }
+ * ```
  * @operationId triggerClusterRebalance
  * @tags Cluster
  */
