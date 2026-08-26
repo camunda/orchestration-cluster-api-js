@@ -13,6 +13,7 @@
 import { parentPort } from 'node:worker_threads';
 import type { JobResult as ApiJobResult } from '../gen/types.gen';
 import { createClientProxy } from './clientProxy.ts';
+import { toModuleSpecifier } from './moduleSpecifier.ts';
 
 // Inline the JobActionReceipt constant to avoid importing the full SDK dependency chain
 // (jobWorker.ts → ../gen/CamundaClient → entire SDK) in the worker thread.
@@ -54,16 +55,7 @@ async function loadHandler(
   const cached = handlerCache.get(handlerModule);
   if (cached) return cached;
 
-  // Convert filesystem paths to file:// URLs for dynamic import().
-  // Handles relative (./ ../) paths, Unix absolute (/), and Windows absolute (C:\).
-  const isPath =
-    handlerModule.startsWith('.') ||
-    handlerModule.startsWith('/') ||
-    /^[a-zA-Z]:[\\/]/.test(handlerModule);
-  const modulePath = isPath
-    ? new URL(handlerModule, `file://${process.cwd()}/`).href
-    : handlerModule;
-  const mod = await import(modulePath);
+  const mod = await import(toModuleSpecifier(handlerModule));
   const handler = mod.default ?? mod.handler;
   if (typeof handler !== 'function') {
     throw new Error(
