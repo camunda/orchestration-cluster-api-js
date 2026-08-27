@@ -181,7 +181,18 @@ jobs:
           echo "=== Container status ==="
           docker ps -a
           echo "=== Container logs ==="
-          docker logs camunda-engine 2>&1 | tail -200
+          # Every container, not one by name: the service that fails to come up differs per
+          # stack. `simple` runs a single `camunda-engine`, while `full` names it
+          # `orchestration` and adds Elasticsearch and Connectors alongside it.
+          #
+          # Best-effort throughout. Steps run under `set -e -o pipefail`, so without the
+          # guards one unreadable container would abort the loop and suppress the logs of
+          # the one that actually failed.
+          for id in $(docker ps -aq || true); do
+            name=$(docker inspect --format '{{.Name}}' "$id" 2>/dev/null | sed 's|^/||' || true)
+            echo "--- ${name:-$id} ---"
+            docker logs "$id" 2>&1 | tail -200 || true
+          done
       - name: Integration Tests
         run: npm run test:integration
       - name: Set up Deno (cross-runtime live REST)
