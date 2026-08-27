@@ -766,6 +766,67 @@ return ack;
 const ack2 = await job.ignore();
 ```
 
+### Deterministic Time (`job.clock`)
+
+The SDK resolves its own cadence — worker poll intervals, retry backoff, eventual-consistency
+polling, backpressure decay — through an injectable clock. Pinning that clock runs all of it
+on virtual time, so tests that would otherwise wait out a 30-second poll finish immediately.
+
+The clock is configured on the client and available as `client.clock`. Handlers reach it as
+`job.clock`, a narrowed view exposing only `now()` and `sleep(ms, signal?)` — `deadline` is
+withheld because a handler that built one against a pinned clock would hang rather than time
+out:
+
+<!-- snippet-source: examples/readme.ts | regions: ReadmeHandlerClock -->
+
+```ts
+const startedAt = job.clock.now();
+
+// A short back-off around a flaky dependency. Waiting here rather than on
+// setTimeout means a test that pins the client's clock also drives the handler.
+await job.clock.sleep(250);
+
+return job.complete({ variables: { waitedMs: job.clock.now() - startedAt } });
+```
+
+Read and wait through `job.clock` rather than `Date.now()` / `setTimeout`, and a test that
+pins the client's clock drives your handler too.
+
+`job.clock.sleep` is for **short in-handler coordination** — spacing retries within one job,
+backing off around a flaky dependency. Long or business-meaningful waits belong in the
+process as BPMN timers, where they survive a crash and are visible to operations.
+
+Pass `createTestClock()` to pin the clock in your own tests:
+
+<!-- snippet-source: examples/readme.ts | regions: ReadmeTestClock -->
+
+```ts
+// Pin the client's clock and the SDK's own cadence runs on virtual time: poll intervals,
+// retry backoff and backpressure decay all settle without waiting in real time.
+const clock = createTestClock({ start: 0, autoAdvance: false });
+const client = createCamundaClient({ clock });
+
+// Nothing settles until the test moves time, so start the wait and advance into it.
+const waiting = client.clock.sleep(30_000);
+await clock.advance(30_000);
+await waiting;
+
+console.log(client.clock.now()); // 30000
+console.log(clock.sleeps); // [30000] — every duration the SDK asked to wait
+```
+
+`autoAdvance` defaults to `true`, where each sleep settles itself on the next macrotask
+having moved time to its wake point — the SDK's loops make progress without the test driving
+them. Set it to `false`, as above, when you need to assert on state *between* two waits.
+
+Prefer `createTestClock` over hand-writing a `Clock`. The contract has clauses that are easy
+to get subtly wrong — most notably that `sleep` must not settle in a microtask, because the
+worker schedules its next poll on resolution and would otherwise spin.
+
+Two things deliberately stay on real time even when the clock is pinned, so that pinning it
+cannot hang a process: **liveness bounds** (shutdown drain, request and config-fetch
+timeouts) and **observational timestamps** (log, telemetry and support-bundle records).
+
 ### Job Corrections (User Task Listeners)
 
 When a job worker handles a [user task listener](https://docs.camunda.io/docs/components/concepts/user-task-listeners/), it can correct task properties (assignee, due date, candidate groups, etc.) by passing a `result` to `job.complete()`:
@@ -1330,7 +1391,9 @@ Exports available from `.../effect`:
   (`pages()` / `items()` → `Stream`, `toArray()` → `Effect`). See below.
 
 **Clock-class win:** `eventually` / `withTimeout` run on the Effect `Clock`, so `TestClock.adjust`
-advances eventual/timeout deterministically in tests — no real-clock burn.
+advances eventual/timeout deterministically in tests — no real-clock burn. The Promise surface
+has the same property via [`createTestClock`](#deterministic-time-jobclock); the difference is
+that Effect gives you `TestClock` and the rest of the ecosystem for free.
 
 ### Paginated Search as a `Stream`
 
@@ -1441,7 +1504,9 @@ Worker exports from `.../effect`:
 
 **Clock-class win:** the activation poll interval and the handler-retry `Schedule` run on the Effect
 `Clock`, so `TestClock.adjust` bounds activation/retry timing in virtual time — the whole loop is
-deterministic in tests, with no real-clock burn.
+deterministic in tests, with no real-clock burn. The Promise worker is equally drivable by pinning
+the client clock (see [Deterministic Time](#deterministic-time-jobclock)); what Effect adds here is
+`Schedule` composition over the retry policy.
 
 ### Injecting Services into a Handler
 
