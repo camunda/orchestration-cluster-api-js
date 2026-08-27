@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
-import { createCamundaClient } from '../src';
+import { createCamundaClient, TenantId } from '../src';
 
 /**
  * Regression for #170 — `CAMUNDA_DEFAULT_TENANT_ID` was not applied to
@@ -182,7 +182,7 @@ describe('default tenantIds (plural) injection — issue #170', () => {
       type: 'demo-task',
       timeout: 30_000,
       maxJobsToActivate: 1,
-      tenantIds: ['tenant-beta', 'tenant-gamma'],
+      tenantIds: [TenantId.assumeExists('tenant-beta'), TenantId.assumeExists('tenant-gamma')],
     });
 
     expect(captured?.tenantIds).toEqual(['tenant-beta', 'tenant-gamma']);

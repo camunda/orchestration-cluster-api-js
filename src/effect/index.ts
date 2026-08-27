@@ -9,6 +9,8 @@ export {
   type DomainError,
   type DomainErrorTag,
   type Effectify,
+  type EffectPaginateOptions,
+  type EffectPaginator,
   EventualConsistencyTimeout,
   eventually,
   type FnKeys,

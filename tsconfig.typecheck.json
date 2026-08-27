@@ -4,6 +4,21 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "scripts"],
+  // Everything that type-checks from source alone, with no build required — so this
+  // runs on a fresh checkout (and in the CI `quality` job, which does not build).
+  //
+  // Two surfaces are deliberately absent because they resolve against the *built*
+  // package rather than source, and so cannot be checked before tsup runs:
+  //   - `tests-integration` — 253 files import `../../dist` on purpose; they exercise
+  //     the published artifact.
+  //   - `camundacon` — the benchmark harnesses likewise import `../../dist`.
+  // Both live in `tsconfig.typecheck.dist.json`, run from `npm run build` after tsup.
+  //
+  // `examples` is absent for a different reason: it is already type-checked by
+  // `hooks/post/950-typecheck-examples.ts` against `examples/tsconfig.json`, which maps
+  // the package name to `src/index.ts`. Checking it here would resolve the same imports
+  // through the package's own `exports` map to `dist/*.d.ts` instead, which both needs a
+  // build and checks the wrong thing.
+  "include": ["src", "scripts", "tests", "test-support", "hooks", "plugins"],
   "exclude": ["dist", "node_modules", "src/template"]
 }

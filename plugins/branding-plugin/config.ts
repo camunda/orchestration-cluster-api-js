@@ -14,7 +14,6 @@ export const defaultConfig: BrandingPlugin['Config'] = {
   dependencies: [],
   handler,
   name: 'branding-plugin',
-  output: 'keys',
 };
 
 export const defineConfig = definePluginConfig(defaultConfig);

@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  // The surfaces that import the *built* package (`../../dist`) rather than source:
+  // integration tests exercise the published artifact deliberately, and the camundacon
+  // benchmark harnesses do the same. They can only be type-checked once tsup has
+  // emitted `dist/`, so `npm run build` runs this after the bundle step rather than
+  // `npm run typecheck` running it on a bare checkout.
+  //
+  // This is not redundant with the declaration build: `tsup --dts` checks that `src`
+  // produces valid types, while this checks that real consumers of those emitted types
+  // still compile against them.
+  "include": ["tests-integration", "camundacon"],
+  "exclude": ["node_modules", "src/template"]
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createCamundaClient } from '../src';
+import { createCamundaClient, GroupId } from '../src';
 
 // Regression guard for the request-validation coverage half of #405.
 //
@@ -18,8 +18,11 @@ import { createCamundaClient } from '../src';
 
 /** A fetch that would succeed — so any rejection is validation, not transport. */
 function okFetch() {
+  // The `input` parameter is declared (not just ignored) so `mock.calls[n]` is a typed
+  // tuple — tests assert on the Request the client actually built.
   return vi.fn(
-    async () => new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } })
+    async (_input: Request) =>
+      new Response('{}', { status: 200, headers: { 'Content-Type': 'application/json' } })
   );
 }
 
@@ -60,7 +63,10 @@ describe('request validation covers path and query params, not just the body (#4
       const client = strictClient(fetchMock);
       // zClientId is /^[a-zA-Z0-9_~@.+-]+$/ — a space is invalid.
       await expect(
-        client.assignClientToGroup({ groupId: 'g1', clientId: 'bad client!' as any })
+        client.assignClientToGroup({
+          groupId: GroupId.assumeExists('g1'),
+          clientId: 'bad client!' as any,
+        })
       ).rejects.toThrow();
       expect(fetchMock).not.toHaveBeenCalled();
     });
@@ -89,7 +95,7 @@ describe('request validation covers path and query params, not just the body (#4
       // `withTenants` carries `.default(false)`. Its presence in the URL proves
       // the strict-mode parse result was written back to `envelope.query` — the
       // write-back that the body-only fallback dropped.
-      const sent = fetchMock.mock.calls[0][0] as Request;
+      const sent = fetchMock.mock.calls[0][0];
       expect(sent.url).toContain('withTenants=false');
     });
   });
