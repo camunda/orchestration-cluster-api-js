@@ -1,3 +1,10 @@
+# [10.0.0-alpha.42](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.41...v10.0.0-alpha.42) (2026-08-27)
+
+
+### Features
+
+* add createTestClock and a Clock contract conformance suite ([#479](https://github.com/camunda/orchestration-cluster-api-js/issues/479)) ([5beea42](https://github.com/camunda/orchestration-cluster-api-js/commit/5beea4241d27b01194960bda3555874ec0258bef)), closes [#477](https://github.com/camunda/orchestration-cluster-api-js/issues/477) [#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476) [#451](https://github.com/camunda/orchestration-cluster-api-js/issues/451) [#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476) [#474](https://github.com/camunda/orchestration-cluster-api-js/issues/474)
+
 # [10.0.0-alpha.41](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.40...v10.0.0-alpha.41) (2026-08-27)
 
 
