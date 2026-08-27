@@ -34,7 +34,7 @@ function discoverHooks(phase: string): string[] {
 function runHook(hookPath: string): void {
   const rel = path.relative(ROOT, hookPath);
   console.log(`\n▸ ${rel}`);
-  execSync(`tsx ${hookPath}`, { cwd: ROOT, stdio: 'inherit' });
+  execSync(`tsx ${JSON.stringify(hookPath)}`, { cwd: ROOT, stdio: 'inherit' });
 }
 
 function runCommand(label: string, cmd: string): void {

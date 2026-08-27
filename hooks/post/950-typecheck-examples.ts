@@ -20,7 +20,7 @@ if (!existsSync(tsconfig)) {
 }
 
 try {
-  execSync(`npx tsc -p ${tsconfig}`, { cwd: root, stdio: 'inherit' });
+  execSync(`npx tsc -p ${JSON.stringify(tsconfig)}`, { cwd: root, stdio: 'inherit' });
   console.log('✓ API examples type-check passed');
 } catch {
   console.error('✗ API examples failed type-check — fix examples/*.ts');
