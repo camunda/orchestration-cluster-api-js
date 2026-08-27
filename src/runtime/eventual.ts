@@ -60,9 +60,9 @@ type PollInvokeResult<T> =
   | { kind: 'error'; error: any; status?: number };
 
 /**
- * Extras the generated client passes alongside the user's ConsistencyOptions. They are not
- * part of `ConsistencyOptions` itself — callers supply consistency, the client supplies these
- * — but they are visible to anyone importing `eventualPoll` from this module directly.
+ * Extras that the generated client passes alongside the user's ConsistencyOptions. They are
+ * not part of `ConsistencyOptions` itself — callers supply consistency, the client supplies
+ * these — but they are visible to anyone importing `eventualPoll` from this module directly.
  */
 type EventualInternals = {
   logger?: Logger;
