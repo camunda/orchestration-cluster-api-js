@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ClusterBalanceResponse</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#lastcompletedrebalance">lastCompletedRebalance</a><span class="tsd-signature-symbol">:</span> <a href="index.ClusterCompletedRebalance.html" class="tsd-signature-type tsd-kind-type-alias">ClusterCompletedRebalance</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#partitions">partitions</a><span class="tsd-signature-symbol">:</span> <a href="index.ClusterRebalancePartition.html" class="tsd-signature-type tsd-kind-type-alias">ClusterRebalancePartition</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#runningrebalance">runningRebalance</a><span class="tsd-signature-symbol">:</span> <a href="index.ClusterRunningRebalance.html" class="tsd-signature-type tsd-kind-type-alias">ClusterRunningRebalance</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state">state</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;BALANCED&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;BALANCING&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;UNBALANCED&quot;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/0c86ebce0f21c87481c3616ddf0f172034c4d68d/src/gen/types.gen.ts#L3061">src/gen/types.gen.ts:3061</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/02a27f2e10100bc65ebbeda0c726bd67b11b51d1/src/gen/types.gen.ts#L3061">src/gen/types.gen.ts:3061</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -38,28 +38,28 @@
 <div class="tsd-comment tsd-typography"><p>The last completed non-dry-run rebalance this coordinator finished.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/0c86ebce0f21c87481c3616ddf0f172034c4d68d/src/gen/types.gen.ts#L3077">src/gen/types.gen.ts:3077</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/02a27f2e10100bc65ebbeda0c726bd67b11b51d1/src/gen/types.gen.ts#L3077">src/gen/types.gen.ts:3077</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="partitions"><span>partitions</span><a href="#partitions" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">partitions</span><span class="tsd-signature-symbol">:</span> <a href="index.ClusterRebalancePartition.html" class="tsd-signature-type tsd-kind-type-alias">ClusterRebalancePartition</a><span class="tsd-signature-symbol">[]</span></div>
 <div class="tsd-comment tsd-typography"><p>The balance state of each partition as of the time of the request.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/0c86ebce0f21c87481c3616ddf0f172034c4d68d/src/gen/types.gen.ts#L3069">src/gen/types.gen.ts:3069</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/02a27f2e10100bc65ebbeda0c726bd67b11b51d1/src/gen/types.gen.ts#L3069">src/gen/types.gen.ts:3069</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="runningrebalance"><span>running<wbr/>Rebalance</span><a href="#runningrebalance" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">runningRebalance</span><span class="tsd-signature-symbol">:</span> <a href="index.ClusterRunningRebalance.html" class="tsd-signature-type tsd-kind-type-alias">ClusterRunningRebalance</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>Normally the rebalance currently running, or absent if no rebalance is running. For a dry-run response, this is instead the unexecuted plan of that dry run.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/0c86ebce0f21c87481c3616ddf0f172034c4d68d/src/gen/types.gen.ts#L3073">src/gen/types.gen.ts:3073</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/02a27f2e10100bc65ebbeda0c726bd67b11b51d1/src/gen/types.gen.ts#L3073">src/gen/types.gen.ts:3073</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state"><span>state</span><a href="#state" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;BALANCED&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;BALANCING&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;UNBALANCED&quot;</span></div>
 <div class="tsd-comment tsd-typography"><p>The cluster's aggregate balance state as of the time of the request.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/0c86ebce0f21c87481c3616ddf0f172034c4d68d/src/gen/types.gen.ts#L3065">src/gen/types.gen.ts:3065</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/02a27f2e10100bc65ebbeda0c726bd67b11b51d1/src/gen/types.gen.ts#L3065">src/gen/types.gen.ts:3065</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
