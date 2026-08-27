@@ -60,8 +60,9 @@ type PollInvokeResult<T> =
   | { kind: 'error'; error: any; status?: number };
 
 /**
- * Internal extras the generated client passes alongside the user's ConsistencyOptions.
- * `clock` is not part of the public surface: it comes from the client, not the caller.
+ * Extras the generated client passes alongside the user's ConsistencyOptions. They are not
+ * part of `ConsistencyOptions` itself — callers supply consistency, the client supplies these
+ * — but they are visible to anyone importing `eventualPoll` from this module directly.
  */
 type EventualInternals = {
   logger?: Logger;
@@ -211,7 +212,10 @@ export function eventualPoll<T>(
           elog?.debug?.(() => [
             `op=${operationId} attempt=${attempts} status=200 predicate=false nextDelay=${delay}ms remaining=${remaining}`,
           ]);
-          void clock.sleep(delay).then(() => loop(resolve, reject));
+          void clock.sleep(delay, outerSignal).then(
+            () => loop(resolve, reject),
+            () => {}
+          );
         })
         .catch((err: any) => {
           if (cancelled || outerSignal.aborted) return settleErr(new Error('Cancelled'));
@@ -228,7 +232,10 @@ export function eventualPoll<T>(
               predicateResult: false,
               nextDelayMs: delay,
             });
-            void clock.sleep(delay).then(() => loop(resolve, reject));
+            void clock.sleep(delay, outerSignal).then(
+              () => loop(resolve, reject),
+              () => {}
+            );
             return;
           }
           if (status === 429 && remaining > 0) {
@@ -253,7 +260,10 @@ export function eventualPoll<T>(
               predicateResult: false,
               nextDelayMs: delay,
             });
-            void clock.sleep(delay).then(() => loop(resolve, reject));
+            void clock.sleep(delay, outerSignal).then(
+              () => loop(resolve, reject),
+              () => {}
+            );
             return;
           }
           if (status && (abortImmediateStatuses.has(status) || status >= 500))

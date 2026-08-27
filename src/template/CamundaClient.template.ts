@@ -154,7 +154,7 @@ class CamundaClientBase {
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
   private _bp: BackpressureManager;
-  private _clock: Clock = createLiveClock();
+  private _clock: Clock;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
   /** Shared thread pool for all threaded job workers (lazy-initialised on first use). */
