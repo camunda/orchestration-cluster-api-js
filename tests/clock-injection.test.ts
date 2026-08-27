@@ -15,7 +15,9 @@ function countingClock(startMs = 1_000) {
       state.sleeps.push(ms);
       current += ms;
     },
-    deadline: () => ({ signal: new AbortController().signal, dispose: () => {} }),
+    // A deadline is a liveness bound: it must still fire even when now/sleep are pinned,
+    // or code guarded by one hangs instead of timing out.
+    deadline: (ms) => liveClock.deadline(ms),
   };
   return { clock, state };
 }

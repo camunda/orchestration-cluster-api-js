@@ -172,21 +172,37 @@ function getBackpressureStateExample() {
 //#endregion GetBackpressureState
 
 //#region Clock
-function clockExample() {
+async function clockExample() {
   // A pinned clock drives the SDK's own cadence — worker polling, retry backoff,
   // backpressure decay — so a test can step through them without waiting in real time.
+  //
+  // `sleep` must not resolve synchronously. The worker schedules its next poll by awaiting
+  // it, so a sleep that resolves in a microtask spins the poll loop as fast as the queue
+  // drains and exhausts the heap. Gate it on an explicit advance, as below.
   let current = 0;
+  let release: (() => void) | undefined;
+
   const camunda = createCamundaClient({
     clock: {
       now: () => current,
-      sleep: async (ms) => {
-        current += ms;
-      },
+      sleep: (ms) =>
+        new Promise((resolve) => {
+          release = () => {
+            current += ms;
+            resolve();
+          };
+        }),
       // Deadlines bound liveness rather than pace cadence, so they stay on real time even
       // when now/sleep are pinned — pinning them would hang instead of timing out.
       deadline: (ms) => liveClock.deadline(ms),
     },
   });
+
+  // The test decides when time moves. `release` is only defined once something has called
+  // sleep, so await the waiter after advancing rather than before.
+  const waiting = camunda.clock.sleep(1_000);
+  release?.();
+  await waiting;
 
   console.log(`Clock reads ${camunda.clock.now()}`);
 }
