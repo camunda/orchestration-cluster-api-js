@@ -48,16 +48,16 @@ const urlOf = (input: RequestInfo | URL) => (input instanceof Request ? input.ur
 function clientYieldingOneJob() {
   let served = false;
   return createCamundaClient({
-    config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 } as any,
+    config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 },
     env: {},
-    fetch: (async (input: RequestInfo | URL) => {
+    fetch: async (input: RequestInfo | URL) => {
       if (urlOf(input).includes('activation')) {
         if (served) return jsonResponse({ jobs: [] });
         served = true;
         return jsonResponse({ jobs: [job('1')] });
       }
       return jsonResponse({});
-    }) as any,
+    },
   });
 }
 
@@ -79,10 +79,11 @@ describe('JobWorker.stopGracefully', () => {
     const worker = camunda.createJobWorker({
       jobType: 'test-type',
       pollIntervalMs: 5,
-      jobHandler: async () => {
+      jobHandler: async (job) => {
         await handlerRunning;
+        return job.ignore();
       },
-    } as any);
+    });
 
     await until(() => worker.activeJobs > 0);
 
@@ -104,10 +105,11 @@ describe('JobWorker.stopGracefully', () => {
     const worker = camunda.createJobWorker({
       jobType: 'test-type',
       pollIntervalMs: 5,
-      jobHandler: async () => {
+      jobHandler: async (job) => {
         await handlerRunning;
+        return job.ignore();
       },
-    } as any);
+    });
 
     await until(() => worker.activeJobs > 0);
 
@@ -123,19 +125,19 @@ describe('JobWorker.stopGracefully', () => {
   it('stops polling, so no further activation happens after it returns', async () => {
     let activations = 0;
     const camunda = createCamundaClient({
-      config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 } as any,
+      config: { CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 },
       env: {},
-      fetch: (async (input: RequestInfo | URL) => {
+      fetch: async (input: RequestInfo | URL) => {
         if (urlOf(input).includes('activation')) activations += 1;
         return jsonResponse({ jobs: [] });
-      }) as any,
+      },
     });
 
     const worker = camunda.createJobWorker({
       jobType: 'test-type',
       pollIntervalMs: 5,
-      jobHandler: async () => {},
-    } as any);
+      jobHandler: async (job) => job.ignore(),
+    });
 
     await until(() => activations > 0);
     await worker.stopGracefully({ waitUpToMs: 200, checkIntervalMs: 5 });
