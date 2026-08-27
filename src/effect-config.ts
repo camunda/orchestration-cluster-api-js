@@ -276,9 +276,11 @@ export const camundaConfig: Effect.Effect<CamundaConfig, Config.ConfigError> = r
  * A `Layer` providing {@link CamundaEffect}, configured entirely from the ambient
  * `ConfigProvider` rather than from `process.env`.
  *
- * The client is constructed with `env: {}` so the provider is the *only* configuration
- * source — an unset value fails as a config error instead of being silently picked up
- * from the ambient environment.
+ * The client is constructed with `env: {}` so hydration does not fall back to the ambient
+ * environment — an unset value fails as a config error instead of being silently picked up
+ * from `process.env`. One residual exception: the telemetry auto-enable branch in
+ * `createCamundaClient` reads `process.env['CAMUNDA_SDK_TELEMETRY_LOG']` directly, so that
+ * single variable can still influence the client even under this layer.
  *
  * @example
  * ```ts
@@ -312,7 +314,10 @@ export function layerFromConfig(
         return createCamundaEffectClient({
           ...options,
           config: overrides as EnvOverrides,
-          // The ConfigProvider is the single source: do not fall back to process.env.
+          // Suppress hydrateConfig's env-hydration so the ConfigProvider is the source of
+          // configuration. Note this does not fully sandbox the client from ambient env: the
+          // telemetry auto-enable branch in createCamundaClient still reads
+          // process.env['CAMUNDA_SDK_TELEMETRY_LOG'] directly, so that single var can still leak in.
           env: {},
         }) satisfies CamundaEffectClient;
       })
