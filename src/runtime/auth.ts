@@ -1,3 +1,4 @@
+import { type Clock, liveClock } from './clock';
 import type { Logger } from './logger';
 import type {
   TelemetryAuthErrorEvent,
@@ -56,7 +57,8 @@ class OAuthManager {
     private cfg: CamundaConfig,
     private logger: Logger,
     private tHooks?: TelemetryHooks,
-    private correlationProvider?: () => string | undefined
+    private correlationProvider?: () => string | undefined,
+    private clock: Clock = liveClock
   ) {
     const hashBase = `${cfg.oauth.oauthUrl}|${cfg.oauth.clientId || ''}|${cfg.tokenAudience}|${cfg.oauth.scope || ''}`;
     this.storageKey = `camunda_oauth_token_cache_${this.simpleHash(hashBase)}`;
@@ -76,7 +78,7 @@ class OAuthManager {
     this.logger.debug(...args);
   }
   private now() {
-    return Date.now();
+    return this.clock.now();
   }
   private loadPersisted() {
     if (this.session) {
@@ -206,9 +208,13 @@ class OAuthManager {
     const base = this.cfg.oauth.retry.baseDelayMs || 1000;
     let attempt = 0;
     let lastErr: any;
+    // Durations are measured, not derived from the token clock: `now` below is the injected
+    // clock and may be pinned, which would make an elapsed time meaningless or negative.
+    const startedAt = liveClock.now();
     while (attempt < max) {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), this.cfg.oauth.timeoutMs);
+      const timeout = liveClock.deadline(this.cfg.oauth.timeoutMs);
+      timeout.signal.addEventListener('abort', () => controller.abort(), { once: true });
       try {
         if (attempt === 0) {
           const evt: TelemetryAuthStartEvent = {
@@ -232,7 +238,7 @@ class OAuthManager {
           body: body.toString(),
           signal: controller.signal,
         });
-        clearTimeout(timeout);
+        timeout.dispose();
         if (!res.ok) {
           lastErr = new Error(`HTTP ${res.status}`);
           throw lastErr;
@@ -269,7 +275,7 @@ class OAuthManager {
             audience: this.cfg.tokenAudience,
             endpoint: this.cfg.oauth.oauthUrl,
             cached: false,
-            durationMs: Date.now() - now,
+            durationMs: liveClock.now() - startedAt,
             expiresInSec: Math.round((entry.expires_at_epoch_ms - now) / 1000),
             scopes: entry.scope ? String(entry.scope).split(/\s+/) : undefined,
             correlationId: this.correlationProvider?.(),
@@ -280,7 +286,7 @@ class OAuthManager {
         }
         return entry.access_token;
       } catch (e: any) {
-        clearTimeout(timeout);
+        timeout.dispose();
         lastErr = e;
         attempt++;
         if (attempt >= max) break;
@@ -301,7 +307,7 @@ class OAuthManager {
         } catch {
           /* ignore */
         }
-        await new Promise((r) => setTimeout(r, sleep));
+        await this.clock.sleep(sleep);
       }
     }
     try {
@@ -310,7 +316,7 @@ class OAuthManager {
         ts: Date.now(),
         audience: this.cfg.tokenAudience,
         endpoint: this.cfg.oauth.oauthUrl,
-        durationMs: 0,
+        durationMs: liveClock.now() - startedAt,
         status: lastErr?.message?.match(/HTTP (\d+)/)?.[1] ? parseInt(RegExp.$1, 10) : undefined,
         message: lastErr?.message || String(lastErr),
         correlationId: this.correlationProvider?.(),
@@ -365,6 +371,7 @@ export function createAuthFacade(
     logger?: Logger;
     telemetryHooks?: TelemetryHooks;
     correlationProvider?: () => string | undefined;
+    clock?: Clock;
   }
 ): AuthFacade {
   const cfg = config;
@@ -387,7 +394,13 @@ export function createAuthFacade(
   let oauth: OAuthManager | null = null;
   let basic: BasicAuthManager | null = null;
   if (cfg.auth.strategy === 'OAUTH')
-    oauth = new OAuthManager(cfg, authLogger.scope('oauth'), tHooks, opts?.correlationProvider);
+    oauth = new OAuthManager(
+      cfg,
+      authLogger.scope('oauth'),
+      tHooks,
+      opts?.correlationProvider,
+      opts?.clock ?? liveClock
+    );
   else if (cfg.auth.strategy === 'BASIC') basic = new BasicAuthManager(cfg);
   const fetcher = (input: RequestInfo, init?: RequestInit) =>
     opts?.fetch ? opts.fetch(input, init) : fetch(input, init);

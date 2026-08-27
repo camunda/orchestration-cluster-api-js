@@ -240,4 +240,22 @@ describe('default clock', () => {
   it('is non-decreasing', () => {
     expect(liveClock.now()).toBeLessThanOrEqual(liveClock.now());
   });
+
+  /**
+   * `liveClock` is constructed at module load. Defaulting the source to the bare `Date.now`
+   * reference captures the real one, so the shared clock silently ignores a later fake-timer
+   * install and freezes at its load-time reading — while every other caller of `Date.now()`
+   * moves. Calling through keeps it in step with whatever `Date` is current.
+   */
+  it('follows a Date replaced after it was constructed', async () => {
+    vi.useFakeTimers();
+    try {
+      const before = liveClock.now();
+      await vi.advanceTimersByTimeAsync(1_000);
+
+      expect(liveClock.now() - before).toBeGreaterThanOrEqual(900);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

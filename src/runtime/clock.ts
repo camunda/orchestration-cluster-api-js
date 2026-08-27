@@ -86,9 +86,10 @@ function scheduleLong(ms: number, onElapsed: () => void): () => void {
  * progress, the way NTP slews rather than steps.
  *
  * @param source injectable purely so the slew behaviour itself is testable; production
- * callers use the default.
+ * callers use the default. Called through rather than captured, so a test that swaps the
+ * global `Date` (fake timers) still drives the shared `liveClock`.
  */
-export function createLiveClock(source: () => number = Date.now): Clock {
+export function createLiveClock(source: () => number = () => Date.now()): Clock {
   let lastSource = source();
   let offsetMs = 0;
   // Forward progress not yet large enough to repay a whole millisecond. Without this,

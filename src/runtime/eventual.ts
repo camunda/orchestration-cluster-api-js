@@ -4,6 +4,7 @@
 // by codegen without circular deps.
 
 import type { Result } from '../resultClient';
+import { type Clock, liveClock } from './clock';
 import { EventualConsistencyTimeoutError } from './errors';
 import type { Logger } from './logger';
 import { hydrateConfig } from './unifiedConfiguration';
@@ -58,9 +59,15 @@ type PollInvokeResult<T> =
   | { kind: 'success'; value: T; status?: number }
   | { kind: 'error'; error: any; status?: number };
 
-function now() {
-  return Date.now();
-}
+/**
+ * Extras that the generated client passes alongside the user's ConsistencyOptions. They are
+ * not part of `ConsistencyOptions` itself — callers supply consistency, the client supplies
+ * these — but they are visible to anyone importing `eventualPoll` from this module directly.
+ */
+type EventualInternals = {
+  logger?: Logger;
+  clock?: Clock;
+};
 
 // errorMode: 'throw' returns CancelablePromise<T> rejecting on errors; 'result' resolves with Result<T> never throwing.
 // Overloads (Option A):
@@ -70,21 +77,22 @@ export function eventualPoll<T>(
   operationId: string,
   isGet: boolean,
   invoke: () => CancelablePromise<T>,
-  options: ConsistencyOptions<T> & { logger?: Logger; errorMode?: 'throw' | undefined }
+  options: ConsistencyOptions<T> & EventualInternals & { errorMode?: 'throw' | undefined }
 ): CancelablePromise<T>;
 export function eventualPoll<T>(
   operationId: string,
   isGet: boolean,
   invoke: () => CancelablePromise<T>,
-  options: ConsistencyOptions<T> & { logger?: Logger; errorMode: 'result' }
+  options: ConsistencyOptions<T> & EventualInternals & { errorMode: 'result' }
 ): CancelablePromise<Result<T>>;
 export function eventualPoll<T>(
   operationId: string,
   isGet: boolean,
   invoke: () => CancelablePromise<T>,
-  options: ConsistencyOptions<T> & { logger?: Logger; errorMode?: 'throw' | 'result' }
+  options: ConsistencyOptions<T> & EventualInternals & { errorMode?: 'throw' | 'result' }
 ): CancelablePromise<any> {
   const { waitUpToMs, predicate, onAttempt, onComplete, abortSignal, trace } = options;
+  const clock = options.clock ?? liveClock;
   const elog = options.logger?.scope('eventual');
   const pollDefaultMs = hydrateConfig().config.eventual?.pollDefaultMs || 500;
   const userInterval = options.pollIntervalMs;
@@ -106,7 +114,7 @@ export function eventualPoll<T>(
 
   return toCancelable<any>((outerSignal) => {
     let attempts = 0;
-    const started = now();
+    const started = clock.now();
     let cancelled = false;
     const abortImmediateStatuses = new Set([400, 401, 403, 409, 422]);
 
@@ -162,7 +170,7 @@ export function eventualPoll<T>(
           } catch (e) {
             return settleErr(e);
           }
-          const elapsed = now() - started;
+          const elapsed = clock.now() - started;
           const remaining = waitUpToMs - elapsed;
           if (ok) {
             onAttempt?.({
@@ -204,12 +212,15 @@ export function eventualPoll<T>(
           elog?.debug?.(() => [
             `op=${operationId} attempt=${attempts} status=200 predicate=false nextDelay=${delay}ms remaining=${remaining}`,
           ]);
-          setTimeout(() => loop(resolve, reject), delay);
+          void clock.sleep(delay, outerSignal).then(
+            () => loop(resolve, reject),
+            () => {}
+          );
         })
         .catch((err: any) => {
           if (cancelled || outerSignal.aborted) return settleErr(new Error('Cancelled'));
           const status: number | undefined = err?.status;
-          const elapsed = now() - started;
+          const elapsed = clock.now() - started;
           const remaining = waitUpToMs - elapsed;
           if (status === 404 && isGet && remaining > 0) {
             const delay = Math.min(pollInterval, remaining);
@@ -221,7 +232,11 @@ export function eventualPoll<T>(
               predicateResult: false,
               nextDelayMs: delay,
             });
-            return setTimeout(() => loop(resolve, reject), delay);
+            void clock.sleep(delay, outerSignal).then(
+              () => loop(resolve, reject),
+              () => {}
+            );
+            return;
           }
           if (status === 429 && remaining > 0) {
             let delay = pollInterval * 2;
@@ -245,7 +260,11 @@ export function eventualPoll<T>(
               predicateResult: false,
               nextDelayMs: delay,
             });
-            return setTimeout(() => loop(resolve, reject), delay);
+            void clock.sleep(delay, outerSignal).then(
+              () => loop(resolve, reject),
+              () => {}
+            );
+            return;
           }
           if (status && (abortImmediateStatuses.has(status) || status >= 500))
             return settleErr(err);

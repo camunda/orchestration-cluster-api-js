@@ -1,5 +1,6 @@
 // Generic HTTP retry abstraction.
 // Allows pluggable strategy via CamundaClient.configure in future.
+import { type Clock, liveClock } from './clock';
 import type { Logger } from './logger';
 
 export interface RetryContext {
@@ -35,16 +36,14 @@ export interface OperationOptions {
 export interface CreateRetryOptions {
   policy: HttpRetryPolicy;
   logger?: Logger;
+  clock?: Clock;
   onAttempt?(info: { attempt: number; nextDelayMs: number; reason: string }): void;
   random?: () => number; // for test determinism
 }
 
-async function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
 export function createRetryExecutor(opts: CreateRetryOptions): RetryStrategy {
   const rand = opts.random || Math.random;
+  const clock = opts.clock ?? liveClock;
   return async function execute<T>(
     op: () => Promise<T>,
     classify?: (err: any) => RetryClassification
@@ -74,7 +73,7 @@ export function createRetryExecutor(opts: CreateRetryOptions): RetryStrategy {
         } catch {
           /* swallow logging errors */
         }
-        await sleep(delay);
+        await clock.sleep(delay);
       }
     }
     throw lastErr;
@@ -131,9 +130,10 @@ export async function executeWithHttpRetry<T>(
   policy: HttpRetryPolicy,
   logger?: Logger,
   classify: (err: any) => RetryClassification = defaultHttpClassifier,
-  onAttempt?: (info: { attempt: number; nextDelayMs: number; reason: string }) => void
+  onAttempt?: (info: { attempt: number; nextDelayMs: number; reason: string }) => void,
+  clock?: Clock
 ): Promise<T> {
   // Use internal executor directly for deterministic single-attempt behavior on non-retryable errors.
-  const exec = createRetryExecutor({ policy, logger, onAttempt });
+  const exec = createRetryExecutor({ policy, logger, onAttempt, clock });
   return exec(fn, classify);
 }

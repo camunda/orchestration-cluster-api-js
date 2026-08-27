@@ -30,7 +30,7 @@ import {
 } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
-import { type Clock, liveClock } from '../runtime/clock';
+import { type Clock, createLiveClock } from '../runtime/clock';
 import {
   type AnyVariableSchema,
   collectTypedVariables,
@@ -154,7 +154,7 @@ class CamundaClientBase {
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
   private _bp: BackpressureManager;
-  private _clock: Clock = liveClock;
+  private _clock: Clock;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
   /** Shared thread pool for all threaded job workers (lazy-initialised on first use). */
@@ -171,7 +171,7 @@ class CamundaClientBase {
 
   constructor(opts: CamundaOptions = {}) {
     if (opts.config) this._overrides = { ...opts.config };
-    this._clock = opts.clock ?? liveClock;
+    this._clock = opts.clock ?? createLiveClock();
     const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Initialize per-client logger
@@ -239,6 +239,7 @@ class CamundaClientBase {
     this._auth = createAuthFacade(this._config, {
       fetch: this._fetch,
       logger: this._log,
+      clock: this._clock,
       telemetryHooks: opts.telemetry?.hooks,
       correlationProvider:
         opts.telemetry?.correlation || (!opts.telemetry && this._config.telemetry?.correlation)
@@ -366,6 +367,7 @@ class CamundaClientBase {
     this._auth = createAuthFacade(this._config, {
       fetch: this._fetch,
       logger: this._log,
+      clock: this._clock,
       telemetryHooks: next.telemetry?.hooks,
       correlationProvider:
         next.telemetry?.correlation || (!next.telemetry && this._config.telemetry?.correlation)
@@ -498,7 +500,9 @@ class CamundaClientBase {
             this._bp.recordBackpressure();
           }
           return decision;
-        }
+        },
+        undefined,
+        this._clock
       );
       this._bp.recordHealthyHint();
       return result;
