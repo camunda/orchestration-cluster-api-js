@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { toModuleSpecifier } from '../src/runtime/moduleSpecifier.js';
+import { toModuleSpecifier } from '../src/runtime/moduleSpecifier';
 
 describe('toModuleSpecifier', () => {
   it('passes bare specifiers through so package resolution still applies', () => {
