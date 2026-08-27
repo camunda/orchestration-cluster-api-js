@@ -511,7 +511,10 @@ export type AgentInstanceUpdateRequest = {
      * Used for ownership/equality validation against the stored agent instance
      * and, when the supplied key differs from the previous association (re-entry
      * of an ad-hoc sub-process or AI Agent task), appended to elementInstanceKeys
-     * with the reverse link updated on the supplied element instance.
+     * with the reverse link updated on the supplied element instance. Only one
+     * element instance may hold this write claim at a time: any update from a
+     * different element instance is rejected while the current writer's job is
+     * still active.
      *
      */
     elementInstanceKey: ElementInstanceKey;
@@ -8611,7 +8614,7 @@ export type MappingRuleFilter = {
     /**
      * The name of the mapping rule.
      */
-    name?: string;
+    name?: StringFilterProperty;
     /**
      * The ID of the mapping rule.
      */
@@ -10627,7 +10630,7 @@ export type RoleFilter = {
     /**
      * The role name search filters.
      */
-    name?: string;
+    name?: StringFilterProperty;
 };
 
 /**
@@ -23682,7 +23685,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:518a106a4191aa1cdabbf2e7d62d464fd913571eb84367d02dd80b30604a0e7b
+// specHash=sha256:d3638a40f5d0c82477c3bceaab0d0a3f9fd2e5804bc363fd39ff7a9d2b9306a8
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

@@ -5087,9 +5087,7 @@ export const zMappingRuleFilter = z.object({
     claimValue: z.string().register(z.globalRegistry, {
         description: 'The value of the claim to match.'
     }).optional(),
-    name: z.string().register(z.globalRegistry, {
-        description: 'The name of the mapping rule.'
-    }).optional(),
+    name: zStringFilterProperty.optional(),
     mappingRuleId: zMappingRuleId.optional()
 }).register(z.globalRegistry, {
     description: 'Mapping rule search filter.'
@@ -6030,9 +6028,7 @@ export const zRoleResult = z.object({
  */
 export const zRoleFilter = z.object({
     roleId: zRoleId.optional(),
-    name: z.string().register(z.globalRegistry, {
-        description: 'The role name search filters.'
-    }).optional()
+    name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Role filter request'
 });
