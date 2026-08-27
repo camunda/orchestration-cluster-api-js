@@ -226,6 +226,90 @@ describe('camundaConfig', () => {
     const missing = allKeys().filter((k) => defaultValue(k) !== undefined && !(k in config));
     expect(missing).toEqual([]);
   });
+
+  describe('empty / whitespace handling (parity with hydrateConfig)', () => {
+    // hydrateConfig() trims every value and treats an empty/whitespace-only value as
+    // unset (so SCHEMA defaults apply and requiredWhen can detect a missing required
+    // key). Class-scoped guards over EVERY defaulted string key catch a regression that
+    // would let Config.string accept empty/whitespace or untrimmed values.
+    const defaultedStringKeys = () =>
+      allKeys().filter(
+        (k) => schemaEntry(k).type === 'string' && !isSecret(k) && defaultValue(k) !== undefined
+      );
+
+    it('treats a whitespace-only value as unset for EVERY defaulted string key', async () => {
+      const keys = defaultedStringKeys();
+      expect(keys.length).toBeGreaterThan(0);
+
+      for (const key of keys) {
+        const config = (await Effect.runPromise(
+          withEnv({ [key]: '   ' }, camundaConfig)
+        )) as Record<string, unknown>;
+        expect(config[key], `${key} whitespace should fall back to its SCHEMA default`).toBe(
+          defaultValue(key)
+        );
+      }
+    });
+
+    it('trims surrounding whitespace from EVERY defaulted string key', async () => {
+      for (const key of defaultedStringKeys()) {
+        const config = (await Effect.runPromise(
+          withEnv({ [key]: '  spaced-value  ' }, camundaConfig)
+        )) as Record<string, unknown>;
+        expect(config[key], `${key} should be trimmed`).toBe('spaced-value');
+      }
+    });
+
+    it('fails a whitespace-only required string key as a typed ConfigError', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv(
+          {
+            CAMUNDA_AUTH_STRATEGY: 'BASIC',
+            CAMUNDA_BASIC_AUTH_USERNAME: '   ',
+            CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+          },
+          camundaConfig
+        )
+      );
+
+      expect(Exit.isFailure(exit)).toBe(true);
+      if (Exit.isFailure(exit)) {
+        expect(JSON.stringify(exit.cause)).toMatch(/CAMUNDA_BASIC_AUTH_USERNAME/);
+      }
+    });
+
+    it('trims a secret value, dropping leading/trailing whitespace', async () => {
+      const config = await Effect.runPromise(
+        withEnv(
+          {
+            CAMUNDA_AUTH_STRATEGY: 'BASIC',
+            CAMUNDA_BASIC_AUTH_USERNAME: '  demo  ',
+            CAMUNDA_BASIC_AUTH_PASSWORD: '  hunter2  ',
+          },
+          camundaConfig
+        )
+      );
+
+      expect(config.CAMUNDA_BASIC_AUTH_USERNAME).toBe('demo');
+      expect(Redacted.value(config.CAMUNDA_BASIC_AUTH_PASSWORD as Redacted.Redacted<string>)).toBe(
+        'hunter2'
+      );
+    });
+  });
+
+  it('does not let a valid alias mask an INVALID canonical value', async () => {
+    // hydrateConfig() consults an alias only when the canonical key is UNSET. An invalid
+    // canonical value must fail as a typed ConfigError, not silently fall back to the
+    // alias (Config.option absorbs absence but propagates parse errors, unlike orElse).
+    const exit = await Effect.runPromiseExit(
+      withEnv(
+        { CAMUNDA_SUPPORT_LOG_ENABLED: 'notabool', CAMUNDA_SUPPORT_LOGGER: 'true' },
+        camundaConfig
+      )
+    );
+
+    expect(Exit.isFailure(exit)).toBe(true);
+  });
 });
 
 describe('layerFromConfig', () => {
@@ -251,6 +335,36 @@ describe('layerFromConfig', () => {
     );
 
     expect(address).toBe('http://injected:8080/v2');
+  });
+
+  it('forwards only provider-supplied keys as overrides, so SDK inference still fires', async () => {
+    // The Promise client treats `opts.config` as user intent (it decides `userSetStrategy`
+    // and whether to auto-infer OAUTH). Forwarding resolved SCHEMA defaults as overrides
+    // would mark a defaulted CAMUNDA_AUTH_STRATEGY=NONE as user-set and suppress inference.
+    // With only supplied keys forwarded, OAuth creds alone still infer the OAUTH strategy.
+    const layer = layerFromConfig().pipe(
+      Layer.provide(
+        ConfigProvider.layer(
+          ConfigProvider.fromEnv({
+            env: {
+              CAMUNDA_REST_ADDRESS: 'http://injected:8080/v2',
+              CAMUNDA_OAUTH_URL: 'http://oauth:18080/token',
+              CAMUNDA_CLIENT_ID: 'my-id',
+              CAMUNDA_CLIENT_SECRET: 'my-secret',
+            },
+          })
+        )
+      )
+    );
+
+    const strategy = await Effect.runPromise(
+      Effect.gen(function* () {
+        const camunda = yield* CamundaEffect;
+        return camunda.inner.config.auth.strategy;
+      }).pipe(Effect.provide(layer))
+    );
+
+    expect(strategy).toBe('OAUTH');
   });
 
   it('surfaces a missing required value as a typed ConfigError, not a construction throw', async () => {
