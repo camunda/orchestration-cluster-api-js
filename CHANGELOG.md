@@ -1,3 +1,10 @@
+# [10.0.0-alpha.40](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.39...v10.0.0-alpha.40) (2026-08-27)
+
+
+### Features
+
+* **clock:** resolve runtime cadence through the injected clock ([#474](https://github.com/camunda/orchestration-cluster-api-js/issues/474)) ([303d10d](https://github.com/camunda/orchestration-cluster-api-js/commit/303d10de1e092c6bb7aa5b95ef036eaba9a47f06))
+
 # [10.0.0-alpha.39](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.38...v10.0.0-alpha.39) (2026-08-27)
 
 
