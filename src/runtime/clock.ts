@@ -18,6 +18,11 @@ export interface Clock {
    *
    * Rejects with the signal's reason if `signal` aborts first, so a caller can cancel a
    * wait without leaving the timer behind.
+   *
+   * An injected implementation must not resolve synchronously. The worker schedules its
+   * next poll by awaiting this, so a sleep that settles in a microtask turns the poll loop
+   * into an unbounded spin that starves the event loop and exhausts the heap. A test clock
+   * should resolve only when the test advances it.
    */
   sleep(ms: number, signal?: AbortSignal): Promise<void>;
 
@@ -29,6 +34,19 @@ export interface Clock {
    */
   deadline(ms: number): { signal: AbortSignal; dispose: () => void };
 }
+
+/**
+ * The slice of the clock handed to job handlers.
+ *
+ * Deliberately narrower than `Clock`: `deadline` is a liveness primitive, and a handler that
+ * built one against a pinned clock would hang rather than time out. Handlers get to read time
+ * and to wait, nothing else.
+ *
+ * `sleep` is for short in-handler coordination — backing off around a flaky dependency,
+ * spacing retries within one job. Long or business-meaningful waits belong in the process as
+ * BPMN timers, where they survive a crash and are visible to operations.
+ */
+export type HandlerClock = Pick<Clock, 'now' | 'sleep'>;
 
 /**
  * Fraction of forward progress used to pay down an absorbed backward step: 1/16, so

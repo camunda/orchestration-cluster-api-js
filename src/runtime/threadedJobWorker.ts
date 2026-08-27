@@ -18,7 +18,12 @@ type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
  * The job object received by a threaded handler.
  * Same shape as EnrichedActivatedJob but without the logger (not available across threads).
  */
-export type ThreadedJob = Omit<EnrichedActivatedJob, 'log'>;
+/**
+ * `clock` is omitted alongside `log` for the same reason: both are live in-process objects,
+ * and a pinned clock cannot cross the worker-thread boundary. Threaded handlers use ambient
+ * time — see camunda/orchestration-cluster-api-js#450.
+ */
+export type ThreadedJob = Omit<EnrichedActivatedJob, 'log' | 'clock'>;
 
 /**
  * Handler function signature for threaded job workers.

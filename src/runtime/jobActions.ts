@@ -1,5 +1,6 @@
 import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses, JobResult, ThrowJobErrorData } from '../gen/types.gen';
+import type { HandlerClock } from './clock';
 import { JobActionReceipt } from './jobWorker';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
@@ -18,6 +19,11 @@ export interface EnrichedActivatedJob extends ActivatedJobResult {
   modifyJobTimeout: ({ newTimeoutMs }: { newTimeoutMs: number }) => Promise<void>;
   modifyRetries: ({ retries }: { retries: number }) => Promise<void>;
   log: ReturnType<CamundaClient['logger']>;
+  /**
+   * The clock this worker's client resolves time through. Reading and waiting through it
+   * means a test that pins the client's clock also drives the handler.
+   */
+  clock: HandlerClock;
   /** Set true once any acknowledgement method is invoked. */
   acknowledged?: boolean;
 }
@@ -42,7 +48,8 @@ export interface JobFailureConfiguration {
 export function enrichActivatedJob(
   raw: ActivatedJobResult,
   client: CamundaClient,
-  log: ReturnType<CamundaClient['logger']>
+  log: ReturnType<CamundaClient['logger']>,
+  clock: HandlerClock = client.clock
 ): EnrichedActivatedJob {
   let acknowledged = false;
   const ack = () => {
@@ -51,7 +58,7 @@ export function enrichActivatedJob(
       job.acknowledged = true;
     }
   };
-  const job: Partial<EnrichedActivatedJob> = { ...raw, log };
+  const job: Partial<EnrichedActivatedJob> = { ...raw, log, clock };
   job.complete = async (
     variables: { [k: string]: any } = {},
     result?: JobResult
