@@ -6,11 +6,12 @@ language js(typescript)
 // the single module allowed to touch ambient time; liveness bounds that must keep real
 // time still go through `liveClock` so every timer stays behind one edge.
 //
-// Scope and exemptions live in biome.json: this plugin has no path awareness of its own.
-// Suppress a justified site with `// biome-ignore lint/plugin: <why real time is correct>`.
+// Scope lives in biome.json -- this plugin has no path awareness of its own. Exemptions do
+// not: suppress a justified site with `// biome-ignore lint/plugin: <why real time is correct>`,
+// so the reason stays at the site and the rest of the file stays guarded.
 or {
   `Date.now()` as $ambient where {
-    register_diagnostic(span=$ambient, message="Read time through the injected clock: `clock.now()`, or `liveClock.now()` for a liveness bound. Observational timestamps are exempted by path in biome.json.", severity="error")
+    register_diagnostic(span=$ambient, message="Read time through the injected clock: `clock.now()`, or `liveClock.now()` for a liveness bound. A timestamp that must report real time is exempted per line with `// biome-ignore lint/plugin: <reason>`.", severity="error")
   },
   // A bare reference captures the function once, so a later `vi.useFakeTimers()` never sees
   // it. This is the shape that made `createLiveClock(source = Date.now)` untestable.

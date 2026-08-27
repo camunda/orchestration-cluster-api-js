@@ -841,27 +841,30 @@ export async function hydrateConfigAsync(
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   // A liveness bound: real time even under a pinned clock, but routed through the one
-  // module allowed to own timers so the budget is released when the fetch wins.
+  // module allowed to own timers so the budget is released however the race settles.
   const budget = liveClock.deadline(ms);
-  return await Promise.race([
-    p.then((v) => {
-      budget.dispose();
-      return v;
-    }),
-    new Promise<T>((_, rej) => {
-      const fail = () =>
-        rej(
-          new CamundaConfigurationError([
-            {
-              code: ConfigErrorCode.CONFIG_INVALID_ENUM,
-              message: `Configuration fetch timed out after ${ms}ms`,
-            },
-          ])
-        );
-      if (budget.signal.aborted) fail();
-      else budget.signal.addEventListener('abort', fail, { once: true });
-    }),
-  ]);
+  try {
+    return await Promise.race([
+      p,
+      new Promise<T>((_, rej) => {
+        const fail = () =>
+          rej(
+            new CamundaConfigurationError([
+              {
+                code: ConfigErrorCode.CONFIG_INVALID_ENUM,
+                message: `Configuration fetch timed out after ${ms}ms`,
+              },
+            ])
+          );
+        if (budget.signal.aborted) fail();
+        else budget.signal.addEventListener('abort', fail, { once: true });
+      }),
+    ]);
+  } finally {
+    // Covers all three outcomes: fetch resolved, fetch rejected, or the deadline won.
+    // `dispose` is `clearTimeout`, so calling it after the timer fired is a no-op.
+    budget.dispose();
+  }
 }
 
 // Export spec for TypeDoc extraction tooling
