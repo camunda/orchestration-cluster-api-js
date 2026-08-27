@@ -188,16 +188,31 @@ type _createAgentInstance_Body = CreateAgentInstanceData extends { body?: infer 
   *
  * @example Create an agent instance
  * ```ts
- * async function createAgentInstanceExample(elementInstanceKey: ElementInstanceKey) {
+ * async function createAgentInstanceExample(
+ *   elementInstanceKey: ElementInstanceKey,
+ *   jobKey: JobKey,
+ *   jobLease: string
+ * ) {
  *   const camunda = createCamundaClient();
  * 
+ *   // The batch must open with a CONFIGURATION item; it establishes the model,
+ *   // provider and system prompt for the instance.
  *   const result = await camunda.createAgentInstance({
  *     elementInstanceKey,
- *     definition: {
- *       model: 'gpt-4o',
- *       provider: 'openai',
- *       systemPrompt: 'You are a helpful assistant.',
- *     },
+ *     jobKey,
+ *     jobLease,
+ *     history: [
+ *       {
+ *         historyItemId: 'configuration-1',
+ *         loopIteration: 1,
+ *         role: 'CONFIGURATION',
+ *         content: [],
+ *         producedAt: new Date().toISOString(),
+ *         model: 'gpt-4o',
+ *         provider: 'openai',
+ *         systemPrompt: [{ contentType: 'TEXT', text: 'You are a helpful assistant.' }],
+ *       },
+ *     ],
  *   });
  * 
  *   console.log(`Created agent instance: ${result.agentInstanceKey}`);
@@ -2997,29 +3012,6 @@ export function completeUserTask(options?: Parameters<typeof _completeUserTask>[
  * fails or is superseded by a retry, the item is marked DISCARDED.
  *
   *
- * @example Append an agent instance history item
- * ```ts
- * async function createAgentInstanceHistoryItemExample(
- *   agentInstanceKey: AgentInstanceKey,
- *   elementInstanceKey: ElementInstanceKey,
- *   jobKey: JobKey,
- *   jobLease: string
- * ) {
- *   const camunda = createCamundaClient();
- * 
- *   const result = await camunda.createAgentInstanceHistoryItem({
- *     agentInstanceKey,
- *     elementInstanceKey,
- *     jobKey,
- *     jobLease,
- *     role: 'ASSISTANT',
- *     content: [{ contentType: 'TEXT', text: 'How can I help you today?' }],
- *     producedAt: new Date().toISOString(),
- *   });
- * 
- *   console.log(`Created history item: ${result.historyItemKey}`);
- * }
- * ```
  * @operationId createAgentInstanceHistoryItem
  * @tags Agent instance
  */
@@ -7095,19 +7087,28 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
  * ```ts
  * async function updateAgentInstanceExample(
  *   agentInstanceKey: AgentInstanceKey,
- *   elementInstanceKey: ElementInstanceKey
+ *   elementInstanceKey: ElementInstanceKey,
+ *   jobKey: JobKey,
+ *   jobLease: string
  * ) {
  *   const camunda = createCamundaClient();
  * 
  *   await camunda.updateAgentInstance({
  *     agentInstanceKey,
  *     elementInstanceKey,
+ *     jobKey,
+ *     jobLease,
  *     status: 'THINKING',
- *     metrics: {
- *       inputTokens: 150,
- *       outputTokens: 50,
- *       modelCalls: 1,
- *     },
+ *     history: [
+ *       {
+ *         historyItemId: 'assistant-1',
+ *         loopIteration: 1,
+ *         role: 'ASSISTANT',
+ *         content: [{ contentType: 'TEXT', text: 'How can I help you?' }],
+ *         producedAt: new Date().toISOString(),
+ *         metrics: { inputTokens: 150, outputTokens: 50, durationMs: 820 },
+ *       },
+ *     ],
  *   });
  * 
  *   console.log(`Updated agent instance: ${agentInstanceKey}`);
