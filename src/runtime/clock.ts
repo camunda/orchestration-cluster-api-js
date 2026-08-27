@@ -167,3 +167,125 @@ export function createLiveClock(source: () => number = () => Date.now()): Clock 
 
 /** The clock used when none is injected. */
 export const liveClock: Clock = createLiveClock();
+
+/**
+ * A `Clock` whose time only moves when the test says so, plus the counters a test needs to
+ * assert on. Everything beyond `Clock` is inspection or control, never behaviour the SDK
+ * depends on.
+ */
+export interface TestClock extends Clock {
+  /** Move time forward by `ms`, settling every sleep that comes due, then drain the queue. */
+  advance(ms: number): Promise<void>;
+  /** Durations passed to `sleep`, in call order. */
+  readonly sleeps: readonly number[];
+  /** How many times `now` has been read. */
+  readonly nowCalls: number;
+  /** Sleeps still waiting for time to advance. */
+  readonly pending: number;
+}
+
+/**
+ * A deterministic clock for tests: virtual time, so poll loops and backoff settle without
+ * burning real time.
+ *
+ * Exists so nobody hand-rolls one. Every ad-hoc clock this replaced got some clause of the
+ * contract wrong — most often settling `sleep` in a microtask, which spins any caller that
+ * reschedules itself on resolution. See #478.
+ *
+ * With `autoAdvance` (the default) a sleep settles itself on the next macrotask, having
+ * moved time to its wake point; the SDK's loops make progress without the test driving
+ * them. Set it to `false` to hold every sleep until `advance()` releases it, which is what
+ * you want when asserting on the state *between* two waits.
+ */
+export function createTestClock(
+  options: { start?: number; autoAdvance?: boolean } = {}
+): TestClock {
+  const { start = 0, autoAdvance = true } = options;
+
+  interface Waiter {
+    at: number;
+    resolve: () => void;
+    detach: () => void;
+  }
+
+  let current = start;
+  let nowCalls = 0;
+  const sleeps: number[] = [];
+  let waiters: Waiter[] = [];
+
+  const settleDue = (): void => {
+    const due = waiters.filter((w) => w.at <= current);
+    waiters = waiters.filter((w) => w.at > current);
+    for (const w of due) {
+      w.detach();
+      w.resolve();
+    }
+  };
+
+  // Deliberately a macrotask, not a microtask: `Clock.sleep` forbids same-tick resolution
+  // because the worker reschedules its next poll on resolution.
+  const nextTick = (fn: () => void): void => {
+    // biome-ignore lint/plugin: this is the allowed module -- the deferral a virtual clock is built on
+    setTimeout(fn, 0);
+  };
+
+  const now = (): number => {
+    nowCalls += 1;
+    return current;
+  };
+
+  const sleep = (ms: number, signal?: AbortSignal): Promise<void> =>
+    new Promise<void>((resolve, reject) => {
+      if (signal?.aborted) {
+        reject(signal.reason);
+        return;
+      }
+
+      sleeps.push(ms);
+      const waiter: Waiter = { at: current + ms, resolve, detach: () => {} };
+
+      if (signal) {
+        const onAbort = (): void => {
+          waiters = waiters.filter((w) => w !== waiter);
+          reject(signal.reason);
+        };
+        signal.addEventListener('abort', onAbort, { once: true });
+        waiter.detach = () => signal.removeEventListener('abort', onAbort);
+      }
+
+      waiters.push(waiter);
+
+      if (autoAdvance) {
+        nextTick(() => {
+          current = Math.max(current, waiter.at);
+          settleDue();
+        });
+      }
+    });
+
+  const advance = async (ms: number): Promise<void> => {
+    current += ms;
+    settleDue();
+    // Hand control back to the event loop so the continuations we just released actually
+    // run before the caller asserts on their effects.
+    await new Promise<void>((resolve) => nextTick(resolve));
+  };
+
+  return {
+    now,
+    sleep,
+    advance,
+    // A deadline bounds liveness rather than pacing cadence: it stays on real time even
+    // here, because code guarded by one should time out rather than hang on a pinned clock.
+    deadline: (ms) => liveClock.deadline(ms),
+    get sleeps() {
+      return sleeps;
+    },
+    get nowCalls() {
+      return nowCalls;
+    },
+    get pending() {
+      return waiters.length;
+    },
+  };
+}

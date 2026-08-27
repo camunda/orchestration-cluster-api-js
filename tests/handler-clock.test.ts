@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createCamundaClient } from '../src';
-import { type Clock, liveClock } from '../src/runtime/clock';
+import { type Clock, createTestClock } from '../src/runtime/clock';
 import { enrichActivatedJob } from '../src/runtime/jobActions';
 
 /**
@@ -30,22 +30,7 @@ const raw = {
   tenantId: '<default>',
 } as any;
 
-function pinnedClock(startMs: number) {
-  let current = startMs;
-  const clock: Clock = {
-    now: () => current,
-    // Yields a macrotask: a sleep that settles in the same tick spins any caller that
-    // reschedules itself on resolution, which is the hazard Clock.sleep documents.
-    sleep(ms: number) {
-      current += ms;
-      return new Promise<void>((resolve) => setTimeout(resolve, 0));
-    },
-    // A deadline is a liveness bound: it must still fire even when now/sleep are pinned,
-    // or code guarded by one hangs instead of timing out.
-    deadline: (ms) => liveClock.deadline(ms),
-  };
-  return clock;
-}
+const pinnedClock = (startMs: number) => createTestClock({ start: startMs });
 
 const clientWith = (clock?: Clock) =>
   createCamundaClient({
