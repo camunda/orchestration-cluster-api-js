@@ -13,7 +13,7 @@
  *   tsx scripts/run-pipeline.ts           # full pipeline (pre + generate + post + test)
  *   tsx scripts/run-pipeline.ts --no-test # skip tests at the end
  */
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -34,7 +34,9 @@ function discoverHooks(phase: string): string[] {
 function runHook(hookPath: string): void {
   const rel = path.relative(ROOT, hookPath);
   console.log(`\n▸ ${rel}`);
-  execSync(`tsx ${JSON.stringify(hookPath)}`, { cwd: ROOT, stdio: 'inherit' });
+  // execFileSync avoids a shell entirely, so hook paths never undergo shell
+  // parsing (spaces, `$VAR`, platform-specific quoting).
+  execFileSync('tsx', [hookPath], { cwd: ROOT, stdio: 'inherit' });
 }
 
 function runCommand(label: string, cmd: string): void {

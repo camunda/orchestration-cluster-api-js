@@ -6,7 +6,7 @@
  * that maps the package import to source. This catches type-contract
  * regressions flowing in from upstream spec changes.
  */
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -20,7 +20,9 @@ if (!existsSync(tsconfig)) {
 }
 
 try {
-  execSync(`npx tsc -p ${JSON.stringify(tsconfig)}`, { cwd: root, stdio: 'inherit' });
+  // execFileSync avoids a shell, so the tsconfig path never undergoes shell
+  // parsing (spaces, `$VAR`, platform-specific quoting).
+  execFileSync('npx', ['tsc', '-p', tsconfig], { cwd: root, stdio: 'inherit' });
   console.log('✓ API examples type-check passed');
 } catch {
   console.error('✗ API examples failed type-check — fix examples/*.ts');
