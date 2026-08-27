@@ -20,7 +20,7 @@ function methodHelperNames(fn: unknown): string[] {
   if (typeof fn !== 'function') return [];
   return Object.getOwnPropertyNames(fn)
     .filter((p) => !INTRINSIC_FUNCTION_PROPS.has(p))
-    .filter((p) => typeof (fn as Record<string, unknown>)[p] === 'function')
+    .filter((p) => typeof (fn as unknown as Record<string, unknown>)[p] === 'function')
     .sort();
 }
 

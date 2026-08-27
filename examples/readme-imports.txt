@@ -56,3 +56,13 @@ import {
   TerminalJobError,
 } from '@camunda8/orchestration-cluster-api/effect';
 //#endregion ReadmeEffectWorkerImport
+
+//#region ReadmeEffectWorkerServicesImport
+import { Context, Effect, Layer } from 'effect';
+import {
+  CamundaEffect,
+  type CamundaEffectClient,
+  layer,
+  workerLayer,
+} from '@camunda8/orchestration-cluster-api/effect';
+//#endregion ReadmeEffectWorkerServicesImport

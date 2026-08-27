@@ -11,6 +11,8 @@
 // split per snippet). Every symbol they name is imported here too, so removing an
 // export breaks this file's type-check.
 import {
+  CamundaEffect,
+  type CamundaEffectClient,
   createCamundaEffectClient,
   createCamundaEffectWorker,
   type EventualConsistencyTimeout,
@@ -18,8 +20,9 @@ import {
   layer,
   RetryableJobError,
   TerminalJobError,
+  workerLayer,
 } from '@camunda8/orchestration-cluster-api/effect';
-import { Effect, Schedule, Stream } from 'effect';
+import { Context, Effect, Layer, Schedule, Stream } from 'effect';
 
 // ---------------------------------------------------------------------------
 // Effect client
@@ -94,8 +97,12 @@ function _readmeEffectWorker() {
   //#region ReadmeEffectWorker
   const program = Effect.gen(function* () {
     // Forked into the current Scope: interrupted (with a best-effort lease release) when
-    // the scope closes.
-    yield* createCamundaEffectWorker<{ ok: boolean }>({
+    // the scope closes. Let both type parameters infer — supplying only the completion-
+    // variable type (`createCamundaEffectWorker<{ ok: boolean }>(…)`) makes TypeScript
+    // fall back to the *default* for the handler's requirements (`R = never`) rather
+    // than inferring it, so a handler with dependencies would stop compiling. See
+    // "Injecting Services into a Handler".
+    yield* createCamundaEffectWorker({
       type: 'payment-processing',
       maxJobsToActivate: 10, // activation batch size
       concurrency: 10, // max jobs handled in parallel (backpressure)
@@ -134,6 +141,67 @@ function _readmeEffectWorker() {
   //#endregion ReadmeEffectWorker
 }
 
+// ---------------------------------------------------------------------------
+// Injecting services into a worker handler
+// ---------------------------------------------------------------------------
+
+//#region ReadmeEffectWorkerServices
+// A service the handler depends on. Nothing about it is Camunda-specific — it is an
+// ordinary Effect service.
+class PaymentGateway extends Context.Service<
+  PaymentGateway,
+  { readonly charge: (amount: number) => Effect.Effect<string> }
+>()('PaymentGateway') {}
+
+// The handler's requirements flow out through the worker's own requirements, so the
+// worker layer asks for `PaymentGateway` just like it asks for the Camunda client.
+const paymentWorker = workerLayer({
+  type: 'payment-processing',
+  handler: (job) =>
+    Effect.gen(function* () {
+      const gateway = yield* PaymentGateway;
+      return { receipt: yield* gateway.charge(Number(job.variables.amount)) };
+    }),
+});
+// paymentWorker: Layer<never, never, CamundaEffect | PaymentGateway>
+
+// Production: the real gateway and a real client.
+const liveWorker = paymentWorker.pipe(
+  Layer.provide(
+    Layer.succeed(PaymentGateway, {
+      charge: (amount) => Effect.succeed(`live-receipt-${amount}`),
+    })
+  ),
+  Layer.provide(layer())
+);
+
+// Tests: the same worker with *both* dependencies swapped. `CamundaEffect` is a service
+// too, so the broker is mocked exactly like the gateway — the worker runs end-to-end
+// with neither a payment provider nor a broker.
+const fakeClient = {
+  activateJobs: () => Effect.succeed({ jobs: [] }),
+  completeJob: () => Effect.void,
+  failJob: () => Effect.void,
+  throwJobError: () => Effect.void,
+} as unknown as CamundaEffectClient;
+
+const mockedWorker = paymentWorker.pipe(
+  Layer.provide(Layer.succeed(PaymentGateway, { charge: () => Effect.succeed('mock-receipt') })),
+  Layer.provide(Layer.succeed(CamundaEffect, fakeClient))
+);
+//#endregion ReadmeEffectWorkerServices
+
+// Type-level guard, compiled by hooks/post/950-typecheck-examples.ts: a handler's
+// requirement must surface in the worker layer's requirements. If `R` ever stopped
+// threading from handler to worker, DI would silently break for users and this
+// annotation would stop compiling. Complements the runtime coverage in
+// tests/effect-worker-di.test.ts.
+const _threadsHandlerRequirements: Layer.Layer<never, never, CamundaEffect | PaymentGateway> =
+  paymentWorker;
+
 void _readmeEffectClient;
 void _readmeEffectPaginate;
 void _readmeEffectWorker;
+void liveWorker;
+void mockedWorker;
+void _threadsHandlerRequirements;
