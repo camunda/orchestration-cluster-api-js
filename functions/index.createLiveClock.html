@@ -38,13 +38,14 @@ progress, the way NTP slews rather than steps.</p>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">source</span>: <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = Date.now</span></span>
+<li><span><span class="tsd-kind-parameter">source</span>: <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = ...</span></span>
 <div class="tsd-comment tsd-typography"><p>injectable purely so the slew behaviour itself is testable; production
-callers use the default.</p>
+callers use the default. Called through rather than captured, so a test that swaps the
+global <code>Date</code> (fake timers) still drives the shared <code>liveClock</code>.</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../interfaces/index.Clock.html" class="tsd-signature-type tsd-kind-interface">Clock</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/f94e326b0993315621f155d79db7049cba8a53df/src/runtime/clock.ts#L91">src/runtime/clock.ts:91</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/5d61ee428d85affef8af140d75c16b4c2971b3ae/src/runtime/clock.ts#L92">src/runtime/clock.ts:92</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
