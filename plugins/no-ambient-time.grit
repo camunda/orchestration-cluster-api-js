@@ -1,0 +1,30 @@
+engine biome(1.0)
+language js(typescript)
+
+// SDK cadence must resolve through the injected clock so poll loops, backoff and token
+// refresh can be driven in tests without waiting for real time. `src/runtime/clock.ts` is
+// the single module allowed to touch ambient time; liveness bounds that must keep real
+// time still go through `liveClock` so every timer stays behind one edge.
+//
+// Scope and exemptions live in biome.json: this plugin has no path awareness of its own.
+// Suppress a justified site with `// biome-ignore lint/plugin: <why real time is correct>`.
+or {
+  `Date.now()` as $ambient where {
+    register_diagnostic(span=$ambient, message="Read time through the injected clock: `clock.now()`, or `liveClock.now()` for a liveness bound. Observational timestamps are exempted by path in biome.json.", severity="error")
+  },
+  // A bare reference captures the function once, so a later `vi.useFakeTimers()` never sees
+  // it. This is the shape that made `createLiveClock(source = Date.now)` untestable.
+  `Date.now` as $ambient where {
+    $ambient <: not within `Date.now()` ,
+    register_diagnostic(span=$ambient, message="Passing `Date.now` by reference captures the real clock at module load, so a fake clock installed later cannot replace it. Pass `() => clock.now()` instead.", severity="error")
+  },
+  `new Date()` as $ambient where {
+    register_diagnostic(span=$ambient, message="`new Date()` reads ambient time just as `Date.now()` does. Use `new Date(clock.now())` so the value follows the injected clock.", severity="error")
+  },
+  `setTimeout($...)` as $ambient where {
+    register_diagnostic(span=$ambient, message="Wait through the injected clock: `clock.sleep(ms, signal)`, or `liveClock.deadline(ms)` for a liveness bound that must survive a pinned clock.", severity="error")
+  },
+  `setInterval($...)` as $ambient where {
+    register_diagnostic(span=$ambient, message="`setInterval` has no injected equivalent: schedule the next tick with `clock.sleep` after each unit of work, so a slow tick cannot overlap the next.", severity="error")
+  }
+}

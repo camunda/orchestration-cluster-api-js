@@ -99,6 +99,7 @@ export class CamundaSupportLogger implements SupportLogger {
     if (!this.enabled || !isNode()) return;
     const fs = require('node:fs') as typeof import('node:fs');
     const msg = typeof message === 'object' ? safeStringify(message) : String(message);
+    // biome-ignore lint/plugin: support-log timestamp: must be real wall-clock so the bundle correlates with external logs
     const line = addTimestamp ? `[${new Date().toISOString()}]: ${msg}\n` : `${msg}\n`;
     try {
       fs.appendFileSync(this.filepath, line);

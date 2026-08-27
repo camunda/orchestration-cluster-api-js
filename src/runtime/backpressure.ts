@@ -2,6 +2,7 @@
 // Escalates on broker backpressure signals, throttles initiating operations.
 // Exempt operations (e.g., job completion/failure) bypass acquire.
 
+import { liveClock } from './clock';
 import type { Logger } from './logger';
 
 export interface BackpressureConfig {
@@ -56,8 +57,8 @@ export class BackpressureManager {
 
   constructor(opts: BackpressureManagerOptions = {}) {
     this.logger = opts.logger;
-    this.now = opts.now || (() => Date.now());
-    this.sleep = opts.sleep || ((ms) => new Promise<void>((r) => setTimeout(r, ms)));
+    this.now = opts.now || (() => liveClock.now());
+    this.sleep = opts.sleep || ((ms) => liveClock.sleep(ms));
     this.cfg = {
       enabled: true,
       initialMaxConcurrency: null,

@@ -6,6 +6,7 @@
 // Static import for path placed before other module imports to satisfy lint ordering
 import path from 'node:path';
 import { createEnv } from 'typed-env';
+import { liveClock } from './clock';
 import {
   aliases as aliasesMeta,
   allKeys,
@@ -839,25 +840,26 @@ export async function hydrateConfigAsync(
 }
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
-  let to: any;
+  // A liveness bound: real time even under a pinned clock, but routed through the one
+  // module allowed to own timers so the budget is released when the fetch wins.
+  const budget = liveClock.deadline(ms);
   return await Promise.race([
     p.then((v) => {
-      clearTimeout(to);
+      budget.dispose();
       return v;
     }),
     new Promise<T>((_, rej) => {
-      to = setTimeout(
-        () =>
-          rej(
-            new CamundaConfigurationError([
-              {
-                code: ConfigErrorCode.CONFIG_INVALID_ENUM,
-                message: `Configuration fetch timed out after ${ms}ms`,
-              },
-            ])
-          ),
-        ms
-      );
+      const fail = () =>
+        rej(
+          new CamundaConfigurationError([
+            {
+              code: ConfigErrorCode.CONFIG_INVALID_ENUM,
+              message: `Configuration fetch timed out after ${ms}ms`,
+            },
+          ])
+        );
+      if (budget.signal.aborted) fail();
+      else budget.signal.addEventListener('abort', fail, { once: true });
     }),
   ]);
 }

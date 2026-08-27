@@ -82,6 +82,7 @@
       }
     }
   },
+  "plugins": [],
   "overrides": [
     {
       "includes": ["src/template/**"],
@@ -100,6 +101,10 @@
           }
         }
       }
+    },
+    {
+      "includes": ["src/runtime/**", "src/template/**"],
+      "plugins": ["./plugins/no-ambient-time.grit"]
     }
   ]
 }
