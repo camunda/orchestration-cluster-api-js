@@ -1269,7 +1269,7 @@ first-class [Effect](https://effect.website) surface — a client whose every me
 > resolution — set `"moduleResolution": "bundler"` (or `"node16"`/`"nodenext"`) in your
 > `tsconfig.json`. The Promise-first `.` entry is unaffected.
 
-<!-- snippet-exempt: uses SDK /effect subpath + optional effect peer not available in examples project -->
+<!-- snippet-source: examples/effect.ts,examples/readme-imports.txt | regions: ReadmeEffectClientImport+ReadmeEffectClient -->
 ```ts
 import { Effect } from 'effect';
 import {
@@ -1326,9 +1326,43 @@ Exports available from `.../effect`:
   the Effect `Clock`, timing out to `EventualConsistencyTimeout`).
 - Dependency injection: `CamundaEffect` (`Context.Service`) + `layer(options?)` (`Layer`) so worker /
   orchestration code composes via `Layer` and swaps a test double trivially.
+- Pagination: `.paginate(body, opts?)` on every `search*` method, returning an `EffectPaginator`
+  (`pages()` / `items()` → `Stream`, `toArray()` → `Effect`). See below.
 
 **Clock-class win:** `eventually` / `withTimeout` run on the Effect `Clock`, so `TestClock.adjust`
 advances eventual/timeout deterministically in tests — no real-clock burn.
+
+### Paginated Search as a `Stream`
+
+Every `search*` operation on the Effect client carries the same `.paginate` helper the
+Promise client installs, re-expressed in Effect terms: `pages()` and `items()` are
+`Stream`s and `toArray()` is an `Effect`. Pages are fetched lazily as they are pulled,
+and interrupting the fiber cancels the in-flight page request.
+
+<!-- snippet-source: examples/effect.ts,examples/readme-imports.txt | regions: ReadmeEffectPaginateImport+ReadmeEffectPaginate -->
+```ts
+import { Effect, Stream } from 'effect';
+import { createCamundaEffectClient } from '@camunda8/orchestration-cluster-api/effect';
+
+const camunda = createCamundaEffectClient();
+
+// Walk every ACTIVE process instance, 100 per request, without ever holding more
+// than one page in memory. `Stream.take` stops pulling — and so stops fetching.
+const activeKeys = await Effect.runPromise(
+  camunda.searchProcessInstances
+    .paginate({ filter: { state: 'ACTIVE' }, page: { limit: 100 } })
+    .items()
+    .pipe(
+      Stream.map((instance) => instance.processInstanceKey),
+      Stream.take(500),
+      Stream.runCollect
+    )
+);
+```
+
+Options: `maxPages` (safety cap), `mode` (`auto` | `cursor` | `offset`), and `consistency`
+(forwarded to the first page only — once paging is under way an empty page is
+end-of-results, not a stale read).
 
 ### Effect Job Workers
 
@@ -1340,7 +1374,7 @@ and a `TerminalJobError` becomes `throwJobError` (caught by a BPMN error boundar
 uncaught). Success completes the job with the returned variables. It composes over the same
 activation/backpressure runtime the Promise worker uses — it does not reimplement activation.
 
-<!-- snippet-exempt: uses SDK /effect subpath + optional effect peer not available in examples project -->
+<!-- snippet-source: examples/effect.ts,examples/readme-imports.txt | regions: ReadmeEffectWorkerImport+ReadmeEffectWorker -->
 ```ts
 import { Effect, Schedule } from 'effect';
 import {
@@ -1371,7 +1405,10 @@ const program = Effect.gen(function* () {
         if (yield* isServiceDown()) {
           // Retryable → failJob(retries - 1) with a re-activation backoff.
           return yield* Effect.fail(
-            new RetryableJobError({ message: 'downstream unavailable', retryBackoff: '5 seconds' })
+            new RetryableJobError({
+              message: 'downstream unavailable',
+              retryBackoff: '5 seconds',
+            })
           );
         }
         return { ok: true }; // success → completeJob(variables)
