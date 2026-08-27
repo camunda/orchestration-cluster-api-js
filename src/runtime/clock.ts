@@ -91,6 +91,9 @@ function scheduleLong(ms: number, onElapsed: () => void): () => void {
 export function createLiveClock(source: () => number = Date.now): Clock {
   let lastSource = source();
   let offsetMs = 0;
+  // Forward progress not yet large enough to repay a whole millisecond. Without this,
+  // reads closer together than the divisor floor to zero repayment and never converge.
+  let slewCreditMs = 0;
 
   const now = (): number => {
     const observed = source();
@@ -98,8 +101,12 @@ export function createLiveClock(source: () => number = Date.now): Clock {
     if (observed < lastSource) {
       offsetMs += lastSource - observed;
     } else if (offsetMs > 0) {
-      const forward = observed - lastSource;
-      offsetMs -= Math.min(offsetMs, Math.floor(forward / SLEW_DIVISOR));
+      slewCreditMs += observed - lastSource;
+      const repay = Math.floor(slewCreditMs / SLEW_DIVISOR);
+      if (repay > 0) {
+        slewCreditMs -= repay * SLEW_DIVISOR;
+        offsetMs -= Math.min(offsetMs, repay);
+      }
     }
 
     lastSource = observed;

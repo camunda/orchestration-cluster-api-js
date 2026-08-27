@@ -73,6 +73,28 @@ describe('live clock', () => {
     expect(clock.now() - src.read()).toBe(0);
   });
 
+  // The repayment is a fraction of each forward step. Taken per-call, a step smaller than
+  // the divisor floors to zero, so a clock read often enough never repays anything and the
+  // offset is permanent — the same failure as the naive permanent-offset approach. The
+  // coarse test above cannot see this: its 30s steps are far larger than the divisor.
+  it('converges under frequent small reads, not just coarse ones', () => {
+    const src = settableSource(1_000);
+    const clock = createLiveClock(src.read);
+
+    clock.now();
+    src.set(0);
+    expect(clock.now() - src.read()).toBe(1_000);
+
+    // 1ms per read, the granularity Date.now() actually reports under a busy loop.
+    // Repaying 1000ms at 1/16 of forward progress needs 16s of it; 20s leaves headroom.
+    for (let i = 1; i <= 20_000; i++) {
+      src.set(i);
+      clock.now();
+    }
+
+    expect(clock.now() - src.read()).toBe(0);
+  });
+
   it('never decreases across a source that oscillates', () => {
     const src = settableSource(0);
     const clock = createLiveClock(src.read);
@@ -209,8 +231,13 @@ describe('live clock deadline', () => {
 });
 
 describe('default clock', () => {
-  it('is shared and non-decreasing', () => {
-    expect(liveClock).toBe(liveClock);
+  it('is a shared instance, not a factory', () => {
+    // Consumers that skip injection must land on one clock, so a single absorbed backward
+    // step is slewed once rather than independently per call site.
+    expect(createLiveClock()).not.toBe(liveClock);
+  });
+
+  it('is non-decreasing', () => {
     expect(liveClock.now()).toBeLessThanOrEqual(liveClock.now());
   });
 });
