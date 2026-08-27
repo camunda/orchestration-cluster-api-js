@@ -9,12 +9,21 @@
 // subpath) is the only way to pull `effect` into the runtime graph. The main `.`
 // entry never imports it, so Promise-first users are never forced to adopt Effect.
 
-import { Context, Data, Duration, Effect, Layer, Schedule } from 'effect';
+import { Context, Data, Duration, Effect, Layer, Schedule, Stream } from 'effect';
 import { type CamundaClient, type CamundaOptions, createCamundaClient } from './gen/CamundaClient';
 import {
   EventualConsistencyTimeoutError as RuntimeEventualConsistencyTimeoutError,
   CamundaValidationError as RuntimeValidationError,
 } from './runtime/errors';
+import type { ConsistencyOptions } from './runtime/eventual';
+import {
+  nextPageRequest,
+  type PaginationMode,
+  type Paginator,
+  type SearchBody,
+  type SearchResponse,
+} from './runtime/pagination';
+import type { SearchPaginateOptions } from './runtime/searchPagination';
 
 // --- Tagged domain errors -------------------------------------------------------
 //
@@ -99,16 +108,128 @@ function toDomainError(err: unknown): DomainError {
   return new CamundaGenericError({ message: String(err), cause: err });
 }
 
+// --- Paginated search -----------------------------------------------------------
+//
+// The Promise client attaches a `.paginate` helper to every `search*` operation
+// (`installSearchPagination`), returning a lazy `AsyncIterable` `Paginator`. The
+// Effect client keeps that helper but re-expresses it in Effect terms: pages and
+// items become `Stream`s, and the eager drain becomes an `Effect`.
+//
+// The page-advance *algebra* is shared with the Promise engine — `nextPageRequest`
+// (pure) decides cursor-vs-offset and end-of-results identically for both. Only the
+// driver differs, and it has to: the Promise engine is an async generator advanced
+// by `AbortSignal`, and bridging that into a `Stream` (`Stream.fromAsyncIterable`)
+// pulls through an uninterruptible `Effect.tryPromise`, so a fiber blocked on an
+// in-flight page could not be interrupted. Driving the loop with the Effect search
+// call — which already cancels its `CancelablePromise` on interrupt — keeps the
+// whole stream interruptible.
+
+/** Options for the Effect client's `.paginate`. */
+export interface EffectPaginateOptions<TData = unknown> {
+  /**
+   * Safety cap on pages fetched (default: unbounded). A non-positive value fetches
+   * no pages at all — the cap is enforced *before* the first request.
+   */
+  readonly maxPages?: number;
+  /** How to advance. `auto` prefers a cursor, falls back to offset. */
+  readonly mode?: PaginationMode;
+  /**
+   * Eventual-consistency controls forwarded to the underlying search call. Defaults
+   * to `{ waitUpToMs: 0 }`. Only the **first** page honours this window: once paging
+   * is under way an empty page is end-of-results, not a not-yet-consistent read.
+   */
+  readonly consistency?: ConsistencyOptions<TData>;
+}
+
+/**
+ * The Effect-flavoured counterpart of a {@link Paginator}: the same three views
+ * (`pages` / `items` / `toArray`) over a multi-page search, as `Stream`s and an
+ * `Effect` rather than async iterables and a `Promise`.
+ *
+ * Every view is lazy — a page is fetched only when pulled — and interruptible:
+ * interrupting the fiber cancels the in-flight page request rather than leaving it
+ * to settle unobserved.
+ */
+export interface EffectPaginator<TItem> {
+  /** A `Stream` of whole pages, each fetched lazily as it is pulled. */
+  pages(): Stream.Stream<SearchResponse<TItem>, DomainError>;
+  /** A `Stream` of individual items, flattened across all pages. */
+  items(): Stream.Stream<TItem, DomainError>;
+  /** Eagerly drains every item into an array. Bounded result sets only. */
+  toArray(): Effect.Effect<TItem[], DomainError>;
+}
+
+/** The Effect-returning search call a paginator drives. */
+type EffectSearch = (
+  body: SearchBody,
+  consistencyArg: { consistency: ConsistencyOptions<unknown> }
+) => Effect.Effect<SearchResponse<unknown>, DomainError>;
+
+/** Build the Effect `.paginate` helper for one Effect-returning search operation. */
+function effectifyPaginate(search: EffectSearch) {
+  return (body: SearchBody, opts: EffectPaginateOptions = {}): EffectPaginator<unknown> => {
+    const { consistency, maxPages = Number.POSITIVE_INFINITY, mode = 'auto' } = opts;
+
+    const pagesFrom = (
+      pageBody: SearchBody,
+      remaining: number,
+      isFirstPage: boolean
+    ): Stream.Stream<SearchResponse<unknown>, DomainError> => {
+      if (remaining <= 0) return Stream.empty;
+      // Waiting on eventual consistency only makes sense for the initial query: once
+      // paging forward, an empty page means end-of-results, not an inconsistent read,
+      // so waiting (and its terminal timeout) must not apply to later fetches.
+      const consistencyArg = {
+        consistency: isFirstPage ? (consistency ?? { waitUpToMs: 0 }) : { waitUpToMs: 0 },
+      } as { consistency: ConsistencyOptions<unknown> };
+
+      return Stream.unwrap(
+        search(pageBody, consistencyArg).pipe(
+          Effect.map((response) => {
+            const next = nextPageRequest(pageBody, response, mode);
+            const head = Stream.make(response);
+            return next === null
+              ? head
+              : Stream.concat(head, pagesFrom(next, remaining - 1, false));
+          })
+        )
+      );
+    };
+
+    const pages = () => pagesFrom(body, maxPages, true);
+    const items = () =>
+      pages().pipe(
+        Stream.map((response) => response.items),
+        Stream.flattenIterable
+      );
+
+    return { pages, items, toArray: () => Stream.runCollect(items()) };
+  };
+}
+
 // --- Client shape ---------------------------------------------------------------
 
 /** Keys of `C` whose values are callable. */
 export type FnKeys<C> = { [K in keyof C]: C[K] extends (...a: any) => any ? K : never }[keyof C];
 
+/**
+ * Helpers attached to a client *method* (not to the client), re-expressed in Effect
+ * terms. Resolves to `unknown` — the identity of `&` — for a method that carries none.
+ */
+type EffectifyMethodHelpers<F> = F extends {
+  paginate(body: infer B, opts?: SearchPaginateOptions<infer D>): Paginator<infer I>;
+}
+  ? { paginate(body: B, opts?: EffectPaginateOptions<D>): EffectPaginator<I> }
+  : unknown;
+
+/** Maps a single method to its Effect-returning form, keeping its attached helpers. */
+type EffectifyMethod<F> = F extends (...a: infer A) => infer R
+  ? ((...a: A) => Effect.Effect<Awaited<R>, DomainError, never>) & EffectifyMethodHelpers<F>
+  : never;
+
 /** Maps every method of `C` to an Effect-returning method, preserving non-fn members. */
 export type Effectify<C> = {
-  [K in FnKeys<C>]: C[K] extends (...a: infer A) => infer R
-    ? (...a: A) => Effect.Effect<Awaited<R>, DomainError, never>
-    : never;
+  [K in FnKeys<C>]: EffectifyMethod<C[K]>;
 } & { inner: C } & { [K in Exclude<keyof C, FnKeys<C>>]: C[K] };
 
 /** The Effect-flavoured Camunda client. Every operation returns an `Effect`. */
@@ -134,7 +255,7 @@ export function createCamundaEffectClient(options?: CamundaOptions): CamundaEffe
   const cache = new Map<string | symbol, unknown>();
 
   function wrap(fn: (...a: any[]) => any) {
-    return (...args: any[]) =>
+    const wrapped = (...args: any[]) =>
       Effect.suspend(() => {
         // The generated client can throw *synchronously* (e.g. an eventual
         // endpoint invoked without `consistencyManagement`). Map those to the
@@ -159,6 +280,24 @@ export function createCamundaEffectClient(options?: CamundaOptions): CamundaEffe
           return typeof cancel === 'function' ? Effect.sync(() => cancel.call(r)) : undefined;
         });
       });
+
+    // A fresh arrow carries none of the own properties the runtime attaches to the
+    // original method. Re-attach the ones the client installs, adapted to Effect —
+    // otherwise the Effect client silently loses part of the Promise client's API
+    // (`.paginate` on all ~48 `search*` operations). Guarded by
+    // `tests/effect-client-surface.test.ts`, which fails if a new method-attached
+    // helper appears here without being adapted.
+    //
+    // The Effect paginator drives `wrapped` (this very Effect search call), not the
+    // Promise `.paginate`; the presence of `.paginate` on the original is what marks
+    // this method as a paginated search operation.
+    if (typeof (fn as { paginate?: unknown }).paginate === 'function') {
+      (wrapped as { paginate?: unknown }).paginate = effectifyPaginate(
+        wrapped as unknown as EffectSearch
+      );
+    }
+
+    return wrapped;
   }
 
   const handler: ProxyHandler<any> = {
