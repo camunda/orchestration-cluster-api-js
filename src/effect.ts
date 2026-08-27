@@ -203,7 +203,11 @@ function effectifyPaginate(search: EffectSearch) {
         Stream.flattenIterable
       );
 
-    return { pages, items, toArray: () => Stream.runCollect(items()) };
+    return {
+      pages,
+      items,
+      toArray: () => Stream.runCollect(items()).pipe(Effect.map((chunk) => [...chunk])),
+    };
   };
 }
 

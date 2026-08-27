@@ -124,10 +124,17 @@ describe('Effect client `.paginate`', () => {
     const { fetch: served } = pagedFetch(100, 10);
     let hanging: AbortSignal | undefined;
     let calls = 0;
+    // Deterministic readiness signal: resolved synchronously the moment page 2's
+    // request begins, so we never race a wall-clock timeout on a loaded runner.
+    let markPage2InFlight!: () => void;
+    const page2InFlight = new Promise<void>((resolve) => {
+      markPage2InFlight = resolve;
+    });
     const fetch = async (input: Request): Promise<Response> => {
       calls += 1;
       if (calls === 1) return served(input);
       hanging = input.signal;
+      markPage2InFlight();
       return new Promise<Response>(() => {}); // never settles
     };
 
@@ -138,8 +145,8 @@ describe('Effect client `.paginate`', () => {
       )
     );
 
-    // Let page 1 settle and page 2 go in flight before interrupting.
-    await new Promise((resolve) => setTimeout(resolve, 25));
+    // Wait until page 1 has settled and page 2 is actually in flight before interrupting.
+    await page2InFlight;
     expect(hanging?.aborted).toBe(false);
 
     await Effect.runPromise(Fiber.interrupt(fiber));
