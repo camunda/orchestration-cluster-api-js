@@ -5,6 +5,7 @@ import {
   createCamundaClient,
   type JobActionReceipt,
   type JobKey,
+  liveClock,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region ActivateJobs
@@ -181,10 +182,9 @@ function clockExample() {
       sleep: async (ms) => {
         current += ms;
       },
-      deadline: () => {
-        const controller = new AbortController();
-        return { signal: controller.signal, dispose: () => controller.abort() };
-      },
+      // Deadlines bound liveness rather than pace cadence, so they stay on real time even
+      // when now/sleep are pinned — pinning them would hang instead of timing out.
+      deadline: (ms) => liveClock.deadline(ms),
     },
   });
 
