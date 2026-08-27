@@ -22,7 +22,7 @@
 // subpath, and the `.` entry's runtime graph is asserted Effect-free by
 // `tests/dist-usage.smoke.mjs`.
 
-import { Config, ConfigProvider, Effect, Layer, Option, Redacted, Schema } from 'effect';
+import { Config, ConfigProvider, Effect, Layer, Option, Redacted } from 'effect';
 import { CamundaEffect, type CamundaEffectClient, createCamundaEffectClient } from './effect';
 import type { CamundaOptions } from './gen/CamundaClient';
 import {
@@ -31,13 +31,24 @@ import {
   defaultValue,
   type EnvOverrides,
   type EnvVarKey,
+  type EnvVarValue,
   isSecret,
   requiredWhen,
+  type SecretKey,
   schemaEntry,
 } from './runtime/configSchema';
 
 /** Options accepted alongside `Config`-sourced configuration. */
 export type CamundaConfigLayerOptions = Omit<CamundaOptions, 'config' | 'env'>;
+
+/**
+ * The configuration {@link camundaConfig} resolves: every SCHEMA key mapped to its declared
+ * value type, EXCEPT `secret: true` keys, which remain `Redacted<string>` (never a bare
+ * string) so they cannot be logged or serialised by accident on the way to the client.
+ */
+export type CamundaConfig = Partial<{
+  [K in EnvVarKey]: K extends SecretKey ? Redacted.Redacted<string> : EnvVarValue<K>;
+}>;
 
 // --- SCHEMA -> Config -----------------------------------------------------------
 
@@ -62,74 +73,109 @@ function allAliases(key: EnvVarKey): readonly string[] {
   return [...aliases(key), ...(EXTRA_ALIASES[key] ?? [])];
 }
 
-/** Unsigned integer — rejects negatives, matching `parseInteger`'s `/^[0-9]+$/` in hydration. */
-const UnsignedInt = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0));
+/** Unsigned integers hydrateConfig accepts (`parseInteger`'s `/^[0-9]+$/`). */
+const UNSIGNED_INT = /^[0-9]+$/;
+/** Signed integers hydrateConfig accepts (`parseSignedInteger`'s `/^-?[0-9]+$/`). */
+const SIGNED_INT = /^-?[0-9]+$/;
+/** Boolean spellings hydrateConfig's `parseBoolean` accepts (case-insensitive, trimmed). */
+const BOOLEAN_TRUE = new Set(['true', 'yes', '1', 'on']);
+const BOOLEAN_FALSE = new Set(['false', 'no', '0', 'off']);
 
-/**
- * The `Config` reading one concrete env var `name` as this `key`'s declared type.
- *
- * A `secret: true` key is read as `Config.redacted`, so its value is a `Redacted` for
- * as long as it lives in the config layer — it cannot be printed or serialised by
- * accident on the way to the client.
- */
-function configForName(key: EnvVarKey, name: string): Config.Config<unknown> {
-  if (isSecret(key)) return Config.redacted(name);
-  switch ((schemaEntry(key) as SchemaEntry).type) {
-    case 'boolean':
-      return Config.boolean(name);
-    case 'int':
-      // Unsigned: negative values are a typed config error, not deferred to the client.
-      return Config.schema(UnsignedInt, name);
-    case 'signedInt':
-      return Config.int(name);
-    case 'enum':
-      return Config.literals((schemaEntry(key) as SchemaEntry).choices ?? [], name);
-    default:
-      return Config.string(name);
-  }
+/** A typed `Config.ConfigError` for a present-but-malformed value, in the error channel. */
+function invalidValue(message: string): Config.ConfigError {
+  return new Config.ConfigError(new ConfigProvider.SourceError({ message }));
 }
 
 /**
- * Normalise a resolved value the way `hydrateConfig()` does for string/secret keys:
- * trim surrounding whitespace and treat an empty/whitespace-only value as *unset*
- * (returned as `Option.none`, so the caller falls back to an alias, a SCHEMA default,
- * or a `requiredWhen` failure). `ConfigProvider` already treats a literal empty string
- * as absent; this additionally covers whitespace-only values and trims real ones.
- * Non-string types pass through unchanged.
+ * Coerce an already-trimmed, non-empty raw string to `key`'s declared type, matching the
+ * parsing `hydrateConfig()` performs (`runtime/unifiedConfiguration.ts`):
+ *
+ *   - booleans accept `true/yes/1/on` and `false/no/0/off`, case-insensitively;
+ *   - `int` is unsigned (`/^[0-9]+$/`); `signedInt` may be negative (`/^-?[0-9]+$/`);
+ *   - enums match case-insensitively and canonicalise to the SCHEMA-declared choice.
+ *
+ * A malformed value fails with a typed `Config.ConfigError` rather than being deferred to a
+ * runtime throw inside the client. Secrets never reach here — they stay `Redacted`.
  */
-function normalizeValue(key: EnvVarKey, value: unknown): Option.Option<unknown> {
-  if (isSecret(key)) {
-    const trimmed = Redacted.value(value as Redacted.Redacted<string>).trim();
-    return trimmed === '' ? Option.none() : Option.some(Redacted.make(trimmed));
+function coerceValue(key: EnvVarKey, raw: string): Effect.Effect<unknown, Config.ConfigError> {
+  const entry = schemaEntry(key) as SchemaEntry;
+  switch (entry.type) {
+    case 'boolean': {
+      const v = raw.toLowerCase();
+      if (BOOLEAN_TRUE.has(v)) return Effect.succeed(true);
+      if (BOOLEAN_FALSE.has(v)) return Effect.succeed(false);
+      return Effect.fail(
+        invalidValue(
+          `Invalid boolean value '${raw}' for ${key}. Expected one of true,false,yes,no,1,0,on,off.`
+        )
+      );
+    }
+    case 'int':
+      return UNSIGNED_INT.test(raw)
+        ? Effect.succeed(Number.parseInt(raw, 10))
+        : Effect.fail(
+            invalidValue(
+              `Invalid integer '${raw}' for ${key}. Only unsigned base-10 integers allowed.`
+            )
+          );
+    case 'signedInt':
+      return SIGNED_INT.test(raw)
+        ? Effect.succeed(Number.parseInt(raw, 10))
+        : Effect.fail(
+            invalidValue(
+              `Invalid integer '${raw}' for ${key}. Only base-10 integers (optionally negative) allowed.`
+            )
+          );
+    case 'enum': {
+      const choices = entry.choices ?? [];
+      const match = choices.find((c) => c.toLowerCase() === raw.toLowerCase());
+      return match !== undefined
+        ? Effect.succeed(match)
+        : Effect.fail(
+            invalidValue(
+              `Invalid value '${raw}' for ${key} (expected one of ${choices.join('|')}).`
+            )
+          );
+    }
+    default:
+      return Effect.succeed(raw);
   }
-  if ((schemaEntry(key) as SchemaEntry).type === 'string') {
-    const trimmed = String(value).trim();
-    return trimmed === '' ? Option.none() : Option.some(trimmed);
-  }
-  return Option.some(value);
 }
 
 /**
  * Read the first *present* value for `key`, consulting its canonical name then each legacy
  * alias in precedence order.
  *
- * Semantics match the SDK's own hydration (`runtime/unifiedConfiguration.ts`):
+ * Every name is read as a raw string (a secret via `Config.redacted`, so its plain value is
+ * never materialised outside a `Redacted`), then normalised the way `hydrateConfig()` does:
+ * surrounding whitespace is trimmed and an empty/whitespace-only value is treated as *unset*
+ * (skipped, so a lower-precedence alias or a SCHEMA default applies). Semantics match the
+ * SDK's own hydration (`runtime/unifiedConfiguration.ts`):
  *
- *   - an alias is consulted ONLY when the higher-precedence name is *absent* — a present
- *     but malformed value fails as a typed `Config.ConfigError` rather than being silently
- *     masked by a valid alias (`Config.option` absorbs absence but propagates parse/enum
- *     errors, unlike `Config.orElse`, which recovers from *any* error);
- *   - an empty/whitespace-only string or secret is treated as absent (see {@link normalizeValue}).
+ *   - an alias is consulted ONLY when the higher-precedence name is *absent* — a present but
+ *     malformed value fails as a typed `Config.ConfigError` (via {@link coerceValue}) rather
+ *     than being silently masked by a valid alias;
+ *   - booleans/enums parse case-insensitively and enums canonicalise, so `camundaConfig` is
+ *     neither stricter nor looser than the Promise-side hydration.
  *
  * Resolves to `Option.none` when neither the canonical name nor any alias supplies a value.
  */
 const readKey = (key: EnvVarKey): Effect.Effect<Option.Option<unknown>, Config.ConfigError> =>
   Effect.gen(function* () {
+    const secret = isSecret(key);
     for (const name of [key, ...allAliases(key)]) {
-      const opt = yield* Config.option(configForName(key, name));
+      const raw: Config.Config<string | Redacted.Redacted<string>> = secret
+        ? Config.redacted(name)
+        : Config.string(name);
+      const opt = yield* Config.option(raw);
       if (Option.isNone(opt)) continue;
-      const normalized = normalizeValue(key, opt.value);
-      if (Option.isSome(normalized)) return normalized;
+      const trimmed = (
+        secret ? Redacted.value(opt.value as Redacted.Redacted<string>) : String(opt.value)
+      ).trim();
+      // Empty/whitespace-only is treated as unset: fall through to an alias or a default.
+      if (trimmed === '') continue;
+      if (secret) return Option.some(Redacted.make(trimmed));
+      return Option.some(yield* coerceValue(key, trimmed));
     }
     return Option.none();
   });
@@ -206,7 +252,7 @@ const resolveConfig = Effect.gen(function* () {
     }
   }
 
-  return { effective: effective as EnvOverrides, present };
+  return { effective: effective as CamundaConfig, present };
 });
 
 /**
@@ -219,7 +265,9 @@ const resolveConfig = Effect.gen(function* () {
  * one are omitted when unset, unless a `requiredWhen` controller makes them required —
  * in which case a missing value is a typed config failure, not a runtime throw.
  */
-export const camundaConfig = resolveConfig.pipe(Effect.map(({ effective }) => effective));
+export const camundaConfig: Effect.Effect<CamundaConfig, Config.ConfigError> = resolveConfig.pipe(
+  Effect.map(({ effective }) => effective)
+);
 
 // --- Layer ----------------------------------------------------------------------
 

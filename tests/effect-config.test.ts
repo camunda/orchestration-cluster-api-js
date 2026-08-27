@@ -310,6 +310,90 @@ describe('camundaConfig', () => {
 
     expect(Exit.isFailure(exit)).toBe(true);
   });
+
+  describe('boolean / enum parsing parity with hydrateConfig', () => {
+    // hydrateConfig() parses booleans from true/false/yes/no/1/0/on/off (case-insensitive,
+    // trimmed) and enums case-insensitively (canonicalising to the SCHEMA casing). These
+    // guards stop camundaConfig from silently becoming stricter than the Promise-side
+    // hydration — e.g. by rejecting `TRUE`, `On`, ` true ` or `basic`.
+    it.each([
+      ['true', true],
+      ['TRUE', true],
+      [' true ', true],
+      ['yes', true],
+      ['YES', true],
+      ['1', true],
+      ['on', true],
+      ['ON', true],
+      ['false', false],
+      ['FALSE', false],
+      [' false ', false],
+      ['no', false],
+      ['0', false],
+      ['off', false],
+      ['OFF', false],
+    ])('parses boolean spelling %j as %s', async (raw, expected) => {
+      const config = await Effect.runPromise(
+        withEnv({ CAMUNDA_SUPPORT_LOG_ENABLED: raw }, camundaConfig)
+      );
+      expect(config.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(expected);
+    });
+
+    it('rejects a non-boolean value for a boolean key as a typed ConfigError', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv({ CAMUNDA_SUPPORT_LOG_ENABLED: 'maybe' }, camundaConfig)
+      );
+      expect(Exit.isFailure(exit)).toBe(true);
+    });
+
+    it.each(['BASIC', 'basic', 'Basic', ' basic '])(
+      'matches enum value %j case-insensitively and canonicalises it',
+      async (raw) => {
+        const config = await Effect.runPromise(
+          withEnv(
+            {
+              CAMUNDA_AUTH_STRATEGY: raw,
+              CAMUNDA_BASIC_AUTH_USERNAME: 'demo',
+              CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+            },
+            camundaConfig
+          )
+        );
+        // Canonicalised to the SCHEMA-declared choice regardless of the input casing.
+        expect(config.CAMUNDA_AUTH_STRATEGY).toBe('BASIC');
+      }
+    );
+
+    it('rejects an enum value outside the declared choices as a typed ConfigError', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv({ CAMUNDA_AUTH_STRATEGY: 'TELEPATHY' }, camundaConfig)
+      );
+      expect(Exit.isFailure(exit)).toBe(true);
+    });
+  });
+
+  it('keeps secret keys typed as Redacted on the exported surface', async () => {
+    // Type-level guard for the camundaConfig surface: secret keys must be Redacted<string>,
+    // never a bare string. If resolveConfig were cast back to plain-string values this would
+    // stop compiling (`.trim()` is not a Redacted method), catching the type regression.
+    const config = await Effect.runPromise(
+      withEnv(
+        {
+          CAMUNDA_AUTH_STRATEGY: 'BASIC',
+          CAMUNDA_BASIC_AUTH_USERNAME: 'demo',
+          CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+        },
+        camundaConfig
+      )
+    );
+
+    const password = config.CAMUNDA_BASIC_AUTH_PASSWORD;
+    if (password !== undefined) {
+      // `password` is typed as Redacted<string>: Redacted.value type-checks and recovers it.
+      expect(Redacted.value(password)).toBe('hunter2');
+    }
+    expect(Redacted.isRedacted(password)).toBe(true);
+  });
 });
 
 describe('layerFromConfig', () => {
