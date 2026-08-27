@@ -1,3 +1,10 @@
+# [10.0.0-alpha.39](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.38...v10.0.0-alpha.39) (2026-08-27)
+
+
+### Bug Fixes
+
+* **effect:** keep .paginate on the Effect client, as Streams ([#468](https://github.com/camunda/orchestration-cluster-api-js/issues/468)) ([b61cfbe](https://github.com/camunda/orchestration-cluster-api-js/commit/b61cfbe1b324b0a97bb1a77858c53c4de7156e37))
+
 # [10.0.0-alpha.38](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.37...v10.0.0-alpha.38) (2026-08-27)
 
 
