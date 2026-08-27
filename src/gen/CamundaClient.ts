@@ -29,6 +29,7 @@ import {
 } from '../runtime/retry';
 import { normalizeError } from '../runtime/errors';
 import { BackpressureManager } from '../runtime/backpressure';
+import { type Clock, liveClock } from '../runtime/clock';
 import {
   type AnyVariableSchema,
   collectTypedVariables,
@@ -1442,6 +1443,10 @@ export interface CamundaOptions {
   throwOnError?: boolean;
   // Optional injected SupportLogger (Node-only). If absent, auto-created when enabled via env/config.
   supportLogger?: SupportLogger;
+  // Clock backing SDK-internal cadence (poll loops, backoff, decay). Inject a pinned clock
+  // to drive those loops in tests without waiting for real time. Defaults to the live clock.
+  // Liveness bounds — shutdown drains and request timeouts — deliberately do not use it.
+  clock?: Clock;
 }
 
 export function createCamundaClient(options?: CamundaOptions): CamundaClient {
@@ -1463,6 +1468,7 @@ class CamundaClientBase {
   private _validation: ValidationManager = new ValidationManager({ req: 'none', res: 'none' });
   private _log: Logger = createLogger();
   private _bp: BackpressureManager;
+  private _clock: Clock = liveClock;
   /** Registered job workers created via createJobWorker (lifecycle managed by user). */
   private _workers: any[] = [];
   /** Shared thread pool for all threaded job workers (lazy-initialised on first use). */
@@ -1479,6 +1485,7 @@ class CamundaClientBase {
 
   constructor(opts: CamundaOptions = {}) {
     if (opts.config) this._overrides = { ...opts.config };
+    this._clock = opts.clock ?? liveClock;
     const { config } = hydrateConfig({ overrides: this._overrides, env: opts.env });
     this._config = deepFreeze(config) as Readonly<CamundaConfig>;
     // Initialize per-client logger
@@ -1567,6 +1574,8 @@ class CamundaClientBase {
     // Initialize global backpressure manager with tuned config
     this._bp = new BackpressureManager({
       logger: this._log.scope('bp'),
+      now: () => this._clock.now(),
+      sleep: (ms) => this._clock.sleep(ms),
       config: {
         enabled: this._config.backpressure.enabled,
         observeOnly: this._config.backpressure.observeOnly,
@@ -1822,6 +1831,10 @@ class CamundaClientBase {
     buildBackpressureError: (resp: any) => Error | undefined
   ) {
     return evaluateSdkResponse(raw, { opId, buildBackpressureError });
+  }
+  /** Clock backing SDK-internal cadence. The injected one when supplied, else the live clock. */
+  get clock(): Clock {
+    return this._clock;
   }
   /** Public accessor for current backpressure adaptive limiter state (stable) */
   getBackpressureState() {
