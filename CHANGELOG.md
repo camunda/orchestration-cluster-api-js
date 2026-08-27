@@ -1,3 +1,10 @@
+# [10.0.0-alpha.37](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.36...v10.0.0-alpha.37) (2026-08-27)
+
+
+### Bug Fixes
+
+* **worker:** hand threaded handler modules to import() as file:// URLs ([#465](https://github.com/camunda/orchestration-cluster-api-js/issues/465)) ([8ef060e](https://github.com/camunda/orchestration-cluster-api-js/commit/8ef060e9ed39b33e5ef707520b8ced5d3713494e))
+
 # [10.0.0-alpha.36](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.35...v10.0.0-alpha.36) (2026-08-27)
 
 
