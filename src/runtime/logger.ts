@@ -56,6 +56,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
   function emit(level: LogLevel, scope: string, rawArgs: any[]) {
     if (!isEnabled(level)) return;
     const args = evalArgs(rawArgs);
+    // biome-ignore lint/plugin: log event timestamp: must be real wall-clock to correlate with external logs
     const evt: LogEvent = { level, scope, ts: Date.now(), args };
     if (transport) {
       try {
@@ -72,6 +73,7 @@ export function createLogger(opts: CreateLoggerOptions = {}): Logger {
   }
   function emitCode(level: LogLevel, scope: string, code: string, msg: string, data?: any) {
     if (!isEnabled(level)) return;
+    // biome-ignore lint/plugin: log event timestamp: must be real wall-clock to correlate with external logs
     const evt: LogEvent = { level, scope, ts: Date.now(), args: [msg], code, data };
     if (transport) {
       try {

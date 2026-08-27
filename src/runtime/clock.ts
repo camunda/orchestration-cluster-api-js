@@ -74,6 +74,7 @@ function scheduleLong(ms: number, onElapsed: () => void): () => void {
   const step = (): void => {
     const slice = Math.min(remaining, MAX_TIMER_MS);
     remaining -= slice;
+    // biome-ignore lint/plugin: this is the allowed module -- the single edge where injected cadence meets the platform timer
     timer = setTimeout(remaining > 0 ? step : onElapsed, slice);
   };
 
@@ -107,6 +108,7 @@ function scheduleLong(ms: number, onElapsed: () => void): () => void {
  * callers use the default. Called through rather than captured, so a test that swaps the
  * global `Date` (fake timers) still drives the shared `liveClock`.
  */
+// biome-ignore lint/plugin: this is the allowed module -- the default time source the live clock reads through
 export function createLiveClock(source: () => number = () => Date.now()): Clock {
   let lastSource = source();
   let offsetMs = 0;

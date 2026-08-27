@@ -159,6 +159,7 @@ export function wrapFetch(
     const redactedUrl = redactUrl(origUrl);
     const requestId = `r${(++globalRequestCounter).toString(36)}`;
     const correlationId = opts.correlation ? opts.correlation() : undefined;
+    // biome-ignore lint/plugin: HTTP span start: duration must report real elapsed time; paired with the same source at both ends so the span stays internally consistent
     const start = Date.now();
     // Unsafe deep diagnostics: capture body when log level 'silly'. Only handles readily serializable bodies.
     let bodyPreview: string | undefined;
@@ -224,6 +225,7 @@ export function wrapFetch(
     }
     try {
       const res = await orig(input, init);
+      // biome-ignore lint/plugin: HTTP span end: paired with the start read above, same source
       const end = Date.now();
       const endEvt: TelemetryHttpEndEvent = {
         type: 'http.end',
@@ -297,6 +299,7 @@ export function wrapFetch(
       }
       return res;
     } catch (e: any) {
+      // biome-ignore lint/plugin: HTTP span end on the error path: paired with the start read above, same source
       const end = Date.now();
       const errEvt: TelemetryHttpErrorEvent = {
         type: 'http.error',

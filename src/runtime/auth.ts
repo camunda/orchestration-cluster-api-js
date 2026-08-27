@@ -219,6 +219,7 @@ class OAuthManager {
         if (attempt === 0) {
           const evt: TelemetryAuthStartEvent = {
             type: 'auth.start',
+            // biome-ignore lint/plugin: telemetry event timestamp: must be real wall-clock so emitted events correlate with external logs, and never drives cadence
             ts: Date.now(),
             audience: this.cfg.tokenAudience,
             endpoint: this.cfg.oauth.oauthUrl,
@@ -271,6 +272,7 @@ class OAuthManager {
         try {
           const evt: TelemetryAuthSuccessEvent = {
             type: 'auth.success',
+            // biome-ignore lint/plugin: telemetry event timestamp: must be real wall-clock so emitted events correlate with external logs, and never drives cadence
             ts: Date.now(),
             audience: this.cfg.tokenAudience,
             endpoint: this.cfg.oauth.oauthUrl,
@@ -297,6 +299,7 @@ class OAuthManager {
           // Emit retry event (domain auth) with computed next delay
           this.tHooks?.retry?.({
             type: 'retry',
+            // biome-ignore lint/plugin: telemetry event timestamp: must be real wall-clock so emitted events correlate with external logs, and never drives cadence
             ts: Date.now(),
             attempt,
             nextDelayMs: Math.round(sleep),
@@ -313,6 +316,7 @@ class OAuthManager {
     try {
       const evt: TelemetryAuthErrorEvent = {
         type: 'auth.error',
+        // biome-ignore lint/plugin: telemetry event timestamp: must be real wall-clock so emitted events correlate with external logs, and never drives cadence
         ts: Date.now(),
         audience: this.cfg.tokenAudience,
         endpoint: this.cfg.oauth.oauthUrl,

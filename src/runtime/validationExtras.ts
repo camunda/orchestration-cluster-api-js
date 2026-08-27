@@ -76,10 +76,12 @@ export function detectExtrasAndMaybeThrow(opts: DetectOptions) {
       const h = hash(sig);
       if (!seenCaptures.has(h)) {
         seenCaptures.add(h);
+        // biome-ignore lint/plugin: filename uniqueness for a capture artifact, not cadence
         const file = pathMod.join(settings.captureDir, `${operationId}-${Date.now()}-${h}.json`);
         const payload = {
           operationId,
           extras: extras,
+          // biome-ignore lint/plugin: capture-artifact timestamp: records when the capture was written, not cadence
           timestamp: new Date().toISOString(),
           sample: value,
         };
