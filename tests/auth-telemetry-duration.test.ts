@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createAuthFacade } from '../src/runtime/auth';
-import type { Clock } from '../src/runtime/clock';
+import { type Clock, liveClock } from '../src/runtime/clock';
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 /**
@@ -18,7 +18,9 @@ function pinnedClock(): Clock {
     sleep: async (ms: number) => {
       current += ms;
     },
-    deadline: () => ({ signal: new AbortController().signal, dispose: () => {} }),
+    // A deadline is a liveness bound: it must still fire even when now/sleep are pinned,
+    // or code guarded by one hangs instead of timing out.
+    deadline: (ms) => liveClock.deadline(ms),
   };
 }
 
