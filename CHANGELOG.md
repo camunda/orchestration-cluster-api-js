@@ -1,3 +1,10 @@
+# [10.0.0-alpha.36](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.35...v10.0.0-alpha.36) (2026-08-27)
+
+
+### Bug Fixes
+
+* **examples:** update agent instance examples to the batched-history API ([#466](https://github.com/camunda/orchestration-cluster-api-js/issues/466)) ([cf1bcb4](https://github.com/camunda/orchestration-cluster-api-js/commit/cf1bcb4f32f9612ec69f96a6fa99ae207db38540))
+
 # [10.0.0-alpha.35](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.34...v10.0.0-alpha.35) (2026-08-24)
 
 
