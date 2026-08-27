@@ -32,10 +32,18 @@ const okFetch = (async () =>
   })) as any;
 
 describe('clock injection point', () => {
-  it('defaults to the live clock when none is supplied', () => {
-    const camunda = createCamundaClient({ config: { ...baseConfig } as any });
+  /**
+   * Each client gets its own live clock rather than the shared `liveClock`. Slew state is
+   * mutable and per-clock, so one client absorbing a backward correction would otherwise
+   * shift every other client's deadlines.
+   */
+  it('defaults to a live clock that is not shared between clients', () => {
+    const a = createCamundaClient({ config: { ...baseConfig } as any });
+    const b = createCamundaClient({ config: { ...baseConfig } as any });
 
-    expect(camunda.clock).toBe(liveClock);
+    expect(a.clock).not.toBe(b.clock);
+    expect(a.clock).not.toBe(liveClock);
+    expect(a.clock.now()).toBeGreaterThan(0);
   });
 
   it('exposes the injected clock', () => {

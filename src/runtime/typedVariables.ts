@@ -9,6 +9,7 @@
 // makes the memory-bound behaviour directly unit-testable. The HTTP wiring lives in the client
 // method `searchVariablesAsDto`, which injects a `fetchPage` callback.
 import type { z } from 'zod';
+import { liveClock } from './clock';
 
 /** Base class for all typed-variable errors, so callers can catch the whole family. */
 export class TypedVariablesError extends Error {
@@ -215,8 +216,8 @@ export interface CollectClock {
 }
 
 const realClock: CollectClock = {
-  now: () => Date.now(),
-  sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  now: () => liveClock.now(),
+  sleep: (ms) => liveClock.sleep(ms),
 };
 
 /**

@@ -147,7 +147,7 @@ export class ThreadedJobWorker {
   private _name: string;
   private _activeJobs = 0;
   private _stopped = false;
-  private _pollTimer: any = null;
+  private _pollWait: AbortController | null = null;
   private _inFlightActivation: any = null;
   /** Consecutive failed activation requests; drives the retry backoff, reset on success. */
   private _consecutiveActivationErrors = 0;
@@ -243,8 +243,8 @@ export class ThreadedJobWorker {
 
   stop() {
     this._stopped = true;
-    if (this._pollTimer) clearTimeout(this._pollTimer);
-    this._pollTimer = null;
+    this._pollWait?.abort();
+    this._pollWait = null;
     if (this._inFlightActivation?.cancel) {
       try {
         this._inFlightActivation.cancel();
@@ -260,8 +260,8 @@ export class ThreadedJobWorker {
       {
         haltPolling: () => {
           this._stopped = true;
-          if (this._pollTimer) clearTimeout(this._pollTimer);
-          this._pollTimer = null;
+          this._pollWait?.abort();
+          this._pollWait = null;
         },
         activeJobs: () => this._activeJobs,
         inFlightActivation: () => this._inFlightActivation,
@@ -377,11 +377,19 @@ export class ThreadedJobWorker {
 
   private _scheduleNext(delayMs: number) {
     if (this._stopped) return;
-    this._pollTimer = setTimeout(() => this._poll(), delayMs);
+    const wait = new AbortController();
+    this._pollWait = wait;
+    // Rejects when stop() aborts the wait; nothing to do in that case.
+    void this._client.clock.sleep(delayMs, wait.signal).then(
+      () => {
+        if (this._pollWait === wait) this._pollWait = null;
+        void this._poll();
+      },
+      () => {}
+    );
   }
 
   private async _poll() {
-    this._pollTimer = null;
     if (this._stopped) return;
     // Belt and braces: the start gate already held the first poll until the pool
     // was ready, so by here this resolves immediately.
