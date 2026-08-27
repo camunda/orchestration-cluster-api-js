@@ -1,3 +1,10 @@
+# [10.0.0-alpha.38](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.37...v10.0.0-alpha.38) (2026-08-27)
+
+
+### Features
+
+* **clock:** add the injected clock and wire the client injection point ([#467](https://github.com/camunda/orchestration-cluster-api-js/issues/467)) ([a9b9ae1](https://github.com/camunda/orchestration-cluster-api-js/commit/a9b9ae1db45dedb83c7e7850ac631e003adcabbb)), closes [#450](https://github.com/camunda/orchestration-cluster-api-js/issues/450) [#451](https://github.com/camunda/orchestration-cluster-api-js/issues/451)
+
 # [10.0.0-alpha.37](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.36...v10.0.0-alpha.37) (2026-08-27)
 
 
