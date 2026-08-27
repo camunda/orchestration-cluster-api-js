@@ -772,7 +772,10 @@ The SDK resolves its own cadence — worker poll intervals, retry backoff, event
 polling, backpressure decay — through an injectable clock. Pinning that clock runs all of it
 on virtual time, so tests that would otherwise wait out a 30-second poll finish immediately.
 
-Handlers get the same clock as `job.clock`, narrowed to `now()` and `sleep(ms, signal?)`:
+The clock is configured on the client and available as `client.clock`. Handlers reach it as
+`job.clock`, a narrowed view exposing only `now()` and `sleep(ms, signal?)` — `deadline` is
+withheld because a handler that built one against a pinned clock would hang rather than time
+out:
 
 <!-- snippet-source: examples/readme.ts | regions: ReadmeHandlerClock -->
 
