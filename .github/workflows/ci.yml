@@ -179,7 +179,7 @@ jobs:
         if: failure() && steps.start-camunda.outcome == 'failure'
         run: |
           echo "=== Container status ==="
-          docker ps -a
+          docker ps -a || echo "(docker ps failed - daemon may be unavailable)"
           echo "=== Container logs ==="
           # Every container, not one by name: the service that fails to come up differs per
           # stack. `simple` runs a single `camunda-engine`, while `full` names it
