@@ -170,6 +170,28 @@ function getBackpressureStateExample() {
 }
 //#endregion GetBackpressureState
 
+//#region Clock
+function clockExample() {
+  // A pinned clock drives the SDK's own cadence — worker polling, retry backoff,
+  // backpressure decay — so a test can step through them without waiting in real time.
+  let current = 0;
+  const camunda = createCamundaClient({
+    clock: {
+      now: () => current,
+      sleep: async (ms) => {
+        current += ms;
+      },
+      deadline: () => {
+        const controller = new AbortController();
+        return { signal: controller.signal, dispose: () => controller.abort() };
+      },
+    },
+  });
+
+  console.log(`Clock reads ${camunda.clock.now()}`);
+}
+//#endregion Clock
+
 // Suppress "declared but never read"
 void activateJobsExample;
 void completeJobExample;
@@ -181,3 +203,4 @@ void createThreadedJobWorkerExample;
 void getWorkersExample;
 void stopAllWorkersExample;
 void getBackpressureStateExample;
+void clockExample;
