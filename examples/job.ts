@@ -172,7 +172,7 @@ function getBackpressureStateExample() {
 //#endregion GetBackpressureState
 
 //#region Clock
-function clockExample() {
+async function clockExample() {
   // A pinned clock drives the SDK's own cadence — worker polling, retry backoff,
   // backpressure decay — so a test can step through them without waiting in real time.
   //
@@ -198,8 +198,11 @@ function clockExample() {
     },
   });
 
-  // The test decides when time moves: nothing waiting on this clock proceeds until here.
+  // The test decides when time moves. `release` is only defined once something has called
+  // sleep, so await the waiter after advancing rather than before.
+  const waiting = camunda.clock.sleep(1_000);
   release?.();
+  await waiting;
 
   console.log(`Clock reads ${camunda.clock.now()}`);
 }

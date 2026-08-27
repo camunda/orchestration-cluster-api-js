@@ -34,8 +34,11 @@ function pinnedClock(startMs: number) {
   let current = startMs;
   const clock: Clock = {
     now: () => current,
-    async sleep(ms: number) {
+    // Yields a macrotask: a sleep that settles in the same tick spins any caller that
+    // reschedules itself on resolution, which is the hazard Clock.sleep documents.
+    sleep(ms: number) {
       current += ms;
+      return new Promise<void>((resolve) => setTimeout(resolve, 0));
     },
     deadline: () => ({ signal: new AbortController().signal, dispose: () => {} }),
   };
@@ -50,13 +53,21 @@ const clientWith = (clock?: Clock) =>
   });
 
 describe('job.clock', () => {
-  it('is the client clock instance, not a separate one', () => {
+  it('is backed by the client clock, and narrowed to now/sleep', async () => {
     const clock = pinnedClock(1_000);
     const camunda = clientWith(clock);
 
     const job = enrichActivatedJob(raw, camunda as any, camunda.logger('test') as any);
 
-    expect(job.clock).toBe(camunda.clock);
+    // Not the same object — it is narrowed — but the same underlying time.
+    expect(job.clock.now()).toBe(camunda.clock.now());
+    await camunda.clock.sleep(5_000);
+    expect(job.clock.now()).toBe(6_000);
+    expect(job.clock.now()).toBe(camunda.clock.now());
+
+    // `deadline` is a liveness primitive and must not reach a handler, in JS or TS.
+    expect(Object.keys(job.clock).sort()).toEqual(['now', 'sleep']);
+    expect('deadline' in job.clock).toBe(false);
   });
 
   it('lets a handler read and wait on pinned time', async () => {
@@ -75,7 +86,8 @@ describe('job.clock', () => {
     const camunda = clientWith();
     const job = enrichActivatedJob(raw, camunda as any, camunda.logger('test') as any);
 
-    expect(job.clock).toBe(camunda.clock);
     expect(job.clock.now()).toBeGreaterThan(0);
+    // Same source as the client's own clock, so both report the same instant.
+    expect(Math.abs(job.clock.now() - camunda.clock.now())).toBeLessThan(100);
   });
 });

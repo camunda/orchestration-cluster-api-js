@@ -372,7 +372,9 @@ export class ThreadedJobWorker {
     const data: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(raw)) {
       if (typeof value === 'function') continue;
-      if (key === 'log') continue;
+      // Objects of functions survive the function check but JSON-collapse to `{}`, which
+      // would hand a threaded handler a clock whose methods are gone.
+      if (key === 'log' || key === 'clock') continue;
       data[key] = value;
     }
     return JSON.parse(JSON.stringify(data));

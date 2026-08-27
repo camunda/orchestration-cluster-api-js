@@ -58,7 +58,13 @@ export function enrichActivatedJob(
       job.acknowledged = true;
     }
   };
-  const job: Partial<EnrichedActivatedJob> = { ...raw, log, clock };
+  // Narrowed rather than passed by reference: the type omits `deadline`, and handing over
+  // the client clock would still expose it to JS callers and to anyone reaching past the type.
+  const job: Partial<EnrichedActivatedJob> = {
+    ...raw,
+    log,
+    clock: { now: () => clock.now(), sleep: (ms, signal) => clock.sleep(ms, signal) },
+  };
   job.complete = async (
     variables: { [k: string]: any } = {},
     result?: JobResult
