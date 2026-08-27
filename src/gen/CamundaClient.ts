@@ -56,7 +56,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 244
+// Operations: 243
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -164,10 +164,6 @@ export type createAdminUserInput = createAdminUserBody;
 type createAgentInstanceOptions = Parameters<typeof Sdk.createAgentInstance>[0];
 type createAgentInstanceBody = (NonNullable<createAgentInstanceOptions> extends { body?: infer B } ? B : never);
 export type createAgentInstanceInput = createAgentInstanceBody;
-type createAgentInstanceHistoryItemOptions = Parameters<typeof Sdk.createAgentInstanceHistoryItem>[0];
-type createAgentInstanceHistoryItemBody = (NonNullable<createAgentInstanceHistoryItemOptions> extends { body?: infer B } ? B : never);
-type createAgentInstanceHistoryItemPathParam_agentInstanceKey = (NonNullable<createAgentInstanceHistoryItemOptions> extends { path: { agentInstanceKey: infer P } } ? P : any);
-export type createAgentInstanceHistoryItemInput = createAgentInstanceHistoryItemBody & { agentInstanceKey: createAgentInstanceHistoryItemPathParam_agentInstanceKey };
 type createAuthorizationOptions = Parameters<typeof Sdk.createAuthorization>[0];
 type createAuthorizationBody = (NonNullable<createAuthorizationOptions> extends { body?: infer B } ? B : never);
 export type createAuthorizationInput = createAuthorizationBody;
@@ -4086,78 +4082,6 @@ class CamundaClientBase {
         }
       };
       return this._invokeWithRetry(() => call(), { opId: 'createAgentInstance', exempt: false, retryOverride: options?.retry });
-    });
-  }
-
-  /**
-   * Create agent instance history item
-   *
-   * Appends a single history item to an agent instance's conversation history.
-   * The created item has commitStatus PENDING until the job identified by jobLease
-   * completes successfully, at which point it transitions to COMMITTED. If the job
-   * fails or is superseded by a retry, the item is marked DISCARDED.
-   *
-    *
-   * @operationId createAgentInstanceHistoryItem
-   * @tags Agent instance
-   */
-  createAgentInstanceHistoryItem(input: createAgentInstanceHistoryItemInput, options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.createAgentInstanceHistoryItem>>;
-  createAgentInstanceHistoryItem(arg: any, options?: OperationOptions): CancelablePromise<any> {
-    return toCancelable(async signal => {
-      const { agentInstanceKey, ..._body } = arg || {};
-      let envelope: any = {};
-      envelope.path = { agentInstanceKey };
-      envelope.body = _body;
-      if (this._validation.settings.req !== 'none') {
-        const _schemas = await this._loadSchemas();
-        if (envelope.body !== undefined) {
-          const maybeBody = await this._validation.gateRequest('createAgentInstanceHistoryItem', _schemas.zCreateAgentInstanceHistoryItemBody, envelope.body);
-          if (this._validation.settings.req === 'strict') envelope.body = maybeBody;
-        }
-        if (envelope.path !== undefined) {
-          const maybePath = await this._validation.gateRequest('createAgentInstanceHistoryItem', _schemas.zCreateAgentInstanceHistoryItemPath, envelope.path);
-          if (this._validation.settings.req === 'strict') envelope.path = maybePath;
-        }
-      }
-      const opts: any = { client: this._client, signal, throwOnError: false };
-      if (envelope.path) opts.path = envelope.path;
-      if (envelope.body !== undefined) opts.body = envelope.body;
-      const call = async () => {
-        try {
-        const _raw = await Sdk.createAgentInstanceHistoryItem(opts);
-        let data = this._evaluateResponse(_raw, 'createAgentInstanceHistoryItem', (resp: any) => {
-          const st = resp.status ?? resp.response?.status;
-          if (!st) return undefined;
-          const candidate = st === 429 || st === 503 || st === 500;
-          if (!candidate) return undefined;
-          let prob: any = undefined;
-          if (resp.error && typeof resp.error === 'object') prob = resp.error;
-          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
-          err.status = st; err.name = 'HttpSdkError';
-          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
-          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail)));
-          if (!isBp) err.nonRetryable = true;
-          return err;
-        });
-        const _respSchemaName = 'zCreateAgentInstanceHistoryItemResponse';
-        if (this._isVoidResponse(_respSchemaName)) {
-          data = undefined;
-        }
-        if (this._validation.settings.res !== 'none') {
-          const _schemas = await this._loadSchemas();
-          const _schema = _schemas.zCreateAgentInstanceHistoryItemResponse;
-          if (_schema) {
-            const maybeR = await this._validation.gateResponse('createAgentInstanceHistoryItem', _schema, data);
-            if (this._validation.settings.res === 'strict') data = maybeR;
-          }
-        }
-        return data;
-        } catch(e) {
-          // Defer normalization to outer executeWithHttpRetry boundary
-          throw e;
-        }
-      };
-      return this._invokeWithRetry(() => call(), { opId: 'createAgentInstanceHistoryItem', exempt: false, retryOverride: options?.retry });
     });
   }
 
@@ -20673,11 +20597,9 @@ class CamundaClientBase {
   /**
    * Update agent instance
    *
-   * Updates the mutable fields of an agent instance (status, metric counters, and
-   * tools) and appends a batch of history items to its conversation history. Metric
-   * values are treated as deltas and applied immediately to the aggregate counters.
-   * Tool updates replace the existing tool list. Each history item created for this
-   * request is echoed back in the response.
+   * Updates the status of an agent instance and appends a batch of history items
+   * to its conversation history. Each history item created for this request is
+   * echoed back in the response.
    *
     *
    * @example Update an agent instance

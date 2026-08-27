@@ -349,28 +349,6 @@ export type AgentInstanceResult = {
 };
 
 /**
- * The definition of an agent instance, as submitted at creation. The systemPrompt is a plain
- * string here for backwards compatibility with existing create requests; the read side
- * (AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side
- * string is deprecated and will be removed as part of #58795.
- *
- */
-export type AgentInstanceDefinition = {
-    /**
-     * The LLM model identifier (for example, gpt-4o).
-     */
-    model: string;
-    /**
-     * The LLM provider (for example, openai or anthropic).
-     */
-    provider: string;
-    /**
-     * The system prompt configured for this agent instance.
-     */
-    systemPrompt: string;
-};
-
-/**
  * The definition of an agent instance. Set at creation, but can change later via a
  * CONFIGURATION history item.
  *
@@ -484,27 +462,11 @@ export type AgentInstanceCreationRequest = {
      */
     elementInstanceKey: ElementInstanceKey;
     /**
-     * The agent's initial definition; model, provider, and systemPrompt can
-     * all be changed later via a CONFIGURATION history item. Required when
-     * history is empty or omitted. Must be omitted when history is
-     * non-empty — supply model, provider, and systemPrompt through a
-     * CONFIGURATION item in history instead.
-     *
-     */
-    definition?: AgentInstanceDefinition;
-    /**
-     * Limits for the agent execution. When omitted, all limits default to -1
-     * (no limit). Must be omitted when history is non-empty — supply limits
-     * through a CONFIGURATION item in history instead, if needed.
-     *
-     */
-    limits?: AgentInstanceLimits;
-    /**
      * The key of the job activation during which this creation is being made.
-     * Required whenever history is non-empty.
+     * A creation must always be attributed to the active job that produced it.
      *
      */
-    jobKey?: JobKey | null;
+    jobKey: JobKey;
     /**
      * Opaque lease token received from the job activation response. Disambiguates
      * this activation from any other activation of the same job: if the job is
@@ -512,17 +474,16 @@ export type AgentInstanceCreationRequest = {
      * rather than committed.
      *
      */
-    jobLease?: string | null;
+    jobLease: string;
     /**
      * A batch of history items to append to the agent instance's conversation
      * history, in request order. Each created item is echoed back in the
-     * response's createdHistory, positionally correlated. When non-empty,
-     * model, provider, and systemPrompt (and, if needed, limits) must be
-     * established through a CONFIGURATION item in this batch instead of the
-     * top-level definition/limits, which must then be omitted.
+     * response's createdHistory, positionally correlated. Must include a
+     * CONFIGURATION item establishing model, provider, and systemPrompt (and,
+     * if needed, limits).
      *
      */
-    history?: Array<AgentInstanceHistoryItem> | null;
+    history: Array<AgentInstanceHistoryItem>;
 };
 
 /**
@@ -535,35 +496,9 @@ export type AgentInstanceCreationResult = {
     agentInstanceKey: AgentInstanceKey;
     /**
      * One entry per history item submitted in the request, in request order.
-     * Empty when no history items were submitted.
      *
      */
     createdHistory: Array<AgentInstanceCreatedHistoryItem>;
-};
-
-/**
- * Metric increments to apply to the agent instance aggregate counters. The engine
- * accumulates these deltas into running totals on each UPDATED event. All fields
- * are optional; omit a field to leave the corresponding counter unchanged.
- *
- */
-export type AgentInstanceMetricsDelta = {
-    /**
-     * Increment to apply to the total input token counter.
-     */
-    inputTokens?: number;
-    /**
-     * Increment to apply to the total output token counter.
-     */
-    outputTokens?: number;
-    /**
-     * Increment to apply to the total model call counter.
-     */
-    modelCalls?: number;
-    /**
-     * Increment to apply to the total tool call counter.
-     */
-    toolCalls?: number;
 };
 
 /**
@@ -585,22 +520,11 @@ export type AgentInstanceUpdateRequest = {
      */
     status?: AgentInstanceUpdateStatusEnum;
     /**
-     * Metric increments to apply to the aggregate counters.
-     */
-    metrics?: AgentInstanceMetricsDelta;
-    /**
-     * The complete list of tools available to the agent, replacing any previously
-     * stored tools. When provided, the engine replaces the existing tool list with
-     * this value.
-     *
-     */
-    tools?: Array<AgentTool> | null;
-    /**
      * The key of the job activation during which this update is being made.
-     * Required whenever history is provided.
+     * An update must always be attributed to the active job that produced it.
      *
      */
-    jobKey?: JobKey | null;
+    jobKey: JobKey;
     /**
      * Opaque lease token received from the job activation response. Disambiguates
      * this activation from any other activation of the same job: if the job is
@@ -608,7 +532,7 @@ export type AgentInstanceUpdateRequest = {
      * rather than committed.
      *
      */
-    jobLease?: string | null;
+    jobLease: string;
     /**
      * A batch of history items to append to the agent instance's conversation
      * history, in request order. Each created item is echoed back in the
@@ -687,55 +611,6 @@ export type AdvancedAgentInstanceStatusFilter = {
 };
 
 /**
- * Request to append a single history item to an agent instance's conversation history.
- */
-export type AgentInstanceHistoryItemRequest = {
-    /**
-     * The key of the currently-active element instance.
-     *
-     */
-    elementInstanceKey: ElementInstanceKey;
-    /**
-     * The key of the current job activation during which this history item was produced.
-     */
-    jobKey: JobKey;
-    /**
-     * Opaque lease token received from the job activation response.
-     */
-    jobLease: string;
-    /**
-     * The loop iteration this item belongs to. Omit if not grouping items by
-     * loopIteration.
-     *
-     */
-    loopIteration?: LoopIterationId | null;
-    /**
-     * The role of this history item in the conversation.
-     */
-    role: AgentInstanceHistoryRoleEnum;
-    /**
-     * The content blocks of this history item.
-     */
-    content: Array<AgentInstanceMessageContent>;
-    /**
-     * Tool calls associated with this history item.
-     * For ASSISTANT items: tool calls dispatched by this LLM response.
-     * For TOOL_RESULT items: single-entry array referencing the originating tool call.
-     * Omit for USER items.
-     *
-     */
-    toolCalls?: Array<AgentInstanceToolCall> | null;
-    /**
-     * Per-call token and latency metrics. Present on ASSISTANT items only.
-     */
-    metrics?: AgentInstanceHistoryItemMetrics | null;
-    /**
-     * The agent-side timestamp of when this message was produced.
-     */
-    producedAt: string;
-};
-
-/**
  * A single history item to append to the agent instance's conversation history,
  * submitted as part of the batch on an agent instance update request.
  *
@@ -808,16 +683,6 @@ export type AgentInstanceHistoryItem = {
      *
      */
     systemPrompt?: Array<AgentInstanceMessageContent> | null;
-};
-
-/**
- * Response returned after successfully appending a history item.
- */
-export type AgentInstanceHistoryItemCreationResult = {
-    /**
-     * The system-generated key for the created history item.
-     */
-    historyItemKey: AgentHistoryItemKey;
 };
 
 export type AgentInstanceHistorySearchQuerySortRequest = {
@@ -8867,6 +8732,13 @@ export type MessageSubscriptionSearchQueryResult = SearchQueryResponse & {
 
 export type MessageSubscriptionResult = {
     /**
+     * The business id inherited from the subscribing process instance when this message
+     * subscription was opened. It is `null` when the process instance has no business id, and
+     * for message start event subscriptions, which are not tied to a process instance.
+     *
+     */
+    businessId: BusinessId | null;
+    /**
      * The message subscription key associated with this message subscription.
      */
     messageSubscriptionKey: MessageSubscriptionKey;
@@ -8951,7 +8823,7 @@ export type MessageSubscriptionSearchQuerySortRequest = {
     /**
      * The field to sort by.
      */
-    field: 'messageSubscriptionKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'messageSubscriptionType' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId' | 'toolName' | 'inboundConnectorType';
+    field: 'businessId' | 'messageSubscriptionKey' | 'processDefinitionId' | 'processDefinitionName' | 'processDefinitionVersion' | 'processInstanceKey' | 'elementId' | 'elementInstanceKey' | 'messageSubscriptionState' | 'messageSubscriptionType' | 'lastUpdatedDate' | 'messageName' | 'correlationKey' | 'tenantId' | 'toolName' | 'inboundConnectorType';
     order?: SortOrderEnum;
 };
 
@@ -8970,6 +8842,13 @@ export type MessageSubscriptionSearchQuery = SearchQueryRequest & {
  * Message subscription search filter.
  */
 export type MessageSubscriptionFilter = {
+    /**
+     * Filter by the business id inherited from the subscribing process instance when the
+     * subscription was opened. Supports advanced string filtering, including `$like` with
+     * `*`/`?` wildcards.
+     *
+     */
+    businessId?: StringFilterProperty;
     /**
      * The message subscription key associated with this message subscription.
      */
@@ -11279,7 +11158,7 @@ export type TenantResult = {
 
 export type TenantSearchQuerySortRequest = {
     /**
-     * The field to sort by.
+     * The field to sort by. `key` is deprecated and should not be used anymore.
      */
     field: 'key' | 'name' | 'tenantId';
     order?: SortOrderEnum;
@@ -11446,7 +11325,45 @@ export type UserTaskSearchQuery = SearchQueryRequest & {
 /**
  * User task filter request.
  */
-export type UserTaskFilter = {
+export type UserTaskFilter = UserTaskFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "assignee": "user1",
+     * "$or": [
+     * { "candidateGroup": "groupA" },
+     * { "candidateUser": "user2" }
+     * ]
+     * }
+     * ```
+     * This matches user tasks that:
+     *
+     * <ul style="padding-left: 20px; margin-left: 20px;">
+     * <li style="list-style-type: disc;">are assigned to <em>user1</em></li>
+     * <li style="list-style-type: disc;">and match either:
+     * <ul style="padding-left: 20px; margin-left: 20px;">
+     * <li style="list-style-type: circle;"><code>candidateGroup</code> is <em>groupA</em>, or</li>
+     * <li style="list-style-type: circle;"><code>candidateUser</code> is <em>user2</em></li>
+     * </ul>
+     * </li>
+     * </ul>
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<UserTaskFilterFields>;
+};
+
+/**
+ * User task filter fields.
+ */
+export type UserTaskFilterFields = {
     /**
      * The user task state.
      */
@@ -13401,60 +13318,6 @@ export type SearchAgentInstancesResponses = {
 };
 
 export type SearchAgentInstancesResponse = SearchAgentInstancesResponses[keyof SearchAgentInstancesResponses];
-
-export type CreateAgentInstanceHistoryItemData = {
-    body: AgentInstanceHistoryItemRequest;
-    path: {
-        /**
-         * The key of the agent instance to append the history item to.
-         */
-        agentInstanceKey: AgentInstanceKeyWritable;
-    };
-    query?: never;
-    url: '/agent-instances/{agentInstanceKey}/history';
-};
-
-export type CreateAgentInstanceHistoryItemErrors = {
-    /**
-     * The provided data is not valid.
-     */
-    400: ProblemDetail;
-    /**
-     * The request lacks valid authentication credentials.
-     */
-    401: ProblemDetail;
-    /**
-     * Forbidden. The request is not allowed.
-     */
-    403: ProblemDetail;
-    /**
-     * The agent instance with the given key was not found, or the specified
-     * jobKey does not correspond to an active job.
-     * More details are provided in the response body.
-     *
-     */
-    404: ProblemDetail;
-    /**
-     * An internal error occurred while processing the request.
-     */
-    500: ProblemDetail;
-    /**
-     * The service is currently unavailable. This may happen only on some requests where the system creates backpressure to prevent the server's compute resources from being exhausted, avoiding more severe failures. In this case, the title of the error object contains `RESOURCE_EXHAUSTED`. Clients are recommended to eventually retry those requests after a backoff period. You can learn more about the backpressure mechanism here: https://docs.camunda.io/docs/components/zeebe/technical-concepts/internal-processing/#handling-backpressure .
-     *
-     */
-    503: ProblemDetail;
-};
-
-export type CreateAgentInstanceHistoryItemError = CreateAgentInstanceHistoryItemErrors[keyof CreateAgentInstanceHistoryItemErrors];
-
-export type CreateAgentInstanceHistoryItemResponses = {
-    /**
-     * The history item was created.
-     */
-    201: AgentInstanceHistoryItemCreationResult;
-};
-
-export type CreateAgentInstanceHistoryItemResponse = CreateAgentInstanceHistoryItemResponses[keyof CreateAgentInstanceHistoryItemResponses];
 
 export type SearchAgentInstanceHistoryData = {
     body?: AgentInstanceHistorySearchQuery;
@@ -23819,7 +23682,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:b4a2f42cc11049ba7a3afb7e2bafd332b5c8160b7a4350814a1a9beac8e1f1d3
+// specHash=sha256:518a106a4191aa1cdabbf2e7d62d464fd913571eb84367d02dd80b30604a0e7b
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

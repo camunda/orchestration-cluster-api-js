@@ -16,27 +16,6 @@ export const zAgentDefinitionTypeEnum = z.enum([
 });
 
 /**
- * The definition of an agent instance, as submitted at creation. The systemPrompt is a plain
- * string here for backwards compatibility with existing create requests; the read side
- * (AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side
- * string is deprecated and will be removed as part of #58795.
- *
- */
-export const zAgentInstanceDefinition = z.object({
-    model: z.string().register(z.globalRegistry, {
-        description: 'The LLM model identifier (for example, gpt-4o).'
-    }),
-    provider: z.string().register(z.globalRegistry, {
-        description: 'The LLM provider (for example, openai or anthropic).'
-    }),
-    systemPrompt: z.string().register(z.globalRegistry, {
-        description: 'The system prompt configured for this agent instance.'
-    })
-}).register(z.globalRegistry, {
-    description: 'The definition of an agent instance, as submitted at creation. The systemPrompt is a plain\nstring here for backwards compatibility with existing create requests; the read side\n(AgentInstanceDefinitionResult) exposes it as content blocks instead. This write-side\nstring is deprecated and will be removed as part of #58795.\n'
-});
-
-/**
  * A tool available to the agent.
  */
 export const zAgentTool = z.object({
@@ -112,29 +91,6 @@ export const zAgentInstanceUpdateStatusEnum = z.enum([
     'TOOL_DISCOVERY'
 ]).register(z.globalRegistry, {
     description: 'The status values that can be set on an agent instance via an update request.\n'
-});
-
-/**
- * Metric increments to apply to the agent instance aggregate counters. The engine
- * accumulates these deltas into running totals on each UPDATED event. All fields
- * are optional; omit a field to leave the corresponding counter unchanged.
- *
- */
-export const zAgentInstanceMetricsDelta = z.object({
-    inputTokens: z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
-        description: 'Increment to apply to the total input token counter.'
-    }).optional(),
-    outputTokens: z.coerce.number().int().gte(0).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
-        description: 'Increment to apply to the total output token counter.'
-    }).optional(),
-    modelCalls: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-        description: 'Increment to apply to the total model call counter.'
-    }).optional(),
-    toolCalls: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-        description: 'Increment to apply to the total tool call counter.'
-    }).optional()
-}).register(z.globalRegistry, {
-    description: 'Metric increments to apply to the agent instance aggregate counters. The engine\naccumulates these deltas into running totals on each UPDATED event. All fields\nare optional; omit a field to leave the corresponding counter unchanged.\n'
 });
 
 /**
@@ -3896,11 +3852,13 @@ export const zJobKey = zLongKey;
  */
 export const zAgentInstanceCreationRequest = z.object({
     elementInstanceKey: zElementInstanceKey,
-    definition: zAgentInstanceDefinition.optional(),
-    limits: zAgentInstanceLimits.optional(),
-    jobKey: zJobKey.nullish(),
-    jobLease: z.string().nullish(),
-    history: z.array(zAgentInstanceHistoryItem).nullish()
+    jobKey: zJobKey,
+    jobLease: z.string().register(z.globalRegistry, {
+        description: 'Opaque lease token received from the job activation response. Disambiguates\nthis activation from any other activation of the same job: if the job is\nlater retried, history items submitted under a superseded lease are discarded\nrather than committed.\n'
+    }),
+    history: z.array(zAgentInstanceHistoryItem).min(1).register(z.globalRegistry, {
+        description: 'A batch of history items to append to the agent instance\'s conversation\nhistory, in request order. Each created item is echoed back in the\nresponse\'s createdHistory, positionally correlated. Must include a\nCONFIGURATION item establishing model, provider, and systemPrompt (and,\nif needed, limits).\n'
+    })
 }).register(z.globalRegistry, {
     description: 'Request to create a new agent instance.'
 });
@@ -3912,36 +3870,13 @@ export const zAgentInstanceCreationRequest = z.object({
 export const zAgentInstanceUpdateRequest = z.object({
     elementInstanceKey: zElementInstanceKey,
     status: zAgentInstanceUpdateStatusEnum.optional(),
-    metrics: zAgentInstanceMetricsDelta.optional(),
-    tools: z.array(zAgentTool).nullish(),
-    jobKey: zJobKey.nullish(),
-    jobLease: z.string().nullish(),
+    jobKey: zJobKey,
+    jobLease: z.string().register(z.globalRegistry, {
+        description: 'Opaque lease token received from the job activation response. Disambiguates\nthis activation from any other activation of the same job: if the job is\nlater retried, history items submitted under a superseded lease are discarded\nrather than committed.\n'
+    }),
     history: z.array(zAgentInstanceHistoryItem).nullish()
 }).register(z.globalRegistry, {
     description: 'Request to update the mutable state of an agent instance.\n'
-});
-
-/**
- * Request to append a single history item to an agent instance's conversation history.
- */
-export const zAgentInstanceHistoryItemRequest = z.object({
-    elementInstanceKey: zElementInstanceKey,
-    jobKey: zJobKey,
-    jobLease: z.string().register(z.globalRegistry, {
-        description: 'Opaque lease token received from the job activation response.'
-    }),
-    loopIteration: zLoopIterationId.nullish(),
-    role: zAgentInstanceHistoryRoleEnum,
-    content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
-        description: 'The content blocks of this history item.'
-    }),
-    toolCalls: z.array(zAgentInstanceToolCall).nullish(),
-    metrics: zAgentInstanceHistoryItemMetrics.nullish(),
-    producedAt: z.iso.datetime().register(z.globalRegistry, {
-        description: 'The agent-side timestamp of when this message was produced.'
-    })
-}).register(z.globalRegistry, {
-    description: 'Request to append a single history item to an agent instance\'s conversation history.'
 });
 
 export const zJobWaitStateDetails = zBaseWaitStateDetails.and(z.object({
@@ -4656,7 +4591,7 @@ export const zAgentInstanceCreatedHistoryItem = z.object({
 export const zAgentInstanceCreationResult = z.object({
     agentInstanceKey: zAgentInstanceKey,
     createdHistory: z.array(zAgentInstanceCreatedHistoryItem).register(z.globalRegistry, {
-        description: 'One entry per history item submitted in the request, in request order.\nEmpty when no history items were submitted.\n'
+        description: 'One entry per history item submitted in the request, in request order.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Response returned after successfully creating an agent instance.'
@@ -4671,15 +4606,6 @@ export const zAgentInstanceUpdateResult = z.object({
     })
 }).register(z.globalRegistry, {
     description: 'Response returned after successfully updating an agent instance.'
-});
-
-/**
- * Response returned after successfully appending a history item.
- */
-export const zAgentInstanceHistoryItemCreationResult = z.object({
-    historyItemKey: zAgentHistoryItemKey
-}).register(z.globalRegistry, {
-    description: 'Response returned after successfully appending a history item.'
 });
 
 /**
@@ -5276,6 +5202,7 @@ export const zAdvancedMessageSubscriptionStateFilter = z.object({
 export const zMessageSubscriptionKey = zLongKey;
 
 export const zMessageSubscriptionResult = z.object({
+    businessId: zBusinessId.nullable(),
     messageSubscriptionKey: zMessageSubscriptionKey,
     processDefinitionId: zProcessDefinitionId,
     processDefinitionKey: zProcessDefinitionKey.nullable(),
@@ -6649,6 +6576,7 @@ export const zMappingRuleSearchQueryRequest = zSearchQueryRequest.and(z.object({
 
 export const zMessageSubscriptionSearchQuerySortRequest = z.object({
     field: z.enum([
+        'businessId',
         'messageSubscriptionKey',
         'processDefinitionId',
         'processDefinitionName',
@@ -7516,7 +7444,7 @@ export const zTenantSearchQuerySortRequest = z.object({
         'name',
         'tenantId'
     ]).register(z.globalRegistry, {
-        description: 'The field to sort by.'
+        description: 'The field to sort by. `key` is deprecated and should not be used anymore.'
     }),
     order: zSortOrderEnum.optional()
 });
@@ -9290,6 +9218,7 @@ export const zMessageSubscriptionKeyFilterProperty = z.union([
  * Message subscription search filter.
  */
 export const zMessageSubscriptionFilter = z.object({
+    businessId: zStringFilterProperty.optional(),
     messageSubscriptionKey: zMessageSubscriptionKeyFilterProperty.optional(),
     processDefinitionKey: zProcessDefinitionKeyFilterProperty.optional(),
     processDefinitionId: zStringFilterProperty.optional(),
@@ -9540,9 +9469,9 @@ export const zUserTaskStateFilterProperty = z.union([
 ]);
 
 /**
- * User task filter request.
+ * User task filter fields.
  */
-export const zUserTaskFilter = z.object({
+export const zUserTaskFilterFields = z.object({
     state: zUserTaskStateFilterProperty.optional(),
     assignee: zStringFilterProperty.optional(),
     businessId: zStringFilterProperty.optional(),
@@ -9569,8 +9498,17 @@ export const zUserTaskFilter = z.object({
     elementInstanceKey: zElementInstanceKey.optional(),
     tags: zTagSet.optional()
 }).register(z.globalRegistry, {
-    description: 'User task filter request.'
+    description: 'User task filter fields.'
 });
+
+/**
+ * User task filter request.
+ */
+export const zUserTaskFilter = zUserTaskFilterFields.and(z.object({
+    $or: z.array(zUserTaskFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "assignee": "user1",\n  "$or": [\n    { "candidateGroup": "groupA" },\n    { "candidateUser": "user2" }\n  ]\n}\n```\nThis matches user tasks that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">are assigned to <em>user1</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>candidateGroup</code> is <em>groupA</em>, or</li>\n      <li style="list-style-type: circle;"><code>candidateUser</code> is <em>user2</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }).optional()
+}));
 
 /**
  * User task search query request.
@@ -10233,17 +10171,6 @@ export const zSearchAgentInstancesBody = zAgentInstanceSearchQuery;
  * The agent instance search result.
  */
 export const zSearchAgentInstancesResponse = zAgentInstanceSearchQueryResult;
-
-export const zCreateAgentInstanceHistoryItemBody = zAgentInstanceHistoryItemRequest;
-
-export const zCreateAgentInstanceHistoryItemPath = z.object({
-    agentInstanceKey: zAgentInstanceKeyWritable
-});
-
-/**
- * The history item was created.
- */
-export const zCreateAgentInstanceHistoryItemResponse = zAgentInstanceHistoryItemCreationResult;
 
 export const zSearchAgentInstanceHistoryBody = zAgentInstanceHistorySearchQuery;
 

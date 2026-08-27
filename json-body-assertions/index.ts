@@ -31,11 +31,6 @@ export const RESPONSE_INDEX = {
       '200': 1
     }
   },
-  '/agent-instances/{agentInstanceKey}/history': {
-    'POST': {
-      '201': 1
-    }
-  },
   '/agent-instances/{agentInstanceKey}/history/search': {
     'POST': {
       '200': 1
