@@ -9,6 +9,7 @@ import {
   nextActivationRetryDelayMs,
 } from './pollBackoff';
 import type { ThreadPool } from './threadPool';
+import { stopWorkerGracefully } from './workerGracefulStop';
 import { WorkerStartGate } from './workerStartGate';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
@@ -255,43 +256,19 @@ export class ThreadedJobWorker {
   }
 
   async stopGracefully(opts?: { waitUpToMs?: number; checkIntervalMs?: number }) {
-    const waitUpToMs = opts?.waitUpToMs ?? 5000;
-    const checkIntervalMs = opts?.checkIntervalMs ?? 10;
-    this._stopped = true;
-    if (this._pollTimer) clearTimeout(this._pollTimer);
-    this._pollTimer = null;
-    const start = Date.now();
-    if (this._inFlightActivation) {
-      try {
-        await Promise.race([
-          this._inFlightActivation,
-          new Promise((_, rej) =>
-            setTimeout(() => rej(new Error('activation.wait.timeout')), waitUpToMs)
-          ),
-        ]);
-      } catch (e: any) {
-        if (e && e.message === 'activation.wait.timeout') {
-          this._log.debug('worker.gracefulStop.activationTimeout');
-        }
-      }
-    }
-    while (this._activeJobs > 0 && Date.now() - start < waitUpToMs) {
-      await new Promise((r) => setTimeout(r, checkIntervalMs));
-    }
-    const timedOut = this._activeJobs > 0;
-    if (timedOut) {
-      if (this._inFlightActivation?.cancel) {
-        try {
-          this._inFlightActivation.cancel();
-        } catch {
-          /* ignore */
-        }
-      }
-      this._log.debug('worker.gracefulStop.timeout', { remaining: this._activeJobs });
-    } else {
-      this._log.debug('worker.gracefulStop.done');
-    }
-    return { remainingJobs: this._activeJobs, timedOut };
+    return stopWorkerGracefully(
+      {
+        haltPolling: () => {
+          this._stopped = true;
+          if (this._pollTimer) clearTimeout(this._pollTimer);
+          this._pollTimer = null;
+        },
+        activeJobs: () => this._activeJobs,
+        inFlightActivation: () => this._inFlightActivation,
+        log: this._log,
+      },
+      opts
+    );
   }
 
   // ─── Job dispatch ───

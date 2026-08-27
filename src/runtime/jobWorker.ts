@@ -7,6 +7,7 @@ import {
   DEFAULT_POLL_BACKOFF_MIN_MS,
   nextActivationRetryDelayMs,
 } from './pollBackoff';
+import { stopWorkerGracefully } from './workerGracefulStop';
 import { WorkerStartGate } from './workerStartGate';
 
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
@@ -220,47 +221,19 @@ export class JobWorker {
    * If timeout is reached, falls back to hard stop logic (cancels activation if still pending).
    */
   async stopGracefully(opts?: { waitUpToMs?: number; checkIntervalMs?: number }) {
-    const waitUpToMs = opts?.waitUpToMs ?? 5000;
-    const checkIntervalMs = opts?.checkIntervalMs ?? 10;
-    this._stopped = true;
-    if (this._pollTimer) clearTimeout(this._pollTimer);
-    this._pollTimer = null;
-    const start = Date.now();
-    // Wait for activation to settle (do not cancel proactively)
-    if (this._inFlightActivation) {
-      try {
-        await Promise.race([
-          this._inFlightActivation,
-          new Promise((_, rej) =>
-            setTimeout(() => rej(new Error('activation.wait.timeout')), waitUpToMs)
-          ),
-        ]);
-      } catch (e: any) {
-        // If activation timed out, we will proceed to fallback below.
-        if (e && e.message === 'activation.wait.timeout') {
-          this._log.debug('worker.gracefulStop.activationTimeout');
-        }
-      }
-    }
-    // Wait for active jobs to drain
-    while (this._activeJobs > 0 && Date.now() - start < waitUpToMs) {
-      await new Promise((r) => setTimeout(r, checkIntervalMs));
-    }
-    const timedOut = this._activeJobs > 0;
-    if (timedOut) {
-      // Fallback: cancel activation if still present and perform hard stop semantics.
-      if (this._inFlightActivation?.cancel) {
-        try {
-          this._inFlightActivation.cancel();
-        } catch {
-          /* ignore */
-        }
-      }
-      this._log.debug('worker.gracefulStop.timeout', { remaining: this._activeJobs });
-    } else {
-      this._log.debug('worker.gracefulStop.done');
-    }
-    return { remainingJobs: this._activeJobs, timedOut };
+    return stopWorkerGracefully(
+      {
+        haltPolling: () => {
+          this._stopped = true;
+          if (this._pollTimer) clearTimeout(this._pollTimer);
+          this._pollTimer = null;
+        },
+        activeJobs: () => this._activeJobs,
+        inFlightActivation: () => this._inFlightActivation,
+        log: this._log,
+      },
+      opts
+    );
   }
 
   private _scheduleNext(delayMs: number) {
