@@ -9,7 +9,7 @@ import { Config, ConfigProvider, Effect, Exit, Layer, Redacted } from 'effect';
 import { describe, expect, it } from 'vitest';
 import { CamundaEffect } from '../src/effect';
 import { camundaConfig, layerFromConfig } from '../src/effect-config';
-import { allKeys, defaultValue, isSecret } from '../src/runtime/configSchema';
+import { allKeys, defaultValue, isSecret, schemaEntry } from '../src/runtime/configSchema';
 
 /** Run `effect` with only these values visible as configuration. */
 function withEnv<A, E>(env: Record<string, string>, effect: Effect.Effect<A, E>) {
@@ -74,6 +74,65 @@ describe('camundaConfig', () => {
     );
 
     expect(Exit.isFailure(exit)).toBe(true);
+  });
+
+  describe('integer sign discipline', () => {
+    // Class-scoped guard: `int` is unsigned (parseInteger's /^[0-9]+$/) while `signedInt`
+    // may be negative. A regression that parses every numeric key as a plain Config.int
+    // would let a negative slip past camundaConfig and only fail later inside the client.
+    const numericKeys = () => allKeys().map((k) => [k, schemaEntry(k).type as string] as const);
+
+    it('rejects a negative value for EVERY unsigned int key', async () => {
+      const intKeys = numericKeys().filter(([, t]) => t === 'int');
+      expect(intKeys.length).toBeGreaterThan(0);
+
+      for (const [key] of intKeys) {
+        const exit = await Effect.runPromiseExit(withEnv({ [key]: '-1' }, camundaConfig));
+        expect(Exit.isFailure(exit), `${key} should reject a negative value`).toBe(true);
+      }
+    });
+
+    it('accepts a negative value for EVERY signedInt key', async () => {
+      const signedKeys = numericKeys().filter(([, t]) => t === 'signedInt');
+      expect(signedKeys.length).toBeGreaterThan(0);
+
+      for (const [key] of signedKeys) {
+        const config = (await Effect.runPromise(withEnv({ [key]: '-1' }, camundaConfig))) as Record<
+          string,
+          unknown
+        >;
+        expect(config[key], `${key} should accept a negative value`).toBe(-1);
+      }
+    });
+
+    it('accepts a non-negative value for EVERY unsigned int key', async () => {
+      const intKeys = numericKeys().filter(([, t]) => t === 'int');
+      for (const [key] of intKeys) {
+        const config = (await Effect.runPromise(withEnv({ [key]: '7' }, camundaConfig))) as Record<
+          string,
+          unknown
+        >;
+        expect(config[key], `${key} should accept a non-negative value`).toBe(7);
+      }
+    });
+  });
+
+  it('promotes the legacy CAMUNDA_SUPPORT_LOGGER alias to CAMUNDA_SUPPORT_LOG_ENABLED', async () => {
+    // The alias is a special promotion in unifiedConfiguration.ts, not schema `aliases`
+    // metadata — so the canonical key's default must not mask a legacy-only value.
+    const aliasOnly = await Effect.runPromise(
+      withEnv({ CAMUNDA_SUPPORT_LOGGER: 'true' }, camundaConfig)
+    );
+    expect(aliasOnly.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(true);
+
+    // Canonical value still wins when both are supplied.
+    const both = await Effect.runPromise(
+      withEnv(
+        { CAMUNDA_SUPPORT_LOG_ENABLED: 'false', CAMUNDA_SUPPORT_LOGGER: 'true' },
+        camundaConfig
+      )
+    );
+    expect(both.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(false);
   });
 
   describe('conditional requirements', () => {

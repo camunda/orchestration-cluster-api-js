@@ -22,7 +22,7 @@
 // subpath, and the `.` entry's runtime graph is asserted Effect-free by
 // `tests/dist-usage.smoke.mjs`.
 
-import { Config, Effect, Layer, Redacted } from 'effect';
+import { Config, Effect, Layer, Redacted, Schema } from 'effect';
 import { CamundaEffect, type CamundaEffectClient, createCamundaEffectClient } from './effect';
 import type { CamundaOptions } from './gen/CamundaClient';
 import {
@@ -48,6 +48,24 @@ type SchemaEntry = {
 };
 
 /**
+ * Legacy env vars the SDK's own hydration (`runtime/unifiedConfiguration.ts`) promotes
+ * onto a canonical key OUTSIDE the schema's `aliases` metadata. Without mirroring them
+ * here the canonical key's default would mask the legacy value — setting only the legacy
+ * name would be silently ignored, diverging from the Promise-side hydration.
+ */
+const EXTRA_ALIASES: Partial<Record<EnvVarKey, readonly string[]>> = {
+  CAMUNDA_SUPPORT_LOG_ENABLED: ['CAMUNDA_SUPPORT_LOGGER'],
+};
+
+/** Every legacy fallback name for a key: schema-declared aliases plus {@link EXTRA_ALIASES}. */
+function allAliases(key: EnvVarKey): readonly string[] {
+  return [...aliases(key), ...(EXTRA_ALIASES[key] ?? [])];
+}
+
+/** Unsigned integer — rejects negatives, matching `parseInteger`'s `/^[0-9]+$/` in hydration. */
+const UnsignedInt = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0));
+
+/**
  * The `Config` for a single `SCHEMA` key, including its declared legacy aliases.
  *
  * A `secret: true` key is read as `Config.redacted`, so its value is a `Redacted` for
@@ -63,6 +81,8 @@ function configForKey(key: EnvVarKey): Config.Config<unknown> {
       case 'boolean':
         return Config.boolean(name);
       case 'int':
+        // Unsigned: negative values are a typed config error, not deferred to the client.
+        return Config.schema(UnsignedInt, name);
       case 'signedInt':
         return Config.int(name);
       case 'enum':
@@ -73,8 +93,9 @@ function configForKey(key: EnvVarKey): Config.Config<unknown> {
   };
 
   // Canonical name first, each declared alias as a fallback — matching the precedence
-  // the SDK's own hydration applies (e.g. CAMUNDA_REST_ADDRESS over ZEEBE_REST_ADDRESS).
-  return aliases(key).reduce<Config.Config<unknown>>(
+  // the SDK's own hydration applies (e.g. CAMUNDA_REST_ADDRESS over ZEEBE_REST_ADDRESS,
+  // and CAMUNDA_SUPPORT_LOG_ENABLED over its legacy CAMUNDA_SUPPORT_LOGGER).
+  return allAliases(key).reduce<Config.Config<unknown>>(
     (cfg, alias) => Config.orElse(cfg, () => atName(alias)),
     atName(key)
   );
