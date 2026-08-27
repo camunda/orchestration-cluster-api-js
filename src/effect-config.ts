@@ -147,7 +147,8 @@ function coerceValue(key: EnvVarKey, raw: string): Effect.Effect<unknown, Config
  * alias in precedence order.
  *
  * Every name is read as a raw string (a secret via `Config.redacted`, so its plain value is
- * never materialised outside a `Redacted`), then normalised the way `hydrateConfig()` does:
+ * never *returned* as a plain string — it is unwrapped only transiently to trim, then re-wrapped
+ * in a `Redacted` before it leaves this function), then normalised the way `hydrateConfig()` does:
  * surrounding whitespace is trimmed and an empty/whitespace-only value is treated as *unset*
  * (skipped, so a lower-precedence alias or a SCHEMA default applies). Semantics match the
  * SDK's own hydration (`runtime/unifiedConfiguration.ts`):
@@ -189,7 +190,7 @@ function isRequired(key: EnvVarKey, resolved: Record<string, unknown>): boolean 
 
 /**
  * The typed `Config.ConfigError` raised when a `requiredWhen` key has no usable value —
- * either genuinely unset or present-but-empty/whitespace (which {@link normalizeValue}
+ * either genuinely unset or present-but-empty/whitespace (which {@link readKey}
  * treats as unset). Surfacing it in the error channel keeps a missing required value a
  * typed failure rather than a runtime throw later in the client.
  */

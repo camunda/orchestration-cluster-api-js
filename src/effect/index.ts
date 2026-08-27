@@ -18,6 +18,7 @@ export {
   withTimeout,
 } from '../effect';
 export {
+  type CamundaConfig,
   type CamundaConfigLayerOptions,
   camundaConfig,
   layerFromConfig,
