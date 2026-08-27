@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ClusterRuntimeBackupTakeResult</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#backupid">backupId</a><span class="tsd-signature-symbol">:</span> <a href="index.BackupId.html" class="tsd-signature-type tsd-kind-type-alias">BackupId</a> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#outcome">outcome</a><span class="tsd-signature-symbol">:</span> <a href="index.ClusterRuntimeBackupTakeOutcome.html" class="tsd-signature-type tsd-kind-type-alias">ClusterRuntimeBackupTakeOutcome</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#physicaltenantid">physicalTenantId</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#reason">reason</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6bbad103ef562170468768ae5723d4dac946760d/src/gen/types.gen.ts#L3003">src/gen/types.gen.ts:3003</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/56f085d7a9ffe76cb49cb8fc87e16144a35b8471/src/gen/types.gen.ts#L2868">src/gen/types.gen.ts:2868</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -38,28 +38,28 @@
 <div class="tsd-comment tsd-typography"><p>The id to monitor or delete this physical tenant's backup by: the id it is running under when <code>TRIGGERED</code> — the requested one, or the one the tenant generated when ids are generated — and the requested id to check when <code>UNKNOWN</code>. Null when the tenant is known to be running no backup, and also when an <code>UNKNOWN</code> tenant generates its own ids, because the id it may be running under was never reported; list that tenant's backups to find it.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6bbad103ef562170468768ae5723d4dac946760d/src/gen/types.gen.ts#L3011">src/gen/types.gen.ts:3011</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/56f085d7a9ffe76cb49cb8fc87e16144a35b8471/src/gen/types.gen.ts#L2876">src/gen/types.gen.ts:2876</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="outcome"><span>outcome</span><a href="#outcome" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">outcome</span><span class="tsd-signature-symbol">:</span> <a href="index.ClusterRuntimeBackupTakeOutcome.html" class="tsd-signature-type tsd-kind-type-alias">ClusterRuntimeBackupTakeOutcome</a></div>
 <div class="tsd-comment tsd-typography"><p>What this physical tenant did with the trigger.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6bbad103ef562170468768ae5723d4dac946760d/src/gen/types.gen.ts#L3015">src/gen/types.gen.ts:3015</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/56f085d7a9ffe76cb49cb8fc87e16144a35b8471/src/gen/types.gen.ts#L2880">src/gen/types.gen.ts:2880</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="physicaltenantid"><span>physical<wbr/>Tenant<wbr/>Id</span><a href="#physicaltenantid" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">physicalTenantId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The id of the physical tenant.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6bbad103ef562170468768ae5723d4dac946760d/src/gen/types.gen.ts#L3007">src/gen/types.gen.ts:3007</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/56f085d7a9ffe76cb49cb8fc87e16144a35b8471/src/gen/types.gen.ts#L2872">src/gen/types.gen.ts:2872</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="reason"><span>reason</span><a href="#reason" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">reason</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>Why this physical tenant reported no triggered backup. Null when it was triggered.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/6bbad103ef562170468768ae5723d4dac946760d/src/gen/types.gen.ts#L3019">src/gen/types.gen.ts:3019</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/56f085d7a9ffe76cb49cb8fc87e16144a35b8471/src/gen/types.gen.ts#L2884">src/gen/types.gen.ts:2884</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
