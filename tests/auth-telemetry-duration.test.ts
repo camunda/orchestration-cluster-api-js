@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createAuthFacade } from '../src/runtime/auth';
-import { type Clock, liveClock } from '../src/runtime/clock';
+import { createTestClock } from '../src/runtime/clock';
 import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
 
 /**
@@ -11,18 +11,7 @@ import { hydrateConfig } from '../src/runtime/unifiedConfiguration';
  */
 
 /** Pinned at epoch 0: the worst case for a duration computed against wall time. */
-function pinnedClock(): Clock {
-  let current = 0;
-  return {
-    now: () => current,
-    sleep: async (ms: number) => {
-      current += ms;
-    },
-    // A deadline is a liveness bound: it must still fire even when now/sleep are pinned,
-    // or code guarded by one hangs instead of timing out.
-    deadline: (ms) => liveClock.deadline(ms),
-  };
-}
+const pinnedClock = () => createTestClock({ start: 0 });
 
 function tokenResponse() {
   const body = { access_token: 't1', expires_in: 120 };

@@ -14,7 +14,14 @@ export {
   type Result,
 } from './resultClient';
 export type { BackpressureSeverity } from './runtime/backpressure';
-export { type Clock, createLiveClock, type HandlerClock, liveClock } from './runtime/clock';
+export {
+  type Clock,
+  createLiveClock,
+  createTestClock,
+  type HandlerClock,
+  liveClock,
+  type TestClock,
+} from './runtime/clock';
 export type { SdkError } from './runtime/errors';
 export {
   CamundaValidationError,
