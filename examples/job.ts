@@ -5,6 +5,7 @@ import {
   createCamundaClient,
   type JobActionReceipt,
   type JobKey,
+  liveClock,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region ActivateJobs
@@ -170,6 +171,27 @@ function getBackpressureStateExample() {
 }
 //#endregion GetBackpressureState
 
+//#region Clock
+function clockExample() {
+  // A pinned clock drives the SDK's own cadence — worker polling, retry backoff,
+  // backpressure decay — so a test can step through them without waiting in real time.
+  let current = 0;
+  const camunda = createCamundaClient({
+    clock: {
+      now: () => current,
+      sleep: async (ms) => {
+        current += ms;
+      },
+      // Deadlines bound liveness rather than pace cadence, so they stay on real time even
+      // when now/sleep are pinned — pinning them would hang instead of timing out.
+      deadline: (ms) => liveClock.deadline(ms),
+    },
+  });
+
+  console.log(`Clock reads ${camunda.clock.now()}`);
+}
+//#endregion Clock
+
 // Suppress "declared but never read"
 void activateJobsExample;
 void completeJobExample;
@@ -181,3 +203,4 @@ void createThreadedJobWorkerExample;
 void getWorkersExample;
 void stopAllWorkersExample;
 void getBackpressureStateExample;
+void clockExample;
