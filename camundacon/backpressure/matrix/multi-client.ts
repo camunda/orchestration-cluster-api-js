@@ -604,7 +604,11 @@ async function main() {
   printAggregates(results, producerErrors, producerQueueFull);
 
   // Flush stdout before exiting (piped stdout is async in Node.js)
-  await new Promise<void>((resolve) => process.stdout.write('', resolve));
+  // `write`'s callback is `(err?: Error | null) => void`; passing `resolve` directly
+  // would hand that error argument to a `Promise<void>` resolver.
+  await new Promise<void>((resolve) => {
+    process.stdout.write('', () => resolve());
+  });
   process.exit(0);
 }
 

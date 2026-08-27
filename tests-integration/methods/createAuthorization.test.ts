@@ -1,5 +1,5 @@
 import { describe, it } from 'vitest';
-import { createCamundaClient } from '../../dist';
+import { createCamundaClient, Username } from '../../dist';
 import { validateResponseShape } from '../../json-body-assertions';
 import { isSdkError } from '../../src/runtime/errors';
 
@@ -8,13 +8,13 @@ describe('createAuthorization', () => {
     const _camunda = createCamundaClient();
 
     try {
-      await _camunda.createUser(
-        {
-          username: 'steve',
-          password: 'password123',
-        },
-        { consistency: { waitUpToMs: 0 } }
-      );
+      // `createUser` is not an eventually-consistent endpoint — it takes
+      // `OperationOptions`, which carries no `consistency` block. The
+      // `{ waitUpToMs: 0 }` this used to pass was silently inert.
+      await _camunda.createUser({
+        username: Username.assumeExists('steve'),
+        password: 'password123',
+      });
       const res = await _camunda.createAuthorization({
         ownerId: 'steve',
         permissionTypes: ['READ'],

@@ -43,6 +43,22 @@ const sampleJob = (over: Partial<Job> = {}): Job =>
     ...over,
   }) as unknown as Job;
 
+/**
+ * Charge through the injected gateway, mapping the *service's* failure onto the
+ * worker's typed channel. A handler must produce `JobError` — letting `GatewayDown`
+ * escape is a type error, which is the contract that keeps acknowledgement total.
+ */
+const chargeOrFailJob = (amount: number) =>
+  Effect.gen(function* () {
+    const gateway = yield* PaymentGateway;
+    return yield* gateway.charge(amount).pipe(
+      Effect.catchTag('GatewayDown', (e) =>
+        Effect.fail(new RetryableJobError({ message: `gateway down: ${e.detail}` }))
+      ),
+      Effect.map((receipt) => ({ receipt }))
+    );
+  });
+
 interface Acks {
   completed: Array<{ variables?: unknown }>;
   failed: Array<{ retries?: number; errorMessage?: string }>;
@@ -99,11 +115,7 @@ describe('injecting services into an Effect worker handler', () => {
     const loop = runWorkerLoop({
       type: 'pay',
       concurrency: 1,
-      handler: (job) =>
-        Effect.gen(function* () {
-          const gateway = yield* PaymentGateway;
-          return { receipt: yield* gateway.charge(Number(job.variables.amount)) };
-        }),
+      handler: (job) => chargeOrFailJob(Number(job.variables.amount)),
     });
 
     await Effect.runPromise(runOnce(loop, Layer.mergeAll(fakeCamunda(acks), mockGateway)));
@@ -127,16 +139,7 @@ describe('injecting services into an Effect worker handler', () => {
     const loop = runWorkerLoop({
       type: 'pay',
       concurrency: 1,
-      handler: () =>
-        Effect.gen(function* () {
-          const gateway = yield* PaymentGateway;
-          return yield* gateway.charge(1).pipe(
-            Effect.catchTag('GatewayDown', (e) =>
-              Effect.fail(new RetryableJobError({ message: `gateway down: ${e.detail}` }))
-            ),
-            Effect.map((receipt) => ({ receipt }))
-          );
-        }),
+      handler: () => chargeOrFailJob(1),
     });
 
     await Effect.runPromise(runOnce(loop, Layer.mergeAll(fakeCamunda(acks), downGateway)));
@@ -152,11 +155,7 @@ describe('injecting services into an Effect worker handler', () => {
     const worker = workerLayer({
       type: 'pay',
       concurrency: 1,
-      handler: (job) =>
-        Effect.gen(function* () {
-          const gateway = yield* PaymentGateway;
-          return { receipt: yield* gateway.charge(Number(job.variables.amount)) };
-        }),
+      handler: (job) => chargeOrFailJob(Number(job.variables.amount)),
     });
 
     const run = async (label: string) => {
