@@ -1,3 +1,10 @@
+# [10.0.0-alpha.41](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.40...v10.0.0-alpha.41) (2026-08-27)
+
+
+### Features
+
+* **clock:** expose the injected clock to job handlers as job.clock ([#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476)) ([b59a829](https://github.com/camunda/orchestration-cluster-api-js/commit/b59a82927a6bf630f350ea5bc97680f55c349fe9))
+
 # [10.0.0-alpha.40](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.39...v10.0.0-alpha.40) (2026-08-27)
 
 
