@@ -234,8 +234,18 @@ export function createTestClock(
     return current;
   };
 
+  const requireDuration = (ms: number, label: string): void => {
+    // Virtual time is a running total, so one bad input corrupts every later reading. Fail
+    // at the call rather than let `NaN` propagate into an unrelated assertion.
+    if (!Number.isFinite(ms) || ms < 0) {
+      throw new RangeError(`${label} needs a finite, non-negative duration in ms, got ${ms}`);
+    }
+  };
+
   const sleep = (ms: number, signal?: AbortSignal): Promise<void> =>
     new Promise<void>((resolve, reject) => {
+      requireDuration(ms, 'clock.sleep');
+
       if (signal?.aborted) {
         reject(signal.reason);
         return;
@@ -257,6 +267,9 @@ export function createTestClock(
 
       if (autoAdvance) {
         nextTick(() => {
+          // Gone by now means aborted, or already settled by another waiter's advance.
+          // Either way its wake point must not drag virtual time forward with it.
+          if (!waiters.includes(waiter)) return;
           current = Math.max(current, waiter.at);
           settleDue();
         });
@@ -264,6 +277,7 @@ export function createTestClock(
     });
 
   const advance = async (ms: number): Promise<void> => {
+    requireDuration(ms, 'clock.advance');
     current += ms;
     settleDue();
     // Hand control back to the event loop so the continuations we just released actually
