@@ -1,0 +1,476 @@
+/*
+ * PROTOTYPE — Effect `Config` sourcing for the Camunda client.
+ *
+ * The property under test throughout: the ambient `ConfigProvider` is the *only*
+ * configuration source. Every case injects values with
+ * `ConfigProvider.fromEnv({ env })` and never touches `process.env`.
+ */
+import { Config, ConfigProvider, Effect, Exit, Layer, Redacted } from 'effect';
+import { describe, expect, it } from 'vitest';
+import { CamundaEffect } from '../src/effect';
+import { camundaConfig, layerFromConfig } from '../src/effect-config';
+import { allKeys, defaultValue, isSecret, schemaEntry } from '../src/runtime/configSchema';
+
+/** Run `effect` with only these values visible as configuration. */
+function withEnv<A, E>(env: Record<string, string>, effect: Effect.Effect<A, E>) {
+  return effect.pipe(Effect.provide(ConfigProvider.layer(ConfigProvider.fromEnv({ env }))));
+}
+
+describe('camundaConfig', () => {
+  it('applies SCHEMA defaults for keys the provider does not supply', async () => {
+    const config = await Effect.runPromise(withEnv({}, camundaConfig));
+
+    expect(config.CAMUNDA_AUTH_STRATEGY).toBe('NONE');
+    expect(config.CAMUNDA_REST_ADDRESS).toBe(defaultValue('CAMUNDA_REST_ADDRESS'));
+    expect(config.CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS).toBe(3);
+  });
+
+  it('coerces by declared type, not as strings', async () => {
+    const config = await Effect.runPromise(
+      withEnv(
+        {
+          CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: '7',
+          CAMUNDA_SUPPORT_LOG_ENABLED: 'true',
+          CAMUNDA_WORKER_REQUEST_TIMEOUT: '-1',
+        },
+        camundaConfig
+      )
+    );
+
+    expect(config.CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS).toBe(7);
+    expect(config.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(true);
+    expect(config.CAMUNDA_WORKER_REQUEST_TIMEOUT).toBe(-1);
+  });
+
+  it('honours declared legacy aliases, canonical name winning', async () => {
+    const aliasOnly = await Effect.runPromise(
+      withEnv({ ZEEBE_REST_ADDRESS: 'http://alias:8080' }, camundaConfig)
+    );
+    expect(aliasOnly.CAMUNDA_REST_ADDRESS).toBe('http://alias:8080');
+
+    const both = await Effect.runPromise(
+      withEnv(
+        {
+          CAMUNDA_REST_ADDRESS: 'http://canonical:8080',
+          ZEEBE_REST_ADDRESS: 'http://alias:8080',
+        },
+        camundaConfig
+      )
+    );
+    expect(both.CAMUNDA_REST_ADDRESS).toBe('http://canonical:8080');
+  });
+
+  it('omits optional keys the provider does not supply', async () => {
+    const config = await Effect.runPromise(withEnv({}, camundaConfig));
+
+    // No SCHEMA default and not conditionally required → absent, not undefined-valued.
+    expect('CAMUNDA_OAUTH_SCOPE' in config).toBe(false);
+    expect('CAMUNDA_WORKER_NAME' in config).toBe(false);
+  });
+
+  it('rejects a value outside an enum key’s declared choices', async () => {
+    const exit = await Effect.runPromiseExit(
+      withEnv({ CAMUNDA_AUTH_STRATEGY: 'TELEPATHY' }, camundaConfig)
+    );
+
+    expect(Exit.isFailure(exit)).toBe(true);
+  });
+
+  describe('integer sign discipline', () => {
+    // Class-scoped guard: `int` is unsigned (parseInteger's /^[0-9]+$/) while `signedInt`
+    // may be negative. A regression that parses every numeric key as a plain Config.int
+    // would let a negative slip past camundaConfig and only fail later inside the client.
+    const numericKeys = () => allKeys().map((k) => [k, schemaEntry(k).type as string] as const);
+
+    it('rejects a negative value for EVERY unsigned int key', async () => {
+      const intKeys = numericKeys().filter(([, t]) => t === 'int');
+      expect(intKeys.length).toBeGreaterThan(0);
+
+      for (const [key] of intKeys) {
+        const exit = await Effect.runPromiseExit(withEnv({ [key]: '-1' }, camundaConfig));
+        expect(Exit.isFailure(exit), `${key} should reject a negative value`).toBe(true);
+      }
+    });
+
+    it('accepts a negative value for EVERY signedInt key', async () => {
+      const signedKeys = numericKeys().filter(([, t]) => t === 'signedInt');
+      expect(signedKeys.length).toBeGreaterThan(0);
+
+      for (const [key] of signedKeys) {
+        const config = (await Effect.runPromise(withEnv({ [key]: '-1' }, camundaConfig))) as Record<
+          string,
+          unknown
+        >;
+        expect(config[key], `${key} should accept a negative value`).toBe(-1);
+      }
+    });
+
+    it('accepts a non-negative value for EVERY unsigned int key', async () => {
+      const intKeys = numericKeys().filter(([, t]) => t === 'int');
+      for (const [key] of intKeys) {
+        const config = (await Effect.runPromise(withEnv({ [key]: '7' }, camundaConfig))) as Record<
+          string,
+          unknown
+        >;
+        expect(config[key], `${key} should accept a non-negative value`).toBe(7);
+      }
+    });
+  });
+
+  it('promotes the legacy CAMUNDA_SUPPORT_LOGGER alias to CAMUNDA_SUPPORT_LOG_ENABLED', async () => {
+    // The alias is a special promotion in unifiedConfiguration.ts, not schema `aliases`
+    // metadata — so the canonical key's default must not mask a legacy-only value.
+    const aliasOnly = await Effect.runPromise(
+      withEnv({ CAMUNDA_SUPPORT_LOGGER: 'true' }, camundaConfig)
+    );
+    expect(aliasOnly.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(true);
+
+    // Canonical value still wins when both are supplied.
+    const both = await Effect.runPromise(
+      withEnv(
+        { CAMUNDA_SUPPORT_LOG_ENABLED: 'false', CAMUNDA_SUPPORT_LOGGER: 'true' },
+        camundaConfig
+      )
+    );
+    expect(both.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(false);
+  });
+
+  describe('conditional requirements', () => {
+    it('fails with a ConfigError when a requiredWhen key is missing', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv({ CAMUNDA_AUTH_STRATEGY: 'BASIC' }, camundaConfig)
+      );
+
+      // A typed failure in the error channel — not a throw at client construction.
+      expect(Exit.isFailure(exit)).toBe(true);
+      if (Exit.isFailure(exit)) {
+        const cause = JSON.stringify(exit.cause, null, 0);
+        expect(cause).toMatch(/CAMUNDA_BASIC_AUTH_USERNAME/);
+      }
+    });
+
+    it('leaves the same key optional when the controller does not match', async () => {
+      const config = await Effect.runPromise(
+        withEnv({ CAMUNDA_AUTH_STRATEGY: 'NONE' }, camundaConfig)
+      );
+
+      expect('CAMUNDA_BASIC_AUTH_USERNAME' in config).toBe(false);
+    });
+
+    it('resolves when the required values are supplied', async () => {
+      const config = await Effect.runPromise(
+        withEnv(
+          {
+            CAMUNDA_AUTH_STRATEGY: 'BASIC',
+            CAMUNDA_BASIC_AUTH_USERNAME: 'demo',
+            CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+          },
+          camundaConfig
+        )
+      );
+
+      expect(config.CAMUNDA_AUTH_STRATEGY).toBe('BASIC');
+      expect(config.CAMUNDA_BASIC_AUTH_USERNAME).toBe('demo');
+    });
+  });
+
+  describe('secrets', () => {
+    it('resolves every SCHEMA secret as Redacted, not as a bare string', async () => {
+      const secretKeys = allKeys().filter(isSecret);
+      // Sanity: SCHEMA really does declare secrets, so this cannot pass vacuously.
+      expect(secretKeys.length).toBeGreaterThan(0);
+
+      const env: Record<string, string> = { CAMUNDA_AUTH_STRATEGY: 'BASIC' };
+      for (const key of secretKeys) env[key] = `value-of-${key}`;
+      // Basic auth requires its username too once the strategy is BASIC.
+      env.CAMUNDA_BASIC_AUTH_USERNAME = 'demo';
+
+      const config = (await Effect.runPromise(withEnv(env, camundaConfig))) as Record<
+        string,
+        unknown
+      >;
+
+      for (const key of secretKeys) {
+        expect(Redacted.isRedacted(config[key])).toBe(true);
+      }
+    });
+
+    it('keeps a secret out of the stringified config', async () => {
+      const config = await Effect.runPromise(
+        withEnv(
+          {
+            CAMUNDA_AUTH_STRATEGY: 'BASIC',
+            CAMUNDA_BASIC_AUTH_USERNAME: 'demo',
+            CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+          },
+          camundaConfig
+        )
+      );
+
+      // The whole point of Redacted: an accidental log/serialise cannot leak it.
+      expect(JSON.stringify(config)).not.toContain('hunter2');
+      expect(String(config.CAMUNDA_BASIC_AUTH_PASSWORD)).not.toContain('hunter2');
+
+      // ...while the value is still recoverable at the point of use.
+      expect(Redacted.value(config.CAMUNDA_BASIC_AUTH_PASSWORD as Redacted.Redacted<string>)).toBe(
+        'hunter2'
+      );
+    });
+  });
+
+  it('is derived from SCHEMA — every key is resolvable without editing this module', async () => {
+    const config = (await Effect.runPromise(withEnv({}, camundaConfig))) as Record<string, unknown>;
+
+    // Every SCHEMA key carrying a default must appear; a key added to SCHEMA is
+    // configurable through Config with no edit to effect-config.ts.
+    const missing = allKeys().filter((k) => defaultValue(k) !== undefined && !(k in config));
+    expect(missing).toEqual([]);
+  });
+
+  describe('empty / whitespace handling (parity with hydrateConfig)', () => {
+    // hydrateConfig() trims every value and treats an empty/whitespace-only value as
+    // unset (so SCHEMA defaults apply and requiredWhen can detect a missing required
+    // key). Class-scoped guards over EVERY defaulted string key catch a regression that
+    // would let Config.string accept empty/whitespace or untrimmed values.
+    const defaultedStringKeys = () =>
+      allKeys().filter(
+        (k) => schemaEntry(k).type === 'string' && !isSecret(k) && defaultValue(k) !== undefined
+      );
+
+    it('treats a whitespace-only value as unset for EVERY defaulted string key', async () => {
+      const keys = defaultedStringKeys();
+      expect(keys.length).toBeGreaterThan(0);
+
+      for (const key of keys) {
+        const config = (await Effect.runPromise(
+          withEnv({ [key]: '   ' }, camundaConfig)
+        )) as Record<string, unknown>;
+        expect(config[key], `${key} whitespace should fall back to its SCHEMA default`).toBe(
+          defaultValue(key)
+        );
+      }
+    });
+
+    it('trims surrounding whitespace from EVERY defaulted string key', async () => {
+      for (const key of defaultedStringKeys()) {
+        const config = (await Effect.runPromise(
+          withEnv({ [key]: '  spaced-value  ' }, camundaConfig)
+        )) as Record<string, unknown>;
+        expect(config[key], `${key} should be trimmed`).toBe('spaced-value');
+      }
+    });
+
+    it('fails a whitespace-only required string key as a typed ConfigError', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv(
+          {
+            CAMUNDA_AUTH_STRATEGY: 'BASIC',
+            CAMUNDA_BASIC_AUTH_USERNAME: '   ',
+            CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+          },
+          camundaConfig
+        )
+      );
+
+      expect(Exit.isFailure(exit)).toBe(true);
+      if (Exit.isFailure(exit)) {
+        expect(JSON.stringify(exit.cause)).toMatch(/CAMUNDA_BASIC_AUTH_USERNAME/);
+      }
+    });
+
+    it('trims a secret value, dropping leading/trailing whitespace', async () => {
+      const config = await Effect.runPromise(
+        withEnv(
+          {
+            CAMUNDA_AUTH_STRATEGY: 'BASIC',
+            CAMUNDA_BASIC_AUTH_USERNAME: '  demo  ',
+            CAMUNDA_BASIC_AUTH_PASSWORD: '  hunter2  ',
+          },
+          camundaConfig
+        )
+      );
+
+      expect(config.CAMUNDA_BASIC_AUTH_USERNAME).toBe('demo');
+      expect(Redacted.value(config.CAMUNDA_BASIC_AUTH_PASSWORD as Redacted.Redacted<string>)).toBe(
+        'hunter2'
+      );
+    });
+  });
+
+  it('does not let a valid alias mask an INVALID canonical value', async () => {
+    // hydrateConfig() consults an alias only when the canonical key is UNSET. An invalid
+    // canonical value must fail as a typed ConfigError, not silently fall back to the
+    // alias (Config.option absorbs absence but propagates parse errors, unlike orElse).
+    const exit = await Effect.runPromiseExit(
+      withEnv(
+        { CAMUNDA_SUPPORT_LOG_ENABLED: 'notabool', CAMUNDA_SUPPORT_LOGGER: 'true' },
+        camundaConfig
+      )
+    );
+
+    expect(Exit.isFailure(exit)).toBe(true);
+  });
+
+  describe('boolean / enum parsing parity with hydrateConfig', () => {
+    // hydrateConfig() parses booleans from true/false/yes/no/1/0/on/off (case-insensitive,
+    // trimmed) and enums case-insensitively (canonicalising to the SCHEMA casing). These
+    // guards stop camundaConfig from silently becoming stricter than the Promise-side
+    // hydration — e.g. by rejecting `TRUE`, `On`, ` true ` or `basic`.
+    it.each([
+      ['true', true],
+      ['TRUE', true],
+      [' true ', true],
+      ['yes', true],
+      ['YES', true],
+      ['1', true],
+      ['on', true],
+      ['ON', true],
+      ['false', false],
+      ['FALSE', false],
+      [' false ', false],
+      ['no', false],
+      ['0', false],
+      ['off', false],
+      ['OFF', false],
+    ])('parses boolean spelling %j as %s', async (raw, expected) => {
+      const config = await Effect.runPromise(
+        withEnv({ CAMUNDA_SUPPORT_LOG_ENABLED: raw }, camundaConfig)
+      );
+      expect(config.CAMUNDA_SUPPORT_LOG_ENABLED).toBe(expected);
+    });
+
+    it('rejects a non-boolean value for a boolean key as a typed ConfigError', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv({ CAMUNDA_SUPPORT_LOG_ENABLED: 'maybe' }, camundaConfig)
+      );
+      expect(Exit.isFailure(exit)).toBe(true);
+    });
+
+    it.each(['BASIC', 'basic', 'Basic', ' basic '])(
+      'matches enum value %j case-insensitively and canonicalises it',
+      async (raw) => {
+        const config = await Effect.runPromise(
+          withEnv(
+            {
+              CAMUNDA_AUTH_STRATEGY: raw,
+              CAMUNDA_BASIC_AUTH_USERNAME: 'demo',
+              CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+            },
+            camundaConfig
+          )
+        );
+        // Canonicalised to the SCHEMA-declared choice regardless of the input casing.
+        expect(config.CAMUNDA_AUTH_STRATEGY).toBe('BASIC');
+      }
+    );
+
+    it('rejects an enum value outside the declared choices as a typed ConfigError', async () => {
+      const exit = await Effect.runPromiseExit(
+        withEnv({ CAMUNDA_AUTH_STRATEGY: 'TELEPATHY' }, camundaConfig)
+      );
+      expect(Exit.isFailure(exit)).toBe(true);
+    });
+  });
+
+  it('keeps secret keys typed as Redacted on the exported surface', async () => {
+    // Type-level guard for the camundaConfig surface: secret keys must be Redacted<string>,
+    // never a bare string. If resolveConfig were cast back to plain-string values this would
+    // stop compiling (`.trim()` is not a Redacted method), catching the type regression.
+    const config = await Effect.runPromise(
+      withEnv(
+        {
+          CAMUNDA_AUTH_STRATEGY: 'BASIC',
+          CAMUNDA_BASIC_AUTH_USERNAME: 'demo',
+          CAMUNDA_BASIC_AUTH_PASSWORD: 'hunter2',
+        },
+        camundaConfig
+      )
+    );
+
+    const password = config.CAMUNDA_BASIC_AUTH_PASSWORD;
+    if (password !== undefined) {
+      // `password` is typed as Redacted<string>: Redacted.value type-checks and recovers it.
+      expect(Redacted.value(password)).toBe('hunter2');
+    }
+    expect(Redacted.isRedacted(password)).toBe(true);
+  });
+});
+
+describe('layerFromConfig', () => {
+  it('builds a working client from injected configuration alone', async () => {
+    const layer = layerFromConfig().pipe(
+      Layer.provide(
+        ConfigProvider.layer(
+          ConfigProvider.fromEnv({
+            env: {
+              CAMUNDA_REST_ADDRESS: 'http://injected:8080/v2',
+              CAMUNDA_AUTH_STRATEGY: 'NONE',
+            },
+          })
+        )
+      )
+    );
+
+    const address = await Effect.runPromise(
+      Effect.gen(function* () {
+        const camunda = yield* CamundaEffect;
+        return camunda.inner.config.restAddress;
+      }).pipe(Effect.provide(layer))
+    );
+
+    expect(address).toBe('http://injected:8080/v2');
+  });
+
+  it('forwards only provider-supplied keys as overrides, so SDK inference still fires', async () => {
+    // The Promise client treats `opts.config` as user intent (it decides `userSetStrategy`
+    // and whether to auto-infer OAUTH). Forwarding resolved SCHEMA defaults as overrides
+    // would mark a defaulted CAMUNDA_AUTH_STRATEGY=NONE as user-set and suppress inference.
+    // With only supplied keys forwarded, OAuth creds alone still infer the OAUTH strategy.
+    const layer = layerFromConfig().pipe(
+      Layer.provide(
+        ConfigProvider.layer(
+          ConfigProvider.fromEnv({
+            env: {
+              CAMUNDA_REST_ADDRESS: 'http://injected:8080/v2',
+              CAMUNDA_OAUTH_URL: 'http://oauth:18080/token',
+              CAMUNDA_CLIENT_ID: 'my-id',
+              CAMUNDA_CLIENT_SECRET: 'my-secret',
+            },
+          })
+        )
+      )
+    );
+
+    const strategy = await Effect.runPromise(
+      Effect.gen(function* () {
+        const camunda = yield* CamundaEffect;
+        return camunda.inner.config.auth.strategy;
+      }).pipe(Effect.provide(layer))
+    );
+
+    expect(strategy).toBe('OAUTH');
+  });
+
+  it('surfaces a missing required value as a typed ConfigError, not a construction throw', async () => {
+    const layer = layerFromConfig().pipe(
+      Layer.provide(
+        ConfigProvider.layer(ConfigProvider.fromEnv({ env: { CAMUNDA_AUTH_STRATEGY: 'OAUTH' } }))
+      )
+    );
+
+    const exit = await Effect.runPromiseExit(
+      Effect.gen(function* () {
+        yield* CamundaEffect;
+      }).pipe(Effect.provide(layer))
+    );
+
+    expect(Exit.isFailure(exit)).toBe(true);
+    if (Exit.isFailure(exit)) {
+      const error = Exit.findErrorOption(exit);
+      expect(error._tag).toBe('Some');
+      if (error._tag === 'Some') {
+        expect(error.value).toBeInstanceOf(Config.ConfigError);
+      }
+    }
+  });
+});

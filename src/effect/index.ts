@@ -20,6 +20,12 @@ export {
   withTimeout,
 } from '../effect';
 export {
+  type CamundaConfig,
+  type CamundaConfigLayerOptions,
+  camundaConfig,
+  layerFromConfig,
+} from '../effect-config';
+export {
   type ActivateJobsStreamOptions,
   activateJobsStream,
   type CamundaEffectWorkerHandle,
