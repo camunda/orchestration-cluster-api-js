@@ -165,6 +165,25 @@ export function createLiveClock(source: () => number = () => Date.now()): Clock 
   return { now, sleep, deadline };
 }
 
+/**
+ * Deliberately a macrotask, not a microtask: `Clock.sleep` forbids same-tick resolution
+ * because the worker reschedules its next poll on resolution.
+ */
+function nextTick(fn: () => void): void {
+  // biome-ignore lint/plugin: this is the allowed module -- the deferral a virtual clock is built on
+  setTimeout(fn, 0);
+}
+
+/**
+ * Virtual time is a running total, so one bad input corrupts every later reading. Fail at
+ * the call rather than let `NaN` propagate into an unrelated assertion.
+ */
+function requireDuration(ms: number, label: string): void {
+  if (!Number.isFinite(ms) || ms < 0) {
+    throw new RangeError(`${label} needs a finite, non-negative duration in ms, got ${ms}`);
+  }
+}
+
 /** The clock used when none is injected. */
 export const liveClock: Clock = createLiveClock();
 
@@ -222,24 +241,9 @@ export function createTestClock(
     }
   };
 
-  // Deliberately a macrotask, not a microtask: `Clock.sleep` forbids same-tick resolution
-  // because the worker reschedules its next poll on resolution.
-  const nextTick = (fn: () => void): void => {
-    // biome-ignore lint/plugin: this is the allowed module -- the deferral a virtual clock is built on
-    setTimeout(fn, 0);
-  };
-
   const now = (): number => {
     nowCalls += 1;
     return current;
-  };
-
-  const requireDuration = (ms: number, label: string): void => {
-    // Virtual time is a running total, so one bad input corrupts every later reading. Fail
-    // at the call rather than let `NaN` propagate into an unrelated assertion.
-    if (!Number.isFinite(ms) || ms < 0) {
-      throw new RangeError(`${label} needs a finite, non-negative duration in ms, got ${ms}`);
-    }
   };
 
   const sleep = (ms: number, signal?: AbortSignal): Promise<void> =>
@@ -300,6 +304,95 @@ export function createTestClock(
     },
     get pending() {
       return waiters.length;
+    },
+  };
+}
+
+/**
+ * The two engine clock operations this clock drives. Declared structurally so this module
+ * stays independent of the generated client; `CamundaClient` satisfies it as-is.
+ */
+export interface EngineClockTarget {
+  pinClock(input: { timestamp: number }): PromiseLike<unknown>;
+  resetClock(): PromiseLike<unknown>;
+}
+
+export interface EngineClock extends Clock {
+  /** Pin the engine to an absolute instant and adopt it as this clock's reading. */
+  pin(epochMs: number): Promise<void>;
+  /** Hand the engine back to real time. The local reading stays where it was. */
+  reset(): Promise<void>;
+  /** Durations passed to `sleep`, in call order. */
+  readonly sleeps: readonly number[];
+}
+
+/**
+ * A clock bound to the engine's own clock, so client cadence and engine time advance
+ * together.
+ *
+ * This is the point of the whole exercise. The engine has been pinnable for a long time
+ * (`PUT /clock`), but the SDK's poll loops ran on the platform timer, so the two were
+ * decoupled: you could pin the engine and the worker would still poll on real time. A worker
+ * waiting on something that never becomes ready burned real seconds inside a test that was
+ * otherwise deterministic.
+ *
+ * Here `sleep` does not wait — it moves the engine forward by the requested duration and
+ * returns. A poll loop therefore *drives* engine time rather than racing it, and a test that
+ * would have taken a real minute finishes as fast as the requests complete.
+ *
+ * Intended for tests and embedded scenarios that own the engine. Pinning is global to the
+ * cluster, so never point one of these at an environment shared with anything else.
+ */
+export function createEngineClock(
+  target: EngineClockTarget,
+  options: { start?: number } = {}
+): EngineClock {
+  // biome-ignore lint/plugin: this is the allowed module -- seeding the engine from real time
+  const { start = Date.now() } = options;
+
+  let current = start;
+  const sleeps: number[] = [];
+
+  const pinTo = async (epochMs: number): Promise<void> => {
+    // Clamp rather than trust the caller: a backwards pin would break the monotonicity every
+    // other Clock guarantees, and concurrent sleeps can otherwise land out of order.
+    const next = Math.max(epochMs, current);
+    await target.pinClock({ timestamp: next });
+    current = next;
+  };
+
+  const sleep = async (ms: number, signal?: AbortSignal): Promise<void> => {
+    requireDuration(ms, 'clock.sleep');
+    if (signal?.aborted) throw signal.reason;
+
+    sleeps.push(ms);
+    await pinTo(current + ms);
+
+    // The pin is I/O, so this normally lands on a later tick anyway. Forcing the boundary
+    // keeps the guarantee true against an in-memory target, where the request resolves in a
+    // microtask and a poll loop would otherwise spin.
+    await new Promise<void>((resolve) => nextTick(resolve));
+
+    if (signal?.aborted) throw signal.reason;
+  };
+
+  return {
+    now: () => current,
+    sleep,
+    async pin(epochMs: number) {
+      if (!Number.isFinite(epochMs)) {
+        throw new RangeError(`clock.pin needs a finite epoch-ms instant, got ${epochMs}`);
+      }
+      await pinTo(epochMs);
+    },
+    async reset() {
+      await target.resetClock();
+    },
+    // A deadline bounds liveness, so it stays on real time: a request timeout must fire even
+    // though engine time only moves when something asks it to.
+    deadline: (ms) => liveClock.deadline(ms),
+    get sleeps() {
+      return sleeps;
     },
   };
 }

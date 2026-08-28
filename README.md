@@ -819,6 +819,39 @@ console.log(clock.sleeps); // [30000] — every duration the SDK asked to wait
 having moved time to its wake point — the SDK's loops make progress without the test driving
 them. Set it to `false`, as above, when you need to assert on state *between* two waits.
 
+#### Binding the SDK to the engine clock
+
+`createTestClock` pins the SDK in isolation: the engine carries on at real time. When you are
+testing against a live engine, `createEngineClock` binds the two together so they advance as
+one — `sleep` moves engine time forward via `PUT /clock` instead of waiting:
+
+<!-- snippet-source: examples/readme.ts | regions: ReadmeEngineClock -->
+
+```ts
+// Bind the SDK's cadence to the engine's own clock. `sleep` no longer waits — it moves
+// engine time forward — so a worker polling for something that never arrives advances the
+// engine instead of burning real seconds.
+const client = createCamundaClient();
+const clock = createEngineClock(client, { start: Date.now() });
+const pinned = createCamundaClient({ clock });
+
+await clock.pin(Date.now());
+try {
+  // A minute of engine time. BPMN timers due inside it fire; the test does not wait.
+  await pinned.clock.sleep(60_000);
+} finally {
+  await clock.reset(); // hand the engine back to real time
+}
+```
+
+This is what makes a worker loop deterministic end to end: the poll interval *drives* engine
+time rather than racing it, so a test that would spend a real minute waiting on something
+that never becomes ready finishes as fast as the requests complete.
+
+> [!WARNING]
+> Pinning is global to the cluster. Only point an engine clock at an engine you own —
+> never a shared environment. Always `reset()` in a `finally`.
+
 Prefer `createTestClock` over hand-writing a `Clock`. The contract has clauses that are easy
 to get subtly wrong — most notably that `sleep` must not settle in a microtask, because the
 worker schedules its next poll on resolution and would otherwise spin.

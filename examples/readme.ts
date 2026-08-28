@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import createCamundaClient, {
   createCamundaResultClient,
+  createEngineClock,
   createTestClock,
   GroupId,
   isOk,
@@ -596,6 +597,25 @@ async function _readmeTestClock() {
   //#endregion ReadmeTestClock
 }
 
+async function _readmeEngineClock() {
+  //#region ReadmeEngineClock
+  // Bind the SDK's cadence to the engine's own clock. `sleep` no longer waits — it moves
+  // engine time forward — so a worker polling for something that never arrives advances the
+  // engine instead of burning real seconds.
+  const client = createCamundaClient();
+  const clock = createEngineClock(client, { start: Date.now() });
+  const pinned = createCamundaClient({ clock });
+
+  await clock.pin(Date.now());
+  try {
+    // A minute of engine time. BPMN timers due inside it fire; the test does not wait.
+    await pinned.clock.sleep(60_000);
+  } finally {
+    await clock.reset(); // hand the engine back to real time
+  }
+  //#endregion ReadmeEngineClock
+}
+
 // ---------------------------------------------------------------------------
 // Job Completion Patterns
 // ---------------------------------------------------------------------------
@@ -739,6 +759,7 @@ void _readmeWorkerDefaultsClient;
 void _readmeJobCompletionPatterns;
 void _readmeHandlerClock;
 void _readmeTestClock;
+void _readmeEngineClock;
 void _readmeBackpressureState;
 void _readmeThreadedLifecycle;
 void _readmeThreadedGraceful;
