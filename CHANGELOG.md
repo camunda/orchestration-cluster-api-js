@@ -1,3 +1,10 @@
+# [10.0.0-alpha.43](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.42...v10.0.0-alpha.43) (2026-08-28)
+
+
+### Features
+
+* bind SDK cadence to the engine clock with createEngineClock ([#482](https://github.com/camunda/orchestration-cluster-api-js/issues/482)) ([8770212](https://github.com/camunda/orchestration-cluster-api-js/commit/8770212210097606b3400b8b98b6d2b452b1ff83)), closes [#450](https://github.com/camunda/orchestration-cluster-api-js/issues/450) [#450](https://github.com/camunda/orchestration-cluster-api-js/issues/450) [#467](https://github.com/camunda/orchestration-cluster-api-js/issues/467) [#474](https://github.com/camunda/orchestration-cluster-api-js/issues/474) [#476](https://github.com/camunda/orchestration-cluster-api-js/issues/476) [#477](https://github.com/camunda/orchestration-cluster-api-js/issues/477) [#479](https://github.com/camunda/orchestration-cluster-api-js/issues/479)
+
 # [10.0.0-alpha.42](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.41...v10.0.0-alpha.42) (2026-08-27)
 
 
