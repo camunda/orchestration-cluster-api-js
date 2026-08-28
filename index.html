@@ -669,6 +669,27 @@ process as BPMN timers, where they survive a crash and are visible to operations
 <p><code>autoAdvance</code> defaults to <code>true</code>, where each sleep settles itself on the next macrotask
 having moved time to its wake point — the SDK's loops make progress without the test driving
 them. Set it to <code>false</code>, as above, when you need to assert on state <em>between</em> two waits.</p>
+<h4 id="binding-the-sdk-to-the-engine-clock" class="tsd-anchor-link">Binding the SDK to the engine clock<a href="#binding-the-sdk-to-the-engine-clock" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h4>
+<p><code>createTestClock</code> pins the SDK in isolation: the engine carries on at real time. When you are
+testing against a live engine, <code>createEngineClock</code> binds the two together so they advance as
+one — <code>sleep</code> moves engine time forward via <code>PUT /clock</code> instead of waiting:</p>
+<!-- snippet-source: examples/readme.ts | regions: ReadmeEngineClock -->
+<pre><code class="ts"><span class="hl-3">// Bind the SDK&#39;s cadence to the engine&#39;s own clock. `sleep` no longer waits — it moves</span><br/><span class="hl-3">// engine time forward — so a worker polling for something that never arrives advances the</span><br/><span class="hl-3">// engine instead of burning real seconds.</span><br/><span class="hl-3">//</span><br/><span class="hl-3">// Two clients, deliberately. `client` issues the pins and must stay on the live clock:</span><br/><span class="hl-3">// HTTP retry sleeps on whatever clock its client was given, so pointing the engine clock</span><br/><span class="hl-3">// at its own driver would have a failed pin back off through `sleep`, which issues another</span><br/><span class="hl-3">// pin, and so on.</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">client</span><span class="hl-1"> = </span><span class="hl-0">createCamundaClient</span><span class="hl-1">();</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">clock</span><span class="hl-1"> = </span><span class="hl-0">createEngineClock</span><span class="hl-1">(</span><span class="hl-5">client</span><span class="hl-1">, { </span><span class="hl-5">start:</span><span class="hl-1"> </span><span class="hl-5">Date</span><span class="hl-1">.</span><span class="hl-0">now</span><span class="hl-1">() });</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">pinned</span><span class="hl-1"> = </span><span class="hl-0">createCamundaClient</span><span class="hl-1">({ </span><span class="hl-5">clock</span><span class="hl-1"> });</span><br/><br/><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">clock</span><span class="hl-1">.</span><span class="hl-0">pin</span><span class="hl-1">(</span><span class="hl-5">Date</span><span class="hl-1">.</span><span class="hl-0">now</span><span class="hl-1">());</span><br/><span class="hl-4">try</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-3">// A minute of engine time. BPMN timers due inside it fire; the test does not wait.</span><br/><span class="hl-1">  </span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">pinned</span><span class="hl-1">.</span><span class="hl-5">clock</span><span class="hl-1">.</span><span class="hl-0">sleep</span><span class="hl-1">(</span><span class="hl-8">60_000</span><span class="hl-1">);</span><br/><span class="hl-1">} </span><span class="hl-4">finally</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">clock</span><span class="hl-1">.</span><span class="hl-0">reset</span><span class="hl-1">(); </span><span class="hl-3">// hand the engine back to real time</span><br/><span class="hl-1">}</span>
+</code><button type="button">Copy</button></pre>
+
+<p>This is what makes a worker loop deterministic end to end: the poll interval <em>drives</em> engine
+time rather than racing it, so a test that would spend a real minute waiting on something
+that never becomes ready finishes as fast as the requests complete.</p>
+<div class="tsd-alert tsd-alert-warning"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><use href="assets/icons.svg#icon-alertWarning"></use></svg><span>Warning</span></div><p>
+Pinning is global to the cluster. Only point an engine clock at an engine you own —
+never a shared environment. Always <code>reset()</code> in a <code>finally</code>.</p>
+</div>
+<div class="tsd-alert tsd-alert-important"><div class="tsd-alert-title"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><use href="assets/icons.svg#icon-alertImportant"></use></svg><span>Important</span></div><p>
+The client you hand to <code>createEngineClock</code> must not itself be configured with that clock.
+HTTP retry backs off on whatever clock its client was given, so a self-referential setup
+would have a failed <code>pinClock</code> retry through <code>sleep</code>, which issues another <code>pinClock</code>.
+Keep the driving client on the live clock, as in the example above.</p>
+</div>
 <p>Prefer <code>createTestClock</code> over hand-writing a <code>Clock</code>. The contract has clauses that are easy
 to get subtly wrong — most notably that <code>sleep</code> must not settle in a microtask, because the
 worker schedules its next poll on resolution and would otherwise spin.</p>
@@ -1468,6 +1489,9 @@ from the package entry point.</p>
 <li><a href="#minimal-example"><span>Minimal <wbr/>Example</span></a></li>
 <li><a href="#job-handler-semantics"><span>Job <wbr/>Handler <wbr/>Semantics</span></a></li>
 <li><a href="#deterministic-time-"><span>Deterministic <wbr/>Time ()</span></a></li>
+<li>
+<ul>
+<li><a href="#binding-the-sdk-to-the-engine-clock"><span>Binding the <wbr/>SDK to the engine clock</span></a></li></ul></li>
 <li><a href="#job-corrections-user-task-listeners"><span>Job <wbr/>Corrections (<wbr/>User <wbr/>Task <wbr/>Listeners)</span></a></li>
 <li><a href="#concurrency-backpressure"><span>Concurrency &amp; <wbr/>Backpressure</span></a></li>
 <li><a href="#validation-1"><span>Validation</span></a></li>
