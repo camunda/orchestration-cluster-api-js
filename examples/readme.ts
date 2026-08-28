@@ -602,6 +602,11 @@ async function _readmeEngineClock() {
   // Bind the SDK's cadence to the engine's own clock. `sleep` no longer waits — it moves
   // engine time forward — so a worker polling for something that never arrives advances the
   // engine instead of burning real seconds.
+  //
+  // Two clients, deliberately. `client` issues the pins and must stay on the live clock:
+  // HTTP retry sleeps on whatever clock its client was given, so pointing the engine clock
+  // at its own driver would have a failed pin back off through `sleep`, which issues another
+  // pin, and so on.
   const client = createCamundaClient();
   const clock = createEngineClock(client, { start: Date.now() });
   const pinned = createCamundaClient({ clock });

@@ -85,7 +85,66 @@ describe('createEngineClock binds client cadence to engine time', () => {
     await clock.pin(1_000);
 
     expect(clock.now()).toBe(5_000);
-    expect(engine.pins).toEqual([5_000]);
+    // Already past that instant, so there is nothing to tell the engine.
+    expect(engine.pins).toEqual([]);
+  });
+
+  describe('concurrent pins', () => {
+    // `current` is read before the pin and written after it. Without serialisation two
+    // overlapping callers compute from the same stale reading, so a late-resolving earlier
+    // pin can land last and drag engine time backwards.
+    it('applies overlapping sleeps in order and never moves time backwards', async () => {
+      const order: number[] = [];
+      const target: EngineClockTarget = {
+        async pinClock(input) {
+          // Longer jumps answer slower, so the naive version finishes on the earlier value.
+          await new Promise((resolve) => setTimeout(resolve, input.timestamp > 2_000 ? 0 : 15));
+          order.push(input.timestamp);
+          return {};
+        },
+        async resetClock() {
+          return {};
+        },
+      };
+      const clock = createEngineClock(target, { start: 0 });
+
+      await Promise.all([clock.sleep(5_000), clock.sleep(1_000)]);
+
+      expect(clock.now()).toBe(5_000);
+      expect(order).toEqual([...order].sort((a, b) => a - b));
+    });
+
+    it('settles overlapping sleeps on the later wake point rather than summing them', async () => {
+      const engine = fakeEngine();
+      const clock = createEngineClock(engine.target, { start: 0 });
+
+      // Two 1s sleeps that overlap are 1s of elapsed time, exactly as on a real clock.
+      await Promise.all([clock.sleep(1_000), clock.sleep(1_000)]);
+
+      expect(clock.now()).toBe(1_000);
+    });
+
+    it('keeps working after a failed pin', async () => {
+      let failNext = true;
+      const target: EngineClockTarget = {
+        async pinClock() {
+          if (failNext) {
+            failNext = false;
+            throw new Error('engine unreachable');
+          }
+          return {};
+        },
+        async resetClock() {
+          return {};
+        },
+      };
+      const clock = createEngineClock(target, { start: 0 });
+
+      await expect(clock.sleep(1_000)).rejects.toThrow('engine unreachable');
+      await clock.sleep(1_000);
+
+      expect(clock.now()).toBe(1_000);
+    });
   });
 
   it('releases the engine on reset', async () => {

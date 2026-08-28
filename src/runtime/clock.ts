@@ -342,6 +342,10 @@ export interface EngineClock extends Clock {
  *
  * Intended for tests and embedded scenarios that own the engine. Pinning is global to the
  * cluster, so never point one of these at an environment shared with anything else.
+ *
+ * `target` must be a client that is *not* itself configured with this clock. The client's
+ * HTTP retry sleeps on its injected clock, so a self-referential setup would have a failed
+ * `pinClock` back off through `sleep`, which issues another `pinClock`, and so on.
  */
 export function createEngineClock(
   target: EngineClockTarget,
@@ -352,14 +356,27 @@ export function createEngineClock(
 
   let current = start;
   const sleeps: number[] = [];
+  let queue: Promise<unknown> = Promise.resolve();
 
-  const pinTo = async (epochMs: number): Promise<void> => {
-    // Clamp rather than trust the caller: a backwards pin would break the monotonicity every
-    // other Clock guarantees, and concurrent sleeps can otherwise land out of order.
-    const next = Math.max(epochMs, current);
-    await target.pinClock({ timestamp: next });
-    current = next;
+  // `current` is read before an await and written after it, so two overlapping callers would
+  // otherwise both compute from the same stale reading -- collapsing two advances into one,
+  // or letting an earlier pin land last and drag engine time backwards. Serialising keeps
+  // every read-modify-write whole.
+  const enqueue = (fn: () => Promise<void>): Promise<void> => {
+    const run = queue.then(fn, fn);
+    // Detach the failure: one unreachable engine must not poison every later pin.
+    queue = run.catch(() => {});
+    return run;
   };
+
+  const pinTo = (epochMs: number): Promise<void> =>
+    enqueue(async () => {
+      // Forward only. Overlapping sleeps settle on the later of their wake points, as they
+      // would on a real clock -- they do not sum.
+      if (epochMs <= current) return;
+      await target.pinClock({ timestamp: epochMs });
+      current = epochMs;
+    });
 
   const sleep = async (ms: number, signal?: AbortSignal): Promise<void> => {
     requireDuration(ms, 'clock.sleep');

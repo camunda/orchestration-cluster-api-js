@@ -831,6 +831,11 @@ one — `sleep` moves engine time forward via `PUT /clock` instead of waiting:
 // Bind the SDK's cadence to the engine's own clock. `sleep` no longer waits — it moves
 // engine time forward — so a worker polling for something that never arrives advances the
 // engine instead of burning real seconds.
+//
+// Two clients, deliberately. `client` issues the pins and must stay on the live clock:
+// HTTP retry sleeps on whatever clock its client was given, so pointing the engine clock
+// at its own driver would have a failed pin back off through `sleep`, which issues another
+// pin, and so on.
 const client = createCamundaClient();
 const clock = createEngineClock(client, { start: Date.now() });
 const pinned = createCamundaClient({ clock });
@@ -851,6 +856,12 @@ that never becomes ready finishes as fast as the requests complete.
 > [!WARNING]
 > Pinning is global to the cluster. Only point an engine clock at an engine you own —
 > never a shared environment. Always `reset()` in a `finally`.
+
+> [!IMPORTANT]
+> The client you hand to `createEngineClock` must not itself be configured with that clock.
+> HTTP retry backs off on whatever clock its client was given, so a self-referential setup
+> would have a failed `pinClock` retry through `sleep`, which issues another `pinClock`.
+> Keep the driving client on the live clock, as in the example above.
 
 Prefer `createTestClock` over hand-writing a `Clock`. The contract has clauses that are easy
 to get subtly wrong — most notably that `sleep` must not settle in a microtask, because the
