@@ -16,8 +16,11 @@ export {
 export type { BackpressureSeverity } from './runtime/backpressure';
 export {
   type Clock,
+  createEngineClock,
   createLiveClock,
   createTestClock,
+  type EngineClock,
+  type EngineClockTarget,
   type HandlerClock,
   liveClock,
   type TestClock,
