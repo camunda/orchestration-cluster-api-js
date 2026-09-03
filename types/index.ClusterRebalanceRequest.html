@@ -16,7 +16,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">ClusterRebalanceRequest</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#leaderwaittimeout">leaderWaitTimeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#maxtransferattempts">maxTransferAttempts</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#replicationlagthreshold">replicationLagThreshold</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#replicationtimeout">replicationTimeout</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/1e7a19f4b4b4ff6ed67a3cef608ccf4fedb3fb18/src/gen/types.gen.ts#L3039">src/gen/types.gen.ts:3039</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L3039">src/gen/types.gen.ts:3039</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -38,28 +38,28 @@
 <div class="tsd-comment tsd-typography"><p>How long the coordinator waits for a partition without a leader to acquire one before reporting <code>NO_LEADER</code> and moving on (as a positive ISO-8601 duration).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/1e7a19f4b4b4ff6ed67a3cef608ccf4fedb3fb18/src/gen/types.gen.ts#L3055">src/gen/types.gen.ts:3055</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L3055">src/gen/types.gen.ts:3055</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="maxtransferattempts"><code class="tsd-tag">Optional</code><span>max<wbr/>Transfer<wbr/>Attempts</span><a href="#maxtransferattempts" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">maxTransferAttempts</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>How many times a current leader may prompt the desired leader to take over leadership before giving up.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/1e7a19f4b4b4ff6ed67a3cef608ccf4fedb3fb18/src/gen/types.gen.ts#L3051">src/gen/types.gen.ts:3051</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L3051">src/gen/types.gen.ts:3051</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="replicationlagthreshold"><code class="tsd-tag">Optional</code><span>replication<wbr/>Lag<wbr/>Threshold</span><a href="#replicationlagthreshold" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">replicationLagThreshold</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>The highest replication lag (in bytes) that a desired leader may have for its transfer to be accepted.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/1e7a19f4b4b4ff6ed67a3cef608ccf4fedb3fb18/src/gen/types.gen.ts#L3043">src/gen/types.gen.ts:3043</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L3043">src/gen/types.gen.ts:3043</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="replicationtimeout"><code class="tsd-tag">Optional</code><span>replication<wbr/>Timeout</span><a href="#replicationtimeout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">replicationTimeout</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>How long a partition may stay frozen waiting for its desired leader to catch up (as a positive ISO-8601 duration).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/1e7a19f4b4b4ff6ed67a3cef608ccf4fedb3fb18/src/gen/types.gen.ts#L3047">src/gen/types.gen.ts:3047</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L3047">src/gen/types.gen.ts:3047</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
