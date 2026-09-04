@@ -1,3 +1,15 @@
+## [9.1.5](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.4...v9.1.5) (2026-09-04)
+
+
+### Bug Fixes
+
+* **runtime:** back off job-worker activation retries on transport errors ([#411](https://github.com/camunda/orchestration-cluster-api-js/issues/411)) ([#490](https://github.com/camunda/orchestration-cluster-api-js/issues/490)) ([5244d73](https://github.com/camunda/orchestration-cluster-api-js/commit/5244d7313dea531e6bce2fd7865a13333e9677f7))
+
+
+### Reverts
+
+* drop unpublished 9.1.5 release metadata ([#491](https://github.com/camunda/orchestration-cluster-api-js/issues/491)) ([70b5724](https://github.com/camunda/orchestration-cluster-api-js/commit/70b57241cf2696e07d0853312dabd73bd4e4c796))
+
 ## [9.1.4](https://github.com/camunda/orchestration-cluster-api-js/compare/v9.1.3...v9.1.4) (2026-07-29)
 
 
