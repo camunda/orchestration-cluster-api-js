@@ -2391,15 +2391,13 @@ export type DeploymentResourceResult = {
 export type DeleteResourceRequest = {
     operationReference?: OperationReference;
     /**
-     * Indicates if the historic data associated with the resource should also be deleted
-     * asynchronously.
+     * Indicates if the historic data of a process resource should be deleted via a
+     * batch operation asynchronously.
      *
-     * This flag is effective for process definitions and decision requirements definitions.
-     * For other resource types (forms, generic resources) it is ignored and no history is
-     * deleted. For a decision requirements definition the `batchOperation` field in the
-     * response carries the created batch operation. For a process definition the history is
-     * deleted as part of the definition's draining/deletion lifecycle and no batch operation is
-     * returned.
+     * This flag is only effective for process resources. For other resource types
+     * (decisions, forms, generic resources), this flag is ignored and no history
+     * will be deleted. In those cases, the `batchOperation` field in the response
+     * will not be populated.
      *
      */
     deleteHistory?: boolean;
@@ -2413,14 +2411,9 @@ export type DeleteResourceResponse = {
     /**
      * The batch operation created for asynchronously deleting the historic data.
      *
-     * Populated when `deleteHistory` is `true` and either the resource is a decision
-     * requirements definition, or the resource is a process definition that is already fully
-     * deleted from the runtime state (its history is purged directly by a batch operation).
-     *
-     * For a process definition that still exists in the runtime state, deletion first drains
-     * the definition and its history is removed asynchronously as part of that lifecycle, so no
-     * batch operation is returned and this field is `null`. It is also `null` for forms and
-     * generic resources.
+     * This field is only populated when the request `deleteHistory` is set to `true` and the resource
+     * is a process definition. For other resource types (decisions, forms, generic resources),
+     * this field will be `null`.
      *
      */
     batchOperation: BatchOperationCreatedResult | null;
@@ -6026,14 +6019,12 @@ export type ProcessDefinitionFilter = {
     /**
      * Filter by the process definition's state.
      * When not set, process definitions in any state are returned.
-     * Set to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).
-     * Set to `DRAINING` to return only definitions that are being deleted but still have
-     * active process instances draining.
+     * Set to `ACTIVE` to exclude deleted definitions (recommended for most use cases).
      * Set to `DELETED` to return only definitions that have been deleted but are still
      * retained in secondary storage.
      *
      */
-    state?: 'ACTIVE' | 'DRAINING' | 'DELETED';
+    state?: 'ACTIVE' | 'DELETED';
 };
 
 export type ProcessDefinitionSearchQueryResult = SearchQueryResponse & {
@@ -6078,11 +6069,8 @@ export type ProcessDefinitionResult = {
     hasStartForm: boolean;
     /**
      * The state of this process definition.
-     * `DRAINING` indicates the definition is being deleted but still has active process
-     * instances draining before it is removed.
-     *
      */
-    state: 'ACTIVE' | 'DRAINING' | 'DELETED';
+    state: 'ACTIVE' | 'DELETED';
 };
 
 /**
@@ -6317,7 +6305,7 @@ export type ProcessInstanceCreationInstructionById = {
      */
     processDefinitionId: ProcessDefinitionId;
     /**
-     * The version of the process. If omitted, the latest active version is used.
+     * The version of the process. By default, the latest version of the process is used.
      *
      */
     processDefinitionVersion?: number;
@@ -16904,7 +16892,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=1.0.0
-// specHash=sha256:31e6f176400015aac7b3e4e2275a3b8f36ec0ed84bb7de539c8bbba1d612d874
+// specHash=sha256:186417ed34bb227df96548b0cdeeaa8e8941ebf743d209ba75717a39ac06ef76
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
