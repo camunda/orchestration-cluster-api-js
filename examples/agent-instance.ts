@@ -5,6 +5,7 @@ import {
   type AgentInstanceKey,
   createCamundaClient,
   type ElementInstanceKey,
+  HistoryItemId,
   type JobKey,
 } from '@camunda8/orchestration-cluster-api';
 
@@ -58,7 +59,7 @@ async function createAgentInstanceExample(
     jobLease,
     history: [
       {
-        historyItemId: 'configuration-1',
+        historyItemId: HistoryItemId.assumeExists('configuration-1'),
         loopIteration: 1,
         role: 'CONFIGURATION',
         content: [],
@@ -91,7 +92,7 @@ async function updateAgentInstanceExample(
     status: 'THINKING',
     history: [
       {
-        historyItemId: 'assistant-1',
+        historyItemId: HistoryItemId.assumeExists('assistant-1'),
         loopIteration: 1,
         role: 'ASSISTANT',
         content: [{ contentType: 'TEXT', text: 'How can I help you?' }],
