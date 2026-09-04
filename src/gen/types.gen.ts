@@ -285,7 +285,10 @@ export type AgentInstanceResult = {
      */
     definition: AgentInstanceDefinitionResult;
     /**
-     * Aggregated metrics across all loopIterations of this agent instance.
+     * Aggregated metrics across all loopIterations of this agent instance. Includes
+     * history items later discarded: metrics are counted when an item is accepted,
+     * not when it's committed.
+     *
      */
     metrics: AgentInstanceMetrics;
     /**
@@ -398,6 +401,18 @@ export type AgentInstanceMetrics = {
      * Total output tokens produced across all model calls.
      */
     outputTokens: number;
+    /**
+     * Total reasoning tokens consumed across all model calls.
+     */
+    reasoningTokenCount: number;
+    /**
+     * Total tokens used to create prompt cache entries across all model calls.
+     */
+    cacheCreationTokenCount: number;
+    /**
+     * Total tokens read from prompt cache across all model calls.
+     */
+    cacheReadTokenCount: number;
     /**
      * Total number of LLM calls made.
      */
@@ -568,7 +583,7 @@ export type AgentInstanceCreatedHistoryItem = {
      * so callers can correlate response entries with request items by id.
      *
      */
-    historyItemId: string;
+    historyItemId: HistoryItemId;
     /**
      * The system-generated key for the history item. When isDuplicate is true,
      * this is the key of the original entry, not a new one.
@@ -626,7 +641,7 @@ export type AgentInstanceHistoryItem = {
      * are flagged via isDuplicate in the response instead. Must be non-blank.
      *
      */
-    historyItemId: string;
+    historyItemId: HistoryItemId;
     /**
      * The loop iteration this item belongs to.
      */
@@ -650,7 +665,7 @@ export type AgentInstanceHistoryItem = {
     /**
      * Per-call token and latency metrics. Present on ASSISTANT items only.
      */
-    metrics?: AgentInstanceHistoryItemMetrics | null;
+    metrics?: AgentInstanceHistoryItemMetricsRequest | null;
     /**
      * The agent-side timestamp of when this message was produced.
      */
@@ -766,10 +781,13 @@ export type AgentInstanceHistoryItemResult = {
     historyItemKey: AgentHistoryItemKey;
     /**
      * The client-supplied identifier this item was created with. Empty for items that don't
-     * carry one.
+     * carry one. Not unique: a job can be re-activated under a superseded lease any number
+     * of times before it completes, so one historyItemId can have zero or more DISCARDED
+     * records and at most one COMMITTED record, since only historyItemKey is guaranteed
+     * unique. Filter by commitStatus rather than assuming one record per historyItemId.
      *
      */
-    historyItemId: string;
+    historyItemId: HistoryItemId;
     /**
      * The key of the agent instance this item belongs to.
      */
@@ -971,6 +989,39 @@ export type AgentInstanceToolCall = {
 };
 
 /**
+ * Per-call token and latency metrics for an ASSISTANT history item, as submitted on a
+ * create/update request. All fields are optional: omit a field the caller has no value
+ * for rather than sending it as an explicit null.
+ *
+ */
+export type AgentInstanceHistoryItemMetricsRequest = {
+    /**
+     * Input tokens consumed by this LLM call. Null when not provided.
+     */
+    inputTokens?: number | null;
+    /**
+     * Output tokens produced by this LLM call. Null when not provided.
+     */
+    outputTokens?: number | null;
+    /**
+     * Reasoning tokens consumed by this LLM call. Null when not provided.
+     */
+    reasoningTokenCount?: number | null;
+    /**
+     * Cache-creation tokens consumed by this LLM call. Null when not provided.
+     */
+    cacheCreationTokenCount?: number | null;
+    /**
+     * Cache-read tokens consumed by this LLM call. Null when not provided.
+     */
+    cacheReadTokenCount?: number | null;
+    /**
+     * Wall-clock duration of the LLM call in milliseconds. Null when not provided.
+     */
+    durationMs?: number | null;
+};
+
+/**
  * Per-call token and latency metrics for an ASSISTANT history item.
  */
 export type AgentInstanceHistoryItemMetrics = {
@@ -982,6 +1033,18 @@ export type AgentInstanceHistoryItemMetrics = {
      * Output tokens produced by this LLM call. Null when not provided.
      */
     outputTokens: number | null;
+    /**
+     * Reasoning tokens consumed by this LLM call. Null when not provided.
+     */
+    reasoningTokenCount: number | null;
+    /**
+     * Cache-creation tokens consumed by this LLM call. Null when not provided.
+     */
+    cacheCreationTokenCount: number | null;
+    /**
+     * Cache-read tokens consumed by this LLM call. Null when not provided.
+     */
+    cacheReadTokenCount: number | null;
     /**
      * Wall-clock duration of the LLM call in milliseconds. Null when not provided.
      */
@@ -3162,7 +3225,7 @@ export type ClusterRebalanceOperationPartition = {
     /**
      * The terminal outcome, present only when progress is COMPLETED.
      */
-    result: 'TRANSFERRED' | 'ALREADY_LEADER' | 'NOT_MEMBER' | 'NOT_REPLICATING' | 'UNREACHABLE' | 'NOT_COORDINATOR' | 'STALE_CONFIGURATION' | 'TRANSFER_IN_PROGRESS' | 'LAG_TOO_HIGH' | 'LEADER_INITIALIZING' | 'CONFIGURATION_CHANGE_IN_PROGRESS' | 'PAUSE_FAILED' | 'REPLICATION_TIMED_OUT' | 'TIMEOUT_NOW_EXHAUSTED' | 'LEADER_CHANGED' | 'NO_LEADER' | 'NO_RESPONSE' | 'CANCELLED';
+    result: 'TRANSFERRED' | 'ALREADY_LEADER' | 'NOT_MEMBER' | 'NOT_REPLICATING' | 'UNREACHABLE' | 'NOT_COORDINATOR' | 'STALE_CONFIGURATION' | 'TRANSFER_IN_PROGRESS' | 'LAG_TOO_HIGH' | 'LEADER_INITIALIZING' | 'CONFIGURATION_CHANGE_IN_PROGRESS' | 'PAUSE_FAILED' | 'REPLICATION_TIMED_OUT' | 'TIMEOUT_NOW_EXHAUSTED' | 'LEADER_CHANGED' | 'NO_LEADER' | 'NO_RESPONSE' | 'CANCELLED' | 'PHYSICAL_TENANT_DISABLED';
 };
 
 /**
@@ -3549,7 +3612,7 @@ export type Partition = {
      * Describes the current operational state of the partition within the cluster configuration.
      *
      */
-    state: 'unknown' | 'joining' | 'active' | 'leaving' | 'recovering';
+    state: 'unknown' | 'joining' | 'active' | 'leaving' | 'recovering' | 'learner';
 };
 
 /**
@@ -6366,6 +6429,11 @@ export type BusinessId = CamundaKey<'BusinessId'>;
  *
  */
 export type LoopIterationId = number;
+
+/**
+ * The client-supplied identifier this item was created with.
+ */
+export type HistoryItemId = CamundaKey<'HistoryItemId'>;
 
 /**
  * ElementId property with full advanced search capabilities.
@@ -9634,7 +9702,7 @@ export type ProcessInstanceCreationInstructionById = {
      */
     processDefinitionId: ProcessDefinitionId;
     /**
-     * The version of the process. By default, the latest version of the process is used.
+     * The version of the process. If omitted, the latest active version is used.
      *
      */
     processDefinitionVersion?: number;
@@ -23685,7 +23753,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:d3638a40f5d0c82477c3bceaab0d0a3f9fd2e5804bc363fd39ff7a9d2b9306a8
+// specHash=sha256:c7fae340f72a14fe4591d7d213021ef71b7d57514edd0fca0f131362c688a4f8
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -24033,6 +24101,20 @@ export namespace GroupId {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'GroupId', { minLength: 1, maxLength: 256 });
+      return true;
+    } catch { return false; }
+  }
+}
+// The client-supplied identifier this item was created with.
+export namespace HistoryItemId {
+  export function assumeExists(value: string): HistoryItemId {
+    assertConstraint(value, 'HistoryItemId', { minLength: 1, maxLength: 256 });
+    return value as any;
+  }
+  export function getValue(key: HistoryItemId): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'HistoryItemId', { minLength: 1, maxLength: 256 });
       return true;
     } catch { return false; }
   }

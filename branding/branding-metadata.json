@@ -1,6 +1,6 @@
 {
   "schemaVersion": "2.0.0",
-  "specHash": "sha256:d3638a40f5d0c82477c3bceaab0d0a3f9fd2e5804bc363fd39ff7a9d2b9306a8",
+  "specHash": "sha256:c7fae340f72a14fe4591d7d213021ef71b7d57514edd0fca0f131362c688a4f8",
   "generator": {
     "name": "@hey-api/openapi-ts"
   },
@@ -1061,6 +1061,46 @@
       },
       "source": {
         "schemaPointer": "#/components/schemas/GroupId"
+      }
+    },
+    {
+      "name": "HistoryItemId",
+      "semanticType": "HistoryItemId",
+      "category": "model-id",
+      "description": "The client-supplied identifier this item was created with.",
+      "composition": {
+        "schemaKind": "inline",
+        "refs": [],
+        "inlineFragments": 0
+      },
+      "constraints": {
+        "minLength": 1,
+        "maxLength": 256,
+        "format": "HistoryItemId"
+      },
+      "examples": [
+        "item-1"
+      ],
+      "extensions": {
+        "x-semantic-type": "HistoryItemId"
+      },
+      "flags": {
+        "semanticKey": true,
+        "includesLongKeyRef": false,
+        "deprecated": false
+      },
+      "stableId": "history-item-id",
+      "brand": {
+        "tsType": "CamundaKey<'HistoryItemId'>"
+      },
+      "zod": {
+        "schemaName": "zHistoryItemId",
+        "transformPipeline": [
+          "brand-cast"
+        ]
+      },
+      "source": {
+        "schemaPointer": "#/components/schemas/HistoryItemId"
       }
     },
     {
@@ -3351,7 +3391,7 @@
     }
   ],
   "integrity": {
-    "totalPrimaryKeys": 42,
+    "totalPrimaryKeys": 43,
     "totalUnionWrappers": 68,
     "implicitCamundaKeys": []
   }

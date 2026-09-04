@@ -38,6 +38,15 @@ export const zAgentInstanceMetrics = z.object({
     outputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
         description: 'Total output tokens produced across all model calls.'
     }),
+    reasoningTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'Total reasoning tokens consumed across all model calls.'
+    }),
+    cacheCreationTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'Total tokens used to create prompt cache entries across all model calls.'
+    }),
+    cacheReadTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).register(z.globalRegistry, {
+        description: 'Total tokens read from prompt cache across all model calls.'
+    }),
     modelCalls: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'Total number of LLM calls made.'
     }),
@@ -185,11 +194,31 @@ export const zAgentInstanceToolCall = z.object({
 });
 
 /**
+ * Per-call token and latency metrics for an ASSISTANT history item, as submitted on a
+ * create/update request. All fields are optional: omit a field the caller has no value
+ * for rather than sending it as an explicit null.
+ *
+ */
+export const zAgentInstanceHistoryItemMetricsRequest = z.object({
+    inputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
+    outputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
+    reasoningTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
+    cacheCreationTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
+    cacheReadTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish(),
+    durationMs: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullish()
+}).register(z.globalRegistry, {
+    description: 'Per-call token and latency metrics for an ASSISTANT history item, as submitted on a\ncreate/update request. All fields are optional: omit a field the caller has no value\nfor rather than sending it as an explicit null.\n'
+});
+
+/**
  * Per-call token and latency metrics for an ASSISTANT history item.
  */
 export const zAgentInstanceHistoryItemMetrics = z.object({
     inputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
     outputTokens: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
+    reasoningTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
+    cacheCreationTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
+    cacheReadTokenCount: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable(),
     durationMs: z.coerce.number().int().min(-9223372036854775808, { error: 'Invalid value: Expected int64 to be >= -9223372036854775808' }).max(9223372036854775807, { error: 'Invalid value: Expected int64 to be <= 9223372036854775807' }).nullable()
 }).register(z.globalRegistry, {
     description: 'Per-call token and latency metrics for an ASSISTANT history item.'
@@ -1147,7 +1176,8 @@ export const zClusterRebalanceOperationPartition = z.object({
         'LEADER_CHANGED',
         'NO_LEADER',
         'NO_RESPONSE',
-        'CANCELLED'
+        'CANCELLED',
+        'PHYSICAL_TENANT_DISABLED'
     ]).register(z.globalRegistry, {
         description: 'The terminal outcome, present only when progress is COMPLETED.'
     })
@@ -1290,7 +1320,8 @@ export const zPartition = z.object({
         'joining',
         'active',
         'leaving',
-        'recovering'
+        'recovering',
+        'learner'
     ]).register(z.globalRegistry, {
         description: 'Describes the current operational state of the partition within the cluster configuration.\n'
     })
@@ -2844,6 +2875,13 @@ export const zLoopIterationId = z.int().gte(1).max(2147483647, { error: 'Invalid
 });
 
 /**
+ * The client-supplied identifier this item was created with.
+ */
+export const zHistoryItemId = z.string().min(1).max(256).register(z.globalRegistry, {
+    description: 'The client-supplied identifier this item was created with.'
+});
+
+/**
  * Advanced filter
  *
  * Advanced ElementId filter.
@@ -3587,16 +3625,14 @@ export const zAgentInstanceDefinitionResult = z.object({
  *
  */
 export const zAgentInstanceHistoryItem = z.object({
-    historyItemId: z.string().register(z.globalRegistry, {
-        description: 'Caller-assigned identifier used to detect and dedupe retries of the same\nitem. For example, when a retried job activation resubmits history items\nit already sent in an earlier attempt, those items are not rejected; they\nare flagged via isDuplicate in the response instead. Must be non-blank.\n'
-    }),
+    historyItemId: zHistoryItemId,
     loopIteration: zLoopIterationId,
     role: zAgentInstanceHistoryRoleEnum,
     content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {
         description: 'The content blocks of this history item.'
     }),
     toolCalls: z.array(zAgentInstanceToolCall).nullish(),
-    metrics: zAgentInstanceHistoryItemMetrics.nullish(),
+    metrics: zAgentInstanceHistoryItemMetricsRequest.nullish(),
     producedAt: z.iso.datetime().register(z.globalRegistry, {
         description: 'The agent-side timestamp of when this message was produced.'
     }),
@@ -4574,9 +4610,7 @@ export const zAgentHistoryItemKey = zLongKey;
  *
  */
 export const zAgentInstanceCreatedHistoryItem = z.object({
-    historyItemId: z.string().register(z.globalRegistry, {
-        description: 'The historyItemId of the corresponding item in the request, echoed back\nso callers can correlate response entries with request items by id.\n'
-    }),
+    historyItemId: zHistoryItemId,
     historyItemKey: zAgentHistoryItemKey,
     isDuplicate: z.boolean().register(z.globalRegistry, {
         description: 'True if this item had already been recorded and no new AGENT_HISTORY event\nwas created for it; false if a new event was created.\n'
@@ -4613,9 +4647,7 @@ export const zAgentInstanceUpdateResult = z.object({
  */
 export const zAgentInstanceHistoryItemResult = z.object({
     historyItemKey: zAgentHistoryItemKey,
-    historyItemId: z.string().register(z.globalRegistry, {
-        description: 'The client-supplied identifier this item was created with. Empty for items that don\'t\ncarry one.\n'
-    }),
+    historyItemId: zHistoryItemId,
     agentInstanceKey: zAgentInstanceKey,
     elementInstanceKey: zElementInstanceKey,
     jobKey: zJobKey,
@@ -5525,7 +5557,7 @@ export const zProcessInstanceCreationRuntimeInstruction = z.object({
 export const zProcessInstanceCreationInstructionById = z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionVersion: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
-        description: 'The version of the process. By default, the latest version of the process is used.\n'
+        description: 'The version of the process. If omitted, the latest active version is used.\n'
     }).optional().default(-1),
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n'
