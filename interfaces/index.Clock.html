@@ -21,7 +21,7 @@ camunda/orchestration-cluster-api-js#450.</p>
 and the injected <code>now</code>/<code>sleep</code> on <code>BackpressureManager</code>.</p>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">Clock</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-call-signature" href="#deadline-1">deadline</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">ms</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">dispose</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">signal</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AbortSignal</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#now-1">now</a><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-call-signature" href="#sleep-1">sleep</a><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">ms</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">signal</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">AbortSignal</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div>
-<section class="tsd-panel tsd-hierarchy" data-refl="9958">
+<section class="tsd-panel tsd-hierarchy" data-refl="9983">
 <h4>Hierarchy (<a href="../hierarchy.html#index.Clock">View Summary</a>)</h4>
 <ul class="tsd-hierarchy">
 <li class="tsd-hierarchy-item"><span class="tsd-hierarchy-target">Clock</span>
@@ -29,7 +29,7 @@ and the injected <code>now</code>/<code>sleep</code> on <code>BackpressureManage
 <li class="tsd-hierarchy-item"><a href="index.EngineClock.html" class="tsd-signature-type tsd-kind-interface">EngineClock</a></li>
 <li class="tsd-hierarchy-item"><a href="index.TestClock.html" class="tsd-signature-type tsd-kind-interface">TestClock</a></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/runtime/clock.ts#L12">src/runtime/clock.ts:12</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/runtime/clock.ts#L12">src/runtime/clock.ts:12</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -60,7 +60,7 @@ early, or a long deadline keeps a handle alive for its full duration.</p>
 <li><span><span class="tsd-kind-parameter">ms</span>: <span class="tsd-signature-type">number</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">dispose</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">()</span> <span class="tsd-signature-symbol">=&gt;</span> <span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">signal</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AbortSignal</span> <span class="tsd-signature-symbol">}</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/runtime/clock.ts#L35">src/runtime/clock.ts:35</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/runtime/clock.ts#L35">src/runtime/clock.ts:35</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="now"><span>now</span><a href="#now" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -71,7 +71,7 @@ early, or a long deadline keeps a handle alive for its full duration.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/runtime/clock.ts#L14">src/runtime/clock.ts:14</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/runtime/clock.ts#L14">src/runtime/clock.ts:14</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sleep"><span>sleep</span><a href="#sleep" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -93,7 +93,7 @@ should resolve only when the test advances it.</p>
 <li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">signal</span>: <span class="tsd-signature-type">AbortSignal</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/runtime/clock.ts#L27">src/runtime/clock.ts:27</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/runtime/clock.ts#L27">src/runtime/clock.ts:27</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">

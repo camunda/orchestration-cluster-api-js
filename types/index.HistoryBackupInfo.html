@@ -27,7 +27,7 @@ configured timeout, the overall state is 'INCOMPLETE'.</li>
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">type</span> <span class="tsd-kind-type-alias">HistoryBackupInfo</span> <span class="tsd-signature-symbol">=</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#backupid">backupId</a><span class="tsd-signature-symbol">:</span> <a href="index.BackupId.html" class="tsd-signature-type tsd-kind-type-alias">BackupId</a><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#details">details</a><span class="tsd-signature-symbol">:</span> <a href="index.HistoryBackupSnapshotInfo.html" class="tsd-signature-type tsd-kind-type-alias">HistoryBackupSnapshotInfo</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#failurereason">failureReason</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#state">state</a><span class="tsd-signature-symbol">:</span> <a href="index.HistoryBackupStateCode.html" class="tsd-signature-type tsd-kind-type-alias">HistoryBackupStateCode</a><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L2200">src/gen/types.gen.ts:2200</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/gen/types.gen.ts#L2263">src/gen/types.gen.ts:2263</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -49,7 +49,7 @@ configured timeout, the overall state is 'INCOMPLETE'.</li>
 <div class="tsd-comment tsd-typography"><p>The id of the backup.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L2204">src/gen/types.gen.ts:2204</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/gen/types.gen.ts#L2267">src/gen/types.gen.ts:2267</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="details"><code class="tsd-tag">Readonly</code><span>details</span><a href="#details" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">details</span><span class="tsd-signature-symbol">:</span> <a href="index.HistoryBackupSnapshotInfo.html" class="tsd-signature-type tsd-kind-type-alias">HistoryBackupSnapshotInfo</a><span class="tsd-signature-symbol">[]</span></div>
@@ -58,21 +58,21 @@ the backup; when the backup was read without snapshot detail, each entry carries
 only its name.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L2219">src/gen/types.gen.ts:2219</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/gen/types.gen.ts#L2282">src/gen/types.gen.ts:2282</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="failurereason"><span>failure<wbr/>Reason</span><a href="#failurereason" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">failureReason</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">null</span></div>
 <div class="tsd-comment tsd-typography"><p>Reason for failure if the state is 'FAILED'.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L2212">src/gen/types.gen.ts:2212</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/gen/types.gen.ts#L2275">src/gen/types.gen.ts:2275</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="state"><span>state</span><a href="#state" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">state</span><span class="tsd-signature-symbol">:</span> <a href="index.HistoryBackupStateCode.html" class="tsd-signature-type tsd-kind-type-alias">HistoryBackupStateCode</a></div>
 <div class="tsd-comment tsd-typography"><p>The aggregated state of the backup.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/e6f762604dbe21a88fb8cc3b8c0e03620fde94b9/src/gen/types.gen.ts#L2208">src/gen/types.gen.ts:2208</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/b57cc522a01e46d39883c5073cbb2bc5fe2546c2/src/gen/types.gen.ts#L2271">src/gen/types.gen.ts:2271</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
