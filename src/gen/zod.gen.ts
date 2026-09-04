@@ -2920,7 +2920,7 @@ export const zDeleteResourceRequest = z.union([
     z.object({
         operationReference: z.optional(zOperationReference),
         deleteHistory: z.optional(z.boolean().register(z.globalRegistry, {
-            description: 'Indicates if the historic data of a process resource should be deleted via a\nbatch operation asynchronously.\n\nThis flag is only effective for process resources. For other resource types\n(decisions, forms, generic resources), this flag is ignored and no history\nwill be deleted. In those cases, the `batchOperation` field in the response\nwill not be populated.\n'
+            description: "Indicates if the historic data associated with the resource should also be deleted\nasynchronously.\n\nThis flag is effective for process definitions and decision requirements definitions.\nFor other resource types (forms, generic resources) it is ignored and no history is\ndeleted. For a decision requirements definition the `batchOperation` field in the\nresponse carries the created batch operation. For a process definition the history is\ndeleted as part of the definition's draining/deletion lifecycle and no batch operation is\nreturned.\n"
         })).default(false)
     }),
     z.null()
@@ -3633,9 +3633,10 @@ export const zProcessDefinitionFilter = z.object({
     })),
     state: z.optional(z.enum([
         'ACTIVE',
+        'DRAINING',
         'DELETED'
     ]).register(z.globalRegistry, {
-        description: "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude deleted definitions (recommended for most use cases).\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n"
+        description: "Filter by the process definition's state.\nWhen not set, process definitions in any state are returned.\nSet to `ACTIVE` to exclude draining and deleted definitions (recommended for most use cases).\nSet to `DRAINING` to return only definitions that are being deleted but still have\nactive process instances draining.\nSet to `DELETED` to return only definitions that have been deleted but are still\nretained in secondary storage.\n"
     }))
 }).register(z.globalRegistry, {
     description: 'Process definition search filter.'
@@ -3664,9 +3665,10 @@ export const zProcessDefinitionResult = z.object({
     }),
     state: z.enum([
         'ACTIVE',
+        'DRAINING',
         'DELETED'
     ]).register(z.globalRegistry, {
-        description: 'The state of this process definition.'
+        description: 'The state of this process definition.\n`DRAINING` indicates the definition is being deleted but still has active process\ninstances draining before it is removed.\n'
     })
 });
 
@@ -3798,7 +3800,7 @@ export const zProcessInstanceCreationRuntimeInstruction = z.object({
 export const zProcessInstanceCreationInstructionById = z.object({
     processDefinitionId: zProcessDefinitionId,
     processDefinitionVersion: z.optional(z.int().register(z.globalRegistry, {
-        description: 'The version of the process. By default, the latest version of the process is used.\n'
+        description: 'The version of the process. If omitted, the latest active version is used.\n'
     })).default(-1),
     variables: z.optional(z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object that will instantiate the variables for the root variable scope\nof the process instance.\n'

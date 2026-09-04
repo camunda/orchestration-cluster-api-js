@@ -702,7 +702,7 @@ export const createDeployment = <ThrowOnError extends boolean = true>(options: O
  *
  * Upload a document to the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const createDocument = <ThrowOnError extends boolean = true>(options: Options<CreateDocumentData, ThrowOnError>) => {
@@ -736,7 +736,7 @@ export const createDocument = <ThrowOnError extends boolean = true>(options: Opt
  * each of which contains the file name of the document that failed to upload and the reason for the failure.
  * The client can choose to retry the whole batch or individual documents based on the response.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const createDocuments = <ThrowOnError extends boolean = true>(options: Options<CreateDocumentsData, ThrowOnError>) => {
@@ -758,7 +758,7 @@ export const createDocuments = <ThrowOnError extends boolean = true>(options: Op
  *
  * Delete a document from the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const deleteDocument = <ThrowOnError extends boolean = true>(options: Options<DeleteDocumentData, ThrowOnError>) => {
@@ -775,7 +775,7 @@ export const deleteDocument = <ThrowOnError extends boolean = true>(options: Opt
  *
  * Download a document from the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP, in-memory (non-production), local (non-production)
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP, in-memory (non-production), local (non-production)
  *
  */
 export const getDocument = <ThrowOnError extends boolean = true>(options: Options<GetDocumentData, ThrowOnError>) => {
@@ -792,7 +792,7 @@ export const getDocument = <ThrowOnError extends boolean = true>(options: Option
  *
  * Create a link to a document in the Camunda 8 cluster.
  *
- * Note that this is currently supported for document stores of type: AWS, GCP
+ * Note that this is currently supported for document stores of type: AWS, Azure, GCP
  *
  */
 export const createDocumentLink = <ThrowOnError extends boolean = true>(options: Options<CreateDocumentLinkData, ThrowOnError>) => {
@@ -1864,6 +1864,8 @@ export const getProcessDefinitionInstanceVersionStatistics = <ThrowOnError exten
  * Creates and starts an instance of the specified process.
  * The process definition to use to create the instance can be specified either using its unique key
  * (as returned by Deploy resources), or using the BPMN process id and a version.
+ * If only the process definition id is given, the latest ACTIVE version is used.
+ * If no ACTIVE version exists, the request is rejected as not found.
  *
  * Waits for the completion of the process instance before returning a result
  * when awaitCompletion is enabled.
@@ -2239,10 +2241,18 @@ export const getResourceContent = <ThrowOnError extends boolean = true>(options:
  *
  * By default, only the resource itself is deleted from the runtime state. To also delete the
  * historic data associated with a resource, set the `deleteHistory` flag in the request body
- * to `true`. The historic data is deleted asynchronously via a batch operation. The details of
- * the created batch operation are included in the response. Note that history deletion is only
- * supported for process resources; for other resource types this flag is ignored and no history
- * will be deleted.
+ * to `true`. History deletion is supported for process definitions and decision requirements
+ * definitions; for other resource types (forms, generic resources) the flag is ignored and no
+ * history is deleted.
+ *
+ * The two supported types differ in how the history is removed. For a decision requirements
+ * definition the history is deleted asynchronously via a batch operation whose details are
+ * returned in the `batchOperation` field of the response. For a process definition that still
+ * exists in the runtime state, the definition first drains its running instances and its
+ * history is deleted asynchronously once the definition is fully removed cluster-wide; no batch
+ * operation is returned in the response. If the process definition has already been removed
+ * from the runtime state and the deletion is later re-triggered with `deleteHistory` set to
+ * `true`, a batch operation is created immediately and returned in the `batchOperation` field.
  */
 export const deleteResource = <ThrowOnError extends boolean = true>(options: Options<DeleteResourceData, ThrowOnError>) => {
     return (options.client ?? client).post<DeleteResourceResponses, DeleteResourceErrors, ThrowOnError>({
