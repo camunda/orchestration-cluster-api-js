@@ -32,7 +32,7 @@ Upstream dependencies — when they misbehave, fix them at the source rather tha
 | `plugins/branding-plugin/` | Plugin that runs inside `@hey-api/openapi-ts`.                                                                        |
 | `scripts/run-pipeline.ts`  | Pipeline orchestrator.                                                                                                |
 | `external-spec/bundled/`   | Bundled OpenAPI spec (`rest-api.bundle.json`) and `spec-metadata.json` — generator inputs.                            |
-| `external-spec/upstream/`  | Sparse clone of the upstream repo. Transient; never commit.                                                           |
+| `external-spec/upstream/`  | Fetched upstream spec sources. **Tracked** — `bundle:spec:local` reads them. The `.tmp-clone-*` dirs are never committed (see below). |
 | `examples/readme.ts`       | Source of truth for `README.md` code examples — type-checked.                                                         |
 | `tests/`                   | Unit tests (no live Camunda required).                                                                                |
 | `tests-integration/`       | Integration tests (require live Camunda).                                                                             |
