@@ -14,7 +14,7 @@ npm install @camunda8/orchestration-cluster-api@^10
 | # | Change | Who is affected |
 |---|--------|-----------------|
 | 1 | [Identifier fields are now branded types](#1-identifier-fields-are-now-branded-types) | Anyone passing plain strings for group, role, client, mapping-rule, tenant, username or cluster-variable-name identifiers |
-| 2 | [`getResourceContent` returns an object, and there is a new binary endpoint](#2-getresourcecontent-returns-an-object-and-there-is-a-new-binary-endpoint) | Callers of `getResourceContent` |
+| 2 | [`getResourceContent` is deprecated, replaced by `getResourceContentBinary`](#2-getresourcecontent-is-deprecated-replaced-by-getresourcecontentbinary) | Callers of `getResourceContent` |
 | 3 | [`BatchOperationItemResponse.processInstanceKey` is nullable](#3-batchoperationitemresponseprocessinstancekey-is-nullable) | Callers reading batch operation items |
 
 Nothing else in the public surface was removed or renamed. See
@@ -72,9 +72,15 @@ const group = await camunda.getGroup({ groupId: GroupId.assumeExists('engineerin
 console.log(`group: ${group.groupId}`); // still a string at runtime
 ```
 
-## 2. `getResourceContent` returns an object, and there is a new binary endpoint
+## 2. `getResourceContent` is deprecated, replaced by `getResourceContentBinary`
 
-The 200 response type changed, and a second operation was added:
+| Operation | Path | Scope | 200 type in v10 |
+|---|---|---|---|
+| `getResourceContent` *(deprecated in 8.10)* | `/resources/{resourceKey}/content` | RPA resources only | `{ [key: string]: unknown }` |
+| `getResourceContentBinary` *(new in 8.10)* | `/resources/{resourceKey}/content/binary` | all resource types **except** BPMN, DMN and forms | `Blob \| File` |
+
+**`getResourceContent` is now marked deprecated upstream**, and its 200 type changed
+from `string` to an object:
 
 ```ts
 // v9
@@ -82,34 +88,32 @@ GetResourceContentResponses         200: string;
 
 // v10
 GetResourceContentResponses         200: { [key: string]: unknown };
-GetResourceContentBinaryResponses   200: Blob | File;   // new in v10
+GetResourceContentBinaryResponses   200: Blob | File;
 ```
 
-Two things changed. `GET /resources/{resourceKey}/content` has always been declared
-`application/json` upstream — the v9 `string` return was the generator flattening that
-JSON response, not the resource bytes. v10 types it honestly as an object. Separately,
-8.10 adds `GET /resources/{resourceKey}/content/binary`, which serves
-`application/octet-stream`.
+The type change is the generator becoming honest rather than a behaviour change: the
+endpoint has always been declared `application/json`, so the v9 `string` was a
+flattened JSON response, not resource bytes. Note also that this operation only ever
+served RPA resources — in 8.9 its description already read *"Currently, this endpoint
+only supports RPA resources"*.
 
-**If you wanted the raw resource** — BPMN XML, a DMN file, a form — use the new binary
-operation:
+**Migrate to `getResourceContentBinary`**, which returns octet-stream content:
 
 ```ts
-// v9
-const content = await camunda.getResourceContent({ resourceKey });
-fs.writeFileSync('process.bpmn', content);
-
-// v10 — raw bytes from the new binary endpoint
 const blob = await camunda.getResourceContentBinary({ resourceKey });
-fs.writeFileSync('process.bpmn', Buffer.from(await blob.arrayBuffer()));
+fs.writeFileSync('automation.rpa', Buffer.from(await blob.arrayBuffer()));
 ```
 
-**If you wanted the JSON metadata**, keep `getResourceContent` and read the object:
+**Neither endpoint serves BPMN, DMN or forms.** The spec is explicit that
+`/content/binary` "does not return BPMN process definitions, DMN decision definitions,
+or form resources". Those have dedicated operations — not a v10 change, but it is the
+question the deprecation tends to raise:
 
-```ts
-const content = await camunda.getResourceContent({ resourceKey });
-console.log(content.resourceName);
-```
+| To fetch | Use |
+|---|---|
+| BPMN process definition XML | `getProcessDefinitionXML` |
+| DMN decision definition XML | `getDecisionDefinitionXML` |
+| A form | `getFormByKey`, `getStartProcessForm`, `getUserTaskForm` |
 
 ## 3. `BatchOperationItemResponse.processInstanceKey` is nullable
 
