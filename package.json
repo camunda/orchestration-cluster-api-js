@@ -56,7 +56,7 @@
     "clean": "rimraf dist src/gen src/facade",
     "generate": "npm run clean && npm run bundle:spec && tsx scripts/run-pipeline.ts && npm run responses:regenerate:local",
     "generate:local": "npm run clean && npm run bundle:spec:local && tsx scripts/run-pipeline.ts && npm run responses:regenerate:local",
-    "bundle:spec": "camunda-schema-bundler --ref ${SPEC_REF:-main} --output-spec external-spec/bundled/rest-api.bundle.json --output-metadata external-spec/bundled/spec-metadata.json",
+    "bundle:spec": "camunda-schema-bundler --ref ${SPEC_REF:-stable/8.10} --output-spec external-spec/bundled/rest-api.bundle.json --output-metadata external-spec/bundled/spec-metadata.json",
     "bundle:spec:local": "camunda-schema-bundler --spec-dir external-spec/upstream/zeebe/gateway-protocol/src/main/proto/v2 --output-spec external-spec/bundled/rest-api.bundle.json --output-metadata external-spec/bundled/spec-metadata.json",
     "version:sync": "tsx scripts/write-version-constant.ts",
     "build": "npm run generate && npm run docs:config && npm run sync-readme:check && npm run format && npm run version:sync && npm run typecheck && tsup src/index.ts src/logger.ts src/effect/index.ts --dts --format esm,cjs --sourcemap --out-dir dist && tsup src/runtime/threadWorkerEntry.ts --format esm,cjs --sourcemap --out-dir dist --no-splitting && npm run typecheck:dist",
