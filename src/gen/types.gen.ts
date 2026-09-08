@@ -495,7 +495,10 @@ export type AgentInstanceCreationRequest = {
      * history, in request order. Each created item is echoed back in the
      * response's createdHistory, positionally correlated. Must include a
      * CONFIGURATION item establishing model, provider, and systemPrompt (and,
-     * if needed, limits).
+     * if needed, limits). Every item's role must be CONFIGURATION or USER, and
+     * no item may carry non-zero usage-token metrics (inputTokens, outputTokens,
+     * reasoningTokenCount, cacheCreationTokenCount, cacheReadTokenCount);
+     * durationMs is exempt and may be non-zero.
      *
      */
     history: Array<AgentInstanceHistoryItem>;
@@ -6243,7 +6246,7 @@ export type GroupSearchQueryRequest = SearchQueryRequest & {
 /**
  * Group filter request
  */
-export type GroupFilter = {
+export type GroupFilterFields = {
     /**
      * The group ID search filters.
      */
@@ -6251,7 +6254,34 @@ export type GroupFilter = {
     /**
      * The group name search filters.
      */
-    name?: string;
+    name?: StringFilterProperty;
+};
+
+/**
+ * Group filter request
+ */
+export type GroupFilter = GroupFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "$or": [
+     * { "groupId": "group-1" },
+     * { "groupId": "group-2" }
+     * ]
+     * }
+     * ```
+     * This matches groups whose <code>groupId</code> is <em>group-1</em> or <em>group-2</em>.
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<GroupFilterFields>;
 };
 
 /**
@@ -8668,9 +8698,9 @@ export type MappingRuleSearchQueryRequest = SearchQueryRequest & {
 };
 
 /**
- * Mapping rule search filter.
+ * Mapping rule search filter fields.
  */
-export type MappingRuleFilter = {
+export type MappingRuleFilterFields = {
     /**
      * The claim name to match against a token.
      */
@@ -8686,7 +8716,34 @@ export type MappingRuleFilter = {
     /**
      * The ID of the mapping rule.
      */
-    mappingRuleId?: MappingRuleId;
+    mappingRuleId?: StringFilterProperty;
+};
+
+/**
+ * Mapping rule search filter.
+ */
+export type MappingRuleFilter = MappingRuleFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "$or": [
+     * { "mappingRuleId": "rule-1" },
+     * { "mappingRuleId": "rule-2" }
+     * ]
+     * }
+     * ```
+     * This matches mapping rules whose <code>mappingRuleId</code> is <em>rule-1</em> or <em>rule-2</em>.
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<MappingRuleFilterFields>;
 };
 
 export type MessageCorrelationRequest = {
@@ -10690,15 +10747,53 @@ export type RoleSearchQueryRequest = SearchQueryRequest & {
 /**
  * Role filter request
  */
-export type RoleFilter = {
+export type RoleFilterFields = {
     /**
      * The role ID search filters.
      */
-    roleId?: RoleId;
+    roleId?: StringFilterProperty;
     /**
      * The role name search filters.
      */
     name?: StringFilterProperty;
+};
+
+/**
+ * Role filter request
+ */
+export type RoleFilter = RoleFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "name": "Admin",
+     * "$or": [
+     * { "roleId": "role-1" },
+     * { "roleId": "role-2" }
+     * ]
+     * }
+     * ```
+     * This matches roles that:
+     *
+     * <ul style="padding-left: 20px; margin-left: 20px;">
+     * <li style="list-style-type: disc;">have name equal to <em>Admin</em></li>
+     * <li style="list-style-type: disc;">and match either:
+     * <ul style="padding-left: 20px; margin-left: 20px;">
+     * <li style="list-style-type: circle;"><code>roleId</code> is <em>role-1</em>, or</li>
+     * <li style="list-style-type: circle;"><code>roleId</code> is <em>role-2</em></li>
+     * </ul>
+     * </li>
+     * </ul>
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<RoleFilterFields>;
 };
 
 /**
@@ -11229,7 +11324,7 @@ export type TenantResult = {
 
 export type TenantSearchQuerySortRequest = {
     /**
-     * The field to sort by. `key` is deprecated and should not be used anymore.
+     * The field to sort by.
      */
     field: 'key' | 'name' | 'tenantId';
     order?: SortOrderEnum;
@@ -11951,9 +12046,9 @@ export type UserSearchQueryRequest = SearchQueryRequest & {
 };
 
 /**
- * User search filter.
+ * User search filter fields.
  */
-export type UserFilter = {
+export type UserFilterFields = {
     /**
      * The username of the user.
      */
@@ -11966,6 +12061,33 @@ export type UserFilter = {
      * The email of the user.
      */
     email?: StringFilterProperty;
+};
+
+/**
+ * User search filter.
+ */
+export type UserFilter = UserFilterFields & {
+    /**
+     * Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.
+     *
+     * Top-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.
+     * <br>
+     * <em>Example:</em>
+     *
+     * ```json
+     * {
+     * "$or": [
+     * { "username": "user-1" },
+     * { "username": "user-2" }
+     * ]
+     * }
+     * ```
+     * This matches users whose <code>username</code> is <em>user-1</em> or <em>user-2</em>.
+     * <br>
+     * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
+     *
+     */
+    $or?: Array<UserFilterFields>;
 };
 
 export type UserSearchResult = SearchQueryResponse & {
@@ -23753,7 +23875,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:c7fae340f72a14fe4591d7d213021ef71b7d57514edd0fca0f131362c688a4f8
+// specHash=sha256:49822b09e774b93a76793c2ae90dfb1a7cff4e2a827538c5706835c407c32e28
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

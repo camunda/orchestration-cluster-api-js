@@ -2585,14 +2585,21 @@ export const zGroupUpdateRequest = z.object({
 /**
  * Group filter request
  */
-export const zGroupFilter = z.object({
+export const zGroupFilterFields = z.object({
     groupId: zStringFilterProperty.optional(),
-    name: z.string().register(z.globalRegistry, {
-        description: 'The group name search filters.'
-    }).optional()
+    name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Group filter request'
 });
+
+/**
+ * Group filter request
+ */
+export const zGroupFilter = zGroupFilterFields.and(z.object({
+    $or: z.array(zGroupFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "$or": [\n    { "groupId": "group-1" },\n    { "groupId": "group-2" }\n  ]\n}\n```\nThis matches groups whose <code>groupId</code> is <em>group-1</em> or <em>group-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }).optional()
+}));
 
 /**
  * Id of a process definition, from the model. Only ids of process definitions that are deployed are useful.
@@ -3893,7 +3900,7 @@ export const zAgentInstanceCreationRequest = z.object({
         description: 'Opaque lease token received from the job activation response. Disambiguates\nthis activation from any other activation of the same job: if the job is\nlater retried, history items submitted under a superseded lease are discarded\nrather than committed.\n'
     }),
     history: z.array(zAgentInstanceHistoryItem).min(1).register(z.globalRegistry, {
-        description: 'A batch of history items to append to the agent instance\'s conversation\nhistory, in request order. Each created item is echoed back in the\nresponse\'s createdHistory, positionally correlated. Must include a\nCONFIGURATION item establishing model, provider, and systemPrompt (and,\nif needed, limits).\n'
+        description: 'A batch of history items to append to the agent instance\'s conversation\nhistory, in request order. Each created item is echoed back in the\nresponse\'s createdHistory, positionally correlated. Must include a\nCONFIGURATION item establishing model, provider, and systemPrompt (and,\nif needed, limits). Every item\'s role must be CONFIGURATION or USER, and\nno item may carry non-zero usage-token metrics (inputTokens, outputTokens,\nreasoningTokenCount, cacheCreationTokenCount, cacheReadTokenCount);\ndurationMs is exempt and may be non-zero.\n'
     })
 }).register(z.globalRegistry, {
     description: 'Request to create a new agent instance.'
@@ -5110,9 +5117,9 @@ export const zMappingRuleResult = z.object({
 });
 
 /**
- * Mapping rule search filter.
+ * Mapping rule search filter fields.
  */
-export const zMappingRuleFilter = z.object({
+export const zMappingRuleFilterFields = z.object({
     claimName: z.string().register(z.globalRegistry, {
         description: 'The claim name to match against a token.'
     }).optional(),
@@ -5120,10 +5127,19 @@ export const zMappingRuleFilter = z.object({
         description: 'The value of the claim to match.'
     }).optional(),
     name: zStringFilterProperty.optional(),
-    mappingRuleId: zMappingRuleId.optional()
+    mappingRuleId: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
-    description: 'Mapping rule search filter.'
+    description: 'Mapping rule search filter fields.'
 });
+
+/**
+ * Mapping rule search filter.
+ */
+export const zMappingRuleFilter = zMappingRuleFilterFields.and(z.object({
+    $or: z.array(zMappingRuleFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "$or": [\n    { "mappingRuleId": "rule-1" },\n    { "mappingRuleId": "rule-2" }\n  ]\n}\n```\nThis matches mapping rules whose <code>mappingRuleId</code> is <em>rule-1</em> or <em>rule-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }).optional()
+}));
 
 export const zMessageCorrelationRequest = z.object({
     name: z.string().register(z.globalRegistry, {
@@ -6058,12 +6074,21 @@ export const zRoleResult = z.object({
 /**
  * Role filter request
  */
-export const zRoleFilter = z.object({
-    roleId: zRoleId.optional(),
+export const zRoleFilterFields = z.object({
+    roleId: zStringFilterProperty.optional(),
     name: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
     description: 'Role filter request'
 });
+
+/**
+ * Role filter request
+ */
+export const zRoleFilter = zRoleFilterFields.and(z.object({
+    $or: z.array(zRoleFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "name": "Admin",\n  "$or": [\n    { "roleId": "role-1" },\n    { "roleId": "role-2" }\n  ]\n}\n```\nThis matches roles that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">have name equal to <em>Admin</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>roleId</code> is <em>role-1</em>, or</li>\n      <li style="list-style-type: circle;"><code>roleId</code> is <em>role-2</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }).optional()
+}));
 
 export const zRoleUserResult = z.object({
     username: zUsername
@@ -7472,7 +7497,7 @@ export const zTenantSearchQuerySortRequest = z.object({
         'name',
         'tenantId'
     ]).register(z.globalRegistry, {
-        description: 'The field to sort by. `key` is deprecated and should not be used anymore.'
+        description: 'The field to sort by.'
     }),
     order: zSortOrderEnum.optional()
 });
@@ -7846,15 +7871,24 @@ export const zUserSearchQuerySortRequest = z.object({
 });
 
 /**
- * User search filter.
+ * User search filter fields.
  */
-export const zUserFilter = z.object({
+export const zUserFilterFields = z.object({
     username: zStringFilterProperty.optional(),
     name: zStringFilterProperty.optional(),
     email: zStringFilterProperty.optional()
 }).register(z.globalRegistry, {
-    description: 'User search filter.'
+    description: 'User search filter fields.'
 });
+
+/**
+ * User search filter.
+ */
+export const zUserFilter = zUserFilterFields.and(z.object({
+    $or: z.array(zUserFilterFields).register(z.globalRegistry, {
+        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "$or": [\n    { "username": "user-1" },\n    { "username": "user-2" }\n  ]\n}\n```\nThis matches users whose <code>username</code> is <em>user-1</em> or <em>user-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
+    }).optional()
+}));
 
 export const zUserSearchQueryRequest = zSearchQueryRequest.and(z.object({
     sort: z.array(zUserSearchQuerySortRequest).register(z.globalRegistry, {
