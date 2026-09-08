@@ -155,20 +155,11 @@ await camunda.createDeployment({
 
 ## Migrating from 8.9
 
-SDK 10.x (for Camunda 8.10) promotes several identifier and name fields from plain `string` to **branded types** via `CamundaKey<T>`. The wire format and runtime API are unchanged — branded values are still plain strings at runtime and are assignable anywhere a `string` is expected (template literals, logging, JSON serialization). Callers need to brand values using `.assumeExists()` (which performs validation) to satisfy the new types.
+SDK 10.x (for Camunda 8.10) promotes several identifier fields from plain `string` to **branded types**, changes the `getResourceContent` response from a string to an object, and makes `BatchOperationItemResponse.processInstanceKey` nullable. Nothing was removed or renamed, and the wire format is unchanged.
 
-### New branded types
+**→ See [MIGRATION.md](./MIGRATION.md) for the full guide**, including the complete list of affected fields.
 
-| Brand | Used for |
-|-------|----------|
-| `RoleId` | Role identifiers |
-| `GroupId` | Group identifiers |
-| `ClientId` | OAuth client identifiers |
-| `MappingRuleId` | Mapping-rule identifiers |
-| `ClusterVariableName` | Cluster variable names |
-| `AgentInstanceKey` | Agent-instance system keys |
-
-### Migration
+The common case is branding an identifier at the boundary:
 
 <!-- snippet-source: examples/readme.ts | regions: V9ToV10Migration -->
 
@@ -187,12 +178,6 @@ await camunda.assignRoleToGroup({
 ```
 
 Each branded type has an `.assumeExists()` method that validates the string and returns the branded value. Validation runs at call time and can throw if the input is malformed, so call it once at the boundary (startup, config parsing, API response) and pass the branded value through your application. See [Branded Keys](#branded-keys) for more on this pattern.
-
-### What does NOT change
-
-- The wire format is unchanged — all values are still strings on the wire.
-- No method signatures changed name or arity.
-- Branded values are assignable anywhere a `string` is expected (template literals, logging, JSON serialization), so existing string-handling code continues to work.
 
 ## Quick Start (Zero‑Config – Recommended)
 
