@@ -14,7 +14,7 @@ npm install @camunda8/orchestration-cluster-api@^10
 | # | Change | Who is affected |
 |---|--------|-----------------|
 | 1 | [Identifier fields are now branded types](#1-identifier-fields-are-now-branded-types) | Anyone passing plain strings for group, role, client, mapping-rule, tenant, username or cluster-variable-name identifiers |
-| 2 | [`getResourceContent` returns an object, not a string](#2-getresourcecontent-returns-an-object-not-a-string) | Callers of `getResourceContent` |
+| 2 | [`getResourceContent` is deprecated, replaced by `getResourceContentBinary`](#2-getresourcecontent-is-deprecated-replaced-by-getresourcecontentbinary) | Callers of `getResourceContent` |
 | 3 | [`BatchOperationItemResponse.processInstanceKey` is nullable](#3-batchoperationitemresponseprocessinstancekey-is-nullable) | Callers reading batch operation items |
 
 Nothing else in the public surface was removed or renamed. See
@@ -72,32 +72,48 @@ const group = await camunda.getGroup({ groupId: GroupId.assumeExists('engineerin
 console.log(`group: ${group.groupId}`); // still a string at runtime
 ```
 
-## 2. `getResourceContent` returns an object, not a string
+## 2. `getResourceContent` is deprecated, replaced by `getResourceContentBinary`
 
-The 200 response type changed:
+| Operation | Path | Scope | 200 type in v10 |
+|---|---|---|---|
+| `getResourceContent` *(deprecated in 8.10)* | `/resources/{resourceKey}/content` | RPA resources only | `{ [key: string]: unknown }` |
+| `getResourceContentBinary` *(new in 8.10)* | `/resources/{resourceKey}/content/binary` | all resource types **except** BPMN, DMN and forms | `Blob \| File` |
+
+**`getResourceContent` is now marked deprecated upstream**, and its 200 type changed
+from `string` to an object:
 
 ```ts
 // v9
-200: string;
+GetResourceContentResponses         200: string;
 
 // v10
-200: { [key: string]: unknown };
+GetResourceContentResponses         200: { [key: string]: unknown };
+GetResourceContentBinaryResponses   200: Blob | File;
 ```
 
-If you consumed the result as a string, that code no longer type-checks:
+The type change is the generator becoming honest rather than a behaviour change: the
+endpoint has always been declared `application/json`, so the v9 `string` was a
+flattened JSON response, not resource bytes. Note also that this operation only ever
+served RPA resources — in 8.9 its description already read *"Currently, this endpoint
+only supports RPA resources"*.
+
+**Migrate to `getResourceContentBinary`**, which returns octet-stream content:
 
 ```ts
-// v9
-const content = await camunda.getResourceContent({ resourceKey });
-fs.writeFileSync('out.bpmn', content);
-
-// v10 — the response is a parsed object
-const content = await camunda.getResourceContent({ resourceKey });
-fs.writeFileSync('out.bpmn', JSON.stringify(content));
+const blob = await camunda.getResourceContentBinary({ resourceKey });
+fs.writeFileSync('automation.rpa', Buffer.from(await blob.arrayBuffer()));
 ```
 
-Adjust to whatever the resource actually is; the point is that the SDK no longer
-hands you a `string`.
+**Neither endpoint serves BPMN, DMN or forms.** The spec is explicit that
+`/content/binary` "does not return BPMN process definitions, DMN decision definitions,
+or form resources". Those have dedicated operations — not a v10 change, but it is the
+question the deprecation tends to raise:
+
+| To fetch | Use |
+|---|---|
+| BPMN process definition XML | `getProcessDefinitionXML` |
+| DMN decision definition XML | `getDecisionDefinitionXML` |
+| A form | `getFormByKey`, `getStartProcessForm`, `getUserTaskForm` |
 
 ## 3. `BatchOperationItemResponse.processInstanceKey` is nullable
 
