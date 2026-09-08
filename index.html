@@ -131,54 +131,14 @@
 <p><strong>Tip</strong>: If your tenant ID comes from a validated source (environment variable, config file), call <code>TenantId.assumeExists()</code> once at startup and pass the branded value throughout your application.</p>
 </blockquote>
 <h2 id="migrating-from-89" class="tsd-anchor-link">Migrating from 8.9<a href="#migrating-from-89" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>SDK 10.x (for Camunda 8.10) promotes several identifier and name fields from plain <code>string</code> to <strong>branded types</strong> via <code>CamundaKey&lt;T&gt;</code>. The wire format and runtime API are unchanged — branded values are still plain strings at runtime and are assignable anywhere a <code>string</code> is expected (template literals, logging, JSON serialization). Callers need to brand values using <code>.assumeExists()</code> (which performs validation) to satisfy the new types.</p>
-<h3 id="new-branded-types" class="tsd-anchor-link">New branded types<a href="#new-branded-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<table>
-<thead>
-<tr>
-<th>Brand</th>
-<th>Used for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>RoleId</code></td>
-<td>Role identifiers</td>
-</tr>
-<tr>
-<td><code>GroupId</code></td>
-<td>Group identifiers</td>
-</tr>
-<tr>
-<td><code>ClientId</code></td>
-<td>OAuth client identifiers</td>
-</tr>
-<tr>
-<td><code>MappingRuleId</code></td>
-<td>Mapping-rule identifiers</td>
-</tr>
-<tr>
-<td><code>ClusterVariableName</code></td>
-<td>Cluster variable names</td>
-</tr>
-<tr>
-<td><code>AgentInstanceKey</code></td>
-<td>Agent-instance system keys</td>
-</tr>
-</tbody>
-</table>
-<h3 id="migration" class="tsd-anchor-link">Migration<a href="#migration" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>SDK 10.x (for Camunda 8.10) promotes several identifier fields from plain <code>string</code> to <strong>branded types</strong>, changes the <code>getResourceContent</code> response from a string to an object, and makes <code>BatchOperationItemResponse.processInstanceKey</code> nullable. Nothing was removed or renamed, and the wire format is unchanged.</p>
+<p><strong>→ See <a href="media/MIGRATION.md">MIGRATION.md</a> for the full guide</strong>, including the complete list of affected fields.</p>
+<p>The common case is branding an identifier at the boundary:</p>
 <!-- snippet-source: examples/readme.ts | regions: V9ToV10Migration -->
 <pre><code class="ts"><span class="hl-3">// v9 — plain strings were accepted</span><br/><span class="hl-3">// await camunda.assignRoleToGroup({</span><br/><span class="hl-3">//   roleId: &#39;developer&#39;,</span><br/><span class="hl-3">//   groupId: &#39;engineering&#39;,</span><br/><span class="hl-3">// });</span><br/><br/><span class="hl-3">// v10 — use the branded type helpers at the boundary</span><br/><span class="hl-4">await</span><span class="hl-1"> </span><span class="hl-5">camunda</span><span class="hl-1">.</span><span class="hl-0">assignRoleToGroup</span><span class="hl-1">({</span><br/><span class="hl-1">  </span><span class="hl-5">roleId:</span><span class="hl-1"> </span><span class="hl-5">RoleId</span><span class="hl-1">.</span><span class="hl-0">assumeExists</span><span class="hl-1">(</span><span class="hl-2">&#39;developer&#39;</span><span class="hl-1">),</span><br/><span class="hl-1">  </span><span class="hl-5">groupId:</span><span class="hl-1"> </span><span class="hl-5">GroupId</span><span class="hl-1">.</span><span class="hl-0">assumeExists</span><span class="hl-1">(</span><span class="hl-2">&#39;engineering&#39;</span><span class="hl-1">),</span><br/><span class="hl-1">});</span>
 </code><button type="button">Copy</button></pre>
 
 <p>Each branded type has an <code>.assumeExists()</code> method that validates the string and returns the branded value. Validation runs at call time and can throw if the input is malformed, so call it once at the boundary (startup, config parsing, API response) and pass the branded value through your application. See <a href="#branded-keys">Branded Keys</a> for more on this pattern.</p>
-<h3 id="what-does-not-change" class="tsd-anchor-link">What does NOT change<a href="#what-does-not-change" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<ul>
-<li>The wire format is unchanged — all values are still strings on the wire.</li>
-<li>No method signatures changed name or arity.</li>
-<li>Branded values are assignable anywhere a <code>string</code> is expected (template literals, logging, JSON serialization), so existing string-handling code continues to work.</li>
-</ul>
 <h2 id="quick-start-zeroconfig-recommended" class="tsd-anchor-link">Quick Start (Zero‑Config – Recommended)<a href="#quick-start-zeroconfig-recommended" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Keep configuration out of application code. Let the factory read <code>CAMUNDA_*</code> variables from the environment (12‑factor style). This makes rotation, secret management, and environment promotion safer &amp; simpler.</p>
 <!-- snippet-source: examples/readme-imports.txt,examples/readme.ts | regions: ReadmeDefaultImport+ReadmeQuickStart -->
@@ -1439,11 +1399,6 @@ from the package entry point.</p>
 <li><a href="#search-results-optional-→-required-fields"><span>Search results: optional → required fields</span></a></li>
 <li><a href="#branded-key-types-for"><span>Branded key types for </span></a></li></ul></li>
 <li><a href="#migrating-from-89"><span>Migrating from 8.9</span></a></li>
-<li>
-<ul>
-<li><a href="#new-branded-types"><span>New branded types</span></a></li>
-<li><a href="#migration"><span>Migration</span></a></li>
-<li><a href="#what-does-not-change"><span>What does <wbr/>NOT change</span></a></li></ul></li>
 <li><a href="#quick-start-zeroconfig-recommended"><span>Quick <wbr/>Start (<wbr/>Zero‑<wbr/>Config – <wbr/>Recommended)</span></a></li>
 <li>
 <ul>
