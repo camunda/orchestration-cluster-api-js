@@ -4018,7 +4018,7 @@ class CamundaClientBase {
    * async function createAgentInstanceExample(
    *   elementInstanceKey: ElementInstanceKey,
    *   jobKey: JobKey,
-   *   jobLease: string
+   *   jobLease: JobLeaseToken
    * ) {
    *   const camunda = createCamundaClient();
    * 
@@ -20635,7 +20635,7 @@ class CamundaClientBase {
    *   agentInstanceKey: AgentInstanceKey,
    *   elementInstanceKey: ElementInstanceKey,
    *   jobKey: JobKey,
-   *   jobLease: string
+   *   jobLease: JobLeaseToken
    * ) {
    *   const camunda = createCamundaClient();
    * 

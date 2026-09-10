@@ -7,6 +7,7 @@ import {
   type ElementInstanceKey,
   HistoryItemId,
   type JobKey,
+  type JobLeaseToken,
 } from '@camunda8/orchestration-cluster-api';
 
 //#region GetAgentInstance
@@ -47,7 +48,7 @@ async function searchAgentInstancesExample() {
 async function createAgentInstanceExample(
   elementInstanceKey: ElementInstanceKey,
   jobKey: JobKey,
-  jobLease: string
+  jobLease: JobLeaseToken
 ) {
   const camunda = createCamundaClient();
 
@@ -80,7 +81,7 @@ async function updateAgentInstanceExample(
   agentInstanceKey: AgentInstanceKey,
   elementInstanceKey: ElementInstanceKey,
   jobKey: JobKey,
-  jobLease: string
+  jobLease: JobLeaseToken
 ) {
   const camunda = createCamundaClient();
 

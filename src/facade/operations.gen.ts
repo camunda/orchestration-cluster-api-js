@@ -191,7 +191,7 @@ type _createAgentInstance_Body = CreateAgentInstanceData extends { body?: infer 
  * async function createAgentInstanceExample(
  *   elementInstanceKey: ElementInstanceKey,
  *   jobKey: JobKey,
- *   jobLease: string
+ *   jobLease: JobLeaseToken
  * ) {
  *   const camunda = createCamundaClient();
  * 
@@ -7081,7 +7081,7 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
  *   agentInstanceKey: AgentInstanceKey,
  *   elementInstanceKey: ElementInstanceKey,
  *   jobKey: JobKey,
- *   jobLease: string
+ *   jobLease: JobLeaseToken
  * ) {
  *   const camunda = createCamundaClient();
  * 

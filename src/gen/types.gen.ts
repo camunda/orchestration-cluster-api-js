@@ -489,7 +489,7 @@ export type AgentInstanceCreationRequest = {
      * rather than committed.
      *
      */
-    jobLease: string;
+    jobLease: JobLeaseToken;
     /**
      * A batch of history items to append to the agent instance's conversation
      * history, in request order. Each created item is echoed back in the
@@ -553,7 +553,7 @@ export type AgentInstanceUpdateRequest = {
      * rather than committed.
      *
      */
-    jobLease: string;
+    jobLease: JobLeaseToken;
     /**
      * A batch of history items to append to the agent instance's conversation
      * history, in request order. Each created item is echoed back in the
@@ -806,7 +806,7 @@ export type AgentInstanceHistoryItemResult = {
     /**
      * The lease token of the activation that produced this item.
      */
-    jobLease: string;
+    jobLease: JobLeaseToken;
     /**
      * The loop iteration this item belongs to.
      */
@@ -3228,7 +3228,7 @@ export type ClusterRebalanceOperationPartition = {
     /**
      * The terminal outcome, present only when progress is COMPLETED.
      */
-    result: 'TRANSFERRED' | 'ALREADY_LEADER' | 'NOT_MEMBER' | 'NOT_REPLICATING' | 'UNREACHABLE' | 'NOT_COORDINATOR' | 'STALE_CONFIGURATION' | 'TRANSFER_IN_PROGRESS' | 'LAG_TOO_HIGH' | 'LEADER_INITIALIZING' | 'CONFIGURATION_CHANGE_IN_PROGRESS' | 'PAUSE_FAILED' | 'REPLICATION_TIMED_OUT' | 'TIMEOUT_NOW_EXHAUSTED' | 'LEADER_CHANGED' | 'NO_LEADER' | 'NO_RESPONSE' | 'CANCELLED' | 'PHYSICAL_TENANT_DISABLED';
+    result: 'TRANSFERRED' | 'ALREADY_LEADER' | 'NOT_MEMBER' | 'NOT_REPLICATING' | 'UNREACHABLE' | 'NOT_COORDINATOR' | 'STALE_CONFIGURATION' | 'TRANSFER_IN_PROGRESS' | 'LAG_TOO_HIGH' | 'LEADER_INITIALIZING' | 'CONFIGURATION_CHANGE_IN_PROGRESS' | 'PAUSE_FAILED' | 'REPLICATION_TIMED_OUT' | 'TIMEOUT_NOW_EXHAUSTED' | 'LEADER_CHANGED' | 'NO_LEADER' | 'NO_RESPONSE' | 'CANCELLED' | 'PHYSICAL_TENANT_DISABLED' | 'PHYSICAL_TENANT_RECOVERING';
 };
 
 /**
@@ -6466,6 +6466,19 @@ export type LoopIterationId = number;
 export type HistoryItemId = CamundaKey<'HistoryItemId'>;
 
 /**
+ * An opaque, engine-minted fencing token identifying a single activation of a job.
+ * Returned by Activate Jobs as `ActivatedJobResult.leaseToken` when the job is
+ * activated with a lease, and passed back on fenced job commands — and on
+ * agent-instance creation/updates as `jobLease` — to prove the caller holds the
+ * current lease. The token is opaque: clients may rely on its presence and equality
+ * only, and must never construct, parse, or otherwise interpret it beyond equality
+ * checks. It cannot be minted client-side; only the engine produces it, exactly once
+ * per leased activation, and clients must not depend on any particular internal format.
+ *
+ */
+export type JobLeaseToken = CamundaKey<'JobLeaseToken'>;
+
+/**
  * ElementId property with full advanced search capabilities.
  */
 export type ElementIdFilterProperty = ElementIdExactMatch | AdvancedElementIdFilter;
@@ -7308,7 +7321,7 @@ export type ActivatedJobResult = {
      * The lease token identifying this activation. This is `null` when the job was activated without a lease.
      *
      */
-    leaseToken: string | null;
+    leaseToken: JobLeaseToken | null;
 };
 
 /**
@@ -7620,7 +7633,7 @@ export type JobFailRequest = {
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: string | null;
+    leaseToken?: JobLeaseToken | null;
 };
 
 export type JobErrorRequest = {
@@ -7647,7 +7660,7 @@ export type JobErrorRequest = {
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: string | null;
+    leaseToken?: JobLeaseToken | null;
 };
 
 export type JobCompletionRequest = {
@@ -7664,7 +7677,7 @@ export type JobCompletionRequest = {
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: string | null;
+    leaseToken?: JobLeaseToken | null;
     /**
      * An optional business id to assign to the process instance the job belongs to, as part of completing the job, letting a worker set the identifier from work it just performed.
      * The business id can only be assigned to a root process instance: if the job belongs to a child process instance (one started by a call activity), the completion is rejected. An empty business id is likewise rejected. The assignment is single and irreversible and is only accepted while business id uniqueness is disabled. Only artifacts created after the assignment carry the business id; already-existing ones are not enriched. Completing with a business id that differs from one already assigned rejects the whole completion, leaving the job open; re-sending the identical business id is an idempotent no-op.
@@ -7796,7 +7809,7 @@ export type JobUpdateRequest = {
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: string | null;
+    leaseToken?: JobLeaseToken | null;
 };
 
 /**
@@ -23875,7 +23888,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:49822b09e774b93a76793c2ae90dfb1a7cff4e2a827538c5706835c407c32e28
+// specHash=sha256:52ea5640dc7418d81d3141f8d0f22723e4f5e41bdeb926fb05808bf4b28aef37
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -24265,6 +24278,20 @@ export namespace JobKey {
   export function isValid(value: string): boolean {
     try {
       assertConstraint(value, 'JobKey', { pattern: "^-?[0-9]+$", minLength: 1, maxLength: 25 });
+      return true;
+    } catch { return false; }
+  }
+}
+// An opaque, engine-minted fencing token identifying a single activation of a job. Returned by Activate Jobs as `ActivatedJobResult.leaseToken` when the job is activated with a lease, and passed back on fenced job commands — and on agent-instance creation/updates as `jobLease` — to prove the caller holds the current lease. The token is opaque: clients may rely on its presence and equality only, and must never construct, parse, or otherwise interpret it beyond equality checks. It cannot be minted client-side; only the engine produces it, exactly once per leased activation, and clients must not depend on any particular internal format. 
+export namespace JobLeaseToken {
+  export function assumeExists(value: string): JobLeaseToken {
+    assertConstraint(value, 'JobLeaseToken', { minLength: 1 });
+    return value as any;
+  }
+  export function getValue(key: JobLeaseToken): string { return key; }
+  export function isValid(value: string): boolean {
+    try {
+      assertConstraint(value, 'JobLeaseToken', { minLength: 1 });
       return true;
     } catch { return false; }
   }
