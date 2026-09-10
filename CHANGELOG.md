@@ -1,3 +1,10 @@
+# [10.0.0-alpha.44](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.43...v10.0.0-alpha.44) (2026-09-10)
+
+
+### Features
+
+* regenerate and update agentInstance examples ([#501](https://github.com/camunda/orchestration-cluster-api-js/issues/501)) ([093ffca](https://github.com/camunda/orchestration-cluster-api-js/commit/093ffca9593205585e197daa07fdd8909009fde7))
+
 # [10.0.0-alpha.43](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.42...v10.0.0-alpha.43) (2026-08-28)
 
 
