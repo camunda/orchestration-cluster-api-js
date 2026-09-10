@@ -308,6 +308,27 @@ jobs:
         with:
           docker-dir: docker
 
+      - name: Wait for published version to propagate
+        run: |
+          PKG="@camunda8/orchestration-cluster-api"
+          VER="${{ needs.publish.outputs.published_version }}"
+          echo "Waiting for ${PKG}@${VER} to become resolvable on the registry"
+          # npm publish returns before the new version is readable from all
+          # registry replicas/CDN edges, so a naive install can hit ETARGET.
+          # Poll `npm view` until the exact version resolves (or time out).
+          attempts=30
+          delay=10
+          for i in $(seq 1 "$attempts"); do
+            if npm view --prefer-online "${PKG}@${VER}" version >/dev/null 2>&1; then
+              echo "Resolved ${PKG}@${VER} after attempt ${i}"
+              exit 0
+            fi
+            echo "Attempt ${i}/${attempts}: ${VER} not visible yet; retrying in ${delay}s"
+            sleep "$delay"
+          done
+          echo "::error::${PKG}@${VER} did not become resolvable within $((attempts * delay))s"
+          exit 1
+
       - name: Install published SDK into example-app
         working-directory: example-app
         run: |
