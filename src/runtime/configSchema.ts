@@ -248,6 +248,13 @@ type PrimitiveType<T> = T extends { type: 'string' }
 
 export type EnvVarValue<K extends EnvVarKey> = PrimitiveType<(typeof SCHEMA)[K]>;
 
+// The subset of keys the schema marks `secret: true`. Callers that keep secrets wrapped
+// (e.g. the Effect `Config` surface holds them as `Redacted`) use this to type those keys
+// distinctly from plain-string keys.
+export type SecretKey = {
+  [K in EnvVarKey]: (typeof SCHEMA)[K] extends { secret: true } ? K : never;
+}[EnvVarKey];
+
 // Flat overrides (strongly typed values)
 export type EnvOverrides = Partial<{ [K in EnvVarKey]: EnvVarValue<K> }>;
 
