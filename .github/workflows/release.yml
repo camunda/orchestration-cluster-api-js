@@ -308,6 +308,39 @@ jobs:
         with:
           docker-dir: docker
 
+      - name: Wait for published version to propagate
+        run: |
+          set -euo pipefail
+          PKG="@camunda8/orchestration-cluster-api"
+          VER="${{ needs.publish.outputs.published_version }}"
+          if [ -z "${VER}" ]; then
+            echo "::error::published_version is empty; refusing to poll the registry for an unspecified version"
+            exit 1
+          fi
+          echo "Waiting for ${PKG}@${VER} to become resolvable on the registry"
+          # npm publish returns before the new version is readable from all
+          # registry replicas/CDN edges, so a naive install can hit ETARGET.
+          # Poll `npm view` until the exact version resolves (or time out).
+          attempts=30
+          delay=10
+          for i in $(seq 1 "$attempts"); do
+            # Capture stderr so we can distinguish "not visible yet" from a
+            # real registry/network/auth failure instead of masking both.
+            if err=$(npm view --prefer-online "${PKG}@${VER}" version 2>&1 >/dev/null); then
+              echo "Resolved ${PKG}@${VER} after attempt ${i}"
+              exit 0
+            fi
+            if ! printf '%s' "$err" | grep -qiE 'ETARGET|E404|No matching version|is not in this registry'; then
+              echo "::error::Unexpected npm error while checking ${PKG}@${VER}; failing fast:"
+              printf '%s\n' "$err"
+              exit 1
+            fi
+            echo "Attempt ${i}/${attempts}: ${VER} not visible yet; retrying in ${delay}s"
+            sleep "$delay"
+          done
+          echo "::error::${PKG}@${VER} did not become resolvable within $((attempts * delay))s"
+          exit 1
+
       - name: Install published SDK into example-app
         working-directory: example-app
         run: |
