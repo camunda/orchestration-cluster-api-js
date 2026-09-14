@@ -34,11 +34,13 @@ export interface EnrichedActivatedJobActions {
  * Generic in its underlying activated-job shape `J` so that the marker-driven
  * dependent-presence projections (see `hooks/post/710-derive-present-when.ts`)
  * can narrow individual response properties — e.g. `leaseToken` becomes
- * non-null when a job was activated with `withLease: true`, or `?: never` when it
- * was not. The absent projection types the property as `never`, which is not
- * assignable to the base field, so `J` is left unconstrained rather than bounded
- * by `ActivatedJobResult`. Defaults to the base `ActivatedJobResult`, so existing
- * `EnrichedActivatedJob` usages are unchanged.
+ * non-null when a job was activated with `withLease: true`, or an optional
+ * nullable field (`{ leaseToken?: null }`) when it was not. The absent
+ * projection re-types the property as optional-and-null rather than removing it,
+ * so it is not assignable to the base non-nullable narrowing; `J` is therefore
+ * left unconstrained rather than bounded by `ActivatedJobResult`. Defaults to the
+ * base `ActivatedJobResult`, so existing `EnrichedActivatedJob` usages are
+ * unchanged.
  */
 export type EnrichedActivatedJob<J = ActivatedJobResult> = J & EnrichedActivatedJobActions;
 
@@ -134,8 +136,16 @@ export function enrichActivatedJob(
     return JobActionReceipt;
   };
   job.modifyJobTimeout = ({ newTimeoutMs }: { newTimeoutMs: number }) =>
-    client.updateJob({ changeset: { timeout: newTimeoutMs }, jobKey: raw.jobKey });
+    client.updateJob({
+      changeset: { timeout: newTimeoutMs },
+      jobKey: raw.jobKey,
+      ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+    });
   job.modifyRetries = ({ retries }: { retries: number }) =>
-    client.updateJob({ changeset: { retries }, jobKey: raw.jobKey });
+    client.updateJob({
+      changeset: { retries },
+      jobKey: raw.jobKey,
+      ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+    });
   return job as EnrichedActivatedJob;
 }

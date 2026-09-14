@@ -13,6 +13,7 @@ import { type EffectWorkerConfig, runWorkerLoop } from '../src/effect-worker';
 
 interface ActivateBody {
   maxJobsToActivate?: number;
+  withLease?: boolean;
 }
 
 function recordingCamunda(bodies: ActivateBody[]): Layer.Layer<CamundaEffect> {
@@ -44,6 +45,21 @@ async function firstActivationBatch(
   return Effect.runPromise(program);
 }
 
+async function firstActivationBody(
+  config: Omit<EffectWorkerConfig<void>, 'handler'>
+): Promise<ActivateBody | undefined> {
+  const bodies: ActivateBody[] = [];
+  const program = Effect.gen(function* () {
+    const fiber = yield* Effect.forkChild(
+      runWorkerLoop<void>({ ...config, handler: () => Effect.void })
+    );
+    yield* TestClock.adjust('1 milli');
+    yield* Fiber.interrupt(fiber);
+    return bodies[0];
+  }).pipe(Effect.provide(recordingCamunda(bodies)), Effect.provide(TestClock.layer()));
+  return Effect.runPromise(program);
+}
+
 describe('Effect worker caps activation batch to handler concurrency', () => {
   it('caps maxJobsToActivate to a smaller numeric concurrency', async () => {
     expect(await firstActivationBatch({ type: 't', maxJobsToActivate: 10, concurrency: 3 })).toBe(
@@ -68,5 +84,19 @@ describe('Effect worker caps activation batch to handler concurrency', () => {
 
   it('leaves the batch untouched when concurrency matches the batch (default coupling)', async () => {
     expect(await firstActivationBatch({ type: 't', maxJobsToActivate: 7 })).toBe(7);
+  });
+});
+
+describe('Effect worker forwards the withLease activation flag', () => {
+  it('sends withLease: true in the activation body when configured', async () => {
+    expect(
+      (await firstActivationBody({ type: 't', concurrency: 1, withLease: true }))?.withLease
+    ).toBe(true);
+  });
+
+  it('omits withLease from the activation body by default', async () => {
+    expect(await firstActivationBody({ type: 't', concurrency: 1 })).not.toHaveProperty(
+      'withLease'
+    );
   });
 });

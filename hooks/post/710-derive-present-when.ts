@@ -157,6 +157,18 @@ function bindOperations(marker: PresentWhenMarker, spec: Json): OperationBinding
   return bindings;
 }
 
+/** Every non-empty subset of `items`, used to enumerate marker combinations. */
+function nonEmptySubsets<T>(items: T[]): T[][] {
+  const out: T[][] = [];
+  const n = items.length;
+  for (let mask = 1; mask < 1 << n; mask++) {
+    const subset: T[] = [];
+    for (let i = 0; i < n; i++) if (mask & (1 << i)) subset.push(items[i]);
+    out.push(subset);
+  }
+  return out;
+}
+
 function presentTypeName(m: PresentWhenMarker): string {
   return `${m.schemaName}With${pascal(m.prop)}`;
 }
@@ -198,78 +210,135 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
   let patched = 0;
   const usedTypes = new Set<string>();
 
+  // Group markers by the operation they bind. A single operation can carry
+  // several `x-present-when` markers (the hook is class-scoped, not hardcoded to
+  // one field); they must be emitted as ONE coherent set of overloads so a call
+  // satisfying multiple literals narrows *every* dependent field, not just the
+  // first-declared one.
+  interface OperationGroup {
+    method: string;
+    arr: string;
+    markers: PresentWhenMarker[];
+  }
+  const groups = new Map<string, OperationGroup>();
   for (const m of markers) {
     for (const binding of bindOperations(m, spec)) {
-      const method = binding.operationId;
-      const arr = binding.arrayProp;
-      // The enriched single declaration emitted by hook 700, e.g.:
-      //   activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
-      const declRe = new RegExp(
-        `  ${method}\\(input: (${method}Input), options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: (\\w+)\\[\\] \\}>;`
-      );
-      const declMatch = src.match(declRe);
-      if (!declMatch) continue;
-      const inputType = declMatch[1];
-      const f = m.requestField;
-      // Idempotence must be marker-specific: several markers can bind the same
-      // operation, so checking only for "any overload of this method" would skip
-      // every marker after the first and drop its projection. Key on THIS marker's
-      // present overload signature (its request field + matched literal).
-      const presentOverloadSig = `${method}(input: ${inputType} & { ${f}: ${scalarLiteral(
-        m.equals
-      )} }`;
-      if (src.includes(presentOverloadSig)) {
-        patched++; // this marker's overloads are already present
-        continue;
+      const key = `${binding.operationId}::${binding.arrayProp}`;
+      let g = groups.get(key);
+      if (!g) {
+        g = { method: binding.operationId, arr: binding.arrayProp, markers: [] };
+        groups.set(key, g);
       }
-      const element = declMatch[2];
-      const present = presentTypeName(m);
-      const absent = absentTypeName(m);
-      usedTypes.add(present);
-      const overloads: string[] = [];
-      // present: F set to the match literal → property required non-null
-      overloads.push(
-        `  ${method}(input: ${inputType} & { ${f}: ${scalarLiteral(
-          m.equals
-        )} }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}<${present}>[] }>;`
-      );
-      // absent: only enumerable for a boolean matcher; the false/null/undefined complement.
-      if (typeof m.equals === 'boolean') {
-        usedTypes.add(absent);
-        overloads.push(
-          `  ${method}(input: ${inputType} & { ${f}?: ${scalarLiteral(
-            !m.equals
-          )} | null | undefined }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}<${absent}>[] }>;`
-        );
-      }
-      // dynamic base: unchanged nullable projection (safe default).
-      overloads.push(declMatch[0]);
-      src = src.replace(declMatch[0], overloads.join('\n'));
+      g.markers.push(m);
+    }
+  }
 
-      // Runtime guard: newer client requested a lease against an older server that
-      // ignores the request field and returns no token → fail fast, don't mis-type.
-      const enrichAnchor = `if (data && data.${arr}) { data.${arr} = data.${arr}.map(`;
-      const guardMark = `/* present-when-guard:${method} */`;
-      if (src.includes(enrichAnchor) && !src.includes(guardMark)) {
-        const guard = `${guardMark} if (data && data.${arr} && _body && (_body as any).${f} === ${scalarLiteral(
-          m.equals
-        )}) { for (const _el of data.${arr}) { if (_el.${m.prop} == null) { const _e: any = new Error('${method}: ${f}=${scalarLiteral(
-          m.equals
-        )} was requested but the server returned an item without \\'${m.prop}\\' — the server may predate this feature. Refusing to silently mis-type the dependent field.'); _e.name = 'PresentWhenUnsupportedError'; throw _e; } } }\n        `;
+  for (const g of groups.values()) {
+    const { method, arr } = g;
+    // The enriched single declaration emitted by hook 700, e.g.:
+    //   activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
+    const declRe = new RegExp(
+      `  ${method}\\(input: (${method}Input), options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: (\\w+)\\[\\] \\}>;`
+    );
+    const declMatch = src.match(declRe);
+    if (!declMatch) continue;
+    const inputType = declMatch[1];
+    const element = declMatch[2];
+
+    // Enumerate every non-empty subset of this operation's markers, MOST-specific
+    // (largest) first, so TypeScript's first-match overload resolution picks the
+    // projection that narrows the most dependent fields for a call satisfying
+    // several literals. The projection for a subset is the intersection of each
+    // marker's present type.
+    const subsets = nonEmptySubsets(g.markers).sort((a, b) => b.length - a.length);
+    const localTypes = new Set<string>();
+    const presentOverloads = subsets.map((subset) => {
+      const constraint = subset
+        .map((m) => `${m.requestField}: ${scalarLiteral(m.equals)}`)
+        .join('; ');
+      const projection = subset
+        .map((m) => {
+          const t = presentTypeName(m);
+          localTypes.add(t);
+          return t;
+        })
+        .join(' & ');
+      return `  ${method}(input: ${inputType} & { ${constraint} }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}<${projection}>[] }>;`;
+    });
+
+    // Idempotence (group-specific): if the most-specific present overload is
+    // already spliced, this operation was handled on a previous run — skip
+    // re-splicing. The projection names it needs are already imported.
+    if (src.includes(presentOverloads[0])) {
+      patched++;
+      continue;
+    }
+    for (const t of localTypes) usedTypes.add(t);
+
+    const overloads: string[] = [...presentOverloads];
+    // absent: only enumerable for a lone boolean matcher (its complement). With
+    // several markers the complement is not a single literal, so the dynamic base
+    // overload (safe nullable default) covers it.
+    if (g.markers.length === 1 && typeof g.markers[0].equals === 'boolean') {
+      const m = g.markers[0];
+      const absent = absentTypeName(m);
+      usedTypes.add(absent);
+      overloads.push(
+        `  ${method}(input: ${inputType} & { ${m.requestField}?: ${scalarLiteral(
+          !m.equals
+        )} | null | undefined }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}<${absent}>[] }>;`
+      );
+    }
+    // dynamic base: unchanged nullable projection (safe default).
+    overloads.push(declMatch[0]);
+    src = src.replace(declMatch[0], overloads.join('\n'));
+
+    // Runtime guards: newer client requested a dependent field against an older
+    // server that ignores it and returns no value → fail fast, don't mis-type.
+    // One guard per marker, each keyed on its own request field, literal and
+    // marked property so a second marker on the same operation is NOT skipped by
+    // the first marker's idempotence marker.
+    const enrichAnchor = `if (data && data.${arr}) { data.${arr} = data.${arr}.map(`;
+    if (src.includes(enrichAnchor)) {
+      for (const m of g.markers) {
+        const f = m.requestField;
+        const lit = scalarLiteral(m.equals);
+        const guardMark = `/* present-when-guard:${method}:${f}=${lit}:${m.prop} */`;
+        if (src.includes(guardMark)) continue;
+        // Build the message as a real JS string, then JSON.stringify it for
+        // embedding so any literal/property value (e.g. one containing a quote)
+        // yields valid TypeScript rather than a broken single-quoted string.
+        const message = `${method}: ${f}=${lit} was requested but the server returned an item without '${m.prop}' — the server may predate this feature. Refusing to silently mis-type the dependent field.`;
+        const guard = `${guardMark} if (data && data.${arr} && _body && (_body as any).${f} === ${lit}) { for (const _el of data.${arr}) { if (_el.${m.prop} == null) { const _e: any = new Error(${JSON.stringify(
+          message
+        )}); _e.name = 'PresentWhenUnsupportedError'; throw _e; } } }\n        `;
         src = src.replace(enrichAnchor, guard + enrichAnchor);
       }
-      patched++;
     }
+    patched++;
   }
 
   // Ensure the projection types used by the overloads are imported. They live in
   // the same generated `types.gen` module the client already imports named types
-  // from; append a dedicated type-only import so the names resolve.
+  // from. Merge newly-discovered names into an existing marked import (an
+  // incremental rerun that adds a marker must not leave new aliases unimported).
   if (usedTypes.size > 0) {
     const importMark = '// present-when projection imports';
-    if (!src.includes(importMark)) {
-      const names = [...usedTypes].sort().join(', ');
-      const importLine = `import type { ${names} } from '../gen/types.gen'; ${importMark}`;
+    const importRe =
+      /import type \{ ([^}]*) \} from '\.\.\/gen\/types\.gen'; \/\/ present-when projection imports/;
+    const existing = src.match(importRe);
+    const names = new Set<string>(usedTypes);
+    if (existing) {
+      for (const n of existing[1]
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean))
+        names.add(n);
+    }
+    const importLine = `import type { ${[...names].sort().join(', ')} } from '../gen/types.gen'; ${importMark}`;
+    if (existing) {
+      src = src.replace(existing[0], importLine);
+    } else {
       const anchor =
         "import type { ProcessInstanceKey, ScopeKey, TenantId, VariableFilter } from '../gen/types.gen';";
       if (src.includes(anchor)) {

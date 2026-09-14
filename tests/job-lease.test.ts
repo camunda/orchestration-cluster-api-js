@@ -92,6 +92,32 @@ describe('§3 leaseToken threading through fenced commands', () => {
   });
 });
 
+describe('§3 leaseToken threading through updateJob (modifyJobTimeout/modifyRetries)', () => {
+  it('threads leaseToken into updateJob for both modify actions when leased', async () => {
+    const updateJob = vi.fn().mockResolvedValue(undefined);
+    const client = { updateJob } as unknown as CamundaClient;
+
+    const job = enrichActivatedJob(createMockJob({ leaseToken: 'lease-upd' }), client, mockLog);
+    await job.modifyJobTimeout({ newTimeoutMs: 5000 });
+    await job.modifyRetries({ retries: 4 });
+
+    expect(updateJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-upd' });
+    expect(updateJob.mock.calls[1][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-upd' });
+  });
+
+  it('omits leaseToken from updateJob for both modify actions when unleased', async () => {
+    const updateJob = vi.fn().mockResolvedValue(undefined);
+    const client = { updateJob } as unknown as CamundaClient;
+
+    const job = enrichActivatedJob(createMockJob({ leaseToken: null }), client, mockLog);
+    await job.modifyJobTimeout({ newTimeoutMs: 5000 });
+    await job.modifyRetries({ retries: 4 });
+
+    expect(updateJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
+    expect(updateJob.mock.calls[1][0]).not.toHaveProperty('leaseToken');
+  });
+});
+
 describe('§3 failure paths thread leaseToken (handler error + validation failure)', () => {
   it('threads leaseToken when the handler throws on a leased job', async () => {
     const { client } = makeCapturingClient([

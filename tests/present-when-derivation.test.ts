@@ -115,10 +115,36 @@ describe('x-present-when marker derivation (class-scoped)', () => {
           );
           expect(client, `missing absent projection ${absent} in overload`).toContain(absent);
         }
-        // runtime guard fences newer-client vs older-server
-        expect(client, `missing runtime guard for ${opId}`).toContain(`present-when-guard:${opId}`);
+        // runtime guard fences newer-client vs older-server. The guard marker is
+        // keyed per marker (request field + matched literal + marked property) so
+        // that a second marker on the SAME operation cannot be skipped by the
+        // first marker's idempotence marker — assert that marker-specific form.
+        const litKey = typeof m.equals === 'string' ? JSON.stringify(m.equals) : String(m.equals);
+        expect(client, `missing marker-specific runtime guard for ${opId}`).toContain(
+          `present-when-guard:${opId}:${m.request}=${litKey}:${m.prop}`
+        );
       }
       expect(opIds.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('guards every marker of a shared operation independently (multi-marker class scope)', () => {
+    // The hook keys each runtime guard and each present overload on its own
+    // marker, so two markers binding one operation both get wired. Assert the
+    // guard marker embeds the request field, literal and property — the parts
+    // that distinguish co-located markers — rather than only the operation id.
+    const client = load('src/gen/CamundaClient.ts');
+    for (const m of markers) {
+      for (const opId of findOwningOperations(spec, m)) {
+        const litKey = typeof m.equals === 'string' ? JSON.stringify(m.equals) : String(m.equals);
+        const bareOpGuard = `present-when-guard:${opId} `;
+        // The old operation-only marker form must NOT be emitted (it would let a
+        // co-located marker be skipped); only the fully-qualified form is valid.
+        expect(client, `bare operation-only guard marker leaked for ${opId}`).not.toContain(
+          `/* ${bareOpGuard}*/`
+        );
+        expect(client).toContain(`present-when-guard:${opId}:${m.request}=${litKey}:${m.prop}`);
+      }
     }
   });
 });

@@ -205,10 +205,18 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
 
   // Non-completion actions still proxy through the client (rare, need response)
   job.modifyJobTimeout = ({ newTimeoutMs }: { newTimeoutMs: number }) =>
-    client.updateJob({ changeset: { timeout: newTimeoutMs }, jobKey: jobData.jobKey });
+    client.updateJob({
+      changeset: { timeout: newTimeoutMs },
+      jobKey: jobData.jobKey,
+      ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+    });
 
   job.modifyRetries = ({ retries }: { retries: number }) =>
-    client.updateJob({ changeset: { retries }, jobKey: jobData.jobKey });
+    client.updateJob({
+      changeset: { retries },
+      jobKey: jobData.jobKey,
+      ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+    });
 
   return job;
 }
