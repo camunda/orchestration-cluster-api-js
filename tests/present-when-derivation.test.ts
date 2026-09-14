@@ -82,12 +82,13 @@ describe('x-present-when marker derivation (class-scoped)', () => {
       const absent = `${m.schemaName}Without${pascal(m.prop)}`;
       expect(types, `missing present projection ${present}`).toContain(`export type ${present} =`);
       expect(types, `missing absent projection ${absent}`).toContain(`export type ${absent} =`);
-      // present makes the property required + non-null; absent removes it.
+      // present makes the property required + non-null; absent models the nullable
+      // wire shape (the field may be absent or explicitly null, never a real token).
       expect(types).toContain(
         `export type ${present} = Omit<${m.schemaName}, '${m.prop}'> & { ${m.prop}: NonNullable<${m.schemaName}['${m.prop}']> };`
       );
       expect(types).toContain(
-        `export type ${absent} = Omit<${m.schemaName}, '${m.prop}'> & { ${m.prop}?: never };`
+        `export type ${absent} = Omit<${m.schemaName}, '${m.prop}'> & { ${m.prop}?: null };`
       );
     }
   });
@@ -105,6 +106,15 @@ describe('x-present-when marker derivation (class-scoped)', () => {
           new RegExp(`${opId}\\(input: ${opId}Input & \\{ ${m.request}: `)
         );
         expect(client).toContain(present);
+        // absent overload: only enumerable for a boolean matcher — the
+        // false/null/undefined complement, typed by the Without... projection.
+        if (typeof m.equals === 'boolean') {
+          const absent = `${m.schemaName}Without${pascal(m.prop)}`;
+          expect(client, `missing absent overload for ${opId}`).toMatch(
+            new RegExp(`${opId}\\(input: ${opId}Input & \\{ ${m.request}\\?: `)
+          );
+          expect(client, `missing absent projection ${absent} in overload`).toContain(absent);
+        }
         // runtime guard fences newer-client vs older-server
         expect(client, `missing runtime guard for ${opId}`).toContain(`present-when-guard:${opId}`);
       }

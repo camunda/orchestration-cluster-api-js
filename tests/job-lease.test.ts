@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 import { createCamundaClient } from '../src';
 import type { CamundaClient } from '../src/gen/CamundaClient';
 import { enrichActivatedJob } from '../src/runtime/jobActions';
@@ -88,6 +89,62 @@ describe('§3 leaseToken threading through fenced commands', () => {
     expect(completeJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
     expect(failJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
     expect(throwJobError.mock.calls[0][0]).not.toHaveProperty('leaseToken');
+  });
+});
+
+describe('§3 failure paths thread leaseToken (handler error + validation failure)', () => {
+  it('threads leaseToken when the handler throws on a leased job', async () => {
+    const { client } = makeCapturingClient([
+      createMockJob({ leaseToken: 'lease-xyz', retries: 3 }),
+    ]);
+    const failJob = vi.fn().mockResolvedValue(undefined);
+    (client as any).failJob = failJob;
+    const worker = client.createJobWorker({
+      jobType: 'leased-task',
+      jobHandler: async () => {
+        throw new Error('handler boom');
+      },
+      withLease: true,
+      maxParallelJobs: 1,
+    });
+    await waitFor(() => failJob.mock.calls.length > 0);
+    worker.stop();
+    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-xyz' });
+  });
+
+  it('omits leaseToken when the handler throws on an unleased job', async () => {
+    const { client } = makeCapturingClient([createMockJob({ leaseToken: null, retries: 3 })]);
+    const failJob = vi.fn().mockResolvedValue(undefined);
+    (client as any).failJob = failJob;
+    const worker = client.createJobWorker({
+      jobType: 'plain-task',
+      jobHandler: async () => {
+        throw new Error('handler boom');
+      },
+      maxParallelJobs: 1,
+    });
+    await waitFor(() => failJob.mock.calls.length > 0);
+    worker.stop();
+    expect(failJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
+  });
+
+  it('threads leaseToken when schema validation fails on a leased job', async () => {
+    const { client } = makeCapturingClient([
+      createMockJob({ leaseToken: 'lease-val', variables: { n: 'not-a-number' } }),
+    ]);
+    const failJob = vi.fn().mockResolvedValue(undefined);
+    (client as any).failJob = failJob;
+    const worker = client.createJobWorker({
+      jobType: 'leased-validated',
+      inputSchema: z.object({ n: z.number() }),
+      validateSchemas: true,
+      jobHandler: async (job) => job.complete(),
+      withLease: true,
+      maxParallelJobs: 1,
+    });
+    await waitFor(() => failJob.mock.calls.length > 0);
+    worker.stop();
+    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-val' });
   });
 });
 

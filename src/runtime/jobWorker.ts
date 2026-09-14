@@ -71,6 +71,12 @@ export interface JobWorkerConfig<
    * rather than racing the newer activation. Once a job type is leased, it is served
    * only to leasing workers of that type, so a homogeneous fleet per job type is
    * recommended.
+   *
+   * Note: the marker-derived non-null `leaseToken` projection applies to the
+   * direct `activateJobs` client call; a worker `jobHandler` intentionally keeps
+   * the base `Job<...>` shape (`leaseToken` remains optional/nullable) because the
+   * token is threaded back into fenced commands automatically — handlers do not
+   * need to read it.
    */
   withLease?: boolean;
   /** @deprecated Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility. */
@@ -397,6 +403,8 @@ export class JobWorker {
           jobKey: raw.jobKey,
           errorMessage: e?.message || 'Handler error',
           retries: typeof retries === 'number' ? Math.max(0, retries - 1) : 0,
+          // Fence the failure against a superseded activation when leased.
+          ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
         });
       } catch (failErr) {
         this._log.error('job.fail.error', failErr);
@@ -409,7 +417,12 @@ export class JobWorker {
 
   private async _failValidation(raw: ActivatedJobResult, msg: string) {
     try {
-      await this._client.failJob({ jobKey: raw.jobKey, errorMessage: msg });
+      await this._client.failJob({
+        jobKey: raw.jobKey,
+        errorMessage: msg,
+        // Fence the failure against a superseded activation when leased.
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      });
     } catch (e) {
       this._log.error('job.fail.validation.error', e);
     } finally {

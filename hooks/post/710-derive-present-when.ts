@@ -180,8 +180,8 @@ function emitProjectionTypes(markers: PresentWhenMarker[]): void {
         m.equals
       )}\`: \`${m.prop}\` is present (required, non-null). */`,
       `export type ${present} = Omit<${m.schemaName}, '${m.prop}'> & { ${m.prop}: NonNullable<${m.schemaName}['${m.prop}']> };`,
-      `/** \`${m.schemaName}\` when \`${m.requestField}\` is absent / a non-matching literal: \`${m.prop}\` is absent. */`,
-      `export type ${absent} = Omit<${m.schemaName}, '${m.prop}'> & { ${m.prop}?: never };`
+      `/** \`${m.schemaName}\` when \`${m.requestField}\` is absent / a non-matching literal: \`${m.prop}\` is null (the nullable wire shape). */`,
+      `export type ${absent} = Omit<${m.schemaName}, '${m.prop}'> & { ${m.prop}?: null };`
     );
   }
   src = `${src.replace(/\n+$/, '')}\n\n${blocks.join('\n')}\n`;
@@ -209,16 +209,23 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
       );
       const declMatch = src.match(declRe);
       if (!declMatch) continue;
-      if (src.includes(`${method}(input: ${declMatch[1]} & {`)) {
-        patched++; // already has overloads
+      const inputType = declMatch[1];
+      const f = m.requestField;
+      // Idempotence must be marker-specific: several markers can bind the same
+      // operation, so checking only for "any overload of this method" would skip
+      // every marker after the first and drop its projection. Key on THIS marker's
+      // present overload signature (its request field + matched literal).
+      const presentOverloadSig = `${method}(input: ${inputType} & { ${f}: ${scalarLiteral(
+        m.equals
+      )} }`;
+      if (src.includes(presentOverloadSig)) {
+        patched++; // this marker's overloads are already present
         continue;
       }
-      const inputType = declMatch[1];
       const element = declMatch[2];
       const present = presentTypeName(m);
       const absent = absentTypeName(m);
       usedTypes.add(present);
-      const f = m.requestField;
       const overloads: string[] = [];
       // present: F set to the match literal → property required non-null
       overloads.push(
