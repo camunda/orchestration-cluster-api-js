@@ -28,6 +28,7 @@ const ROOT = process.cwd();
 const SPEC_PATH = path.join(ROOT, 'external-spec/bundled/rest-api.bundle.json');
 const TYPES_PATH = path.join(ROOT, 'src/gen/types.gen.ts');
 const CLIENT_PATH = path.join(ROOT, 'src/gen/CamundaClient.ts');
+const ZOD_PATH = path.join(ROOT, 'src/gen/zod.gen.ts');
 
 type Json = Record<string, any>;
 
@@ -281,6 +282,22 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
     }
     for (const t of localTypes) usedTypes.add(t);
 
+    // Atomically rebuild the hook-owned overload block: strip any present/absent
+    // overloads this hook emitted for THIS operation on a previous run before
+    // re-splicing the current group. Without this, adding a new marker to an
+    // already-patched operation leaves the prior (narrower) marker overloads
+    // sitting ABOVE the base declaration; TypeScript's first-match overload
+    // resolution then selects a stale overload and omits the newly added
+    // projection (e.g. an existing marker-A overload wins before the new A+B
+    // overload). The base declaration (no `& { … }` intersection) is preserved —
+    // it is re-appended below as the dynamic default. Idempotent: a pure rerun
+    // short-circuits above, so this only runs when the group genuinely changed.
+    const staleOverloadRe = new RegExp(
+      `^  ${method}\\(input: ${inputType} & \\{[^\\n]*\\}, options\\?: OperationOptions\\): CancelablePromise<\\{ ${arr}: \\w+Of<[^\\n]*>\\[\\] \\}>;\\n`,
+      'gm'
+    );
+    src = src.replace(staleOverloadRe, '');
+
     const overloads: string[] = [...presentOverloads];
     // absent: only enumerable for a lone boolean matcher (its complement). With
     // several markers the complement is not a single literal, so the dynamic base
@@ -378,6 +395,51 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
   return patched;
 }
 
+/**
+ * Relax the marked response property in the generated zod schema from
+ * `.nullable()` to `.nullish()`.
+ *
+ * The marked property is `required` + `nullable` in the spec, so
+ * `CAMUNDA_SDK_VALIDATION=res:strict` / `res:fanatical` response validation
+ * demands the key be present (value `null` or a token). An older server that
+ * predates the feature omits the key *entirely*, which would fail response
+ * validation BEFORE the dependent-presence terminal guard (injected after
+ * `gateResponse`) ever runs — the workers would then treat the contract mismatch
+ * as an ordinary, transient activation failure and back off forever instead of
+ * stopping. `.nullish()` additionally accepts an absent key, so the omitting
+ * response passes validation and reaches the terminal `PresentWhenUnsupportedError`
+ * guard, preserving the advertised non-retryable stop across every validation
+ * mode. `.nullish()` is strictly more permissive than `.nullable()`, so the
+ * present-null and present-token cases still validate unchanged.
+ *
+ * Idempotent: once a property is `.nullish()`, the `.nullable()` form is gone and
+ * a rerun is a no-op.
+ */
+function relaxMarkedPropsInZod(markers: PresentWhenMarker[]): void {
+  if (!fs.existsSync(ZOD_PATH)) return;
+  let src = fs.readFileSync(ZOD_PATH, 'utf8');
+  let changed = false;
+  for (const m of markers) {
+    const constDecl = `export const z${m.schemaName} = z.object({`;
+    const start = src.indexOf(constDecl);
+    if (start === -1) continue;
+    // Scope the replacement to THIS schema's object body (up to the next
+    // top-level `export const`), so a same-named property on another schema
+    // (e.g. request schemas that already use `.nullish()`) is untouched.
+    const rest = src.slice(start + constDecl.length);
+    const nextExport = rest.indexOf('\nexport const ');
+    const end = nextExport === -1 ? src.length : start + constDecl.length + nextExport;
+    const block = src.slice(start, end);
+    const propRe = new RegExp(`(\\n\\s*${m.prop}:\\s*[^\\n]*?)\\.nullable\\(\\)`);
+    if (propRe.test(block)) {
+      const patched = block.replace(propRe, '$1.nullish()');
+      src = src.slice(0, start) + patched + src.slice(end);
+      changed = true;
+    }
+  }
+  if (changed) fs.writeFileSync(ZOD_PATH, src, 'utf8');
+}
+
 function main(): void {
   if (!fs.existsSync(SPEC_PATH)) {
     console.log('[present-when] bundled spec not found, skipping');
@@ -395,6 +457,7 @@ function main(): void {
       .join(', ')}`
   );
   emitProjectionTypes(markers);
+  relaxMarkedPropsInZod(markers);
   const patched = patchClient(markers, spec);
   console.log(`[present-when] emitted projections; patched ${patched} client operation(s)`);
 }

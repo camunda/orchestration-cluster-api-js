@@ -187,7 +187,88 @@ describe('x-present-when marker derivation (class-scoped)', () => {
       }
     }
   });
+
+  it('relaxes the marked response property to tolerate absence under strict validation', () => {
+    // Threads on PR #514: the marked property is `required` + `nullable` in the
+    // spec, so `res:strict`/`res:fanatical` response validation demands the key be
+    // present. An older server that predates the feature omits it entirely, which
+    // would fail validation BEFORE the dependent-presence terminal guard runs — the
+    // worker would then back off forever instead of stopping. The generator relaxes
+    // the marked property to `.nullish()` (tolerates absent) so the omitting response
+    // passes validation and reaches the terminal guard. Class-scoped over every
+    // marker, not just leaseToken.
+    const zod = load('src/gen/zod.gen.ts');
+    for (const m of markers) {
+      const block = zodSchemaBlock(zod, m.schemaName);
+      expect(block, `zod schema block z${m.schemaName} not found`).not.toBe('');
+      const nullableRe = new RegExp(`\\n\\s*${m.prop}:\\s*[^\\n]*\\.nullable\\(\\)`);
+      const nullishRe = new RegExp(`\\n\\s*${m.prop}:\\s*[^\\n]*\\.nullish\\(\\)`);
+      expect(
+        nullableRe.test(block),
+        `${m.schemaName}.${m.prop} must not stay .nullable() (fails strict validation before the terminal guard)`
+      ).toBe(false);
+      expect(
+        nullishRe.test(block),
+        `${m.schemaName}.${m.prop} must be relaxed to .nullish() so an omitting server reaches the terminal guard`
+      ).toBe(true);
+    }
+  });
+
+  it('emits no duplicated / stale present-when overloads for an operation (atomic rebuild)', () => {
+    // Suppressed advisory on PR #514: an incremental rerun that adds a marker to an
+    // already-patched operation must REBUILD the hook-owned overload block, not
+    // append beside stale narrower overloads (TypeScript's first-match resolution
+    // would then pick a stale overload and drop the new projection). The generated
+    // output must therefore never contain a duplicated marker overload line.
+    const client = load('src/gen/CamundaClient.ts');
+    const seen = new Set<string>();
+    for (const m of markers) {
+      for (const opId of findOwningOperations(spec, m)) {
+        if (seen.has(opId)) continue;
+        seen.add(opId);
+        const overloadRe = new RegExp(
+          `^  ${opId}\\(input: ${opId}Input & \\{[^\\n]*\\}, options\\?: OperationOptions\\): CancelablePromise<[^\\n]*>;$`,
+          'gm'
+        );
+        const lines = client.match(overloadRe) ?? [];
+        const counts = new Map<string, number>();
+        for (const l of lines) counts.set(l, (counts.get(l) ?? 0) + 1);
+        for (const [line, n] of counts) {
+          expect(n, `duplicated present-when overload for ${opId}: ${line}`).toBe(1);
+        }
+      }
+    }
+  });
+
+  it('imports every EnrichedActivatedJobOf projection it references (import merge invariant)', () => {
+    // Thread on PR #514: on an incremental rerun the jobActions import may predate a
+    // symbol hook 710 now emits. If the import is not merged, the generated
+    // overloads reference an unimported `EnrichedActivatedJobOf` and typechecking
+    // fails. Lock the invariant on the generated output: any reference implies an
+    // import.
+    const client = load('src/gen/CamundaClient.ts');
+    if (client.includes('EnrichedActivatedJobOf<')) {
+      const importRe = /import \{([^}]*)\} from '\.\.\/runtime\/jobActions';/;
+      const imp = client.match(importRe);
+      expect(imp, 'jobActions import missing though EnrichedActivatedJobOf is referenced').not.toBe(
+        null
+      );
+      const names = (imp?.[1] ?? '').split(',').map((s) => s.trim());
+      expect(names).toContain('EnrichedActivatedJobOf');
+    }
+  });
 });
+
+/** Extract a `z<schemaName>` object body (up to the next top-level export). */
+function zodSchemaBlock(zod: string, schemaName: string): string {
+  const decl = `export const z${schemaName} = z.object({`;
+  const start = zod.indexOf(decl);
+  if (start === -1) return '';
+  const rest = zod.slice(start + decl.length);
+  const next = rest.indexOf('\nexport const ');
+  const end = next === -1 ? zod.length : start + decl.length + next;
+  return zod.slice(start, end);
+}
 
 function findOwningOperations(spec: Json, m: Marker): string[] {
   const ids: string[] = [];

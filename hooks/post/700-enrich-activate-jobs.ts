@@ -6,12 +6,36 @@ function patchCamundaClient(filePath: string) {
   let src = readFileSync(filePath, 'utf8');
   const alreadyInjected = /enrichActivatedJob\(/.test(src);
 
-  // Insert import after jobWorker import for stability
-  if (!/runtime\/jobActions/.test(src)) {
+  // Insert/merge the jobActions import. On a freshly generated file there is no
+  // such import, so we add it after the jobWorker import for stability. On an
+  // incremental rerun against an already-patched file the import may already
+  // exist but predate a symbol this hook (and hook 710) now need — MERGE the
+  // required names into the existing import rather than skipping, otherwise hook
+  // 710 emits overloads that reference an unimported symbol (e.g.
+  // `EnrichedActivatedJobOf`) and typechecking fails.
+  const requiredJobActionsNames = [
+    'enrichActivatedJob',
+    'EnrichedActivatedJob',
+    'EnrichedActivatedJobOf',
+  ];
+  const jobActionsImportRe = /import \{([^}]*)\} from '\.\.\/runtime\/jobActions';/;
+  const existingJobActionsImport = src.match(jobActionsImportRe);
+  if (existingJobActionsImport) {
+    const names = new Set(
+      existingJobActionsImport[1]
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    );
+    for (const n of requiredJobActionsNames) names.add(n);
+    src = src.replace(
+      existingJobActionsImport[0],
+      `import { ${[...names].join(', ')} } from '../runtime/jobActions';`
+    );
+  } else {
     src = src.replace(
       /import { JobWorker, type JobWorkerConfig } from '..\/runtime\/jobWorker';/,
-      (m) =>
-        `${m}\nimport { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from '../runtime/jobActions';`
+      (m) => `${m}\nimport { ${requiredJobActionsNames.join(', ')} } from '../runtime/jobActions';`
     );
   }
 
