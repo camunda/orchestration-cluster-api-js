@@ -2047,7 +2047,7 @@ class CamundaClientBase {
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
         }
-        /* present-when-guard:activateJobs */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.leaseToken == null) { const _e: any = new Error('activateJobs: withLease=true was requested but the server returned an item without \'leaseToken\' — the server may predate this feature. Refusing to silently mis-type the dependent field.'); _e.name = 'PresentWhenUnsupportedError'; throw _e; } } }
+        /* present-when-guard:activateJobs:withLease=true:leaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.leaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'leaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; throw _e; } } }
         if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this as any, this.logger().scope(`job:${j.jobKey}`))); }
         return data;
         } catch(e) {
