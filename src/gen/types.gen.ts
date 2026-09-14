@@ -24496,5 +24496,5 @@ export namespace VariableKey {
 // ---- x-present-when dependent-presence projections (generated) ----
 /** `ActivatedJobResult` when `withLease === true`: `leaseToken` is present (required, non-null). */
 export type ActivatedJobResultWithLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken: NonNullable<ActivatedJobResult['leaseToken']> };
-/** `ActivatedJobResult` when `withLease` is absent / a non-matching literal: `leaseToken` is absent. */
-export type ActivatedJobResultWithoutLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken?: never };
+/** `ActivatedJobResult` when `withLease` is absent / a non-matching literal: `leaseToken` is null (the nullable wire shape). */
+export type ActivatedJobResultWithoutLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken?: null };
