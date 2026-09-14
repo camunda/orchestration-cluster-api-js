@@ -29,6 +29,7 @@ const SPEC_PATH = path.join(ROOT, 'external-spec/bundled/rest-api.bundle.json');
 const TYPES_PATH = path.join(ROOT, 'src/gen/types.gen.ts');
 const CLIENT_PATH = path.join(ROOT, 'src/gen/CamundaClient.ts');
 const ZOD_PATH = path.join(ROOT, 'src/gen/zod.gen.ts');
+const JOBACTIONS_PATH = path.join(ROOT, 'src/runtime/jobActions.ts');
 
 type Json = Record<string, any>;
 
@@ -210,6 +211,17 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
   let src = fs.readFileSync(CLIENT_PATH, 'utf8');
   let patched = 0;
   const usedTypes = new Set<string>();
+  // Narrowing companions (`<Element>Of`) this hook references in the overloads it
+  // emits — merged into the client's `../runtime/jobActions` import at the end.
+  // Hook 700 no longer imports these unconditionally (that broke a no-marker
+  // build with an unused import), so the hook that USES the companion owns
+  // importing it.
+  const neededJobActionsCtors = new Set<string>();
+  // Exported symbols of the hand-written jobActions module, read once — the
+  // fail-fast source of truth for whether a `<Element>Of` projection companion
+  // genuinely exists (rather than inferring it from a prior rerun's spliced
+  // overloads, which would let the check pass trivially).
+  const jobActionsSrc = fs.readFileSync(JOBACTIONS_PATH, 'utf8');
   // Markers that were successfully rewritten into overloads. Any collected marker
   // NOT in this set — because it bound to zero operations, or its operation's
   // enriched declaration was not found — is a silent no-op we must fail on
@@ -253,29 +265,37 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
 
     // The overloads below narrow the response via an `<Element>Of<Projection>`
     // generic companion (e.g. `EnrichedActivatedJobOf`). That companion is only
-    // emitted for enriched-job arrays; for any other response element type the
-    // referenced `${element}Of` type does not exist and the generated client
+    // hand-authored for enriched-job arrays; for any other response element type
+    // the referenced `${element}Of` type does not exist and the generated client
     // would fail to typecheck with a cryptic missing-type error. Fail fast here
-    // instead — validate that the client already imports/declares an
-    // `${element}Of` companion for this operation's element type. This keeps the
-    // marker contract honest: a future `x-present-when` marker on a non-job
-    // response array is rejected loudly at generation time rather than silently
-    // emitting broken code (the marker author must add a projection companion or
-    // restrict the marker to a supported response shape).
+    // instead — validate that the hand-written `jobActions` module actually
+    // EXPORTS an `${element}Of` companion for this operation's element type. This
+    // keeps the marker contract honest: a future `x-present-when` marker on a
+    // non-job response array is rejected loudly at generation time rather than
+    // silently emitting broken code (the marker author must add a projection
+    // companion or restrict the marker to a supported response shape).
+    //
+    // We check the module SOURCE (not whether the client already imports the
+    // name) because a previous rerun would have spliced overloads referencing
+    // that name into the client, making an import-based check pass trivially even
+    // when no such companion type exists.
     const projectionCtor = `${element}Of`;
-    const importsProjectionCtor = new RegExp(`import[^;]*\\b${projectionCtor}\\b[^;]*from`).test(
-      src
-    );
-    if (!importsProjectionCtor) {
+    const exportsProjectionCtor = new RegExp(
+      `export\\s+(?:type|interface|class)\\s+${projectionCtor}\\b`
+    ).test(jobActionsSrc);
+    if (!exportsProjectionCtor) {
       throw new Error(
         `[present-when] operation '${method}' response element '${element}' has no ` +
-          `'${projectionCtor}' projection companion type imported in the generated client. ` +
+          `'${projectionCtor}' projection companion type exported from '../runtime/jobActions'. ` +
           `The marker-derived overloads require an '<Element>Of<Projection>' generic to narrow ` +
           `the dependent field; only enriched-job arrays currently provide one ` +
           `('EnrichedActivatedJobOf'). Add a projection companion for '${element}' or restrict ` +
           `the marker to a supported response shape — refusing to emit an unresolved '${projectionCtor}'.`
       );
     }
+    // This operation's overloads reference the companion — ensure the client
+    // imports it (hook 700 no longer does so unconditionally).
+    neededJobActionsCtors.add(projectionCtor);
 
     // Enumerate every non-empty subset of this operation's markers, MOST-specific
     // (largest) first, so TypeScript's first-match overload resolution picks the
@@ -414,6 +434,36 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
         // Fallback: insert after the first import statement.
         src = src.replace(/(^import .*?;\n)/m, `$1${importLine}\n`);
       }
+    }
+  }
+
+  // Merge the narrowing companions (`<Element>Of`) referenced by the emitted
+  // overloads into the client's existing `../runtime/jobActions` import. Hook 700
+  // imports only the symbols it always emits (`enrichActivatedJob`,
+  // `EnrichedActivatedJob`); the companion is added HERE so that a spec with no
+  // markers never carries an unused import (Biome `noUnusedImports`). The import
+  // always exists at this point because hook 700 runs first and emits it.
+  if (neededJobActionsCtors.size > 0) {
+    const jobActionsImportRe = /import \{([^}]*)\} from '\.\.\/runtime\/jobActions';/;
+    const existing = src.match(jobActionsImportRe);
+    if (existing) {
+      const names = new Set(
+        existing[1]
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      );
+      for (const c of neededJobActionsCtors) names.add(c);
+      src = src.replace(
+        existing[0],
+        `import { ${[...names].join(', ')} } from '../runtime/jobActions';`
+      );
+    } else {
+      throw new Error(
+        `[present-when] expected a '../runtime/jobActions' import in the generated client to ` +
+          `merge projection companion(s) ${[...neededJobActionsCtors].join(', ')} into, but none ` +
+          `was found. Hook 700 (enrich-activate-jobs) must run before this hook.`
+      );
     }
   }
 

@@ -49,8 +49,8 @@ export interface CancelSdkError extends Error {
 export interface PresentWhenUnsupportedError extends Error {
   operationId?: string;
   cause?: unknown;
-  /** Always true — retrying cannot change an unsupported server response shape. */
-  nonRetryable?: true;
+  /** Always `true` — retrying cannot change an unsupported server response shape. */
+  nonRetryable: true;
   name: 'PresentWhenUnsupportedError';
 }
 

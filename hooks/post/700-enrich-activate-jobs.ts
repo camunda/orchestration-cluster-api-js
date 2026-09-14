@@ -9,15 +9,17 @@ function patchCamundaClient(filePath: string) {
   // Insert/merge the jobActions import. On a freshly generated file there is no
   // such import, so we add it after the jobWorker import for stability. On an
   // incremental rerun against an already-patched file the import may already
-  // exist but predate a symbol this hook (and hook 710) now need — MERGE the
-  // required names into the existing import rather than skipping, otherwise hook
-  // 710 emits overloads that reference an unimported symbol (e.g.
-  // `EnrichedActivatedJobOf`) and typechecking fails.
-  const requiredJobActionsNames = [
-    'enrichActivatedJob',
-    'EnrichedActivatedJob',
-    'EnrichedActivatedJobOf',
-  ];
+  // exist but predate a symbol this hook now needs — MERGE the required names
+  // into the existing import rather than skipping.
+  //
+  // Limit this list to the symbols THIS hook ALWAYS emits: `enrichActivatedJob`
+  // (spliced into the implementation below) and `EnrichedActivatedJob` (the
+  // adjusted `activateJobs` return type). The narrowing companion
+  // `EnrichedActivatedJobOf` is imported by hook 710 ONLY when it actually emits
+  // narrowed overloads that reference it. Importing it unconditionally here would
+  // leave it unused for a spec with no `x-present-when` markers (hook 710 returns
+  // early), tripping Biome's `noUnusedImports` and failing the build.
+  const requiredJobActionsNames = ['enrichActivatedJob', 'EnrichedActivatedJob'];
   const jobActionsImportRe = /import \{([^}]*)\} from '\.\.\/runtime\/jobActions';/;
   const existingJobActionsImport = src.match(jobActionsImportRe);
   if (existingJobActionsImport) {
