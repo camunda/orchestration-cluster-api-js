@@ -209,6 +209,11 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
   let src = fs.readFileSync(CLIENT_PATH, 'utf8');
   let patched = 0;
   const usedTypes = new Set<string>();
+  // Markers that were successfully rewritten into overloads. Any collected marker
+  // NOT in this set — because it bound to zero operations, or its operation's
+  // enriched declaration was not found — is a silent no-op we must fail on
+  // (below), rather than shipping a marker the client never honours.
+  const boundMarkers = new Set<PresentWhenMarker>();
 
   // Group markers by the operation they bind. A single operation can carry
   // several `x-present-when` markers (the hook is class-scoped, not hardcoded to
@@ -263,13 +268,14 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
           return t;
         })
         .join(' & ');
-      return `  ${method}(input: ${inputType} & { ${constraint} }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}<${projection}>[] }>;`;
+      return `  ${method}(input: ${inputType} & { ${constraint} }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}Of<${projection}>[] }>;`;
     });
 
     // Idempotence (group-specific): if the most-specific present overload is
     // already spliced, this operation was handled on a previous run — skip
     // re-splicing. The projection names it needs are already imported.
     if (src.includes(presentOverloads[0])) {
+      for (const m of g.markers) boundMarkers.add(m);
       patched++;
       continue;
     }
@@ -286,7 +292,7 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
       overloads.push(
         `  ${method}(input: ${inputType} & { ${m.requestField}?: ${scalarLiteral(
           !m.equals
-        )} | null | undefined }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}<${absent}>[] }>;`
+        )} | null | undefined }, options?: OperationOptions): CancelablePromise<{ ${arr}: ${element}Of<${absent}>[] }>;`
       );
     }
     // dynamic base: unchanged nullable projection (safe default).
@@ -311,11 +317,29 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
         const message = `${method}: ${f}=${lit} was requested but the server returned an item without '${m.prop}' — the server may predate this feature. Refusing to silently mis-type the dependent field.`;
         const guard = `${guardMark} if (data && data.${arr} && _body && (_body as any).${f} === ${lit}) { for (const _el of data.${arr}) { if (_el.${m.prop} == null) { const _e: any = new Error(${JSON.stringify(
           message
-        )}); _e.name = 'PresentWhenUnsupportedError'; throw _e; } } }\n        `;
+        )}); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }\n        `;
         src = src.replace(enrichAnchor, guard + enrichAnchor);
       }
     }
+    for (const m of g.markers) boundMarkers.add(m);
     patched++;
+  }
+
+  // Fail-fast: a collected marker that produced no overloads is a silent no-op —
+  // e.g. it bound to no operation (its request field / response array-of-schema
+  // shape was not recognised), or the operation's enriched declaration was not
+  // found. Shipping such a marker means the client never honours the declared
+  // dependent-presence contract, so refuse to generate rather than emit a spec
+  // whose typing silently diverges from the marker.
+  const unbound = markers.filter((m) => !boundMarkers.has(m));
+  if (unbound.length > 0) {
+    const list = unbound.map((m) => `${m.schemaName}.${m.prop}⇐${m.requestField}`).join(', ');
+    throw new Error(
+      `[present-when] ${unbound.length} marker(s) bound to zero client operations: ${list}. ` +
+        `Each x-present-when marker must resolve to an operation whose 200 response exposes ` +
+        `the marked schema as an array property and whose request carries the dependency field. ` +
+        `Fix the marker or extend the binding logic — refusing to emit an unhonoured contract.`
+    );
   }
 
   // Ensure the projection types used by the overloads are imported. They live in

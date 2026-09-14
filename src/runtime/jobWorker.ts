@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses } from '../gen/types.gen';
+import { isPresentWhenUnsupportedError } from './errors';
 import type { EnrichedActivatedJob } from './jobActions';
 import {
   DEFAULT_POLL_BACKOFF_MAX_MS,
@@ -318,14 +319,18 @@ export class JobWorker {
         this._scheduleNext(this._cfg.pollIntervalMs);
         return;
       }
-      // Any non-cancellation activation failure: back off exponentially (with
-      // jitter) so a sustained fault — a transport outage (broker restart, LAN
-      // blip, DNS flap) or a persistent server/auth/validation error — does not
-      // turn into a tight sub-millisecond retry loop that floods logs and hammers
-      // the endpoint. Transport outages are the motivating case, but backing off
-      // on *every* recurring failure is deliberate: it is the safe default that
-      // keeps the retry cadence bounded regardless of the error class. Resets to
-      // the floor on the next successful poll.
+      // Terminal, non-retryable fault: the server returned a response shape that
+      // cannot satisfy a requested dependent-presence contract (e.g. a lease was
+      // requested against a server that predates the feature). Backing off and
+      // retrying can never succeed — the same request yields the same unsupported
+      // shape forever — so stop the worker instead of looping. Surfacing it loudly
+      // is the correct failure mode; a silent infinite backoff would mask a real
+      // client/server version mismatch.
+      if (isPresentWhenUnsupportedError(e)) {
+        this._log.error('activation.fatal', e);
+        this.stop();
+        return;
+      }
       this._consecutiveActivationErrors += 1;
       // nextActivationRetryDelayMs is the single source of truth shared with
       // ThreadedJobWorker so the two implementations cannot drift. When backoff

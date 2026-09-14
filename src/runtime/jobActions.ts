@@ -31,18 +31,33 @@ export interface EnrichedActivatedJobActions {
 /**
  * Enriched job type with convenience methods.
  *
- * Generic in its underlying activated-job shape `J` so that the marker-driven
- * dependent-presence projections (see `hooks/post/710-derive-present-when.ts`)
- * can narrow individual response properties — e.g. `leaseToken` becomes
- * non-null when a job was activated with `withLease: true`, or an optional
- * nullable field (`{ leaseToken?: null }`) when it was not. The absent
- * projection re-types the property as optional-and-null rather than removing it,
- * so it is not assignable to the base non-nullable narrowing; `J` is therefore
- * left unconstrained rather than bounded by `ActivatedJobResult`. Defaults to the
- * base `ActivatedJobResult`, so existing `EnrichedActivatedJob` usages are
- * unchanged.
+ * A back-compatible **interface** so downstream consumers can declaration-merge
+ * or `extends` it exactly as they could before the dependent-presence typing
+ * work landed (restoring the pre-#513 public surface — turning it into a generic
+ * type alias was a breaking change for those consumers). It resolves to the base
+ * `ActivatedJobResult` shape plus the action methods.
+ *
+ * The marker-driven dependent-presence projections (see
+ * `hooks/post/710-derive-present-when.ts`) narrow individual response properties
+ * via the generic {@link EnrichedActivatedJobOf} companion instead of
+ * re-parameterising this interface — an interface cannot intersect an arbitrary
+ * type parameter, and keeping this name non-generic preserves back-compat.
  */
-export type EnrichedActivatedJob<J = ActivatedJobResult> = J & EnrichedActivatedJobActions;
+export interface EnrichedActivatedJob extends EnrichedActivatedJobActions {}
+export interface EnrichedActivatedJob extends ActivatedJobResult {}
+
+/**
+ * Generic projection of an enriched job over its underlying activated-job shape
+ * `J`, used by the marker-driven dependent-presence overloads to narrow
+ * individual response properties — e.g. `leaseToken` becomes non-null when a job
+ * was activated with `withLease: true`, or an optional nullable field
+ * (`{ leaseToken?: null }`) when it was not. The absent projection re-types the
+ * property as optional-and-null rather than removing it, so it is not assignable
+ * to the base non-nullable narrowing; `J` is therefore left unconstrained rather
+ * than bounded by `ActivatedJobResult`. Defaults to the base `ActivatedJobResult`,
+ * so `EnrichedActivatedJobOf` with no argument equals {@link EnrichedActivatedJob}.
+ */
+export type EnrichedActivatedJobOf<J = ActivatedJobResult> = J & EnrichedActivatedJobActions;
 
 export interface JobFailureConfiguration {
   errorMessage: string;

@@ -147,6 +147,46 @@ describe('x-present-when marker derivation (class-scoped)', () => {
       }
     }
   });
+
+  it('every collected marker binds to at least one client operation (generator fails fast otherwise)', () => {
+    // Advisory: a marker that binds to zero operations is a silent no-op — the
+    // client never honours its declared dependent-presence contract. The
+    // generator now throws when this happens, so the derivation output can never
+    // ship an unbound marker. This locks that invariant on the real spec.
+    for (const m of markers) {
+      expect(
+        findOwningOperations(spec, m).length,
+        `${m.schemaName}.${m.prop} bound to 0 ops`
+      ).toBeGreaterThan(0);
+    }
+  });
+
+  it('narrowed overloads project the generic EnrichedActivatedJobOf, base stays the interface', () => {
+    // Back-compat: `EnrichedActivatedJob` is restored to a plain (non-generic)
+    // interface so consumers can still declaration-merge / `extends` it. The
+    // dependent-presence narrowing is expressed through the generic companion
+    // `EnrichedActivatedJobOf<...>` instead of re-parameterising the interface.
+    const client = load('src/gen/CamundaClient.ts');
+    for (const m of markers) {
+      for (const opId of findOwningOperations(spec, m)) {
+        // The dynamic-base overload keeps the non-generic interface + array.
+        expect(client, `missing base interface array for ${opId}`).toMatch(
+          new RegExp(
+            `${opId}\\(input: ${opId}Input, options\\?: OperationOptions\\): CancelablePromise<\\{ \\w+: EnrichedActivatedJob\\[\\] \\}>;`
+          )
+        );
+        // The narrowed overloads use the generic projection, never the interface
+        // with a type argument (which no longer compiles).
+        expect(client, `narrowed overload should use EnrichedActivatedJobOf for ${opId}`).toContain(
+          'EnrichedActivatedJobOf<'
+        );
+        expect(
+          client,
+          `narrowed overload must not parameterise the interface for ${opId}`
+        ).not.toMatch(/EnrichedActivatedJob<[^O]/);
+      }
+    }
+  });
 });
 
 function findOwningOperations(spec: Json, m: Marker): string[] {

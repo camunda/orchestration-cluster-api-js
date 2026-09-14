@@ -11,7 +11,7 @@ function patchCamundaClient(filePath: string) {
     src = src.replace(
       /import { JobWorker, type JobWorkerConfig } from '..\/runtime\/jobWorker';/,
       (m) =>
-        `${m}\nimport { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';`
+        `${m}\nimport { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from '../runtime/jobActions';`
     );
   }
 

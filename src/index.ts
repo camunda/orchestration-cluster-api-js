@@ -25,13 +25,14 @@ export {
   liveClock,
   type TestClock,
 } from './runtime/clock';
-export type { SdkError } from './runtime/errors';
+export type { PresentWhenUnsupportedError, SdkError } from './runtime/errors';
 export {
   CamundaValidationError,
   EventualConsistencyTimeoutError,
+  isPresentWhenUnsupportedError,
   isSdkError,
 } from './runtime/errors';
-export type { EnrichedActivatedJob } from './runtime/jobActions';
+export type { EnrichedActivatedJob, EnrichedActivatedJobOf } from './runtime/jobActions';
 // Public re-exports for worker API
 export type { Job, JobActionReceipt, JobWorker, JobWorkerConfig } from './runtime/jobWorker';
 export { JobActionReceipt as JobActionReceiptSymbol } from './runtime/jobWorker';
