@@ -54,10 +54,20 @@ export interface EnrichedActivatedJob extends ActivatedJobResult {}
  * (`{ leaseToken?: null }`) when it was not. The absent projection re-types the
  * property as optional-and-null rather than removing it, so it is not assignable
  * to the base non-nullable narrowing; `J` is therefore left unconstrained rather
- * than bounded by `ActivatedJobResult`. Defaults to the base `ActivatedJobResult`,
- * so `EnrichedActivatedJobOf` with no argument equals {@link EnrichedActivatedJob}.
+ * than bounded by `ActivatedJobResult`.
+ *
+ * The overlay is `Omit<EnrichedActivatedJob, keyof ActivatedJobResult>` — the
+ * non-base portion of {@link EnrichedActivatedJob} — rather than
+ * `EnrichedActivatedJobActions` directly. This preserves the declaration-merge
+ * compatibility promise for *narrowed* jobs too: any field a consumer merges onto
+ * the public `EnrichedActivatedJob` interface (e.g. `interface EnrichedActivatedJob
+ * { myFlag: boolean }`) is carried onto `activateJobs({ withLease: true })` results
+ * as well, instead of silently disappearing from the narrowed overload while
+ * remaining on the base one. Defaults to the base `ActivatedJobResult`, so
+ * `EnrichedActivatedJobOf` with no argument equals {@link EnrichedActivatedJob}.
  */
-export type EnrichedActivatedJobOf<J = ActivatedJobResult> = J & EnrichedActivatedJobActions;
+export type EnrichedActivatedJobOf<J = ActivatedJobResult> = J &
+  Omit<EnrichedActivatedJob, keyof ActivatedJobResult>;
 
 export interface JobFailureConfiguration {
   errorMessage: string;

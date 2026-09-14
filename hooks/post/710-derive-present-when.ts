@@ -251,6 +251,32 @@ function patchClient(markers: PresentWhenMarker[], spec: Json): number {
     const inputType = declMatch[1];
     const element = declMatch[2];
 
+    // The overloads below narrow the response via an `<Element>Of<Projection>`
+    // generic companion (e.g. `EnrichedActivatedJobOf`). That companion is only
+    // emitted for enriched-job arrays; for any other response element type the
+    // referenced `${element}Of` type does not exist and the generated client
+    // would fail to typecheck with a cryptic missing-type error. Fail fast here
+    // instead — validate that the client already imports/declares an
+    // `${element}Of` companion for this operation's element type. This keeps the
+    // marker contract honest: a future `x-present-when` marker on a non-job
+    // response array is rejected loudly at generation time rather than silently
+    // emitting broken code (the marker author must add a projection companion or
+    // restrict the marker to a supported response shape).
+    const projectionCtor = `${element}Of`;
+    const importsProjectionCtor = new RegExp(`import[^;]*\\b${projectionCtor}\\b[^;]*from`).test(
+      src
+    );
+    if (!importsProjectionCtor) {
+      throw new Error(
+        `[present-when] operation '${method}' response element '${element}' has no ` +
+          `'${projectionCtor}' projection companion type imported in the generated client. ` +
+          `The marker-derived overloads require an '<Element>Of<Projection>' generic to narrow ` +
+          `the dependent field; only enriched-job arrays currently provide one ` +
+          `('EnrichedActivatedJobOf'). Add a projection companion for '${element}' or restrict ` +
+          `the marker to a supported response shape — refusing to emit an unresolved '${projectionCtor}'.`
+      );
+    }
+
     // Enumerate every non-empty subset of this operation's markers, MOST-specific
     // (largest) first, so TypeScript's first-match overload resolution picks the
     // projection that narrows the most dependent fields for a call satisfying

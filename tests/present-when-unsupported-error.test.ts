@@ -110,3 +110,85 @@ describe('job worker stops on PresentWhenUnsupportedError (terminal, no infinite
     expect(fetchMock.mock.calls.length).toBe(callsAfterStop);
   });
 });
+
+/**
+ * A fully-valid activated job that satisfies every required field of
+ * `zActivatedJobResult` EXCEPT `leaseToken`, which is intentionally omitted (an
+ * older server that ignored `withLease`). Every other field is present and
+ * schema-valid so that, under strict response validation, the ONLY thing that
+ * could make validation fail is the missing `leaseToken` — which the
+ * `.nullish()` relaxation (hook 710, zod.gen.ts) deliberately admits. This lets
+ * the terminal present-when guard fire instead of a spurious validation error.
+ */
+function completeLeasedJobWithoutToken() {
+  return {
+    type: 'lease-strict-test',
+    processDefinitionId: 'my_process',
+    processDefinitionVersion: 1,
+    elementId: 'task-1',
+    customHeaders: {},
+    worker: 'w',
+    retries: 3,
+    deadline: Date.now() + 30_000,
+    variables: {},
+    tenantId: '<default>',
+    physicalTenantId: '<default>',
+    jobKey: '2251799813685249',
+    processInstanceKey: '2251799813685250',
+    processDefinitionKey: '2251799813685251',
+    elementInstanceKey: '2251799813685252',
+    kind: 'BPMN_ELEMENT',
+    listenerEventType: 'UNSPECIFIED',
+    userTask: null,
+    tags: [],
+    rootProcessInstanceKey: null,
+    businessId: null,
+    priority: 0,
+    // leaseToken intentionally absent.
+  };
+}
+
+/**
+ * PR #514 review (suppressed advisory, zod.gen.ts:4053) — the `.nullish()`
+ * relaxation is what lets the documented strict/fanatical older-server path reach
+ * the terminal present-when guard. The derivation test only inspects the
+ * generated SOURCE text; this is the missing RUNTIME regression proving that a
+ * `withLease: true` activation against a server that omits `leaseToken` rejects
+ * with `PresentWhenUnsupportedError` (the guard) rather than a validation error —
+ * i.e. that the omitted required-but-nullable field is admitted by response
+ * validation before the guard runs. If `leaseToken` reverted to `.nullable()`,
+ * strict validation would reject first and this test would fail with a non-guard
+ * error name.
+ */
+describe('res:strict/res:fanatical admits an omitted leaseToken so the terminal guard (not a validation error) fires', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  for (const mode of ['res:strict', 'res:fanatical'] as const) {
+    it(`activateJobs({ withLease: true }) rejects with PresentWhenUnsupportedError under ${mode}`, async () => {
+      const fetchMock = vi.fn(async () =>
+        jsonResponse({ jobs: [completeLeasedJobWithoutToken()] })
+      );
+
+      const client = createCamundaClient({
+        config: { CAMUNDA_SDK_VALIDATION: mode, CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: 1 },
+        env: {},
+        fetch: fetchMock as any,
+      });
+
+      const err = await (client.activateJobs as any)({
+        type: 'lease-strict-test',
+        maxJobsToActivate: 1,
+        timeout: 1000,
+        withLease: true,
+      }).then(
+        () => {
+          throw new Error('expected activateJobs to reject, but it resolved');
+        },
+        (e: any) => e
+      );
+
+      expect(isPresentWhenUnsupportedError(err)).toBe(true);
+      expect(err.name).toBe('PresentWhenUnsupportedError');
+    });
+  }
+});
