@@ -23888,7 +23888,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:52ea5640dc7418d81d3141f8d0f22723e4f5e41bdeb926fb05808bf4b28aef37
+// specHash=sha256:ead4b49a7375e344c1f6244fe11648fffb31a15c6b07d438b82a5b8e11fcb2bf
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -24492,3 +24492,9 @@ export namespace VariableKey {
     } catch { return false; }
   }
 }
+
+// ---- x-present-when dependent-presence projections (generated) ----
+/** `ActivatedJobResult` when `withLease === true`: `leaseToken` is present (required, non-null). */
+export type ActivatedJobResultWithLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken: NonNullable<ActivatedJobResult['leaseToken']> };
+/** `ActivatedJobResult` when `withLease` is absent / a non-matching literal: `leaseToken` is absent. */
+export type ActivatedJobResultWithoutLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken?: never };
