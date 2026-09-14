@@ -112,6 +112,15 @@ export interface ActivateJobsStreamOptions<R = never> {
   /** Restrict activation to these variable names. */
   readonly fetchVariables?: readonly string[];
   /**
+   * Activate jobs with a lease — default `false`.
+   *
+   * When `true`, each activated job is assigned a distinct, opaque lease token
+   * (`ActivatedJobResult.leaseToken`) that is threaded back into the fenced
+   * `completeJob` / `failJob` / `throwJobError` commands, fencing them against a
+   * superseded activation of the same job.
+   */
+  readonly withLease?: boolean;
+  /**
    * `Schedule` used to back off and retry a **failed activation request** (transport
    * outage, broker restart, transient server error). Runs on the Effect `Clock`.
    * When omitted, an activation failure fails the stream.
@@ -195,6 +204,7 @@ export function activateJobsStream<R = never>(
     ...(options.fetchVariables && options.fetchVariables.length > 0
       ? { fetchVariable: [...options.fetchVariables] }
       : {}),
+    ...(options.withLease ? { withLease: true } : {}),
   };
 
   const pollOnce: Effect.Effect<Job[], DomainError, CamundaEffect> = Effect.gen(function* () {

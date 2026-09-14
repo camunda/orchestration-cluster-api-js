@@ -93,6 +93,14 @@ export interface ThreadedJobWorkerConfig<
   jobType: string;
   /** Optional list of variable names to fetch during activation */
   fetchVariables?: In extends z.ZodTypeAny ? Array<Extract<keyof z.infer<In>, string>> : string[];
+  /**
+   * Activate jobs with a lease — default `false`.
+   *
+   * When `true`, each activated job is assigned a distinct, opaque lease token
+   * (`ActivatedJobResult.leaseToken`) that is automatically threaded back into the
+   * fenced `complete` / `fail` / `error` commands. See {@link JobWorkerConfig.withLease}.
+   */
+  withLease?: boolean;
   /** Optional explicit name */
   workerName?: string;
   /**
@@ -129,6 +137,7 @@ type ResolvedThreadedJobWorkerConfig = ThreadedJobWorkerConfig & {
   validateSchemas: boolean;
   maxParallelJobs: number;
   jobTimeoutMs: number;
+  withLease: boolean;
 };
 
 let _workerCounter = 0;
@@ -175,6 +184,7 @@ export class ThreadedJobWorker {
       validateSchemas: cfg.validateSchemas ?? false,
       maxParallelJobs: cfg.maxParallelJobs ?? 10,
       jobTimeoutMs: cfg.jobTimeoutMs ?? 60_000,
+      withLease: cfg.withLease ?? false,
     };
     this._maxParallelJobs = this._cfg.maxParallelJobs;
     this._jobTimeoutMs = this._cfg.jobTimeoutMs;
@@ -422,6 +432,7 @@ export class ThreadedJobWorker {
       ...(this._cfg.fetchVariables && this._cfg.fetchVariables.length > 0
         ? { fetchVariable: this._cfg.fetchVariables }
         : {}),
+      ...(this._cfg.withLease ? { withLease: true } : {}),
     };
     this._log.debug(() => ['activation.request', { batchSize }]);
     let result: ActivatedJobResult[] = [];

@@ -60,6 +60,19 @@ export interface JobWorkerConfig<
   jobType: string;
   /** Optional list of variable names to fetch during activation */
   fetchVariables?: In extends z.ZodTypeAny ? Array<Extract<keyof z.infer<In>, string>> : string[];
+  /**
+   * Activate jobs with a lease — default `false`.
+   *
+   * When `true`, each activated job is assigned a distinct, opaque lease token
+   * (`ActivatedJobResult.leaseToken`) that is automatically threaded back into the
+   * fenced `complete` / `fail` / `error` commands. The lease fences those commands
+   * against a superseded activation of the same job (e.g. after a timeout and
+   * re-activation by another worker): a command carrying a stale token is rejected
+   * rather than racing the newer activation. Once a job type is leased, it is served
+   * only to leasing workers of that type, so a homogeneous fleet per job type is
+   * recommended.
+   */
+  withLease?: boolean;
   /** @deprecated Not used; pacing handled by long polling + client backpressure. Present only for migration compatibility. */
   maxBackoffTimeMs?: number;
   /** Optional explicit name */
@@ -92,6 +105,7 @@ type ResolvedJobWorkerConfig = JobWorkerConfig & {
   validateSchemas: boolean;
   maxParallelJobs: number;
   jobTimeoutMs: number;
+  withLease: boolean;
 };
 
 type InferOrUnknown<T extends z.ZodTypeAny | undefined> = T extends z.ZodTypeAny
@@ -139,6 +153,7 @@ export class JobWorker {
       validateSchemas: cfg.validateSchemas ?? false,
       maxParallelJobs: cfg.maxParallelJobs ?? 10,
       jobTimeoutMs: cfg.jobTimeoutMs ?? 60_000,
+      withLease: cfg.withLease ?? false,
     };
     this._maxParallelJobs = this._cfg.maxParallelJobs;
     this._jobTimeoutMs = this._cfg.jobTimeoutMs;
@@ -273,6 +288,9 @@ export class JobWorker {
       ...(this._cfg.fetchVariables && this._cfg.fetchVariables.length > 0
         ? { fetchVariable: this._cfg.fetchVariables }
         : {}),
+      // Request a lease only when explicitly enabled; omitting the field keeps
+      // the activation identical to a non-leasing worker.
+      ...(this._cfg.withLease ? { withLease: true } : {}),
     };
     this._log.debug(() => ['activation.request', { batchSize }]);
     let result: ActivatedJobResult[] = [];

@@ -6,8 +6,8 @@ import { JobActionReceipt } from './jobWorker';
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 type JobErrorRequest = ThrowJobErrorData['body'];
 
-/** Enriched job type with convenience methods. */
-export interface EnrichedActivatedJob extends ActivatedJobResult {
+/** Convenience action methods spliced onto an activated job. */
+export interface EnrichedActivatedJobActions {
   complete(variables?: { [k: string]: any }, result?: JobResult): Promise<JobActionReceipt>;
   fail(body: any): Promise<JobActionReceipt>;
   error(error: JobErrorRequest): Promise<JobActionReceipt>;
@@ -27,6 +27,20 @@ export interface EnrichedActivatedJob extends ActivatedJobResult {
   /** Set true once any acknowledgement method is invoked. */
   acknowledged?: boolean;
 }
+
+/**
+ * Enriched job type with convenience methods.
+ *
+ * Generic in its underlying activated-job shape `J` so that the marker-driven
+ * dependent-presence projections (see `hooks/post/710-derive-present-when.ts`)
+ * can narrow individual response properties — e.g. `leaseToken` becomes
+ * non-null when a job was activated with `withLease: true`, or `?: never` when it
+ * was not. The absent projection types the property as `never`, which is not
+ * assignable to the base field, so `J` is left unconstrained rather than bounded
+ * by `ActivatedJobResult`. Defaults to the base `ActivatedJobResult`, so existing
+ * `EnrichedActivatedJob` usages are unchanged.
+ */
+export type EnrichedActivatedJob<J = ActivatedJobResult> = J & EnrichedActivatedJobActions;
 
 export interface JobFailureConfiguration {
   errorMessage: string;
@@ -74,6 +88,7 @@ export function enrichActivatedJob(
         variables,
         jobKey: raw.jobKey,
         ...(result !== undefined && { result }),
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
       });
     } finally {
       ack();
@@ -82,7 +97,11 @@ export function enrichActivatedJob(
   };
   job.fail = async (reason: JobFailureConfiguration): Promise<JobActionReceipt> => {
     try {
-      await client.failJob({ ...reason, jobKey: raw.jobKey });
+      await client.failJob({
+        ...reason,
+        jobKey: raw.jobKey,
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      });
     } finally {
       ack();
     }
@@ -90,7 +109,11 @@ export function enrichActivatedJob(
   };
   job.error = async (error: JobErrorRequest): Promise<JobActionReceipt> => {
     try {
-      await client.throwJobError({ ...error, jobKey: raw.jobKey });
+      await client.throwJobError({
+        ...error,
+        jobKey: raw.jobKey,
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      });
     } finally {
       ack();
     }

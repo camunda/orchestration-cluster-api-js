@@ -147,7 +147,14 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
     ack();
     job._completionAction = {
       method: 'completeJob',
-      args: [{ variables, jobKey: jobData.jobKey, ...(result !== undefined && { result }) }],
+      args: [
+        {
+          variables,
+          jobKey: jobData.jobKey,
+          ...(result !== undefined && { result }),
+          ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+        },
+      ],
     };
     return JobActionReceipt;
   };
@@ -156,7 +163,13 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
     ack();
     job._completionAction = {
       method: 'failJob',
-      args: [{ ...reason, jobKey: jobData.jobKey }],
+      args: [
+        {
+          ...reason,
+          jobKey: jobData.jobKey,
+          ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+        },
+      ],
     };
     return JobActionReceipt;
   };
@@ -165,7 +178,13 @@ function createJobProxy(jobData: Record<string, unknown>, client: any): any {
     ack();
     job._completionAction = {
       method: 'throwJobError',
-      args: [{ ...error, jobKey: jobData.jobKey }],
+      args: [
+        {
+          ...error,
+          jobKey: jobData.jobKey,
+          ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+        },
+      ],
     };
     return JobActionReceipt;
   };
