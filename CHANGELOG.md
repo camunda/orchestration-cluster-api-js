@@ -1,3 +1,10 @@
+# [10.0.0-alpha.45](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.44...v10.0.0-alpha.45) (2026-09-15)
+
+
+### Features
+
+* **worker:** consume x-present-when marker — leaseToken dependent typing + withLease worker surface ([#514](https://github.com/camunda/orchestration-cluster-api-js/issues/514)) ([838de15](https://github.com/camunda/orchestration-cluster-api-js/commit/838de154893106deef17cb6dc698bbf7e026f11e)), closes [camunda/camunda#62777](https://github.com/camunda/camunda/issues/62777) [#513](https://github.com/camunda/orchestration-cluster-api-js/issues/513) [#513](https://github.com/camunda/orchestration-cluster-api-js/issues/513)
+
 # [10.0.0-alpha.44](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.43...v10.0.0-alpha.44) (2026-09-10)
 
 
