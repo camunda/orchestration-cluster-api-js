@@ -87,8 +87,8 @@ type _cancelProcessInstancesBatchOperation_Body = CancelProcessInstancesBatchOpe
 /**
  * Cancel process instances (batch)
  *
- * Cancels multiple running process instances.
- * Since only ACTIVE root instances can be cancelled, any given filters for state and
+ * Cancels multiple active or suspended process instances.
+ * Since only ACTIVE and SUSPENDED root instances can be cancelled, any given filters for state and
  * parentProcessInstanceKey are ignored and overridden during this batch operation.
  * This is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).
  *
@@ -7389,4 +7389,4 @@ export function updateUserTask(options?: Parameters<typeof _updateUserTask>[0]):
   return toCancelable(signal => _updateUserTask({ ...(options||{}), signal } as any).then((r:any)=> (r as any).data));
 }
 
-// SENTINEL_FACADE_PREWRITE hash=585763757d75d128 totalWrappers=243 elements=1503 physicalLines=3893
+// SENTINEL_FACADE_PREWRITE hash=e2b4387bc7040ee9 totalWrappers=243 elements=1503 physicalLines=3893

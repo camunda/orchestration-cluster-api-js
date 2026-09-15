@@ -16,19 +16,6 @@ export const zAgentDefinitionTypeEnum = z.enum([
 });
 
 /**
- * A tool available to the agent.
- */
-export const zAgentTool = z.object({
-    name: z.string().register(z.globalRegistry, {
-        description: 'The tool name as visible to the LLM.'
-    }),
-    description: z.string().nullable(),
-    elementId: z.string().nullable()
-}).register(z.globalRegistry, {
-    description: 'A tool available to the agent.'
-});
-
-/**
  * Aggregated metrics for an agent instance across all model calls.
  */
 export const zAgentInstanceMetrics = z.object({
@@ -174,23 +161,6 @@ export const zAgentInstanceMessageContentTypeEnum = z.enum([
     'OBJECT'
 ]).register(z.globalRegistry, {
     description: 'The content type discriminator for a history item content block.'
-});
-
-/**
- * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
- *
- */
-export const zAgentInstanceToolCall = z.object({
-    toolCallId: z.string().register(z.globalRegistry, {
-        description: 'The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.'
-    }),
-    toolName: z.string().register(z.globalRegistry, {
-        description: 'The LLM-visible tool name.'
-    }),
-    elementId: z.string().nullable(),
-    arguments: z.record(z.string(), z.unknown()).nullable()
-}).register(z.globalRegistry, {
-    description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\n'
 });
 
 /**
@@ -2597,9 +2567,7 @@ export const zGroupFilterFields = z.object({
  * Group filter request
  */
 export const zGroupFilter = zGroupFilterFields.and(z.object({
-    $or: z.array(zGroupFilterFields).register(z.globalRegistry, {
-        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "$or": [\n    { "groupId": "group-1" },\n    { "groupId": "group-2" }\n  ]\n}\n```\nThis matches groups whose <code>groupId</code> is <em>group-1</em> or <em>group-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
-    }).optional()
+    $or: z.array(zGroupFilterFields).nullish()
 }));
 
 /**
@@ -2614,6 +2582,36 @@ export const zProcessDefinitionId = z.string().min(1).regex(/^[\p{L}_][\p{L}\p{N
  */
 export const zElementId = z.string().register(z.globalRegistry, {
     description: 'The model-defined id of an element.'
+});
+
+/**
+ * A tool available to the agent.
+ */
+export const zAgentTool = z.object({
+    name: z.string().register(z.globalRegistry, {
+        description: 'The tool name as visible to the LLM.'
+    }),
+    description: z.string().nullable(),
+    elementId: zElementId.nullable()
+}).register(z.globalRegistry, {
+    description: 'A tool available to the agent.'
+});
+
+/**
+ * A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.
+ *
+ */
+export const zAgentInstanceToolCall = z.object({
+    toolCallId: z.string().register(z.globalRegistry, {
+        description: 'The LLM-assigned tool call ID. Correlates ASSISTANT items to their matching TOOL_RESULT items.'
+    }),
+    toolName: z.string().register(z.globalRegistry, {
+        description: 'The LLM-visible tool name.'
+    }),
+    elementId: zElementId.nullable(),
+    arguments: z.record(z.string(), z.unknown()).nullable()
+}).register(z.globalRegistry, {
+    description: 'A tool call associated with a history item. Used in both ASSISTANT and TOOL_RESULT items.\n'
 });
 
 /**
@@ -5146,9 +5144,7 @@ export const zMappingRuleFilterFields = z.object({
  * Mapping rule search filter.
  */
 export const zMappingRuleFilter = zMappingRuleFilterFields.and(z.object({
-    $or: z.array(zMappingRuleFilterFields).register(z.globalRegistry, {
-        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "$or": [\n    { "mappingRuleId": "rule-1" },\n    { "mappingRuleId": "rule-2" }\n  ]\n}\n```\nThis matches mapping rules whose <code>mappingRuleId</code> is <em>rule-1</em> or <em>rule-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
-    }).optional()
+    $or: z.array(zMappingRuleFilterFields).nullish()
 }));
 
 export const zMessageCorrelationRequest = z.object({
@@ -5340,9 +5336,7 @@ export const zCorrelatedMessageSubscriptionResult = z.object({
     correlationTime: z.iso.datetime().register(z.globalRegistry, {
         description: 'The time when the message was correlated.'
     }),
-    elementId: z.string().register(z.globalRegistry, {
-        description: 'The element ID that received the message.'
-    }),
+    elementId: zElementId,
     elementInstanceKey: zElementInstanceKey.nullable(),
     messageKey: zMessageKey,
     messageName: z.string().register(z.globalRegistry, {
@@ -6095,9 +6089,7 @@ export const zRoleFilterFields = z.object({
  * Role filter request
  */
 export const zRoleFilter = zRoleFilterFields.and(z.object({
-    $or: z.array(zRoleFilterFields).register(z.globalRegistry, {
-        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "name": "Admin",\n  "$or": [\n    { "roleId": "role-1" },\n    { "roleId": "role-2" }\n  ]\n}\n```\nThis matches roles that:\n\n<ul style="padding-left: 20px; margin-left: 20px;">\n  <li style="list-style-type: disc;">have name equal to <em>Admin</em></li>\n  <li style="list-style-type: disc;">and match either:\n    <ul style="padding-left: 20px; margin-left: 20px;">\n      <li style="list-style-type: circle;"><code>roleId</code> is <em>role-1</em>, or</li>\n      <li style="list-style-type: circle;"><code>roleId</code> is <em>role-2</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
-    }).optional()
+    $or: z.array(zRoleFilterFields).nullish()
 }));
 
 export const zRoleUserResult = z.object({
@@ -7895,9 +7887,7 @@ export const zUserFilterFields = z.object({
  * User search filter.
  */
 export const zUserFilter = zUserFilterFields.and(z.object({
-    $or: z.array(zUserFilterFields).register(z.globalRegistry, {
-        description: 'Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  "$or": [\n    { "username": "user-1" },\n    { "username": "user-2" }\n  ]\n}\n```\nThis matches users whose <code>username</code> is <em>user-1</em> or <em>user-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n'
-    }).optional()
+    $or: z.array(zUserFilterFields).nullish()
 }));
 
 export const zUserSearchQueryRequest = zSearchQueryRequest.and(z.object({

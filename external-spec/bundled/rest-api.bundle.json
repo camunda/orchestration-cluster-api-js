@@ -9702,7 +9702,7 @@
           }
         ],
         "summary": "Cancel process instances (batch)",
-        "description": "Cancels multiple running process instances.\nSince only ACTIVE root instances can be cancelled, any given filters for state and\nparentProcessInstanceKey are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
+        "description": "Cancels multiple active or suspended process instances.\nSince only ACTIVE and SUSPENDED root instances can be cancelled, any given filters for state and\nparentProcessInstanceKey are ignored and overridden during this batch operation.\nThis is done asynchronously, the progress can be tracked using the batchOperationKey from the response and the batch operation status endpoint (/batch-operations/{batchOperationKey}).\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -19450,9 +19450,13 @@
             "description": "A human-readable description of the tool."
           },
           "elementId": {
-            "type": "string",
+            "description": "The BPMN element ID of the tool element within the ad-hoc sub-process.",
             "nullable": true,
-            "description": "The BPMN element ID of the tool element within the ad-hoc sub-process."
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementId"
+              }
+            ]
           }
         }
       },
@@ -20297,8 +20301,12 @@
           },
           "elementId": {
             "description": "The BPMN element ID handling this tool.",
-            "type": "string",
-            "nullable": true
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementId"
+              }
+            ]
           },
           "arguments": {
             "description": "The tool call arguments as provided by the LLM. May be null or populated on\nany item, including TOOL_RESULT.\n",
@@ -30378,6 +30386,7 @@
               "$or": {
                 "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"$or\": [\n    { \"groupId\": \"group-1\" },\n    { \"groupId\": \"group-2\" }\n  ]\n}\n```\nThis matches groups whose <code>groupId</code> is <em>group-1</em> or <em>group-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
                 "type": "array",
+                "nullable": true,
                 "items": {
                   "$ref": "#/components/schemas/GroupFilterFields"
                 }
@@ -35168,6 +35177,7 @@
               "$or": {
                 "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"$or\": [\n    { \"mappingRuleId\": \"rule-1\" },\n    { \"mappingRuleId\": \"rule-2\" }\n  ]\n}\n```\nThis matches mapping rules whose <code>mappingRuleId</code> is <em>rule-1</em> or <em>rule-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
                 "type": "array",
+                "nullable": true,
                 "items": {
                   "$ref": "#/components/schemas/MappingRuleFilterFields"
                 }
@@ -35882,7 +35892,11 @@
           },
           "elementId": {
             "description": "The element ID that received the message.",
-            "type": "string"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ElementId"
+              }
+            ]
           },
           "elementInstanceKey": {
             "allOf": [
@@ -38911,6 +38925,7 @@
               "$or": {
                 "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"name\": \"Admin\",\n  \"$or\": [\n    { \"roleId\": \"role-1\" },\n    { \"roleId\": \"role-2\" }\n  ]\n}\n```\nThis matches roles that:\n\n<ul style=\"padding-left: 20px; margin-left: 20px;\">\n  <li style=\"list-style-type: disc;\">have name equal to <em>Admin</em></li>\n  <li style=\"list-style-type: disc;\">and match either:\n    <ul style=\"padding-left: 20px; margin-left: 20px;\">\n      <li style=\"list-style-type: circle;\"><code>roleId</code> is <em>role-1</em>, or</li>\n      <li style=\"list-style-type: circle;\"><code>roleId</code> is <em>role-2</em></li>\n    </ul>\n  </li>\n</ul>\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
                 "type": "array",
+                "nullable": true,
                 "items": {
                   "$ref": "#/components/schemas/RoleFilterFields"
                 }
@@ -41543,6 +41558,7 @@
               "$or": {
                 "description": "Defines a list of alternative filter groups combined using OR logic. Each object in the array is evaluated independently, and the filter matches if any one of them is satisfied.\n\nTop-level fields and the `$or` clause are combined using AND logic — meaning: (top-level filters) AND (any of the `$or` filters) must match.\n<br>\n<em>Example:</em>\n\n```json\n{\n  \"$or\": [\n    { \"username\": \"user-1\" },\n    { \"username\": \"user-2\" }\n  ]\n}\n```\nThis matches users whose <code>username</code> is <em>user-1</em> or <em>user-2</em>.\n<br>\n<p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.\n",
                 "type": "array",
+                "nullable": true,
                 "items": {
                   "$ref": "#/components/schemas/UserFilterFields"
                 }

@@ -386,7 +386,7 @@ export type AgentTool = {
     /**
      * The BPMN element ID of the tool element within the ad-hoc sub-process.
      */
-    elementId: string | null;
+    elementId: ElementId | null;
 };
 
 /**
@@ -980,7 +980,7 @@ export type AgentInstanceToolCall = {
     /**
      * The BPMN element ID handling this tool.
      */
-    elementId: string | null;
+    elementId: ElementId | null;
     /**
      * The tool call arguments as provided by the LLM. May be null or populated on
      * any item, including TOOL_RESULT.
@@ -6281,7 +6281,7 @@ export type GroupFilter = GroupFilterFields & {
      * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
      *
      */
-    $or?: Array<GroupFilterFields>;
+    $or?: Array<GroupFilterFields> | null;
 };
 
 /**
@@ -8756,7 +8756,7 @@ export type MappingRuleFilter = MappingRuleFilterFields & {
      * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
      *
      */
-    $or?: Array<MappingRuleFilterFields>;
+    $or?: Array<MappingRuleFilterFields> | null;
 };
 
 export type MessageCorrelationRequest = {
@@ -9088,7 +9088,7 @@ export type CorrelatedMessageSubscriptionResult = {
     /**
      * The element ID that received the message.
      */
-    elementId: string;
+    elementId: ElementId;
     /**
      * The element instance key that received the message.
      * It is `null` for start event subscriptions.
@@ -10806,7 +10806,7 @@ export type RoleFilter = RoleFilterFields & {
      * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
      *
      */
-    $or?: Array<RoleFilterFields>;
+    $or?: Array<RoleFilterFields> | null;
 };
 
 /**
@@ -12100,7 +12100,7 @@ export type UserFilter = UserFilterFields & {
      * <p>Note: Using complex <code>$or</code> conditions may impact performance, use with caution in high-volume environments.
      *
      */
-    $or?: Array<UserFilterFields>;
+    $or?: Array<UserFilterFields> | null;
 };
 
 export type UserSearchResult = SearchQueryResponse & {
@@ -23888,7 +23888,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:ead4b49a7375e344c1f6244fe11648fffb31a15c6b07d438b82a5b8e11fcb2bf
+// specHash=sha256:f0500c81aaeb695997ea023a65e6c4452a2d8db7dc0b1da0bbc9145196683824
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
