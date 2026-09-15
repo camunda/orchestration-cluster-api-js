@@ -34,6 +34,22 @@ import {
 } from 'effect';
 import { CamundaEffect, type DomainError } from './effect';
 import type { ActivatedJobResult } from './gen/types.gen';
+import { isPresentWhenUnsupportedError } from './runtime/errors';
+
+/**
+ * Is this Effect `DomainError` a terminal dependent-presence contract mismatch?
+ *
+ * The Effect client narrows the plain `PresentWhenUnsupportedError` thrown by a
+ * generated `x-present-when` guard into the tagged `DomainError` channel, keeping
+ * the original error as `cause`. Retrying it is futile (an older server can never
+ * satisfy the derived presence contract), so activation retry must exclude it.
+ */
+function isTerminalContractError(e: DomainError): boolean {
+  return (
+    isPresentWhenUnsupportedError(e) ||
+    isPresentWhenUnsupportedError((e as { cause?: unknown }).cause)
+  );
+}
 
 // --- Job shape ------------------------------------------------------------------
 
@@ -111,6 +127,19 @@ export interface ActivateJobsStreamOptions<R = never> {
   readonly requestTimeout?: Duration.Input | number;
   /** Restrict activation to these variable names. */
   readonly fetchVariables?: readonly string[];
+  /**
+   * Activate jobs with a lease — default `false`.
+   *
+   * When `true`, each activated job is assigned a distinct, opaque lease token
+   * (`ActivatedJobResult.leaseToken`) that is threaded back into the fenced
+   * `completeJob` / `failJob` / `throwJobError` commands, fencing them against a
+   * superseded activation of the same job.
+   *
+   * Note: the Effect `handler` intentionally keeps the base job shape
+   * (`leaseToken` remains optional/nullable); the token is threaded back into
+   * fenced commands automatically, so handlers do not read it directly.
+   */
+  readonly withLease?: boolean;
   /**
    * `Schedule` used to back off and retry a **failed activation request** (transport
    * outage, broker restart, transient server error). Runs on the Effect `Clock`.
@@ -195,6 +224,7 @@ export function activateJobsStream<R = never>(
     ...(options.fetchVariables && options.fetchVariables.length > 0
       ? { fetchVariable: [...options.fetchVariables] }
       : {}),
+    ...(options.withLease ? { withLease: true } : {}),
   };
 
   const pollOnce: Effect.Effect<Job[], DomainError, CamundaEffect> = Effect.gen(function* () {
@@ -210,7 +240,18 @@ export function activateJobsStream<R = never>(
 
   const activation: Effect.Effect<Job[], DomainError, CamundaEffect | R> =
     options.activationRetrySchedule
-      ? Effect.retry(pollOnce, { schedule: options.activationRetrySchedule })
+      ? Effect.retry(pollOnce, {
+          schedule: options.activationRetrySchedule,
+          // A dependent-presence contract mismatch (`PresentWhenUnsupportedError`,
+          // e.g. `withLease` requested against a server that predates lease tokens)
+          // is TERMINAL: retrying the same request against the same server can
+          // never satisfy the derived presence contract. Stop instead of looping on
+          // the user's retry schedule, matching the terminal handling in the plain
+          // and threaded worker poll loops. The Effect client maps the thrown guard
+          // error into the `DomainError` channel while preserving the original as
+          // `cause`, so we discriminate it there.
+          while: (e) => !isTerminalContractError(e),
+        })
       : pollOnce;
 
   return Stream.fromIterableEffectRepeat(activation);

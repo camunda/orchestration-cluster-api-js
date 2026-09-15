@@ -4050,7 +4050,7 @@ export const zActivatedJobResult = z.object({
     priority: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
     }),
-    leaseToken: zJobLeaseToken.nullable()
+    leaseToken: zJobLeaseToken.nullish()
 });
 
 /**

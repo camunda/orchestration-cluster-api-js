@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { CamundaClient } from '../gen/CamundaClient';
 import type { ActivateJobsResponses } from '../gen/types.gen';
+import { isPresentWhenUnsupportedError } from './errors';
 import type { EnrichedActivatedJob } from './jobActions';
 import type { JobActionReceipt } from './jobWorker';
 import {
@@ -93,6 +94,18 @@ export interface ThreadedJobWorkerConfig<
   jobType: string;
   /** Optional list of variable names to fetch during activation */
   fetchVariables?: In extends z.ZodTypeAny ? Array<Extract<keyof z.infer<In>, string>> : string[];
+  /**
+   * Activate jobs with a lease — default `false`.
+   *
+   * When `true`, each activated job is assigned a distinct, opaque lease token
+   * (`ActivatedJobResult.leaseToken`) that is automatically threaded back into the
+   * fenced `complete` / `fail` / `error` commands. See {@link JobWorkerConfig.withLease}.
+   *
+   * Note: the threaded `jobHandler` intentionally keeps the base job shape
+   * (`leaseToken` remains optional/nullable); the token is threaded back into
+   * fenced commands automatically, so handlers do not read it directly.
+   */
+  withLease?: boolean;
   /** Optional explicit name */
   workerName?: string;
   /**
@@ -129,6 +142,7 @@ type ResolvedThreadedJobWorkerConfig = ThreadedJobWorkerConfig & {
   validateSchemas: boolean;
   maxParallelJobs: number;
   jobTimeoutMs: number;
+  withLease: boolean;
 };
 
 let _workerCounter = 0;
@@ -175,6 +189,7 @@ export class ThreadedJobWorker {
       validateSchemas: cfg.validateSchemas ?? false,
       maxParallelJobs: cfg.maxParallelJobs ?? 10,
       jobTimeoutMs: cfg.jobTimeoutMs ?? 60_000,
+      withLease: cfg.withLease ?? false,
     };
     this._maxParallelJobs = this._cfg.maxParallelJobs;
     this._jobTimeoutMs = this._cfg.jobTimeoutMs;
@@ -354,6 +369,8 @@ export class ThreadedJobWorker {
             jobKey: raw.jobKey!,
             errorMessage: err?.message || 'Thread handler error',
             retries: typeof raw.retries === 'number' ? Math.max(0, raw.retries - 1) : 0,
+            // Fence the failure against a superseded activation when leased.
+            ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
           })
           .catch((failErr: any) => {
             this._log.error('job.fail.error', failErr);
@@ -422,6 +439,7 @@ export class ThreadedJobWorker {
       ...(this._cfg.fetchVariables && this._cfg.fetchVariables.length > 0
         ? { fetchVariable: this._cfg.fetchVariables }
         : {}),
+      ...(this._cfg.withLease ? { withLease: true } : {}),
     };
     this._log.debug(() => ['activation.request', { batchSize }]);
     let result: ActivatedJobResult[] = [];
@@ -443,14 +461,17 @@ export class ThreadedJobWorker {
         this._scheduleNext(this._cfg.pollIntervalMs);
         return;
       }
-      // Any non-cancellation activation failure: back off exponentially (with
-      // jitter) so a sustained fault — a transport outage (broker restart, LAN
-      // blip, DNS flap) or a persistent server/auth/validation error — does not
-      // turn into a tight sub-millisecond retry loop that floods logs and hammers
-      // the endpoint. Transport outages are the motivating case, but backing off
-      // on *every* recurring failure is deliberate: it is the safe default that
-      // keeps the retry cadence bounded regardless of the error class. Resets to
-      // the floor on the next successful poll.
+      // Terminal, non-retryable fault: the server returned a response shape that
+      // cannot satisfy a requested dependent-presence contract (e.g. a lease was
+      // requested against a server that predates the feature). Backing off and
+      // retrying can never succeed — the same request yields the same unsupported
+      // shape forever — so stop the worker instead of looping. Mirrors JobWorker
+      // so the two implementations cannot drift.
+      if (isPresentWhenUnsupportedError(e)) {
+        this._log.error('activation.fatal', e);
+        this.stop();
+        return;
+      }
       this._consecutiveActivationErrors += 1;
       // nextActivationRetryDelayMs is the single source of truth shared with
       // JobWorker so the two implementations cannot drift. When backoff is
@@ -525,7 +546,12 @@ export class ThreadedJobWorker {
 
   private async _failValidation(raw: ActivatedJobResult, msg: string) {
     try {
-      await this._client.failJob({ jobKey: raw.jobKey, errorMessage: msg });
+      await this._client.failJob({
+        jobKey: raw.jobKey,
+        errorMessage: msg,
+        // Fence the failure against a superseded activation when leased.
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      });
     } catch (e) {
       this._log.error('job.fail.validation.error', e);
     } finally {

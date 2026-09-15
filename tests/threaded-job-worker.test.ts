@@ -445,6 +445,202 @@ describeIf('ThreadedJobWorker', () => {
     expect(completionBody).not.toHaveProperty('result');
   });
 
+  it('sends withLease: true in the threaded activation body when configured', async () => {
+    let activationBody: any;
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          if (activationBody === undefined) {
+            const rawBody = init?.body
+              ? (init.body as string)
+              : input instanceof Request
+                ? await input.text()
+                : '{}';
+            activationBody = JSON.parse(rawBody || '{}');
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ jobs: [] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+      withLease: true,
+    });
+
+    await waitFor(() => activationBody !== undefined, 10000);
+    expect(activationBody.withLease).toBe(true);
+  });
+
+  it('omits withLease from the threaded activation body by default', async () => {
+    let activationBody: any;
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          if (activationBody === undefined) {
+            const rawBody = init?.body
+              ? (init.body as string)
+              : input instanceof Request
+                ? await input.text()
+                : '{}';
+            activationBody = JSON.parse(rawBody || '{}');
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ jobs: [] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+    });
+
+    await waitFor(() => activationBody !== undefined, 10000);
+    expect(activationBody).not.toHaveProperty('withLease');
+  });
+
+  it('threads leaseToken into the completion request via the thread proxy for a leased job', async () => {
+    let activateCallCount = 0;
+    let completionBody: any;
+    let completeCount = 0;
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          activateCallCount++;
+          if (activateCallCount === 1) {
+            return new Response(
+              JSON.stringify({ jobs: [createMockJob({ leaseToken: 'lease-thread' })] }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (url.includes('/v2/jobs/test-job-1/completion')) {
+          const rawBody = init?.body
+            ? (init.body as string)
+            : input instanceof Request
+              ? await input.text()
+              : '{}';
+          completionBody = JSON.parse(rawBody || '{}');
+          completeCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ error: `No mock for ${url}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+      withLease: true,
+    });
+
+    await waitFor(() => completeCount >= 1, 10000);
+    expect(completionBody).toMatchObject({ leaseToken: 'lease-thread' });
+  });
+
+  it('omits leaseToken from the completion request via the thread proxy for an unleased job', async () => {
+    let activateCallCount = 0;
+    let completionBody: any;
+    let completeCount = 0;
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          activateCallCount++;
+          if (activateCallCount === 1) {
+            return new Response(JSON.stringify({ jobs: [createMockJob({ leaseToken: null })] }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            });
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (url.includes('/v2/jobs/test-job-1/completion')) {
+          const rawBody = init?.body
+            ? (init.body as string)
+            : input instanceof Request
+              ? await input.text()
+              : '{}';
+          completionBody = JSON.parse(rawBody || '{}');
+          completeCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ error: `No mock for ${url}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+    });
+
+    await waitFor(() => completeCount >= 1, 10000);
+    expect(completionBody).not.toHaveProperty('leaseToken');
+  });
+
   it('exposes pool stats', async () => {
     const client = createCamundaClient({
       config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
@@ -464,6 +660,121 @@ describeIf('ThreadedJobWorker', () => {
     expect(worker.poolSize).toBe(2);
     expect(worker.busyThreads).toBe(0);
     expect(worker.activeJobs).toBe(0);
+  });
+
+  it('forwards leaseToken to the failure request when a thread handler throws (onError path)', async () => {
+    let activateCallCount = 0;
+    let failureBody: any;
+    let failCount = 0;
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+        if (url.includes('/v2/jobs/activation')) {
+          activateCallCount++;
+          if (activateCallCount === 1) {
+            return new Response(
+              JSON.stringify({ jobs: [createMockJob({ leaseToken: 'lease-thread' })] }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } }
+            );
+          }
+          return new Response(JSON.stringify({ jobs: [] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        if (url.includes('/v2/jobs/test-job-1/failure')) {
+          const rawBody = init?.body
+            ? (init.body as string)
+            : input instanceof Request
+              ? await input.text()
+              : '{}';
+          failureBody = JSON.parse(rawBody || '{}');
+          failCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+        return new Response(JSON.stringify({ error: `No mock for ${url}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-throw.js'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+      withLease: true,
+    });
+
+    await waitFor(() => failCount >= 1, 10000);
+    expect(failureBody).toMatchObject({ leaseToken: 'lease-thread' });
+  });
+
+  it('stops (no further activation) on a terminal PresentWhenUnsupportedError from a tokenless leased activation', async () => {
+    let activateCallCount = 0;
+    let completeCount = 0;
+    let failCount = 0;
+
+    const client = createCamundaClient({
+      config: { CAMUNDA_REST_ADDRESS: 'http://localhost:8080' },
+      fetch: mockFetch({
+        '/v2/jobs/activation': async () => {
+          activateCallCount++;
+          // withLease was requested but the (older) server returns a job with no
+          // leaseToken — the generated guard throws PresentWhenUnsupportedError,
+          // which is terminal: the worker must stop rather than poll forever.
+          return new Response(JSON.stringify({ jobs: [createMockJob({ leaseToken: null })] }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        },
+        '/v2/jobs/test-job-1/completion': async () => {
+          completeCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        },
+        '/v2/jobs/test-job-1/failure': async () => {
+          failCount++;
+          return new Response(JSON.stringify({}), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        },
+      }) as any,
+    });
+
+    worker = client.createThreadedJobWorker({
+      jobType: 'test-task',
+      handlerModule: path.join(__dirname, 'fixtures/threaded-handler-complete.js'),
+      maxParallelJobs: 1,
+      jobTimeoutMs: 30000,
+      autoStart: true,
+      threadPoolSize: 1,
+      withLease: true,
+    });
+
+    // The worker must stop on the terminal fault.
+    await waitFor(() => worker!.stopped, 10000);
+
+    // Give any (erroneously) scheduled re-poll a chance to fire, then assert the
+    // worker made exactly one activation attempt and never dispatched the job.
+    const attemptsAtStop = activateCallCount;
+    await new Promise((r) => setTimeout(r, 500));
+    expect(activateCallCount).toBe(attemptsAtStop);
+    expect(attemptsAtStop).toBe(1);
+    expect(completeCount).toBe(0);
+    expect(failCount).toBe(0);
   });
 });
 

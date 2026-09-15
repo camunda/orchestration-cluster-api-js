@@ -6,8 +6,8 @@ import { JobActionReceipt } from './jobWorker';
 type ActivatedJobResult = ActivateJobsResponses[200]['jobs'][number];
 type JobErrorRequest = ThrowJobErrorData['body'];
 
-/** Enriched job type with convenience methods. */
-export interface EnrichedActivatedJob extends ActivatedJobResult {
+/** Convenience action methods spliced onto an activated job. */
+export interface EnrichedActivatedJobActions {
   complete(variables?: { [k: string]: any }, result?: JobResult): Promise<JobActionReceipt>;
   fail(body: any): Promise<JobActionReceipt>;
   error(error: JobErrorRequest): Promise<JobActionReceipt>;
@@ -27,6 +27,47 @@ export interface EnrichedActivatedJob extends ActivatedJobResult {
   /** Set true once any acknowledgement method is invoked. */
   acknowledged?: boolean;
 }
+
+/**
+ * Enriched job type with convenience methods.
+ *
+ * A back-compatible **interface** so downstream consumers can declaration-merge
+ * or `extends` it exactly as they could before the dependent-presence typing
+ * work landed (restoring the pre-#513 public surface — turning it into a generic
+ * type alias was a breaking change for those consumers). It resolves to the base
+ * `ActivatedJobResult` shape plus the action methods.
+ *
+ * The marker-driven dependent-presence projections (see
+ * `hooks/post/710-derive-present-when.ts`) narrow individual response properties
+ * via the generic {@link EnrichedActivatedJobOf} companion instead of
+ * re-parameterising this interface — an interface cannot intersect an arbitrary
+ * type parameter, and keeping this name non-generic preserves back-compat.
+ */
+export interface EnrichedActivatedJob extends EnrichedActivatedJobActions {}
+export interface EnrichedActivatedJob extends ActivatedJobResult {}
+
+/**
+ * Generic projection of an enriched job over its underlying activated-job shape
+ * `J`, used by the marker-driven dependent-presence overloads to narrow
+ * individual response properties — e.g. `leaseToken` becomes non-null when a job
+ * was activated with `withLease: true`, or an optional nullable field
+ * (`{ leaseToken?: null }`) when it was not. The absent projection re-types the
+ * property as optional-and-null rather than removing it, so it is not assignable
+ * to the base non-nullable narrowing; `J` is therefore left unconstrained rather
+ * than bounded by `ActivatedJobResult`.
+ *
+ * The overlay is `Omit<EnrichedActivatedJob, keyof ActivatedJobResult>` — the
+ * non-base portion of {@link EnrichedActivatedJob} — rather than
+ * `EnrichedActivatedJobActions` directly. This preserves the declaration-merge
+ * compatibility promise for *narrowed* jobs too: any field a consumer merges onto
+ * the public `EnrichedActivatedJob` interface (e.g. `interface EnrichedActivatedJob
+ * { myFlag: boolean }`) is carried onto `activateJobs({ withLease: true })` results
+ * as well, instead of silently disappearing from the narrowed overload while
+ * remaining on the base one. Defaults to the base `ActivatedJobResult`, so
+ * `EnrichedActivatedJobOf` with no argument equals {@link EnrichedActivatedJob}.
+ */
+export type EnrichedActivatedJobOf<J = ActivatedJobResult> = J &
+  Omit<EnrichedActivatedJob, keyof ActivatedJobResult>;
 
 export interface JobFailureConfiguration {
   errorMessage: string;
@@ -74,6 +115,7 @@ export function enrichActivatedJob(
         variables,
         jobKey: raw.jobKey,
         ...(result !== undefined && { result }),
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
       });
     } finally {
       ack();
@@ -82,7 +124,11 @@ export function enrichActivatedJob(
   };
   job.fail = async (reason: JobFailureConfiguration): Promise<JobActionReceipt> => {
     try {
-      await client.failJob({ ...reason, jobKey: raw.jobKey });
+      await client.failJob({
+        ...reason,
+        jobKey: raw.jobKey,
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      });
     } finally {
       ack();
     }
@@ -90,7 +136,11 @@ export function enrichActivatedJob(
   };
   job.error = async (error: JobErrorRequest): Promise<JobActionReceipt> => {
     try {
-      await client.throwJobError({ ...error, jobKey: raw.jobKey });
+      await client.throwJobError({
+        ...error,
+        jobKey: raw.jobKey,
+        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      });
     } finally {
       ack();
     }
@@ -111,8 +161,16 @@ export function enrichActivatedJob(
     return JobActionReceipt;
   };
   job.modifyJobTimeout = ({ newTimeoutMs }: { newTimeoutMs: number }) =>
-    client.updateJob({ changeset: { timeout: newTimeoutMs }, jobKey: raw.jobKey });
+    client.updateJob({
+      changeset: { timeout: newTimeoutMs },
+      jobKey: raw.jobKey,
+      ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+    });
   job.modifyRetries = ({ retries }: { retries: number }) =>
-    client.updateJob({ changeset: { retries }, jobKey: raw.jobKey });
+    client.updateJob({
+      changeset: { retries },
+      jobKey: raw.jobKey,
+      ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+    });
   return job as EnrichedActivatedJob;
 }

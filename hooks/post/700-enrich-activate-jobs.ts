@@ -6,12 +6,38 @@ function patchCamundaClient(filePath: string) {
   let src = readFileSync(filePath, 'utf8');
   const alreadyInjected = /enrichActivatedJob\(/.test(src);
 
-  // Insert import after jobWorker import for stability
-  if (!/runtime\/jobActions/.test(src)) {
+  // Insert/merge the jobActions import. On a freshly generated file there is no
+  // such import, so we add it after the jobWorker import for stability. On an
+  // incremental rerun against an already-patched file the import may already
+  // exist but predate a symbol this hook now needs — MERGE the required names
+  // into the existing import rather than skipping.
+  //
+  // Limit this list to the symbols THIS hook ALWAYS emits: `enrichActivatedJob`
+  // (spliced into the implementation below) and `EnrichedActivatedJob` (the
+  // adjusted `activateJobs` return type). The narrowing companion
+  // `EnrichedActivatedJobOf` is imported by hook 710 ONLY when it actually emits
+  // narrowed overloads that reference it. Importing it unconditionally here would
+  // leave it unused for a spec with no `x-present-when` markers (hook 710 returns
+  // early), tripping Biome's `noUnusedImports` and failing the build.
+  const requiredJobActionsNames = ['enrichActivatedJob', 'EnrichedActivatedJob'];
+  const jobActionsImportRe = /import \{([^}]*)\} from '\.\.\/runtime\/jobActions';/;
+  const existingJobActionsImport = src.match(jobActionsImportRe);
+  if (existingJobActionsImport) {
+    const names = new Set(
+      existingJobActionsImport[1]
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    );
+    for (const n of requiredJobActionsNames) names.add(n);
+    src = src.replace(
+      existingJobActionsImport[0],
+      `import { ${[...names].join(', ')} } from '../runtime/jobActions';`
+    );
+  } else {
     src = src.replace(
       /import { JobWorker, type JobWorkerConfig } from '..\/runtime\/jobWorker';/,
-      (m) =>
-        `${m}\nimport { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';`
+      (m) => `${m}\nimport { ${requiredJobActionsNames.join(', ')} } from '../runtime/jobActions';`
     );
   }
 

@@ -38,12 +38,29 @@ export interface CancelSdkError extends Error {
   name: 'CancelSdkError';
 }
 
+/**
+ * Raised by a generated dependent-presence (`x-present-when`) guard when the
+ * server returns a response shape that predates the feature — e.g. a lease
+ * token was requested but the payload cannot support the derived presence
+ * contract. It is **terminal, not transient**: retrying the same request
+ * against the same server can never satisfy the contract, so it is marked
+ * `nonRetryable` and a job worker stops rather than looping on backoff.
+ */
+export interface PresentWhenUnsupportedError extends Error {
+  operationId?: string;
+  cause?: unknown;
+  /** Always `true` — retrying cannot change an unsupported server response shape. */
+  nonRetryable: true;
+  name: 'PresentWhenUnsupportedError';
+}
+
 export type SdkError =
   | HttpSdkError
   | ValidationSdkError
   | AuthSdkError
   | NetworkSdkError
-  | CancelSdkError;
+  | CancelSdkError
+  | PresentWhenUnsupportedError;
 
 export function isSdkError(e: unknown): e is SdkError {
   return (
@@ -56,8 +73,19 @@ export function isSdkError(e: unknown): e is SdkError {
       'AuthSdkError',
       'NetworkSdkError',
       'CancelSdkError',
+      'PresentWhenUnsupportedError',
     ].includes((e as any).name)
   );
+}
+
+/**
+ * Discriminates the terminal dependent-presence guard error. A worker poll loop
+ * uses this to stop instead of rescheduling: the fault is a server/contract
+ * mismatch, not a transient transport error, so exponential backoff would loop
+ * forever.
+ */
+export function isPresentWhenUnsupportedError(e: unknown): e is PresentWhenUnsupportedError {
+  return !!e && typeof e === 'object' && (e as any).name === 'PresentWhenUnsupportedError';
 }
 
 // Attempt to classify any thrown value to a stable SdkError.

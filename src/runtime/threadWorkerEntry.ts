@@ -11,13 +11,9 @@
  * Handlers are cached by module path so each import happens only once per thread.
  */
 import { parentPort } from 'node:worker_threads';
-import type { JobResult as ApiJobResult } from '../gen/types.gen';
 import { createClientProxy } from './clientProxy.ts';
 import { toModuleSpecifier } from './moduleSpecifier.ts';
-
-// Inline the JobActionReceipt constant to avoid importing the full SDK dependency chain
-// (jobWorker.ts → ../gen/CamundaClient → entire SDK) in the worker thread.
-const JobActionReceipt = 'JOB_ACTION_RECEIPT' as const;
+import { createJobProxy } from './threadJobProxy.ts';
 
 if (!parentPort) {
   throw new Error('threadWorkerEntry must run inside a worker_threads Worker');
@@ -121,78 +117,6 @@ parentPort.on('message', async (msg: JobMessage & { clientPort?: any }) => {
     }
   }
 });
-
-/**
- * Build a job object with action methods that proxy through the client.
- * The job data is plain serialized data from the main thread.
- * Action methods (complete, fail, error, etc.) call back to the main thread client.
- */
-function createJobProxy(jobData: Record<string, unknown>, client: any): any {
-  const acknowledged = { value: false };
-  const ack = () => {
-    acknowledged.value = true;
-    job.acknowledged = true;
-  };
-
-  const job: any = { ...jobData };
-
-  /**
-   * Completion actions (complete/fail/error/cancelWorkflow) are stored as intent
-   * rather than proxied through the MessagePort. The thread returns immediately,
-   * and the main thread executes the API call asynchronously. This keeps threads
-   * free for CPU work instead of blocking on I/O round-trips.
-   */
-
-  job.complete = async (variables: Record<string, unknown> = {}, result?: ApiJobResult) => {
-    ack();
-    job._completionAction = {
-      method: 'completeJob',
-      args: [{ variables, jobKey: jobData.jobKey, ...(result !== undefined && { result }) }],
-    };
-    return JobActionReceipt;
-  };
-
-  job.fail = async (reason: any) => {
-    ack();
-    job._completionAction = {
-      method: 'failJob',
-      args: [{ ...reason, jobKey: jobData.jobKey }],
-    };
-    return JobActionReceipt;
-  };
-
-  job.error = async (error: any) => {
-    ack();
-    job._completionAction = {
-      method: 'throwJobError',
-      args: [{ ...error, jobKey: jobData.jobKey }],
-    };
-    return JobActionReceipt;
-  };
-
-  job.cancelWorkflow = async () => {
-    ack();
-    job._completionAction = {
-      method: 'cancelProcessInstance',
-      args: [{ processInstanceKey: jobData.processInstanceKey }],
-    };
-    return JobActionReceipt;
-  };
-
-  job.ignore = async () => {
-    ack();
-    return JobActionReceipt;
-  };
-
-  // Non-completion actions still proxy through the client (rare, need response)
-  job.modifyJobTimeout = ({ newTimeoutMs }: { newTimeoutMs: number }) =>
-    client.updateJob({ changeset: { timeout: newTimeoutMs }, jobKey: jobData.jobKey });
-
-  job.modifyRetries = ({ retries }: { retries: number }) =>
-    client.updateJob({ changeset: { retries }, jobKey: jobData.jobKey });
-
-  return job;
-}
 
 // Signal ready
 parentPort.postMessage({ type: 'ready' });

@@ -59,4 +59,28 @@ describe('type honesty: optional fields must not throw when omitted', () => {
     expect(worker).toBeInstanceOf(ThreadedJobWorker);
     worker.stop();
   });
+
+  it('createJobWorker succeeds when withLease is omitted (defaults to false)', () => {
+    const client = createCamundaClient({ fetch: noopFetch as any });
+    // `withLease?` is optional; omitting it must not throw — the resolved config
+    // applies the `false` default.
+    const worker = client.createJobWorker({
+      jobType: 'test-type',
+      jobHandler: noopHandler,
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(JobWorker);
+    worker.stop();
+  });
+
+  it('createThreadedJobWorker succeeds when withLease is omitted (defaults to false)', () => {
+    const client = createCamundaClient({ fetch: noopFetch as any });
+    const worker = client.createThreadedJobWorker({
+      jobType: 'test-type',
+      handlerModule: './fake-handler.js',
+      autoStart: false,
+    });
+    expect(worker).toBeInstanceOf(ThreadedJobWorker);
+    worker.stop();
+  });
 });

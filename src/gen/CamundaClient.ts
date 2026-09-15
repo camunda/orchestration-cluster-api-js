@@ -21,6 +21,7 @@ import {
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
 import type { ProcessInstanceKey, ScopeKey, TenantId, VariableFilter } from '../gen/types.gen';
+import type { ActivatedJobResultWithLeaseToken, ActivatedJobResultWithoutLeaseToken } from '../gen/types.gen'; // present-when projection imports
 import {
   executeWithHttpRetry,
   defaultHttpClassifier,
@@ -38,7 +39,7 @@ import {
   variableNamesFromSchema,
 } from '../runtime/typedVariables';
 import { JobWorker, type JobWorkerConfig } from '../runtime/jobWorker';
-import { enrichActivatedJob, EnrichedActivatedJob } from '../runtime/jobActions';
+import { enrichActivatedJob, EnrichedActivatedJob, EnrichedActivatedJobOf } from '../runtime/jobActions';
 import { ThreadedJobWorker, type ThreadedJobWorkerConfig } from '../runtime/threadedJobWorker';
 import { ThreadPool } from '../runtime/threadPool';
 import { evaluateSdkResponse } from '../runtime/responseEvaluation';
@@ -1996,6 +1997,8 @@ class CamundaClientBase {
    * @operationId activateJobs
    * @tags Job
    */
+  activateJobs(input: activateJobsInput & { withLease: true }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithLeaseToken>[] }>;
+  activateJobs(input: activateJobsInput & { withLease?: false | null | undefined }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithoutLeaseToken>[] }>;
   activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
   activateJobs(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
@@ -2044,6 +2047,7 @@ class CamundaClientBase {
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
         }
+        /* present-when-guard:activateJobs:withLease=true:leaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.leaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'leaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
         if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this as any, this.logger().scope(`job:${j.jobKey}`))); }
         return data;
         } catch(e) {

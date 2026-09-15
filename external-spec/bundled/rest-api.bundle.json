@@ -32461,6 +32461,10 @@
           "leaseToken": {
             "description": "The lease token identifying this activation. This is `null` when the job was activated without a lease.\n",
             "nullable": true,
+            "x-present-when": {
+              "request": "withLease",
+              "equals": true
+            },
             "allOf": [
               {
                 "$ref": "#/components/schemas/JobLeaseToken"
