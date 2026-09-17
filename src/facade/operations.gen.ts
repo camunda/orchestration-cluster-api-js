@@ -191,7 +191,7 @@ type _createAgentInstance_Body = CreateAgentInstanceData extends { body?: infer 
  * async function createAgentInstanceExample(
  *   elementInstanceKey: ElementInstanceKey,
  *   jobKey: JobKey,
- *   jobLease: JobLeaseToken
+ *   jobLeaseToken: JobLeaseToken
  * ) {
  *   const camunda = createCamundaClient();
  * 
@@ -200,7 +200,7 @@ type _createAgentInstance_Body = CreateAgentInstanceData extends { body?: infer 
  *   const result = await camunda.createAgentInstance({
  *     elementInstanceKey,
  *     jobKey,
- *     jobLease,
+ *     jobLeaseToken,
  *     history: [
  *       {
  *         historyItemId: HistoryItemId.assumeExists('configuration-1'),
@@ -7081,7 +7081,7 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
  *   agentInstanceKey: AgentInstanceKey,
  *   elementInstanceKey: ElementInstanceKey,
  *   jobKey: JobKey,
- *   jobLease: JobLeaseToken
+ *   jobLeaseToken: JobLeaseToken
  * ) {
  *   const camunda = createCamundaClient();
  * 
@@ -7089,7 +7089,7 @@ export function unassignUserTask(options?: Parameters<typeof _unassignUserTask>[
  *     agentInstanceKey,
  *     elementInstanceKey,
  *     jobKey,
- *     jobLease,
+ *     jobLeaseToken,
  *     status: 'THINKING',
  *     history: [
  *       {
