@@ -131,12 +131,12 @@ export interface ActivateJobsStreamOptions<R = never> {
    * Activate jobs with a lease — default `false`.
    *
    * When `true`, each activated job is assigned a distinct, opaque lease token
-   * (`ActivatedJobResult.leaseToken`) that is threaded back into the fenced
+   * (`ActivatedJobResult.jobLeaseToken`) that is threaded back into the fenced
    * `completeJob` / `failJob` / `throwJobError` commands, fencing them against a
    * superseded activation of the same job.
    *
    * Note: the Effect `handler` intentionally keeps the base job shape
-   * (`leaseToken` remains optional/nullable); the token is threaded back into
+   * (`jobLeaseToken` remains optional/nullable); the token is threaded back into
    * fenced commands automatically, so handlers do not read it directly.
    */
   readonly withLease?: boolean;
@@ -268,7 +268,7 @@ function completeJob<A extends CompleteVars>(
     yield* camunda.completeJob({
       jobKey: job.jobKey,
       variables: (vars ?? {}) as { [key: string]: unknown },
-      ...(job.leaseToken != null ? { leaseToken: job.leaseToken } : {}),
+      ...(job.jobLeaseToken != null ? { jobLeaseToken: job.jobLeaseToken } : {}),
     });
   });
 }
@@ -285,7 +285,7 @@ function failJobRetryable(
       retries: Math.max(0, (job.retries ?? 1) - 1),
       ...(error.retryBackoff !== undefined ? { retryBackOff: toMillis(error.retryBackoff) } : {}),
       ...(error.variables ? { variables: { ...error.variables } } : {}),
-      ...(job.leaseToken != null ? { leaseToken: job.leaseToken } : {}),
+      ...(job.jobLeaseToken != null ? { jobLeaseToken: job.jobLeaseToken } : {}),
     });
   });
 }
@@ -301,7 +301,7 @@ function raiseIncident(
       errorCode: error.code,
       errorMessage: error.message,
       ...(error.variables ? { variables: { ...error.variables } } : {}),
-      ...(job.leaseToken != null ? { leaseToken: job.leaseToken } : {}),
+      ...(job.jobLeaseToken != null ? { jobLeaseToken: job.jobLeaseToken } : {}),
     });
   });
 }
@@ -317,7 +317,7 @@ function releaseLease(job: Job): Effect.Effect<void, never, CamundaEffect> {
       jobKey: job.jobKey,
       errorMessage: 'worker interrupted; releasing lease for re-activation',
       retries: job.retries ?? 1,
-      ...(job.leaseToken != null ? { leaseToken: job.leaseToken } : {}),
+      ...(job.jobLeaseToken != null ? { jobLeaseToken: job.jobLeaseToken } : {}),
     });
   }).pipe(Effect.ignore);
 }
@@ -344,7 +344,7 @@ function failJobOnDefect(
       jobKey: job.jobKey,
       errorMessage: defect instanceof Error ? defect.message : 'Handler error',
       retries: Math.max(0, (job.retries ?? 1) - 1),
-      ...(job.leaseToken != null ? { leaseToken: job.leaseToken } : {}),
+      ...(job.jobLeaseToken != null ? { jobLeaseToken: job.jobLeaseToken } : {}),
     });
   });
 }

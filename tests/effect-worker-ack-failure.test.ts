@@ -20,7 +20,7 @@ const sampleJob = (key: string): Job =>
     jobKey: key,
     type: 'test-job',
     retries: 3,
-    leaseToken: null,
+    jobLeaseToken: null,
     variables: {},
     customHeaders: {},
     processInstanceKey: '10',

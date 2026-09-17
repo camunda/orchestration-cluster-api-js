@@ -65,7 +65,7 @@ export interface JobWorkerConfig<
    * Activate jobs with a lease — default `false`.
    *
    * When `true`, each activated job is assigned a distinct, opaque lease token
-   * (`ActivatedJobResult.leaseToken`) that is automatically threaded back into the
+   * (`ActivatedJobResult.jobLeaseToken`) that is automatically threaded back into the
    * fenced `complete` / `fail` / `error` commands. The lease fences those commands
    * against a superseded activation of the same job (e.g. after a timeout and
    * re-activation by another worker): a command carrying a stale token is rejected
@@ -73,9 +73,9 @@ export interface JobWorkerConfig<
    * only to leasing workers of that type, so a homogeneous fleet per job type is
    * recommended.
    *
-   * Note: the marker-derived non-null `leaseToken` projection applies to the
+   * Note: the marker-derived non-null `jobLeaseToken` projection applies to the
    * direct `activateJobs` client call; a worker `jobHandler` intentionally keeps
-   * the base `Job<...>` shape (`leaseToken` remains optional/nullable) because the
+   * the base `Job<...>` shape (`jobLeaseToken` remains optional/nullable) because the
    * token is threaded back into fenced commands automatically — handlers do not
    * need to read it.
    */
@@ -409,7 +409,7 @@ export class JobWorker {
           errorMessage: e?.message || 'Handler error',
           retries: typeof retries === 'number' ? Math.max(0, retries - 1) : 0,
           // Fence the failure against a superseded activation when leased.
-          ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+          ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
         });
       } catch (failErr) {
         this._log.error('job.fail.error', failErr);
@@ -426,7 +426,7 @@ export class JobWorker {
         jobKey: raw.jobKey,
         errorMessage: msg,
         // Fence the failure against a superseded activation when leased.
-        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
       });
     } catch (e) {
       this._log.error('job.fail.validation.error', e);

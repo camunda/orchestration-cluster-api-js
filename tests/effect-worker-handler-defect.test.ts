@@ -21,7 +21,7 @@ const sampleJob = (key: string, retries = 3): Job =>
     jobKey: key,
     type: 'test-job',
     retries,
-    leaseToken: null,
+    jobLeaseToken: null,
     variables: {},
     customHeaders: {},
     processInstanceKey: '10',

@@ -22,7 +22,7 @@ const sampleJob = (over: Partial<Job> = {}): Job =>
     jobKey: '1',
     type: 'test-job',
     retries: 3,
-    leaseToken: null,
+    jobLeaseToken: null,
     variables: {},
     customHeaders: {},
     processInstanceKey: '10',

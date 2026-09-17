@@ -98,11 +98,11 @@ export interface ThreadedJobWorkerConfig<
    * Activate jobs with a lease — default `false`.
    *
    * When `true`, each activated job is assigned a distinct, opaque lease token
-   * (`ActivatedJobResult.leaseToken`) that is automatically threaded back into the
+   * (`ActivatedJobResult.jobLeaseToken`) that is automatically threaded back into the
    * fenced `complete` / `fail` / `error` commands. See {@link JobWorkerConfig.withLease}.
    *
    * Note: the threaded `jobHandler` intentionally keeps the base job shape
-   * (`leaseToken` remains optional/nullable); the token is threaded back into
+   * (`jobLeaseToken` remains optional/nullable); the token is threaded back into
    * fenced commands automatically, so handlers do not read it directly.
    */
   withLease?: boolean;
@@ -370,7 +370,7 @@ export class ThreadedJobWorker {
             errorMessage: err?.message || 'Thread handler error',
             retries: typeof raw.retries === 'number' ? Math.max(0, raw.retries - 1) : 0,
             // Fence the failure against a superseded activation when leased.
-            ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+            ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
           })
           .catch((failErr: any) => {
             this._log.error('job.fail.error', failErr);
@@ -550,7 +550,7 @@ export class ThreadedJobWorker {
         jobKey: raw.jobKey,
         errorMessage: msg,
         // Fence the failure against a superseded activation when leased.
-        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
       });
     } catch (e) {
       this._log.error('job.fail.validation.error', e);

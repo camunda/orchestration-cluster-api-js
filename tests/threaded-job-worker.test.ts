@@ -528,7 +528,7 @@ describeIf('ThreadedJobWorker', () => {
     expect(activationBody).not.toHaveProperty('withLease');
   });
 
-  it('threads leaseToken into the completion request via the thread proxy for a leased job', async () => {
+  it('threads jobLeaseToken into the completion request via the thread proxy for a leased job', async () => {
     let activateCallCount = 0;
     let completionBody: any;
     let completeCount = 0;
@@ -542,7 +542,7 @@ describeIf('ThreadedJobWorker', () => {
           activateCallCount++;
           if (activateCallCount === 1) {
             return new Response(
-              JSON.stringify({ jobs: [createMockJob({ leaseToken: 'lease-thread' })] }),
+              JSON.stringify({ jobs: [createMockJob({ jobLeaseToken: 'lease-thread' })] }),
               { status: 200, headers: { 'Content-Type': 'application/json' } }
             );
           }
@@ -582,10 +582,10 @@ describeIf('ThreadedJobWorker', () => {
     });
 
     await waitFor(() => completeCount >= 1, 10000);
-    expect(completionBody).toMatchObject({ leaseToken: 'lease-thread' });
+    expect(completionBody).toMatchObject({ jobLeaseToken: 'lease-thread' });
   });
 
-  it('omits leaseToken from the completion request via the thread proxy for an unleased job', async () => {
+  it('omits jobLeaseToken from the completion request via the thread proxy for an unleased job', async () => {
     let activateCallCount = 0;
     let completionBody: any;
     let completeCount = 0;
@@ -598,10 +598,13 @@ describeIf('ThreadedJobWorker', () => {
         if (url.includes('/v2/jobs/activation')) {
           activateCallCount++;
           if (activateCallCount === 1) {
-            return new Response(JSON.stringify({ jobs: [createMockJob({ leaseToken: null })] }), {
-              status: 200,
-              headers: { 'Content-Type': 'application/json' },
-            });
+            return new Response(
+              JSON.stringify({ jobs: [createMockJob({ jobLeaseToken: null })] }),
+              {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+              }
+            );
           }
           return new Response(JSON.stringify({ jobs: [] }), {
             status: 200,
@@ -638,7 +641,7 @@ describeIf('ThreadedJobWorker', () => {
     });
 
     await waitFor(() => completeCount >= 1, 10000);
-    expect(completionBody).not.toHaveProperty('leaseToken');
+    expect(completionBody).not.toHaveProperty('jobLeaseToken');
   });
 
   it('exposes pool stats', async () => {
@@ -662,7 +665,7 @@ describeIf('ThreadedJobWorker', () => {
     expect(worker.activeJobs).toBe(0);
   });
 
-  it('forwards leaseToken to the failure request when a thread handler throws (onError path)', async () => {
+  it('forwards jobLeaseToken to the failure request when a thread handler throws (onError path)', async () => {
     let activateCallCount = 0;
     let failureBody: any;
     let failCount = 0;
@@ -676,7 +679,7 @@ describeIf('ThreadedJobWorker', () => {
           activateCallCount++;
           if (activateCallCount === 1) {
             return new Response(
-              JSON.stringify({ jobs: [createMockJob({ leaseToken: 'lease-thread' })] }),
+              JSON.stringify({ jobs: [createMockJob({ jobLeaseToken: 'lease-thread' })] }),
               { status: 200, headers: { 'Content-Type': 'application/json' } }
             );
           }
@@ -716,7 +719,7 @@ describeIf('ThreadedJobWorker', () => {
     });
 
     await waitFor(() => failCount >= 1, 10000);
-    expect(failureBody).toMatchObject({ leaseToken: 'lease-thread' });
+    expect(failureBody).toMatchObject({ jobLeaseToken: 'lease-thread' });
   });
 
   it('stops (no further activation) on a terminal PresentWhenUnsupportedError from a tokenless leased activation', async () => {
@@ -730,9 +733,9 @@ describeIf('ThreadedJobWorker', () => {
         '/v2/jobs/activation': async () => {
           activateCallCount++;
           // withLease was requested but the (older) server returns a job with no
-          // leaseToken — the generated guard throws PresentWhenUnsupportedError,
+          // jobLeaseToken — the generated guard throws PresentWhenUnsupportedError,
           // which is terminal: the worker must stop rather than poll forever.
-          return new Response(JSON.stringify({ jobs: [createMockJob({ leaseToken: null })] }), {
+          return new Response(JSON.stringify({ jobs: [createMockJob({ jobLeaseToken: null })] }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' },
           });

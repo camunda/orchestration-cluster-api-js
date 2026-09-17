@@ -49,9 +49,9 @@ export interface EnrichedActivatedJob extends ActivatedJobResult {}
 /**
  * Generic projection of an enriched job over its underlying activated-job shape
  * `J`, used by the marker-driven dependent-presence overloads to narrow
- * individual response properties — e.g. `leaseToken` becomes non-null when a job
+ * individual response properties — e.g. `jobLeaseToken` becomes non-null when a job
  * was activated with `withLease: true`, or an optional nullable field
- * (`{ leaseToken?: null }`) when it was not. The absent projection re-types the
+ * (`{ jobLeaseToken?: null }`) when it was not. The absent projection re-types the
  * property as optional-and-null rather than removing it, so it is not assignable
  * to the base non-nullable narrowing; `J` is therefore left unconstrained rather
  * than bounded by `ActivatedJobResult`.
@@ -115,7 +115,7 @@ export function enrichActivatedJob(
         variables,
         jobKey: raw.jobKey,
         ...(result !== undefined && { result }),
-        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
       });
     } finally {
       ack();
@@ -127,7 +127,7 @@ export function enrichActivatedJob(
       await client.failJob({
         ...reason,
         jobKey: raw.jobKey,
-        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
       });
     } finally {
       ack();
@@ -139,7 +139,7 @@ export function enrichActivatedJob(
       await client.throwJobError({
         ...error,
         jobKey: raw.jobKey,
-        ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+        ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
       });
     } finally {
       ack();
@@ -164,13 +164,13 @@ export function enrichActivatedJob(
     client.updateJob({
       changeset: { timeout: newTimeoutMs },
       jobKey: raw.jobKey,
-      ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
     });
   job.modifyRetries = ({ retries }: { retries: number }) =>
     client.updateJob({
       changeset: { retries },
       jobKey: raw.jobKey,
-      ...(raw.leaseToken != null ? { leaseToken: raw.leaseToken } : {}),
+      ...(raw.jobLeaseToken != null ? { jobLeaseToken: raw.jobLeaseToken } : {}),
     });
   return job as EnrichedActivatedJob;
 }

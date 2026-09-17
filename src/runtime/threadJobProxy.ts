@@ -4,7 +4,7 @@
  *
  * Kept in its own module — separate from the worker-thread bootstrap, which
  * throws on import outside a `worker_threads` Worker — so the proxy's behaviour
- * (in particular that EVERY job action forwards the activation `leaseToken` back
+ * (in particular that EVERY job action forwards the activation `jobLeaseToken` back
  * to the main-thread client) is unit-testable directly, without spinning up a
  * real worker thread.
  *
@@ -44,7 +44,7 @@ export function createJobProxy(jobData: Record<string, unknown>, client: any): a
           variables,
           jobKey: jobData.jobKey,
           ...(result !== undefined && { result }),
-          ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+          ...(jobData.jobLeaseToken != null ? { jobLeaseToken: jobData.jobLeaseToken } : {}),
         },
       ],
     };
@@ -59,7 +59,7 @@ export function createJobProxy(jobData: Record<string, unknown>, client: any): a
         {
           ...reason,
           jobKey: jobData.jobKey,
-          ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+          ...(jobData.jobLeaseToken != null ? { jobLeaseToken: jobData.jobLeaseToken } : {}),
         },
       ],
     };
@@ -74,7 +74,7 @@ export function createJobProxy(jobData: Record<string, unknown>, client: any): a
         {
           ...error,
           jobKey: jobData.jobKey,
-          ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+          ...(jobData.jobLeaseToken != null ? { jobLeaseToken: jobData.jobLeaseToken } : {}),
         },
       ],
     };
@@ -100,14 +100,14 @@ export function createJobProxy(jobData: Record<string, unknown>, client: any): a
     client.updateJob({
       changeset: { timeout: newTimeoutMs },
       jobKey: jobData.jobKey,
-      ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+      ...(jobData.jobLeaseToken != null ? { jobLeaseToken: jobData.jobLeaseToken } : {}),
     });
 
   job.modifyRetries = ({ retries }: { retries: number }) =>
     client.updateJob({
       changeset: { retries },
       jobKey: jobData.jobKey,
-      ...(jobData.leaseToken != null ? { leaseToken: jobData.leaseToken } : {}),
+      ...(jobData.jobLeaseToken != null ? { jobLeaseToken: jobData.jobLeaseToken } : {}),
     });
 
   return job;
