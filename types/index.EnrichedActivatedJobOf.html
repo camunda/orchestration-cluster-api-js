@@ -14,9 +14,9 @@
 <div class="tsd-signature"><span class="tsd-kind-type-alias">EnrichedActivatedJobOf</span><span class="tsd-signature-symbol">:</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#j">J</a> <span class="tsd-signature-symbol">&amp;</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/index.EnrichedActivatedJob.html" class="tsd-signature-type tsd-kind-interface">EnrichedActivatedJob</a><span class="tsd-signature-symbol">,</span> <span class="tsd-signature-keyword">keyof</span> <span class="tsd-signature-type">ActivatedJobResult</span><span class="tsd-signature-symbol">&gt;</span></div>
 <div class="tsd-comment tsd-typography"><p>Generic projection of an enriched job over its underlying activated-job shape
 <code>J</code>, used by the marker-driven dependent-presence overloads to narrow
-individual response properties — e.g. <code>leaseToken</code> becomes non-null when a job
+individual response properties — e.g. <code>jobLeaseToken</code> becomes non-null when a job
 was activated with <code>withLease: true</code>, or an optional nullable field
-(<code>{ leaseToken?: null }</code>) when it was not. The absent projection re-types the
+(<code>{ jobLeaseToken?: null }</code>) when it was not. The absent projection re-types the
 property as optional-and-null rather than removing it, so it is not assignable
 to the base non-nullable narrowing; <code>J</code> is therefore left unconstrained rather
 than bounded by <code>ActivatedJobResult</code>.</p>
@@ -34,7 +34,7 @@ remaining on the base one. Defaults to the base <code>ActivatedJobResult</code>,
 <ul class="tsd-type-parameter-list">
 <li><span id="j"><span class="tsd-kind-type-parameter">J</span> = <span class="tsd-signature-type">ActivatedJobResult</span></span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/0a71162efbe904dd1cc61ba1e4c4c6dc68696700/src/runtime/jobActions.ts#L69">src/runtime/jobActions.ts:69</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/camunda/orchestration-cluster-api-js/blob/7ca81a329982a735265567ba8a906ab039bc5dee/src/runtime/jobActions.ts#L69">src/runtime/jobActions.ts:69</a></li></ul></aside></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
