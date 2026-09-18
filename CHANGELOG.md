@@ -1,3 +1,10 @@
+# [10.0.0-alpha.46](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.45...v10.0.0-alpha.46) (2026-09-18)
+
+
+### Bug Fixes
+
+* send the job lease token under its renamed jobLeaseToken field ([#518](https://github.com/camunda/orchestration-cluster-api-js/issues/518)) ([5ed526b](https://github.com/camunda/orchestration-cluster-api-js/commit/5ed526bd31a74b246aaa31d655e2dde318b2afb3))
+
 # [10.0.0-alpha.45](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.44...v10.0.0-alpha.45) (2026-09-15)
 
 
