@@ -18,7 +18,7 @@ import { isPresentWhenUnsupportedError, isSdkError, normalizeError } from '../sr
 
 function makeGuardError(): any {
   const e: any = new Error(
-    "activateJobs: withLease=true was requested but the server returned an item without 'leaseToken'"
+    "activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken'"
   );
   e.name = 'PresentWhenUnsupportedError';
   e.nonRetryable = true;
@@ -67,7 +67,7 @@ function leasedJobWithoutToken() {
     customHeaders: {},
     worker: 'w',
     tenantId: '<default>',
-    // leaseToken intentionally absent: an older server that ignored withLease.
+    // jobLeaseToken intentionally absent: an older server that ignored withLease.
   };
 }
 
@@ -113,10 +113,10 @@ describe('job worker stops on PresentWhenUnsupportedError (terminal, no infinite
 
 /**
  * A fully-valid activated job that satisfies every required field of
- * `zActivatedJobResult` EXCEPT `leaseToken`, which is intentionally omitted (an
+ * `zActivatedJobResult` EXCEPT `jobLeaseToken`, which is intentionally omitted (an
  * older server that ignored `withLease`). Every other field is present and
  * schema-valid so that, under strict response validation, the ONLY thing that
- * could make validation fail is the missing `leaseToken` — which the
+ * could make validation fail is the missing `jobLeaseToken` — which the
  * `.nullish()` relaxation (hook 710, zod.gen.ts) deliberately admits. This lets
  * the terminal present-when guard fire instead of a spurious validation error.
  */
@@ -144,7 +144,7 @@ function completeLeasedJobWithoutToken() {
     rootProcessInstanceKey: null,
     businessId: null,
     priority: 0,
-    // leaseToken intentionally absent.
+    // jobLeaseToken intentionally absent.
   };
 }
 
@@ -153,14 +153,14 @@ function completeLeasedJobWithoutToken() {
  * relaxation is what lets the documented strict/fanatical older-server path reach
  * the terminal present-when guard. The derivation test only inspects the
  * generated SOURCE text; this is the missing RUNTIME regression proving that a
- * `withLease: true` activation against a server that omits `leaseToken` rejects
+ * `withLease: true` activation against a server that omits `jobLeaseToken` rejects
  * with `PresentWhenUnsupportedError` (the guard) rather than a validation error —
  * i.e. that the omitted required-but-nullable field is admitted by response
- * validation before the guard runs. If `leaseToken` reverted to `.nullable()`,
+ * validation before the guard runs. If `jobLeaseToken` reverted to `.nullable()`,
  * strict validation would reject first and this test would fail with a non-guard
  * error name.
  */
-describe('res:strict/res:fanatical admits an omitted leaseToken so the terminal guard (not a validation error) fires', () => {
+describe('res:strict/res:fanatical admits an omitted jobLeaseToken so the terminal guard (not a validation error) fires', () => {
   afterEach(() => vi.restoreAllMocks());
 
   for (const mode of ['res:strict', 'res:fanatical'] as const) {

@@ -5,7 +5,7 @@ import { createJobProxy } from '../src/runtime/threadJobProxy';
  * Class-scoped regression for lease-token forwarding through the threaded job
  * proxy (PR #514 review — the inline thread on threadWorkerEntry.ts).
  *
- * A leased job (activated with `withLease: true`) receives a `leaseToken` that
+ * A leased job (activated with `withLease: true`) receives a `jobLeaseToken` that
  * MUST be echoed back on every subsequent job action so the broker accepts it.
  * Before this test only `complete` was covered; `fail`, `error`,
  * `modifyJobTimeout` and `modifyRetries` could silently drop the token without
@@ -28,90 +28,90 @@ function makeClient() {
 const LEASE = 'lease-abc';
 
 describe('threaded job proxy — lease-token forwarding (class-scoped)', () => {
-  describe('a leased job forwards its leaseToken on every action', () => {
+  describe('a leased job forwards its jobLeaseToken on every action', () => {
     it('complete', async () => {
       const { client } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: LEASE }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: LEASE }, client);
       await job.complete({ ok: true });
       expect(job._completionAction.method).toBe('completeJob');
-      expect(job._completionAction.args[0]).toMatchObject({ jobKey: 'j1', leaseToken: LEASE });
+      expect(job._completionAction.args[0]).toMatchObject({ jobKey: 'j1', jobLeaseToken: LEASE });
     });
 
     it('fail', async () => {
       const { client } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: LEASE }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: LEASE }, client);
       await job.fail({ errorMessage: 'boom', retries: 1 });
       expect(job._completionAction.method).toBe('failJob');
-      expect(job._completionAction.args[0]).toMatchObject({ jobKey: 'j1', leaseToken: LEASE });
+      expect(job._completionAction.args[0]).toMatchObject({ jobKey: 'j1', jobLeaseToken: LEASE });
     });
 
     it('error', async () => {
       const { client } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: LEASE }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: LEASE }, client);
       await job.error({ errorCode: 'E', errorMessage: 'bad' });
       expect(job._completionAction.method).toBe('throwJobError');
-      expect(job._completionAction.args[0]).toMatchObject({ jobKey: 'j1', leaseToken: LEASE });
+      expect(job._completionAction.args[0]).toMatchObject({ jobKey: 'j1', jobLeaseToken: LEASE });
     });
 
     it('modifyJobTimeout', async () => {
       const { client, calls } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: LEASE }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: LEASE }, client);
       await job.modifyJobTimeout({ newTimeoutMs: 5000 });
       expect(calls).toHaveLength(1);
       expect(calls[0].arg).toMatchObject({
         jobKey: 'j1',
-        leaseToken: LEASE,
+        jobLeaseToken: LEASE,
         changeset: { timeout: 5000 },
       });
     });
 
     it('modifyRetries', async () => {
       const { client, calls } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: LEASE }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: LEASE }, client);
       await job.modifyRetries({ retries: 2 });
       expect(calls).toHaveLength(1);
       expect(calls[0].arg).toMatchObject({
         jobKey: 'j1',
-        leaseToken: LEASE,
+        jobLeaseToken: LEASE,
         changeset: { retries: 2 },
       });
     });
   });
 
-  describe('an unleased job never invents a leaseToken', () => {
+  describe('an unleased job never invents a jobLeaseToken', () => {
     it('complete', async () => {
       const { client } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: null }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: null }, client);
       await job.complete();
-      expect(job._completionAction.args[0]).not.toHaveProperty('leaseToken');
+      expect(job._completionAction.args[0]).not.toHaveProperty('jobLeaseToken');
     });
 
     it('fail', async () => {
       const { client } = makeClient();
       const job = createJobProxy({ jobKey: 'j1' }, client);
       await job.fail({ errorMessage: 'boom' });
-      expect(job._completionAction.args[0]).not.toHaveProperty('leaseToken');
+      expect(job._completionAction.args[0]).not.toHaveProperty('jobLeaseToken');
     });
 
     it('error', async () => {
       const { client } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: null }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: null }, client);
       await job.error({ errorCode: 'E', errorMessage: 'bad' });
-      expect(job._completionAction.args[0]).not.toHaveProperty('leaseToken');
+      expect(job._completionAction.args[0]).not.toHaveProperty('jobLeaseToken');
     });
 
     it('modifyJobTimeout', async () => {
       const { client, calls } = makeClient();
-      const job = createJobProxy({ jobKey: 'j1', leaseToken: null }, client);
+      const job = createJobProxy({ jobKey: 'j1', jobLeaseToken: null }, client);
       await job.modifyJobTimeout({ newTimeoutMs: 5000 });
-      expect(calls[0].arg).not.toHaveProperty('leaseToken');
+      expect(calls[0].arg).not.toHaveProperty('jobLeaseToken');
     });
 
     it('modifyRetries', async () => {
       const { client, calls } = makeClient();
       const job = createJobProxy({ jobKey: 'j1' }, client);
       await job.modifyRetries({ retries: 2 });
-      expect(calls[0].arg).not.toHaveProperty('leaseToken');
+      expect(calls[0].arg).not.toHaveProperty('jobLeaseToken');
     });
   });
 });

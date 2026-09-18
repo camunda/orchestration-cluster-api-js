@@ -21,7 +21,7 @@ import {
 import { ValidationManager } from '../runtime/validationManager';
 import type { Client } from '../gen/client/types.gen';
 import type { ProcessInstanceKey, ScopeKey, TenantId, VariableFilter } from '../gen/types.gen';
-import type { ActivatedJobResultWithLeaseToken, ActivatedJobResultWithoutLeaseToken } from '../gen/types.gen'; // present-when projection imports
+import type { ActivatedJobResultWithJobLeaseToken, ActivatedJobResultWithoutJobLeaseToken } from '../gen/types.gen'; // present-when projection imports
 import {
   executeWithHttpRetry,
   defaultHttpClassifier,
@@ -1997,8 +1997,8 @@ class CamundaClientBase {
    * @operationId activateJobs
    * @tags Job
    */
-  activateJobs(input: activateJobsInput & { withLease: true }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithLeaseToken>[] }>;
-  activateJobs(input: activateJobsInput & { withLease?: false | null | undefined }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithoutLeaseToken>[] }>;
+  activateJobs(input: activateJobsInput & { withLease: true }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithJobLeaseToken>[] }>;
+  activateJobs(input: activateJobsInput & { withLease?: false | null | undefined }, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJobOf<ActivatedJobResultWithoutJobLeaseToken>[] }>;
   activateJobs(input: activateJobsInput, options?: OperationOptions): CancelablePromise<{ jobs: EnrichedActivatedJob[] }>;
   activateJobs(arg: any, options?: OperationOptions): CancelablePromise<any> {
     return toCancelable(async signal => {
@@ -2047,7 +2047,7 @@ class CamundaClientBase {
             if (this._validation.settings.res === 'strict') data = maybeR;
           }
         }
-        /* present-when-guard:activateJobs:withLease=true:leaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.leaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'leaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
+        /* present-when-guard:activateJobs:withLease=true:jobLeaseToken */ if (data && data.jobs && _body && (_body as any).withLease === true) { for (const _el of data.jobs) { if (_el.jobLeaseToken == null) { const _e: any = new Error("activateJobs: withLease=true was requested but the server returned an item without 'jobLeaseToken' — the server may predate this feature. Refusing to silently mis-type the dependent field."); _e.name = 'PresentWhenUnsupportedError'; _e.nonRetryable = true; throw _e; } } }
         if (data && data.jobs) { data.jobs = data.jobs.map((j: any) => enrichActivatedJob(j, this as any, this.logger().scope(`job:${j.jobKey}`))); }
         return data;
         } catch(e) {
@@ -4022,7 +4022,7 @@ class CamundaClientBase {
    * async function createAgentInstanceExample(
    *   elementInstanceKey: ElementInstanceKey,
    *   jobKey: JobKey,
-   *   jobLease: JobLeaseToken
+   *   jobLeaseToken: JobLeaseToken
    * ) {
    *   const camunda = createCamundaClient();
    * 
@@ -4031,7 +4031,7 @@ class CamundaClientBase {
    *   const result = await camunda.createAgentInstance({
    *     elementInstanceKey,
    *     jobKey,
-   *     jobLease,
+   *     jobLeaseToken,
    *     history: [
    *       {
    *         historyItemId: HistoryItemId.assumeExists('configuration-1'),
@@ -20639,7 +20639,7 @@ class CamundaClientBase {
    *   agentInstanceKey: AgentInstanceKey,
    *   elementInstanceKey: ElementInstanceKey,
    *   jobKey: JobKey,
-   *   jobLease: JobLeaseToken
+   *   jobLeaseToken: JobLeaseToken
    * ) {
    *   const camunda = createCamundaClient();
    * 
@@ -20647,7 +20647,7 @@ class CamundaClientBase {
    *     agentInstanceKey,
    *     elementInstanceKey,
    *     jobKey,
-   *     jobLease,
+   *     jobLeaseToken,
    *     status: 'THINKING',
    *     history: [
    *       {

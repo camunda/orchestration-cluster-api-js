@@ -8,11 +8,11 @@ import { enrichActivatedJob } from '../src/runtime/jobActions';
  * Lease-token threading + `withLease` worker surface (issue #513).
  *
  * Two related contracts, both derived from the `x-present-when` marker on
- * `ActivatedJobResult.leaseToken`:
+ * `ActivatedJobResult.jobLeaseToken`:
  *
  *  §2  A worker configured with `withLease: true` sends `withLease: true` in the
  *      activation request body; a worker without it sends no `withLease`.
- *  §3  When a job carries a `leaseToken`, the fenced `complete` / `fail` / `error`
+ *  §3  When a job carries a `jobLeaseToken`, the fenced `complete` / `fail` / `error`
  *      commands thread it back (matching the effect worker). When the job has no
  *      lease token, the commands carry none.
  */
@@ -33,7 +33,7 @@ function createMockJob(overrides: Record<string, unknown> = {}) {
     customHeaders: {},
     worker: 'test-worker',
     tenantId: '<default>',
-    leaseToken: null,
+    jobLeaseToken: null,
     ...overrides,
   } as any;
 }
@@ -48,14 +48,14 @@ async function waitFor(pred: () => boolean, timeoutMs = 1000): Promise<void> {
   }
 }
 
-describe('§3 leaseToken threading through fenced commands', () => {
-  it('threads leaseToken into complete/fail/error when the job is leased', async () => {
+describe('§3 jobLeaseToken threading through fenced commands', () => {
+  it('threads jobLeaseToken into complete/fail/error when the job is leased', async () => {
     const completeJob = vi.fn().mockResolvedValue(undefined);
     const failJob = vi.fn().mockResolvedValue(undefined);
     const throwJobError = vi.fn().mockResolvedValue(undefined);
     const client = { completeJob, failJob, throwJobError } as unknown as CamundaClient;
 
-    const raw = createMockJob({ leaseToken: 'lease-abc' });
+    const raw = createMockJob({ jobLeaseToken: 'lease-abc' });
     const job = enrichActivatedJob(raw, client, mockLog);
 
     await job.complete({ ok: true });
@@ -64,64 +64,70 @@ describe('§3 leaseToken threading through fenced commands', () => {
 
     expect(completeJob.mock.calls[0][0]).toMatchObject({
       jobKey: 'job-1',
-      leaseToken: 'lease-abc',
+      jobLeaseToken: 'lease-abc',
     });
-    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-abc' });
+    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', jobLeaseToken: 'lease-abc' });
     expect(throwJobError.mock.calls[0][0]).toMatchObject({
       jobKey: 'job-1',
-      leaseToken: 'lease-abc',
+      jobLeaseToken: 'lease-abc',
     });
   });
 
-  it('omits leaseToken from the commands when the job is not leased', async () => {
+  it('omits jobLeaseToken from the commands when the job is not leased', async () => {
     const completeJob = vi.fn().mockResolvedValue(undefined);
     const failJob = vi.fn().mockResolvedValue(undefined);
     const throwJobError = vi.fn().mockResolvedValue(undefined);
     const client = { completeJob, failJob, throwJobError } as unknown as CamundaClient;
 
-    const raw = createMockJob({ leaseToken: null });
+    const raw = createMockJob({ jobLeaseToken: null });
     const job = enrichActivatedJob(raw, client, mockLog);
 
     await job.complete({ ok: true });
     await job.fail({ errorMessage: 'boom', retries: 2 });
     await job.error({ errorCode: 'E', errorMessage: 'nope' });
 
-    expect(completeJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
-    expect(failJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
-    expect(throwJobError.mock.calls[0][0]).not.toHaveProperty('leaseToken');
+    expect(completeJob.mock.calls[0][0]).not.toHaveProperty('jobLeaseToken');
+    expect(failJob.mock.calls[0][0]).not.toHaveProperty('jobLeaseToken');
+    expect(throwJobError.mock.calls[0][0]).not.toHaveProperty('jobLeaseToken');
   });
 });
 
-describe('§3 leaseToken threading through updateJob (modifyJobTimeout/modifyRetries)', () => {
-  it('threads leaseToken into updateJob for both modify actions when leased', async () => {
+describe('§3 jobLeaseToken threading through updateJob (modifyJobTimeout/modifyRetries)', () => {
+  it('threads jobLeaseToken into updateJob for both modify actions when leased', async () => {
     const updateJob = vi.fn().mockResolvedValue(undefined);
     const client = { updateJob } as unknown as CamundaClient;
 
-    const job = enrichActivatedJob(createMockJob({ leaseToken: 'lease-upd' }), client, mockLog);
+    const job = enrichActivatedJob(createMockJob({ jobLeaseToken: 'lease-upd' }), client, mockLog);
     await job.modifyJobTimeout({ newTimeoutMs: 5000 });
     await job.modifyRetries({ retries: 4 });
 
-    expect(updateJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-upd' });
-    expect(updateJob.mock.calls[1][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-upd' });
+    expect(updateJob.mock.calls[0][0]).toMatchObject({
+      jobKey: 'job-1',
+      jobLeaseToken: 'lease-upd',
+    });
+    expect(updateJob.mock.calls[1][0]).toMatchObject({
+      jobKey: 'job-1',
+      jobLeaseToken: 'lease-upd',
+    });
   });
 
-  it('omits leaseToken from updateJob for both modify actions when unleased', async () => {
+  it('omits jobLeaseToken from updateJob for both modify actions when unleased', async () => {
     const updateJob = vi.fn().mockResolvedValue(undefined);
     const client = { updateJob } as unknown as CamundaClient;
 
-    const job = enrichActivatedJob(createMockJob({ leaseToken: null }), client, mockLog);
+    const job = enrichActivatedJob(createMockJob({ jobLeaseToken: null }), client, mockLog);
     await job.modifyJobTimeout({ newTimeoutMs: 5000 });
     await job.modifyRetries({ retries: 4 });
 
-    expect(updateJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
-    expect(updateJob.mock.calls[1][0]).not.toHaveProperty('leaseToken');
+    expect(updateJob.mock.calls[0][0]).not.toHaveProperty('jobLeaseToken');
+    expect(updateJob.mock.calls[1][0]).not.toHaveProperty('jobLeaseToken');
   });
 });
 
-describe('§3 failure paths thread leaseToken (handler error + validation failure)', () => {
-  it('threads leaseToken when the handler throws on a leased job', async () => {
+describe('§3 failure paths thread jobLeaseToken (handler error + validation failure)', () => {
+  it('threads jobLeaseToken when the handler throws on a leased job', async () => {
     const { client } = makeCapturingClient([
-      createMockJob({ leaseToken: 'lease-xyz', retries: 3 }),
+      createMockJob({ jobLeaseToken: 'lease-xyz', retries: 3 }),
     ]);
     const failJob = vi.fn().mockResolvedValue(undefined);
     (client as any).failJob = failJob;
@@ -135,11 +141,11 @@ describe('§3 failure paths thread leaseToken (handler error + validation failur
     });
     await waitFor(() => failJob.mock.calls.length > 0);
     worker.stop();
-    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-xyz' });
+    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', jobLeaseToken: 'lease-xyz' });
   });
 
-  it('omits leaseToken when the handler throws on an unleased job', async () => {
-    const { client } = makeCapturingClient([createMockJob({ leaseToken: null, retries: 3 })]);
+  it('omits jobLeaseToken when the handler throws on an unleased job', async () => {
+    const { client } = makeCapturingClient([createMockJob({ jobLeaseToken: null, retries: 3 })]);
     const failJob = vi.fn().mockResolvedValue(undefined);
     (client as any).failJob = failJob;
     const worker = client.createJobWorker({
@@ -151,12 +157,12 @@ describe('§3 failure paths thread leaseToken (handler error + validation failur
     });
     await waitFor(() => failJob.mock.calls.length > 0);
     worker.stop();
-    expect(failJob.mock.calls[0][0]).not.toHaveProperty('leaseToken');
+    expect(failJob.mock.calls[0][0]).not.toHaveProperty('jobLeaseToken');
   });
 
-  it('threads leaseToken when schema validation fails on a leased job', async () => {
+  it('threads jobLeaseToken when schema validation fails on a leased job', async () => {
     const { client } = makeCapturingClient([
-      createMockJob({ leaseToken: 'lease-val', variables: { n: 'not-a-number' } }),
+      createMockJob({ jobLeaseToken: 'lease-val', variables: { n: 'not-a-number' } }),
     ]);
     const failJob = vi.fn().mockResolvedValue(undefined);
     (client as any).failJob = failJob;
@@ -170,7 +176,7 @@ describe('§3 failure paths thread leaseToken (handler error + validation failur
     });
     await waitFor(() => failJob.mock.calls.length > 0);
     worker.stop();
-    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', leaseToken: 'lease-val' });
+    expect(failJob.mock.calls[0][0]).toMatchObject({ jobKey: 'job-1', jobLeaseToken: 'lease-val' });
   });
 });
 
@@ -229,15 +235,15 @@ describe('§2 withLease worker surface', () => {
 });
 
 describe('§3 runtime guard: newer client vs older server', () => {
-  it('fails loudly when withLease: true is requested but no leaseToken is returned', async () => {
-    const { client } = makeCapturingClient([createMockJob({ leaseToken: null })]);
+  it('fails loudly when withLease: true is requested but no jobLeaseToken is returned', async () => {
+    const { client } = makeCapturingClient([createMockJob({ jobLeaseToken: null })]);
     await expect(
       client.activateJobs({ type: 't', timeout: 1000, maxJobsToActivate: 1, withLease: true })
-    ).rejects.toThrow(/leaseToken/);
+    ).rejects.toThrow(/jobLeaseToken/);
   });
 
   it('does not guard when withLease is not requested', async () => {
-    const { client } = makeCapturingClient([createMockJob({ leaseToken: null })]);
+    const { client } = makeCapturingClient([createMockJob({ jobLeaseToken: null })]);
     const res = await client.activateJobs({ type: 't', timeout: 1000, maxJobsToActivate: 1 });
     expect(res.jobs).toHaveLength(1);
   });
@@ -245,7 +251,7 @@ describe('§3 runtime guard: newer client vs older server', () => {
 
 /**
  * §1 Compile-time proof that the `x-present-when` marker derivation narrows
- * `leaseToken` by the `withLease` literal. This function is never executed — it
+ * `jobLeaseToken` by the `withLease` literal. This function is never executed — it
  * exists purely so `npm run typecheck` (which includes `tests/`) fails if the
  * generated overloads regress. `{}` accepts any non-null value but rejects
  * `null` / `undefined`, so it doubles as a non-null assertion.
@@ -255,8 +261,8 @@ async function _presentWhenTypeProof(client: CamundaClient) {
   const leased = (
     await client.activateJobs({ type: 't', timeout: 1000, maxJobsToActivate: 1, withLease: true })
   ).jobs[0];
-  // present projection: leaseToken is required + non-null.
-  const _present: NonNullable<unknown> = leased.leaseToken;
+  // present projection: jobLeaseToken is required + non-null.
+  const _present: NonNullable<unknown> = leased.jobLeaseToken;
 
   const dynamicFlag: boolean = Boolean(1);
   const dynamic = (
@@ -267,8 +273,8 @@ async function _presentWhenTypeProof(client: CamundaClient) {
       withLease: dynamicFlag,
     })
   ).jobs[0];
-  // @ts-expect-error dynamic projection keeps leaseToken nullable — not assignable to a non-null type
-  const _dynamic: NonNullable<unknown> = dynamic.leaseToken;
+  // @ts-expect-error dynamic projection keeps jobLeaseToken nullable — not assignable to a non-null type
+  const _dynamic: NonNullable<unknown> = dynamic.jobLeaseToken;
 
   void _present;
   void _dynamic;

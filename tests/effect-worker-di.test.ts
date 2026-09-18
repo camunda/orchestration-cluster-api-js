@@ -36,7 +36,7 @@ const sampleJob = (over: Partial<Job> = {}): Job =>
     jobKey: '1',
     type: 'pay',
     retries: 3,
-    leaseToken: null,
+    jobLeaseToken: null,
     variables: { amount: 42 },
     customHeaders: {},
     processInstanceKey: '10',

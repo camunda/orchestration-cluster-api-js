@@ -48,7 +48,7 @@ async function searchAgentInstancesExample() {
 async function createAgentInstanceExample(
   elementInstanceKey: ElementInstanceKey,
   jobKey: JobKey,
-  jobLease: JobLeaseToken
+  jobLeaseToken: JobLeaseToken
 ) {
   const camunda = createCamundaClient();
 
@@ -57,7 +57,7 @@ async function createAgentInstanceExample(
   const result = await camunda.createAgentInstance({
     elementInstanceKey,
     jobKey,
-    jobLease,
+    jobLeaseToken,
     history: [
       {
         historyItemId: HistoryItemId.assumeExists('configuration-1'),
@@ -81,7 +81,7 @@ async function updateAgentInstanceExample(
   agentInstanceKey: AgentInstanceKey,
   elementInstanceKey: ElementInstanceKey,
   jobKey: JobKey,
-  jobLease: JobLeaseToken
+  jobLeaseToken: JobLeaseToken
 ) {
   const camunda = createCamundaClient();
 
@@ -89,7 +89,7 @@ async function updateAgentInstanceExample(
     agentInstanceKey,
     elementInstanceKey,
     jobKey,
-    jobLease,
+    jobLeaseToken,
     status: 'THINKING',
     history: [
       {

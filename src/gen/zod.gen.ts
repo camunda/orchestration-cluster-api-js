@@ -2889,9 +2889,9 @@ export const zHistoryItemId = z.string().min(1).max(256).register(z.globalRegist
 
 /**
  * An opaque, engine-minted fencing token identifying a single activation of a job.
- * Returned by Activate Jobs as `ActivatedJobResult.leaseToken` when the job is
- * activated with a lease, and passed back on fenced job commands — and on
- * agent-instance creation/updates as `jobLease` — to prove the caller holds the
+ * Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is
+ * activated with a lease, and passed back under the same name on fenced job
+ * commands and on agent-instance creation/updates, to prove the caller holds the
  * current lease. The token is opaque: clients may rely on its presence and equality
  * only, and must never construct, parse, or otherwise interpret it beyond equality
  * checks. It cannot be minted client-side; only the engine produces it, exactly once
@@ -2899,7 +2899,7 @@ export const zHistoryItemId = z.string().min(1).max(256).register(z.globalRegist
  *
  */
 export const zJobLeaseToken = z.string().min(1).register(z.globalRegistry, {
-    description: 'An opaque, engine-minted fencing token identifying a single activation of a job.\nReturned by Activate Jobs as `ActivatedJobResult.leaseToken` when the job is\nactivated with a lease, and passed back on fenced job commands — and on\nagent-instance creation/updates as `jobLease` — to prove the caller holds the\ncurrent lease. The token is opaque: clients may rely on its presence and equality\nonly, and must never construct, parse, or otherwise interpret it beyond equality\nchecks. It cannot be minted client-side; only the engine produces it, exactly once\nper leased activation, and clients must not depend on any particular internal format.\n'
+    description: 'An opaque, engine-minted fencing token identifying a single activation of a job.\nReturned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is\nactivated with a lease, and passed back under the same name on fenced job\ncommands and on agent-instance creation/updates, to prove the caller holds the\ncurrent lease. The token is opaque: clients may rely on its presence and equality\nonly, and must never construct, parse, or otherwise interpret it beyond equality\nchecks. It cannot be minted client-side; only the engine produces it, exactly once\nper leased activation, and clients must not depend on any particular internal format.\n'
 });
 
 /**
@@ -3223,7 +3223,7 @@ export const zJobFailRequest = z.object({
     variables: z.record(z.string(), z.unknown()).register(z.globalRegistry, {
         description: 'JSON object that will instantiate the variables at the local scope of the job\'s associated task.\n'
     }).optional(),
-    leaseToken: zJobLeaseToken.nullish()
+    jobLeaseToken: zJobLeaseToken.nullish()
 });
 
 export const zJobErrorRequest = z.object({
@@ -3232,7 +3232,7 @@ export const zJobErrorRequest = z.object({
     }),
     errorMessage: z.string().nullish(),
     variables: z.record(z.string(), z.unknown()).nullish(),
-    leaseToken: zJobLeaseToken.nullish()
+    jobLeaseToken: zJobLeaseToken.nullish()
 });
 
 /**
@@ -3318,7 +3318,7 @@ export const zJobResult = z.union([
 export const zJobCompletionRequest = z.object({
     variables: z.record(z.string(), z.unknown()).nullish(),
     result: zJobResult.optional(),
-    leaseToken: zJobLeaseToken.nullish(),
+    jobLeaseToken: zJobLeaseToken.nullish(),
     businessId: zBusinessId.nullish()
 });
 
@@ -3910,7 +3910,7 @@ export const zJobKey = zLongKey;
 export const zAgentInstanceCreationRequest = z.object({
     elementInstanceKey: zElementInstanceKey,
     jobKey: zJobKey,
-    jobLease: zJobLeaseToken,
+    jobLeaseToken: zJobLeaseToken,
     history: z.array(zAgentInstanceHistoryItem).min(1).register(z.globalRegistry, {
         description: 'A batch of history items to append to the agent instance\'s conversation\nhistory, in request order. Each created item is echoed back in the\nresponse\'s createdHistory, positionally correlated. Must include a\nCONFIGURATION item establishing model, provider, and systemPrompt (and,\nif needed, limits). Every item\'s role must be CONFIGURATION or USER, and\nno item may carry non-zero usage-token metrics (inputTokens, outputTokens,\nreasoningTokenCount, cacheCreationTokenCount, cacheReadTokenCount);\ndurationMs is exempt and may be non-zero.\n'
     })
@@ -3926,7 +3926,7 @@ export const zAgentInstanceUpdateRequest = z.object({
     elementInstanceKey: zElementInstanceKey,
     status: zAgentInstanceUpdateStatusEnum.optional(),
     jobKey: zJobKey,
-    jobLease: zJobLeaseToken,
+    jobLeaseToken: zJobLeaseToken,
     history: z.array(zAgentInstanceHistoryItem).nullish()
 }).register(z.globalRegistry, {
     description: 'Request to update the mutable state of an agent instance.\n'
@@ -4048,7 +4048,7 @@ export const zActivatedJobResult = z.object({
     priority: z.int().min(-2147483648, { error: 'Invalid value: Expected int32 to be >= -2147483648' }).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The priority of the job. Higher values indicate higher priority. Jobs created before 8.10 have no stored priority; the API returns 0 for such jobs.\n'
     }),
-    leaseToken: zJobLeaseToken.nullish()
+    jobLeaseToken: zJobLeaseToken.nullish()
 });
 
 /**
@@ -4550,7 +4550,7 @@ export const zIncidentResolutionRequest = z.object({
 export const zJobUpdateRequest = z.object({
     changeset: zJobChangeset,
     operationReference: zOperationReference.optional(),
-    leaseToken: zJobLeaseToken.nullish()
+    jobLeaseToken: zJobLeaseToken.nullish()
 });
 
 /**
@@ -4668,7 +4668,7 @@ export const zAgentInstanceHistoryItemResult = z.object({
     agentInstanceKey: zAgentInstanceKey,
     elementInstanceKey: zElementInstanceKey,
     jobKey: zJobKey,
-    jobLease: zJobLeaseToken,
+    jobLeaseToken: zJobLeaseToken,
     loopIteration: zLoopIterationId,
     role: zAgentInstanceHistoryRoleEnum,
     content: z.array(zAgentInstanceMessageContent).register(z.globalRegistry, {

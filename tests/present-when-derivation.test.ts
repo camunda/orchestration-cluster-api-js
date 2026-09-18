@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 /**
  * Marker-derivation guard (issue #513), scoped to the CLASS of defect rather than
- * the `leaseToken` instance.
+ * the `jobLeaseToken` instance.
  *
  * The `x-present-when: { request, equals }` vendor extension encodes a
  * request→response dependent-presence relationship. `hooks/post/710-derive-present-when.ts`
@@ -61,10 +61,10 @@ describe('x-present-when marker derivation (class-scoped)', () => {
   const spec = loadSpec();
   const markers = collectMarkers(spec);
 
-  it('finds at least one marker (leaseToken is the canonical case)', () => {
+  it('finds at least one marker (jobLeaseToken is the canonical case)', () => {
     expect(markers.length).toBeGreaterThan(0);
     expect(
-      markers.some((m) => m.schemaName === 'ActivatedJobResult' && m.prop === 'leaseToken')
+      markers.some((m) => m.schemaName === 'ActivatedJobResult' && m.prop === 'jobLeaseToken')
     ).toBe(true);
   });
 
@@ -196,7 +196,7 @@ describe('x-present-when marker derivation (class-scoped)', () => {
     // worker would then back off forever instead of stopping. The generator relaxes
     // the marked property to `.nullish()` (tolerates absent) so the omitting response
     // passes validation and reaches the terminal guard. Class-scoped over every
-    // marker, not just leaseToken.
+    // marker, not just jobLeaseToken.
     const zod = load('src/gen/zod.gen.ts');
     for (const m of markers) {
       const block = zodSchemaBlock(zod, m.schemaName);

@@ -489,7 +489,7 @@ export type AgentInstanceCreationRequest = {
      * rather than committed.
      *
      */
-    jobLease: JobLeaseToken;
+    jobLeaseToken: JobLeaseToken;
     /**
      * A batch of history items to append to the agent instance's conversation
      * history, in request order. Each created item is echoed back in the
@@ -553,7 +553,7 @@ export type AgentInstanceUpdateRequest = {
      * rather than committed.
      *
      */
-    jobLease: JobLeaseToken;
+    jobLeaseToken: JobLeaseToken;
     /**
      * A batch of history items to append to the agent instance's conversation
      * history, in request order. Each created item is echoed back in the
@@ -806,7 +806,7 @@ export type AgentInstanceHistoryItemResult = {
     /**
      * The lease token of the activation that produced this item.
      */
-    jobLease: JobLeaseToken;
+    jobLeaseToken: JobLeaseToken;
     /**
      * The loop iteration this item belongs to.
      */
@@ -6467,9 +6467,9 @@ export type HistoryItemId = CamundaKey<'HistoryItemId'>;
 
 /**
  * An opaque, engine-minted fencing token identifying a single activation of a job.
- * Returned by Activate Jobs as `ActivatedJobResult.leaseToken` when the job is
- * activated with a lease, and passed back on fenced job commands — and on
- * agent-instance creation/updates as `jobLease` — to prove the caller holds the
+ * Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is
+ * activated with a lease, and passed back under the same name on fenced job
+ * commands and on agent-instance creation/updates, to prove the caller holds the
  * current lease. The token is opaque: clients may rely on its presence and equality
  * only, and must never construct, parse, or otherwise interpret it beyond equality
  * checks. It cannot be minted client-side; only the engine produces it, exactly once
@@ -7206,7 +7206,7 @@ export type JobActivationRequest = {
      */
     tenantFilter?: TenantFilterEnum;
     /**
-     * Whether to activate the jobs with a lease. When true, each activated job is assigned a distinct, opaque lease token, returned as ActivatedJobResult.leaseToken. The lease fences the complete, fail, and throw-error commands against a superseded activation of the same job (for example, after the job timed out or failed and was re-activated by another worker): a command carrying a stale lease token is rejected rather than racing with the newer activation. Once a job has been activated with a lease, it is served only to leasing workers of that job type; a homogeneous fleet per job type is recommended. Omit or set to false to activate jobs without a lease.
+     * Whether to activate the jobs with a lease. When true, each activated job is assigned a distinct, opaque lease token, returned as ActivatedJobResult.jobLeaseToken. The lease fences the complete, fail, and throw-error commands against a superseded activation of the same job (for example, after the job timed out or failed and was re-activated by another worker): a command carrying a stale lease token is rejected rather than racing with the newer activation. Once a job has been activated with a lease, it is served only to leasing workers of that job type; a homogeneous fleet per job type is recommended. Omit or set to false to activate jobs without a lease.
      *
      */
     withLease?: boolean | null;
@@ -7321,7 +7321,7 @@ export type ActivatedJobResult = {
      * The lease token identifying this activation. This is `null` when the job was activated without a lease.
      *
      */
-    leaseToken: JobLeaseToken | null;
+    jobLeaseToken: JobLeaseToken | null;
 };
 
 /**
@@ -7628,12 +7628,12 @@ export type JobFailRequest = {
         [key: string]: unknown;
     };
     /**
-     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.jobLeaseToken`.
      * For a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: JobLeaseToken | null;
+    jobLeaseToken?: JobLeaseToken | null;
 };
 
 export type JobErrorRequest = {
@@ -7655,12 +7655,12 @@ export type JobErrorRequest = {
         [key: string]: unknown;
     } | null;
     /**
-     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.jobLeaseToken`.
      * For a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: JobLeaseToken | null;
+    jobLeaseToken?: JobLeaseToken | null;
 };
 
 export type JobCompletionRequest = {
@@ -7672,12 +7672,12 @@ export type JobCompletionRequest = {
     } | null;
     result?: JobResult;
     /**
-     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.jobLeaseToken`.
      * For a leased job, the matching token must be supplied to prove the command comes from the worker that holds the current lease; a command with no token is rejected. A command carrying a stale token is likewise rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: JobLeaseToken | null;
+    jobLeaseToken?: JobLeaseToken | null;
     /**
      * An optional business id to assign to the process instance the job belongs to, as part of completing the job, letting a worker set the identifier from work it just performed.
      * The business id can only be assigned to a root process instance: if the job belongs to a child process instance (one started by a call activity), the completion is rejected. An empty business id is likewise rejected. The assignment is single and irreversible and is only accepted while business id uniqueness is disabled. Only artifacts created after the assignment carry the business id; already-existing ones are not enriched. Completing with a business id that differs from one already assigned rejects the whole completion, leaving the job open; re-sending the identical business id is an idempotent no-op.
@@ -7803,13 +7803,13 @@ export type JobUpdateRequest = {
     changeset: JobChangeset;
     operationReference?: OperationReference;
     /**
-     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.leaseToken`.
+     * The token identifying a leased job's activation, obtained from `ActivatedJobResult.jobLeaseToken`.
      * For a leased job, a supplied token is validated to prove the command comes from the worker that holds the current lease; a command carrying a stale token is rejected, fencing the job against a superseded activation (for example, after the job timed out or failed and was re-activated by another worker).
      * An update without a token always applies to support operator and bulk updates of leased jobs. Note that this is different from lifecycle requests like complete, fail, and throw-error that always require a token for leased jobs.
      * A job that was activated without a lease requires no token.
      *
      */
-    leaseToken?: JobLeaseToken | null;
+    jobLeaseToken?: JobLeaseToken | null;
 };
 
 /**
@@ -23888,7 +23888,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:f0500c81aaeb695997ea023a65e6c4452a2d8db7dc0b1da0bbc9145196683824
+// specHash=sha256:bac5f20ff88c4d231798842bb5ff2921e156a72b890b31567f7f2bac27d76f8d
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
@@ -24282,7 +24282,7 @@ export namespace JobKey {
     } catch { return false; }
   }
 }
-// An opaque, engine-minted fencing token identifying a single activation of a job. Returned by Activate Jobs as `ActivatedJobResult.leaseToken` when the job is activated with a lease, and passed back on fenced job commands — and on agent-instance creation/updates as `jobLease` — to prove the caller holds the current lease. The token is opaque: clients may rely on its presence and equality only, and must never construct, parse, or otherwise interpret it beyond equality checks. It cannot be minted client-side; only the engine produces it, exactly once per leased activation, and clients must not depend on any particular internal format. 
+// An opaque, engine-minted fencing token identifying a single activation of a job. Returned by Activate Jobs as `ActivatedJobResult.jobLeaseToken` when the job is activated with a lease, and passed back under the same name on fenced job commands and on agent-instance creation/updates, to prove the caller holds the current lease. The token is opaque: clients may rely on its presence and equality only, and must never construct, parse, or otherwise interpret it beyond equality checks. It cannot be minted client-side; only the engine produces it, exactly once per leased activation, and clients must not depend on any particular internal format. 
 export namespace JobLeaseToken {
   export function assumeExists(value: string): JobLeaseToken {
     assertConstraint(value, 'JobLeaseToken', { minLength: 1 });
@@ -24494,7 +24494,7 @@ export namespace VariableKey {
 }
 
 // ---- x-present-when dependent-presence projections (generated) ----
-/** `ActivatedJobResult` when `withLease === true`: `leaseToken` is present (required, non-null). */
-export type ActivatedJobResultWithLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken: NonNullable<ActivatedJobResult['leaseToken']> };
-/** `ActivatedJobResult` when `withLease` is absent / a non-matching literal: `leaseToken` is null (the nullable wire shape). */
-export type ActivatedJobResultWithoutLeaseToken = Omit<ActivatedJobResult, 'leaseToken'> & { leaseToken?: null };
+/** `ActivatedJobResult` when `withLease === true`: `jobLeaseToken` is present (required, non-null). */
+export type ActivatedJobResultWithJobLeaseToken = Omit<ActivatedJobResult, 'jobLeaseToken'> & { jobLeaseToken: NonNullable<ActivatedJobResult['jobLeaseToken']> };
+/** `ActivatedJobResult` when `withLease` is absent / a non-matching literal: `jobLeaseToken` is null (the nullable wire shape). */
+export type ActivatedJobResultWithoutJobLeaseToken = Omit<ActivatedJobResult, 'jobLeaseToken'> & { jobLeaseToken?: null };
