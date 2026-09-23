@@ -1563,6 +1563,13 @@
       "label": "Get cluster status"
     }
   ],
+  "getClusterUpgradeStatus": [
+    {
+      "file": "admin-operations.ts",
+      "region": "GetClusterUpgradeStatus",
+      "label": "Get cluster upgrade-readiness status"
+    }
+  ],
   "getRestoreStatus": [
     {
       "file": "client.ts",
