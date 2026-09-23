@@ -756,6 +756,11 @@ export const RESPONSE_INDEX = {
       '503': 1
     }
   },
+  '/cluster/v2/status/upgrade': {
+    'GET': {
+      '200': 1
+    }
+  },
   '/cluster/v2/topology': {
     'GET': {
       '200': 1

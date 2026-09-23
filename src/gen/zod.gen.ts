@@ -880,6 +880,21 @@ export const zClusterStatusResponse = z.object({
 });
 
 /**
+ * The upgrade-readiness status of the whole cluster.
+ */
+export const zClusterUpgradeStatusResponse = z.object({
+    status: z.enum([
+        'MIGRATED',
+        'MIGRATION_IN_PROGRESS',
+        'UNKNOWN'
+    ]).register(z.globalRegistry, {
+        description: '`MIGRATED` once every known upgrade-readiness condition is met for every known physical tenant; `MIGRATION_IN_PROGRESS` when at least one is confirmed not yet migrated; `UNKNOWN` otherwise.'
+    })
+}).register(z.globalRegistry, {
+    description: 'The upgrade-readiness status of the whole cluster.'
+});
+
+/**
  * Provides information on a broker node, independent of any physical tenant.
  */
 export const zClusterBrokerInfo = z.object({
@@ -4478,7 +4493,7 @@ export const zBatchOperationCreatedResult = z.object({
 export const zBatchOperationResponse = z.object({
     batchOperationKey: zBatchOperationKey,
     state: zBatchOperationStateEnum,
-    batchOperationType: zBatchOperationTypeEnum,
+    batchOperationType: zBatchOperationTypeEnum.nullable(),
     startDate: z.iso.datetime().nullable(),
     endDate: z.iso.datetime().nullable(),
     actorType: zAuditLogActorTypeEnum.nullable(),
@@ -7253,9 +7268,8 @@ export const zSecretListRequest = z.record(z.string(), z.never()).register(z.glo
 /**
  * The secret references the caller is authorized to see.
  *
- * Unbounded for now: the response carries the configured stores' full enumeration for the
- * physical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,
- * so that is not yet a breaking-contract concern.
+ * Unbounded: the response carries the configured stores' full enumeration for the physical
+ * tenant.
  *
  */
 export const zSecretListResult = z.object({
@@ -7265,7 +7279,7 @@ export const zSecretListResult = z.object({
         description: 'The secret references, each of the form `camunda.secrets.<name>`.'
     })
 }).register(z.globalRegistry, {
-    description: 'The secret references the caller is authorized to see.\n\nUnbounded for now: the response carries the configured stores\' full enumeration for the\nphysical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,\nso that is not yet a breaking-contract concern.\n'
+    description: 'The secret references the caller is authorized to see.\n\nUnbounded: the response carries the configured stores\' full enumeration for the physical\ntenant.\n'
 });
 
 export const zSignalBroadcastRequest = z.object({
@@ -12443,6 +12457,11 @@ export const zRestoreAsClusterAdminResponse = zClusterRestoreResponse;
  * The cluster can process work; the body reports whether it is fully healthy or degraded.
  */
 export const zGetClusterStatusResponse = zClusterStatusResponse;
+
+/**
+ * The cluster's upgrade-readiness status.
+ */
+export const zGetClusterUpgradeStatusResponse = zClusterUpgradeStatusResponse;
 
 /**
  * The topology of the whole cluster, aggregated over all physical tenants.
