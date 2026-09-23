@@ -2,7 +2,6 @@
   "metadata": {
     "sourceRepo": "https://github.com/camunda/camunda",
     "commit": "local",
-    "generatedAt": "2026-09-23T22:17:02.294Z",
     "specPath": "zeebe/gateway-protocol/src/main/proto/v2/rest-api.yaml",
     "specSha256": "e756c461ade25b81befd66a96bd667f98b153bd47e6cd0a2779e6fbcddc79bdd"
   },
