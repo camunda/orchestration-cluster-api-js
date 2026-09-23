@@ -58,7 +58,7 @@ function deepFreeze<T>(obj: T): T {
 
 // === AUTO-GENERATED CAMUNDA SUPPORT TYPES START ===
 // Generated
-// Operations: 243
+// Operations: 244
 type _RawReturn<F> = F extends (...a:any)=>Promise<infer R> ? R : never;
 type _DataOf<F> = Exclude<_RawReturn<F> extends { data: infer D } ? D : _RawReturn<F>, undefined>;
 type activateAdHocSubProcessActivitiesOptions = Parameters<typeof Sdk.activateAdHocSubProcessActivities>[0];
@@ -351,6 +351,8 @@ type getClusterStatusOptions = Parameters<typeof Sdk.getClusterStatus>[0];
 export type getClusterStatusInput = void;
 type getClusterTopologyOptions = Parameters<typeof Sdk.getClusterTopology>[0];
 export type getClusterTopologyInput = void;
+type getClusterUpgradeStatusOptions = Parameters<typeof Sdk.getClusterUpgradeStatus>[0];
+export type getClusterUpgradeStatusInput = void;
 type getDecisionDefinitionOptions = Parameters<typeof Sdk.getDecisionDefinition>[0];
 type getDecisionDefinitionPathParam_decisionDefinitionKey = (NonNullable<getDecisionDefinitionOptions> extends { path: { decisionDefinitionKey: infer P } } ? P : any);
 export type getDecisionDefinitionInput = { decisionDefinitionKey: getDecisionDefinitionPathParam_decisionDefinitionKey };
@@ -8029,6 +8031,66 @@ class CamundaClientBase {
   }
 
   /**
+   * Get the upgrade-readiness status of the whole cluster
+   *
+   * Reports one overall upgrade-readiness status for the whole cluster, folded over every physical tenant and condition. `MIGRATED` only once every known condition has migrated for every known physical tenant; `MIGRATION_IN_PROGRESS` when at least one is confirmed not yet migrated; `UNKNOWN` otherwise (including before anything has been reported yet). No per-tenant or per-condition detail is reported here; see the `upgradeReadiness` actuator endpoint for that.
+    *
+   * @example Get cluster upgrade-readiness status
+   * ```ts
+   * async function getClusterUpgradeStatusExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const upgradeStatus = await camunda.getClusterUpgradeStatus();
+   * 
+   *   console.log(`Cluster upgrade-readiness status: ${upgradeStatus.status}`);
+   * }
+   * ```
+   * @operationId getClusterUpgradeStatus
+   * @tags Cluster
+   */
+  getClusterUpgradeStatus(options?: OperationOptions): CancelablePromise<_DataOf<typeof Sdk.getClusterUpgradeStatus>>;
+  getClusterUpgradeStatus(arg?: any, options?: OperationOptions): CancelablePromise<any> {
+    return toCancelable(async signal => {
+      const opts: any = { client: this._client, signal, throwOnError: false };
+      const call = async () => {
+        try {
+        const _raw = await Sdk.getClusterUpgradeStatus(opts as any);
+        let data = this._evaluateResponse(_raw, 'getClusterUpgradeStatus', (resp: any) => {
+          const st = resp.status ?? resp.response?.status;
+          if (!st) return undefined;
+          const candidate = st === 429 || st === 503 || st === 500;
+          if (!candidate) return undefined;
+          let prob: any = undefined;
+          if (resp.error && typeof resp.error === 'object') prob = resp.error;
+          const err: any = new Error((prob && (prob.title || prob.detail)) ? (prob.title || prob.detail) : ('HTTP ' + st));
+          err.status = st; err.name = 'HttpSdkError';
+          if (prob) { for (const k of ['type','title','detail','instance']) if (prob[k] !== undefined) err[k] = prob[k]; }
+          const isBp = (st === 429) || (st === 503 && err.title === 'RESOURCE_EXHAUSTED') || (st === 500 && (typeof err.detail === 'string' && /RESOURCE_EXHAUSTED/.test(err.detail))); 
+          if (!isBp) err.nonRetryable = true;
+          return err;
+        });
+        const _respSchemaName = 'zGetClusterUpgradeStatusResponse';
+        if (this._isVoidResponse(_respSchemaName)) {
+          data = undefined;
+        }
+        if (this._validation.settings.res !== 'none') {
+          const _schemas = await this._loadSchemas();
+          const _schema = _schemas.zGetClusterUpgradeStatusResponse;
+          if (_schema) {
+            const maybeR = await this._validation.gateResponse('getClusterUpgradeStatus', _schema, data);
+            if (this._validation.settings.res === 'strict') data = maybeR;
+          }
+        }
+        return data;
+        } catch(e) {
+          throw e;
+        }
+      };
+      return this._invokeWithRetry(() => call(), { opId: 'getClusterUpgradeStatus', exempt: false, retryOverride: options?.retry });
+    });
+  }
+
+  /**
    * Get decision definition
    *
    * Returns a decision definition by key.
@@ -12787,7 +12849,7 @@ class CamundaClientBase {
   }
 
   /**
-   * List secrets (alpha)
+   * List secrets
    *
    * List the `camunda.secrets.*` references known for the caller's physical tenant.
    *
@@ -12803,8 +12865,6 @@ class CamundaClientBase {
    * however, a name that is not a bare identifier has to be backtick-escaped, since FEEL reads
    * a bare dash as the minus operator: a listed `camunda.secrets.db-password` is written
    * `` =camunda.secrets.`db-password` `` in a BPMN input mapping.
-   *
-   * This endpoint is an alpha feature and may be subject to change in future releases.
    *
     *
    * @example List secret references
@@ -13871,7 +13931,7 @@ class CamundaClientBase {
   }
 
   /**
-   * Resolve secrets (alpha)
+   * Resolve secrets
    *
    * Resolve a deduplicated batch of `camunda.secrets.*` references for the caller's
    * physical tenant in a single round-trip.
@@ -13886,8 +13946,6 @@ class CamundaClientBase {
    * References are resolved against the secret stores configured for the caller's physical
    * tenant, served from the gateway's secret cache when the value is already cached and read
    * from the store otherwise.
-   *
-   * This endpoint is an alpha feature and may be subject to change in future releases.
    *
     *
    * @example Resolve secrets

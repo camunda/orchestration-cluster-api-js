@@ -243,6 +243,16 @@ async function getClusterStatusExample() {
 }
 //#endregion GetClusterStatus
 
+//#region GetClusterUpgradeStatus
+async function getClusterUpgradeStatusExample() {
+  const camunda = createCamundaClient();
+
+  const upgradeStatus = await camunda.getClusterUpgradeStatus();
+
+  console.log(`Cluster upgrade-readiness status: ${upgradeStatus.status}`);
+}
+//#endregion GetClusterUpgradeStatus
+
 //#region TriggerClusterRebalance
 async function triggerClusterRebalanceExample() {
   const camunda = createCamundaClient();
@@ -634,6 +644,7 @@ void getSystemConfigurationExample;
 void getAuthenticationExample;
 void getStatusExample;
 void getClusterStatusExample;
+void getClusterUpgradeStatusExample;
 void triggerClusterRebalanceExample;
 void getClusterRebalanceExample;
 void cancelClusterRebalanceExample;

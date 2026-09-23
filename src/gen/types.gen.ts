@@ -2390,7 +2390,13 @@ export type BatchOperationResponse = {
      */
     batchOperationKey: BatchOperationKey;
     state: BatchOperationStateEnum;
-    batchOperationType: BatchOperationTypeEnum;
+    /**
+     * The type of the batch operation.
+     * This is `null` for batch operations whose type was never recorded in
+     * secondary storage, such as legacy Operate batch operations.
+     *
+     */
+    batchOperationType: BatchOperationTypeEnum | null;
     /**
      * The start date of the batch operation.
      * This is `null` if the batch operation has not yet started.
@@ -2817,6 +2823,16 @@ export type ClusterStatusResponse = {
      * `HEALTHY` when every physical tenant is healthy, `DOWN` when no physical tenant can process work, `DEGRADED` in every other case.
      */
     status: 'HEALTHY' | 'DEGRADED' | 'DOWN';
+};
+
+/**
+ * The upgrade-readiness status of the whole cluster.
+ */
+export type ClusterUpgradeStatusResponse = {
+    /**
+     * `MIGRATED` once every known upgrade-readiness condition is met for every known physical tenant; `MIGRATION_IN_PROGRESS` when at least one is confirmed not yet migrated; `UNKNOWN` otherwise.
+     */
+    status: 'MIGRATED' | 'MIGRATION_IN_PROGRESS' | 'UNKNOWN';
 };
 
 /**
@@ -11084,9 +11100,8 @@ export type SecretListRequest = {
 /**
  * The secret references the caller is authorized to see.
  *
- * Unbounded for now: the response carries the configured stores' full enumeration for the
- * physical tenant. Pagination is expected to land here before GA. This is an alpha endpoint,
- * so that is not yet a breaking-contract concern.
+ * Unbounded: the response carries the configured stores' full enumeration for the physical
+ * tenant.
  *
  */
 export type SecretListResult = {
@@ -23088,6 +23103,22 @@ export type GetClusterStatusResponses = {
 
 export type GetClusterStatusResponse = GetClusterStatusResponses[keyof GetClusterStatusResponses];
 
+export type GetClusterUpgradeStatusData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/cluster/v2/status/upgrade';
+};
+
+export type GetClusterUpgradeStatusResponses = {
+    /**
+     * The cluster's upgrade-readiness status.
+     */
+    200: ClusterUpgradeStatusResponse;
+};
+
+export type GetClusterUpgradeStatusResponse = GetClusterUpgradeStatusResponses[keyof GetClusterUpgradeStatusResponses];
+
 export type GetClusterTopologyData = {
     body?: never;
     path?: never;
@@ -23888,7 +23919,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:bac5f20ff88c4d231798842bb5ff2921e156a72b890b31567f7f2bac27d76f8d
+// specHash=sha256:bc827cb3d135b1d3afb62e23ab2c6bb19e3cdd207ccba54465857c2d7be5468a
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}
