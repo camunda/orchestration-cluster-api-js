@@ -1,3 +1,10 @@
+# [10.0.0-alpha.47](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.46...v10.0.0-alpha.47) (2026-09-23)
+
+
+### Features
+
+* add example coverage for getClusterUpgradeStatus ([#527](https://github.com/camunda/orchestration-cluster-api-js/issues/527)) ([aa27b85](https://github.com/camunda/orchestration-cluster-api-js/commit/aa27b859481d91436957467ed2054cc52b05bb15))
+
 # [10.0.0-alpha.46](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.45...v10.0.0-alpha.46) (2026-09-18)
 
 
