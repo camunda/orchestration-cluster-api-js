@@ -1,3 +1,10 @@
+# [10.0.0-alpha.48](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.47...v10.0.0-alpha.48) (2026-09-23)
+
+
+### Bug Fixes
+
+* stop the response fixture re-stamping a timestamp on every build ([#530](https://github.com/camunda/orchestration-cluster-api-js/issues/530)) ([7857c34](https://github.com/camunda/orchestration-cluster-api-js/commit/7857c34d647e70b96375f510951aa34386244c3b)), closes [#519](https://github.com/camunda/orchestration-cluster-api-js/issues/519) [#519](https://github.com/camunda/orchestration-cluster-api-js/issues/519)
+
 # [10.0.0-alpha.47](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.46...v10.0.0-alpha.47) (2026-09-23)
 
 
