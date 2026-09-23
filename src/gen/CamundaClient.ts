@@ -8035,6 +8035,16 @@ class CamundaClientBase {
    *
    * Reports one overall upgrade-readiness status for the whole cluster, folded over every physical tenant and condition. `MIGRATED` only once every known condition has migrated for every known physical tenant; `MIGRATION_IN_PROGRESS` when at least one is confirmed not yet migrated; `UNKNOWN` otherwise (including before anything has been reported yet). No per-tenant or per-condition detail is reported here; see the `upgradeReadiness` actuator endpoint for that.
     *
+   * @example Get cluster upgrade-readiness status
+   * ```ts
+   * async function getClusterUpgradeStatusExample() {
+   *   const camunda = createCamundaClient();
+   * 
+   *   const upgradeStatus = await camunda.getClusterUpgradeStatus();
+   * 
+   *   console.log(`Cluster upgrade-readiness status: ${upgradeStatus.status}`);
+   * }
+   * ```
    * @operationId getClusterUpgradeStatus
    * @tags Cluster
    */
