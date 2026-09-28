@@ -9,8 +9,10 @@
  * Usage: node scripts/postprocess-md-docs.mjs [docs-md]
  */
 
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const docsDir = process.argv[2] || 'docs-md';
 
@@ -172,14 +174,35 @@ function cleanHtml(filePath) {
 /**
  * Rewrite _media/ links to GitHub repo URLs.
  * TypeDoc copies referenced files into _media/ but those aren't valid in Docusaurus.
+ * It also flattens them to their basename, so the real path is recovered from the
+ * tracked repo files; an unknown or ambiguous name is an error rather than a guess.
  */
+const GITHUB_BASE = 'https://github.com/camunda/orchestration-cluster-api-js/blob/main/';
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const trackedPathsByName = new Map();
+for (const path of execFileSync('git', ['ls-files'], { cwd: repoRoot, encoding: 'utf-8' })
+  .split('\n')
+  .filter(Boolean)) {
+  const name = basename(path);
+  trackedPathsByName.set(name, [...(trackedPathsByName.get(name) ?? []), path]);
+}
+const mediaLinkErrors = [];
+
 function rewriteMediaLinks(filePath) {
-  const GITHUB_BASE = 'https://github.com/camunda/orchestration-cluster-api-js/blob/main/';
   let content = readFileSync(filePath, 'utf-8');
   const before = content;
   content = content.replace(
-    /\[([^\]]+)\]\(_media\/([^)]+)\)/g,
-    (_, text, path) => `[${text}](${GITHUB_BASE}${path})`
+    /\]\((?:\.\.\/)*_media\/([^)#]+)(#[^)]*)?\)/g,
+    (match, name, fragment = '') => {
+      const paths = trackedPathsByName.get(name) ?? [];
+      if (paths.length !== 1) {
+        mediaLinkErrors.push(
+          `  ${filePath}: _media/${name} matches ${paths.length} tracked files (${paths.join(', ')})`
+        );
+        return match;
+      }
+      return `](${GITHUB_BASE}${paths[0]}${fragment})`;
+    }
   );
   if (content !== before) {
     writeFileSync(filePath, content, 'utf-8');
@@ -263,5 +286,12 @@ function processDirectory(dir) {
 
 // Run
 const count = processDirectory(docsDir);
+if (mediaLinkErrors.length > 0) {
+  console.error(`Cannot resolve ${mediaLinkErrors.length} _media link(s) to a repo file:`);
+  for (const err of mediaLinkErrors) console.error(err);
+  process.exit(1);
+}
+// Every _media link now points at GitHub; the copies would only leak into camunda-docs.
+rmSync(join(docsDir, '_media'), { recursive: true, force: true });
 createCategoryFiles(docsDir);
 console.log(`Post-processed ${count} markdown files in ${docsDir}`);
