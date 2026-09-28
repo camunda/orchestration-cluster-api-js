@@ -58,4 +58,13 @@ describe('postprocess-md-docs _media handling', () => {
     expect(run.status).not.toBe(0);
     expect(run.stderr).toContain('no-such-file.ts');
   });
+
+  it('fails rather than guess when a _media file matches several tracked files', () => {
+    // index.ts is tracked at several paths (src/, src/gen/, example-app/, ...).
+    const run = setup({ 'index.md': '[x](_media/index.ts)' }, ['index.ts']);
+
+    expect(run.status).not.toBe(0);
+    expect(run.stderr).toContain('src/index.ts');
+    expect(readFileSync(join(docsDir, 'index.md'), 'utf8')).not.toContain(GITHUB_BASE);
+  });
 });
