@@ -1,3 +1,10 @@
+# [10.0.0-alpha.49](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.48...v10.0.0-alpha.49) (2026-09-29)
+
+
+### Bug Fixes
+
+* **docs:** restore the client method reference in the API docs ([#533](https://github.com/camunda/orchestration-cluster-api-js/issues/533)) ([72508ad](https://github.com/camunda/orchestration-cluster-api-js/commit/72508adf689fb2e5fd87f4e514bceb85102c98dd)), closes [#446](https://github.com/camunda/orchestration-cluster-api-js/issues/446)
+
 # [10.0.0-alpha.48](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.47...v10.0.0-alpha.48) (2026-09-23)
 
 
