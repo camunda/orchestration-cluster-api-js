@@ -1456,7 +1456,11 @@ export function createCamundaClient(options?: CamundaOptions): CamundaClient {
   return new CamundaClient(options);
 }
 
-class CamundaClientBase {
+/**
+ * The Camunda client's operation methods. Create clients with {@link createCamundaClient}
+ * or {@link CamundaClient}, which add `.paginate(...)` to every search operation.
+ */
+export class CamundaClientBase {
   private _client: Client;
   private _config: Readonly<CamundaConfig>;
   private _auth: ReturnType<typeof createAuthFacade> = createAuthFacade({
