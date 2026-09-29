@@ -6586,7 +6586,8 @@ export type IncidentFilter = {
      */
     errorType?: IncidentErrorTypeFilterProperty;
     /**
-     * The error message of this incident.
+     * The error message of this incident. For `$eq`, `$neq`, `$in`, and `$notIn`, matching is case-insensitive and matches if the incident's error message contains the given value as a phrase, not necessarily the entire error message. `$like` matches on individual words of the error message and does not support multi-word patterns.
+     *
      */
     errorMessage?: StringFilterProperty;
     /**
@@ -23919,7 +23920,7 @@ export type GetVariableResponse = GetVariableResponses[keyof GetVariableResponse
 
 // branding-plugin generated
 // schemaVersion=2.0.0
-// specHash=sha256:bc827cb3d135b1d3afb62e23ab2c6bb19e3cdd207ccba54465857c2d7be5468a
+// specHash=sha256:39641c369e00946870689517f5bcbfad75e68c9f86ff99032bf1d0d73767c942
 
 export function assertConstraint(value: string, label: string, c: { pattern?: string; minLength?: number; maxLength?: number }) {
   if (c.pattern && !(new RegExp(c.pattern, 'u').test(value))) throw new Error(`[31mInvalid pattern for ${label}: '${value}'.[0m Needs to match: ${JSON.stringify(c)}

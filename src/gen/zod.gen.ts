@@ -6123,7 +6123,7 @@ export const zRoleGroupResult = z.object({
  * Limit-based pagination
  */
 export const zLimitPagination = z.object({
-    limit: z.int().gte(1).lte(10000).register(z.globalRegistry, {
+    limit: z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
 });
@@ -6135,7 +6135,7 @@ export const zOffsetPagination = z.object({
     from: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The index of items to start searching from.'
     }).optional(),
-    limit: z.int().gte(1).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
+    limit: z.int().gte(0).max(2147483647, { error: 'Invalid value: Expected int32 to be <= 2147483647' }).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
 });
@@ -6145,7 +6145,7 @@ export const zOffsetPagination = z.object({
  */
 export const zCursorForwardPagination = z.object({
     after: zEndCursor.optional(),
-    limit: z.int().gte(1).lte(10000).register(z.globalRegistry, {
+    limit: z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
 });
@@ -6195,7 +6195,7 @@ export const zJobErrorStatisticsQuery = z.object({
  */
 export const zCursorBackwardPagination = z.object({
     before: zStartCursor.optional(),
-    limit: z.int().gte(1).lte(10000).register(z.globalRegistry, {
+    limit: z.int().gte(0).lte(10000).register(z.globalRegistry, {
         description: 'The maximum number of items to return in one request.'
     }).optional().default(100)
 });
