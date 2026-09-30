@@ -3,7 +3,7 @@
 | Key | Type | Default | Requirement | Flags | Description |
 |-----|------|---------|-------------|-------|-------------|
 | `CAMUNDA_REST_ADDRESS` | string | `http://localhost:8080/v2` | Optional |  | Base REST endpoint address. Legacy alias: ZEEBE_REST_ADDRESS (used only when CAMUNDA_REST_ADDRESS is unset). |
-| `CAMUNDA_REST_ADDRESS_EXACT` | boolean | `false` | Optional |  | Use CAMUNDA_REST_ADDRESS exactly as provided, without appending the /v2 suffix. Useful for gateway/reverse-proxy deployments whose base path does not follow the /v2 convention. |
+| `CAMUNDA_REST_ADDRESS_EXACT` | boolean | `false` | Optional |  | Disable the automatic /v2 suffix so CAMUNDA_REST_ADDRESS is used as the base path. The value is still normalized (surrounding whitespace and trailing slashes are trimmed) — this option only suppresses the /v2 append, it does not preserve the address byte-for-byte. Useful for gateway/reverse-proxy deployments whose base path does not follow the /v2 convention. |
 | `CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS` | int | `3` | Optional |  | Maximum total HTTP attempts (including the initial attempt) for transient failures (429,503, network). |
 | `CAMUNDA_SDK_HTTP_RETRY_BASE_DELAY_MS` | int | `100` | Optional |  | Base delay in milliseconds for exponential backoff (full jitter) for HTTP retries. |
 | `CAMUNDA_SDK_HTTP_RETRY_MAX_DELAY_MS` | int | `2000` | Optional |  | Maximum delay cap in milliseconds for HTTP retry backoff. |

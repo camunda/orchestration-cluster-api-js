@@ -12,7 +12,7 @@ export const SCHEMA = {
   CAMUNDA_REST_ADDRESS_EXACT: {
     type: 'boolean',
     default: false,
-    doc: 'Use CAMUNDA_REST_ADDRESS exactly as provided, without appending the /v2 suffix. Useful for gateway/reverse-proxy deployments whose base path does not follow the /v2 convention.',
+    doc: 'Disable the automatic /v2 suffix so CAMUNDA_REST_ADDRESS is used as the base path. The value is still normalized (surrounding whitespace and trailing slashes are trimmed) — this option only suppresses the /v2 append, it does not preserve the address byte-for-byte. Useful for gateway/reverse-proxy deployments whose base path does not follow the /v2 convention.',
   },
   CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: {
     desc: 'Maximum total HTTP attempts (including the initial attempt) for transient failures (429,503, network).',
