@@ -39,14 +39,14 @@ describe('CAMUNDA_REST_ADDRESS_EXACT (opt out of /v2 suffix)', () => {
     expect(config.restAddress).toBe('https://gateway.example/api');
   });
 
-  it('preserves a trailing slash exactly when exact mode is enabled', () => {
+  it('strips a trailing slash in exact mode to avoid double-slash request paths', () => {
     const { config } = hydrateConfig({
       env: {
         CAMUNDA_REST_ADDRESS: 'https://gateway.example/api/',
         CAMUNDA_REST_ADDRESS_EXACT: 'true',
       },
     });
-    expect(config.restAddress).toBe('https://gateway.example/api/');
+    expect(config.restAddress).toBe('https://gateway.example/api');
   });
 
   it('leaves an existing /v2 address untouched in exact mode', () => {

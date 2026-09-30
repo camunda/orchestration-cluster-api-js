@@ -569,7 +569,10 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     // Trim whitespace and trailing slashes first
     _restAddress = _restAddress.trim();
     if (_restAddressExact) {
-      // Exact mode: leave the address untouched (no /v2 append).
+      // Exact mode: do not append /v2, but still strip trailing slashes so the
+      // join with an operation path (which begins with '/') does not produce a
+      // double-slash request path (e.g. `.../api/` + `/license` -> `.../api//license`).
+      _restAddress = _restAddress.replace(/\/+$/, '');
     } else if (!/\/v2\/?$/i.test(_restAddress)) {
       // If it already ends with /v2 or /v2/, leave as-is; else append
       _restAddress = `${_restAddress.replace(/\/+$/, '')}/v2`;
