@@ -1,3 +1,10 @@
+# [10.0.0-alpha.50](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.49...v10.0.0-alpha.50) (2026-09-30)
+
+
+### Features
+
+* **config:** add CAMUNDA_REST_ADDRESS_EXACT to opt out of /v2 suffix ([#534](https://github.com/camunda/orchestration-cluster-api-js/issues/534)) ([2797790](https://github.com/camunda/orchestration-cluster-api-js/commit/27977905b38cebb1789d6724a6c7702d50bb8679)), closes [#499](https://github.com/camunda/orchestration-cluster-api-js/issues/499)
+
 # [10.0.0-alpha.49](https://github.com/camunda/orchestration-cluster-api-js/compare/v10.0.0-alpha.48...v10.0.0-alpha.49) (2026-09-29)
 
 
