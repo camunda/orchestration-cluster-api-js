@@ -9,6 +9,11 @@ export const SCHEMA = {
     aliases: ['ZEEBE_REST_ADDRESS'],
     doc: 'Base REST endpoint address. Legacy alias: ZEEBE_REST_ADDRESS (used only when CAMUNDA_REST_ADDRESS is unset).',
   },
+  CAMUNDA_REST_ADDRESS_EXACT: {
+    type: 'boolean',
+    default: false,
+    doc: 'Disable the automatic /v2 suffix so CAMUNDA_REST_ADDRESS is used as the base path. The value is still normalized (surrounding whitespace and trailing slashes are trimmed) — this option only suppresses the /v2 append, it does not preserve the address byte-for-byte. Useful for gateway/reverse-proxy deployments whose base path does not follow the /v2 convention.',
+  },
   CAMUNDA_SDK_HTTP_RETRY_MAX_ATTEMPTS: {
     desc: 'Maximum total HTTP attempts (including the initial attempt) for transient failures (429,503, network).',
     type: 'int',

@@ -560,13 +560,21 @@ export function hydrateConfig(options: HydrateOptions = {}): HydratedConfigurati
     else redacted[k] = v;
   }
 
-  // Normalize restAddress to ensure it ends with /v2 (idempotent)
+  // Normalize restAddress to ensure it ends with /v2 (idempotent), unless the user
+  // opted out via CAMUNDA_REST_ADDRESS_EXACT — then use the address exactly as given
+  // (for gateway/reverse-proxy deployments whose base path does not follow /v2).
+  const _restAddressExact = reqBool('CAMUNDA_REST_ADDRESS_EXACT');
   let _restAddress = reqStr('CAMUNDA_REST_ADDRESS');
   if (_restAddress) {
     // Trim whitespace and trailing slashes first
     _restAddress = _restAddress.trim();
-    // If it already ends with /v2 or /v2/, leave as-is; else append
-    if (!/\/v2\/?$/i.test(_restAddress)) {
+    if (_restAddressExact) {
+      // Exact mode: do not append /v2, but still strip trailing slashes so the
+      // join with an operation path (which begins with '/') does not produce a
+      // double-slash request path (e.g. `.../api/` + `/license` -> `.../api//license`).
+      _restAddress = _restAddress.replace(/\/+$/, '');
+    } else if (!/\/v2\/?$/i.test(_restAddress)) {
+      // If it already ends with /v2 or /v2/, leave as-is; else append
       _restAddress = `${_restAddress.replace(/\/+$/, '')}/v2`;
     } else {
       // Canonicalize to no trailing slash (optional design choice); keep existing behavior by not altering
