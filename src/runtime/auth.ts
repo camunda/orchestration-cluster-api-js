@@ -7,6 +7,7 @@ import type {
   TelemetryHooks,
 } from './telemetry';
 import type { CamundaConfig } from './unifiedConfiguration';
+import { node } from '#platform';
 
 /** Auth error codes */
 export enum CamundaAuthErrorCode {
@@ -91,11 +92,9 @@ class OAuthManager {
         /* ignore */
       }
     }
-    if (!this.session && this.cfg.oauth.cacheDir && this.isNode()) {
+    if (!this.session && this.cfg.oauth.cacheDir && node && this.isNode()) {
       try {
-        const fs = require('node:fs');
-
-        const path = require('node:path');
+        const { fs, path } = node;
         const file = path.join(this.cfg.oauth.cacheDir, `${this.storageKey}.json`);
         if (fs.existsSync(file)) {
           const raw = fs.readFileSync(file, 'utf8');
@@ -114,11 +113,9 @@ class OAuthManager {
         } catch {
           /* ignore */
         }
-      } else if (this.cfg.oauth.cacheDir && this.isNode()) {
+      } else if (this.cfg.oauth.cacheDir && node && this.isNode()) {
         try {
-          const fs = require('node:fs');
-
-          const path = require('node:path');
+          const { fs, path } = node;
           if (!fs.existsSync(this.cfg.oauth.cacheDir))
             fs.mkdirSync(this.cfg.oauth.cacheDir, { recursive: true });
           const file = path.join(this.cfg.oauth.cacheDir, `${this.storageKey}.json`);
@@ -177,11 +174,9 @@ class OAuthManager {
     if (opts.disk) {
       if (this.session) {
         this.session.removeItem(this.storageKey);
-      } else if (this.cfg.oauth.cacheDir && this.isNode()) {
+      } else if (this.cfg.oauth.cacheDir && node && this.isNode()) {
         try {
-          const fs = require('node:fs');
-
-          const path = require('node:path');
+          const { fs, path } = node;
           const file = path.join(this.cfg.oauth.cacheDir, `${this.storageKey}.json`);
           if (fs.existsSync(file)) fs.unlinkSync(file);
         } catch {
@@ -410,18 +405,16 @@ export function createAuthFacade(
     opts?.fetch ? opts.fetch(input, init) : fetch(input, init);
   // mTLS: if in Node and mtls config present, create https.Agent and augment fetch with agent option.
   let nodeAgent: any = null;
-  if (cfg.mtls && typeof process !== 'undefined' && process.versions?.node) {
+  if (cfg.mtls && node && typeof process !== 'undefined' && process.versions?.node) {
     try {
-      const fs = require('node:fs');
-
-      const https = require('node:https');
+      const { fs, https } = node;
       const material: any = {};
-      if (cfg.mtls.cert || cfg.mtls.certPath)
-        material.cert = cfg.mtls.cert || fs.readFileSync(cfg.mtls.certPath, 'utf8');
-      if (cfg.mtls.key || cfg.mtls.keyPath)
-        material.key = cfg.mtls.key || fs.readFileSync(cfg.mtls.keyPath, 'utf8');
-      if (cfg.mtls.ca || cfg.mtls.caPath)
-        material.ca = cfg.mtls.ca || fs.readFileSync(cfg.mtls.caPath, 'utf8');
+      // Inline PEM wins; otherwise read from the configured path.
+      const pem = (inline?: string, path?: string) =>
+        inline || (path ? fs.readFileSync(path, 'utf8') : inline);
+      if (cfg.mtls.cert || cfg.mtls.certPath) material.cert = pem(cfg.mtls.cert, cfg.mtls.certPath);
+      if (cfg.mtls.key || cfg.mtls.keyPath) material.key = pem(cfg.mtls.key, cfg.mtls.keyPath);
+      if (cfg.mtls.ca || cfg.mtls.caPath) material.ca = pem(cfg.mtls.ca, cfg.mtls.caPath);
       if (cfg.mtls.keyPassphrase) material.passphrase = cfg.mtls.keyPassphrase;
       nodeAgent = new https.Agent(material);
       // Expose for request layer reuse without import cycles.

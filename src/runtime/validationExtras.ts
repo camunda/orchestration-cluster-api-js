@@ -1,6 +1,7 @@
 import { ZodObject, type ZodTypeAny } from 'zod';
 import { CamundaValidationError } from './errors';
 import type { Logger } from './logger';
+import { node } from '#platform';
 
 export type ExtrasPolicy = 'ignore' | 'warn' | 'error';
 
@@ -67,9 +68,9 @@ export function detectExtrasAndMaybeThrow(opts: DetectOptions) {
   // Capture sample (root only) if capture dir configured (always for fanatical by design)
   if (settings.captureDir) {
     try {
-      const fs = require('node:fs');
-
-      const pathMod = require('node:path');
+      // Throw into the surrounding catch when Node built-ins are unavailable (browser).
+      if (!node) throw new Error('node:fs unavailable');
+      const { fs, path: pathMod } = node;
       if (!fs.existsSync(settings.captureDir))
         fs.mkdirSync(settings.captureDir, { recursive: true, mode: 0o700 });
       const sig = `${operationId}|${flatIssues.sort().join('|')}`;

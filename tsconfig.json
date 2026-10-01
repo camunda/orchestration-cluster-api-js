@@ -9,7 +9,9 @@
     "declaration": true,
     "declarationMap": true,
     "rootDir": ".",
-    "outDir": "dist"
+    "outDir": "dist",
+    // Source-time resolution of the #platform subpath import (see package.json "imports").
+    "paths": { "#platform": ["./src/runtime/platform/node.ts"] }
   },
   "include": ["src", "scripts"],
   "exclude": ["dist", "node_modules"]
