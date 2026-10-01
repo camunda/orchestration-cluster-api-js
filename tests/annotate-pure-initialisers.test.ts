@@ -14,30 +14,49 @@
  * generator can plausibly emit (single-line, multiline callee, multiline args,
  * nested calls, generics) — not just the one instance from the review.
  */
-import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
+import { annotatePureInitialisers } from '../hooks/post/650-annotate-pure-initialisers';
 
-const repoRoot = join(__dirname, '..');
-const hook = join(repoRoot, 'hooks', 'post', '650-annotate-pure-initialisers.ts');
 const PURE = '/* @__PURE__ */';
 
-/** Every temp dir this suite created — afterEach removes the whole set. */
+/** Temp dirs awaiting cleanup by the next afterEach (cleared each test). */
 const created: string[] = [];
+/**
+ * Every temp dir this suite EVER created — never cleared, so afterAll can prove
+ * the cleanup removed all of them. Tracking must be separate from `created`:
+ * afterEach empties `created`, so an afterAll check against `created` alone would
+ * always see `[]` and could never detect a leak (Copilot review, PR #539).
+ */
+const allCreated: string[] = [];
 let work: string;
 
-/** Run the hook with `cwd` = a temp dir whose src/gen contains `files`. */
+/**
+ * Run the hook against a temp src/gen containing `files`, IN-PROCESS. Calling
+ * annotatePureInitialisers() directly (rather than spawning `tsx` per case)
+ * keeps the table-driven suites fast and deterministic: spawning a subprocess
+ * that loads the TypeScript compiler cost ~10 s each and blew the test timeouts.
+ * `result.status` / `result.stderr` mirror the CLI contract the pipeline relies
+ * on: non-zero status + the callee name in stderr when a call is unreviewed.
+ */
 function runHook(files: Record<string, string>) {
   work = mkdtempSync(join(tmpdir(), 'annotate-pure-'));
   created.push(work);
+  allCreated.push(work);
   for (const [name, body] of Object.entries(files)) {
     const p = join(work, 'src', 'gen', name);
     mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p, body);
   }
-  const result = spawnSync('npx', ['tsx', hook], { cwd: work, encoding: 'utf8' });
+  let result: { status: number; stderr: string };
+  try {
+    const { unreviewed } = annotatePureInitialisers(work);
+    result = { status: unreviewed.length ? 1 : 0, stderr: unreviewed.join('\n') };
+  } catch (err) {
+    result = { status: 1, stderr: err instanceof Error ? (err.stack ?? err.message) : String(err) };
+  }
   const read = (name: string) => readFileSync(join(work, 'src', 'gen', name), 'utf8');
   return { result, read };
 }
@@ -50,9 +69,12 @@ afterEach(() => {
 // Review finding: `work` was overwritten on each runHook call, so afterEach
 // removed only the LAST temp dir — the table-driven failure tests leaked ten
 // dirs per suite run. afterEach now tracks and removes the full set; this
-// end-of-suite assertion is the regression signal that nothing leaked.
+// end-of-suite assertion is the regression signal that nothing leaked. It checks
+// `allCreated` (the never-cleared suite-lifetime list), NOT `created`: afterEach
+// empties `created` after every test, so a check against it would always pass
+// even if cleanup removed only a subset.
 afterAll(() => {
-  const leaked = created.filter((dir) => existsSync(dir));
+  const leaked = allCreated.filter((dir) => existsSync(dir));
   expect(leaked).toEqual([]);
 });
 
@@ -143,9 +165,7 @@ describe('650-annotate-pure-initialisers', () => {
       expect(result.status).toBe(1);
       expect(result.stderr.toLowerCase()).toContain('sneaky');
     }
-    // Five hook subprocesses under full-suite load exceed the 5 s default
-    // timeout; the timeout is a safety net, not a correctness signal.
-  }, 30_000);
+  });
 
   it('fails the pipeline on an unreviewed nested callee that is already /* @__PURE__ */-annotated', () => {
     // Third review finding: the gate trusted a pre-existing `/* @__PURE__ */`
@@ -165,9 +185,7 @@ describe('650-annotate-pure-initialisers', () => {
       expect(result.status).toBe(1);
       expect(result.stderr.toLowerCase()).toContain('sneaky');
     }
-    // Five hook subprocesses under full-suite load exceed the 5 s default
-    // timeout; the timeout is a safety net, not a correctness signal.
-  }, 30_000);
+  });
 
   it('is idempotent: already-annotated initialisers are left untouched', () => {
     const annotated = `export const client: Client = ${PURE} createClient(${PURE} createConfig<ClientOptions2>({ throwOnError: true }));\n`;
@@ -219,7 +237,49 @@ describe('650-annotate-pure-initialisers', () => {
       expect(result.status).toBe(1);
       expect(result.stderr.toLowerCase()).toContain('sneaky');
     }
-    // Five hook subprocesses under full-suite load exceed the 5 s default
-    // timeout; the timeout is a safety net, not a correctness signal.
-  }, 30_000);
+  });
+
+  it('fails the pipeline on an unreviewed eager call wrapped in ANY expression (ternary, ??, &&, array, object)', () => {
+    // Review finding (previously missed): the fail-closed invariant was bypassed
+    // when a top-level call was wrapped in an expression other than
+    // await/parentheses. `const x = enabled ? sneaky() : undefined` and
+    // `const x = existing ?? sneaky()` produced no match, so the eager call was
+    // neither annotated nor rejected — fail-open in every such shape. The gate
+    // now walks the AST and rejects an eagerly-evaluated unknown call regardless
+    // of the surrounding expression wrapper.
+    for (const src of [
+      `export const x = enabled ? sneakySideEffect() : undefined;\n`,
+      `export const x = cond ? other : sneakySideEffect();\n`,
+      `export const x = existing ?? sneakySideEffect();\n`,
+      `export const x = a && sneakySideEffect();\n`,
+      `export const x = a || sneakySideEffect();\n`,
+      `export const x = [sneakySideEffect()];\n`,
+      `export const x = { k: sneakySideEffect() };\n`,
+      `export const x = \`\${sneakySideEffect()}\`;\n`,
+    ]) {
+      const { result } = runHook({ 'evil.gen.ts': src });
+      expect(result.status).toBe(1);
+      expect(result.stderr.toLowerCase()).toContain('sneaky');
+    }
+  });
+
+  it('does NOT reject or annotate calls that are LAZILY evaluated inside a function/arrow/class body', () => {
+    // The dual of the fail-open fix: the gate must distinguish an EAGER
+    // module-init call from a LAZY call in a deferred body. The 240+ generated
+    // SDK methods are arrow functions whose bodies call
+    // `(options?.client ?? client).method(...)` only when later invoked — and are
+    // textually identical to an eager `a ?? sneaky()`. A text matcher cannot tell
+    // them apart; the AST gate must leave every lazy shape untouched (no
+    // rejection, no annotation), or it would false-positive on the whole SDK.
+    const lazy = [
+      `export const getFoo = (options) => (options?.client ?? client).get({ url: '/x' });\n`,
+      `export const makeFoo = () => sneakySideEffect();\n`,
+      `export const asyncFoo = async () => sneakySideEffect();\n`,
+      `export const obj = { run() { return sneakySideEffect(); } };\n`,
+      `export const cls = class { m() { return sneakySideEffect(); } };\n`,
+    ].join('');
+    const { result, read } = runHook({ 'sdk.gen.ts': lazy });
+    expect(result.status).toBe(0);
+    expect(read('sdk.gen.ts')).toBe(lazy); // left byte-for-byte untouched
+  });
 });

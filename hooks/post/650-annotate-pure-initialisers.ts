@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 // Marks side-effect-free top-level initialisers in generated code as
 // `/* @__PURE__ */` so consumer bundlers can drop them (issue #537, phase 2).
@@ -14,24 +16,26 @@ import path from 'node:path';
 // which dragged the entire fetch client into every consumer bundle, even one that
 // imported only `isSdkError`.
 //
-// Policy: every top-level `const x = call(...)` / `new X(...)` in the scanned
-// files must have its callee in PURE_CALLEES (then it is annotated) or in
+// Policy: every EAGERLY EVALUATED top-level call / `new` in the scanned files
+// must have its callee in PURE_CALLEES (then it is annotated) or in
 // BUNDLER_KNOWN_PURE (bundlers already treat it as pure). Anything else FAILS the
 // pipeline, so a new top-level call introduced by a generator upgrade gets a
 // human decision instead of silently re-breaking tree-shaking.
 //
-// The callee may start on a later line than the declaration (`const x =\n
-// createClient(...)` is a shape the generator's formatter can emit), so detection
-// tolerates whitespace — including newlines — between `=` and the callee, and the
-// nested-call pass spans the whole initialiser statement. It also tolerates an
-// `await` and/or wrapping parentheses before the callee (`const x = await
-// createClient(...)`, `const x = (createClient(...))`): those are the same
-// eagerly evaluated call, so they must hit the same gate. Anything else would be
-// fail-open: a formatting change would bypass both annotation and the gate.
-// Guarded end-to-end by scripts/check-tree-shaking.mjs.
-
-const root = process.cwd();
-const GEN_DIR = path.join(root, 'src', 'gen');
+// "Eagerly evaluated" is the load-bearing distinction, and the reason this gate
+// walks the TypeScript AST instead of a regex: a call runs at import time only if
+// it is reached while evaluating a module-level initialiser WITHOUT first
+// entering a function body. `export const client = createClient(...)` runs the
+// call; `export const getFoo = (o) => (o.client ?? client).get(...)` does NOT —
+// the `.get(...)` lives in an arrow body and only runs when `getFoo()` is later
+// called. The 240+ generated SDK methods are exactly this lazy shape and are
+// textually indistinguishable from an eager `a ?? sneaky()` by regex alone, so a
+// text matcher is either fail-open (misses eager calls wrapped in `?:` / `??` /
+// other expressions) or false-positives on every lazy SDK export. The AST walk
+// collects eager calls regardless of expression wrapper and stops at every
+// function/arrow/class boundary, so it is fail-closed for every initialiser shape
+// without touching the lazy ones. Guarded end-to-end by
+// scripts/check-tree-shaking.mjs and tests/annotate-pure-initialisers.test.ts.
 
 // zod.gen.ts is excluded: it is only ever loaded lazily via `import()`, and its
 // schema definitions call `.register(...)` into a global registry (a real side
@@ -50,13 +54,12 @@ const BUNDLER_KNOWN_PURE = new Set(['new Set', 'new Map', 'new WeakMap', 'new We
 
 const PURE = '/* @__PURE__ */ ';
 
-// The `=\s*` (not `= `) is load-bearing: the callee may begin on the next line.
-// `(?:await\s*)?\(*` tolerates an awaited and/or parenthesised initializer —
-// `const x = (createClient(...))` and `const x = await createClient(...)` are
-// the same eagerly evaluated call, so they must hit the same gate; anchoring
-// the callee immediately after `=` would be fail-open for those shapes.
-const TOP_LEVEL_CALL =
-  /^((?:export )?(?:const|let) [\w$]+(?:: [^=\n]+)? =\s*(?:await\s*)?\(*)(\/\* @__PURE__ \*\/ )?(new )?([\w$.]+)(?:<[^\n(]*>)?\(/gm;
+export interface AnnotateResult {
+  /** Number of @__PURE__ hints inserted this run. */
+  annotated: number;
+  /** One message per eagerly-evaluated unreviewed call (empty = gate passes). */
+  unreviewed: string[];
+}
 
 function walk(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
@@ -66,178 +69,124 @@ function walk(dir: string): string[] {
   });
 }
 
-/** Line/col of an absolute offset in `src`, 0-based. */
-function locate(src: string, offset: number): { line: number; col: number } {
-  const line = src.slice(0, offset).split('\n').length - 1;
-  const col = offset - (src.lastIndexOf('\n', offset - 1) + 1);
-  return { line, col };
+/** Text of a call/new callee, e.g. `createClient`, `Object.entries`, `foo.bar`. */
+function calleeText(expr: ts.Expression): string {
+  return expr.getText().replace(/\s+/g, '');
+}
+
+/** True if `node`'s immediate leading trivia already carries a @__PURE__ hint. */
+function alreadyAnnotated(src: string, node: ts.Node): boolean {
+  return src.slice(node.getFullStart(), node.getStart()).includes('@__PURE__');
+}
+
+type EagerCall = { node: ts.CallExpression | ts.NewExpression; key: string; pure: boolean };
+
+/**
+ * Collect every call / `new` that is EAGERLY evaluated while running `init` as a
+ * module-level initialiser — i.e. reachable without crossing a function, arrow,
+ * class, or accessor boundary (those defer evaluation to call time). The
+ * arguments of an eager call are themselves eager, so we descend into them.
+ */
+function collectEagerCalls(init: ts.Node, out: EagerCall[]): void {
+  const visit = (node: ts.Node): void => {
+    // Stop at any construct whose body is not evaluated at module-init time.
+    if (
+      ts.isFunctionExpression(node) ||
+      ts.isArrowFunction(node) ||
+      ts.isClassExpression(node) ||
+      ts.isFunctionDeclaration(node) ||
+      ts.isClassDeclaration(node) ||
+      ts.isMethodDeclaration(node) ||
+      ts.isGetAccessorDeclaration(node) ||
+      ts.isSetAccessorDeclaration(node)
+    ) {
+      return;
+    }
+    if (ts.isCallExpression(node) || ts.isNewExpression(node)) {
+      const ctor = ts.isNewExpression(node);
+      const callee = calleeText(node.expression);
+      const key = ctor ? `new ${callee}` : callee;
+      const pure = !ctor && PURE_CALLEES.has(callee);
+      out.push({ node, key, pure });
+      // Descend into the callee and arguments: both are eager. A call's own
+      // callee can itself be a parenthesised IIFE etc., and its arguments can be
+      // further eager calls (`createClient(createConfig(...))`).
+      ts.forEachChild(node, visit);
+      return;
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(init);
 }
 
 /**
- * Range of lines [start, end] covered by the statement that starts on line
- * `start` — found by bracket balancing, so a multiline call's arguments are
- * included. Falls back to the first line ending in `;`.
+ * Annotate pure top-level initialisers under `<root>/src/gen` in place and report
+ * every eagerly-evaluated unreviewed call. Pure run: no files changed and an
+ * empty `unreviewed`. Does NOT throw or exit — the CLI wrapper below turns a
+ * non-empty `unreviewed` into a failing process.
  */
-function statementRange(lines: string[], start: number): [number, number] {
-  let depth = 0;
-  for (let i = start; i < lines.length; i++) {
-    for (const ch of lines[i]) {
-      if (ch === '(' || ch === '{' || ch === '[') depth++;
-      else if (ch === ')' || ch === '}' || ch === ']') depth--;
-    }
-    if (depth <= 0 && lines[i].trimEnd().endsWith(';')) return [start, i];
-  }
-  return [start, start];
-}
+export function annotatePureInitialisers(root: string): AnnotateResult {
+  const GEN_DIR = path.join(root, 'src', 'gen');
+  let annotated = 0;
+  const unreviewed: string[] = [];
 
-let annotated = 0;
-const unreviewed: string[] = [];
-for (const file of walk(GEN_DIR)) {
-  const src = fs.readFileSync(file, 'utf8');
-  const lines = src.split('\n');
-  // Lines that are part of a recognised top-level initialiser. The nested-call
-  // pass below only annotates inside these runs.
-  const consumed = new Array<boolean>(lines.length).fill(false);
+  for (const file of walk(GEN_DIR)) {
+    const src = fs.readFileSync(file, 'utf8');
+    const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, /* setParentNodes */ true);
 
-  TOP_LEVEL_CALL.lastIndex = 0;
-  let m: RegExpExecArray | null;
-  while ((m = TOP_LEVEL_CALL.exec(src)) !== null) {
-    const [whole, decl, pure, ctor, callee] = m;
-    const { line: startLine } = locate(src, m.index);
-    const { line: matchEndLine } = locate(src, m.index + whole.length);
-    const mark = (through: number) => {
-      for (let i = startLine; i <= through; i++) consumed[i] = true;
-    };
-    const key = `${ctor ?? ''}${callee}`;
-    if (BUNDLER_KNOWN_PURE.has(key)) {
-      mark(matchEndLine);
-      continue;
-    }
-    if (!PURE_CALLEES.has(callee) || ctor) {
-      unreviewed.push(`${path.relative(root, file)}: ${whole.trim()}`);
-      mark(matchEndLine);
-      continue;
-    }
-    if (pure) {
-      mark(matchEndLine); // idempotent: already annotated
-      continue;
-    }
-    annotated++;
-    // Insert the annotation exactly where the callee starts, which may be a
-    // later line than the declaration.
-    const { line: declEndLine, col } = locate(src, m.index + decl.length);
-    lines[declEndLine] = lines[declEndLine].slice(0, col) + PURE + lines[declEndLine].slice(col);
-    mark(declEndLine);
-  }
-
-  // Extend each consumed run to the end of its initialiser statement so nested
-  // calls on later lines (multiline argument lists) are covered too.
-  for (let i = 0; i < lines.length; i++) {
-    if (!consumed[i]) continue;
-    const [, end] = statementRange(lines, i);
-    for (let k = i; k <= end; k++) consumed[k] = true;
-  }
-
-  // Fail-closed gate for NESTED calls: an eagerly evaluated call or `new`
-  // anywhere inside a reviewed initialiser must itself be reviewed — otherwise
-  // `createClient(sneakySideEffect())` would pass the gate with the side effect
-  // intact (the outer reviewed callee marks the statement consumed). Scan the
-  // whole consumed statement for every callee-shaped token and fail on any that
-  // is neither reviewed, bundler-known-pure, nor already annotated.
-  const ANY_CALL = /(?:\bnew\s+)?([\w$]+(?:\s*\.\s*[\w$]+)*)(?:<[^\n(]*>)?\s*\(/g;
-  let i = 0;
-  while (i < lines.length) {
-    if (!consumed[i]) {
-      i++;
-      continue;
-    }
-    let j = i;
-    while (j + 1 < lines.length && consumed[j + 1]) j++;
-    // Skip the outer call's own callee: everything up to its `(` was vetted by
-    // the primary pass above.
-    let parenLine = i;
-    let parenCol = -1;
-    for (let k = i; k <= j; k++) {
-      const idx = lines[k].indexOf('(', lines[k].indexOf(PURE) + PURE.length);
-      if (idx !== -1) {
-        parenLine = k;
-        parenCol = idx;
-        break;
+    const inserts: number[] = []; // offsets at which to splice in a @__PURE__ hint
+    for (const stmt of sf.statements) {
+      if (!ts.isVariableStatement(stmt)) continue; // only top-level const/let/var
+      for (const decl of stmt.declarationList.declarations) {
+        if (!decl.initializer) continue;
+        const eager: EagerCall[] = [];
+        collectEagerCalls(decl.initializer, eager);
+        for (const { node, key, pure } of eager) {
+          if (BUNDLER_KNOWN_PURE.has(key)) continue; // bundlers already drop these
+          if (pure) {
+            if (!alreadyAnnotated(src, node)) inserts.push(node.getStart());
+            continue;
+          }
+          // A pre-existing @__PURE__ hint on an unreviewed callee is a bundler
+          // annotation, not the promised human review, so it still fails.
+          unreviewed.push(
+            `${path.relative(root, file)}: eagerly-evaluated unreviewed call '${key}(...)' in a top-level initialiser`
+          );
+        }
       }
     }
-    for (let k = parenLine; k <= j; k++) {
-      const from = k === parenLine ? parenCol : 0;
-      const segment = lines[k].slice(from);
-      ANY_CALL.lastIndex = 0;
-      let cm: RegExpExecArray | null;
-      while ((cm = ANY_CALL.exec(segment)) !== null) {
-        const callee = cm[1].replace(/\s*\.\s*/g, '.');
-        if (PURE_CALLEES.has(callee)) continue;
-        const ctorPrefix = cm[0].slice(0, cm[0].indexOf(callee));
-        if (BUNDLER_KNOWN_PURE.has(ctorPrefix + callee)) continue;
-        // Do NOT exempt a callee just because the generated source already
-        // carries a `/* @__PURE__ */` on it: a bundler hint emitted upstream is
-        // not the promised human review, so `createClient(/* @__PURE__ */
-        // sneakySideEffect())` must still fail. Reviewed and bundler-known
-        // callees are the only exemptions, and both are handled above.
-        unreviewed.push(
-          `${path.relative(root, file)}: nested call to unreviewed callee '${callee}' inside a reviewed initialiser`
-        );
+
+    if (inserts.length) {
+      annotated += inserts.length;
+      let out = src;
+      for (const offset of [...inserts].sort((a, b) => b - a)) {
+        out = out.slice(0, offset) + PURE + out.slice(offset);
       }
+      if (out !== src) fs.writeFileSync(file, out, 'utf8');
     }
-    i = j + 1;
   }
 
-  // A pure annotation lets the bundler drop the outer call, but it still keeps any
-  // argument that is itself an un-annotated call (e.g. `createClient(createConfig(...))`).
-  // Annotate reviewed callees nested anywhere inside the initialiser statement.
-  const nested = new RegExp(
-    String.raw`(?<!@__PURE__ \*/ )\b(${[...PURE_CALLEES].map((c) => c.replace('.', '\\.')).join('|')})(<[^\n(]*>)?\(`,
-    'g'
-  );
-  i = 0;
-  while (i < lines.length) {
-    if (!consumed[i]) {
-      i++;
-      continue;
-    }
-    let j = i;
-    while (j + 1 < lines.length && consumed[j + 1]) j++;
-    // Find the outer call's `(` — everything before it is the callee itself,
-    // already handled by the primary pass.
-    let parenLine = i;
-    let parenCol = -1;
-    for (let k = i; k <= j; k++) {
-      const idx = lines[k].indexOf('(', lines[k].indexOf(PURE) + PURE.length);
-      if (idx !== -1) {
-        parenLine = k;
-        parenCol = idx;
-        break;
-      }
-    }
-    for (let k = parenLine; k <= j; k++) {
-      const from = k === parenLine ? parenCol : 0;
-      lines[k] =
-        lines[k].slice(0, from) +
-        lines[k].slice(from).replace(nested, (mm) => {
-          annotated++;
-          return `${PURE}${mm}`;
-        });
-    }
-    i = j + 1;
+  return { annotated, unreviewed };
+}
+
+/** CLI entry: annotate `process.cwd()`'s src/gen, print, and fail on unreviewed. */
+function main(): void {
+  const { annotated, unreviewed } = annotatePureInitialisers(process.cwd());
+  if (unreviewed.length) {
+    console.error(
+      '[annotate-pure] Unreviewed top-level calls in generated code. Each one runs at import ' +
+        'time and defeats tree-shaking. Review it and add the callee to PURE_CALLEES in ' +
+        'hooks/post/650-annotate-pure-initialisers.ts if it is side-effect-free:\n  ' +
+        unreviewed.join('\n  ')
+    );
+    process.exit(1);
   }
-
-  const finalOut = lines.join('\n');
-  if (finalOut !== src) fs.writeFileSync(file, finalOut, 'utf8');
+  console.log(`[annotate-pure] Annotated ${annotated} top-level initialisers as /* @__PURE__ */`);
 }
 
-if (unreviewed.length) {
-  console.error(
-    '[annotate-pure] Unreviewed top-level calls in generated code. Each one runs at import ' +
-      'time and defeats tree-shaking. Review it and add the callee to PURE_CALLEES in ' +
-      'hooks/post/650-annotate-pure-initialisers.ts if it is side-effect-free:\n  ' +
-      unreviewed.join('\n  ')
-  );
-  process.exit(1);
-}
-console.log(`[annotate-pure] Annotated ${annotated} top-level initialisers as /* @__PURE__ */`);
+// Run only when executed directly (tsx hooks/post/650-...ts), not when imported
+// by the test suite — which calls annotatePureInitialisers() in-process so it
+// never pays the tsx + TypeScript-compiler startup cost per case.
+const invokedDirectly =
+  process.argv[1] !== undefined && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) main();
